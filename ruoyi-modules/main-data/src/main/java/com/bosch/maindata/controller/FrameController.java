@@ -25,14 +25,13 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
 
 /**
  * 跨Controller
- * 
+ *
  * @author xuhao
  * @date 2022-09-21
  */
 @RestController
 @RequestMapping("/frame")
-public class FrameController extends BaseController
-{
+public class FrameController extends BaseController {
     @Autowired
     private IFrameService frameService;
 
@@ -41,8 +40,7 @@ public class FrameController extends BaseController
      */
     @RequiresPermissions("maindata:frame:list")
     @GetMapping("/list")
-    public TableDataInfo list(Frame frame)
-    {
+    public TableDataInfo list(Frame frame) {
         startPage();
         List<Frame> list = frameService.selectFrameList(frame);
         return getDataTable(list);
@@ -54,8 +52,7 @@ public class FrameController extends BaseController
     @RequiresPermissions("maindata:frame:export")
     @Log(title = "跨", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, Frame frame)
-    {
+    public void export(HttpServletResponse response, Frame frame) {
         List<Frame> list = frameService.selectFrameList(frame);
         ExcelUtil<Frame> util = new ExcelUtil<Frame>(Frame.class);
         util.exportExcel(response, list, "跨数据");
@@ -66,8 +63,7 @@ public class FrameController extends BaseController
      */
     @RequiresPermissions("maindata:frame:query")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(frameService.selectFrameById(id));
     }
 
@@ -77,8 +73,7 @@ public class FrameController extends BaseController
     @RequiresPermissions("maindata:frame:add")
     @Log(title = "跨", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody Frame frame)
-    {
+    public AjaxResult add(@RequestBody Frame frame) {
         return toAjax(frameService.insertFrame(frame));
     }
 
@@ -88,8 +83,7 @@ public class FrameController extends BaseController
     @RequiresPermissions("maindata:frame:edit")
     @Log(title = "跨", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Frame frame)
-    {
+    public AjaxResult edit(@RequestBody Frame frame) {
         return toAjax(frameService.updateFrame(frame));
     }
 
@@ -98,9 +92,8 @@ public class FrameController extends BaseController
      */
     @RequiresPermissions("maindata:frame:remove")
     @Log(title = "跨", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(frameService.deleteFrameByIds(ids));
     }
 }
