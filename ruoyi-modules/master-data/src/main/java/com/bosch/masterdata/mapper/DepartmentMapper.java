@@ -2,6 +2,7 @@ package com.bosch.masterdata.mapper;
 
 import java.util.List;
 import com.bosch.masterdata.domain.Department;
+import com.bosch.masterdata.domain.vo.DepartmentVO;
 
 /**
  * 部门Mapper接口
@@ -58,4 +59,12 @@ public interface DepartmentMapper
      * @return 结果
      */
     public int deleteDepartmentByIds(Long[] ids);
+
+    /**
+     * 查询启用部门列表
+     *
+     * @return 启用部门集合
+     */
+    public List<DepartmentVO> selectDepartmentVOList();
+
 }

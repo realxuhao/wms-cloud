@@ -3,7 +3,13 @@
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bosch.masterdata.mapper.DepartmentMapper">
-    
+
+    <resultMap type="DepartmentVO" id="DepartmentVOResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="code"    column="code"    />
+    </resultMap>
+
     <resultMap type="Department" id="DepartmentResult">
         <result property="id"    column="id"    />
         <result property="name"    column="name"    />
@@ -90,4 +96,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectDepartmentVOList"  resultMap="DepartmentVOResult">
+        <include refid="selectDepartmentVo"/>
+        where status = '0'
+    </select>
 </mapper>

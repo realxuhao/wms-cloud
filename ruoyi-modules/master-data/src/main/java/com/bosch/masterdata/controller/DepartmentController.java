@@ -2,6 +2,11 @@ package com.bosch.masterdata.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.bosch.masterdata.domain.vo.DepartmentVO;
+import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +33,7 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
  * @date 2022-09-22
  */
 @RestController
+@Api("部门接口")
 @RequestMapping("/department")
 public class DepartmentController extends BaseController
 {
@@ -100,5 +106,17 @@ public class DepartmentController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(departmentService.deleteDepartmentByIds(ids));
+    }
+
+    /**
+     * 查询部门列表
+     */
+    @ApiOperation("查询启用状态部门列表")
+    @GetMapping("/departmentVOList")
+    public R<List<DepartmentVO>> list()
+    {
+        startPage();
+        List<DepartmentVO> list = departmentService.selectDepartmentVOList();
+        return R.ok(list);
     }
 }

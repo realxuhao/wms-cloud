@@ -1,6 +1,8 @@
 package com.bosch.masterdata.service.impl;
 
 import java.util.List;
+
+import com.bosch.masterdata.domain.vo.DepartmentVO;
 import com.ruoyi.common.core.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -92,5 +94,16 @@ public class DepartmentServiceImpl implements IDepartmentService
     public int deleteDepartmentById(Long id)
     {
         return departmentMapper.deleteDepartmentById(id);
+    }
+
+    /**
+     * 查询启用部门列表
+     *
+     * @return 启用部门列表
+     */
+    @Override
+    public List<DepartmentVO> selectDepartmentVOList()
+    {
+        return departmentMapper.selectDepartmentVOList();
     }
 }

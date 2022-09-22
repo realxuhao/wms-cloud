@@ -2,6 +2,7 @@ package com.bosch.masterdata.service;
 
 import java.util.List;
 import com.bosch.masterdata.domain.Department;
+import com.bosch.masterdata.domain.vo.DepartmentVO;
 
 /**
  * 部门Service接口
@@ -9,7 +10,7 @@ import com.bosch.masterdata.domain.Department;
  * @author xuhao
  * @date 2022-09-22
  */
-public interface IDepartmentService 
+public interface IDepartmentService
 {
     /**
      * 查询部门
@@ -58,4 +59,11 @@ public interface IDepartmentService
      * @return 结果
      */
     public int deleteDepartmentById(Long id);
+
+    /**
+     * 查询启用部门列表
+     *
+     * @return 启用部门列表
+     */
+    public List<DepartmentVO> selectDepartmentVOList();
 }
