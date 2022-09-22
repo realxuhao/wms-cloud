@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.masterdata.mapper.MaterialSupplierMapper">
+    
+    <resultMap type="MaterialSupplier" id="MaterialSupplierResult">
+        <result property="id"    column="id"    />
+        <result property="materialId"    column="material_id"    />
+        <result property="supplierId"    column="supplier_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectMaterialSupplierVo">
+        select id, material_id, supplier_id, create_by, update_by, create_time, update_time, status, remark from md_material_supplier
+    </sql>
+
+    <select id="selectMaterialSupplierList" parameterType="MaterialSupplier" resultMap="MaterialSupplierResult">
+        <include refid="selectMaterialSupplierVo"/>
+        <where>  
+            <if test="materialId != null "> and material_id = #{materialId}</if>
+            <if test="supplierId != null "> and supplier_id = #{supplierId}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectMaterialSupplierById" parameterType="Long" resultMap="MaterialSupplierResult">
+        <include refid="selectMaterialSupplierVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertMaterialSupplier" parameterType="MaterialSupplier" useGeneratedKeys="true" keyProperty="id">
+        insert into md_material_supplier
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="materialId != null">material_id,</if>
+            <if test="supplierId != null">supplier_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="materialId != null">#{materialId},</if>
+            <if test="supplierId != null">#{supplierId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMaterialSupplier" parameterType="MaterialSupplier">
+        update md_material_supplier
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="supplierId != null">supplier_id = #{supplierId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMaterialSupplierById" parameterType="Long">
+        delete from md_material_supplier where id = #{id}
+    </delete>
+
+    <delete id="deleteMaterialSupplierByIds" parameterType="String">
+        delete from md_material_supplier where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

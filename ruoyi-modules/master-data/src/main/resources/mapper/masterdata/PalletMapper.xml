@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.masterdata.mapper.PalletMapper">
+    
+    <resultMap type="Pallet" id="PalletResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="length"    column="length"    />
+        <result property="width"    column="width"    />
+        <result property="height"    column="height"    />
+        <result property="virtualPrefixCode"    column="virtual_prefix_code"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectPalletVo">
+        select id, type, length, width, height, virtual_prefix_code, create_by, update_by, create_time, update_time, status, remark from md_pallet
+    </sql>
+
+    <select id="selectPalletList" parameterType="Pallet" resultMap="PalletResult">
+        <include refid="selectPalletVo"/>
+        <where>  
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="length != null "> and length = #{length}</if>
+            <if test="width != null "> and width = #{width}</if>
+            <if test="height != null "> and height = #{height}</if>
+            <if test="virtualPrefixCode != null  and virtualPrefixCode != ''"> and virtual_prefix_code = #{virtualPrefixCode}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+    </select>
+    
+    <select id="selectPalletById" parameterType="Long" resultMap="PalletResult">
+        <include refid="selectPalletVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertPallet" parameterType="Pallet" useGeneratedKeys="true" keyProperty="id">
+        insert into md_pallet
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="type != null and type != ''">type,</if>
+            <if test="length != null">length,</if>
+            <if test="width != null">width,</if>
+            <if test="height != null">height,</if>
+            <if test="virtualPrefixCode != null">virtual_prefix_code,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="length != null">#{length},</if>
+            <if test="width != null">#{width},</if>
+            <if test="height != null">#{height},</if>
+            <if test="virtualPrefixCode != null">#{virtualPrefixCode},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePallet" parameterType="Pallet">
+        update md_pallet
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="length != null">length = #{length},</if>
+            <if test="width != null">width = #{width},</if>
+            <if test="height != null">height = #{height},</if>
+            <if test="virtualPrefixCode != null">virtual_prefix_code = #{virtualPrefixCode},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePalletById" parameterType="Long">
+        delete from md_pallet where id = #{id}
+    </delete>
+
+    <delete id="deletePalletByIds" parameterType="String">
+        delete from md_pallet where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
