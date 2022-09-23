@@ -2,6 +2,15 @@ package com.bosch.masterdata.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.bosch.masterdata.domain.dto.SupplierInfoDTO;
+import com.bosch.masterdata.domain.vo.MaterialVO;
+import com.bosch.masterdata.domain.vo.PageVO;
+import com.bosch.masterdata.domain.vo.SupplierInfoVO;
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +36,7 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
  * @author xuhao
  * @date 2022-09-22
  */
+@Api(tags = "供应商接口")
 @RestController
 @RequestMapping("/supplierInfo")
 public class SupplierInfoController extends BaseController
@@ -37,14 +47,14 @@ public class SupplierInfoController extends BaseController
     /**
      * 查询供应商列表
      */
-    @RequiresPermissions("masterdata:info:list")
-    @GetMapping("/list")
-    public TableDataInfo list(SupplierInfo supplierInfo)
-    {
-        startPage();
-        List<SupplierInfo> list = supplierInfoService.selectSupplierInfoList(supplierInfo);
-        return getDataTable(list);
-    }
+//    @RequiresPermissions("masterdata:info:list")
+//    @GetMapping("/list")
+//    public TableDataInfo list(SupplierInfo supplierInfo)
+//    {
+//        startPage();
+//        List<SupplierInfo> list = supplierInfoService.selectSupplierInfoList(supplierInfo);
+//        return getDataTable(list);
+//    }
 
     /**
      * 导出供应商列表
@@ -62,43 +72,73 @@ public class SupplierInfoController extends BaseController
     /**
      * 获取供应商详细信息
      */
-    @RequiresPermissions("masterdata:info:query")
-    @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
-        return AjaxResult.success(supplierInfoService.selectSupplierInfoById(id));
-    }
+//    @RequiresPermissions("masterdata:info:query")
+//    @GetMapping(value = "/{id}")
+//    public AjaxResult getInfo(@PathVariable("id") Long id)
+//    {
+//        return AjaxResult.success(supplierInfoService.selectSupplierInfoById(id));
+//    }
 
     /**
      * 新增供应商
      */
-    @RequiresPermissions("masterdata:info:add")
-    @Log(title = "供应商", businessType = BusinessType.INSERT)
-    @PostMapping
-    public AjaxResult add(@RequestBody SupplierInfo supplierInfo)
-    {
-        return toAjax(supplierInfoService.insertSupplierInfo(supplierInfo));
-    }
+//    @RequiresPermissions("masterdata:info:add")
+//    @Log(title = "供应商", businessType = BusinessType.INSERT)
+//    @PostMapping
+//    public AjaxResult add(@RequestBody SupplierInfo supplierInfo)
+//    {
+//        return toAjax(supplierInfoService.insertSupplierInfo(supplierInfo));
+//    }
 
-    /**
-     * 修改供应商
-     */
-    @RequiresPermissions("masterdata:info:edit")
-    @Log(title = "供应商", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public AjaxResult edit(@RequestBody SupplierInfo supplierInfo)
-    {
-        return toAjax(supplierInfoService.updateSupplierInfo(supplierInfo));
-    }
+
 
     /**
      * 删除供应商
      */
-    @RequiresPermissions("masterdata:info:remove")
+    //@RequiresPermissions("masterdata:info:remove")
+    @ApiOperation("删除供应商")
     @Log(title = "供应商", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(supplierInfoService.deleteSupplierInfoByIds(ids));
+    }
+
+    /**
+     * 新增供应商DTO
+     */
+    //@RequiresPermissions("masterdata:info:add")
+    @ApiOperation("新增供应商")
+    @Log(title = "供应商", businessType = BusinessType.INSERT)
+    @PostMapping("/addSupplierInfo")
+    public AjaxResult addSupplierInfo(@RequestBody SupplierInfoDTO supplierInfoDTO)
+    {
+        return toAjax(supplierInfoService.insertSupplierInfo(supplierInfoDTO));
+    }
+
+    /**
+     * 修改供应商
+     */
+    //@RequiresPermissions("masterdata:info:edit")
+    @ApiOperation("修改供应商")
+    @Log(title = "供应商", businessType = BusinessType.UPDATE)
+    @PutMapping("/{id}")
+    public AjaxResult edit(@PathVariable("id") Long id,@RequestBody SupplierInfoDTO supplierInfoDTO)
+    {
+        supplierInfoDTO.setId(id);
+        return toAjax(supplierInfoService.updateSupplierInfo(supplierInfoDTO));
+    }
+
+    /**
+     * 查询供应商列表
+     */
+    //@RequiresPermissions("masterdata:info:list")
+    @GetMapping("/list")
+    @ApiOperation("查询供应商")
+    public R<PageVO<SupplierInfoVO>> list(SupplierInfoDTO supplierInfoDTO)
+    {
+        startPage();
+        List<SupplierInfoVO> list = supplierInfoService.selectSupplierInfoList(supplierInfoDTO);
+        return R.ok(new PageVO<>(list,new PageInfo<>(list).getTotal()));
     }
 }

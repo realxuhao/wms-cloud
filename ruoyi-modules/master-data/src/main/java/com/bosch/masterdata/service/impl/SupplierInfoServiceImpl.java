@@ -1,7 +1,12 @@
 package com.bosch.masterdata.service.impl;
 
 import java.util.List;
+
+import com.bosch.masterdata.domain.dto.SupplierInfoDTO;
+import com.bosch.masterdata.domain.vo.SupplierInfoVO;
+import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.SupplierInfoMapper;
@@ -44,6 +49,16 @@ public class SupplierInfoServiceImpl implements ISupplierInfoService
         return supplierInfoMapper.selectSupplierInfoList(supplierInfo);
     }
 
+    @Override
+    public List<SupplierInfoVO> selectSupplierInfoList(SupplierInfoDTO supplierInfoDTO) {
+        SupplierInfo supplierInfo= BeanConverUtil.conver(supplierInfoDTO,SupplierInfo.class);
+        List<SupplierInfoVO> supplierInfoVOS =
+                BeanConverUtil.converList(supplierInfoMapper.selectSupplierInfoList(supplierInfo),
+                        SupplierInfoVO.class);
+
+        return supplierInfoVOS;
+    }
+
     /**
      * 新增供应商
      * 
@@ -57,6 +72,14 @@ public class SupplierInfoServiceImpl implements ISupplierInfoService
         return supplierInfoMapper.insertSupplierInfo(supplierInfo);
     }
 
+    @Override
+    public int insertSupplierInfo(SupplierInfoDTO supplierInfoDTO) {
+        SupplierInfo supplierInfo = BeanConverUtil.conver(supplierInfoDTO, SupplierInfo.class);
+        supplierInfo.setCreateTime(DateUtils.getNowDate());
+        supplierInfo.setCreateBy(SecurityUtils.getUsername());
+        return supplierInfoMapper.insertSupplierInfo(supplierInfo);
+    }
+
     /**
      * 修改供应商
      * 
@@ -67,6 +90,14 @@ public class SupplierInfoServiceImpl implements ISupplierInfoService
     public int updateSupplierInfo(SupplierInfo supplierInfo)
     {
         supplierInfo.setUpdateTime(DateUtils.getNowDate());
+        return supplierInfoMapper.updateSupplierInfo(supplierInfo);
+    }
+
+    @Override
+    public int updateSupplierInfo(SupplierInfoDTO supplierInfoDTO) {
+        SupplierInfo supplierInfo = BeanConverUtil.conver(supplierInfoDTO, SupplierInfo.class);
+        supplierInfo.setUpdateTime(DateUtils.getNowDate());
+        supplierInfo.setUpdateBy(SecurityUtils.getUsername());
         return supplierInfoMapper.updateSupplierInfo(supplierInfo);
     }
 
