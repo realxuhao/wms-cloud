@@ -69,4 +69,11 @@ public interface MaterialMapper
      */
     public List<MaterialVO> selectMaterialVOList(MaterialDTO materialDTO);
 
+    /**
+     * 查询物料信息
+     *
+     * @param id 物料信息主键
+     * @return 物料信息
+     */
+    public MaterialVO selectMaterialVOById(Long id);
 }

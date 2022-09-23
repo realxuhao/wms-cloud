@@ -2,6 +2,8 @@ package com.bosch.masterdata.service;
 
 import java.util.List;
 import com.bosch.masterdata.domain.SupplierInfo;
+import com.bosch.masterdata.domain.dto.SupplierInfoDTO;
+import com.bosch.masterdata.domain.vo.SupplierInfoVO;
 
 /**
  * 供应商Service接口
@@ -27,6 +29,7 @@ public interface ISupplierInfoService
      */
     public List<SupplierInfo> selectSupplierInfoList(SupplierInfo supplierInfo);
 
+    public List<SupplierInfo> selectSupplierInfoList(SupplierInfoDTO supplierInfoDTO);
     /**
      * 新增供应商
      * 
@@ -34,6 +37,8 @@ public interface ISupplierInfoService
      * @return 结果
      */
     public int insertSupplierInfo(SupplierInfo supplierInfo);
+
+    public int insertSupplierInfo(SupplierInfoDTO supplierInfoDTO);
 
     /**
      * 修改供应商
@@ -43,6 +48,7 @@ public interface ISupplierInfoService
      */
     public int updateSupplierInfo(SupplierInfo supplierInfo);
 
+    public int updateSupplierInfo(SupplierInfoDTO supplierInfoDTO);
     /**
      * 批量删除供应商
      * 

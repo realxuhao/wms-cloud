@@ -38,6 +38,11 @@ public class MaterialServiceImpl implements IMaterialService
         return materialMapper.selectMaterialById(id);
     }
 
+    @Override
+    public MaterialVO selectMaterialVOById(Long id) {
+        return materialMapper.selectMaterialVOById(id);
+    }
+
     /**
      * 查询物料信息列表
      * 

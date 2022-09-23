@@ -145,9 +145,21 @@ public class MaterialController extends BaseController
     //@RequiresPermissions("masterdata:material:edit")
     @ApiOperation("修改物料")
     @Log(title = "物料信息", businessType = BusinessType.UPDATE)
-    @PostMapping("/editMaterial")
-    public AjaxResult edit(@RequestBody MaterialDTO materialDTO)
+    @PutMapping("/{id}")
+    public AjaxResult edit(@PathVariable("id") Long id,@RequestBody MaterialDTO materialDTO)
     {
+        materialDTO.setId(id);
         return toAjax(materialService.updateMaterial(materialDTO));
+    }
+
+    /**
+     * 获取物料信息详细信息
+     */
+    //@RequiresPermissions("masterdata:material:query")
+    @GetMapping(value = "/{id}")
+    @ApiOperation("获取物料详情")
+    public AjaxResult getInfo(@PathVariable("id") Long id)
+    {
+        return AjaxResult.success(materialService.selectMaterialVOById(id));
     }
 }
