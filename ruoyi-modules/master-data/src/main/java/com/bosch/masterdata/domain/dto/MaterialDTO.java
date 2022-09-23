@@ -76,4 +76,8 @@ public class MaterialDTO extends PageDomain {
     /** 状态（1：启用，0：停用） */
     @ApiModelProperty(value = "状态 1：启用，0：停用")
     private Long status;
+
+    @ApiModelProperty(value = "备注")
+    /** 备注 */
+    private String remark;
 }

@@ -21,6 +21,7 @@ public interface IMaterialService
      */
     public Material selectMaterialById(Long id);
 
+    public MaterialVO selectMaterialVOById(Long id);
     /**
      * 查询物料信息列表
      * 

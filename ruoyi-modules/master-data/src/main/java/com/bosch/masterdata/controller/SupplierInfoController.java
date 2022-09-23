@@ -69,15 +69,7 @@ public class SupplierInfoController extends BaseController
         util.exportExcel(response, list, "供应商数据");
     }
 
-    /**
-     * 获取供应商详细信息
-     */
-//    @RequiresPermissions("masterdata:info:query")
-//    @GetMapping(value = "/{id}")
-//    public AjaxResult getInfo(@PathVariable("id") Long id)
-//    {
-//        return AjaxResult.success(supplierInfoService.selectSupplierInfoById(id));
-//    }
+
 
     /**
      * 新增供应商
@@ -135,10 +127,20 @@ public class SupplierInfoController extends BaseController
     //@RequiresPermissions("masterdata:info:list")
     @GetMapping("/list")
     @ApiOperation("查询供应商")
-    public R<PageVO<SupplierInfoVO>> list(SupplierInfoDTO supplierInfoDTO)
+    public R<PageVO<SupplierInfo>> list(SupplierInfoDTO supplierInfoDTO)
     {
         startPage();
-        List<SupplierInfoVO> list = supplierInfoService.selectSupplierInfoList(supplierInfoDTO);
+        List<SupplierInfo> list = supplierInfoService.selectSupplierInfoList(supplierInfoDTO);
         return R.ok(new PageVO<>(list,new PageInfo<>(list).getTotal()));
+    }
+    /**
+     * 获取供应商详细信息
+     */
+    //@RequiresPermissions("masterdata:info:query")
+    @ApiOperation("查询供应商详情")
+    @GetMapping(value = "/{id}")
+    public AjaxResult getInfo(@PathVariable("id") Long id)
+    {
+        return AjaxResult.success(supplierInfoService.selectSupplierInfoById(id));
     }
 }

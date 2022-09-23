@@ -29,7 +29,7 @@ public interface ISupplierInfoService
      */
     public List<SupplierInfo> selectSupplierInfoList(SupplierInfo supplierInfo);
 
-    public List<SupplierInfoVO> selectSupplierInfoList(SupplierInfoDTO supplierInfoDTO);
+    public List<SupplierInfo> selectSupplierInfoList(SupplierInfoDTO supplierInfoDTO);
     /**
      * 新增供应商
      * 

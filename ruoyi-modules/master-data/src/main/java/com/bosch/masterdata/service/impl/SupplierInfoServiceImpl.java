@@ -50,13 +50,13 @@ public class SupplierInfoServiceImpl implements ISupplierInfoService
     }
 
     @Override
-    public List<SupplierInfoVO> selectSupplierInfoList(SupplierInfoDTO supplierInfoDTO) {
+    public List<SupplierInfo> selectSupplierInfoList(SupplierInfoDTO supplierInfoDTO) {
         SupplierInfo supplierInfo= BeanConverUtil.conver(supplierInfoDTO,SupplierInfo.class);
-        List<SupplierInfoVO> supplierInfoVOS =
-                BeanConverUtil.converList(supplierInfoMapper.selectSupplierInfoList(supplierInfo),
-                        SupplierInfoVO.class);
+//        List<SupplierInfoVO> supplierInfoVOS =
+//                BeanConverUtil.converList(supplierInfoMapper.selectSupplierInfoList(supplierInfo),
+//                        SupplierInfoVO.class);
 
-        return supplierInfoVOS;
+        return supplierInfoMapper.selectSupplierInfoList(supplierInfo);
     }
 
     /**

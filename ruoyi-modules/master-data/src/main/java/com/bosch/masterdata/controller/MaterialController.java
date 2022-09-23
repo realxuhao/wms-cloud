@@ -151,4 +151,15 @@ public class MaterialController extends BaseController
         materialDTO.setId(id);
         return toAjax(materialService.updateMaterial(materialDTO));
     }
+
+    /**
+     * 获取物料信息详细信息
+     */
+    //@RequiresPermissions("masterdata:material:query")
+    @GetMapping(value = "/{id}")
+    @ApiOperation("获取物料详情")
+    public AjaxResult getInfo(@PathVariable("id") Long id)
+    {
+        return AjaxResult.success(materialService.selectMaterialVOById(id));
+    }
 }
