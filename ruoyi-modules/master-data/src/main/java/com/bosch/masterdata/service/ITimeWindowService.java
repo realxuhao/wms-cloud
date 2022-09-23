@@ -2,6 +2,8 @@ package com.bosch.masterdata.service;
 
 import java.util.List;
 import com.bosch.masterdata.domain.TimeWindow;
+import com.bosch.masterdata.domain.dto.TimeWindowDTO;
+import com.bosch.masterdata.domain.vo.TimeWindowVO;
 
 /**
  * 道口时间窗口Service接口
@@ -22,18 +24,18 @@ public interface ITimeWindowService
     /**
      * 查询道口时间窗口列表
      * 
-     * @param timeWindow 道口时间窗口
+     * @param timeWindowDTO 道口时间窗口
      * @return 道口时间窗口集合
      */
-    public List<TimeWindow> selectTimeWindowList(TimeWindow timeWindow);
+    public List<TimeWindowVO> selectTimeWindowList(TimeWindowDTO timeWindowDTO);
 
     /**
      * 新增道口时间窗口
      * 
-     * @param timeWindow 道口时间窗口
+     * @param timeWindowDTO 道口时间窗口
      * @return 结果
      */
-    public int insertTimeWindow(TimeWindow timeWindow);
+    public int insertTimeWindow(TimeWindowDTO timeWindowDTO);
 
     /**
      * 修改道口时间窗口
@@ -41,7 +43,7 @@ public interface ITimeWindowService
      * @param timeWindow 道口时间窗口
      * @return 结果
      */
-    public int updateTimeWindow(TimeWindow timeWindow);
+    public int updateTimeWindow(TimeWindowDTO timeWindow);
 
     /**
      * 批量删除道口时间窗口

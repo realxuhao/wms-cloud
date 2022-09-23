@@ -2,6 +2,8 @@ package com.bosch.masterdata.mapper;
 
 import java.util.List;
 import com.bosch.masterdata.domain.TimeWindow;
+import com.bosch.masterdata.domain.dto.TimeWindowDTO;
+import com.bosch.masterdata.domain.vo.TimeWindowVO;
 
 /**
  * 道口时间窗口Mapper接口
@@ -22,10 +24,10 @@ public interface TimeWindowMapper
     /**
      * 查询道口时间窗口列表
      * 
-     * @param timeWindow 道口时间窗口
+     * @param timeWindowDTO 道口时间窗口
      * @return 道口时间窗口集合
      */
-    public List<TimeWindow> selectTimeWindowList(TimeWindow timeWindow);
+    public List<TimeWindowVO> selectTimeWindowList(TimeWindowDTO timeWindowDTO);
 
     /**
      * 新增道口时间窗口

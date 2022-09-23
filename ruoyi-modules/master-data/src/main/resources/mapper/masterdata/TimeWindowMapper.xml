@@ -17,18 +17,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="remark"    column="remark"    />
     </resultMap>
 
+    <resultMap type="TimeWindowVO" id="TimeWindowVOResult">
+        <result property="id"    column="id"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="windowCode"    column="window_code"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
     <sql id="selectTimeWindowVo">
         select id, start_time, end_time, window_code, create_by, update_by, create_time, update_time, status, remark from md_time_window
     </sql>
 
-    <select id="selectTimeWindowList" parameterType="TimeWindow" resultMap="TimeWindowResult">
-        <include refid="selectTimeWindowVo"/>
+    <select id="selectTimeWindowList" parameterType="TimeWindowDTO" resultMap="TimeWindowVOResult">
+--         <include refid="selectTimeWindowVo"/>
         <where>  
             <if test="startTime != null  and startTime != ''"> and start_time = #{startTime}</if>
             <if test="endTime != null  and endTime != ''"> and end_time = #{endTime}</if>
             <if test="windowCode != null  and windowCode != ''"> and window_code = #{windowCode}</if>
             <if test="status != null "> and status = #{status}</if>
         </where>
+        order by create_time desc
     </select>
     
     <select id="selectTimeWindowById" parameterType="Long" resultMap="TimeWindowResult">
