@@ -8,7 +8,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="id"    column="id"    />
         <result property="type"    column="type"    />
         <result property="code"    column="code"    />
-        <result property="descrition"    column="descrition"    />
+        <result property="description"    column="description"    />
         <result property="createBy"    column="create_by"    />
         <result property="updateBy"    column="update_by"    />
         <result property="createTime"    column="create_time"    />
@@ -17,18 +17,28 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="remark"    column="remark"    />
     </resultMap>
 
+    <resultMap type="MoveTypeVO" id="MoveTypeVOResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="code"    column="code"    />
+        <result property="description"    column="description"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
     <sql id="selectMoveTypeVo">
-        select id, type, code, descrition, create_by, update_by, create_time, update_time, status, remark from md_move_type
+        select id, type, code, description, create_by, update_by, create_time, update_time, status, remark from md_move_type
     </sql>
 
-    <select id="selectMoveTypeList" parameterType="MoveType" resultMap="MoveTypeResult">
+    <select id="selectMoveTypeList" parameterType="MoveTypeDTO" resultMap="MoveTypeVOResult">
         <include refid="selectMoveTypeVo"/>
         <where>  
             <if test="type != null  and type != ''"> and type = #{type}</if>
             <if test="code != null  and code != ''"> and code = #{code}</if>
-            <if test="descrition != null  and descrition != ''"> and descrition = #{descrition}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
             <if test="status != null "> and status = #{status}</if>
         </where>
+        order by create_time desc
     </select>
     
     <select id="selectMoveTypeById" parameterType="Long" resultMap="MoveTypeResult">
@@ -42,7 +52,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="id != null">id,</if>
             <if test="type != null and type != ''">type,</if>
             <if test="code != null and code != ''">code,</if>
-            <if test="descrition != null">descrition,</if>
+            <if test="description != null">description,</if>
             <if test="createBy != null">create_by,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="createTime != null">create_time,</if>
@@ -54,7 +64,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="id != null">#{id},</if>
             <if test="type != null and type != ''">#{type},</if>
             <if test="code != null and code != ''">#{code},</if>
-            <if test="descrition != null">#{descrition},</if>
+            <if test="description != null">#{description},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="createTime != null">#{createTime},</if>
@@ -69,7 +79,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="type != null and type != ''">type = #{type},</if>
             <if test="code != null and code != ''">code = #{code},</if>
-            <if test="descrition != null">descrition = #{descrition},</if>
+            <if test="description != null">description = #{description},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>

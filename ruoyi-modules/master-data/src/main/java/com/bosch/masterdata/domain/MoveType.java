@@ -28,7 +28,7 @@ public class MoveType extends BaseEntity
 
     /** 移动类型描述 */
     @Excel(name = "移动类型描述")
-    private String descrition;
+    private String description;
 
     /** 状态（1：启用，0：停用） */
     @Excel(name = "状态", readConverterExp = "1=：启用，0：停用")
@@ -61,14 +61,14 @@ public class MoveType extends BaseEntity
     {
         return code;
     }
-    public void setDescrition(String descrition) 
+    public void setDescription(String description)
     {
-        this.descrition = descrition;
+        this.description = description;
     }
 
-    public String getDescrition() 
+    public String getDescription()
     {
-        return descrition;
+        return description;
     }
     public void setStatus(Long status) 
     {
@@ -86,7 +86,7 @@ public class MoveType extends BaseEntity
             .append("id", getId())
             .append("type", getType())
             .append("code", getCode())
-            .append("descrition", getDescrition())
+            .append("description", getDescription())
             .append("createBy", getCreateBy())
             .append("updateBy", getUpdateBy())
             .append("createTime", getCreateTime())

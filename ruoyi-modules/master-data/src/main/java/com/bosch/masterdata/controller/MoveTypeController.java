@@ -2,6 +2,16 @@ package com.bosch.masterdata.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.bosch.masterdata.domain.dto.MoveTypeDTO;
+import com.bosch.masterdata.domain.vo.MaterialTypeVO;
+import com.bosch.masterdata.domain.vo.MoveTypeVO;
+import com.bosch.masterdata.domain.vo.PageVO;
+import com.bosch.masterdata.utils.BeanConverUtil;
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,14 +33,14 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
 
 /**
  * 移动类型配置Controller
- * 
+ *
  * @author xuhao
  * @date 2022-09-22
  */
 @RestController
 @RequestMapping("/moveType")
-public class MoveTypeController extends BaseController
-{
+@Api(tags = "移动类型接口")
+public class MoveTypeController extends BaseController {
     @Autowired
     private IMoveTypeService moveTypeService;
 
@@ -38,12 +48,12 @@ public class MoveTypeController extends BaseController
      * 查询移动类型配置列表
      */
     @RequiresPermissions("masterdata:type:list")
+    @ApiOperation("查询移动类型列表")
     @GetMapping("/list")
-    public TableDataInfo list(MoveType moveType)
-    {
+    public R<PageVO<MoveTypeVO>> list(MoveTypeDTO moveTypeDTO) {
         startPage();
-        List<MoveType> list = moveTypeService.selectMoveTypeList(moveType);
-        return getDataTable(list);
+        List<MoveTypeVO> list = moveTypeService.selectMoveTypeList(moveTypeDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
     /**
@@ -52,11 +62,10 @@ public class MoveTypeController extends BaseController
     @RequiresPermissions("masterdata:type:export")
     @Log(title = "移动类型配置", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, MoveType moveType)
-    {
-        List<MoveType> list = moveTypeService.selectMoveTypeList(moveType);
+    public void export(HttpServletResponse response, MoveTypeDTO moveType) {
+        List<MoveTypeVO> list = moveTypeService.selectMoveTypeList(moveType);
         ExcelUtil<MoveType> util = new ExcelUtil<MoveType>(MoveType.class);
-        util.exportExcel(response, list, "移动类型配置数据");
+        util.exportExcel(response, BeanConverUtil.converList(list, MoveType.class), "移动类型配置数据");
     }
 
     /**
@@ -64,19 +73,18 @@ public class MoveTypeController extends BaseController
      */
     @RequiresPermissions("masterdata:type:query")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(moveTypeService.selectMoveTypeById(id));
     }
 
     /**
      * 新增移动类型配置
      */
-    @RequiresPermissions("masterdata:type:add")
+//    @RequiresPermissions("masterdata:type:add")
+    @ApiOperation("增加移动类型")
     @Log(title = "移动类型配置", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody MoveType moveType)
-    {
+    public AjaxResult add(@RequestBody MoveTypeDTO moveType) {
         return toAjax(moveTypeService.insertMoveType(moveType));
     }
 
@@ -85,10 +93,10 @@ public class MoveTypeController extends BaseController
      */
     @RequiresPermissions("masterdata:type:edit")
     @Log(title = "移动类型配置", businessType = BusinessType.UPDATE)
+    @ApiOperation("修改移动类型")
     @PutMapping
-    public AjaxResult edit(@RequestBody MoveType moveType)
-    {
-        return toAjax(moveTypeService.updateMoveType(moveType));
+    public AjaxResult edit(@RequestBody MoveTypeDTO moveTypeDTO) {
+        return toAjax(moveTypeService.updateMoveType(moveTypeDTO));
     }
 
     /**
@@ -96,9 +104,9 @@ public class MoveTypeController extends BaseController
      */
     @RequiresPermissions("masterdata:type:remove")
     @Log(title = "移动类型配置", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @ApiOperation("删除移动类型")
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(moveTypeService.deleteMoveTypeByIds(ids));
     }
 }

@@ -2,6 +2,8 @@ package com.bosch.masterdata.service;
 
 import java.util.List;
 import com.bosch.masterdata.domain.MoveType;
+import com.bosch.masterdata.domain.dto.MoveTypeDTO;
+import com.bosch.masterdata.domain.vo.MoveTypeVO;
 
 /**
  * 移动类型配置Service接口
@@ -22,10 +24,10 @@ public interface IMoveTypeService
     /**
      * 查询移动类型配置列表
      * 
-     * @param moveType 移动类型配置
+     * @param moveTypeDTO 移动类型配置
      * @return 移动类型配置集合
      */
-    public List<MoveType> selectMoveTypeList(MoveType moveType);
+    public List<MoveTypeVO> selectMoveTypeList(MoveTypeDTO moveTypeDTO);
 
     /**
      * 新增移动类型配置
@@ -33,15 +35,15 @@ public interface IMoveTypeService
      * @param moveType 移动类型配置
      * @return 结果
      */
-    public int insertMoveType(MoveType moveType);
+    public int insertMoveType(MoveTypeDTO moveType);
 
     /**
      * 修改移动类型配置
      * 
-     * @param moveType 移动类型配置
+     * @param moveTypeDTO 移动类型配置
      * @return 结果
      */
-    public int updateMoveType(MoveType moveType);
+    public int updateMoveType(MoveTypeDTO moveTypeDTO);
 
     /**
      * 批量删除移动类型配置

@@ -2,6 +2,7 @@ package com.bosch.masterdata.mapper;
 
 import java.util.List;
 import com.bosch.masterdata.domain.MoveType;
+import com.bosch.masterdata.domain.vo.MoveTypeVO;
 
 /**
  * 移动类型配置Mapper接口
@@ -25,7 +26,7 @@ public interface MoveTypeMapper
      * @param moveType 移动类型配置
      * @return 移动类型配置集合
      */
-    public List<MoveType> selectMoveTypeList(MoveType moveType);
+    public List<MoveTypeVO> selectMoveTypeList(MoveType moveType);
 
     /**
      * 新增移动类型配置
