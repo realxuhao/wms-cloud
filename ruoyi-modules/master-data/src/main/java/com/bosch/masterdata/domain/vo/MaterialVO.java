@@ -1,10 +1,12 @@
 package com.bosch.masterdata.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.annotation.Excel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 public class MaterialVO {
@@ -80,4 +82,9 @@ public class MaterialVO {
     @ApiModelProperty(value = "备注")
     /** 备注 */
     private String remark;
+
+    /** 创建时间 */
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
 }

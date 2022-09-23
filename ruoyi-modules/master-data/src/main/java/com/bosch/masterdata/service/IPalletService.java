@@ -2,6 +2,8 @@ package com.bosch.masterdata.service;
 
 import java.util.List;
 import com.bosch.masterdata.domain.Pallet;
+import com.bosch.masterdata.domain.dto.PalletDTO;
+import com.bosch.masterdata.domain.vo.PalletVO;
 
 /**
  * 托盘Service接口
@@ -27,6 +29,7 @@ public interface IPalletService
      */
     public List<Pallet> selectPalletList(Pallet pallet);
 
+    public List<PalletVO> selectPalletList(PalletDTO palletDTO);
     /**
      * 新增托盘
      * 
@@ -35,6 +38,7 @@ public interface IPalletService
      */
     public int insertPallet(Pallet pallet);
 
+    public int insertPallet(PalletDTO palletDTO);
     /**
      * 修改托盘
      * 
@@ -43,6 +47,7 @@ public interface IPalletService
      */
     public int updatePallet(Pallet pallet);
 
+    public int updatePallet(PalletDTO palletDTO);
     /**
      * 批量删除托盘
      * 
