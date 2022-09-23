@@ -2,6 +2,10 @@ package com.bosch.masterdata.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.bosch.masterdata.domain.Frame;
+import com.bosch.masterdata.domain.vo.PageVO;
+import com.ruoyi.common.core.domain.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -101,4 +105,6 @@ public class BinController extends BaseController
     {
         return toAjax(binService.deleteBinByIds(ids));
     }
+
+
 }

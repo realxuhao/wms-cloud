@@ -1,7 +1,12 @@
 package com.bosch.masterdata.service.impl;
 
 import java.util.List;
+
+import com.bosch.masterdata.domain.dto.PalletDTO;
+import com.bosch.masterdata.domain.vo.PalletVO;
+import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.PalletMapper;
@@ -44,6 +49,13 @@ public class PalletServiceImpl implements IPalletService
         return palletMapper.selectPalletList(pallet);
     }
 
+    @Override
+    public List<PalletVO> selectPalletList(PalletDTO palletDTO) {
+        Pallet pallet = BeanConverUtil.conver(palletDTO, Pallet.class);
+
+        return BeanConverUtil.converList(palletMapper.selectPalletList(pallet),PalletVO.class);
+    }
+
     /**
      * 新增托盘
      * 
@@ -57,6 +69,14 @@ public class PalletServiceImpl implements IPalletService
         return palletMapper.insertPallet(pallet);
     }
 
+    @Override
+    public int insertPallet(PalletDTO palletDTO) {
+        Pallet pallet = BeanConverUtil.conver(palletDTO, Pallet.class);
+        pallet.setCreateTime(DateUtils.getNowDate());
+        pallet.setCreateBy(SecurityUtils.getUsername());
+        return palletMapper.insertPallet(pallet);
+    }
+
     /**
      * 修改托盘
      * 
@@ -67,6 +87,14 @@ public class PalletServiceImpl implements IPalletService
     public int updatePallet(Pallet pallet)
     {
         pallet.setUpdateTime(DateUtils.getNowDate());
+        return palletMapper.updatePallet(pallet);
+    }
+
+    @Override
+    public int updatePallet(PalletDTO palletDTO) {
+        Pallet pallet = BeanConverUtil.conver(palletDTO, Pallet.class);
+        pallet.setUpdateTime(DateUtils.getNowDate());
+        pallet.setUpdateBy(SecurityUtils.getUsername());
         return palletMapper.updatePallet(pallet);
     }
 
