@@ -30,7 +30,7 @@ public class MoveTypeVO {
      * 移动类型描述
      */
     @ApiModelProperty(value = "移动类型描述")
-    private String descrition;
+    private String description;
 
 
     @ApiModelProperty(value = "创建时间")
