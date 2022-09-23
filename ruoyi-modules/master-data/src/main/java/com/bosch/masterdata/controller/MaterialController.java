@@ -119,7 +119,7 @@ public class MaterialController extends BaseController
      * 查询物料信息
      */
     @ApiOperation("查询物料列表")
-    @GetMapping("/departmentVOList")
+    @GetMapping("/materialVOList")
     public R<PageVO<MaterialVO>> list(MaterialDTO materialDTO)
     {
         startPage();
