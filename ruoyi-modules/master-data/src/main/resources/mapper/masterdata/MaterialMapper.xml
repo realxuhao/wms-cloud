@@ -45,12 +45,7 @@
         <result property="minPackageNetWeight" column="min_package_net_weight"/>
         <result property="lessDeviationRatio" column="less_deviation_ratio"/>
         <result property="moreDeviationRatio" column="more_deviation_ratio"/>
-        <result property="createBy" column="create_by"/>
-        <result property="updateBy" column="update_by"/>
-        <result property="createTime" column="create_time"/>
-        <result property="updateTime" column="update_time"/>
         <result property="status" column="status"/>
-        <result property="remark" column="remark"/>
     </resultMap>
     <sql id="selectMaterialVo">
         select id, code, name, min_package_number, material_type_id, unit, error_proofing_method, has_pallet, bind_pallet, package_weight, pallet_weight, total_weight, min_package_net_weight, less_deviation_ratio, more_deviation_ratio, create_by, update_by, create_time, update_time, status, remark from md_material

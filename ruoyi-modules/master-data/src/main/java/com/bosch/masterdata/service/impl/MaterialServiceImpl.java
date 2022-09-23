@@ -4,7 +4,10 @@ import java.util.List;
 
 import com.bosch.masterdata.domain.dto.MaterialDTO;
 import com.bosch.masterdata.domain.vo.MaterialVO;
+import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.MaterialMapper;
@@ -66,6 +69,20 @@ public class MaterialServiceImpl implements IMaterialService
     }
 
     /**
+     * 新增物料DTO
+     *
+     * @param materialDTO 物料信息
+     * @return 结果
+     */
+    @Override
+    public int insertMaterialDTO(MaterialDTO materialDTO) {
+        Material material = BeanConverUtil.conver(materialDTO, Material.class);
+        material.setCreateTime(DateUtils.getNowDate());
+        material.setCreateBy(SecurityUtils.getUsername());
+        return materialMapper.insertMaterial(material);
+    }
+
+    /**
      * 修改物料信息
      * 
      * @param material 物料信息
@@ -75,6 +92,14 @@ public class MaterialServiceImpl implements IMaterialService
     public int updateMaterial(Material material)
     {
         material.setUpdateTime(DateUtils.getNowDate());
+        return materialMapper.updateMaterial(material);
+    }
+
+    @Override
+    public int updateMaterial(MaterialDTO materialDTO) {
+        Material material = BeanConverUtil.conver(materialDTO, Material.class);
+        material.setUpdateTime(DateUtils.getNowDate());
+        material.setCreateBy(SecurityUtils.getUsername());
         return materialMapper.updateMaterial(material);
     }
 

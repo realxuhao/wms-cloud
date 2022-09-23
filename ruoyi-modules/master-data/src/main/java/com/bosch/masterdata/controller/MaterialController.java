@@ -6,8 +6,11 @@ import javax.servlet.http.HttpServletResponse;
 import com.bosch.masterdata.domain.dto.MaterialDTO;
 import com.bosch.masterdata.domain.vo.DepartmentVO;
 import com.bosch.masterdata.domain.vo.MaterialVO;
+import com.bosch.masterdata.domain.vo.PageVO;
 import com.bosch.masterdata.utils.BeanConverUtil;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +38,7 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
  * @author xuhao
  * @date 2022-09-22
  */
-@ApiOperation("物料接口")
+@Api(tags = "物料接口")
 @RestController
 @RequestMapping("/material")
 public class MaterialController extends BaseController
@@ -46,15 +49,15 @@ public class MaterialController extends BaseController
     /**
      * 查询物料信息列表
      */
-    @RequiresPermissions("masterdata:material:list")
-    @GetMapping("/list")
-    public TableDataInfo list(Material material)
-    {
-        startPage();
-        List<Material> list = materialService.selectMaterialList(material);
-        List<MaterialVO> materialVOS = BeanConverUtil.converList(list, MaterialVO.class);
-        return getDataTable(list);
-    }
+//    @RequiresPermissions("masterdata:material:list")
+//    @GetMapping("/list")
+//    public TableDataInfo list(Material material)
+//    {
+//        startPage();
+//        List<Material> list = materialService.selectMaterialList(material);
+//        List<MaterialVO> materialVOS = BeanConverUtil.converList(list, MaterialVO.class);
+//        return getDataTable(list);
+//    }
 
     /**
      * 导出物料信息列表
@@ -72,34 +75,34 @@ public class MaterialController extends BaseController
     /**
      * 获取物料信息详细信息
      */
-    @RequiresPermissions("masterdata:material:query")
-    @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
-        return AjaxResult.success(materialService.selectMaterialById(id));
-    }
+//    @RequiresPermissions("masterdata:material:query")
+//    @GetMapping(value = "/{id}")
+//    public AjaxResult getInfo(@PathVariable("id") Long id)
+//    {
+//        return AjaxResult.success(materialService.selectMaterialById(id));
+//    }
 
     /**
      * 新增物料信息
      */
-    @RequiresPermissions("masterdata:material:add")
-    @Log(title = "物料信息", businessType = BusinessType.INSERT)
-    @PostMapping
-    public AjaxResult add(@RequestBody Material material)
-    {
-        return toAjax(materialService.insertMaterial(material));
-    }
+//    @RequiresPermissions("masterdata:material:add")
+//    @Log(title = "物料信息", businessType = BusinessType.INSERT)
+//    @PostMapping
+//    public AjaxResult add(@RequestBody Material material)
+//    {
+//        return toAjax(materialService.insertMaterial(material));
+//    }
 
     /**
      * 修改物料信息
      */
-    @RequiresPermissions("masterdata:material:edit")
-    @Log(title = "物料信息", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public AjaxResult edit(@RequestBody Material material)
-    {
-        return toAjax(materialService.updateMaterial(material));
-    }
+//    @RequiresPermissions("masterdata:material:edit")
+//    @Log(title = "物料信息", businessType = BusinessType.UPDATE)
+//    @PutMapping
+//    public AjaxResult edit(@RequestBody Material material)
+//    {
+//        return toAjax(materialService.updateMaterial(material));
+//    }
 
     /**
      * 删除物料信息
@@ -116,13 +119,35 @@ public class MaterialController extends BaseController
      * 查询物料信息
      */
     @ApiOperation("查询物料列表")
-    @GetMapping("/departmentVOList")
-    public R<List<MaterialVO>> list(MaterialDTO materialDTO)
+    @GetMapping("/materialVOList")
+    public R<PageVO<MaterialVO>> list(MaterialDTO materialDTO)
     {
         startPage();
         List<MaterialVO> list = materialService.selectMaterialVOList(materialDTO);
 
-        return R.ok(list);
+        return R.ok(new PageVO<>(list,new PageInfo<>(list).getTotal()));
+    }
+    /**
+     * 新增物料信息
+     */
+    //@RequiresPermissions("masterdata:material:add")
+    @ApiOperation("新增物料")
+    @Log(title = "物料信息", businessType = BusinessType.INSERT)
+    @PostMapping("/addMaterial")
+    public AjaxResult addMaterial(@RequestBody MaterialDTO materialDTO)
+    {
+        return toAjax(materialService.insertMaterialDTO(materialDTO));
     }
 
+    /**
+     * 修改物料信息
+     */
+    //@RequiresPermissions("masterdata:material:edit")
+    @ApiOperation("修改物料")
+    @Log(title = "物料信息", businessType = BusinessType.UPDATE)
+    @PostMapping("/editMaterial")
+    public AjaxResult edit(@RequestBody MaterialDTO materialDTO)
+    {
+        return toAjax(materialService.updateMaterial(materialDTO));
+    }
 }
