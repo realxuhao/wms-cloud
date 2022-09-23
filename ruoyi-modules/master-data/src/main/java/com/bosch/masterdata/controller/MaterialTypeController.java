@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.bosch.masterdata.domain.dto.MaterialTypeDTO;
 import com.bosch.masterdata.domain.vo.DepartmentVO;
 import com.bosch.masterdata.domain.vo.MaterialTypeVO;
+import com.bosch.masterdata.domain.vo.PageVO;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
@@ -117,10 +118,10 @@ public class MaterialTypeController extends BaseController
      */
     @ApiOperation("查询启用物料类型列表")
     @GetMapping("/materialTypeVOList")
-    public R<List<MaterialTypeVO>> list(MaterialTypeDTO materialTypeDTO)
+    public R<PageVO<MaterialTypeVO>> list(MaterialTypeDTO materialTypeDTO)
     {
         startPage();
         List<MaterialTypeVO> list = materialTypeService.selectMaterialTypeVOList(materialTypeDTO);
-        return R.ok(list);
+        return R.ok(new PageVO<>(list,new PageInfo<>(list).getTotal()));
     }
 }
