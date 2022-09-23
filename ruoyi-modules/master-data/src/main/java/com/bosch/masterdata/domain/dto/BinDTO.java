@@ -1,9 +1,10 @@
 package com.bosch.masterdata.domain.dto;
 
 import com.ruoyi.common.core.annotation.Excel;
+import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 
-public class BinDTO {
+public class BinDTO extends PageDomain {
 
     /** id */
     @ApiModelProperty(value = "id")

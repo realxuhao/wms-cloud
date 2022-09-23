@@ -1,12 +1,17 @@
 package com.bosch.masterdata.service.impl;
 
 import java.util.List;
+
+import com.bosch.masterdata.domain.dto.MaterialTypeDTO;
+import com.bosch.masterdata.domain.vo.MaterialTypeVO;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.MaterialTypeMapper;
 import com.bosch.masterdata.domain.MaterialType;
 import com.bosch.masterdata.service.IMaterialTypeService;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 物料类型Service业务层处理
@@ -15,7 +20,7 @@ import com.bosch.masterdata.service.IMaterialTypeService;
  * @date 2022-09-22
  */
 @Service
-public class MaterialTypeServiceImpl implements IMaterialTypeService 
+public class MaterialTypeServiceImpl implements IMaterialTypeService
 {
     @Autowired
     private MaterialTypeMapper materialTypeMapper;
@@ -54,6 +59,7 @@ public class MaterialTypeServiceImpl implements IMaterialTypeService
     public int insertMaterialType(MaterialType materialType)
     {
         materialType.setCreateTime(DateUtils.getNowDate());
+        materialType.setCreateBy(SecurityUtils.getUsername());
         return materialTypeMapper.insertMaterialType(materialType);
     }
 
@@ -67,6 +73,7 @@ public class MaterialTypeServiceImpl implements IMaterialTypeService
     public int updateMaterialType(MaterialType materialType)
     {
         materialType.setUpdateTime(DateUtils.getNowDate());
+        materialType.setUpdateBy(SecurityUtils.getUsername());
         return materialTypeMapper.updateMaterialType(materialType);
     }
 
@@ -92,5 +99,10 @@ public class MaterialTypeServiceImpl implements IMaterialTypeService
     public int deleteMaterialTypeById(Long id)
     {
         return materialTypeMapper.deleteMaterialTypeById(id);
+    }
+
+    @Override
+    public List<MaterialTypeVO> selectMaterialTypeVOList(MaterialTypeDTO materialTypeDTO) {
+        return materialTypeMapper.selectMaterialTypeVOList(materialTypeDTO);
     }
 }

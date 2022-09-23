@@ -1,8 +1,9 @@
 package com.bosch.masterdata.domain.dto;
 
+import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 
-public class MaterialBinDTO {
+public class MaterialBinDTO extends PageDomain {
     /** id */
     @ApiModelProperty(value = "id")
     private Long id;

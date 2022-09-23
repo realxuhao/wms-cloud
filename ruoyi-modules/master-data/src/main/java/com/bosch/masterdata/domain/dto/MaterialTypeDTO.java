@@ -1,10 +1,11 @@
 package com.bosch.masterdata.domain.dto;
 
+import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class MaterialTypeDTO {
+public class MaterialTypeDTO extends PageDomain {
     /** 物料类型id */
     @ApiModelProperty(value = "物料类型id")
     private Long id;
@@ -23,7 +24,7 @@ public class MaterialTypeDTO {
 
     /** 所属部门名称 */
     @ApiModelProperty(value = "所属部门名称")
-    private String department;
+    private String departmentName;
 
     /** 状态（1：启用，0：停用） */
     @ApiModelProperty(value = "状态（1：启用，0：停用）")

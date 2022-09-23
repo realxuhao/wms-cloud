@@ -1,5 +1,6 @@
 package com.bosch.masterdata.domain.dto;
 
+import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.datascope.annotation.DataScope;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -7,7 +8,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class FrameDTO {
+public class FrameDTO extends PageDomain {
 
     /** id */
     @ApiModelProperty(value = "id")

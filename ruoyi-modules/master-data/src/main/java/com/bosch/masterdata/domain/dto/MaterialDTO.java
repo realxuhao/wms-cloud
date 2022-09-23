@@ -1,13 +1,14 @@
 package com.bosch.masterdata.domain.dto;
 
 import com.ruoyi.common.core.annotation.Excel;
+import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
-public class MaterialDTO {
+public class MaterialDTO extends PageDomain {
     /** id */
     @ApiModelProperty(value = "物料id")
     private Long id;

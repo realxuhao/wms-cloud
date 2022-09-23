@@ -2,6 +2,9 @@ package com.bosch.masterdata.mapper;
 
 import java.util.List;
 import com.bosch.masterdata.domain.MaterialType;
+import com.bosch.masterdata.domain.dto.MaterialTypeDTO;
+import com.bosch.masterdata.domain.vo.DepartmentVO;
+import com.bosch.masterdata.domain.vo.MaterialTypeVO;
 
 /**
  * 物料类型Mapper接口
@@ -58,4 +61,11 @@ public interface MaterialTypeMapper
      * @return 结果
      */
     public int deleteMaterialTypeByIds(Long[] ids);
+
+    /**
+     * 查询启用物料类型列表
+     *
+     * @return 物料类型集合
+     */
+    public List<MaterialTypeVO> selectMaterialTypeVOList(MaterialTypeDTO materialTypeDTO);
 }

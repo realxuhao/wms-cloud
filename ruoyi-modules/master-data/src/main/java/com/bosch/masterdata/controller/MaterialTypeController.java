@@ -2,6 +2,15 @@ package com.bosch.masterdata.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.bosch.masterdata.domain.dto.MaterialTypeDTO;
+import com.bosch.masterdata.domain.vo.DepartmentVO;
+import com.bosch.masterdata.domain.vo.MaterialTypeVO;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -100,5 +109,18 @@ public class MaterialTypeController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(materialTypeService.deleteMaterialTypeByIds(ids));
+    }
+
+
+    /**
+     * 查询物料类型列表
+     */
+    @ApiOperation("查询启用物料类型列表")
+    @GetMapping("/materialTypeVOList")
+    public R<List<MaterialTypeVO>> list(MaterialTypeDTO materialTypeDTO)
+    {
+        startPage();
+        List<MaterialTypeVO> list = materialTypeService.selectMaterialTypeVOList(materialTypeDTO);
+        return R.ok(list);
     }
 }

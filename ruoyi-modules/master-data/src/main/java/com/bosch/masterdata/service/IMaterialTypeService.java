@@ -2,6 +2,9 @@ package com.bosch.masterdata.service;
 
 import java.util.List;
 import com.bosch.masterdata.domain.MaterialType;
+import com.bosch.masterdata.domain.dto.MaterialTypeDTO;
+import com.bosch.masterdata.domain.vo.DepartmentVO;
+import com.bosch.masterdata.domain.vo.MaterialTypeVO;
 
 /**
  * 物料类型Service接口
@@ -58,4 +61,6 @@ public interface IMaterialTypeService
      * @return 结果
      */
     public int deleteMaterialTypeById(Long id);
+
+    List<MaterialTypeVO> selectMaterialTypeVOList(MaterialTypeDTO materialTypeDTO);
 }
