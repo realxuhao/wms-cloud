@@ -23,6 +23,7 @@
         <result property="description" column="description"/>
         <result property="departmentId" column="department_id"/>
         <result property="departmentName" column="department_name"/>
+        <result property="createTime" column="create_time"/>
         <result property="status" column="status"/>
     </resultMap>
 
@@ -43,13 +44,15 @@
 
     <select id="selectMaterialTypeVOList" parameterType="MaterialTypeDto" resultMap="MaterialTypeVoResult">
         select
-        t1.id,t1.code,t1.description,t1.department_id,t2.name as department_name,t1.status
+        t1.id,t1.code,t1.description,t1.department_id,t2.name as department_name,t1.status,t1.create_time
         from md_material_type t1,md_department t2
-        where t1.status="1" and t1.department_id=t2.id and t2.status="1"
+        where  t1.department_id=t2.id
         <if test="code != null  and code != ''">and t1.code = #{code}</if>
         <if test="description != null  and description != ''">and t1.description = #{description}</if>
         <if test="departmentId != null ">and t1.department_id = #{departmentId}</if>
         <if test="departmentName != null ">and t2.name = #{departmentName}</if>
+        <if test="status != null ">and t1.status = #{status}and t2.status = #{status}</if>
+        order by t1.create_time desc
 
     </select>
 
