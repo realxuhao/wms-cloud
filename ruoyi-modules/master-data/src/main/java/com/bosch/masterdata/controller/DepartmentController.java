@@ -33,7 +33,7 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
  * @date 2022-09-22
  */
 @RestController
-@Api("部门接口")
+@ApiOperation("部门接口")
 @RequestMapping("/department")
 public class DepartmentController extends BaseController
 {

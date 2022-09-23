@@ -2,6 +2,8 @@ package com.bosch.masterdata.mapper;
 
 import java.util.List;
 import com.bosch.masterdata.domain.Material;
+import com.bosch.masterdata.domain.dto.MaterialDTO;
+import com.bosch.masterdata.domain.vo.MaterialVO;
 
 /**
  * 物料信息Mapper接口
@@ -58,4 +60,13 @@ public interface MaterialMapper
      * @return 结果
      */
     public int deleteMaterialByIds(Long[] ids);
+
+    /**
+     * 查询物料信息列表
+     *
+     * @param materialDTO 物料信息
+     * @return 物料信息集合
+     */
+    public List<MaterialVO> selectMaterialVOList(MaterialDTO materialDTO);
+
 }

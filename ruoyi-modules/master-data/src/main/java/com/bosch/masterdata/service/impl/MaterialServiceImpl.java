@@ -1,6 +1,9 @@
 package com.bosch.masterdata.service.impl;
 
 import java.util.List;
+
+import com.bosch.masterdata.domain.dto.MaterialDTO;
+import com.bosch.masterdata.domain.vo.MaterialVO;
 import com.ruoyi.common.core.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +45,11 @@ public class MaterialServiceImpl implements IMaterialService
     public List<Material> selectMaterialList(Material material)
     {
         return materialMapper.selectMaterialList(material);
+    }
+
+    @Override
+    public List<MaterialVO> selectMaterialVOList(MaterialDTO materialDTO) {
+        return materialMapper.selectMaterialVOList(materialDTO);
     }
 
     /**
