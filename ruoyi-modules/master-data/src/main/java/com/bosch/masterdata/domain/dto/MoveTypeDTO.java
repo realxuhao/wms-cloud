@@ -28,7 +28,7 @@ public class MoveTypeDTO extends PageDomain {
      * 移动类型描述
      */
     @ApiModelProperty(value = "移动类型描述")
-    private String descrition;
+    private String description;
 
     @ApiModelProperty(value = "状态（1：启用，0：停用）")
     private Long status;
