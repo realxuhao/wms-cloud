@@ -44,7 +44,13 @@ public interface IMaterialService
      * @return 结果
      */
     public int insertMaterial(Material material);
-
+    /**
+     * 新增物料
+     *
+     * @param materialDTO 物料信息
+     * @return 结果
+     */
+    public int insertMaterialDTO(MaterialDTO materialDTO);
     /**
      * 修改物料信息
      * 
@@ -52,6 +58,14 @@ public interface IMaterialService
      * @return 结果
      */
     public int updateMaterial(Material material);
+
+    /**
+     * 修改物料信息
+     *
+     * @param material 物料信息
+     * @return 结果
+     */
+    public int updateMaterial(MaterialDTO material);
 
     /**
      * 批量删除物料信息
