@@ -99,6 +99,6 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectDepartmentVOList"  resultMap="DepartmentVOResult">
         <include refid="selectDepartmentVo"/>
-        where status = '1'
+        where status = '0'
     </select>
 </mapper>
