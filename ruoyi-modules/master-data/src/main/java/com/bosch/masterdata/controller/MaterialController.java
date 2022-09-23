@@ -2,6 +2,14 @@ package com.bosch.masterdata.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.bosch.masterdata.domain.dto.MaterialDTO;
+import com.bosch.masterdata.domain.vo.DepartmentVO;
+import com.bosch.masterdata.domain.vo.MaterialVO;
+import com.bosch.masterdata.utils.BeanConverUtil;
+import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +35,7 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
  * @author xuhao
  * @date 2022-09-22
  */
+@ApiOperation("物料接口")
 @RestController
 @RequestMapping("/material")
 public class MaterialController extends BaseController
@@ -43,6 +52,7 @@ public class MaterialController extends BaseController
     {
         startPage();
         List<Material> list = materialService.selectMaterialList(material);
+        List<MaterialVO> materialVOS = BeanConverUtil.converList(list, MaterialVO.class);
         return getDataTable(list);
     }
 
@@ -101,4 +111,18 @@ public class MaterialController extends BaseController
     {
         return toAjax(materialService.deleteMaterialByIds(ids));
     }
+
+    /**
+     * 查询物料信息
+     */
+    @ApiOperation("查询物料列表")
+    @GetMapping("/departmentVOList")
+    public R<List<MaterialVO>> list(MaterialDTO materialDTO)
+    {
+        startPage();
+        List<MaterialVO> list = materialService.selectMaterialVOList(materialDTO);
+
+        return R.ok(list);
+    }
+
 }

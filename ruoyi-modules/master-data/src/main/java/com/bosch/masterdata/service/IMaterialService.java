@@ -2,6 +2,8 @@ package com.bosch.masterdata.service;
 
 import java.util.List;
 import com.bosch.masterdata.domain.Material;
+import com.bosch.masterdata.domain.dto.MaterialDTO;
+import com.bosch.masterdata.domain.vo.MaterialVO;
 
 /**
  * 物料信息Service接口
@@ -26,6 +28,14 @@ public interface IMaterialService
      * @return 物料信息集合
      */
     public List<Material> selectMaterialList(Material material);
+
+    /**
+     * 查询物料信息列表
+     *
+     * @param materialDTO 物料信息
+     * @return 物料信息集合
+     */
+    public List<MaterialVO> selectMaterialVOList(MaterialDTO materialDTO);
 
     /**
      * 新增物料信息
