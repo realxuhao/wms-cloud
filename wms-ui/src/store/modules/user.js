@@ -1,6 +1,6 @@
 import { authService } from '@/api'
 import _ from 'lodash'
-import { removeToken } from 'minerva-ui-sdk'
+import { removeToken } from '@/utils/cookie'
 
 const user = {
   state: {
