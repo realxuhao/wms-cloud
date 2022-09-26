@@ -10,6 +10,8 @@ import com.bosch.masterdata.domain.vo.BinVO;
 import com.bosch.masterdata.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +37,7 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
  * @author xuhao
  * @date 2022-09-26
  */
+@Api(tags = "库位接口")
 @RestController
 @RequestMapping("/bin")
 public class BinController extends BaseController
@@ -113,7 +116,8 @@ public class BinController extends BaseController
     /**
      * 查询库位列表
      */
-    @RequiresPermissions("masterdata:bin:list")
+    @ApiOperation("查询库位列表")
+    //@RequiresPermissions("masterdata:bin:list")
     @GetMapping("/binVOlist")
     public R<PageVO<BinVO>> list(BinDTO binDTO)
     {

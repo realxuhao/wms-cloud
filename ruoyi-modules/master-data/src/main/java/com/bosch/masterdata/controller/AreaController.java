@@ -11,6 +11,7 @@ import com.bosch.masterdata.domain.vo.MaterialVO;
 import com.bosch.masterdata.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +38,7 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
  * @author xuhao
  * @date 2022-09-26
  */
+@Api(tags = "区域接口")
 @RestController
 @RequestMapping("/area")
 public class AreaController extends BaseController
@@ -106,6 +108,7 @@ public class AreaController extends BaseController
      */
     @RequiresPermissions("masterdata:area:remove")
     @Log(title = "区域", businessType = BusinessType.DELETE)
+    @ApiOperation("删除区域")
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Integer[] ids)
     {
@@ -129,6 +132,7 @@ public class AreaController extends BaseController
      * 新增区域
      */
     //@RequiresPermissions("masterdata:area:add")
+    @ApiOperation("新增区域")
     @Log(title = "区域", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody AreaDTO areaDTO)
@@ -140,6 +144,7 @@ public class AreaController extends BaseController
      * 修改区域
      */
     //@RequiresPermissions("masterdata:area:edit")
+    @ApiOperation("修改区域")
     @Log(title = "区域", businessType = BusinessType.UPDATE)
     @PutMapping("{/id}")
     public AjaxResult edit(@PathVariable("id") Long id,@RequestBody AreaDTO areaDTO)
