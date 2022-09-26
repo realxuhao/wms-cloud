@@ -12,7 +12,7 @@ import com.bosch.masterdata.service.IBinService;
  * 库位Service业务层处理
  * 
  * @author xuhao
- * @date 2022-09-22
+ * @date 2022-09-26
  */
 @Service
 public class BinServiceImpl implements IBinService 

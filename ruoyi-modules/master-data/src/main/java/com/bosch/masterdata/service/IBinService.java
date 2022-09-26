@@ -7,7 +7,7 @@ import com.bosch.masterdata.domain.Bin;
  * 库位Service接口
  * 
  * @author xuhao
- * @date 2022-09-22
+ * @date 2022-09-26
  */
 public interface IBinService 
 {

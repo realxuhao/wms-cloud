@@ -2,15 +2,13 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.bosch.masterdata.mapper.FrameMapper">
+<mapper namespace="com.bosch.masterdata.mapper.WareMapper">
     
-    <resultMap type="Frame" id="FrameResult">
+    <resultMap type="Ware" id="WareResult">
         <result property="id"    column="id"    />
-        <result property="areaId"    column="area_id"    />
-        <result property="name"    column="name"    />
         <result property="code"    column="code"    />
-        <result property="width"    column="width"    />
-        <result property="bearWeight"    column="bear_weight"    />
+        <result property="name"    column="name"    />
+        <result property="location"    column="location"    />
         <result property="createBy"    column="create_by"    />
         <result property="updateBy"    column="update_by"    />
         <result property="createTime"    column="create_time"    />
@@ -19,35 +17,32 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="remark"    column="remark"    />
     </resultMap>
 
-    <sql id="selectFrameVo">
-        select id, area_id, name, code, width, bear_weight, create_by, update_by, create_time, update_time, status, remark from md_frame
+    <sql id="selectWareVo">
+        select id, code, name, location, create_by, update_by, create_time, update_time, status, remark from md_ware
     </sql>
 
-    <select id="selectFrameList" parameterType="Frame" resultMap="FrameResult">
-        <include refid="selectFrameVo"/>
+    <select id="selectWareList" parameterType="Ware" resultMap="WareResult">
+        <include refid="selectWareVo"/>
         <where>  
-            <if test="areaId != null "> and area_id = #{areaId}</if>
-            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="code != null  and code != ''"> and code = #{code}</if>
-            <if test="width != null "> and width = #{width}</if>
-            <if test="bearWeight != null "> and bear_weight = #{bearWeight}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="location != null  and location != ''"> and location = #{location}</if>
             <if test="status != null "> and status = #{status}</if>
         </where>
     </select>
     
-    <select id="selectFrameById" parameterType="Long" resultMap="FrameResult">
-        <include refid="selectFrameVo"/>
+    <select id="selectWareById" parameterType="String" resultMap="WareResult">
+        <include refid="selectWareVo"/>
         where id = #{id}
     </select>
         
-    <insert id="insertFrame" parameterType="Frame" useGeneratedKeys="true" keyProperty="id">
-        insert into md_frame
+    <insert id="insertWare" parameterType="Ware">
+        insert into md_ware
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="areaId != null">area_id,</if>
-            <if test="name != null">name,</if>
+            <if test="id != null">id,</if>
             <if test="code != null and code != ''">code,</if>
-            <if test="width != null">width,</if>
-            <if test="bearWeight != null">bear_weight,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="location != null and location != ''">location,</if>
             <if test="createBy != null">create_by,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="createTime != null">create_time,</if>
@@ -56,11 +51,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="remark != null">remark,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="areaId != null">#{areaId},</if>
-            <if test="name != null">#{name},</if>
+            <if test="id != null">#{id},</if>
             <if test="code != null and code != ''">#{code},</if>
-            <if test="width != null">#{width},</if>
-            <if test="bearWeight != null">#{bearWeight},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="location != null and location != ''">#{location},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="createTime != null">#{createTime},</if>
@@ -70,14 +64,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
-    <update id="updateFrame" parameterType="Frame">
-        update md_frame
+    <update id="updateWare" parameterType="Ware">
+        update md_ware
         <trim prefix="SET" suffixOverrides=",">
-            <if test="areaId != null">area_id = #{areaId},</if>
-            <if test="name != null">name = #{name},</if>
             <if test="code != null and code != ''">code = #{code},</if>
-            <if test="width != null">width = #{width},</if>
-            <if test="bearWeight != null">bear_weight = #{bearWeight},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="location != null and location != ''">location = #{location},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
@@ -88,12 +80,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         where id = #{id}
     </update>
 
-    <delete id="deleteFrameById" parameterType="Long">
-        delete from md_frame where id = #{id}
+    <delete id="deleteWareById" parameterType="String">
+        delete from md_ware where id = #{id}
     </delete>
 
-    <delete id="deleteFrameByIds" parameterType="String">
-        delete from md_frame where id in 
+    <delete id="deleteWareByIds" parameterType="String">
+        delete from md_ware where id in 
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

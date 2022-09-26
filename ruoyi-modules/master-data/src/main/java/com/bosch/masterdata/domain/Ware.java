@@ -1,74 +1,47 @@
 package com.bosch.masterdata.domain;
 
-import java.math.BigDecimal;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 
 /**
- * 跨对象 md_frame
+ * 仓库对象 md_ware
  * 
  * @author xuhao
  * @date 2022-09-26
  */
-public class Frame extends BaseEntity
+public class Ware extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
-    private Long id;
+    private String id;
 
-    /** 区域id */
-    @Excel(name = "区域id")
-    private Long areaId;
-
-    /** 跨名称 */
-    @Excel(name = "跨名称")
-    private String name;
-
-    /** 跨编码 */
-    @Excel(name = "跨编码")
+    /** 仓库编码 */
+    @Excel(name = "仓库编码")
     private String code;
 
-    /** 宽度 */
-    @Excel(name = "宽度")
-    private BigDecimal width;
+    /** 仓库名称 */
+    @Excel(name = "仓库名称")
+    private String name;
 
-    /** 承重 */
-    @Excel(name = "承重")
-    private BigDecimal bearWeight;
+    /** 仓库地址 */
+    @Excel(name = "仓库地址")
+    private String location;
 
     /** 状态（1：启用，0：停用） */
     @Excel(name = "状态", readConverterExp = "1=：启用，0：停用")
     private Long status;
 
-    public void setId(Long id) 
+    public void setId(String id) 
     {
         this.id = id;
     }
 
-    public Long getId() 
+    public String getId() 
     {
         return id;
-    }
-    public void setAreaId(Long areaId) 
-    {
-        this.areaId = areaId;
-    }
-
-    public Long getAreaId() 
-    {
-        return areaId;
-    }
-    public void setName(String name) 
-    {
-        this.name = name;
-    }
-
-    public String getName() 
-    {
-        return name;
     }
     public void setCode(String code) 
     {
@@ -79,23 +52,23 @@ public class Frame extends BaseEntity
     {
         return code;
     }
-    public void setWidth(BigDecimal width) 
+    public void setName(String name) 
     {
-        this.width = width;
+        this.name = name;
     }
 
-    public BigDecimal getWidth() 
+    public String getName() 
     {
-        return width;
+        return name;
     }
-    public void setBearWeight(BigDecimal bearWeight) 
+    public void setLocation(String location) 
     {
-        this.bearWeight = bearWeight;
+        this.location = location;
     }
 
-    public BigDecimal getBearWeight() 
+    public String getLocation() 
     {
-        return bearWeight;
+        return location;
     }
     public void setStatus(Long status) 
     {
@@ -111,11 +84,9 @@ public class Frame extends BaseEntity
     public String toString() {
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
-            .append("areaId", getAreaId())
-            .append("name", getName())
             .append("code", getCode())
-            .append("width", getWidth())
-            .append("bearWeight", getBearWeight())
+            .append("name", getName())
+            .append("location", getLocation())
             .append("createBy", getCreateBy())
             .append("updateBy", getUpdateBy())
             .append("createTime", getCreateTime())

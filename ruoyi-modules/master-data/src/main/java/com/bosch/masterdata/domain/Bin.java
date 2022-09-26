@@ -9,7 +9,7 @@ import com.ruoyi.common.core.web.domain.BaseEntity;
  * 库位对象 md_bin
  * 
  * @author xuhao
- * @date 2022-09-22
+ * @date 2022-09-26
  */
 public class Bin extends BaseEntity
 {
@@ -21,6 +21,10 @@ public class Bin extends BaseEntity
     /** 跨id */
     @Excel(name = "跨id")
     private Long frameId;
+
+    /** 库位名称 */
+    @Excel(name = "库位名称")
+    private String name;
 
     /** 库位编码 */
     @Excel(name = "库位编码")
@@ -48,6 +52,15 @@ public class Bin extends BaseEntity
     {
         return frameId;
     }
+    public void setName(String name) 
+    {
+        this.name = name;
+    }
+
+    public String getName() 
+    {
+        return name;
+    }
     public void setCode(String code) 
     {
         this.code = code;
@@ -72,6 +85,7 @@ public class Bin extends BaseEntity
         return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
             .append("id", getId())
             .append("frameId", getFrameId())
+            .append("name", getName())
             .append("code", getCode())
             .append("createBy", getCreateBy())
             .append("updateBy", getUpdateBy())

@@ -1,11 +1,8 @@
 package com.bosch.masterdata.controller;
 
 import java.util.List;
+import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
-
-import com.bosch.masterdata.domain.Frame;
-import com.bosch.masterdata.domain.vo.PageVO;
-import com.ruoyi.common.core.domain.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -29,7 +26,7 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
  * 库位Controller
  * 
  * @author xuhao
- * @date 2022-09-22
+ * @date 2022-09-26
  */
 @RestController
 @RequestMapping("/bin")
@@ -105,6 +102,4 @@ public class BinController extends BaseController
     {
         return toAjax(binService.deleteBinByIds(ids));
     }
-
-
 }

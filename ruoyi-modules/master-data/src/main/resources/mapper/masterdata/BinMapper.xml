@@ -7,6 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="Bin" id="BinResult">
         <result property="id"    column="id"    />
         <result property="frameId"    column="frame_id"    />
+        <result property="name"    column="name"    />
         <result property="code"    column="code"    />
         <result property="createBy"    column="create_by"    />
         <result property="updateBy"    column="update_by"    />
@@ -17,13 +18,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectBinVo">
-        select id, frame_id, code, create_by, update_by, create_time, update_time, status, remark from md_bin
+        select id, frame_id, name, code, create_by, update_by, create_time, update_time, status, remark from md_bin
     </sql>
 
     <select id="selectBinList" parameterType="Bin" resultMap="BinResult">
         <include refid="selectBinVo"/>
         <where>  
             <if test="frameId != null "> and frame_id = #{frameId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="code != null  and code != ''"> and code = #{code}</if>
             <if test="status != null "> and status = #{status}</if>
         </where>
@@ -39,6 +41,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
             <if test="frameId != null">frame_id,</if>
+            <if test="name != null">name,</if>
             <if test="code != null and code != ''">code,</if>
             <if test="createBy != null">create_by,</if>
             <if test="updateBy != null">update_by,</if>
@@ -50,6 +53,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
             <if test="frameId != null">#{frameId},</if>
+            <if test="name != null">#{name},</if>
             <if test="code != null and code != ''">#{code},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="updateBy != null">#{updateBy},</if>
@@ -64,6 +68,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         update md_bin
         <trim prefix="SET" suffixOverrides=",">
             <if test="frameId != null">frame_id = #{frameId},</if>
+            <if test="name != null">name = #{name},</if>
             <if test="code != null and code != ''">code = #{code},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
