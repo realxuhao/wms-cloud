@@ -13,6 +13,8 @@ import department from './modules/department'
 import materialType from './modules/materialType'
 import supplier from './modules/supplier'
 import moveType from './modules/moveType'
+import timeWindow from './modules/timeWindow'
+import pallet from './modules/pallet'
 
 // dynamic router permission control (Experimental)
 // import permission from './modules/async-router'
@@ -30,7 +32,9 @@ export default new Vuex.Store({
     materialType,
     department,
     supplier,
-    moveType
+    moveType,
+    timeWindow,
+    pallet
   },
   state: {
 
