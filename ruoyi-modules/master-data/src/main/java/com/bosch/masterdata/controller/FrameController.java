@@ -73,6 +73,7 @@ public class FrameController extends BaseController {
      */
     @RequiresPermissions("masterdata:frame:query")
     @GetMapping(value = "/{id}")
+    @ApiOperation("根据id查询跨详细信息")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(frameService.selectFrameById(id));
     }
@@ -93,6 +94,7 @@ public class FrameController extends BaseController {
      */
     @RequiresPermissions("masterdata:frame:edit")
     @Log(title = "跨", businessType = BusinessType.UPDATE)
+    @ApiOperation("更新跨")
     @PutMapping
     public AjaxResult edit(@RequestBody FrameDTO frameDTO) {
         return toAjax(frameService.updateFrame(frameDTO));
@@ -103,6 +105,7 @@ public class FrameController extends BaseController {
      */
     @RequiresPermissions("masterdata:frame:remove")
     @Log(title = "跨", businessType = BusinessType.DELETE)
+    @ApiOperation("删除跨")
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(frameService.deleteFrameByIds(ids));

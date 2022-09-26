@@ -57,9 +57,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </where>
     </select>
     
-    <select id="selectFrameById" parameterType="Long" resultMap="FrameResult">
-        <include refid="selectFrameVo"/>
-        where id = #{id}
+    <select id="selectFrameById" parameterType="Long" resultMap="FrameVOResult">
+        select f.id as id,w.id as ware_id ,w.code as ware_code,w.name as ware_name,
+               a.id as area_id, a.name as area_name,a.code as area_code,f.code as code,
+               f.name as name,f.width as width,f.bear_weight as bear_weight,f.create_time as create_time
+        from md_frame f
+                 left join md_area a on f.area_id=a.id
+                 left join md_ware w on w.id=a.id
+        where f.id = #{id}
     </select>
         
     <insert id="insertFrame" parameterType="Frame" useGeneratedKeys="true" keyProperty="id">
