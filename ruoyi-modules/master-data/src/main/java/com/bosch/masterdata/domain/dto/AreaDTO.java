@@ -12,7 +12,7 @@ public class AreaDTO extends PageDomain {
 
     /** 仓库id */
     @ApiModelProperty(value = "仓库id")
-    private Long wareId;
+    private Integer wareId;
 
     /** 存储区编码 */
     @ApiModelProperty(value = "存储区编码")
