@@ -144,10 +144,11 @@ public class PalletController extends BaseController
      */
     //@RequiresPermissions("masterdata:pallet:edit")
     @Log(title = "托盘", businessType = BusinessType.UPDATE)
-    @PutMapping
+    @PutMapping("/{id}")
     @ApiOperation("修改托盘")
-    public AjaxResult edit(@RequestBody PalletDTO palletDTO)
+    public AjaxResult edit(@PathVariable("id") Long id,@RequestBody PalletDTO palletDTO)
     {
+        palletDTO.setId(id);
         return toAjax(palletService.updatePallet(palletDTO));
     }
     /**

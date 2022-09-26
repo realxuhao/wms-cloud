@@ -6,23 +6,12 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class BinVO {
+//跨
+public class FrameVO {
+
     /** id */
     @ApiModelProperty(value = "id")
     private Long id;
-
-    /** 跨id */
-    @ApiModelProperty(value = "跨id")
-    private Long frameId;
-
-    /** 库位编码 */
-    @ApiModelProperty(value = "库位编码")
-    private String code;
-
-    /** 库位名称 */
-    @ApiModelProperty(value = "库位名称")
-    private String name;
-
 
     /** 仓库id */
     @ApiModelProperty(value = "id")
@@ -50,21 +39,17 @@ public class BinVO {
 
     /** 跨编码 */
     @ApiModelProperty(value = "跨编码")
-    private String frameCode;
+    private String code;
 
     /** 跨名称 */
     @ApiModelProperty(value = "跨名称")
-    private String frameName;
+    private String name;
 
     /** 宽度 */
     @ApiModelProperty(value = "宽度")
-    private BigDecimal frameWidth;
+    private BigDecimal width;
 
     /** 承重 */
     @ApiModelProperty(value = "承重")
-    private BigDecimal frameBearWeight;
-
-    /** 备注 */
-    @ApiModelProperty(value = "备注")
-    private String remark;
+    private BigDecimal bearWeight;
 }
