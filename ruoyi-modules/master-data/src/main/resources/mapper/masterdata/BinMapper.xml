@@ -81,7 +81,10 @@ FROM
         <include refid="selectBinVo"/>
         where id = #{id}
     </select>
-
+    <select id="selectBinVOById" parameterType="Long" resultMap="BinVOResult">
+        <include refid="binVOList"/>
+        where b.id = #{id}
+    </select>
     <insert id="insertBin" parameterType="Bin">
         insert into md_bin
         <trim prefix="(" suffix=")" suffixOverrides=",">

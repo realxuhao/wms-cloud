@@ -21,6 +21,7 @@ public interface IBinService
      */
     public Bin selectBinById(Long id);
 
+    public BinVO selectBinVOById(Long id);
     /**
      * 查询库位列表
      * 

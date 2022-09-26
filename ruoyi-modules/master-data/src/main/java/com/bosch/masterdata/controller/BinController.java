@@ -77,7 +77,7 @@ public class BinController extends BaseController
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
-        return AjaxResult.success(binService.selectBinById(id));
+        return AjaxResult.success(binService.selectBinVOById(id));
     }
 
     /**

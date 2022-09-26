@@ -37,6 +37,11 @@ public class BinServiceImpl implements IBinService
         return binMapper.selectBinById(id);
     }
 
+    @Override
+    public BinVO selectBinVOById(Long id) {
+        return binMapper.selectBinVOById(id);
+    }
+
     /**
      * 查询库位列表
      * 
