@@ -1,7 +1,13 @@
 package com.bosch.masterdata.service.impl;
 
 import java.util.List;
+
+import com.bosch.masterdata.domain.Material;
+import com.bosch.masterdata.domain.dto.AreaDTO;
+import com.bosch.masterdata.domain.vo.AreaVO;
+import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.AreaMapper;
@@ -44,6 +50,13 @@ public class AreaServiceImpl implements IAreaService
         return areaMapper.selectAreaList(area);
     }
 
+    @Override
+    public List<AreaVO> selectAreaVOList(AreaDTO areaDTO) {
+        Area area = BeanConverUtil.conver(areaDTO, Area.class);
+
+        return BeanConverUtil.converList(areaMapper.selectAreaList(area),AreaVO.class);
+    }
+
     /**
      * 新增区域
      * 
@@ -57,6 +70,14 @@ public class AreaServiceImpl implements IAreaService
         return areaMapper.insertArea(area);
     }
 
+    @Override
+    public int insertArea(AreaDTO areaDTO) {
+        Area area = BeanConverUtil.conver(areaDTO, Area.class);
+        area.setCreateTime(DateUtils.getNowDate());
+        area.setCreateBy(SecurityUtils.getUsername());
+        return areaMapper.insertArea(area);
+    }
+
     /**
      * 修改区域
      * 
@@ -66,6 +87,14 @@ public class AreaServiceImpl implements IAreaService
     @Override
     public int updateArea(Area area)
     {
+        area.setUpdateTime(DateUtils.getNowDate());
+        return areaMapper.updateArea(area);
+    }
+
+    @Override
+    public int updateArea(AreaDTO areaDTO) {
+        Area area = BeanConverUtil.conver(areaDTO, Area.class);
+        area.setUpdateBy(SecurityUtils.getUsername());
         area.setUpdateTime(DateUtils.getNowDate());
         return areaMapper.updateArea(area);
     }

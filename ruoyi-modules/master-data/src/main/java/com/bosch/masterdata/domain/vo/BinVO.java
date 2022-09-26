@@ -1,9 +1,11 @@
 package com.bosch.masterdata.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 public class BinVO {
@@ -42,11 +44,11 @@ public class BinVO {
 
     /** 区域名称 */
     @ApiModelProperty(value = "区域名称")
-    private Long areaName;
+    private String areaName;
 
     /** 区域编码 */
     @ApiModelProperty(value = "区域编码")
-    private Long areaCode;
+    private String areaCode;
 
     /** 跨编码 */
     @ApiModelProperty(value = "跨编码")
@@ -67,4 +69,8 @@ public class BinVO {
     /** 备注 */
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
 }

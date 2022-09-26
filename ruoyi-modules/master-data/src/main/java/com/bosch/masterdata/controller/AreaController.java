@@ -3,6 +3,15 @@ package com.bosch.masterdata.controller;
 import java.util.List;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
+
+import com.bosch.masterdata.domain.dto.AreaDTO;
+import com.bosch.masterdata.domain.dto.MaterialDTO;
+import com.bosch.masterdata.domain.vo.AreaVO;
+import com.bosch.masterdata.domain.vo.MaterialVO;
+import com.bosch.masterdata.domain.vo.PageVO;
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,14 +47,14 @@ public class AreaController extends BaseController
     /**
      * 查询区域列表
      */
-    @RequiresPermissions("masterdata:area:list")
-    @GetMapping("/list")
-    public TableDataInfo list(Area area)
-    {
-        startPage();
-        List<Area> list = areaService.selectAreaList(area);
-        return getDataTable(list);
-    }
+//    @RequiresPermissions("masterdata:area:list")
+//    @GetMapping("/list")
+//    public TableDataInfo list(Area area)
+//    {
+//        startPage();
+//        List<Area> list = areaService.selectAreaList(area);
+//        return getDataTable(list);
+//    }
 
     /**
      * 导出区域列表
@@ -63,7 +72,7 @@ public class AreaController extends BaseController
     /**
      * 获取区域详细信息
      */
-    @RequiresPermissions("masterdata:area:query")
+    //@RequiresPermissions("masterdata:area:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Integer id)
     {
@@ -73,24 +82,24 @@ public class AreaController extends BaseController
     /**
      * 新增区域
      */
-    @RequiresPermissions("masterdata:area:add")
-    @Log(title = "区域", businessType = BusinessType.INSERT)
-    @PostMapping
-    public AjaxResult add(@RequestBody Area area)
-    {
-        return toAjax(areaService.insertArea(area));
-    }
+//    @RequiresPermissions("masterdata:area:add")
+//    @Log(title = "区域", businessType = BusinessType.INSERT)
+//    @PostMapping
+//    public AjaxResult add(@RequestBody Area area)
+//    {
+//        return toAjax(areaService.insertArea(area));
+//    }
 
     /**
      * 修改区域
      */
-    @RequiresPermissions("masterdata:area:edit")
-    @Log(title = "区域", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public AjaxResult edit(@RequestBody Area area)
-    {
-        return toAjax(areaService.updateArea(area));
-    }
+//    @RequiresPermissions("masterdata:area:edit")
+//    @Log(title = "区域", businessType = BusinessType.UPDATE)
+//    @PutMapping
+//    public AjaxResult edit(@RequestBody Area area)
+//    {
+//        return toAjax(areaService.updateArea(area));
+//    }
 
     /**
      * 删除区域
@@ -101,5 +110,41 @@ public class AreaController extends BaseController
     public AjaxResult remove(@PathVariable Integer[] ids)
     {
         return toAjax(areaService.deleteAreaByIds(ids));
+    }
+
+    /**
+     * 查询区域信息
+     */
+    @ApiOperation("查询区域信息")
+    @GetMapping("/areaVOList")
+    public R<PageVO<AreaVO>> list(AreaDTO areaDTO)
+    {
+        startPage();
+        List<AreaVO> list = areaService.selectAreaVOList(areaDTO);
+
+        return R.ok(new PageVO<>(list,new PageInfo<>(list).getTotal()));
+    }
+
+    /**
+     * 新增区域
+     */
+    //@RequiresPermissions("masterdata:area:add")
+    @Log(title = "区域", businessType = BusinessType.INSERT)
+    @PostMapping
+    public AjaxResult add(@RequestBody AreaDTO areaDTO)
+    {
+        return toAjax(areaService.insertArea(areaDTO));
+    }
+
+    /**
+     * 修改区域
+     */
+    //@RequiresPermissions("masterdata:area:edit")
+    @Log(title = "区域", businessType = BusinessType.UPDATE)
+    @PutMapping("{/id}")
+    public AjaxResult edit(@PathVariable("id") Long id,@RequestBody AreaDTO areaDTO)
+    {
+        areaDTO.setId(id);
+        return toAjax(areaService.updateArea(areaDTO));
     }
 }

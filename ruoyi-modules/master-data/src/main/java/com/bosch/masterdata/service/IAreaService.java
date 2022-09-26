@@ -2,6 +2,8 @@ package com.bosch.masterdata.service;
 
 import java.util.List;
 import com.bosch.masterdata.domain.Area;
+import com.bosch.masterdata.domain.dto.AreaDTO;
+import com.bosch.masterdata.domain.vo.AreaVO;
 
 /**
  * 区域Service接口
@@ -28,6 +30,14 @@ public interface IAreaService
     public List<Area> selectAreaList(Area area);
 
     /**
+     * 查询区域VO列表
+     *
+     * @param areaDTO 区域
+     * @return 区域集合
+     */
+    public List<AreaVO> selectAreaVOList(AreaDTO areaDTO);
+
+    /**
      * 新增区域
      * 
      * @param area 区域
@@ -35,6 +45,7 @@ public interface IAreaService
      */
     public int insertArea(Area area);
 
+    public int insertArea(AreaDTO areaDTO);
     /**
      * 修改区域
      * 
@@ -43,6 +54,7 @@ public interface IAreaService
      */
     public int updateArea(Area area);
 
+    public int updateArea(AreaDTO areaDTO);
     /**
      * 批量删除区域
      * 

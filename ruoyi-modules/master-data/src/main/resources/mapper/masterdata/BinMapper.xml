@@ -1,41 +1,87 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bosch.masterdata.mapper.BinMapper">
-    
-    <resultMap type="Bin" id="BinResult">
-        <result property="id"    column="id"    />
-        <result property="frameId"    column="frame_id"    />
-        <result property="name"    column="name"    />
-        <result property="code"    column="code"    />
-        <result property="createBy"    column="create_by"    />
-        <result property="updateBy"    column="update_by"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="status"    column="status"    />
-        <result property="remark"    column="remark"    />
-    </resultMap>
 
+    <resultMap type="Bin" id="BinResult">
+        <result property="id" column="id"/>
+        <result property="frameId" column="frame_id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+    <resultMap type="BinVO" id="BinVOResult">
+        <result property="id" column="id"/>
+        <result property="frameId" column="frame_id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="wareCode" column="wareCode"/>
+        <result property="wareName" column="wareName"/>
+        <result property="wareId" column="wareId"/>
+        <result property="areaCode" column="areaCode"/>
+        <result property="areaName" column="areaName"/>
+        <result property="areaId" column="areaId"/>
+        <result property="frameCode" column="frameCode"/>
+        <result property="frameName" column="frameName"/>
+        <result property="frameWidth" column="frameWidth"/>
+        <result property="frameBearWeight" column="frameBearWeight"/>
+        <result property="createTime" column="createTime"/>
+    </resultMap>
     <sql id="selectBinVo">
         select id, frame_id, name, code, create_by, update_by, create_time, update_time, status, remark from md_bin
     </sql>
-
+    <sql id="binVOList">
+        SELECT
+        b.id,
+	b.frame_id,
+	b.CODE as code,
+	b.NAME as name,
+	w.CODE as wareCode ,
+	w.NAME as wareName,
+	w.id as wareId,
+  a.code as areaCode,
+	a.name as areaName,
+	a.id as areaId,
+	f.code as frameCode,
+	f.name as frameName,
+	f.width as frameWidth,
+	f.bear_weight as frameBearWeight,
+		b.create_time as createTime
+FROM
+	md_bin AS b
+	LEFT JOIN md_frame AS f ON b.frame_id = f.id
+	LEFT JOIN md_area AS a ON f.area_id = a.id
+	LEFT JOIN md_ware AS w ON a.ware_id = w.id
+    </sql>
     <select id="selectBinList" parameterType="Bin" resultMap="BinResult">
         <include refid="selectBinVo"/>
-        <where>  
-            <if test="frameId != null "> and frame_id = #{frameId}</if>
-            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-            <if test="code != null  and code != ''"> and code = #{code}</if>
-            <if test="status != null "> and status = #{status}</if>
+        <where>
+            <if test="frameId != null ">and frame_id = #{frameId}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="code != null  and code != ''">and code = #{code}</if>
+            <if test="status != null ">and status = #{status}</if>
         </where>
     </select>
-    
+    <select id="selectBinVOList" parameterType="BinDTO" resultMap="BinVOResult">
+        <include refid="binVOList"/>
+        <where>
+            <if test="frameId != null ">and b.frame_id = #{frameId}</if>
+            <if test="name != null  and name != ''">and b.name like concat('%', #{name}, '%')</if>
+            <if test="code != null  and code != ''">and b.code = #{code}</if>
+            <if test="status != null ">and b.status = #{status}</if>
+        </where>
+    </select>
     <select id="selectBinById" parameterType="Long" resultMap="BinResult">
         <include refid="selectBinVo"/>
         where id = #{id}
     </select>
-        
+
     <insert id="insertBin" parameterType="Bin">
         insert into md_bin
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -49,7 +95,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time,</if>
             <if test="status != null">status,</if>
             <if test="remark != null">remark,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
             <if test="frameId != null">#{frameId},</if>
@@ -61,7 +107,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">#{updateTime},</if>
             <if test="status != null">#{status},</if>
             <if test="remark != null">#{remark},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateBin" parameterType="Bin">
@@ -85,7 +131,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteBinByIds" parameterType="String">
-        delete from md_bin where id in 
+        delete from md_bin where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>

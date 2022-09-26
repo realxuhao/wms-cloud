@@ -1,6 +1,9 @@
 package com.bosch.masterdata.service.impl;
 
 import java.util.List;
+
+import com.bosch.masterdata.domain.dto.BinDTO;
+import com.bosch.masterdata.domain.vo.BinVO;
 import com.ruoyi.common.core.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +45,12 @@ public class BinServiceImpl implements IBinService
     public List<Bin> selectBinList(Bin bin)
     {
         return binMapper.selectBinList(bin);
+    }
+
+    @Override
+    public List<BinVO> selectBinList(BinDTO binDTO) {
+
+        return binMapper.selectBinVOList(binDTO);
     }
 
     /**

@@ -3,6 +3,13 @@ package com.bosch.masterdata.controller;
 import java.util.List;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
+
+import com.bosch.masterdata.domain.dto.BinDTO;
+import com.bosch.masterdata.domain.vo.AreaVO;
+import com.bosch.masterdata.domain.vo.BinVO;
+import com.bosch.masterdata.domain.vo.PageVO;
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.core.domain.R;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -101,5 +108,18 @@ public class BinController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(binService.deleteBinByIds(ids));
+    }
+
+    /**
+     * 查询库位列表
+     */
+    @RequiresPermissions("masterdata:bin:list")
+    @GetMapping("/binVOlist")
+    public R<PageVO<BinVO>> list(BinDTO binDTO)
+    {
+        startPage();
+        List<BinVO> list = binService.selectBinList(binDTO);
+
+        return R.ok(new PageVO<>(list,new PageInfo<>(list).getTotal()));
     }
 }

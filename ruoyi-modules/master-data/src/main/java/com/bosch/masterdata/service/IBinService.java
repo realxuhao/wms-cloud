@@ -2,6 +2,8 @@ package com.bosch.masterdata.service;
 
 import java.util.List;
 import com.bosch.masterdata.domain.Bin;
+import com.bosch.masterdata.domain.dto.BinDTO;
+import com.bosch.masterdata.domain.vo.BinVO;
 
 /**
  * 库位Service接口
@@ -27,6 +29,7 @@ public interface IBinService
      */
     public List<Bin> selectBinList(Bin bin);
 
+    public List<BinVO> selectBinList(BinDTO binDTO);
     /**
      * 新增库位
      * 
