@@ -16,7 +16,7 @@ public class Ware extends BaseEntity
     private static final long serialVersionUID = 1L;
 
     /** id */
-    private String id;
+    private Long id;
 
     /** 仓库编码 */
     @Excel(name = "仓库编码")
@@ -34,12 +34,12 @@ public class Ware extends BaseEntity
     @Excel(name = "状态", readConverterExp = "1=：启用，0：停用")
     private Long status;
 
-    public void setId(String id) 
+    public void setId(Long id)
     {
         this.id = id;
     }
 
-    public String getId() 
+    public Long getId()
     {
         return id;
     }
