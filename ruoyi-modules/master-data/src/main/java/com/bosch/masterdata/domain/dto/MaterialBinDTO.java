@@ -2,7 +2,9 @@ package com.bosch.masterdata.domain.dto;
 
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
+@Data
 public class MaterialBinDTO extends PageDomain {
     /** id */
     @ApiModelProperty(value = "id")
@@ -28,7 +30,4 @@ public class MaterialBinDTO extends PageDomain {
     @ApiModelProperty(value = "分配至该库位的优先级")
     private Long priorityLevel;
 
-    /** 状态（1：启用，0：停用） */
-    @ApiModelProperty(value = "状态（1：启用，0：停用）")
-    private Long status;
 }

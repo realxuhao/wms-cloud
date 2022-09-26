@@ -2,6 +2,8 @@ package com.bosch.masterdata.mapper;
 
 import java.util.List;
 import com.bosch.masterdata.domain.MaterialBin;
+import com.bosch.masterdata.domain.dto.MaterialBinDTO;
+import com.bosch.masterdata.domain.vo.MaterialBinVO;
 
 /**
  * 物料库位分配策略Mapper接口
@@ -17,15 +19,15 @@ public interface MaterialBinMapper
      * @param id 物料库位分配策略主键
      * @return 物料库位分配策略
      */
-    public MaterialBin selectMaterialBinById(Long id);
+    public MaterialBinVO selectMaterialBinById(Long id);
 
     /**
      * 查询物料库位分配策略列表
      * 
-     * @param materialBin 物料库位分配策略
+     * @param materialBinDTO 物料库位分配策略
      * @return 物料库位分配策略集合
      */
-    public List<MaterialBin> selectMaterialBinList(MaterialBin materialBin);
+    public List<MaterialBinVO> selectMaterialBinList(MaterialBinDTO materialBinDTO);
 
     /**
      * 新增物料库位分配策略
