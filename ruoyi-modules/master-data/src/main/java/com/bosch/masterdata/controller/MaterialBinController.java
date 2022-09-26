@@ -2,6 +2,15 @@ package com.bosch.masterdata.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.bosch.masterdata.domain.dto.MaterialBinDTO;
+import com.bosch.masterdata.domain.vo.MaterialBinVO;
+import com.bosch.masterdata.domain.vo.PageVO;
+import com.bosch.masterdata.utils.BeanConverUtil;
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,14 +32,14 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
 
 /**
  * 物料库位分配策略Controller
- * 
+ *
  * @author xuhao
  * @date 2022-09-22
  */
 @RestController
 @RequestMapping("/materialBin")
-public class MaterialBinController extends BaseController
-{
+@Api(tags = "物料库位分配规则接口")
+public class MaterialBinController extends BaseController {
     @Autowired
     private IMaterialBinService materialBinService;
 
@@ -39,11 +48,11 @@ public class MaterialBinController extends BaseController
      */
     @RequiresPermissions("masterdata:bin:list")
     @GetMapping("/list")
-    public TableDataInfo list(MaterialBin materialBin)
-    {
+    @ApiOperation("查询物料库位规则列表")
+    public R<PageVO<MaterialBinVO>> list(MaterialBinDTO materialBinDTO) {
         startPage();
-        List<MaterialBin> list = materialBinService.selectMaterialBinList(materialBin);
-        return getDataTable(list);
+        List<MaterialBinVO> list = materialBinService.selectMaterialBinList(materialBinDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
     /**
@@ -52,11 +61,10 @@ public class MaterialBinController extends BaseController
     @RequiresPermissions("masterdata:bin:export")
     @Log(title = "物料库位分配策略", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, MaterialBin materialBin)
-    {
-        List<MaterialBin> list = materialBinService.selectMaterialBinList(materialBin);
+    public void export(HttpServletResponse response, MaterialBinDTO materialBinDTO) {
+        List<MaterialBinVO> list = materialBinService.selectMaterialBinList(materialBinDTO);
         ExcelUtil<MaterialBin> util = new ExcelUtil<MaterialBin>(MaterialBin.class);
-        util.exportExcel(response, list, "物料库位分配策略数据");
+        util.exportExcel(response, BeanConverUtil.converList(list, MaterialBin.class), "物料库位分配策略数据");
     }
 
     /**
@@ -64,8 +72,8 @@ public class MaterialBinController extends BaseController
      */
     @RequiresPermissions("masterdata:bin:query")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    @ApiOperation("根据id查询物料库位规则")
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(materialBinService.selectMaterialBinById(id));
     }
 
@@ -74,10 +82,10 @@ public class MaterialBinController extends BaseController
      */
     @RequiresPermissions("masterdata:bin:add")
     @Log(title = "物料库位分配策略", businessType = BusinessType.INSERT)
+    @ApiOperation("新增物料库位分配策略")
     @PostMapping
-    public AjaxResult add(@RequestBody MaterialBin materialBin)
-    {
-        return toAjax(materialBinService.insertMaterialBin(materialBin));
+    public AjaxResult add(@RequestBody MaterialBinDTO materialBinDTO) {
+        return toAjax(materialBinService.insertMaterialBin(BeanConverUtil.conver(materialBinDTO, MaterialBin.class)));
     }
 
     /**
@@ -85,10 +93,11 @@ public class MaterialBinController extends BaseController
      */
     @RequiresPermissions("masterdata:bin:edit")
     @Log(title = "物料库位分配策略", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public AjaxResult edit(@RequestBody MaterialBin materialBin)
-    {
-        return toAjax(materialBinService.updateMaterialBin(materialBin));
+    @ApiOperation("修改物料库位分配策略")
+    @PutMapping("/{id}")
+    public AjaxResult edit(@PathVariable("id") Long id, @RequestBody MaterialBinDTO materialBinDTO) {
+        materialBinDTO.setId(id);
+        return toAjax(materialBinService.updateMaterialBin(BeanConverUtil.conver(materialBinDTO, MaterialBin.class)));
     }
 
     /**
@@ -96,9 +105,9 @@ public class MaterialBinController extends BaseController
      */
     @RequiresPermissions("masterdata:bin:remove")
     @Log(title = "物料库位分配策略", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @ApiOperation("删除物料库位分配策略")
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(materialBinService.deleteMaterialBinByIds(ids));
     }
 }
