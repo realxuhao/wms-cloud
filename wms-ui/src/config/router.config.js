@@ -48,6 +48,20 @@ export const asyncRouterMap = [
             component: () => import('@/views/masterData/moveType/Index'),
             meta: { title: '移动类型', permission: [ ] },
             hideChildrenInMenu: true
+          },
+          {
+            path: '/master-data/time-window',
+            name: 'timeWindow',
+            component: () => import('@/views/masterData/timeWindow/Index'),
+            meta: { title: '时间窗口', permission: [ ] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/master-data/pallet',
+            name: 'pallet',
+            component: () => import('@/views/masterData/pallet/Index'),
+            meta: { title: '托盘管理', permission: [ ] },
+            hideChildrenInMenu: true
           }
         ]
       },
