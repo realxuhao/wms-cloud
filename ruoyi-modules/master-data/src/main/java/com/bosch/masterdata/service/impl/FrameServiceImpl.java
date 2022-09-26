@@ -31,7 +31,7 @@ public class FrameServiceImpl implements IFrameService {
      * @return 跨
      */
     @Override
-    public Frame selectFrameById(Long id) {
+    public FrameVO selectFrameById(Long id) {
         return frameMapper.selectFrameById(id);
     }
 

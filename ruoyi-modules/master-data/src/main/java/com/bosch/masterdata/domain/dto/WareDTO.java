@@ -1,10 +1,11 @@
-package com.bosch.masterdata.domain.vo;
+package com.bosch.masterdata.domain.dto;
 
+import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class WareVO {
+public class WareDTO extends PageDomain {
     /**
      * id
      */
@@ -34,12 +35,5 @@ public class WareVO {
      */
     @ApiModelProperty(value = "备注")
     private String remark;
-
-    /**
-     * 创建时间
-     */
-    @ApiModelProperty(value = "创建时间")
-    private String createTime;
-
 
 }

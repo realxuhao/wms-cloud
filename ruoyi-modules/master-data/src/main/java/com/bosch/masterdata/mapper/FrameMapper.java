@@ -19,7 +19,7 @@ public interface FrameMapper
      * @param id 跨主键
      * @return 跨
      */
-    public Frame selectFrameById(Long id);
+    public FrameVO selectFrameById(Long id);
 
     /**
      * 查询跨列表

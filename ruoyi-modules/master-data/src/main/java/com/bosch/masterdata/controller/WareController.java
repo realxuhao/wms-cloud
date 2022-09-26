@@ -3,6 +3,15 @@ package com.bosch.masterdata.controller;
 import java.util.List;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
+
+import com.bosch.masterdata.domain.dto.WareDTO;
+import com.bosch.masterdata.domain.vo.PageVO;
+import com.bosch.masterdata.domain.vo.WareVO;
+import com.bosch.masterdata.utils.BeanConverUtil;
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,14 +33,14 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
 
 /**
  * 仓库Controller
- * 
+ *
  * @author xuhao
  * @date 2022-09-26
  */
 @RestController
 @RequestMapping("/ware")
-public class WareController extends BaseController
-{
+@Api(tags = "仓库接口")
+public class WareController extends BaseController {
     @Autowired
     private IWareService wareService;
 
@@ -40,11 +49,13 @@ public class WareController extends BaseController
      */
     @RequiresPermissions("masterdata:ware:list")
     @GetMapping("/list")
-    public TableDataInfo list(Ware ware)
-    {
+    @ApiOperation("查询仓库列表")
+    public R<PageVO<WareVO>> list(WareDTO wareDTO) {
         startPage();
-        List<Ware> list = wareService.selectWareList(ware);
-        return getDataTable(list);
+        List<Ware> list = wareService.selectWareList(BeanConverUtil.conver(wareDTO, Ware.class));
+        List<WareVO> wareVOS = BeanConverUtil.converList(list, WareVO.class);
+        return R.ok(new PageVO<>(wareVOS, new PageInfo<>(wareVOS).getTotal()));
+
     }
 
     /**
@@ -53,8 +64,7 @@ public class WareController extends BaseController
     @RequiresPermissions("masterdata:ware:export")
     @Log(title = "仓库", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, Ware ware)
-    {
+    public void export(HttpServletResponse response, Ware ware) {
         List<Ware> list = wareService.selectWareList(ware);
         ExcelUtil<Ware> util = new ExcelUtil<Ware>(Ware.class);
         util.exportExcel(response, list, "仓库数据");
@@ -65,8 +75,8 @@ public class WareController extends BaseController
      */
     @RequiresPermissions("masterdata:ware:query")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") String id)
-    {
+    @ApiOperation("获取仓库详细信息")
+    public AjaxResult getInfo(@PathVariable("id") String id) {
         return AjaxResult.success(wareService.selectWareById(id));
     }
 
@@ -75,10 +85,10 @@ public class WareController extends BaseController
      */
     @RequiresPermissions("masterdata:ware:add")
     @Log(title = "仓库", businessType = BusinessType.INSERT)
+    @ApiOperation("新增仓库")
     @PostMapping
-    public AjaxResult add(@RequestBody Ware ware)
-    {
-        return toAjax(wareService.insertWare(ware));
+    public AjaxResult add(@RequestBody WareDTO wareDTO) {
+        return toAjax(wareService.insertWare(BeanConverUtil.conver(wareDTO,Ware.class)));
     }
 
     /**
@@ -86,10 +96,10 @@ public class WareController extends BaseController
      */
     @RequiresPermissions("masterdata:ware:edit")
     @Log(title = "仓库", businessType = BusinessType.UPDATE)
+    @ApiOperation("修改仓库")
     @PutMapping
-    public AjaxResult edit(@RequestBody Ware ware)
-    {
-        return toAjax(wareService.updateWare(ware));
+    public AjaxResult edit(@RequestBody WareDTO wareDTO) {
+        return toAjax(wareService.updateWare(BeanConverUtil.conver(wareDTO,Ware.class)));
     }
 
     /**
@@ -97,9 +107,9 @@ public class WareController extends BaseController
      */
     @RequiresPermissions("masterdata:ware:remove")
     @Log(title = "仓库", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable String[] ids)
-    {
+    @ApiOperation("删除仓库")
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable String[] ids) {
         return toAjax(wareService.deleteWareByIds(ids));
     }
 }
