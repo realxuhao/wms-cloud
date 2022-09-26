@@ -64,27 +64,33 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           },
           {
-            path: '/master-data/warehouse',
-            name: 'warehouse',
-            component: () => import('@/views/masterData/warehouse/Index'),
+            path: '/master-data/ware',
+            name: 'ware',
+            component: () => import('@/views/masterData/ware/Index'),
             meta: { title: '仓库管理', permission: [] },
             hideChildrenInMenu: true
           },
           {
             path: '/master-data/area',
             name: 'area',
-            component: () => import('@/views/masterData/location/Index'),
-            meta: { title: '库位管理', permission: [] },
+            component: () => import('@/views/masterData/area/Index'),
+            meta: { title: '存储区管理', permission: [] },
             hideChildrenInMenu: true
           },
           {
-            path: '/master-data/storage',
-            name: 'storage',
-            component: () => import('@/views/masterData/storage/Index'),
-            meta: { title: '存储区管理', permission: [] },
+            path: '/master-data/frame',
+            name: 'frame',
+            component: () => import('@/views/masterData/frame/Index'),
+            meta: { title: '跨管理', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/master-data/bin',
+            name: 'bin',
+            component: () => import('@/views/masterData/bin/Index'),
+            meta: { title: '库位管理', permission: [] },
             hideChildrenInMenu: true
           }
-
         ]
       },
 

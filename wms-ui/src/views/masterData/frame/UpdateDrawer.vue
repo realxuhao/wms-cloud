@@ -24,18 +24,43 @@
             { rules: [{ required: true, message: '请输入名称!' }] }
           ]" />
       </a-form-item>
-      <a-form-item label="时间窗口余量">
-        <!--  {pattern:/d/,required:true,message:'只能输入数字和小数点!'} -->
-        <a-input
-          placeholder="时间窗口余量"
+      <a-form-item label="承重">
+        <a-input-number
+          placeholder="承重"
           v-decorator="[
-            'timeWindow',
-            { rules: [{ required: true, message: '请输入时间窗口余量!' },] }
+            'bearWeight',
+            { rules: [{ required: true, message: '请输入承重!' }] }
+          ]" />
+      </a-form-item>
+      <a-form-item label="宽">
+        <a-input
+          placeholder="宽"
+          v-decorator="[
+            'width',
+            { rules: [{ required: true, message: '请输入宽!' }] }
+          ]" />
+      </a-form-item>
+      <a-form-item label="仓库">
+        <a-select
+          @change="handleGetAreaList"
+          placeholder="仓库"
+          v-decorator="[
+            'wareId',
+            { rules: [{ required: true, message: '请选择仓库!' },] }
           ]">
-          <span slot="addonAfter" style="width: 80px">
-            min
-          </span>
-        </a-input>
+          <a-select-option v-for="item in wareList" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="存储区">
+        <a-select
+          placeholder="存储区"
+          :loading="areaLoading"
+          v-decorator="[
+            'areaId',
+            { rules: [{ required: true, message: '请选择存储区!' },] }
+          ]">
+          <a-select-option v-for="item in areaList" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+        </a-select>
       </a-form-item>
     </a-form>
 
@@ -84,7 +109,11 @@ export default {
   data () {
     return {
       form: this.$form.createForm(this),
-      submitLoading: false
+      submitLoading: false,
+
+      wareList: [],
+      areaList: [],
+      areaLoading: false
     }
   },
   model: {
@@ -108,12 +137,30 @@ export default {
 
       this.$emit('change', false)
     },
+    async handleGetAreaList () {
+      const { wareId } = this.form.getFieldsValue()
+
+      try {
+        this.form.setFieldsValue({ areaId: null })
+        this.areaLoading = true
+        const data = await this.$store.dispatch('area/getList', { wareId })
+        this.areaList = data
+      } catch (error) {
+        this.$message.error('获取存储区数据失败！')
+      } finally {
+        this.areaLoading = false
+      }
+    },
     async getAndUpdateForm () {
-      const { data } = await this.$store.dispatch('supplier/getOne', this.id)
-      this.form.setFieldsValue(_.pick(data, ['code', 'name', 'timeWindow']))
+      const { data } = await this.$store.dispatch('frame/getOne', this.id)
+      this.form.setFieldsValue(_.pick(data, ['code', 'name', 'bearWeight', 'width', 'wareId', 'areaId']))
+    },
+    async getWareList () {
+      const list = await this.$store.dispatch('ware/getList')
+      this.wareList = list
     },
     async loadData () {
-
+      await this.getWareList()
     },
     handleSubmit (e) {
       e.preventDefault()
@@ -127,9 +174,9 @@ export default {
           this.submitLoading = true
 
           if (this.updateType === 'edit') {
-            await this.$store.dispatch('supplier/edit', { id: this.id, updateEntity: values })
+            await this.$store.dispatch('frame/edit', { id: this.id, updateEntity: values })
           } else {
-            await this.$store.dispatch('supplier/add', values)
+            await this.$store.dispatch('frame/add', values)
           }
 
           this.$emit('on-ok')
@@ -148,6 +195,8 @@ export default {
         this.loadData()
         if (this.updateType === 'edit') {
           this.getAndUpdateForm()
+
+          this.handleGetAreaList()
         }
       }
     }

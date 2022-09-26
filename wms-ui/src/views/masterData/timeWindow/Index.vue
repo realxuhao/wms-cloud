@@ -1,21 +1,6 @@
 <template>
   <div class="wrapper">
-    <!-- table -->
     <div class="table-content">
-      <!-- <a-form-model class="search-content" layout="inline" :model="queryForm">
-        <a-form-model-item label="编码">
-          <a-input v-model="queryForm.code" placeholder="编码" />
-        </a-form-model-item>
-        <a-form-model-item label="名称">
-          <a-input v-model="queryForm.name" placeholder="名称" />
-        </a-form-model-item>
-        <a-form-model-item >
-          <a-button type="primary" icon="search" @click="handleSearch" :loading="searchLoading">
-            搜索
-          </a-button>
-        </a-form-model-item>
-      </a-form-model> -->
-
       <div class="action-content">
         <a-button type="primary" icon="plus" @click="handleAdd">
           新建

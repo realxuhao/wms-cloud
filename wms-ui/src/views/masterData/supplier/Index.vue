@@ -53,7 +53,7 @@
           :current="queryForm.pageNum"
           :page-size.sync="queryForm.pageSize"
           :total="paginationTotal"
-          @showSizeChange="loadTableList"
+          @showSizeChange="onShowSizeChange"
           @change="changePagination" />
       </div>
 
@@ -131,6 +131,10 @@ export default {
     }
   },
   methods: {
+    onShowSizeChange () {
+      this.queryForm.pageNum = 1
+      this.loadTableList()
+    },
     changePagination (page) {
       this.queryForm.pageNum = page
       this.loadTableList()

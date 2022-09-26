@@ -33,10 +33,31 @@ const destroy = async (id) => {
   return data
 }
 
+const getDispatchBinList = async (parameter) => {
+  const url = `/materialBin/list?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const addDispatchBin = async (options) => {
+  const { data } = await createAuthInstance(baseUrl).post('/materialBin', options)
+  return data
+}
+
+const destroyDispatchBin = async (id) => {
+  const url = `/materialBin/${id}`
+  const { data } = await createAuthInstance(baseUrl).delete(url)
+  return data
+}
+
 export const materialService = {
   getList,
   getOne,
   edit,
   add,
-  destroy
+  destroy,
+
+  getDispatchBinList,
+  addDispatchBin,
+  destroyDispatchBin
 }

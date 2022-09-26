@@ -1,11 +1,6 @@
 <template>
   <div class="wrapper">
 
-    <!-- search -->
-    <!-- <div class="search-content">
-
-    </div> -->
-
     <!-- table -->
     <div class="table-content">
       <a-form-model class="search-content" layout="inline" :model="queryForm">
@@ -65,6 +60,8 @@
             >
               <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
+            <a-divider type="vertical" />
+            <a class="primary-color" @click="handleOpenDispathRule(record)"><a-icon class="m-r-4" type="setting" />分配库位</a>
           </div>
         </template>
 
@@ -98,11 +95,17 @@
       :id="currentUpdateId"
       @on-ok="loadTableList"
     ></UpdateDrawer>
+
+    <DispatchRule
+      v-model="dispatchRuleVisible"
+      :id="currentUpdateId"
+    ></DispatchRule>
   </div>
 </template>
 
 <script>
 import UpdateDrawer from './UpdateDrawer'
+import DispatchRule from './DispatchRule'
 
 const columns = [
   {
@@ -212,7 +215,7 @@ const columns = [
     title: '操作',
     key: 'action',
     fixed: 'right',
-    width: 200,
+    width: 240,
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -220,13 +223,16 @@ const columns = [
 export default {
   name: 'Material',
   components: {
-    UpdateDrawer
+    UpdateDrawer,
+    DispatchRule
   },
   data () {
     return {
       visible: false,
       updateType: 'add', // edit、add
       currentUpdateId: undefined,
+
+      dispatchRuleVisible: false,
 
       materialTypeListLoading: false,
       materialTypeList: [],
@@ -285,6 +291,10 @@ export default {
       this.currentUpdateId = null
     },
 
+    handleOpenDispathRule (record) {
+      this.dispatchRuleVisible = true
+      this.currentUpdateId = record.id
+    },
     async loadTableList () {
       try {
         this.tableLoading = true

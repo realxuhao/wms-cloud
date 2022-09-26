@@ -24,18 +24,13 @@
             { rules: [{ required: true, message: '请输入名称!' }] }
           ]" />
       </a-form-item>
-      <a-form-item label="时间窗口余量">
-        <!--  {pattern:/d/,required:true,message:'只能输入数字和小数点!'} -->
+      <a-form-item label="地点">
         <a-input
-          placeholder="时间窗口余量"
+          placeholder="地点"
           v-decorator="[
-            'timeWindow',
-            { rules: [{ required: true, message: '请输入时间窗口余量!' },] }
-          ]">
-          <span slot="addonAfter" style="width: 80px">
-            min
-          </span>
-        </a-input>
+            'location',
+            { rules: [{ required: true, message: '请输入地点!' }] }
+          ]" />
       </a-form-item>
     </a-form>
 
@@ -109,8 +104,8 @@ export default {
       this.$emit('change', false)
     },
     async getAndUpdateForm () {
-      const { data } = await this.$store.dispatch('supplier/getOne', this.id)
-      this.form.setFieldsValue(_.pick(data, ['code', 'name', 'timeWindow']))
+      const { data } = await this.$store.dispatch('ware/getOne', this.id)
+      this.form.setFieldsValue(_.pick(data, ['code', 'name', 'location']))
     },
     async loadData () {
 
@@ -127,9 +122,9 @@ export default {
           this.submitLoading = true
 
           if (this.updateType === 'edit') {
-            await this.$store.dispatch('supplier/edit', { id: this.id, updateEntity: values })
+            await this.$store.dispatch('ware/edit', { id: this.id, updateEntity: values })
           } else {
-            await this.$store.dispatch('supplier/add', values)
+            await this.$store.dispatch('ware/add', values)
           }
 
           this.$emit('on-ok')

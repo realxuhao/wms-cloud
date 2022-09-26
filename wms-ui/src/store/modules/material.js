@@ -29,6 +29,19 @@ const material = {
     async destroy ({ commit }, id) {
       const data = await materialService.destroy(id)
       return data
+    },
+
+    async getDispatchBinList ({ commit }, options) {
+      const data = await materialService.getDispatchBinList(options)
+      return data
+    },
+    async addDiapatchBin ({ commit }, options) {
+      const data = await materialService.addDispatchBin(options)
+      return data
+    },
+    async destroyDispatchBin ({ commit }, id) {
+      const data = await materialService.destroyDispatchBin(id)
+      return data
     }
   }
 }
