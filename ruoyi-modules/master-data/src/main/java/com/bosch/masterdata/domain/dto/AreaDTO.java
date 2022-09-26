@@ -1,10 +1,11 @@
 package com.bosch.masterdata.domain.dto;
 
+import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class AreaDTO {
+public class AreaDTO extends PageDomain {
     /** id */
     @ApiModelProperty(value = "id")
     private Long id;

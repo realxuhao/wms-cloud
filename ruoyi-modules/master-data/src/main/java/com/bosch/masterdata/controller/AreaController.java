@@ -38,7 +38,7 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
  * @author xuhao
  * @date 2022-09-26
  */
-@Api(tags = "区域接口")
+@Api(tags = "存储区接口")
 @RestController
 @RequestMapping("/area")
 public class AreaController extends BaseController
