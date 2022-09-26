@@ -38,7 +38,7 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
  * @author xuhao
  * @date 2022-09-26
  */
-@Api(tags = "区域接口")
+@Api(tags = "存储区接口")
 @RestController
 @RequestMapping("/area")
 public class AreaController extends BaseController
@@ -146,8 +146,8 @@ public class AreaController extends BaseController
     //@RequiresPermissions("masterdata:area:edit")
     @ApiOperation("修改区域")
     @Log(title = "区域", businessType = BusinessType.UPDATE)
-    @PutMapping("{/id}")
-    public AjaxResult edit(@PathVariable("id") Long id,@RequestBody AreaDTO areaDTO)
+    @PutMapping("/{id}")
+    public AjaxResult edit(@PathVariable("id") Integer id,@RequestBody AreaDTO areaDTO)
     {
         areaDTO.setId(id);
         return toAjax(areaService.updateArea(areaDTO));

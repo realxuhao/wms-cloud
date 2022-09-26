@@ -2,6 +2,8 @@ package com.bosch.masterdata.mapper;
 
 import java.util.List;
 import com.bosch.masterdata.domain.Area;
+import com.bosch.masterdata.domain.dto.AreaDTO;
+import com.bosch.masterdata.domain.vo.AreaVO;
 
 /**
  * 区域Mapper接口
@@ -27,6 +29,7 @@ public interface AreaMapper
      */
     public List<Area> selectAreaList(Area area);
 
+    public List<AreaVO> selectAreaVOList(Area area);
     /**
      * 新增区域
      * 

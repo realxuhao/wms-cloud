@@ -16,11 +16,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="status"    column="status"    />
         <result property="remark"    column="remark"    />
     </resultMap>
-
+    <resultMap type="AreaVO" id="AreaVOResult">
+        <result property="id"    column="id"    />
+        <result property="code"    column="code"    />
+        <result property="name"    column="name"    />
+        <result property="wareCode"    column="wareCode"    />
+        <result property="wareName"    column="wareName"    />
+        <result property="wareId"    column="ware_id"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
     <sql id="selectAreaVo">
         select id, code, name, ware_id, create_by, update_by, create_time, update_time, status, remark from md_area
     </sql>
-
+    <sql id="areaVOList">
+        SELECT
+	a.id,
+	a.CODE as code,
+	a.NAME as name,
+	w.code as wareCode,
+	w.name as wareName,
+	a.ware_id,
+	a.create_by,
+	a.update_by,
+	a.create_time,
+	a.update_time,
+	a.remark
+FROM
+	md_area AS a
+LEFT JOIN md_ware as w on a.ware_id=w.id
+    </sql>
     <select id="selectAreaList" parameterType="Area" resultMap="AreaResult">
         <include refid="selectAreaVo"/>
         <where>  
@@ -30,7 +58,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="status != null "> and status = #{status}</if>
         </where>
     </select>
-    
+    <select id="selectAreaVOList" parameterType="Area" resultMap="AreaVOResult">
+        <include refid="areaVOList"/>
+        <where>
+            <if test="code != null  and code != ''"> and a.code = #{code}</if>
+            <if test="name != null  and name != ''"> and a.name like concat('%', #{name}, '%')</if>
+            <if test="wareId != null "> and a.ware_id = #{wareId}</if>
+            <if test="status != null "> and a.status = #{status}</if>
+        </where>
+    </select>
     <select id="selectAreaById" parameterType="Integer" resultMap="AreaResult">
         <include refid="selectAreaVo"/>
         where id = #{id}

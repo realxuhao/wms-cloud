@@ -54,7 +54,7 @@ public class AreaServiceImpl implements IAreaService
     public List<AreaVO> selectAreaVOList(AreaDTO areaDTO) {
         Area area = BeanConverUtil.conver(areaDTO, Area.class);
 
-        return BeanConverUtil.converList(areaMapper.selectAreaList(area),AreaVO.class);
+        return BeanConverUtil.converList(areaMapper.selectAreaVOList(area),AreaVO.class);
     }
 
     /**

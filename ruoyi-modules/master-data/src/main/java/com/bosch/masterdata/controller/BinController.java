@@ -83,24 +83,24 @@ public class BinController extends BaseController
     /**
      * 新增库位
      */
-    @RequiresPermissions("masterdata:bin:add")
-    @Log(title = "库位", businessType = BusinessType.INSERT)
-    @PostMapping
-    public AjaxResult add(@RequestBody Bin bin)
-    {
-        return toAjax(binService.insertBin(bin));
-    }
+//    @RequiresPermissions("masterdata:bin:add")
+//    @Log(title = "库位", businessType = BusinessType.INSERT)
+//    @PostMapping
+//    public AjaxResult add(@RequestBody Bin bin)
+//    {
+//        return toAjax(binService.insertBin(bin));
+//    }
 
     /**
      * 修改库位
      */
-    @RequiresPermissions("masterdata:bin:edit")
-    @Log(title = "库位", businessType = BusinessType.UPDATE)
-    @PutMapping
-    public AjaxResult edit(@RequestBody Bin bin)
-    {
-        return toAjax(binService.updateBin(bin));
-    }
+//    @RequiresPermissions("masterdata:bin:edit")
+//    @Log(title = "库位", businessType = BusinessType.UPDATE)
+//    @PutMapping
+//    public AjaxResult edit(@RequestBody Bin bin)
+//    {
+//        return toAjax(binService.updateBin(bin));
+//    }
 
     /**
      * 删除库位
@@ -125,5 +125,29 @@ public class BinController extends BaseController
         List<BinVO> list = binService.selectBinList(binDTO);
 
         return R.ok(new PageVO<>(list,new PageInfo<>(list).getTotal()));
+    }
+
+    /**
+     * 新增库位
+     */
+    @ApiOperation("新增库位")
+    //@RequiresPermissions("masterdata:bin:add")
+    @Log(title = "库位", businessType = BusinessType.INSERT)
+    @PostMapping
+    public AjaxResult add(@RequestBody BinDTO binDTO)
+    {
+        return toAjax(binService.insertBin(binDTO));
+    }
+
+    /**
+     * 修改库位
+     */
+    @ApiOperation("修改库位")
+    @Log(title = "库位", businessType = BusinessType.UPDATE)
+    @PutMapping("{/id}")
+    public AjaxResult edit(@PathVariable("id") Long id,@RequestBody BinDTO binDTO)
+    {
+        binDTO.setId(id);
+        return toAjax(binService.updateBin(binDTO));
     }
 }
