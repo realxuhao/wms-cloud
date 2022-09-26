@@ -23,7 +23,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="id"    column="id"    />
         <result property="wareId"    column="ware_id"    />
         <result property="wareCode"    column="ware_code"    />
-        <result property="wareName"    column="wareName"    />
+        <result property="wareName"    column="ware_name"    />
         <result property="areaId"    column="area_id"    />
         <result property="areaName"    column="area_name"    />
         <result property="areaCode"    column="area_code"    />
