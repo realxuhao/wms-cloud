@@ -38,6 +38,7 @@ public interface IBinService
      */
     public int insertBin(Bin bin);
 
+    public int insertBin(BinDTO binDTO);
     /**
      * 修改库位
      * 
@@ -45,7 +46,7 @@ public interface IBinService
      * @return 结果
      */
     public int updateBin(Bin bin);
-
+    public int updateBin(BinDTO binDTO);
     /**
      * 批量删除库位
      * 

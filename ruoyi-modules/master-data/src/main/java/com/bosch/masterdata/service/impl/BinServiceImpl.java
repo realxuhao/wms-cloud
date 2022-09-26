@@ -4,7 +4,9 @@ import java.util.List;
 
 import com.bosch.masterdata.domain.dto.BinDTO;
 import com.bosch.masterdata.domain.vo.BinVO;
+import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.BinMapper;
@@ -66,6 +68,14 @@ public class BinServiceImpl implements IBinService
         return binMapper.insertBin(bin);
     }
 
+    @Override
+    public int insertBin(BinDTO binDTO) {
+        Bin bin = BeanConverUtil.conver(binDTO, Bin.class);
+        bin.setCreateBy(SecurityUtils.getUsername());
+        bin.setCreateTime(DateUtils.getNowDate());
+        return binMapper.insertBin(bin);
+    }
+
     /**
      * 修改库位
      * 
@@ -75,6 +85,14 @@ public class BinServiceImpl implements IBinService
     @Override
     public int updateBin(Bin bin)
     {
+        bin.setUpdateTime(DateUtils.getNowDate());
+        return binMapper.updateBin(bin);
+    }
+
+    @Override
+    public int updateBin(BinDTO binDTO) {
+        Bin bin = BeanConverUtil.conver(binDTO, Bin.class);
+        bin.setUpdateBy(SecurityUtils.getUsername());
         bin.setUpdateTime(DateUtils.getNowDate());
         return binMapper.updateBin(bin);
     }
