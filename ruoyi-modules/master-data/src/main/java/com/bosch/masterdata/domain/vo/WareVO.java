@@ -39,7 +39,7 @@ public class WareVO {
      * 创建时间
      */
     @ApiModelProperty(value = "创建时间")
-    private String create_time;
+    private String createTime;
 
 
 }
