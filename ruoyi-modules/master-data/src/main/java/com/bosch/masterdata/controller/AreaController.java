@@ -146,8 +146,8 @@ public class AreaController extends BaseController
     //@RequiresPermissions("masterdata:area:edit")
     @ApiOperation("修改区域")
     @Log(title = "区域", businessType = BusinessType.UPDATE)
-    @PutMapping("{/id}")
-    public AjaxResult edit(@PathVariable("id") Long id,@RequestBody AreaDTO areaDTO)
+    @PutMapping("/{id}")
+    public AjaxResult edit(@PathVariable("id") Integer id,@RequestBody AreaDTO areaDTO)
     {
         areaDTO.setId(id);
         return toAjax(areaService.updateArea(areaDTO));

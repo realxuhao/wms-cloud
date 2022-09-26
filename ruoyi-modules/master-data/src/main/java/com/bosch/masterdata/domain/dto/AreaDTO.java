@@ -8,7 +8,7 @@ import lombok.Data;
 public class AreaDTO extends PageDomain {
     /** id */
     @ApiModelProperty(value = "id")
-    private Long id;
+    private Integer id;
 
     /** 仓库id */
     @ApiModelProperty(value = "仓库id")
