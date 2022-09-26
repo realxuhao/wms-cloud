@@ -2,6 +2,8 @@ package com.bosch.masterdata.service;
 
 import java.util.List;
 import com.bosch.masterdata.domain.Frame;
+import com.bosch.masterdata.domain.dto.FrameDTO;
+import com.bosch.masterdata.domain.vo.FrameVO;
 
 /**
  * 跨Service接口
@@ -22,26 +24,26 @@ public interface IFrameService
     /**
      * 查询跨列表
      * 
-     * @param frame 跨
+     * @param frameDTO 跨
      * @return 跨集合
      */
-    public List<Frame> selectFrameList(Frame frame);
+    public List<FrameVO> selectFrameList(FrameDTO frameDTO);
 
     /**
      * 新增跨
      * 
-     * @param frame 跨
+     * @param frameDTO 跨
      * @return 结果
      */
-    public int insertFrame(Frame frame);
+    public int insertFrame(FrameDTO frameDTO);
 
     /**
      * 修改跨
      * 
-     * @param frame 跨
+     * @param frameDTO 跨
      * @return 结果
      */
-    public int updateFrame(Frame frame);
+    public int updateFrame(FrameDTO frameDTO);
 
     /**
      * 批量删除跨

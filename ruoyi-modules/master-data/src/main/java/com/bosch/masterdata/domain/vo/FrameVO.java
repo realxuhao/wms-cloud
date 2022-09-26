@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Data
 //跨
@@ -31,11 +32,11 @@ public class FrameVO {
 
     /** 区域名称 */
     @ApiModelProperty(value = "区域名称")
-    private Long areaName;
+    private String areaName;
 
     /** 区域编码 */
     @ApiModelProperty(value = "区域编码")
-    private Long areaCode;
+    private String areaCode;
 
     /** 跨编码 */
     @ApiModelProperty(value = "跨编码")
@@ -52,4 +53,8 @@ public class FrameVO {
     /** 承重 */
     @ApiModelProperty(value = "承重")
     private BigDecimal bearWeight;
+
+    /** 创建时间 */
+    @ApiModelProperty(value = "创建时间")
+    private Date createTime;
 }

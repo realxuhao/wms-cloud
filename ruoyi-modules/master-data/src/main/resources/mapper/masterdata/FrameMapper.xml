@@ -19,19 +19,41 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="remark"    column="remark"    />
     </resultMap>
 
+    <resultMap type="FrameVO" id="FrameVOResult">
+        <result property="id"    column="id"    />
+        <result property="wareId"    column="ware_id"    />
+        <result property="wareCode"    column="ware_code"    />
+        <result property="wareName"    column="wareName"    />
+        <result property="areaId"    column="area_id"    />
+        <result property="areaName"    column="area_name"    />
+        <result property="areaCode"    column="area_code"    />
+        <result property="code"    column="code"    />
+        <result property="name"    column="name"    />
+        <result property="width"    column="width"    />
+        <result property="bearWeight"    column="bear_weight"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+
     <sql id="selectFrameVo">
         select id, area_id, name, code, width, bear_weight, create_by, update_by, create_time, update_time, status, remark from md_frame
     </sql>
 
-    <select id="selectFrameList" parameterType="Frame" resultMap="FrameResult">
-        <include refid="selectFrameVo"/>
-        <where>  
-            <if test="areaId != null "> and area_id = #{areaId}</if>
-            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
-            <if test="code != null  and code != ''"> and code = #{code}</if>
-            <if test="width != null "> and width = #{width}</if>
-            <if test="bearWeight != null "> and bear_weight = #{bearWeight}</if>
-            <if test="status != null "> and status = #{status}</if>
+
+
+    <select id="selectFrameList" parameterType="FrameDTO" resultMap="FrameVOResult">
+        select f.id as id,w.id as ware_id ,w.code as ware_code,w.name as ware_name,
+               a.id as area_id, a.name as area_name,a.code as area_code,f.code as code,
+               f.name as name,f.width as width,f.bear_weight as bear_weight,f.create_time as create_time
+        from md_frame f
+            left join md_area a on f.area_id=a.id
+            left join md_ware w on w.id=a.id
+        <where>
+            <if test="areaId != null "> and f.area_id = #{areaId}</if>
+            <if test="name != null  and name != ''"> and f.name like concat('%', #{name}, '%')</if>
+            <if test="code != null  and code != ''"> and f.code = #{code}</if>
+            <if test="width != null "> and f.width = #{width}</if>
+            <if test="bearWeight != null "> and f.bear_weight = #{bearWeight}</if>
         </where>
     </select>
     

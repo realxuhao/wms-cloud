@@ -3,6 +3,15 @@ package com.bosch.masterdata.controller;
 import java.util.List;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
+
+import com.bosch.masterdata.domain.dto.FrameDTO;
+import com.bosch.masterdata.domain.vo.FrameVO;
+import com.bosch.masterdata.domain.vo.PageVO;
+import com.bosch.masterdata.utils.BeanConverUtil;
+import com.github.pagehelper.PageInfo;
+import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,14 +33,14 @@ import com.ruoyi.common.core.web.page.TableDataInfo;
 
 /**
  * 跨Controller
- * 
+ *
  * @author xuhao
  * @date 2022-09-26
  */
 @RestController
+@Api(tags = "跨接口")
 @RequestMapping("/frame")
-public class FrameController extends BaseController
-{
+public class FrameController extends BaseController {
     @Autowired
     private IFrameService frameService;
 
@@ -40,11 +49,11 @@ public class FrameController extends BaseController
      */
     @RequiresPermissions("masterdata:frame:list")
     @GetMapping("/list")
-    public TableDataInfo list(Frame frame)
-    {
+    @ApiOperation("查询跨列表")
+    public R<PageVO<FrameVO>> list(FrameDTO frameDTO) {
         startPage();
-        List<Frame> list = frameService.selectFrameList(frame);
-        return getDataTable(list);
+        List<FrameVO> list = frameService.selectFrameList(frameDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
     /**
@@ -53,11 +62,10 @@ public class FrameController extends BaseController
     @RequiresPermissions("masterdata:frame:export")
     @Log(title = "跨", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, Frame frame)
-    {
-        List<Frame> list = frameService.selectFrameList(frame);
+    public void export(HttpServletResponse response, FrameDTO frameDTO) {
+        List<FrameVO> list = frameService.selectFrameList(frameDTO);
         ExcelUtil<Frame> util = new ExcelUtil<Frame>(Frame.class);
-        util.exportExcel(response, list, "跨数据");
+        util.exportExcel(response, BeanConverUtil.converList(list, Frame.class), "跨数据");
     }
 
     /**
@@ -65,8 +73,7 @@ public class FrameController extends BaseController
      */
     @RequiresPermissions("masterdata:frame:query")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(frameService.selectFrameById(id));
     }
 
@@ -75,10 +82,10 @@ public class FrameController extends BaseController
      */
     @RequiresPermissions("masterdata:frame:add")
     @Log(title = "跨", businessType = BusinessType.INSERT)
+    @ApiOperation("新增跨")
     @PostMapping
-    public AjaxResult add(@RequestBody Frame frame)
-    {
-        return toAjax(frameService.insertFrame(frame));
+    public AjaxResult add(@RequestBody FrameDTO frameDTO) {
+        return toAjax(frameService.insertFrame(frameDTO));
     }
 
     /**
@@ -87,9 +94,8 @@ public class FrameController extends BaseController
     @RequiresPermissions("masterdata:frame:edit")
     @Log(title = "跨", businessType = BusinessType.UPDATE)
     @PutMapping
-    public AjaxResult edit(@RequestBody Frame frame)
-    {
-        return toAjax(frameService.updateFrame(frame));
+    public AjaxResult edit(@RequestBody FrameDTO frameDTO) {
+        return toAjax(frameService.updateFrame(frameDTO));
     }
 
     /**
@@ -97,9 +103,8 @@ public class FrameController extends BaseController
      */
     @RequiresPermissions("masterdata:frame:remove")
     @Log(title = "跨", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(frameService.deleteFrameByIds(ids));
     }
 }
