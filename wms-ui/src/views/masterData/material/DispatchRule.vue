@@ -14,6 +14,8 @@
     <a-form v-show="formVisible" class="search-content m-b-8" layout="inline" :form="form">
       <a-form-item label="库位">
         <a-select
+          show-search
+          :filter-option="filterOption"
           class="width180"
           v-decorator="[
             'binId',
@@ -32,7 +34,7 @@
       </a-form-item>
       <a-form-item label="">
         <a-button class="m-r-8" type="primary" @click="handleSubmit" :loading="submitLoading">确认</a-button>
-        <a-button @click="formVisible = false" :loading="submitLoading">取消</a-button>
+        <a-button @click="handleCancel" :loading="submitLoading">取消</a-button>
 
       </a-form-item>
     </a-form>
@@ -135,6 +137,7 @@ export default {
     onClose () {
       this.form.resetFields()
       this.formVisible = false
+      this.binList = []
 
       this.$emit('change', false)
     },
@@ -145,6 +148,10 @@ export default {
     },
     async handleAdd () {
       this.formVisible = true
+    },
+    async handleCancel () {
+      this.formVisible = false
+      this.form.resetFields()
     },
     async handleDelete (record) {
       try {
