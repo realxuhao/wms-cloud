@@ -252,7 +252,7 @@
     </dependencyManagement>
 
     <modules>
-        <module>ruoyi-auth</module>
+        <module>wms-auth</module>
         <module>wms-gateway</module>
         <module>ruoyi-visual</module>
         <module>ruoyi-modules</module>

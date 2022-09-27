@@ -1,14 +1,15 @@
-package com.ruoyi.auth.controller;
+package com.bosch.auth.controller;
 
 import javax.servlet.http.HttpServletRequest;
+
+import com.bosch.auth.form.LoginBody;
+import com.bosch.auth.form.RegisterBody;
+import com.bosch.auth.service.SysLoginService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import com.ruoyi.auth.form.LoginBody;
-import com.ruoyi.auth.form.RegisterBody;
-import com.ruoyi.auth.service.SysLoginService;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.JwtUtils;
 import com.ruoyi.common.core.utils.StringUtils;

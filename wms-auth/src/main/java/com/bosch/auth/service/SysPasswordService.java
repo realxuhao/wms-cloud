@@ -1,4 +1,4 @@
-package com.ruoyi.auth.service;
+package com.bosch.auth.service;
 
 import java.util.concurrent.TimeUnit;
 import org.springframework.beans.factory.annotation.Autowired;

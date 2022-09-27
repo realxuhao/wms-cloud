@@ -1,4 +1,4 @@
-package com.ruoyi.auth.service;
+package com.bosch.auth.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

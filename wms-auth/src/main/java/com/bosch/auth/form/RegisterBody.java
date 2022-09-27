@@ -1,4 +1,4 @@
-package com.ruoyi.auth.form;
+package com.bosch.auth.form;
 
 /**
  * 用户注册对象

@@ -8,10 +8,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     
-    <artifactId>ruoyi-auth</artifactId>
+    <artifactId>wms-auth</artifactId>
 	
     <description>
-        ruoyi-auth认证授权中心
+        wms-auth认证授权中心
     </description>
     
     <dependencies>
