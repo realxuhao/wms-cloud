@@ -16,7 +16,7 @@ import com.ruoyi.common.security.annotation.RequiresPermissions;
 import com.ruoyi.common.security.annotation.RequiresRoles;
 import com.ruoyi.common.security.service.TokenService;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import com.ruoyi.system.api.model.LoginUser;
+import com.bosch.system.api.model.LoginUser;
 
 /**
  * Token 权限验证，逻辑实现类

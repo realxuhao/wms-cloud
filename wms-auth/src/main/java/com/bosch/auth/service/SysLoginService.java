@@ -10,9 +10,9 @@ import com.ruoyi.common.core.enums.UserStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import com.ruoyi.system.api.RemoteUserService;
-import com.ruoyi.system.api.domain.SysUser;
-import com.ruoyi.system.api.model.LoginUser;
+import com.bosch.system.api.RemoteUserService;
+import com.bosch.system.api.domain.SysUser;
+import com.bosch.system.api.model.LoginUser;
 
 /**
  * 登录校验方法

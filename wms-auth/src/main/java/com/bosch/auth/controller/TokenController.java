@@ -16,7 +16,7 @@ import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.auth.AuthUtil;
 import com.ruoyi.common.security.service.TokenService;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import com.ruoyi.system.api.model.LoginUser;
+import com.bosch.system.api.model.LoginUser;
 
 /**
  * token 控制

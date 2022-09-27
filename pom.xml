@@ -255,7 +255,7 @@
         <module>wms-auth</module>
         <module>wms-gateway</module>
         <module>ruoyi-visual</module>
-        <module>ruoyi-modules</module>
+        <module>wms-modules</module>
         <module>ruoyi-api</module>
         <module>ruoyi-common</module>
     </modules>

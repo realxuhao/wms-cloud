@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import com.ruoyi.common.core.constant.SecurityConstants;
-import com.ruoyi.system.api.RemoteLogService;
-import com.ruoyi.system.api.domain.SysOperLog;
+import com.bosch.system.api.RemoteLogService;
+import com.bosch.system.api.domain.SysOperLog;
 
 /**
  * 异步调用日志服务
