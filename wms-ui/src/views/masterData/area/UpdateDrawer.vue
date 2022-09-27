@@ -108,7 +108,7 @@ export default {
       this.$emit('change', false)
     },
     async getAndUpdateForm () {
-      const { data } = await this.$store.dispatch('ware/getOne', this.id)
+      const { data } = await this.$store.dispatch('area/getOne', this.id)
       this.form.setFieldsValue(_.pick(data, ['code', 'name', 'wareId']))
     },
     async getWareList () {
@@ -130,9 +130,9 @@ export default {
           this.submitLoading = true
 
           if (this.updateType === 'edit') {
-            await this.$store.dispatch('ware/edit', { id: this.id, updateEntity: values })
+            await this.$store.dispatch('area/edit', { id: this.id, updateEntity: values })
           } else {
-            await this.$store.dispatch('ware/add', values)
+            await this.$store.dispatch('area/add', values)
           }
 
           this.$emit('on-ok')
