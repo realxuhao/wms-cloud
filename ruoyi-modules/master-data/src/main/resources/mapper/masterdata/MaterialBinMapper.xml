@@ -61,6 +61,7 @@
         LEFT JOIN md_bin b ON mb.bin_id = b.id,
         md_material m
         where mb.material_id = m.id
+        <if test="materialId != null ">and mb.material_id = #{materialId}</if>
 <!--        <where>-->
 <!--            <if test="materialId != null ">and mb.material_id = #{materialId}</if>-->
 <!--            <if test="binId != null ">and mb.bin_id = #{binId}</if>-->
