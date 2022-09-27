@@ -1,20 +1,12 @@
 # Tomcat
 server:
-  port: 8888
-
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-
-mybatis:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  port: 8080
 
 # Spring
 spring: 
   application:
     # 应用名称
-    name: master-data
+    name: wms-gateway
   profiles:
     # 环境配置
     active: dev
@@ -31,3 +23,18 @@ spring:
         # 共享配置
         shared-configs:
           - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+    sentinel:
+      # 取消控制台懒加载
+      eager: true
+      transport:
+        # 控制台地址
+        dashboard: 127.0.0.1:8718
+      # nacos配置持久化
+      datasource:
+        ds1:
+          nacos:
+            server-addr: 121.36.136.109:8848
+            dataId: sentinel-ruoyi-gateway
+            groupId: DEFAULT_GROUP
+            data-type: json
+            rule-type: flow
