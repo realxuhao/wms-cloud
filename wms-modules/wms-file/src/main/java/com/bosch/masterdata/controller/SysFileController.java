@@ -1,15 +1,20 @@
 package com.bosch.masterdata.controller;
 
+import com.bosch.masterdata.domain.dto.WareDTO;
+import com.bosch.masterdata.utils.EasyExcelUtil;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.file.FileUtils;
 import com.bosch.masterdata.service.ISysFileService;
 import com.bosch.system.api.domain.SysFile;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * 文件请求处理
@@ -17,6 +22,7 @@ import com.bosch.system.api.domain.SysFile;
  * @author ruoyi
  */
 @RestController
+@RequestMapping("/file")
 public class SysFileController
 {
     private static final Logger log = LoggerFactory.getLogger(SysFileController.class);
@@ -45,4 +51,15 @@ public class SysFileController
             return R.fail(e.getMessage());
         }
     }
+
+
+    @ApiOperation("读取出库excel表")
+    @PostMapping(value = "/importExcel", headers = "content-type=multipart/form-data")
+    public R importExcelSubject(@RequestParam(value = "file", required = true)MultipartFile file) throws IOException {
+        List<WareDTO> list = EasyExcelUtil.read(file.getInputStream(),
+                WareDTO.class);
+        //outEvalDeclareService.saveBatchTopic(list);
+        return R.ok(list);
+    }
+
 }

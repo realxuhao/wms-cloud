@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.masterdata.mapper.MaterialMapper">
+
+    <resultMap type="Material" id="MaterialResult">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="minPackageNumber" column="min_package_number"/>
+        <result property="materialTypeId" column="material_type_id"/>
+        <result property="unit" column="unit"/>
+        <result property="errorProofingMethod" column="error_proofing_method"/>
+        <result property="hasPallet" column="has_pallet"/>
+        <result property="bindPallet" column="bind_pallet"/>
+        <result property="packageWeight" column="package_weight"/>
+        <result property="palletWeight" column="pallet_weight"/>
+        <result property="totalWeight" column="total_weight"/>
+        <result property="minPackageNetWeight" column="min_package_net_weight"/>
+        <result property="lessDeviationRatio" column="less_deviation_ratio"/>
+        <result property="moreDeviationRatio" column="more_deviation_ratio"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+    <resultMap type="MaterialVO" id="MaterialVOResult">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="minPackageNumber" column="min_package_number"/>
+        <result property="materialTypeId" column="material_type_id"/>
+        <result property="materialType" column="material_type"/>
+
+        <result property="unit" column="unit"/>
+        <result property="errorProofingMethod" column="error_proofing_method"/>
+        <result property="hasPallet" column="has_pallet"/>
+        <result property="bindPallet" column="bind_pallet"/>
+        <result property="packageWeight" column="package_weight"/>
+        <result property="palletWeight" column="pallet_weight"/>
+        <result property="totalWeight" column="total_weight"/>
+        <result property="minPackageNetWeight" column="min_package_net_weight"/>
+        <result property="lessDeviationRatio" column="less_deviation_ratio"/>
+        <result property="moreDeviationRatio" column="more_deviation_ratio"/>
+        <result property="status" column="status"/>
+    </resultMap>
+    <sql id="selectMaterialVo">
+        select id, code, name, min_package_number, material_type_id, unit, error_proofing_method, has_pallet, bind_pallet, package_weight, pallet_weight, total_weight, min_package_net_weight, less_deviation_ratio, more_deviation_ratio, create_by, update_by, create_time, update_time, status, remark from md_material
+    </sql>
+
+    <select id="selectMaterialList" parameterType="Material" resultMap="MaterialResult">
+        <include refid="selectMaterialVo"/>
+        <where>
+            <if test="code != null  and code != ''">and code = #{code}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="minPackageNumber != null ">and min_package_number = #{minPackageNumber}</if>
+            <if test="materialTypeId != null ">and material_type_id = #{materialTypeId}</if>
+            <if test="unit != null  and unit != ''">and unit = #{unit}</if>
+            <if test="errorProofingMethod != null  and errorProofingMethod != ''">and error_proofing_method =
+                #{errorProofingMethod}
+            </if>
+            <if test="hasPallet != null ">and has_pallet = #{hasPallet}</if>
+            <if test="bindPallet != null ">and bind_pallet = #{bindPallet}</if>
+            <if test="packageWeight != null ">and package_weight = #{packageWeight}</if>
+            <if test="palletWeight != null ">and pallet_weight = #{palletWeight}</if>
+            <if test="totalWeight != null ">and total_weight = #{totalWeight}</if>
+            <if test="minPackageNetWeight != null ">and min_package_net_weight = #{minPackageNetWeight}</if>
+            <if test="lessDeviationRatio != null ">and less_deviation_ratio = #{lessDeviationRatio}</if>
+            <if test="moreDeviationRatio != null ">and more_deviation_ratio = #{moreDeviationRatio}</if>
+            <if test="status != null ">and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectMaterialById" parameterType="Long" resultMap="MaterialResult">
+        <include refid="selectMaterialVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMaterial" parameterType="Material" useGeneratedKeys="true" keyProperty="id">
+        insert into md_material
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="code != null and code != ''">code,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="minPackageNumber != null">min_package_number,</if>
+            <if test="materialTypeId != null">material_type_id,</if>
+            <if test="unit != null and unit != ''">unit,</if>
+            <if test="errorProofingMethod != null and errorProofingMethod != ''">error_proofing_method,</if>
+            <if test="hasPallet != null">has_pallet,</if>
+            <if test="bindPallet != null">bind_pallet,</if>
+            <if test="packageWeight != null">package_weight,</if>
+            <if test="palletWeight != null">pallet_weight,</if>
+            <if test="totalWeight != null">total_weight,</if>
+            <if test="minPackageNetWeight != null">min_package_net_weight,</if>
+            <if test="lessDeviationRatio != null">less_deviation_ratio,</if>
+            <if test="moreDeviationRatio != null">more_deviation_ratio,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="code != null and code != ''">#{code},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="minPackageNumber != null">#{minPackageNumber},</if>
+            <if test="materialTypeId != null">#{materialTypeId},</if>
+            <if test="unit != null and unit != ''">#{unit},</if>
+            <if test="errorProofingMethod != null and errorProofingMethod != ''">#{errorProofingMethod},</if>
+            <if test="hasPallet != null">#{hasPallet},</if>
+            <if test="bindPallet != null">#{bindPallet},</if>
+            <if test="packageWeight != null">#{packageWeight},</if>
+            <if test="palletWeight != null">#{palletWeight},</if>
+            <if test="totalWeight != null">#{totalWeight},</if>
+            <if test="minPackageNetWeight != null">#{minPackageNetWeight},</if>
+            <if test="lessDeviationRatio != null">#{lessDeviationRatio},</if>
+            <if test="moreDeviationRatio != null">#{moreDeviationRatio},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMaterial" parameterType="Material">
+        update md_material
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="code != null and code != ''">code = #{code},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="minPackageNumber != null">min_package_number = #{minPackageNumber},</if>
+            <if test="materialTypeId != null">material_type_id = #{materialTypeId},</if>
+            <if test="unit != null and unit != ''">unit = #{unit},</if>
+            <if test="errorProofingMethod != null and errorProofingMethod != ''">error_proofing_method =
+                #{errorProofingMethod},
+            </if>
+            <if test="hasPallet != null">has_pallet = #{hasPallet},</if>
+            <if test="bindPallet != null">bind_pallet = #{bindPallet},</if>
+            <if test="packageWeight != null">package_weight = #{packageWeight},</if>
+            <if test="palletWeight != null">pallet_weight = #{palletWeight},</if>
+            <if test="totalWeight != null">total_weight = #{totalWeight},</if>
+            <if test="minPackageNetWeight != null">min_package_net_weight = #{minPackageNetWeight},</if>
+            <if test="lessDeviationRatio != null">less_deviation_ratio = #{lessDeviationRatio},</if>
+            <if test="moreDeviationRatio != null">more_deviation_ratio = #{moreDeviationRatio},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMaterialById" parameterType="Long">
+        delete from md_material where id = #{id}
+    </delete>
+
+    <delete id="deleteMaterialByIds" parameterType="String">
+        delete from md_material where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectMaterialVOList" parameterType="MaterialDTO" resultMap="MaterialVOResult">
+        SELECT
+        m.id,
+        m.CODE,
+        m.NAME,
+        m.min_package_number,
+        m.material_type_id,
+        mt.code as material_type,
+        m.unit,
+        m.error_proofing_method,
+        m.has_pallet,
+        m.bind_pallet,
+        m.package_weight,
+        m.pallet_weight,
+        m.total_weight,
+        m.min_package_net_weight,
+        m.less_deviation_ratio,
+        m.more_deviation_ratio,
+        m.create_by,
+        m.update_by,
+        m.create_time,
+        m.update_time,
+        m.STATUS,
+        m.remark
+        FROM
+        md_material m
+        LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
+
+        <where>
+            <if test="code != null  and code != ''">and code = #{code}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="minPackageNumber != null ">and min_package_number = #{minPackageNumber}</if>
+            <if test="materialTypeId != null ">and material_type_id = #{materialTypeId}</if>
+            <if test="unit != null  and unit != ''">and unit = #{unit}</if>
+            <if test="errorProofingMethod != null  and errorProofingMethod != ''">and error_proofing_method =
+                #{errorProofingMethod}
+            </if>
+            <if test="hasPallet != null ">and has_pallet = #{hasPallet}</if>
+            <if test="bindPallet != null ">and bind_pallet = #{bindPallet}</if>
+            <if test="packageWeight != null ">and package_weight = #{packageWeight}</if>
+            <if test="palletWeight != null ">and pallet_weight = #{palletWeight}</if>
+            <if test="totalWeight != null ">and total_weight = #{totalWeight}</if>
+            <if test="minPackageNetWeight != null ">and min_package_net_weight = #{minPackageNetWeight}</if>
+            <if test="lessDeviationRatio != null ">and less_deviation_ratio = #{lessDeviationRatio}</if>
+            <if test="moreDeviationRatio != null ">and more_deviation_ratio = #{moreDeviationRatio}</if>
+            <if test="status != null ">and status = #{status}</if>
+        </where>
+    </select>
+
+    <select id="selectMaterialVOById" parameterType="Long" resultMap="MaterialVOResult">
+        SELECT
+        m.id,
+        m.CODE,
+        m.NAME,
+        m.min_package_number,
+        m.material_type_id,
+        mt.code as material_type,
+        m.unit,
+        m.error_proofing_method,
+        m.has_pallet,
+        m.bind_pallet,
+        m.package_weight,
+        m.pallet_weight,
+        m.total_weight,
+        m.min_package_net_weight,
+        m.less_deviation_ratio,
+        m.more_deviation_ratio,
+        m.create_by,
+        m.update_by,
+        m.create_time,
+        m.update_time,
+        m.STATUS,
+        m.remark
+        FROM
+        md_material m
+        LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
+        where m.id = #{id}
+    </select>
+</mapper>

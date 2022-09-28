@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.masterdata.mapper.FrameMapper">
+    
+    <resultMap type="Frame" id="FrameResult">
+        <result property="id"    column="id"    />
+        <result property="areaId"    column="area_id"    />
+        <result property="name"    column="name"    />
+        <result property="code"    column="code"    />
+        <result property="width"    column="width"    />
+        <result property="bearWeight"    column="bear_weight"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <resultMap type="FrameVO" id="FrameVOResult">
+        <result property="id"    column="id"    />
+        <result property="wareId"    column="ware_id"    />
+        <result property="wareCode"    column="ware_code"    />
+        <result property="wareName"    column="ware_name"    />
+        <result property="areaId"    column="area_id"    />
+        <result property="areaName"    column="area_name"    />
+        <result property="areaCode"    column="area_code"    />
+        <result property="code"    column="code"    />
+        <result property="name"    column="name"    />
+        <result property="width"    column="width"    />
+        <result property="bearWeight"    column="bear_weight"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+
+    <sql id="selectFrameVo">
+        select id, area_id, name, code, width, bear_weight, create_by, update_by, create_time, update_time, status, remark from md_frame
+    </sql>
+
+
+
+    <select id="selectFrameList" parameterType="FrameDTO" resultMap="FrameVOResult">
+        select f.id as id,w.id as ware_id ,w.code as ware_code,w.name as ware_name,
+               a.id as area_id, a.name as area_name,a.code as area_code,f.code as code,
+               f.name as name,f.width as width,f.bear_weight as bear_weight,f.create_time as create_time
+        from md_frame f
+            left join md_area a on f.area_id=a.id
+            left join md_ware w on w.id=a.id
+        <where>
+            <if test="areaId != null "> and f.area_id = #{areaId}</if>
+            <if test="name != null  and name != ''"> and f.name like concat('%', #{name}, '%')</if>
+            <if test="code != null  and code != ''"> and f.code = #{code}</if>
+            <if test="width != null "> and f.width = #{width}</if>
+            <if test="bearWeight != null "> and f.bear_weight = #{bearWeight}</if>
+        </where>
+    </select>
+    
+    <select id="selectFrameById" parameterType="Long" resultMap="FrameVOResult">
+        select f.id as id,w.id as ware_id ,w.code as ware_code,w.name as ware_name,
+               a.id as area_id, a.name as area_name,a.code as area_code,f.code as code,
+               f.name as name,f.width as width,f.bear_weight as bear_weight,f.create_time as create_time
+        from md_frame f
+                 left join md_area a on f.area_id=a.id
+                 left join md_ware w on w.id=a.id
+        where f.id = #{id}
+    </select>
+        
+    <insert id="insertFrame" parameterType="Frame" useGeneratedKeys="true" keyProperty="id">
+        insert into md_frame
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="areaId != null">area_id,</if>
+            <if test="name != null">name,</if>
+            <if test="code != null and code != ''">code,</if>
+            <if test="width != null">width,</if>
+            <if test="bearWeight != null">bear_weight,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="areaId != null">#{areaId},</if>
+            <if test="name != null">#{name},</if>
+            <if test="code != null and code != ''">#{code},</if>
+            <if test="width != null">#{width},</if>
+            <if test="bearWeight != null">#{bearWeight},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFrame" parameterType="Frame">
+        update md_frame
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="areaId != null">area_id = #{areaId},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="code != null and code != ''">code = #{code},</if>
+            <if test="width != null">width = #{width},</if>
+            <if test="bearWeight != null">bear_weight = #{bearWeight},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteFrameById" parameterType="Long">
+        delete from md_frame where id = #{id}
+    </delete>
+
+    <delete id="deleteFrameByIds" parameterType="String">
+        delete from md_frame where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

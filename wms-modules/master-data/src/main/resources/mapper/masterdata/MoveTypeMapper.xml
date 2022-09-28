@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.masterdata.mapper.MoveTypeMapper">
+    
+    <resultMap type="MoveType" id="MoveTypeResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="code"    column="code"    />
+        <result property="description"    column="description"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <resultMap type="MoveTypeVO" id="MoveTypeVOResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="code"    column="code"    />
+        <result property="description"    column="description"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectMoveTypeVo">
+        select id, type, code, description, create_by, update_by, create_time, update_time, status, remark from md_move_type
+    </sql>
+
+    <select id="selectMoveTypeList" parameterType="MoveTypeDTO" resultMap="MoveTypeVOResult">
+        <include refid="selectMoveTypeVo"/>
+        <where>  
+            <if test="type != null  and type != ''"> and type = #{type}</if>
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="status != null "> and status = #{status}</if>
+        </where>
+        order by create_time desc
+    </select>
+    
+    <select id="selectMoveTypeById" parameterType="Long" resultMap="MoveTypeResult">
+        <include refid="selectMoveTypeVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertMoveType" parameterType="MoveType">
+        insert into md_move_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="code != null and code != ''">code,</if>
+            <if test="description != null">description,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="code != null and code != ''">#{code},</if>
+            <if test="description != null">#{description},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateMoveType" parameterType="MoveType">
+        update md_move_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="code != null and code != ''">code = #{code},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMoveTypeById" parameterType="Long">
+        delete from md_move_type where id = #{id}
+    </delete>
+
+    <delete id="deleteMoveTypeByIds" parameterType="String">
+        delete from md_move_type where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
