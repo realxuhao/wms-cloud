@@ -57,7 +57,7 @@
         <!-- RuoYi Api System -->
         <dependency>
             <groupId>com.ruoyi</groupId>
-            <artifactId>ruoyi-api-system</artifactId>
+            <artifactId>wms-api-system</artifactId>
         </dependency>
         
         <!-- RuoYi Common Swagger -->

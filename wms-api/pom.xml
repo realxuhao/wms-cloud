@@ -9,14 +9,14 @@
     <modelVersion>4.0.0</modelVersion>
 
     <modules>
-        <module>ruoyi-api-system</module>
+        <module>wms-api-system</module>
     </modules>
 
-    <artifactId>ruoyi-api</artifactId>
+    <artifactId>wms-api</artifactId>
     <packaging>pom</packaging>
 
     <description>
-        ruoyi-api系统接口
+        wms-api系统接口
     </description>
 
 </project>

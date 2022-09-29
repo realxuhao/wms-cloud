@@ -1,5 +1,6 @@
 package com.bosch.system.api;
 
+
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,6 +10,8 @@ import com.ruoyi.common.core.constant.ServiceNameConstants;
 import com.ruoyi.common.core.domain.R;
 import com.bosch.system.api.domain.SysFile;
 import com.bosch.system.api.factory.RemoteFileFallbackFactory;
+
+import java.util.List;
 
 /**
  * 文件服务
@@ -26,4 +29,5 @@ public interface RemoteFileService
      */
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public R<SysFile> upload(@RequestPart(value = "file") MultipartFile file);
+
 }

@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.core.domain.R;
@@ -61,5 +62,18 @@ public class SysFileController
         //outEvalDeclareService.saveBatchTopic(list);
         return R.ok(list);
     }
+    /**
+     * 解析文件
+     *
+     * @param file 文件信息
+     * @return 结果
+     */
+    @ApiOperation("解析excel表")
+    @PostMapping(value = "/read")
+    public <T> R<List<T>> read(@RequestPart(value = "file") MultipartFile file,@RequestParam(value = "className") String className)throws Exception{
 
+        Class<?> TClass = Class.forName("com.bosch.masterdata.domain.dto."+className);
+        List<T> read = EasyExcelUtil.read(file.getInputStream(), TClass);
+        return R.ok(read);
+    }
 }

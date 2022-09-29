@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import com.ruoyi.common.swagger.annotation.EnableCustomSwagger2;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 /**
  * 文件服务
@@ -12,6 +13,7 @@ import com.ruoyi.common.swagger.annotation.EnableCustomSwagger2;
  */
 @EnableCustomSwagger2
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
+@EnableFeignClients
 public class WMSFileApplication
 {
     public static void main(String[] args)

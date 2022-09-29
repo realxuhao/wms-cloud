@@ -53,8 +53,6 @@
                 <scope>provided</scope>
             </dependency>
 
-
-
             <!-- SpringCloud 微服务 -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
@@ -244,7 +242,7 @@
             <!-- 系统接口 -->
             <dependency>
                 <groupId>com.ruoyi</groupId>
-                <artifactId>ruoyi-api-system</artifactId>
+                <artifactId>wms-api-system</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 
@@ -256,7 +254,7 @@
         <module>wms-gateway</module>
         <module>ruoyi-visual</module>
         <module>wms-modules</module>
-        <module>ruoyi-api</module>
+        <module>wms-api</module>
         <module>ruoyi-common</module>
     </modules>
     <packaging>pom</packaging>
@@ -267,6 +265,12 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
+        <!-- SpringCloud Openfeign -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

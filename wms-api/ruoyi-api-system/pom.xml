@@ -4,15 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <groupId>com.ruoyi</groupId>
-        <artifactId>ruoyi-api</artifactId>
+        <artifactId>wms-api</artifactId>
         <version>3.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     
-    <artifactId>ruoyi-api-system</artifactId>
+    <artifactId>wms-api-system</artifactId>
 
     <description>
-        ruoyi-api-system系统接口模块
+        wms-api-system系统接口模块
     </description>
 
     <dependencies>
