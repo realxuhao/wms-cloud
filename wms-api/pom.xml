@@ -10,6 +10,7 @@
 
     <modules>
         <module>wms-api-system</module>
+        <module>wms-api-file</module>
         <module>master-data-api</module>
     </modules>
 

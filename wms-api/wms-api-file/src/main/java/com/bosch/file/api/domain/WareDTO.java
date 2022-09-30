@@ -1,4 +1,4 @@
-package com.bosch.masterdata.domain.dto;
+package com.bosch.file.api.domain;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.ruoyi.common.core.web.page.PageDomain;

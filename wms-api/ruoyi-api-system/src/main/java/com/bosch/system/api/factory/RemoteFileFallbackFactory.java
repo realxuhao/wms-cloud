@@ -9,8 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.ruoyi.common.core.domain.R;
 import com.bosch.system.api.domain.SysFile;
 
-import java.util.List;
-
 /**
  * 文件服务降级处理
  * 

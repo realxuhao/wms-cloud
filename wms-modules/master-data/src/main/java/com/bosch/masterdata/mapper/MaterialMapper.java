@@ -78,4 +78,11 @@ public interface MaterialMapper
     public MaterialVO selectMaterialVOById(Long id);
 
     MaterialVO selectMaterialVOByMaterialCode(String materialCode);
+
+    /**
+     * 验证是否重复
+     * @param list
+     * @return
+     */
+    public Integer validateRecord(List<MaterialDTO> list);
 }

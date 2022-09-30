@@ -16,7 +16,11 @@
     </description>
 	
     <dependencies>
-    	
+        <dependency>
+            <groupId>commons-beanutils</groupId>
+            <artifactId>commons-beanutils</artifactId>
+            <version>1.9.3</version>
+        </dependency>
     	<!-- SpringCloud Alibaba Nacos -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
@@ -87,10 +91,18 @@
             <artifactId>lombok</artifactId>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>wms-api-file</artifactId>
+        </dependency>
         <dependency>
             <groupId>com.ruoyi</groupId>
             <artifactId>master-data-api</artifactId>
+            <version>3.6.0</version>
+            <scope>compile</scope>
         </dependency>
+
 
 
     </dependencies>

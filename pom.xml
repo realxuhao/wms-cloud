@@ -245,7 +245,12 @@
                 <artifactId>wms-api-system</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
-
+            <!-- 文件接口 -->
+            <dependency>
+                <groupId>com.ruoyi</groupId>
+                <artifactId>wms-api-file</artifactId>
+                <version>${ruoyi.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -256,10 +261,16 @@
         <module>wms-modules</module>
         <module>wms-api</module>
         <module>ruoyi-common</module>
+        <module>wms-api-file</module>
     </modules>
     <packaging>pom</packaging>
 
     <dependencies>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>3.1.1</version>
+        </dependency>
         <!-- bootstrap 启动器 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

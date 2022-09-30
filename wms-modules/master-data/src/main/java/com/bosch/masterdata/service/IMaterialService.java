@@ -85,4 +85,12 @@ public interface IMaterialService
     public int deleteMaterialById(Long id);
 
     MaterialVO selectMaterialVOBymaterialCode(String materialCode);
+
+    /**
+     * 查询物料信息是否重复
+     *
+     * @param materials 物料信息
+     * @return
+     */
+    public boolean selectMaterialList(List<MaterialDTO> materials);
 }

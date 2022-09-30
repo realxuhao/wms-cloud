@@ -1,4 +1,4 @@
-package com.bosch.masterdata.domain.dto;
+package com.bosch.file.api.domain;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.ruoyi.common.core.annotation.Excel;
@@ -11,8 +11,8 @@ import java.math.BigDecimal;
 @Data
 public class MaterialDTO extends PageDomain {
     /** id */
-    @ExcelProperty(value = "物料id")
-    @ApiModelProperty(value = "物料id")
+    @ExcelProperty(value = "id")
+    @ApiModelProperty(value = "id")
     private Long id;
 
     /** 物料类型代码 */

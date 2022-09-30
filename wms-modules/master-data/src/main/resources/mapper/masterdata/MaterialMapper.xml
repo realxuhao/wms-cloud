@@ -275,4 +275,12 @@
                 LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
         where m.CODE = #{materialCode}
     </select>
+
+    <select id="validateRecord" resultType="integer" parameterType="MaterialDTO">
+        SELECT COUNT(*) FROM md_material
+        WHERE (code) IN
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            (#{item.code})
+        </foreach>
+    </select>
 </mapper>

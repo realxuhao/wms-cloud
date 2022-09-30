@@ -15,25 +15,23 @@ import com.bosch.masterdata.service.IMaterialService;
 
 /**
  * 物料信息Service业务层处理
- * 
+ *
  * @author xuhao
  * @date 2022-09-22
  */
 @Service
-public class MaterialServiceImpl implements IMaterialService 
-{
+public class MaterialServiceImpl implements IMaterialService {
     @Autowired
     private MaterialMapper materialMapper;
 
     /**
      * 查询物料信息
-     * 
+     *
      * @param id 物料信息主键
      * @return 物料信息
      */
     @Override
-    public Material selectMaterialById(Long id)
-    {
+    public Material selectMaterialById(Long id) {
         return materialMapper.selectMaterialById(id);
     }
 
@@ -44,13 +42,12 @@ public class MaterialServiceImpl implements IMaterialService
 
     /**
      * 查询物料信息列表
-     * 
+     *
      * @param material 物料信息
      * @return 物料信息
      */
     @Override
-    public List<Material> selectMaterialList(Material material)
-    {
+    public List<Material> selectMaterialList(Material material) {
         return materialMapper.selectMaterialList(material);
     }
 
@@ -61,13 +58,12 @@ public class MaterialServiceImpl implements IMaterialService
 
     /**
      * 新增物料信息
-     * 
+     *
      * @param material 物料信息
      * @return 结果
      */
     @Override
-    public int insertMaterial(Material material)
-    {
+    public int insertMaterial(Material material) {
         material.setCreateTime(DateUtils.getNowDate());
         return materialMapper.insertMaterial(material);
     }
@@ -88,13 +84,12 @@ public class MaterialServiceImpl implements IMaterialService
 
     /**
      * 修改物料信息
-     * 
+     *
      * @param material 物料信息
      * @return 结果
      */
     @Override
-    public int updateMaterial(Material material)
-    {
+    public int updateMaterial(Material material) {
         material.setUpdateTime(DateUtils.getNowDate());
         return materialMapper.updateMaterial(material);
     }
@@ -109,25 +104,23 @@ public class MaterialServiceImpl implements IMaterialService
 
     /**
      * 批量删除物料信息
-     * 
+     *
      * @param ids 需要删除的物料信息主键
      * @return 结果
      */
     @Override
-    public int deleteMaterialByIds(Long[] ids)
-    {
+    public int deleteMaterialByIds(Long[] ids) {
         return materialMapper.deleteMaterialByIds(ids);
     }
 
     /**
      * 删除物料信息信息
-     * 
+     *
      * @param id 物料信息主键
      * @return 结果
      */
     @Override
-    public int deleteMaterialById(Long id)
-    {
+    public int deleteMaterialById(Long id) {
         return materialMapper.deleteMaterialById(id);
     }
 
@@ -135,4 +128,11 @@ public class MaterialServiceImpl implements IMaterialService
     public MaterialVO selectMaterialVOBymaterialCode(String materialCode) {
         return materialMapper.selectMaterialVOByMaterialCode(materialCode);
     }
+
+    @Override
+    public boolean selectMaterialList(List<MaterialDTO> materials) {
+        return  materialMapper.validateRecord(materials)>0;
+    }
+
+
 }
