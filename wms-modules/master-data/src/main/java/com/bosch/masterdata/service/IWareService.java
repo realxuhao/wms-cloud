@@ -1,7 +1,7 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
-import com.bosch.masterdata.domain.Ware;
+import com.bosch.masterdata.api.domain.Ware;
 
 /**
  * 仓库Service接口

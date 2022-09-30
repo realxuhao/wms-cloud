@@ -1,9 +1,9 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
-import com.bosch.masterdata.domain.Area;
-import com.bosch.masterdata.domain.dto.AreaDTO;
-import com.bosch.masterdata.domain.vo.AreaVO;
+import com.bosch.masterdata.api.domain.Area;
+import com.bosch.masterdata.api.domain.dto.AreaDTO;
+import com.bosch.masterdata.api.domain.vo.AreaVO;
 
 /**
  * 区域Service接口

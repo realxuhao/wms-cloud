@@ -2,15 +2,14 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
-import com.bosch.masterdata.domain.dto.SupplierInfoDTO;
-import com.bosch.masterdata.domain.vo.SupplierInfoVO;
+import com.bosch.masterdata.api.domain.dto.SupplierInfoDTO;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.SupplierInfoMapper;
-import com.bosch.masterdata.domain.SupplierInfo;
+import com.bosch.masterdata.api.domain.SupplierInfo;
 import com.bosch.masterdata.service.ISupplierInfoService;
 
 /**

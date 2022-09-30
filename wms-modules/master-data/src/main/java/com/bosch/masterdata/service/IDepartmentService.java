@@ -1,8 +1,8 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
-import com.bosch.masterdata.domain.Department;
-import com.bosch.masterdata.domain.vo.DepartmentVO;
+import com.bosch.masterdata.api.domain.Department;
+import com.bosch.masterdata.api.domain.vo.DepartmentVO;
 
 /**
  * 部门Service接口

@@ -2,14 +2,14 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
-import com.bosch.masterdata.domain.dto.MaterialBinDTO;
-import com.bosch.masterdata.domain.vo.MaterialBinVO;
+import com.bosch.masterdata.api.domain.dto.MaterialBinDTO;
+import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.MaterialBinMapper;
-import com.bosch.masterdata.domain.MaterialBin;
+import com.bosch.masterdata.api.domain.MaterialBin;
 import com.bosch.masterdata.service.IMaterialBinService;
 
 /**

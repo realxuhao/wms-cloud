@@ -1,7 +1,7 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
-import com.bosch.masterdata.domain.Ware;
+import com.bosch.masterdata.api.domain.Ware;
 
 /**
  * 仓库Mapper接口

@@ -1,9 +1,9 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
-import com.bosch.masterdata.domain.Material;
-import com.bosch.masterdata.domain.dto.MaterialDTO;
-import com.bosch.masterdata.domain.vo.MaterialVO;
+import com.bosch.masterdata.api.domain.Material;
+import com.bosch.masterdata.api.domain.dto.MaterialDTO;
+import com.bosch.masterdata.api.domain.vo.MaterialVO;
 
 /**
  * 物料信息Mapper接口
@@ -76,4 +76,6 @@ public interface MaterialMapper
      * @return 物料信息
      */
     public MaterialVO selectMaterialVOById(Long id);
+
+    MaterialVO selectMaterialVOByMaterialCode(String materialCode);
 }

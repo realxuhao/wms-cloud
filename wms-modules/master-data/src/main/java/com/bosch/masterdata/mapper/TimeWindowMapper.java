@@ -1,9 +1,9 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
-import com.bosch.masterdata.domain.TimeWindow;
-import com.bosch.masterdata.domain.dto.TimeWindowDTO;
-import com.bosch.masterdata.domain.vo.TimeWindowVO;
+import com.bosch.masterdata.api.domain.TimeWindow;
+import com.bosch.masterdata.api.domain.dto.TimeWindowDTO;
+import com.bosch.masterdata.api.domain.vo.TimeWindowVO;
 
 /**
  * 道口时间窗口Mapper接口

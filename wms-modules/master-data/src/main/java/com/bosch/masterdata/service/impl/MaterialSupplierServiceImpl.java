@@ -5,7 +5,7 @@ import com.ruoyi.common.core.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.MaterialSupplierMapper;
-import com.bosch.masterdata.domain.MaterialSupplier;
+import com.bosch.masterdata.api.domain.MaterialSupplier;
 import com.bosch.masterdata.service.IMaterialSupplierService;
 
 /**

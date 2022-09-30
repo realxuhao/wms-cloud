@@ -1,9 +1,9 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
-import com.bosch.masterdata.domain.MaterialBin;
-import com.bosch.masterdata.domain.dto.MaterialBinDTO;
-import com.bosch.masterdata.domain.vo.MaterialBinVO;
+import com.bosch.masterdata.api.domain.MaterialBin;
+import com.bosch.masterdata.api.domain.dto.MaterialBinDTO;
+import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 
 /**
  * 物料库位分配策略Service接口

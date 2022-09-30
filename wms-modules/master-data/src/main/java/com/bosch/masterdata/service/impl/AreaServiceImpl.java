@@ -2,16 +2,15 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
-import com.bosch.masterdata.domain.Material;
-import com.bosch.masterdata.domain.dto.AreaDTO;
-import com.bosch.masterdata.domain.vo.AreaVO;
+import com.bosch.masterdata.api.domain.dto.AreaDTO;
+import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.AreaMapper;
-import com.bosch.masterdata.domain.Area;
+import com.bosch.masterdata.api.domain.Area;
 import com.bosch.masterdata.service.IAreaService;
 
 /**

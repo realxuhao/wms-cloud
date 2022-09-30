@@ -2,16 +2,15 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
-import com.bosch.masterdata.domain.dto.MoveTypeDTO;
-import com.bosch.masterdata.domain.vo.MoveTypeVO;
+import com.bosch.masterdata.api.domain.dto.MoveTypeDTO;
+import com.bosch.masterdata.api.domain.vo.MoveTypeVO;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
-import com.ruoyi.common.core.utils.bean.BeanUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.MoveTypeMapper;
-import com.bosch.masterdata.domain.MoveType;
+import com.bosch.masterdata.api.domain.MoveType;
 import com.bosch.masterdata.service.IMoveTypeService;
 
 /**

@@ -3,9 +3,9 @@ package com.bosch.masterdata.controller;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
-import com.bosch.masterdata.domain.dto.MaterialBinDTO;
-import com.bosch.masterdata.domain.vo.MaterialBinVO;
-import com.bosch.masterdata.domain.vo.PageVO;
+import com.bosch.masterdata.api.domain.dto.MaterialBinDTO;
+import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
+import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
@@ -23,12 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.annotation.RequiresPermissions;
-import com.bosch.masterdata.domain.MaterialBin;
+import com.bosch.masterdata.api.domain.MaterialBin;
 import com.bosch.masterdata.service.IMaterialBinService;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
-import com.ruoyi.common.core.web.page.TableDataInfo;
 
 /**
  * 物料库位分配策略Controller

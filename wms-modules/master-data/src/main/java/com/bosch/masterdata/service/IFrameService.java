@@ -1,9 +1,9 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
-import com.bosch.masterdata.domain.Frame;
-import com.bosch.masterdata.domain.dto.FrameDTO;
-import com.bosch.masterdata.domain.vo.FrameVO;
+
+import com.bosch.masterdata.api.domain.dto.FrameDTO;
+import com.bosch.masterdata.api.domain.vo.FrameVO;
 
 /**
  * 跨Service接口

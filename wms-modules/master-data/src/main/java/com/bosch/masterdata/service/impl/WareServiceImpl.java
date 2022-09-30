@@ -7,7 +7,7 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.WareMapper;
-import com.bosch.masterdata.domain.Ware;
+import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.service.IWareService;
 
 /**

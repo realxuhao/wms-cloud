@@ -1,7 +1,7 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
-import com.bosch.masterdata.domain.SupplierInfo;
+import com.bosch.masterdata.api.domain.SupplierInfo;
 
 /**
  * 供应商Mapper接口

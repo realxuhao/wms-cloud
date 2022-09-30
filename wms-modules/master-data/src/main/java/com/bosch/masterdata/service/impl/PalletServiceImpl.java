@@ -2,15 +2,15 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
-import com.bosch.masterdata.domain.dto.PalletDTO;
-import com.bosch.masterdata.domain.vo.PalletVO;
+import com.bosch.masterdata.api.domain.dto.PalletDTO;
+import com.bosch.masterdata.api.domain.vo.PalletVO;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.PalletMapper;
-import com.bosch.masterdata.domain.Pallet;
+import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.service.IPalletService;
 
 /**

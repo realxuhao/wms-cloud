@@ -1,9 +1,9 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
-import com.bosch.masterdata.domain.Pallet;
-import com.bosch.masterdata.domain.dto.PalletDTO;
-import com.bosch.masterdata.domain.vo.PalletVO;
+import com.bosch.masterdata.api.domain.Pallet;
+import com.bosch.masterdata.api.domain.dto.PalletDTO;
+import com.bosch.masterdata.api.domain.vo.PalletVO;
 
 /**
  * 托盘Service接口

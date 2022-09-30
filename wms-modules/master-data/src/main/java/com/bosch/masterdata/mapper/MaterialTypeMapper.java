@@ -1,10 +1,9 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
-import com.bosch.masterdata.domain.MaterialType;
-import com.bosch.masterdata.domain.dto.MaterialTypeDTO;
-import com.bosch.masterdata.domain.vo.DepartmentVO;
-import com.bosch.masterdata.domain.vo.MaterialTypeVO;
+import com.bosch.masterdata.api.domain.MaterialType;
+import com.bosch.masterdata.api.domain.dto.MaterialTypeDTO;
+import com.bosch.masterdata.api.domain.vo.MaterialTypeVO;
 
 /**
  * 物料类型Mapper接口

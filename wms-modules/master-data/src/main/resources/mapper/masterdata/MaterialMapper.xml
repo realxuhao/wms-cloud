@@ -245,4 +245,34 @@
         LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
         where m.id = #{id}
     </select>
+
+    <select id="selectMaterialVOByMaterialCode" parameterType="String" resultMap="MaterialVOResult">
+        SELECT
+            m.id,
+            m.CODE,
+            m.NAME,
+            m.min_package_number,
+            m.material_type_id,
+            mt.code as material_type,
+            m.unit,
+            m.error_proofing_method,
+            m.has_pallet,
+            m.bind_pallet,
+            m.package_weight,
+            m.pallet_weight,
+            m.total_weight,
+            m.min_package_net_weight,
+            m.less_deviation_ratio,
+            m.more_deviation_ratio,
+            m.create_by,
+            m.update_by,
+            m.create_time,
+            m.update_time,
+            m.STATUS,
+            m.remark
+        FROM
+            md_material m
+                LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
+        where m.CODE = #{materialCode}
+    </select>
 </mapper>

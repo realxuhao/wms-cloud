@@ -2,16 +2,15 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
-import com.bosch.masterdata.domain.dto.MaterialDTO;
-import com.bosch.masterdata.domain.vo.MaterialVO;
+import com.bosch.masterdata.api.domain.dto.MaterialDTO;
+import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.MaterialMapper;
-import com.bosch.masterdata.domain.Material;
+import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.service.IMaterialService;
 
 /**
@@ -130,5 +129,10 @@ public class MaterialServiceImpl implements IMaterialService
     public int deleteMaterialById(Long id)
     {
         return materialMapper.deleteMaterialById(id);
+    }
+
+    @Override
+    public MaterialVO selectMaterialVOBymaterialCode(String materialCode) {
+        return materialMapper.selectMaterialVOByMaterialCode(materialCode);
     }
 }

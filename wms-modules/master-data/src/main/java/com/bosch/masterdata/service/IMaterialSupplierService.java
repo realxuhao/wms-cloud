@@ -1,7 +1,7 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
-import com.bosch.masterdata.domain.MaterialSupplier;
+import com.bosch.masterdata.api.domain.MaterialSupplier;
 
 /**
  * 供应商物料Service接口

@@ -6,30 +6,23 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.bosch.masterdata.api.FileFeign;
 import com.bosch.masterdata.enumeration.ClassType;
-import com.bosch.system.api.RemoteFileService;
-import com.bosch.masterdata.domain.dto.MaterialDTO;
-import com.bosch.masterdata.domain.dto.WareDTO;
-import com.bosch.masterdata.domain.vo.DepartmentVO;
-import com.bosch.masterdata.domain.vo.MaterialVO;
-import com.bosch.masterdata.domain.vo.PageVO;
-import com.bosch.masterdata.utils.BeanConverUtil;
+import com.bosch.masterdata.api.domain.dto.MaterialDTO;
+import com.bosch.masterdata.api.domain.vo.MaterialVO;
+import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.poi.ss.formula.functions.T;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.annotation.RequiresPermissions;
-import com.bosch.masterdata.domain.Material;
+import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.service.IMaterialService;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
-import com.ruoyi.common.core.web.page.TableDataInfo;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -122,6 +115,17 @@ public class MaterialController extends BaseController
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
         return AjaxResult.success(materialService.selectMaterialVOById(id));
+    }
+
+    /**
+     * 获取物料信息详细信息
+     */
+    //@RequiresPermissions("masterdata:material:query")
+    @GetMapping(value = "/{materialCode}")
+    @ApiOperation("根据物料编码获取获取物料详情")
+    public AjaxResult getInfoByMaterialCode(@PathVariable("materialCode") String materialCode)
+    {
+        return AjaxResult.success(materialService.selectMaterialVOBymaterialCode(materialCode));
     }
 
     /**

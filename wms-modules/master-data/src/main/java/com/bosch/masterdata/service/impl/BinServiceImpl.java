@@ -2,15 +2,15 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
-import com.bosch.masterdata.domain.dto.BinDTO;
-import com.bosch.masterdata.domain.vo.BinVO;
+import com.bosch.masterdata.api.domain.dto.BinDTO;
+import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.BinMapper;
-import com.bosch.masterdata.domain.Bin;
+import com.bosch.masterdata.api.domain.Bin;
 import com.bosch.masterdata.service.IBinService;
 
 /**

@@ -1,9 +1,9 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
-import com.bosch.masterdata.domain.MoveType;
-import com.bosch.masterdata.domain.dto.MoveTypeDTO;
-import com.bosch.masterdata.domain.vo.MoveTypeVO;
+import com.bosch.masterdata.api.domain.MoveType;
+import com.bosch.masterdata.api.domain.dto.MoveTypeDTO;
+import com.bosch.masterdata.api.domain.vo.MoveTypeVO;
 
 /**
  * 移动类型配置Service接口

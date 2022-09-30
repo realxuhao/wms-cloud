@@ -2,12 +2,12 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
-import com.bosch.masterdata.domain.vo.DepartmentVO;
+import com.bosch.masterdata.api.domain.vo.DepartmentVO;
 import com.ruoyi.common.core.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.DepartmentMapper;
-import com.bosch.masterdata.domain.Department;
+import com.bosch.masterdata.api.domain.Department;
 import com.bosch.masterdata.service.IDepartmentService;
 
 /**

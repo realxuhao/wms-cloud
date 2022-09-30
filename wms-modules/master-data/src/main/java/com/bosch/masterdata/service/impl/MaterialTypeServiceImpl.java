@@ -2,16 +2,15 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
-import com.bosch.masterdata.domain.dto.MaterialTypeDTO;
-import com.bosch.masterdata.domain.vo.MaterialTypeVO;
+import com.bosch.masterdata.api.domain.dto.MaterialTypeDTO;
+import com.bosch.masterdata.api.domain.vo.MaterialTypeVO;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.MaterialTypeMapper;
-import com.bosch.masterdata.domain.MaterialType;
+import com.bosch.masterdata.api.domain.MaterialType;
 import com.bosch.masterdata.service.IMaterialTypeService;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * 物料类型Service业务层处理

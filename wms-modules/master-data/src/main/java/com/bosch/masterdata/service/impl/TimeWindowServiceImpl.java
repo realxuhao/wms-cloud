@@ -2,15 +2,15 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
-import com.bosch.masterdata.domain.dto.TimeWindowDTO;
-import com.bosch.masterdata.domain.vo.TimeWindowVO;
+import com.bosch.masterdata.api.domain.dto.TimeWindowDTO;
+import com.bosch.masterdata.api.domain.vo.TimeWindowVO;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.TimeWindowMapper;
-import com.bosch.masterdata.domain.TimeWindow;
+import com.bosch.masterdata.api.domain.TimeWindow;
 import com.bosch.masterdata.service.ITimeWindowService;
 
 /**

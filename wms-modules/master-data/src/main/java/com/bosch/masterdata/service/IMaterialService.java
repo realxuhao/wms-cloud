@@ -1,9 +1,9 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
-import com.bosch.masterdata.domain.Material;
-import com.bosch.masterdata.domain.dto.MaterialDTO;
-import com.bosch.masterdata.domain.vo.MaterialVO;
+import com.bosch.masterdata.api.domain.Material;
+import com.bosch.masterdata.api.domain.dto.MaterialDTO;
+import com.bosch.masterdata.api.domain.vo.MaterialVO;
 
 /**
  * 物料信息Service接口
@@ -83,4 +83,6 @@ public interface IMaterialService
      * @return 结果
      */
     public int deleteMaterialById(Long id);
+
+    MaterialVO selectMaterialVOBymaterialCode(String materialCode);
 }

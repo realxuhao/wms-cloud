@@ -1,9 +1,8 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
-import com.bosch.masterdata.domain.SupplierInfo;
-import com.bosch.masterdata.domain.dto.SupplierInfoDTO;
-import com.bosch.masterdata.domain.vo.SupplierInfoVO;
+import com.bosch.masterdata.api.domain.SupplierInfo;
+import com.bosch.masterdata.api.domain.dto.SupplierInfoDTO;
 
 /**
  * 供应商Service接口

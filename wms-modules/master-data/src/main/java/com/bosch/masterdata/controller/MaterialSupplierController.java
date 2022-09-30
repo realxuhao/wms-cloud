@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.annotation.RequiresPermissions;
-import com.bosch.masterdata.domain.MaterialSupplier;
+import com.bosch.masterdata.api.domain.MaterialSupplier;
 import com.bosch.masterdata.service.IMaterialSupplierService;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;

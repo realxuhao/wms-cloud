@@ -1,9 +1,9 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
-import com.bosch.masterdata.domain.Bin;
-import com.bosch.masterdata.domain.dto.BinDTO;
-import com.bosch.masterdata.domain.vo.BinVO;
+import com.bosch.masterdata.api.domain.Bin;
+import com.bosch.masterdata.api.domain.dto.BinDTO;
+import com.bosch.masterdata.api.domain.vo.BinVO;
 
 /**
  * 库位Mapper接口

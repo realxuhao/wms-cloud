@@ -1,8 +1,8 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
-import com.bosch.masterdata.domain.MoveType;
-import com.bosch.masterdata.domain.vo.MoveTypeVO;
+import com.bosch.masterdata.api.domain.MoveType;
+import com.bosch.masterdata.api.domain.vo.MoveTypeVO;
 
 /**
  * 移动类型配置Mapper接口
