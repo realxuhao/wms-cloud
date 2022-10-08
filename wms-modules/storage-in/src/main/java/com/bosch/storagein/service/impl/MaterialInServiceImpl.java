@@ -112,6 +112,8 @@ public class MaterialInServiceImpl implements IMaterialInService {
             return false;
         }
 
+        //计算平均值
+        //TODO 补充计算说明
         MaterialVO materialVO = getMaterialVOByMesBarCode(mesBarCode);
         double caculateResult = (actualResult - materialVO.getPackageWeight().doubleValue()) / actualQuantity - (materialVO.getPackageWeight().doubleValue() - materialVO.getMinPackageNetWeight().doubleValue());
         double res = caculateResult / materialVO.getTransferWeightRatio().doubleValue();
@@ -136,6 +138,7 @@ public class MaterialInServiceImpl implements IMaterialInService {
             return false;
         }
         double res = Math.ceil(actualResult / actualQuantity);
+        //TODO 补充计算说明
         if (res < materialInCheckVO.getMinStandard() ||
                 res > materialInCheckVO.getMaxStandard()) {
             return false;
@@ -143,6 +146,11 @@ public class MaterialInServiceImpl implements IMaterialInService {
         return true;
     }
 
+    /**
+     * 根据mesBarCode获取物料信息
+     * @param mesBarCode
+     * @return
+     */
     private MaterialVO getMaterialVOByMesBarCode(String mesBarCode) {
         R<MaterialVO> materialVORes = remoteMaterialService.getInfoByMaterialCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
         if (StringUtils.isNull(materialVORes) || StringUtils.isNull(materialVORes.getData())) {
@@ -151,6 +159,12 @@ public class MaterialInServiceImpl implements IMaterialInService {
         return materialVORes.getData();
     }
 
+    /**
+     * 构建MaterialCheckVO
+     * @param materialVO
+     * @param mesBarCode
+     * @return
+     */
     private MaterialInCheckVO buildMaterialCheckVO(MaterialVO materialVO, String mesBarCode) {
         MaterialInCheckVO materialInCheckVO = new MaterialInCheckVO();
         materialInCheckVO.setSsccNumber(MesBarCodeUtil.getSNCC(mesBarCode));
@@ -158,6 +172,7 @@ public class MaterialInServiceImpl implements IMaterialInService {
         materialInCheckVO.setMaterialNb(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
         dealCheckType(materialInCheckVO, materialVO.getErrorProofingMethod());
+        //免检或者该批次已经检验过，直接返回
         if (CheckTypeEnum.CHECKED.getCode().equals(materialInCheckVO.getCheckType()) || CheckTypeEnum.FREE.getCode().equals(materialInCheckVO.getCheckType())) {
             return materialInCheckVO;
         }
@@ -165,6 +180,7 @@ public class MaterialInServiceImpl implements IMaterialInService {
         materialInCheckVO.setMaxStandard(materialVO.getMoreDeviationRatio().doubleValue());
         materialInCheckVO.setUnit(materialVO.getUnit());
 
+        //计算抽样数量
         dealCheckQuantity(materialInCheckVO, materialVO.getMinPackageNumber());
 
         MaterialReceiveVO materialReceiveVO = materialRecevieMapper.selectMaterialReceiveVOBySncc(materialInCheckVO.getSsccNumber());
@@ -181,14 +197,20 @@ public class MaterialInServiceImpl implements IMaterialInService {
         searchDTO.setBatchNumber(materialInCheckVO.getBatchNb());
         List<MaterialReceiveVO> list = materialRecevieMapper.selectMaterialReceiveVOList(searchDTO);
 
+        //获取该物料下的该批次的总数量
         int total = list.stream().mapToInt(MaterialReceiveVO::getQuantity).sum();
-
+        //计算最小包装数量
         Integer totalPackage = (int) Math.ceil(Double.valueOf(total / minPackageNumber));
 
         materialInCheckVO.setCheckQuantity(getCheckQuantity(totalPackage));
 
     }
 
+    /**
+     * 处理检验类型
+     * @param materialInCheckVO
+     * @param errorProofingMethod
+     */
     private void dealCheckType(MaterialInCheckVO materialInCheckVO, String errorProofingMethod) {
         MaterialReceiveDTO searchDTO = new MaterialReceiveDTO();
         searchDTO.setMaterialNb(materialInCheckVO.getMaterialNb());
@@ -196,21 +218,27 @@ public class MaterialInServiceImpl implements IMaterialInService {
         List<MaterialReceiveVO> list = materialRecevieMapper.selectMaterialReceiveVOList(searchDTO);
 
         List<Integer> status = list.stream().map(MaterialReceiveVO::getStatus).collect(Collectors.toList());
-        if (status.contains(MaterialStatusEnum.IN.getCode())) {
+
+        if (status.contains(MaterialStatusEnum.IN.getCode())) {//该批次已经检验过
             materialInCheckVO.setCheckType(CheckTypeEnum.CHECKED.getCode());
             materialInCheckVO.setCheckTypeDesc(CheckTypeEnum.CHECKED.getDesc());
-        } else if (CheckTypeEnum.COUNT.getDesc().equals(errorProofingMethod)) {
+        } else if (CheckTypeEnum.COUNT.getDesc().equals(errorProofingMethod)) {//数数
             materialInCheckVO.setCheckType(CheckTypeEnum.COUNT.getCode());
             materialInCheckVO.setCheckTypeDesc(CheckTypeEnum.COUNT.getDesc());
-        } else if (CheckTypeEnum.WEIGHT.getDesc().equals(errorProofingMethod)) {
+        } else if (CheckTypeEnum.WEIGHT.getDesc().equals(errorProofingMethod)) {//称重
             materialInCheckVO.setCheckType(CheckTypeEnum.WEIGHT.getCode());
             materialInCheckVO.setCheckTypeDesc(CheckTypeEnum.WEIGHT.getDesc());
-        } else if (CheckTypeEnum.FREE.getDesc().equals(errorProofingMethod)) {
+        } else if (CheckTypeEnum.FREE.getDesc().equals(errorProofingMethod)) {//免检
             materialInCheckVO.setCheckType(CheckTypeEnum.FREE.getCode());
             materialInCheckVO.setCheckTypeDesc(CheckTypeEnum.FREE.getDesc());
         }
     }
 
+    /**
+     * 抽样规则。TODO 需要放到数据库维护
+     * @param totalPackage
+     * @return
+     */
     private Integer getCheckQuantity(Integer totalPackage) {
         if (totalPackage >= 1 && totalPackage <= 10) {
             return totalPackage;
