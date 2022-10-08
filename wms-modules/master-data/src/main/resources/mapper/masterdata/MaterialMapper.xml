@@ -20,6 +20,7 @@
         <result property="minPackageNetWeight" column="min_package_net_weight"/>
         <result property="lessDeviationRatio" column="less_deviation_ratio"/>
         <result property="moreDeviationRatio" column="more_deviation_ratio"/>
+        <result property="transferWeightRatio" column="transfer_weight_ratio"/>
         <result property="createBy" column="create_by"/>
         <result property="updateBy" column="update_by"/>
         <result property="createTime" column="create_time"/>
@@ -45,10 +46,33 @@
         <result property="minPackageNetWeight" column="min_package_net_weight"/>
         <result property="lessDeviationRatio" column="less_deviation_ratio"/>
         <result property="moreDeviationRatio" column="more_deviation_ratio"/>
+        <result property="transferWeightRatio" column="transfer_weight_ratio"/>
+
         <result property="status" column="status"/>
     </resultMap>
     <sql id="selectMaterialVo">
-        select id, code, name, min_package_number, material_type_id, unit, error_proofing_method, has_pallet, bind_pallet, package_weight, pallet_weight, total_weight, min_package_net_weight, less_deviation_ratio, more_deviation_ratio, create_by, update_by, create_time, update_time, status, remark from md_material
+        select id,
+               code,
+               name,
+               min_package_number,
+               material_type_id,
+               unit,
+               error_proofing_method,
+               has_pallet,
+               bind_pallet,
+               package_weight,
+               pallet_weight,
+               total_weight,
+               min_package_net_weight,
+               less_deviation_ratio,
+               more_deviation_ratio,
+               create_by,
+               update_by,
+               create_time,
+               update_time,
+               status,
+               remark
+        from md_material
     </sql>
 
     <select id="selectMaterialList" parameterType="Material" resultMap="MaterialResult">
@@ -96,6 +120,7 @@
             <if test="minPackageNetWeight != null">min_package_net_weight,</if>
             <if test="lessDeviationRatio != null">less_deviation_ratio,</if>
             <if test="moreDeviationRatio != null">more_deviation_ratio,</if>
+            <if test="transferWeightRatio != null">transfer_weight_ratio,</if>
             <if test="createBy != null">create_by,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="createTime != null">create_time,</if>
@@ -118,6 +143,8 @@
             <if test="minPackageNetWeight != null">#{minPackageNetWeight},</if>
             <if test="lessDeviationRatio != null">#{lessDeviationRatio},</if>
             <if test="moreDeviationRatio != null">#{moreDeviationRatio},</if>
+            <if test="transferWeightRatio != null">transferWeightRatio,</if>
+
             <if test="createBy != null">#{createBy},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="createTime != null">#{createTime},</if>
@@ -146,6 +173,8 @@
             <if test="minPackageNetWeight != null">min_package_net_weight = #{minPackageNetWeight},</if>
             <if test="lessDeviationRatio != null">less_deviation_ratio = #{lessDeviationRatio},</if>
             <if test="moreDeviationRatio != null">more_deviation_ratio = #{moreDeviationRatio},</if>
+            <if test="transferWeightRatio != null">transfer_weight_ratio = #{transferWeightRatio},</if>
+
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
@@ -157,7 +186,9 @@
     </update>
 
     <delete id="deleteMaterialById" parameterType="Long">
-        delete from md_material where id = #{id}
+        delete
+        from md_material
+        where id = #{id}
     </delete>
 
     <delete id="deleteMaterialByIds" parameterType="String">
@@ -185,6 +216,7 @@
         m.min_package_net_weight,
         m.less_deviation_ratio,
         m.more_deviation_ratio,
+        m.transfer_weight_ratio,
         m.create_by,
         m.update_by,
         m.create_time,
@@ -217,62 +249,60 @@
     </select>
 
     <select id="selectMaterialVOById" parameterType="Long" resultMap="MaterialVOResult">
-        SELECT
-        m.id,
-        m.CODE,
-        m.NAME,
-        m.min_package_number,
-        m.material_type_id,
-        mt.code as material_type,
-        m.unit,
-        m.error_proofing_method,
-        m.has_pallet,
-        m.bind_pallet,
-        m.package_weight,
-        m.pallet_weight,
-        m.total_weight,
-        m.min_package_net_weight,
-        m.less_deviation_ratio,
-        m.more_deviation_ratio,
-        m.create_by,
-        m.update_by,
-        m.create_time,
-        m.update_time,
-        m.STATUS,
-        m.remark
-        FROM
-        md_material m
-        LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
+        SELECT m.id,
+               m.CODE,
+               m.NAME,
+               m.min_package_number,
+               m.material_type_id,
+               mt.code as material_type,
+               m.unit,
+               m.error_proofing_method,
+               m.has_pallet,
+               m.bind_pallet,
+               m.package_weight,
+               m.pallet_weight,
+               m.total_weight,
+               m.min_package_net_weight,
+               m.less_deviation_ratio,
+               m.more_deviation_ratio,
+               m.transfer_weight_ratio,
+               m.create_by,
+               m.update_by,
+               m.create_time,
+               m.update_time,
+               m.STATUS,
+               m.remark
+        FROM md_material m
+                 LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
         where m.id = #{id}
     </select>
 
     <select id="selectMaterialVOByMaterialCode" parameterType="String" resultMap="MaterialVOResult">
-        SELECT
-            m.id,
-            m.CODE,
-            m.NAME,
-            m.min_package_number,
-            m.material_type_id,
-            mt.code as material_type,
-            m.unit,
-            m.error_proofing_method,
-            m.has_pallet,
-            m.bind_pallet,
-            m.package_weight,
-            m.pallet_weight,
-            m.total_weight,
-            m.min_package_net_weight,
-            m.less_deviation_ratio,
-            m.more_deviation_ratio,
-            m.create_by,
-            m.update_by,
-            m.create_time,
-            m.update_time,
-            m.STATUS,
-            m.remark
-        FROM
-            md_material m
-                LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
+        SELECT m.id,
+               m.CODE,
+               m.NAME,
+               m.min_package_number,
+               m.material_type_id,
+               mt.code as material_type,
+               m.unit,
+               m.error_proofing_method,
+               m.has_pallet,
+               m.bind_pallet,
+               m.package_weight,
+               m.pallet_weight,
+               m.total_weight,
+               m.min_package_net_weight,
+               m.less_deviation_ratio,
+               m.more_deviation_ratio,
+               m.transfer_weight_ratio,
+               m.create_by,
+               m.update_by,
+               m.create_time,
+               m.update_time,
+               m.STATUS,
+               m.remark
+        FROM md_material m
+                 LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
         where m.CODE = #{materialCode}
     </select>
 

@@ -64,6 +64,11 @@ public class R<T> implements Serializable
         return restResult(null, code, msg);
     }
 
+    public static <T> R<T> fail(T data, int code, String msg)
+    {
+        return restResult(data, code, msg);
+    }
+
     private static <T> R<T> restResult(T data, int code, String msg)
     {
         R<T> apiResult = new R<>();

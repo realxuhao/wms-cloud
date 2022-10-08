@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.storagein.mapper.MaterialInMapper">
+
+    <insert id="insertMaterialIn" parameterType="MaterialInDTO" useGeneratedKeys="true" keyProperty="id">
+        insert into si_material_in
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ssccNumber != null and ssccNumber != ''">sscc_number,</if>
+            <if test="batchNb != null and batchNb != ''">batch_nb,</if>
+            <if test="materialNb != null and materialNb !=''">material_nb,</if>
+            <if test="checkType != null">check_type,</if>
+
+            <if test="checkQuantity != null">check_quantity,</if>
+            <if test="minStandard != null">min_standard,</if>
+            <if test="maxStandard != null">max_standard,</if>
+            <if test="actualQuantity != null">actual_quantity,</if>
+            <if test="actualResult != null">actual_result,</if>
+            <if test="operateUser != null and materialNb !=''">operate_user,</if>
+            <if test="operateTime != null">opearte_time,</if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ssccNumber != null and ssccNumber != ''">#{ssccNumber},</if>
+            <if test="batchNb != null and batchNb != ''">#{batchNb},</if>
+            <if test="materialNb != null and materialNb !=''">#{materialNb},</if>
+            <if test="checkType != null">#{checkType},</if>
+            <if test="checkQuantity != null">#{checkQuantity},</if>
+            <if test="minStandard != null">#{minStandard},</if>
+            <if test="maxStandard != null">#{maxStandard},</if>
+            <if test="actualQuantity != null">#{actualQuantity},</if>
+            <if test="actualResult != null">#{actualResult},</if>
+            <if test="operateUser != null and materialNb !=''">#{operateUser},</if>
+            <if test="operateTime != null">#{operateTime},</if>
+        </trim>
+    </insert>
+
+</mapper>

@@ -14,6 +14,7 @@
         <module>wms-job</module>
         <module>wms-file</module>
         <module>master-data</module>
+        <module>storage-in</module>
     </modules>
 
     <artifactId>wms-modules</artifactId>

@@ -15,7 +15,7 @@ public class MaterialVO {
     @ApiModelProperty(value = "物料id")
     private Long id;
 
-    /** 物料类型代码 */
+    /** 物料代码 */
     @ApiModelProperty(value = "物料代码")
     private String code;
 
@@ -45,23 +45,23 @@ public class MaterialVO {
 
     /** 是否带托盘 */
     @ApiModelProperty(value = "是否带托盘")
-    private Long hasPallet;
+    private Integer hasPallet;
 
     /** 是否绑定托盘 */
     @ApiModelProperty(value = "是否绑定托盘")
-    private Long bindPallet;
+    private Integer bindPallet;
 
     /** 包装重量 */
     @ApiModelProperty(value = "包装重量")
-    private Long packageWeight;
+    private BigDecimal packageWeight;
 
     /** 托盘重量 */
     @ApiModelProperty(value = "托盘重量")
-    private Long palletWeight;
+    private BigDecimal palletWeight;
 
     /** 来料总重量（每托） */
     @ApiModelProperty(value = "来料总重量")
-    private Long totalWeight;
+    private BigDecimal totalWeight;
 
     /** 最小包装重量(净重) */
     @ApiModelProperty(value = "最小包装重量(净重)")
@@ -74,6 +74,10 @@ public class MaterialVO {
     /** 允许正偏差比例【绝对值】 */
     @ApiModelProperty(value = "允许正偏差比例【绝对值】")
     private BigDecimal moreDeviationRatio;
+
+    /**转化重量参数 */
+    @ApiModelProperty(value = "转化重量参数")
+    private BigDecimal transferWeightRatio;
 
     /** 状态（1：启用，0：停用） */
     @ApiModelProperty(value = "状态 1：启用，0：停用")

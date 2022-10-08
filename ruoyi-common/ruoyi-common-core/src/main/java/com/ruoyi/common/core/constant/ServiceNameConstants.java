@@ -21,4 +21,14 @@ public class ServiceNameConstants
      * 文件服务的serviceid
      */
     public static final String FILE_SERVICE = "wms-file";
+
+    /**
+     * 主数据服务的serviceid
+     */
+    public static final String MASTER_DATA_SERVICE = "master-data";
+
+    /**
+     * 入库服务的serviceid
+     */
+    public static final String STORAGE_IN = "storage-in";
 }

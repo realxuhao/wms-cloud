@@ -125,11 +125,11 @@ public class MaterialController extends BaseController
      * 获取物料信息详细信息
      */
     //@RequiresPermissions("masterdata:material:query")
-    @GetMapping(value = "/{materialCode}")
+    @GetMapping(value = "/getByMaterialCode/{materialCode}")
     @ApiOperation("根据物料编码获取获取物料详情")
-    public AjaxResult getInfoByMaterialCode(@PathVariable("materialCode") String materialCode)
+    public R<MaterialVO> getInfoByMaterialCode(@PathVariable("materialCode") String materialCode)
     {
-        return AjaxResult.success(materialService.selectMaterialVOBymaterialCode(materialCode));
+        return R.ok(materialService.selectMaterialVOBymaterialCode(materialCode));
     }
 
     /**
