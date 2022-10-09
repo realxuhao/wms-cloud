@@ -32,7 +32,7 @@ export const asyncRouterMap = [
             path: '/master-data/material',
             name: 'material',
             component: () => import('@/views/masterData/material/Index'),
-            meta: { title: '物料管理', permission: [] },
+            meta: { title: '物料主数据管理', permission: [] },
             hideChildrenInMenu: true
           },
           {
@@ -60,7 +60,7 @@ export const asyncRouterMap = [
             path: '/master-data/pallet',
             name: 'pallet',
             component: () => import('@/views/masterData/pallet/Index'),
-            meta: { title: '托盘管理', permission: [] },
+            meta: { title: '托盘类型管理', permission: [] },
             hideChildrenInMenu: true
           },
           {
