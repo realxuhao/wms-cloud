@@ -96,16 +96,16 @@
       @on-ok="loadTableList"
     ></UpdateDrawer>
 
-    <DispatchRule
+    <DispatchBin
       v-model="dispatchRuleVisible"
       :id="currentUpdateId"
-    ></DispatchRule>
+    ></DispatchBin>
   </div>
 </template>
 
 <script>
 import UpdateDrawer from './UpdateDrawer'
-import DispatchRule from './DispatchRule'
+import DispatchBin from './DispatchBin'
 
 const columns = [
   {
@@ -120,17 +120,13 @@ const columns = [
     title: '物料代码',
     dataIndex: 'code',
     key: 'code',
-    width: 200,
-    fixed: 'left'
-
+    width: 200
   },
   {
     title: '物料类型',
     dataIndex: 'materialType',
     key: 'materialType',
-    width: 200,
-    fixed: 'left'
-
+    width: 200
   },
   {
     title: '包装重量',
@@ -224,7 +220,7 @@ export default {
   name: 'Material',
   components: {
     UpdateDrawer,
-    DispatchRule
+    DispatchBin
   },
   data () {
     return {

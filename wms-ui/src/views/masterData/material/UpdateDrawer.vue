@@ -37,7 +37,7 @@
           ]"
           placeholder="物料类型">
           <a-select-option :value="item.id" v-for="item in materialTypeList" :key="item.id">
-            {{ item.description }}
+            {{ item.code }}
           </a-select-option>
         </a-select>
       </a-form-item>

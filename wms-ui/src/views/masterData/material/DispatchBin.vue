@@ -179,7 +179,7 @@ export default {
           await this.$store.dispatch('material/addDiapatchBin', { ...values, materialId: this.id })
 
           this.formVisible = false
-
+          this.loadDispatchBinList()
           this.$message.success('添加成功')
         } catch (error) {
           this.$message.error(error)

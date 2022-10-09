@@ -77,13 +77,13 @@ const columns = [
     width: 200
   },
   {
-    title: '承重',
+    title: '承重（kg）',
     key: 'bearWeight',
     dataIndex: 'bearWeight',
     width: 200
   },
   {
-    title: '宽',
+    title: '宽度（m）',
     key: 'width',
     dataIndex: 'width',
     width: 200
