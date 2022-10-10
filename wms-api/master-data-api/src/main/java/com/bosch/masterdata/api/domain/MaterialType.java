@@ -1,5 +1,9 @@
 package com.bosch.masterdata.api.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.annotation.Excel;
@@ -11,11 +15,14 @@ import com.ruoyi.common.core.web.domain.BaseEntity;
  * @author xuhao
  * @date 2022-09-22
  */
+@Data
+@TableName("md_material_type")
 public class MaterialType extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
 
     /** id */
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     /** 物料类型代码 */
@@ -34,65 +41,5 @@ public class MaterialType extends BaseEntity
     @Excel(name = "状态", readConverterExp = "1=：启用，0：停用")
     private Long status;
 
-    public void setId(Long id) 
-    {
-        this.id = id;
-    }
 
-    public Long getId() 
-    {
-        return id;
-    }
-    public void setCode(String code) 
-    {
-        this.code = code;
-    }
-
-    public String getCode() 
-    {
-        return code;
-    }
-    public void setDescription(String description) 
-    {
-        this.description = description;
-    }
-
-    public String getDescription() 
-    {
-        return description;
-    }
-    public void setDepartmentId(Long departmentId) 
-    {
-        this.departmentId = departmentId;
-    }
-
-    public Long getDepartmentId() 
-    {
-        return departmentId;
-    }
-    public void setStatus(Long status) 
-    {
-        this.status = status;
-    }
-
-    public Long getStatus() 
-    {
-        return status;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("code", getCode())
-            .append("description", getDescription())
-            .append("departmentId", getDepartmentId())
-            .append("createBy", getCreateBy())
-            .append("updateBy", getUpdateBy())
-            .append("createTime", getCreateTime())
-            .append("updateTime", getUpdateTime())
-            .append("status", getStatus())
-            .append("remark", getRemark())
-            .toString();
-    }
 }

@@ -1,6 +1,9 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.api.domain.MaterialType;
 import com.bosch.masterdata.api.domain.dto.MaterialTypeDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialTypeVO;
@@ -11,7 +14,7 @@ import com.bosch.masterdata.api.domain.vo.MaterialTypeVO;
  * @author xuhao
  * @date 2022-09-22
  */
-public interface IMaterialTypeService 
+public interface IMaterialTypeService extends IService<MaterialType>
 {
     /**
      * 查询物料类型

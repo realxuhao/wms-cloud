@@ -1,7 +1,14 @@
 package com.bosch.masterdata.service;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.masterdata.api.domain.Material;
+import com.bosch.masterdata.api.domain.MaterialType;
 import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 
@@ -11,7 +18,7 @@ import com.bosch.masterdata.api.domain.vo.MaterialVO;
  * @author xuhao
  * @date 2022-09-22
  */
-public interface IMaterialService 
+public interface IMaterialService extends IService<Material>
 {
     /**
      * 查询物料信息
@@ -28,7 +35,7 @@ public interface IMaterialService
      * @param material 物料信息
      * @return 物料信息集合
      */
-    public List<Material> selectMaterialList(Material material);
+    public List<Material> validMaterialList(Material material);
 
     /**
      * 查询物料信息列表
@@ -92,5 +99,19 @@ public interface IMaterialService
      * @param materials 物料信息
      * @return
      */
-    public boolean selectMaterialList(List<MaterialDTO> materials);
+    public boolean validMaterialList(List<MaterialDTO> materials);
+
+    /**
+     * 获取typemap
+     * @param codes
+     * @return
+     */
+    public Map<String,Long> getTypeMap(List<String> codes);
+
+    /**
+     * list set value
+     * @param dtos
+     * @return
+     */
+    public List<MaterialDTO> setMaterialList(List<MaterialDTO> dtos);
 }

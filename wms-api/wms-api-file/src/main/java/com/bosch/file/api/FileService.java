@@ -1,5 +1,6 @@
 package com.bosch.file.api;
 
+import com.bosch.file.api.factory.FileFallbackFactory;
 import com.ruoyi.common.core.constant.ServiceNameConstants;
 import com.ruoyi.common.core.domain.R;
 import org.springframework.cloud.openfeign.FeignClient;

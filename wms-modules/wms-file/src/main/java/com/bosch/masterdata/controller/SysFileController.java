@@ -61,7 +61,7 @@ public class SysFileController
     @PostMapping(value = "/read")
     public <T> R<List<T>> read(@RequestPart(value = "file") MultipartFile file,@RequestParam(value = "className") String className)throws Exception{
 
-        Class<?> TClass = Class.forName("com.com.file.api.domain.dto."+className);
+        Class<?> TClass = Class.forName("com.bosch.masterdata.api.domain.dto."+className);
         List<T> read = EasyExcelUtil.read(file.getInputStream(), TClass);
         return R.ok(read);
     }

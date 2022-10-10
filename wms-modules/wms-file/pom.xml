@@ -74,6 +74,12 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>master-data-api</artifactId>
+            <version>3.6.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>

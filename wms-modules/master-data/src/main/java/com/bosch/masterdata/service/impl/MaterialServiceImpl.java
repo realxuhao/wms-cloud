@@ -1,17 +1,34 @@
 package com.bosch.masterdata.service.impl;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.enums.SqlMethod;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.Constants;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.domain.MaterialType;
 import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
+import com.bosch.masterdata.mapper.MaterialTypeMapper;
+import com.bosch.masterdata.service.IMaterialTypeService;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import org.apache.ibatis.binding.MapperMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.MaterialMapper;
 import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.service.IMaterialService;
+
+import javax.annotation.Resource;
 
 /**
  * 物料信息Service业务层处理
@@ -20,10 +37,14 @@ import com.bosch.masterdata.service.IMaterialService;
  * @date 2022-09-22
  */
 @Service
-public class MaterialServiceImpl implements IMaterialService {
-    @Autowired
+public  class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> implements IMaterialService {
+    @Resource
     private MaterialMapper materialMapper;
 
+    @Resource
+    private MaterialTypeMapper materialTypeMapper;
+    @Autowired
+    private IMaterialTypeService materialTypeService;
     /**
      * 查询物料信息
      *
@@ -47,7 +68,7 @@ public class MaterialServiceImpl implements IMaterialService {
      * @return 物料信息
      */
     @Override
-    public List<Material> selectMaterialList(Material material) {
+    public List<Material> validMaterialList(Material material) {
         return materialMapper.selectMaterialList(material);
     }
 
@@ -130,8 +151,34 @@ public class MaterialServiceImpl implements IMaterialService {
     }
 
     @Override
-    public boolean selectMaterialList(List<MaterialDTO> materials) {
+    public boolean validMaterialList(List<MaterialDTO> materials) {
         return  materialMapper.validateRecord(materials)>0;
+    }
+
+    @Override
+    public Map<String,Long> getTypeMap(List<String> codes) {
+        Map<String,Long> collect=new HashMap<>();
+        LambdaQueryWrapper<MaterialType> queryWrapper=new LambdaQueryWrapper<MaterialType>();
+        queryWrapper.in(MaterialType::getCode,codes);
+        List<MaterialType> materialTypes = materialTypeMapper.selectList(queryWrapper);
+        if (CollectionUtils.isNotEmpty(materialTypes)){
+            collect = materialTypes.stream().collect(Collectors.toMap(MaterialType::getCode,MaterialType::getId));
+        }
+        return  collect;
+    }
+
+    @Override
+    public List<MaterialDTO> setMaterialList(List<MaterialDTO> materialDTOList) {
+        //获取物料类型集合
+        List<String> types =
+                materialDTOList.stream().map(MaterialDTO::getMaterialType).collect(Collectors.toList());
+        //获取物料类型map
+        Map<String,Long> typeMap = getTypeMap(types);
+        //绑定物料类型id
+        materialDTOList.forEach(x->{
+            x.setMaterialTypeId(typeMap.get(x.getMaterialType()));
+        });
+        return materialDTOList;
     }
 
 

@@ -2,22 +2,27 @@ package com.bosch.masterdata.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.enumeration.ClassType;
-import com.bosch.system.api.RemoteFileService;
+import com.bosch.masterdata.mapper.MaterialMapper;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
@@ -46,7 +51,8 @@ public class MaterialController extends BaseController
     @Autowired
     private FileService fileService;
 
-
+    @Autowired
+    private MaterialMapper materialMapper;
     /**
      * 导出物料信息列表
      */
@@ -55,7 +61,7 @@ public class MaterialController extends BaseController
     @PostMapping("/export")
     public void export(HttpServletResponse response, Material material)
     {
-        List<Material> list = materialService.selectMaterialList(material);
+        List<Material> list = materialService.validMaterialList(material);
         ExcelUtil<Material> util = new ExcelUtil<Material>(Material.class);
         util.exportExcel(response, list, "物料信息数据");
     }
@@ -145,15 +151,59 @@ public class MaterialController extends BaseController
             Object data = result.getData();
             List<MaterialDTO> materialDTOList = JSON.parseArray(JSON.toJSONString(data), MaterialDTO.class);
             if (CollectionUtils.isNotEmpty(materialDTOList)){
-                materialService.selectMaterialList(materialDTOList);
+                boolean valid = materialService.validMaterialList(materialDTOList);
+                if (valid){
+                    return R.fail(400,"存在重复数据");
+                }else {
+                    //物料类型id
+                    List<MaterialDTO> materialDTOS = materialService.setMaterialList(materialDTOList);
+                    List<Material> materials = BeanConverUtil.converList(materialDTOS, Material.class);
+                    materialService.saveBatch(materials);
+                }
             }
             return R.ok(materialDTOList);
         }
         else {
-            return result;
+            return R.fail("文件服务调用失败");
         }
+    }
+    /**
+     * 批量上传物料明细
+     */
+    @ApiOperation("批量更新物料明细")
+    @PostMapping(value = "/saveBatch", headers = "content-type=multipart/form-data")
+    @Transactional(rollbackFor = Exception.class)
+    public R saveBatchMaterial(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
 
-
+        try {
+            //解析文件服务
+            R result = fileService.read(file,ClassType.MATERIALDTO.getDesc());
+            if (result.isSuccess()){
+                Object data = result.getData();
+                List<MaterialDTO> materialDTOList = JSON.parseArray(JSON.toJSONString(data), MaterialDTO.class);
+                if (CollectionUtils.isNotEmpty(materialDTOList)){
+                    //物料类型id
+                    List<MaterialDTO> materialDTOS = materialService.setMaterialList(materialDTOList);
+                    //转换物料DO
+                    List<Material> materials = BeanConverUtil.converList(materialDTOS, Material.class);
+                    materials.forEach(r->{
+                        LambdaUpdateWrapper<Material> wrapper=new LambdaUpdateWrapper<Material>();
+                        wrapper.eq(Material::getCode,r.getCode());
+                        boolean update = materialService.update(r, wrapper);
+                        if (!update){
+                            materialService.save(r);
+                        }
+                    });
+                }
+                return R.ok("导入成功");
+            }
+            else {
+                return R.fail("文件服务调用失败");
+            }
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            return R.fail("文件服务调用失败");
+        }
 
     }
 }

@@ -20,6 +20,12 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-common-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-annotation</artifactId>
+            <version>3.4.2</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 </project>

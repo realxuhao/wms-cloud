@@ -2,8 +2,11 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.api.domain.dto.MaterialTypeDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialTypeVO;
+import com.bosch.masterdata.mapper.MaterialMapper;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +22,7 @@ import com.bosch.masterdata.service.IMaterialTypeService;
  * @date 2022-09-22
  */
 @Service
-public class MaterialTypeServiceImpl implements IMaterialTypeService
+public class MaterialTypeServiceImpl extends ServiceImpl<MaterialTypeMapper, MaterialType> implements IMaterialTypeService
 {
     @Autowired
     private MaterialTypeMapper materialTypeMapper;

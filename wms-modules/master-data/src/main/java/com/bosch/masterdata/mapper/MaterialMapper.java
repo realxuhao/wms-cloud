@@ -1,9 +1,13 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
 /**
  * 物料信息Mapper接口
@@ -11,8 +15,12 @@ import com.bosch.masterdata.api.domain.vo.MaterialVO;
  * @author xuhao
  * @date 2022-09-22
  */
-public interface MaterialMapper 
+@Mapper
+@Repository("materialMapper")
+public interface MaterialMapper extends BaseMapper<Material>
 {
+
+
     /**
      * 查询物料信息
      * 
@@ -85,4 +93,6 @@ public interface MaterialMapper
      * @return
      */
     public Integer validateRecord(List<MaterialDTO> list);
+
+
 }
