@@ -1,25 +1,32 @@
 package com.bosch.masterdata.controller;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.nacos.common.utils.CollectionUtils;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.Area;
+import com.bosch.masterdata.api.domain.SupplierInfo;
 import com.bosch.masterdata.api.domain.dto.AreaDTO;
+import com.bosch.masterdata.api.domain.dto.SupplierInfoDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
+import com.bosch.masterdata.enumeration.ClassType;
+import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.annotation.RequiresPermissions;
@@ -27,6 +34,7 @@ import com.bosch.masterdata.service.IAreaService;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 区域Controller
@@ -42,17 +50,8 @@ public class AreaController extends BaseController
     @Autowired
     private IAreaService areaService;
 
-    /**
-     * 查询区域列表
-     */
-//    @RequiresPermissions("masterdata:area:list")
-//    @GetMapping("/list")
-//    public TableDataInfo list(Area area)
-//    {
-//        startPage();
-//        List<Area> list = areaService.selectAreaList(area);
-//        return getDataTable(list);
-//    }
+    @Autowired
+    private FileService fileService;
 
     /**
      * 导出区域列表
@@ -76,28 +75,6 @@ public class AreaController extends BaseController
     {
         return AjaxResult.success(areaService.selectAreaById(id));
     }
-
-    /**
-     * 新增区域
-     */
-//    @RequiresPermissions("masterdata:area:add")
-//    @Log(title = "区域", businessType = BusinessType.INSERT)
-//    @PostMapping
-//    public AjaxResult add(@RequestBody Area area)
-//    {
-//        return toAjax(areaService.insertArea(area));
-//    }
-
-    /**
-     * 修改区域
-     */
-//    @RequiresPermissions("masterdata:area:edit")
-//    @Log(title = "区域", businessType = BusinessType.UPDATE)
-//    @PutMapping
-//    public AjaxResult edit(@RequestBody Area area)
-//    {
-//        return toAjax(areaService.updateArea(area));
-//    }
 
     /**
      * 删除区域
@@ -147,5 +124,81 @@ public class AreaController extends BaseController
     {
         areaDTO.setId(id);
         return toAjax(areaService.updateArea(areaDTO));
+    }
+    /**
+     * 批量上传存储区
+     */
+    @ApiOperation("批量上传存储区")
+    @PostMapping(value = "/import" , headers = "content-type=multipart/form-data")
+    @Transactional(rollbackFor = Exception.class)
+    public R importExcel(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
+        try {
+            //解析文件服务
+            R result = fileService.read(file, ClassType.AREADTO.getDesc());
+            if (result.isSuccess()) {
+                Object data = result.getData();
+                List<AreaDTO> dtos = JSON.parseArray(JSON.toJSONString(data), AreaDTO.class);
+                if (CollectionUtils.isNotEmpty(dtos)) {
+                    List<String> collect = dtos.stream().map(AreaDTO::getCode).collect(Collectors.toList());
+
+                    boolean valid = areaService.validList(collect);
+                    if (valid) {
+                        return R.fail(400, "存在重复数据");
+                    } else {
+                        //dto赋值
+                        List<AreaDTO> areaDTOS = areaService.setValue(dtos);
+                        //添加
+                        List<Area> dos = BeanConverUtil.converList(areaDTOS, Area.class);
+                        areaService.saveBatch(dos);
+                    }
+                }
+                return R.ok("解析成功");
+            } else {
+                return R.fail("文件服务调用失败");
+            }
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            return R.fail(e.getMessage());
+        }
+
+    }
+
+    /**
+     * 批量更新存储区
+     */
+    @ApiOperation("批量更新存储区")
+    @PostMapping(value = "/saveBatch" , headers = "content-type=multipart/form-data")
+    @Transactional(rollbackFor = Exception.class)
+    public R saveBatch(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
+
+        try {
+            //解析文件服务
+            R result = fileService.read(file, ClassType.AREADTO.getDesc());
+            if (result.isSuccess()) {
+                Object data = result.getData();
+                List<AreaDTO> dtos = JSON.parseArray(JSON.toJSONString(data), AreaDTO.class);
+                if (CollectionUtils.isNotEmpty(dtos)) {
+                    //dto赋值
+                    List<AreaDTO> areaDTOS = areaService.setValue(dtos);
+                    //转换DO
+                    List<Area> dos = BeanConverUtil.converList(areaDTOS, Area.class);
+                    dos.forEach(r->{
+                        LambdaUpdateWrapper<Area> wrapper=new LambdaUpdateWrapper<Area>();
+                        wrapper.eq(Area::getCode,r.getCode());
+                        boolean update = areaService.update(r, wrapper);
+                        if (!update){
+                            r.setCreateBy(SecurityUtils.getUsername());
+                            r.setCreateTime(DateUtils.getNowDate());
+                            areaService.save(r);
+                        }
+                    });
+                }
+            }
+            return R.ok("导入成功");
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            return R.fail(e.getMessage());
+        }
+
     }
 }

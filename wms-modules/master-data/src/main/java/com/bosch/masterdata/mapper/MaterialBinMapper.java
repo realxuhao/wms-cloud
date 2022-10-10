@@ -1,9 +1,14 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.api.domain.MaterialBin;
 import com.bosch.masterdata.api.domain.dto.MaterialBinDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
 /**
  * 物料库位分配策略Mapper接口
@@ -11,7 +16,9 @@ import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
  * @author xuhao
  * @date 2022-09-22
  */
-public interface MaterialBinMapper 
+@Mapper
+@Repository("materialBinMapper")
+public interface MaterialBinMapper extends BaseMapper<MaterialBin>
 {
     /**
      * 查询物料库位分配策略

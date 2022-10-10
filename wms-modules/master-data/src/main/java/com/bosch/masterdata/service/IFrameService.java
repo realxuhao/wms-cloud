@@ -1,7 +1,12 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
+import java.util.Map;
 
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.masterdata.api.domain.Area;
+import com.bosch.masterdata.api.domain.Frame;
+import com.bosch.masterdata.api.domain.dto.AreaDTO;
 import com.bosch.masterdata.api.domain.dto.FrameDTO;
 import com.bosch.masterdata.api.domain.vo.FrameVO;
 
@@ -11,7 +16,7 @@ import com.bosch.masterdata.api.domain.vo.FrameVO;
  * @author xuhao
  * @date 2022-09-26
  */
-public interface IFrameService 
+public interface IFrameService extends IService<Frame>
 {
     /**
      * 查询跨
@@ -60,4 +65,20 @@ public interface IFrameService
      * @return 结果
      */
     public int deleteFrameById(Long id);
+
+    public Map<String,Long> getTypeMap(List<String> codes);
+
+    /**
+     * 重复校验
+     * @param codes
+     * @return
+     */
+    public boolean validList(List<String> codes);
+
+    /**
+     * 赋值
+     * @param dtos
+     * @return
+     */
+    public List<FrameDTO> setValue(List<FrameDTO> dtos);
 }

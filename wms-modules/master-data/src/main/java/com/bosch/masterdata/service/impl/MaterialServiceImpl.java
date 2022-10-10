@@ -19,6 +19,7 @@ import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.mapper.MaterialTypeMapper;
 import com.bosch.masterdata.service.IMaterialTypeService;
 import com.bosch.masterdata.utils.BeanConverUtil;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.apache.ibatis.binding.MapperMethod;
@@ -176,6 +177,9 @@ public  class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> 
         Map<String,Long> typeMap = getTypeMap(types);
         //绑定物料类型id
         materialDTOList.forEach(x->{
+            if (typeMap.get(x.getMaterialType())==null){
+                throw new ServiceException("包含不存在的物料类型");
+            }
             x.setMaterialTypeId(typeMap.get(x.getMaterialType()));
         });
         return materialDTOList;

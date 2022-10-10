@@ -1,9 +1,14 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bosch.masterdata.api.domain.Area;
 import com.bosch.masterdata.api.domain.Bin;
 import com.bosch.masterdata.api.domain.dto.BinDTO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
 /**
  * 库位Mapper接口
@@ -11,7 +16,9 @@ import com.bosch.masterdata.api.domain.vo.BinVO;
  * @author xuhao
  * @date 2022-09-26
  */
-public interface BinMapper 
+@Mapper
+@Repository("binMapper")
+public interface BinMapper extends BaseMapper<Bin>
 {
     /**
      * 查询库位

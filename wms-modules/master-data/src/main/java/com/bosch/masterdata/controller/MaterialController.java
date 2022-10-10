@@ -18,6 +18,8 @@ import com.bosch.masterdata.mapper.MaterialMapper;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,8 +53,6 @@ public class MaterialController extends BaseController
     @Autowired
     private FileService fileService;
 
-    @Autowired
-    private MaterialMapper materialMapper;
     /**
      * 导出物料信息列表
      */
@@ -143,7 +143,7 @@ public class MaterialController extends BaseController
      */
     @ApiOperation("批量上传物料明细")
     @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
-    public R importExcelSubject(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
+    public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
 
         //解析文件服务
         R result = fileService.read(file,ClassType.MATERIALDTO.getDesc());
@@ -191,6 +191,8 @@ public class MaterialController extends BaseController
                         wrapper.eq(Material::getCode,r.getCode());
                         boolean update = materialService.update(r, wrapper);
                         if (!update){
+                            r.setCreateBy(SecurityUtils.getUsername());
+                            r.setCreateTime(DateUtils.getNowDate());
                             materialService.save(r);
                         }
                     });
@@ -202,7 +204,7 @@ public class MaterialController extends BaseController
             }
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
-            return R.fail("文件服务调用失败");
+            return R.fail(e.getMessage());
         }
 
     }

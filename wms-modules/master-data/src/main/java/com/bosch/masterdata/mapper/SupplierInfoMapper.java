@@ -1,7 +1,12 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bosch.masterdata.api.domain.MaterialBin;
 import com.bosch.masterdata.api.domain.SupplierInfo;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
 /**
  * 供应商Mapper接口
@@ -9,7 +14,9 @@ import com.bosch.masterdata.api.domain.SupplierInfo;
  * @author xuhao
  * @date 2022-09-22
  */
-public interface SupplierInfoMapper 
+@Mapper
+@Repository("supplierInfoMapper")
+public interface SupplierInfoMapper extends BaseMapper<SupplierInfo>
 {
     /**
      * 查询供应商

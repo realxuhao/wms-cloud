@@ -1,7 +1,12 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
+import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.masterdata.api.domain.Area;
 import com.bosch.masterdata.api.domain.Bin;
+import com.bosch.masterdata.api.domain.dto.AreaDTO;
 import com.bosch.masterdata.api.domain.dto.BinDTO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 
@@ -11,7 +16,7 @@ import com.bosch.masterdata.api.domain.vo.BinVO;
  * @author xuhao
  * @date 2022-09-26
  */
-public interface IBinService 
+public interface IBinService extends IService<Bin>
 {
     /**
      * 查询库位
@@ -63,4 +68,20 @@ public interface IBinService
      * @return 结果
      */
     public int deleteBinById(Long id);
+
+    public Map<String,Long> getTypeMap(List<String> codes);
+
+    /**
+     * 重复校验
+     * @param codes
+     * @return
+     */
+    public boolean validList(List<String> codes);
+
+    /**
+     * 赋值
+     * @param dtos
+     * @return
+     */
+    public List<BinDTO> setValue(List<BinDTO> dtos);
 }
