@@ -2,6 +2,9 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.domain.Area;
+import com.bosch.masterdata.mapper.AreaMapper;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +20,7 @@ import com.bosch.masterdata.service.IWareService;
  * @date 2022-09-26
  */
 @Service
-public class WareServiceImpl implements IWareService {
+public class WareServiceImpl extends ServiceImpl<WareMapper, Ware>  implements IWareService {
     @Autowired
     private WareMapper wareMapper;
 

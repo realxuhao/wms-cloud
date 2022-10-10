@@ -1,10 +1,24 @@
 package com.bosch.masterdata.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.domain.MaterialType;
+import com.bosch.masterdata.api.domain.SupplierInfo;
+import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.dto.AreaDTO;
+import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
+import com.bosch.masterdata.mapper.SupplierInfoMapper;
+import com.bosch.masterdata.mapper.WareMapper;
 import com.bosch.masterdata.utils.BeanConverUtil;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +34,13 @@ import com.bosch.masterdata.service.IAreaService;
  * @date 2022-09-26
  */
 @Service
-public class AreaServiceImpl implements IAreaService 
+public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements IAreaService
 {
     @Autowired
     private AreaMapper areaMapper;
 
+    @Autowired
+    private WareMapper wareMapper;
     /**
      * 查询区域
      * 
@@ -120,5 +136,38 @@ public class AreaServiceImpl implements IAreaService
     public int deleteAreaById(Integer id)
     {
         return areaMapper.deleteAreaById(id);
+    }
+
+    @Override
+    public Map<String,Long> getTypeMap(List<String> codes) {
+        Map<String,Long> collect=new HashMap<>();
+        LambdaQueryWrapper<Ware> queryWrapper=new LambdaQueryWrapper<Ware>();
+        queryWrapper.in(Ware::getCode,codes);
+        List<Ware> types = wareMapper.selectList(queryWrapper);
+        if (CollectionUtils.isNotEmpty(types)){
+            collect = types.stream().collect(Collectors.toMap(Ware::getCode,Ware::getId));
+        }
+        return  collect;
+    }
+
+    public boolean validList(List<String> codes) {
+        QueryWrapper<Area> wrapper=new QueryWrapper<>();
+        wrapper.in("code",codes);
+        return  areaMapper.selectCount(wrapper)>0;
+    }
+    public List<AreaDTO> setValue(List<AreaDTO> dtos) {
+        //获取集合
+        List<String> types =
+                dtos.stream().map(AreaDTO::getWareCode).collect(Collectors.toList());
+        //获取map
+        Map<String,Long> typeMap = getTypeMap(types);
+        //绑定id
+        dtos.forEach(x->{
+            if (typeMap.get(x.getWareCode())==null){
+                throw new ServiceException("包含不存在的仓库Code");
+            }
+            x.setWareId(typeMap.get(x.getWareCode()));
+        });
+        return dtos;
     }
 }

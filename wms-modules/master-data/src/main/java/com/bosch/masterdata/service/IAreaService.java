@@ -1,7 +1,11 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
+import java.util.Map;
+
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.masterdata.api.domain.Area;
+import com.bosch.masterdata.api.domain.SupplierInfo;
 import com.bosch.masterdata.api.domain.dto.AreaDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 
@@ -11,7 +15,7 @@ import com.bosch.masterdata.api.domain.vo.AreaVO;
  * @author xuhao
  * @date 2022-09-26
  */
-public interface IAreaService 
+public interface IAreaService extends IService<Area>
 {
     /**
      * 查询区域
@@ -63,6 +67,7 @@ public interface IAreaService
      */
     public int deleteAreaByIds(Integer[] ids);
 
+    public Map<String,Long> getTypeMap(List<String> codes);
     /**
      * 删除区域信息
      * 
@@ -70,4 +75,18 @@ public interface IAreaService
      * @return 结果
      */
     public int deleteAreaById(Integer id);
+
+    /**
+     * 重复校验
+     * @param codes
+     * @return
+     */
+    public boolean validList(List<String> codes);
+
+    /**
+     * 赋值
+     * @param dtos
+     * @return
+     */
+    public List<AreaDTO> setValue(List<AreaDTO> dtos);
 }

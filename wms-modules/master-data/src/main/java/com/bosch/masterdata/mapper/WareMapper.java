@@ -1,7 +1,12 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bosch.masterdata.api.domain.Area;
 import com.bosch.masterdata.api.domain.Ware;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
 /**
  * 仓库Mapper接口
@@ -9,7 +14,9 @@ import com.bosch.masterdata.api.domain.Ware;
  * @author xuhao
  * @date 2022-09-26
  */
-public interface WareMapper 
+@Mapper
+@Repository("wareMapper")
+public interface WareMapper extends BaseMapper<Ware>
 {
     /**
      * 查询仓库

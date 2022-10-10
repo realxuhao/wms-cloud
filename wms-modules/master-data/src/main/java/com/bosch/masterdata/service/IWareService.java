@@ -1,6 +1,9 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.masterdata.api.domain.Area;
 import com.bosch.masterdata.api.domain.Ware;
 
 /**
@@ -9,7 +12,7 @@ import com.bosch.masterdata.api.domain.Ware;
  * @author xuhao
  * @date 2022-09-26
  */
-public interface IWareService 
+public interface IWareService extends IService<Ware>
 {
     /**
      * 查询仓库

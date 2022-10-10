@@ -1,6 +1,9 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.api.domain.SupplierInfo;
 import com.bosch.masterdata.api.domain.dto.SupplierInfoDTO;
 
@@ -10,7 +13,7 @@ import com.bosch.masterdata.api.domain.dto.SupplierInfoDTO;
  * @author xuhao
  * @date 2022-09-22
  */
-public interface ISupplierInfoService 
+public interface ISupplierInfoService extends IService<SupplierInfo>
 {
     /**
      * 查询供应商
@@ -63,4 +66,11 @@ public interface ISupplierInfoService
      * @return 结果
      */
     public int deleteSupplierInfoById(Long id);
+
+    /**
+     * 判断是否存在重复数据
+     * @param codes
+     * @return
+     */
+    public boolean validList(List<String> codes);
 }

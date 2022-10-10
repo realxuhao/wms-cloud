@@ -1,10 +1,24 @@
 package com.bosch.masterdata.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.domain.Area;
+import com.bosch.masterdata.api.domain.Frame;
+import com.bosch.masterdata.api.domain.Ware;
+import com.bosch.masterdata.api.domain.dto.AreaDTO;
 import com.bosch.masterdata.api.domain.dto.BinDTO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
+import com.bosch.masterdata.mapper.AreaMapper;
+import com.bosch.masterdata.mapper.FrameMapper;
 import com.bosch.masterdata.utils.BeanConverUtil;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +34,13 @@ import com.bosch.masterdata.service.IBinService;
  * @date 2022-09-26
  */
 @Service
-public class BinServiceImpl implements IBinService 
+public class BinServiceImpl extends ServiceImpl<BinMapper, Bin> implements IBinService
 {
     @Autowired
     private BinMapper binMapper;
 
+    @Autowired
+    private FrameMapper frameMapper;
     /**
      * 查询库位
      * 
@@ -124,5 +140,38 @@ public class BinServiceImpl implements IBinService
     public int deleteBinById(Long id)
     {
         return binMapper.deleteBinById(id);
+    }
+
+    @Override
+    public Map<String,Long> getTypeMap(List<String> codes) {
+        Map<String,Long> collect=new HashMap<>();
+        LambdaQueryWrapper<Frame> queryWrapper=new LambdaQueryWrapper<Frame>();
+        queryWrapper.in(Frame::getCode,codes);
+        List<Frame> types = frameMapper.selectList(queryWrapper);
+        if (CollectionUtils.isNotEmpty(types)){
+            collect = types.stream().collect(Collectors.toMap(Frame::getCode,Frame::getId));
+        }
+        return  collect;
+    }
+
+    public boolean validList(List<String> codes) {
+        QueryWrapper<Bin> wrapper=new QueryWrapper<>();
+        wrapper.in("code",codes);
+        return  binMapper.selectCount(wrapper)>0;
+    }
+    public List<BinDTO> setValue(List<BinDTO> dtos) {
+        //获取集合
+        List<String> types =
+                dtos.stream().map(BinDTO::getFrameCode).collect(Collectors.toList());
+        //获取map
+        Map<String,Long> typeMap = getTypeMap(types);
+        //绑定id
+        dtos.forEach(x->{
+            if (typeMap.get(x.getFrameCode())==null){
+                throw new ServiceException("包含不存在的仓库Code");
+            }
+            x.setFrameId(typeMap.get(x.getFrameCode()));
+        });
+        return dtos;
     }
 }

@@ -1,9 +1,14 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.masterdata.api.domain.Frame;
+import com.bosch.masterdata.api.domain.SupplierInfo;
 import com.bosch.masterdata.api.domain.dto.FrameDTO;
 import com.bosch.masterdata.api.domain.vo.FrameVO;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
 /**
  * 跨Mapper接口
@@ -11,7 +16,9 @@ import com.bosch.masterdata.api.domain.vo.FrameVO;
  * @author xuhao
  * @date 2022-09-26
  */
-public interface FrameMapper 
+@Mapper
+@Repository("frameMapper")
+public interface FrameMapper extends BaseMapper<Frame>
 {
     /**
      * 查询跨

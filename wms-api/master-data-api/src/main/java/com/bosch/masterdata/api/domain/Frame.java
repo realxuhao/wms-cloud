@@ -1,6 +1,9 @@
 package com.bosch.masterdata.api.domain;
 
 import java.math.BigDecimal;
+
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.annotation.Excel;
@@ -12,6 +15,8 @@ import com.ruoyi.common.core.web.domain.BaseEntity;
  * @author xuhao
  * @date 2022-09-26
  */
+@Data
+@TableName("md_frame")
 public class Frame extends BaseEntity
 {
     private static final long serialVersionUID = 1L;
@@ -43,85 +48,4 @@ public class Frame extends BaseEntity
     @Excel(name = "状态", readConverterExp = "1=：启用，0：停用")
     private Long status;
 
-    public void setId(Long id) 
-    {
-        this.id = id;
-    }
-
-    public Long getId() 
-    {
-        return id;
-    }
-    public void setAreaId(Long areaId) 
-    {
-        this.areaId = areaId;
-    }
-
-    public Long getAreaId() 
-    {
-        return areaId;
-    }
-    public void setName(String name) 
-    {
-        this.name = name;
-    }
-
-    public String getName() 
-    {
-        return name;
-    }
-    public void setCode(String code) 
-    {
-        this.code = code;
-    }
-
-    public String getCode() 
-    {
-        return code;
-    }
-    public void setWidth(BigDecimal width) 
-    {
-        this.width = width;
-    }
-
-    public BigDecimal getWidth() 
-    {
-        return width;
-    }
-    public void setBearWeight(BigDecimal bearWeight) 
-    {
-        this.bearWeight = bearWeight;
-    }
-
-    public BigDecimal getBearWeight() 
-    {
-        return bearWeight;
-    }
-    public void setStatus(Long status) 
-    {
-        this.status = status;
-    }
-
-    public Long getStatus() 
-    {
-        return status;
-    }
-
-    @Override
-    public String toString() {
-        return new ToStringBuilder(this,ToStringStyle.MULTI_LINE_STYLE)
-            .append("id", getId())
-            .append("areaId", getAreaId())
-            .append("name", getName())
-            .append("code", getCode())
-            .append("width", getWidth())
-            .append("bearWeight", getBearWeight())
-            .append("createBy", getCreateBy())
-            .append("updateBy", getUpdateBy())
-            .append("createTime", getCreateTime())
-            .append("updateTime", getUpdateTime())
-            .append("status", getStatus())
-            .append("remark", getRemark())
-            .toString();
-    }
 }

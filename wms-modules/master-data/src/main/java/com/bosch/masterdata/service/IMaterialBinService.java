@@ -1,6 +1,9 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.api.domain.MaterialBin;
 import com.bosch.masterdata.api.domain.dto.MaterialBinDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
@@ -11,7 +14,7 @@ import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
  * @author xuhao
  * @date 2022-09-22
  */
-public interface IMaterialBinService 
+public interface IMaterialBinService extends IService<MaterialBin>
 {
     /**
      * 查询物料库位分配策略

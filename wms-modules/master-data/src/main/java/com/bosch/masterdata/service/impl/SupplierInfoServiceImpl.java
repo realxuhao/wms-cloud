@@ -2,7 +2,12 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.domain.Material;
+import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.dto.SupplierInfoDTO;
+import com.bosch.masterdata.mapper.MaterialMapper;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -19,7 +24,7 @@ import com.bosch.masterdata.service.ISupplierInfoService;
  * @date 2022-09-22
  */
 @Service
-public class SupplierInfoServiceImpl implements ISupplierInfoService 
+public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, SupplierInfo>  implements ISupplierInfoService
 {
     @Autowired
     private SupplierInfoMapper supplierInfoMapper;
@@ -122,5 +127,11 @@ public class SupplierInfoServiceImpl implements ISupplierInfoService
     public int deleteSupplierInfoById(Long id)
     {
         return supplierInfoMapper.deleteSupplierInfoById(id);
+    }
+
+    public boolean validList(List<String> codes) {
+        QueryWrapper<SupplierInfo> wrapper=new QueryWrapper<>();
+        wrapper.in("code",codes);
+        return  supplierInfoMapper.selectCount(wrapper)>0;
     }
 }
