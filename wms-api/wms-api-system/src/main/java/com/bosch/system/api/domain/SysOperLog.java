@@ -79,6 +79,10 @@ public class SysOperLog extends BaseEntity
     @Excel(name = "操作时间", width = 30, dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date operTime;
 
+    /** 操作时间 */
+    @Excel(name = "方法返回码")
+    private Integer methodReturnCode;
+
     public Long getOperId()
     {
         return operId;
@@ -237,5 +241,13 @@ public class SysOperLog extends BaseEntity
     public void setOperTime(Date operTime)
     {
         this.operTime = operTime;
+    }
+
+    public Integer getMethodReturnCode() {
+        return methodReturnCode;
+    }
+
+    public void setMethodReturnCode(Integer methodReturnCode) {
+        this.methodReturnCode = methodReturnCode;
     }
 }
