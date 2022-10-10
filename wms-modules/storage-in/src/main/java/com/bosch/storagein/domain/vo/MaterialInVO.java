@@ -1,6 +1,8 @@
 package com.bosch.storagein.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.util.Date;
 
@@ -9,7 +11,8 @@ import java.util.Date;
  * @since: 10/8/2022 14:57
  * @description:
  */
-public class MaterialInResultVO {
+@Data
+public class MaterialInVO {
     /**
      * id
      */
@@ -27,6 +30,12 @@ public class MaterialInResultVO {
      */
     @ApiModelProperty(value = "批次号")
     private String batchNb;
+
+    /**
+     * 检验类型
+     */
+    @ApiModelProperty(value = "检验类型，0：称重，1：数数，2：免检，3：该批次已检")
+    private Integer checkType;
 
     /**
      * 物料号
@@ -66,6 +75,12 @@ public class MaterialInResultVO {
     private Double actualResult;
 
     /**
+     * 实际平均结果
+     */
+    @ApiModelProperty(value = "实际平均结果")
+    private Double averageResult;
+
+    /**
      * 操作人
      */
     @ApiModelProperty(value = "操作人")
@@ -75,6 +90,7 @@ public class MaterialInResultVO {
      * 操作时间
      */
     @ApiModelProperty(value = "操作时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date operateTime;
 
 }

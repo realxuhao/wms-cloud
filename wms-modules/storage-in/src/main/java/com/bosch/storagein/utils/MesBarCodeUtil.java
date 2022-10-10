@@ -9,7 +9,7 @@ public class MesBarCodeUtil {
         return mesBarCode.substring(0,8);
     }
 
-    public static String getSNCC(String mesBarCode){
+    public static String getSSCC(String mesBarCode){
         return mesBarCode.substring(8,26);
     }
 
@@ -28,7 +28,7 @@ public class MesBarCodeUtil {
     public static void main(String[] args) {
         String mesBarCode="20170826669006391110000015100961661611251128000060";
         System.out.println(getExpireDate(mesBarCode));
-        System.out.println(getSNCC(mesBarCode));
+        System.out.println(getSSCC(mesBarCode));
         System.out.println(getMaterialNb(mesBarCode));
         System.out.println(getBatchNb(mesBarCode));
         System.out.println(getQuantity(mesBarCode));

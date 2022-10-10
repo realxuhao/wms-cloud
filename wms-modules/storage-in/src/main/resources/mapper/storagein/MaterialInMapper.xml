@@ -4,6 +4,39 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bosch.storagein.mapper.MaterialInMapper">
 
+    <resultMap type="MaterialInVO" id="selectMaterialInVoResult">
+        <result property="id" column="id"/>
+        <result property="ssccNumber" column="sscc_number"/>
+        <result property="batchNb" column="batch_nb"/>
+        <result property="materialNb" column="material_nb"/>
+        <result property="checkType" column="check_type"/>
+        <result property="checkQuantity" column="check_quantity"/>
+        <result property="minStandard" column="min_standard"/>
+        <result property="maxStandard" column="max_standard"/>
+        <result property="actualQuantity" column="actual_quantity"/>
+        <result property="actualResult" column="actual_result"/>
+        <result property="averageResult" column="average_result"/>
+        <result property="operateUser" column="operate_user"/>
+        <result property="operateTime" column="operate_time"/>
+    </resultMap>
+
+    <sql id="selectMaterialInVo">
+        select id,
+               sscc_number,
+               batch_nb,
+               material_nb,
+               check_type,
+               check_quantity,
+               min_standard,
+               max_standard,
+               actual_quantity,
+               actual_result,
+               average_result,
+               operate_user,
+               operate_time
+        from si_material_in
+    </sql>
+
     <insert id="insertMaterialIn" parameterType="MaterialInDTO" useGeneratedKeys="true" keyProperty="id">
         insert into si_material_in
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -18,7 +51,9 @@
             <if test="actualQuantity != null">actual_quantity,</if>
             <if test="actualResult != null">actual_result,</if>
             <if test="operateUser != null and materialNb !=''">operate_user,</if>
-            <if test="operateTime != null">opearte_time,</if>
+            <if test="operateTime != null">operate_time,</if>
+            <if test="averageResult != null">average_result,</if>
+
 
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -33,7 +68,47 @@
             <if test="actualResult != null">#{actualResult},</if>
             <if test="operateUser != null and materialNb !=''">#{operateUser},</if>
             <if test="operateTime != null">#{operateTime},</if>
+            <if test="averageResult != null">#{averageResult},</if>
+
         </trim>
     </insert>
+
+
+    <update id="updateVirtualBinCode">
+        update si_material_in
+        set virtual_bin_code = #{virtualBinCode}
+        where sscc_number = #{ssccNumber}
+
+    </update>
+
+
+    <select id="selectById" resultMap="selectMaterialInVoResult">
+        <include refid="selectMaterialInVo"/>
+        where id = #{id}
+    </select>
+
+
+    <select id="selectBySsccNumber" resultMap="selectMaterialInVoResult">
+        <include refid="selectMaterialInVo"/>
+        where sscc_number = #{ssccNumber}
+    </select>
+
+
+    <select id="getByUserName" resultMap="selectMaterialInVoResult">
+        <include refid="selectMaterialInVo"/>
+        where operate_user = #{username}
+    </select>
+
+
+    <select id="selectMaterialInList" resultMap="selectMaterialInVoResult">
+        <include refid="selectMaterialInVo"/>
+        <where>
+
+            <if test="ssccNumber != null  and ssccNumber != ''">and sscc_number = #{ssccNumber}</if>
+            <if test="batchNb != null  and batchNb != ''">and batch_nb = #{batchNb}</if>
+
+            <if test="operateUser != null  and operateUser != ''">and operate_user = #{operateUser}</if>
+        </where>
+    </select>
 
 </mapper>

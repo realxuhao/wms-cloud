@@ -23,7 +23,7 @@ public interface MaterialRecevieMapper
      * @param id 物料收货信息主键
      * @return 物料信息
      */
-//    public MaterialReceiveVO selectMaterialReceiveVOById(Long id);
+    public MaterialReceiveVO selectMaterialReceiveVOById(Long id);
 
     /**
      * 查询物料信息列表

@@ -27,7 +27,6 @@ public class MaterialReceiveCotroller extends BaseController {
     private IMaterialReceiveService materialReceiveService;
 
 
-//    @RequiresPermissions("masterdata:department:list")
     @GetMapping("/list")
     @ApiOperation("查询收货列表")
     public R<PageVO<MaterialReceiveVO>> list(MaterialReceiveDTO materialReceiveDTO) {
@@ -37,7 +36,6 @@ public class MaterialReceiveCotroller extends BaseController {
     }
 
 
-    //    @RequiresPermissions("masterdata:area:remove")
     @Log(title = "原材料收货", businessType = BusinessType.DELETE)
     @ApiOperation("逻辑删除原材料收货")
     @DeleteMapping("/{id}")
@@ -45,12 +43,18 @@ public class MaterialReceiveCotroller extends BaseController {
         return toAjax(materialReceiveService.deleteMaterialReceiveById(id));
     }
 
-    //    @RequiresPermissions("masterdata:frame:remove")
-//    @Log(title = "原材料收货", businessType = BusinessType.DELETE)
+
     @ApiOperation("批量逻辑删除原材料收货")
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(materialReceiveService.deleteMaterialReceiveByIds(ids));
+    }
+
+    @GetMapping(value = "/{id}")
+    @ApiOperation("获取收货信息详细信息")
+    public AjaxResult getInfo(@PathVariable("id") Long id)
+    {
+        return AjaxResult.success(materialReceiveService.selectById(id));
     }
 
 

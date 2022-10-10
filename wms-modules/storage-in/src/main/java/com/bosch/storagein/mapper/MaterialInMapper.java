@@ -1,7 +1,10 @@
 package com.bosch.storagein.mapper;
 
-import com.bosch.masterdata.api.domain.Area;
 import com.bosch.storagein.domain.dto.MaterialInDTO;
+import com.bosch.storagein.domain.vo.MaterialInVO;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @author: UWH4SZH
@@ -17,4 +20,14 @@ public interface MaterialInMapper {
      * @return 结果
      */
     public int insertMaterialIn(MaterialInDTO materialInDTO);
+
+    MaterialInVO selectById(Long id);
+
+    int updateVirtualBinCode(@Param("ssccNumber") String ssccNumber, @Param("virtualBinCode") String virtualBinCode);
+
+    List<MaterialInVO> selectBySsccNumber(String ssccNumber);
+
+    List<MaterialInVO> getByUserName(String username);
+
+    List<MaterialInVO> selectMaterialInList(MaterialInDTO materialInDTO);
 }

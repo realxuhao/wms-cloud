@@ -3,8 +3,10 @@ package com.bosch.storagein.domain.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class MaterialInCheckVO {
 
     /**
@@ -72,5 +74,7 @@ public class MaterialInCheckVO {
      */
     @ApiModelProperty(value = "PO行号")
     private String poNumberItem;
+
+
 
 }

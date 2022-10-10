@@ -7,9 +7,7 @@ import com.bosch.storagein.service.IMaterialReceiveService;
 import com.bosch.storagein.utils.MesBarCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -37,9 +35,14 @@ public class MaterialReceiveServiceImpl implements IMaterialReceiveService {
 
     @Override
     public MaterialReceiveVO selectByMesBarCode(String mesBarCode) {
-        String sncc = MesBarCodeUtil.getSNCC(mesBarCode);
+        String sncc = MesBarCodeUtil.getSSCC(mesBarCode);
         MaterialReceiveDTO materialReceiveDTO = new MaterialReceiveDTO();
         materialReceiveDTO.setSsccNumber(sncc);
         return materialRecevieMapper.selectMaterialReceiveVOBySncc(sncc);
+    }
+
+    @Override
+    public MaterialReceiveVO selectById(Long id) {
+        return materialRecevieMapper.selectMaterialReceiveVOById(id);
     }
 }

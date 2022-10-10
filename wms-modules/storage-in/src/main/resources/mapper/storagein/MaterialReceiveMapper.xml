@@ -53,6 +53,12 @@
         <include refid="selectMaterialReceiveVo"/>
         where delete_flag=1 and sscc_number = #{snccNumber}
     </select>
+    <select id="selectMaterialReceiveVOById" resultType="com.bosch.storagein.domain.vo.MaterialReceiveVO">
+        <include refid="selectMaterialReceiveVo"/>
+        where delete_flag=1 and id = #{id}
+
+
+    </select>
 
 
     <update id="deleteMaterialReceiveVOById" parameterType="Long">
@@ -70,7 +76,7 @@
         </foreach>
     </update>
 
-    <update id="updateStatusBySscc" >
+    <update id="updateStatusBySscc">
         update si_material_receive
         set status = #{status}
         where sscc_number = #{ssccNumber}

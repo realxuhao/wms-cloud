@@ -1,5 +1,6 @@
 package com.bosch.storagein.domain.dto;
 
+import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -11,7 +12,7 @@ import java.util.Date;
  * @description:
  */
 @Data
-public class MaterialInDTO {
+public class MaterialInDTO extends PageDomain {
 
     /**
      * id
@@ -74,6 +75,12 @@ public class MaterialInDTO {
      */
     @ApiModelProperty(value = "实际称重、数数结果")
     private Double actualResult;
+
+    /**
+     * 实际平均结果
+     */
+    @ApiModelProperty(value = "实际平均结果")
+    private Double averageResult;
 
     /**
      * 操作人

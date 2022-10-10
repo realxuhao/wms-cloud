@@ -22,4 +22,6 @@ public interface IMaterialReceiveService {
     public Integer deleteMaterialReceiveByIds(Long[] ids);
 
     public MaterialReceiveVO selectByMesBarCode(String mesBarCode);
+
+    MaterialReceiveVO selectById(Long id);
 }
