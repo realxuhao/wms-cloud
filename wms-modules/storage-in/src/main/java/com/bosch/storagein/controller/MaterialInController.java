@@ -17,6 +17,7 @@ import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,16 @@ public class MaterialInController extends BaseController {
     @PostMapping("/list")
     @ApiOperation("查询入库列表")
     public R<PageVO<MaterialInVO>> list(@RequestBody MaterialInDTO materialInDTO) {
+        startPage();
+        List<MaterialInVO> list = materialInService.selectMaterialInList(materialInDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
+    @GetMapping("/currentUserData")
+    @ApiOperation("获取当前用户的入库记录")
+    public R<PageVO<MaterialInVO>> currentUserData() {
+        MaterialInDTO materialInDTO = new MaterialInDTO();
+        materialInDTO.setOperateUser(SecurityUtils.getUsername());
         startPage();
         List<MaterialInVO> list = materialInService.selectMaterialInList(materialInDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));

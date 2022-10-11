@@ -1,6 +1,5 @@
 package com.bosch.masterdata.controller;
 
-import com.bosch.masterdata.api.domain.dto.WareDTO;
 import com.bosch.masterdata.utils.EasyExcelUtil;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;

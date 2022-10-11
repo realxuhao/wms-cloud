@@ -109,6 +109,7 @@
 
             <if test="operateUser != null  and operateUser != ''">and operate_user = #{operateUser}</if>
         </where>
+        order by operate_time desc
     </select>
 
 </mapper>
