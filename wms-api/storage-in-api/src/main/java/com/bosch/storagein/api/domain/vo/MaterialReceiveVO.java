@@ -80,6 +80,7 @@ public class MaterialReceiveVO {
      * 上传时间
      */
     @ApiModelProperty(value = "上传时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date uploadTime;
 
     /**
@@ -92,6 +93,7 @@ public class MaterialReceiveVO {
      * 更新时间
      */
     @ApiModelProperty(value = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**
