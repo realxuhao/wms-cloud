@@ -2,6 +2,7 @@ package com.bosch.storagein.service;
 
 import com.bosch.storagein.domain.dto.MaterialReceiveDTO;
 import com.bosch.storagein.domain.vo.MaterialReceiveVO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -24,4 +25,6 @@ public interface IMaterialReceiveService {
     public MaterialReceiveVO selectByMesBarCode(String mesBarCode);
 
     MaterialReceiveVO selectById(Long id);
+
+    public Integer updateEditFlag(List<Long> id, Integer editFlag);
 }

@@ -45,4 +45,9 @@ public class MaterialReceiveServiceImpl implements IMaterialReceiveService {
     public MaterialReceiveVO selectById(Long id) {
         return materialRecevieMapper.selectMaterialReceiveVOById(id);
     }
+
+    @Override
+    public Integer updateEditFlag(List<Long> ids, Integer editFlag) {
+        return materialRecevieMapper.updateEditFlag(ids, editFlag);
+    }
 }

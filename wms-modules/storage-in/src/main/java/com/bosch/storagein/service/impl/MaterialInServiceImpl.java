@@ -58,8 +58,9 @@ public class MaterialInServiceImpl implements IMaterialInService {
 
         //校验通过后，更新收货表状态+分配虚拟货位
         if (materialCheckResultVO.getCheckFlag()) {
+
             materialRecevieMapper.updateStatusBySscc(MesBarCodeUtil.getSSCC(materialInCheckDTO.getMesBarCode()),
-                    MaterialStatusEnum.WAIT_IN.getCode());
+                    MaterialStatusEnum.IN.getCode());
 
             materialInMapper.updateVirtualBinCode(materialCheckResultVO.getSsccNumber(), Constants.VIRTUAL_BIN_CODE);
         }

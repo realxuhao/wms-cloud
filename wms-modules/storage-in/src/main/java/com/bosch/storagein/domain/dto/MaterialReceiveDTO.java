@@ -11,26 +11,32 @@ public class MaterialReceiveDTO extends PageDomain {
 //    @ApiModelProperty(value = "主键id")
 //    private Long id;
 
-    /** SSCC码 */
+    /**
+     * SSCC码
+     */
     @ApiModelProperty(value = "SSCC码")
     private String ssccNumber;
 
-    /** 批次号 */
+    /**
+     * 批次号
+     */
     @ApiModelProperty(value = "批次号")
     private String batchNumber;
 
-    /** 物料号 */
+    /**
+     * 物料号
+     */
     @ApiModelProperty(value = "物料号")
     private String materialNb;
-
-
 
 
 //    /** BBD(过期时间) */
 //    @ApiModelProperty(value = "BBD过期时间")
 //    private String expireDate;
 
-    /** 来源PO号 */
+    /**
+     * 来源PO号
+     */
     @ApiModelProperty(value = "来源PO号")
     private String fromPurchaseOrder;
 
@@ -58,7 +64,12 @@ public class MaterialReceiveDTO extends PageDomain {
 //    @ApiModelProperty(value = "删除标记1:可用，0:删除")
 //    private Integer deleteFlag;
 //
-    /** 物料流转状态:0:待入库，1：已入库 */
+    /**
+     * 物料流转状态:0:待入库，1：已入库
+     */
     @ApiModelProperty(value = "物料流转状态:0:待入库，1：已入库")
     private Integer status;
+
+    @ApiModelProperty(value = "是否可编辑")
+    private Integer editFlag;
 }

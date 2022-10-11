@@ -61,4 +61,7 @@ public interface MaterialRecevieMapper
 
     public void updateStatusBySscc(@Param("ssccNumber") String ssccNumber, @Param("status") Integer status);
 
+    public int updateEditFlag(@Param("ids") List<Long> ids, @Param("editFlag") Integer editFlag);
+
+
 }

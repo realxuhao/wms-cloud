@@ -99,4 +99,7 @@ public class MaterialReceiveVO {
      */
     @ApiModelProperty(value = "物料流转状态:0:待入库，1：已入库")
     private Integer status;
+
+    @ApiModelProperty(value = "是否可编辑")
+    private Integer editFlag;
 }

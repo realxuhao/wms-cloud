@@ -19,6 +19,7 @@
         <result property="updateTime" column="update_time"/>
         <result property="deleteFlag" column="delete_flag"/>
         <result property="status" column="status"/>
+        <result property="editFlag" column="edit_flag"/>
     </resultMap>
     <sql id="selectMaterialReceiveVo">
         select id,
@@ -34,7 +35,8 @@
                update_user,
                update_time,
                delete_flag,
-               status
+               status,
+               edit_flag
         from si_material_receive
     </sql>
 
@@ -53,11 +55,11 @@
         <include refid="selectMaterialReceiveVo"/>
         where delete_flag=1 and sscc_number = #{snccNumber}
     </select>
+
+
     <select id="selectMaterialReceiveVOById" resultType="com.bosch.storagein.domain.vo.MaterialReceiveVO">
         <include refid="selectMaterialReceiveVo"/>
         where delete_flag=1 and id = #{id}
-
-
     </select>
 
 
@@ -81,5 +83,17 @@
         set status = #{status}
         where sscc_number = #{ssccNumber}
     </update>
+
+    <update id="updateEditFlag">
+        update si_material_receive
+        set edit_flag = #{editFlag}
+        where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+
+
 
 </mapper>

@@ -5,6 +5,7 @@ import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.storagein.constants.ResponseConstants;
 import com.bosch.storagein.domain.dto.MaterialInCheckDTO;
 import com.bosch.storagein.domain.dto.MaterialInDTO;
+import com.bosch.storagein.domain.dto.request.EditBean;
 import com.bosch.storagein.domain.vo.MaterialCheckResultVO;
 import com.bosch.storagein.domain.vo.MaterialInCheckVO;
 import com.bosch.storagein.domain.vo.MaterialInVO;
@@ -91,6 +92,7 @@ public class MaterialInController extends BaseController {
         List<MaterialInVO> list = materialInService.selectMaterialInList(materialInDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
+
 
 
 }
