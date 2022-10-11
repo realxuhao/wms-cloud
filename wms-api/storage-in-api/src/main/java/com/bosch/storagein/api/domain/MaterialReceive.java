@@ -1,4 +1,4 @@
-package com.bosch.storagein.domain;
+package com.bosch.storagein.api.domain;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.bosch.storagein.enumeration;
+package com.bosch.storagein.api.enumeration;
 
 public enum MaterialStatusEnum {
     WAIT_IN("待入库", 0),

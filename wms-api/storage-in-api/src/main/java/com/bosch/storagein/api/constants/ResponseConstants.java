@@ -1,4 +1,4 @@
-package com.bosch.storagein.constants;
+package com.bosch.storagein.api.constants;
 
 public class ResponseConstants {
 

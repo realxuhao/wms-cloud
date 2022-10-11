@@ -1,4 +1,4 @@
-package com.bosch.storagein.enumeration;
+package com.bosch.storagein.api.enumeration;
 
 import org.omg.CORBA.FREE_MEM;
 

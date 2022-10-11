@@ -1,9 +1,9 @@
 package com.bosch.storagein.controller;
 
 import com.bosch.masterdata.api.domain.vo.PageVO;
-import com.bosch.storagein.domain.dto.MaterialReceiveDTO;
-import com.bosch.storagein.domain.dto.request.EditBean;
-import com.bosch.storagein.domain.vo.MaterialReceiveVO;
+import com.bosch.storagein.api.domain.dto.MaterialReceiveDTO;
+import com.bosch.storagein.api.domain.dto.request.EditBean;
+import com.bosch.storagein.api.domain.vo.MaterialReceiveVO;
 import com.bosch.storagein.service.IMaterialReceiveService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;

@@ -1,6 +1,6 @@
-package com.bosch.storagein.domain.dto;
+package com.bosch.storagein.api.domain.vo;
 
-import com.ruoyi.common.core.web.page.PageDomain;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -8,12 +8,11 @@ import java.util.Date;
 
 /**
  * @author: UWH4SZH
- * @since: 10/8/2022 14:39
+ * @since: 10/8/2022 14:57
  * @description:
  */
 @Data
-public class MaterialInDTO extends PageDomain {
-
+public class MaterialInVO {
     /**
      * id
      */
@@ -33,17 +32,16 @@ public class MaterialInDTO extends PageDomain {
     private String batchNb;
 
     /**
+     * 检验类型
+     */
+    @ApiModelProperty(value = "检验类型，0：称重，1：数数，2：免检，3：该批次已检")
+    private Integer checkType;
+
+    /**
      * 物料号
      */
     @ApiModelProperty(value = "物料号")
     private String materialNb;
-
-    /**
-     * 检查类型
-     */
-    @ApiModelProperty(value = "检查类型")
-    private Integer checkType;
-
 
 
     /**
@@ -56,13 +54,13 @@ public class MaterialInDTO extends PageDomain {
      * 最小标准
      */
     @ApiModelProperty(value = "最小标准")
-    private Double minStandard;
+    private Integer minStandard;
 
     /**
      * 最大标准
      */
     @ApiModelProperty(value = "最大标准")
-    private Double maxStandard;
+    private Integer maxStandard;
 
     /**
      * 实际数量
@@ -92,5 +90,7 @@ public class MaterialInDTO extends PageDomain {
      * 操作时间
      */
     @ApiModelProperty(value = "操作时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date operateTime;
+
 }

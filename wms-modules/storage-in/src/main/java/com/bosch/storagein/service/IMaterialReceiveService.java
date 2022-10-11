@@ -1,8 +1,9 @@
 package com.bosch.storagein.service;
 
-import com.bosch.storagein.domain.dto.MaterialReceiveDTO;
-import com.bosch.storagein.domain.vo.MaterialReceiveVO;
-import org.apache.ibatis.annotations.Param;
+
+
+import com.bosch.storagein.api.domain.dto.MaterialReceiveDTO;
+import com.bosch.storagein.api.domain.vo.MaterialReceiveVO;
 
 import java.util.List;
 

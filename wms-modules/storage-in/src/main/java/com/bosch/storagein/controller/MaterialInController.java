@@ -1,15 +1,14 @@
 package com.bosch.storagein.controller;
 
 
+
 import com.bosch.masterdata.api.domain.vo.PageVO;
-import com.bosch.storagein.constants.ResponseConstants;
-import com.bosch.storagein.domain.dto.MaterialInCheckDTO;
-import com.bosch.storagein.domain.dto.MaterialInDTO;
-import com.bosch.storagein.domain.vo.MaterialCheckResultVO;
-import com.bosch.storagein.domain.vo.MaterialInCheckVO;
-import com.bosch.storagein.domain.vo.MaterialInVO;
-import com.bosch.storagein.domain.vo.MaterialReceiveVO;
-import com.bosch.storagein.enumeration.MaterialStatusEnum;
+import com.bosch.storagein.api.constants.*;
+import com.bosch.storagein.api.domain.dto.MaterialInCheckDTO;
+import com.bosch.storagein.api.domain.dto.*;
+import com.bosch.storagein.api.domain.vo.MaterialInCheckVO;
+import com.bosch.storagein.api.domain.vo.*;
+import com.bosch.storagein.api.enumeration.MaterialStatusEnum;
 import com.bosch.storagein.service.IMaterialInService;
 import com.bosch.storagein.service.IMaterialReceiveService;
 import com.github.pagehelper.PageInfo;

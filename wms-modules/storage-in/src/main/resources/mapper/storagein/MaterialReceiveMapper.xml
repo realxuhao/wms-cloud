@@ -78,7 +78,7 @@
     </select>
 
 
-    <select id="selectMaterialReceiveVOById" resultType="com.bosch.storagein.domain.vo.MaterialReceiveVO">
+    <select id="selectMaterialReceiveVOById" resultMap="MaterialReceiveVOResult">
         <include refid="selectMaterialReceiveVo"/>
         where delete_flag=1 and id = #{id}
     </select>

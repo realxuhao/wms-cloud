@@ -2,9 +2,8 @@ package com.bosch.storagein.mapper;
 
 
 
-import com.bosch.storagein.domain.dto.MaterialReceiveDTO;
-import com.bosch.storagein.domain.vo.MaterialReceiveVO;
-import io.swagger.models.auth.In;
+import com.bosch.storagein.api.domain.dto.MaterialReceiveDTO;
+import com.bosch.storagein.api.domain.vo.MaterialReceiveVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -40,7 +39,7 @@ public interface MaterialRecevieMapper
      * @param snccNumber SNCC
      * @return 物料信息集合
      */
-    public MaterialReceiveVO selectMaterialReceiveVOBySncc( String snccNumber);
+    public MaterialReceiveVO selectMaterialReceiveVOBySncc(String snccNumber);
 
     /**
      * 删除物料信息

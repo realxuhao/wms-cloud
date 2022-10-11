@@ -1,8 +1,8 @@
 package com.bosch.storagein.service.impl;
 
-import com.bosch.storagein.domain.dto.MaterialInDTO;
-import com.bosch.storagein.domain.dto.MaterialReceiveDTO;
-import com.bosch.storagein.domain.vo.MaterialReceiveVO;
+
+import com.bosch.storagein.api.domain.dto.*;
+import com.bosch.storagein.api.domain.vo.*;
 import com.bosch.storagein.mapper.MaterialRecevieMapper;
 import com.bosch.storagein.service.IMaterialReceiveService;
 import com.bosch.storagein.utils.MesBarCodeUtil;

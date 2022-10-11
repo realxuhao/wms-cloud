@@ -1,7 +1,7 @@
 package com.bosch.storagein.mapper;
 
-import com.bosch.storagein.domain.dto.MaterialInDTO;
-import com.bosch.storagein.domain.vo.MaterialInVO;
+import com.bosch.storagein.api.domain.dto.MaterialInDTO;
+import com.bosch.storagein.api.domain.vo.MaterialInVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

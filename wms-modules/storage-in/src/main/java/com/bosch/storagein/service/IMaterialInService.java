@@ -1,10 +1,12 @@
 package com.bosch.storagein.service;
 
-import com.bosch.storagein.domain.dto.MaterialInCheckDTO;
-import com.bosch.storagein.domain.dto.MaterialInDTO;
-import com.bosch.storagein.domain.vo.MaterialCheckResultVO;
-import com.bosch.storagein.domain.vo.MaterialInCheckVO;
-import com.bosch.storagein.domain.vo.MaterialInVO;
+
+
+import com.bosch.storagein.api.domain.dto.MaterialInCheckDTO;
+import com.bosch.storagein.api.domain.dto.MaterialInDTO;
+import com.bosch.storagein.api.domain.vo.MaterialCheckResultVO;
+import com.bosch.storagein.api.domain.vo.MaterialInCheckVO;
+import com.bosch.storagein.api.domain.vo.MaterialInVO;
 
 import java.util.List;
 
