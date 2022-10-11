@@ -13,6 +13,11 @@ public class ResponseConstants {
     public static final Integer HAS_IN = 602;
 
     /**
+     * 抽样件数
+     */
+    public static final Integer QUANTITY_INVALID = 603;
+
+    /**
      * mesBarCode不存在
      */
     public static final Integer MES_BARCODE_NOT_EXIST = 602;

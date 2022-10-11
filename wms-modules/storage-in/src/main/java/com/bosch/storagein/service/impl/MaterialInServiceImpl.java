@@ -90,6 +90,17 @@ public class MaterialInServiceImpl implements IMaterialInService {
         return materialInMapper.selectMaterialInList(materialInDTO);
     }
 
+    @Override
+    public boolean checkSampleQuantity(MaterialInCheckDTO materialInCheckDTO) {
+        Integer actualQuantity = materialInCheckDTO.getActualQuantity();
+        MaterialVO materialVO = getMaterialVOByMesBarCode(materialInCheckDTO.getMesBarCode());
+        MaterialInCheckVO materialInCheckVO = buildMaterialCheckVO(materialVO, materialInCheckDTO.getMesBarCode());
+        if (actualQuantity < materialInCheckVO.getCheckQuantity()) {
+            return false;
+        }
+        return true;
+    }
+
     private MaterialCheckResultVO dealCheck(MaterialInCheckDTO materialInCheckDTO) {
         Integer actualQuantity = materialInCheckDTO.getActualQuantity();
         Double actualResult = materialInCheckDTO.getActualResult();
@@ -110,7 +121,7 @@ public class MaterialInServiceImpl implements IMaterialInService {
         }
 
         //称重 或者 数数
-        if ((CheckTypeEnum.WEIGHT.getCode().equals(materialInCheckVO.getCheckType()) && checkWeight(materialInCheckVO, mesBarCode, actualQuantity, actualResult, checkResultVO))
+        if ((CheckTypeEnum.WEIGHT.getCode().equals(materialInCheckVO.getCheckType()) && checkWeight(mesBarCode, actualQuantity, actualResult, checkResultVO))
                 || (CheckTypeEnum.COUNT.getCode().equals(materialInCheckVO.getCheckType()) && checkCount(materialInCheckVO, actualQuantity, actualResult, checkResultVO))) {
             MaterialInDTO materialInDTO = buildMaterialInDTO(mesBarCode, materialInCheckVO);
             materialInDTO.setActualQuantity(actualQuantity);
@@ -144,17 +155,13 @@ public class MaterialInServiceImpl implements IMaterialInService {
     /**
      * 校验称重
      *
-     * @param materialInCheckVO
+     * @param
      * @param actualQuantity
      * @param actualResult
      * @return
      */
-    private Boolean checkWeight(MaterialInCheckVO materialInCheckVO, String mesBarCode, Integer actualQuantity,
+    private Boolean checkWeight(String mesBarCode, Integer actualQuantity,
                                 Double actualResult, MaterialCheckResultVO checkResultVO) {
-        if (actualQuantity < materialInCheckVO.getCheckQuantity()) {
-            return false;
-        }
-
         //计算平均值
         //TODO 补充计算说明
         MaterialVO materialVO = getMaterialVOByMesBarCode(mesBarCode);
@@ -180,9 +187,6 @@ public class MaterialInServiceImpl implements IMaterialInService {
      */
     private Boolean checkCount(MaterialInCheckVO materialInCheckVO, Integer actualQuantity,
                                Double actualResult, MaterialCheckResultVO checkResultVO) {
-        if (actualQuantity < materialInCheckVO.getCheckQuantity()) {
-            return false;
-        }
         double res = Math.ceil(actualResult / actualQuantity);
         checkResultVO.setAverageResult(res);
         //TODO 补充计算说明
@@ -218,10 +222,6 @@ public class MaterialInServiceImpl implements IMaterialInService {
         materialInCheckVO.setMaterialNb(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
         dealCheckType(materialInCheckVO, materialVO.getErrorProofingMethod());
-        //免检或者该批次已经检验过，直接返回
-        if (CheckTypeEnum.CHECKED.getCode().equals(materialInCheckVO.getCheckType()) || CheckTypeEnum.FREE.getCode().equals(materialInCheckVO.getCheckType())) {
-            return materialInCheckVO;
-        }
         materialInCheckVO.setMinStandard(materialVO.getLessDeviationRatio().doubleValue());
         materialInCheckVO.setMaxStandard(materialVO.getMoreDeviationRatio().doubleValue());
         materialInCheckVO.setUnit(materialVO.getUnit());
@@ -229,6 +229,12 @@ public class MaterialInServiceImpl implements IMaterialInService {
 
         //计算抽样数量
         dealCheckQuantity(materialInCheckVO, materialVO.getMinPackageNumber());
+
+        //免检或者该批次已经检验过，直接返回
+        if (CheckTypeEnum.CHECKED.getCode().equals(materialInCheckVO.getCheckType()) || CheckTypeEnum.FREE.getCode().equals(materialInCheckVO.getCheckType())) {
+            return materialInCheckVO;
+        }
+
 
         MaterialReceiveVO materialReceiveVO = materialRecevieMapper.selectMaterialReceiveVOBySncc(materialInCheckVO.getSsccNumber());
         materialInCheckVO.setFromPurchaseOrder(materialReceiveVO.getFromPurchaseOrder());

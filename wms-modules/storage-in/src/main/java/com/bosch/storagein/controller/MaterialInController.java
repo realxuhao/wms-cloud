@@ -68,6 +68,10 @@ public class MaterialInController extends BaseController {
         if (!CollectionUtils.isEmpty(materialInVOS)) {
             return R.fail(null, ResponseConstants.HAS_IN, "重复入库");
         }
+        //校验抽样件数是否符合
+        if (!materialInService.checkSampleQuantity(materialInCheckDTO)){
+            return R.fail(null, ResponseConstants.QUANTITY_INVALID, "抽样件数不符合");
+        }
         return R.ok(materialInService.check(materialInCheckDTO));
     }
 
