@@ -12,6 +12,7 @@
         <module>wms-api-system</module>
         <module>wms-api-file</module>
         <module>master-data-api</module>
+        <module>storage-in-api</module>
     </modules>
 
     <artifactId>wms-api</artifactId>
