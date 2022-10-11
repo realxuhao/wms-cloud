@@ -9,6 +9,7 @@
         <result property="ssccNumber" column="sscc_number"/>
         <result property="batchNb" column="batch_nb"/>
         <result property="materialNb" column="material_nb"/>
+        <result property="materialName" column="material_name"/>
         <result property="checkType" column="check_type"/>
         <result property="checkQuantity" column="check_quantity"/>
         <result property="minStandard" column="min_standard"/>
@@ -101,7 +102,21 @@
 
 
     <select id="selectMaterialInList" resultMap="selectMaterialInVoResult">
-        <include refid="selectMaterialInVo"/>
+        select si.id,
+        si.sscc_number,
+        si.batch_nb,
+        si.material_nb,
+        si.check_type,
+        mm.name as material_name,
+        si.check_quantity,
+        si.min_standard,
+        si.max_standard,
+        si.actual_quantity,
+        si.actual_result,
+        si.average_result,
+        si.operate_user,
+        si.operate_time
+        from si_material_in si left join md_material mm on si.material_nb = mm.code
         <where>
 
             <if test="ssccNumber != null  and ssccNumber != ''">and sscc_number = #{ssccNumber}</if>

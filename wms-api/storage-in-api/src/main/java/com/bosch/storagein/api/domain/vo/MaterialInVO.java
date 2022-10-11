@@ -43,6 +43,9 @@ public class MaterialInVO {
     @ApiModelProperty(value = "物料号")
     private String materialNb;
 
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
+
 
     /**
      * 应检查数量
