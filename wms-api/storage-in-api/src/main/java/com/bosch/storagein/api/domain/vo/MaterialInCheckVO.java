@@ -22,6 +22,12 @@ public class MaterialInCheckVO {
     private String materialNb;
 
     /**
+     * 物料号
+     */
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
+
+    /**
      * 批次号
      */
     @ApiModelProperty(value = "批次号")

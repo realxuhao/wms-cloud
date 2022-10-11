@@ -18,7 +18,7 @@ public interface IMaterialInService {
      * @param mesBarCode
      * @return
      */
-    public MaterialInCheckVO getMaterialSampleInfo(String mesBarCode);
+    public MaterialInCheckVO getMaterialCheckInfo(String mesBarCode);
 
 
     public MaterialCheckResultVO check(MaterialInCheckDTO materialInCheckDTO);

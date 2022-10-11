@@ -43,7 +43,7 @@ public class MaterialInController extends BaseController {
      */
     @GetMapping(value = "/getCheckByBarCode/{mesBarCode}")
     @ApiOperation("根据mesBarCode查询物料校验信息")
-    public R<MaterialInCheckVO> getInfo(@PathVariable("mesBarCode") String mesBarCode) {
+    public R<MaterialInCheckVO> getCheckInfo(@PathVariable("mesBarCode") String mesBarCode) {
         List<MaterialReceiveVO> materialReceiveVOs = materialReceiveService.selectByMesBarCode(mesBarCode);
 
         //        if (materialReceiveVO == null) {
@@ -53,7 +53,7 @@ public class MaterialInController extends BaseController {
         if (collect.contains(MaterialStatusEnum.IN.getCode())) {
             return R.fail(null, ResponseConstants.BATCH_HAS_IN, "该批次已有入库");
         }
-        return R.ok(materialInService.getMaterialSampleInfo(mesBarCode));
+        return R.ok(materialInService.getMaterialCheckInfo(mesBarCode));
     }
 
 

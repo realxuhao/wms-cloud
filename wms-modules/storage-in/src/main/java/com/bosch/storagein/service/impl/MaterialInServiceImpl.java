@@ -42,7 +42,7 @@ public class MaterialInServiceImpl implements IMaterialInService {
     private MaterialInMapper materialInMapper;
 
     @Override
-    public MaterialInCheckVO getMaterialSampleInfo(String mesBarCode) {
+    public MaterialInCheckVO getMaterialCheckInfo(String mesBarCode) {
         MaterialVO materialVO = getMaterialVOByMesBarCode(mesBarCode);
         MaterialInCheckVO materialInCheckVO = buildMaterialCheckVO(materialVO, mesBarCode);
         materialRecevieMapper.updateStatusBySscc(materialInCheckVO.getSsccNumber(), MaterialStatusEnum.WAIT_IN.getCode());
@@ -225,6 +225,7 @@ public class MaterialInServiceImpl implements IMaterialInService {
         materialInCheckVO.setMinStandard(materialVO.getLessDeviationRatio().doubleValue());
         materialInCheckVO.setMaxStandard(materialVO.getMoreDeviationRatio().doubleValue());
         materialInCheckVO.setUnit(materialVO.getUnit());
+        materialInCheckVO.setMaterialName(materialVO.getName());
 
         //计算抽样数量
         dealCheckQuantity(materialInCheckVO, materialVO.getMinPackageNumber());
