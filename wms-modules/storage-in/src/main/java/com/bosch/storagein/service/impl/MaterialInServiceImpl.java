@@ -158,7 +158,7 @@ public class MaterialInServiceImpl implements IMaterialInService {
         //计算平均值
         //TODO 补充计算说明
         MaterialVO materialVO = getMaterialVOByMesBarCode(mesBarCode);
-        double caculateResult = (actualResult - materialVO.getPackageWeight().doubleValue()) / actualQuantity - (materialVO.getPackageWeight().doubleValue() - materialVO.getMinPackageNetWeight().doubleValue());
+        double caculateResult = (actualResult - materialVO.getPackageWeight().doubleValue() * actualQuantity) / actualQuantity - (materialVO.getPackageWeight().doubleValue() - materialVO.getMinPackageNetWeight().doubleValue());
         double res = caculateResult / materialVO.getTransferWeightRatio().doubleValue();
 
         checkResultVO.setAverageResult(res);
