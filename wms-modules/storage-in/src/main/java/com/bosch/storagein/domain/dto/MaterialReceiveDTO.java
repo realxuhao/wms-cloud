@@ -30,6 +30,10 @@ public class MaterialReceiveDTO extends PageDomain {
     private String materialNb;
 
 
+    @ApiModelProperty(value = "批次")
+    private String batchNb;
+
+
 //    /** BBD(过期时间) */
 //    @ApiModelProperty(value = "BBD过期时间")
 //    private String expireDate;

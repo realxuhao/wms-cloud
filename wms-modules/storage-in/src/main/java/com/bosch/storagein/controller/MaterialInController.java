@@ -5,11 +5,11 @@ import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.storagein.constants.ResponseConstants;
 import com.bosch.storagein.domain.dto.MaterialInCheckDTO;
 import com.bosch.storagein.domain.dto.MaterialInDTO;
-import com.bosch.storagein.domain.dto.request.EditBean;
 import com.bosch.storagein.domain.vo.MaterialCheckResultVO;
 import com.bosch.storagein.domain.vo.MaterialInCheckVO;
 import com.bosch.storagein.domain.vo.MaterialInVO;
 import com.bosch.storagein.domain.vo.MaterialReceiveVO;
+import com.bosch.storagein.enumeration.MaterialStatusEnum;
 import com.bosch.storagein.service.IMaterialInService;
 import com.bosch.storagein.service.IMaterialReceiveService;
 import com.github.pagehelper.PageInfo;
@@ -26,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @Api(tags = "原材料入库接口")
@@ -44,12 +45,14 @@ public class MaterialInController extends BaseController {
     @GetMapping(value = "/getCheckByBarCode/{mesBarCode}")
     @ApiOperation("根据mesBarCode查询物料校验信息")
     public R<MaterialInCheckVO> getInfo(@PathVariable("mesBarCode") String mesBarCode) {
-        MaterialReceiveVO materialReceiveVO = materialReceiveService.selectByMesBarCode(mesBarCode);
-        if (materialReceiveVO == null) {
-            return R.fail(null, ResponseConstants.MES_BARCODE_NOT_EXIST, "该条码不存在");
-        }
-        if (materialReceiveVO.getStatus() == 1) {
-            return R.fail(null, ResponseConstants.HAS_IN, "重复入库");
+        List<MaterialReceiveVO> materialReceiveVOs = materialReceiveService.selectByMesBarCode(mesBarCode);
+
+        //        if (materialReceiveVO == null) {
+//            return R.fail(null, ResponseConstants.MES_BARCODE_NOT_EXIST, "该条码不存在");
+//        }
+        List<Integer> collect = materialReceiveVOs.stream().map(MaterialReceiveVO::getStatus).collect(Collectors.toList());
+        if (collect.contains(MaterialStatusEnum.IN.getCode())) {
+            return R.fail(null, ResponseConstants.BATCH_HAS_IN, "该批次已有入库");
         }
         return R.ok(materialInService.getMaterialSampleInfo(mesBarCode));
     }
@@ -92,7 +95,6 @@ public class MaterialInController extends BaseController {
         List<MaterialInVO> list = materialInService.selectMaterialInList(materialInDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
-
 
 
 }

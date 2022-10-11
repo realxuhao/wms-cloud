@@ -1,5 +1,6 @@
 package com.bosch.storagein.service.impl;
 
+import com.bosch.storagein.domain.dto.MaterialInDTO;
 import com.bosch.storagein.domain.dto.MaterialReceiveDTO;
 import com.bosch.storagein.domain.vo.MaterialReceiveVO;
 import com.bosch.storagein.mapper.MaterialRecevieMapper;
@@ -34,11 +35,12 @@ public class MaterialReceiveServiceImpl implements IMaterialReceiveService {
     }
 
     @Override
-    public MaterialReceiveVO selectByMesBarCode(String mesBarCode) {
-        String sncc = MesBarCodeUtil.getSSCC(mesBarCode);
+    public List<MaterialReceiveVO> selectByMesBarCode(String mesBarCode) {
         MaterialReceiveDTO materialReceiveDTO = new MaterialReceiveDTO();
-        materialReceiveDTO.setSsccNumber(sncc);
-        return materialRecevieMapper.selectMaterialReceiveVOBySncc(sncc);
+        materialReceiveDTO.setMaterialNb(MesBarCodeUtil.getMaterialNb(mesBarCode));
+        materialReceiveDTO.setBatchNumber(MesBarCodeUtil.getBatchNb(mesBarCode));
+
+        return materialRecevieMapper.selectMaterialReceiveVOList(materialReceiveDTO);
     }
 
     @Override

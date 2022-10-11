@@ -8,6 +8,8 @@
         <result property="id" column="id"/>
         <result property="ssccNumber" column="sscc_number"/>
         <result property="batchNb" column="batch_nb"/>
+        <result property="materialNb" column="material_nb"/>
+        <result property="materialName" column="material_name"/>
         <result property="expireDate" column="expire_date"/>
         <result property="unit" column="unit"/>
         <result property="quantity" column="quantity"/>
@@ -22,33 +24,52 @@
         <result property="editFlag" column="edit_flag"/>
     </resultMap>
     <sql id="selectMaterialReceiveVo">
-        select id,
-               sscc_number,
-               batch_nb,
-               str_to_date(expire_date, '%d/%m/%y') as expire_date,
-               unit,
-               quantity,
-               from_purchase_order,
-               po_number_item,
-               upload_user,
-               upload_time,
-               update_user,
-               update_time,
-               delete_flag,
-               status,
-               edit_flag
-        from si_material_receive
+        select sm.id,
+               sm.sscc_number,
+               sm.batch_nb,
+               str_to_date(sm.expire_date, '%d/%m/%y') as expire_date,
+               sm.material_nb,
+               sm.unit,
+               sm.quantity,
+               sm.from_purchase_order,
+               sm.po_number_item,
+               sm.upload_user,
+               sm.upload_time,
+               sm.update_user,
+               sm.update_time,
+               sm.delete_flag,
+               sm.status,
+               sm.edit_flag
+        from si_material_receive sm
     </sql>
 
     <select id="selectMaterialReceiveVOList" parameterType="MaterialReceiveDTO" resultMap="MaterialReceiveVOResult">
-        <include refid="selectMaterialReceiveVo"/>
-        where delete_flag=1
-        <if test="ssccNumber != null  and ssccNumber != ''">and sscc_number = #{ssccNumber}</if>
-        <if test="materialNb != null  and materialNb != ''">and material_nb = #{materialNb}</if>
-        <if test="fromPurchaseOrder != null and fromPurchaseOrder != ''">and from_purchase_order =
+        select sm.id,
+        sm.sscc_number,
+        sm.batch_nb,
+        str_to_date(sm.expire_date, '%d/%m/%y') as expire_date,
+        sm.material_nb,
+        mm.name as material_name,
+        sm.unit,
+        sm.quantity,
+        sm.from_purchase_order,
+        sm.po_number_item,
+        sm.upload_user,
+        sm.upload_time,
+        sm.update_user,
+        sm.update_time,
+        sm.delete_flag,
+        sm.status,
+        sm.edit_flag
+        from si_material_receive sm left join md_material mm on sm.material_nb = mm.code
+        where sm.delete_flag=1
+        <if test="ssccNumber != null  and ssccNumber != ''">and sm.sscc_number = #{ssccNumber}</if>
+        <if test="materialNb != null  and materialNb != ''">and sm.material_nb = #{materialNb}</if>
+        <if test="batchNb != null  and batchNb != ''">and sm.batch_nb = #{batchNb}</if>
+        <if test="fromPurchaseOrder != null and fromPurchaseOrder != ''">and sm.from_purchase_order =
             #{fromPurchaseOrder}
         </if>
-        <if test="status != null  and status != ''">and status = #{status}</if>
+        <if test="status != null  and status != ''">and sm.status = #{status}</if>
     </select>
 
     <select id="selectMaterialReceiveVOBySncc" parameterType="string" resultMap="MaterialReceiveVOResult">

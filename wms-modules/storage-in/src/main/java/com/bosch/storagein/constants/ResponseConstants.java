@@ -3,9 +3,14 @@ package com.bosch.storagein.constants;
 public class ResponseConstants {
 
     /**
-     * 已经入库的返回标记
+     * 该批次已经入库的返回标记
      */
-    public static final Integer HAS_IN = 601;
+    public static final Integer BATCH_HAS_IN = 601;
+
+    /**
+     * 该批次已经入库的返回标记
+     */
+    public static final Integer HAS_IN = 602;
 
     /**
      * mesBarCode不存在
