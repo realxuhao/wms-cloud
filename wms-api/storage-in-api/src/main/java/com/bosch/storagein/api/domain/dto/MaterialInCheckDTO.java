@@ -3,6 +3,8 @@ package com.bosch.storagein.api.domain.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.PrintWriter;
+
 @Data
 public class MaterialInCheckDTO {
 
@@ -14,4 +16,7 @@ public class MaterialInCheckDTO {
 
     @ApiModelProperty(value = "实际称重、数数结果")
     private Double actualResult;
+
+    @ApiModelProperty(value = "原托数")
+    private Integer originPalletQuantity;
 }

@@ -19,6 +19,7 @@
         <result property="averageResult" column="average_result"/>
         <result property="operateUser" column="operate_user"/>
         <result property="operateTime" column="operate_time"/>
+        <result property="originPalletQuantity" column="origin_pallet_quantity"/>
     </resultMap>
 
     <sql id="selectMaterialInVo">
@@ -39,7 +40,6 @@
     </sql>
 
     <insert id="insertMaterialIn" parameterType="MaterialInDTO" useGeneratedKeys="true" keyProperty="id">
-
 
 
         insert into si_material_in
@@ -81,11 +81,13 @@
 
 
     <insert id="batchInsert">
-        INSERT INTO si_material_in (sscc_number, batch_nb, material_nb, check_type, check_quantity,min_standard,max_standard,actual_quantity,actual_result,operate_user,operate_time,average_result,virtual_bin_code)
+        INSERT INTO si_material_in (sscc_number, batch_nb, material_nb, check_type,
+        check_quantity,min_standard,max_standard,
+        actual_quantity,actual_result,operate_user,operate_time,average_result,virtual_bin_code,origin_pallet_quantity)
         VALUES
         <foreach collection="list" separator="," item="item">
             (#{item.ssccNumber},#{item.batchNb},#{item.materialNb},#{item.checkType},#{item.checkQuantity},#{item.minStandard},#{item.maxStandard},#{item.actualQuantity},#{item.actualResult}
-            ,#{item.operateUser},#{item.operateTime},#{item.averageResult},#{item.virtualBinCode})
+            ,#{item.operateUser},#{item.operateTime},#{item.averageResult},#{item.virtualBinCode},#{originPalletQuantity})
         </foreach>
 
     </insert>

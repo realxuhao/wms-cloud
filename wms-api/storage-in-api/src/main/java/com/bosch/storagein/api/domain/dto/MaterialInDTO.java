@@ -47,7 +47,6 @@ public class MaterialInDTO extends PageDomain {
     private Integer checkType;
 
 
-
     /**
      * 应检查数量
      */
@@ -102,4 +101,10 @@ public class MaterialInDTO extends PageDomain {
      */
     @ApiModelProperty(value = "操作时间")
     private Date operateTime;
+
+    /**
+     * 原托数
+     */
+    @ApiModelProperty(value = "原托数")
+    private Integer originPalletQuantity;
 }

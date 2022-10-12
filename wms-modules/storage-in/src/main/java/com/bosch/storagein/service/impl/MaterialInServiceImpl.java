@@ -110,7 +110,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         //如果是免检，直接入库。
         if (CheckTypeEnum.FREE.getCode().equals(materialInCheckVO.getCheckType())) {
 
-            batchStorageIn(materialInCheckVO, actualQuantity, actualResult, checkResultVO.getAverageResult());
+            batchStorageIn(materialInCheckVO, materialInCheckDTO, checkResultVO.getAverageResult());
 
             checkResultVO.setCheckFlag(true);
             return checkResultVO;
@@ -120,7 +120,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         if ((CheckTypeEnum.WEIGHT.getCode().equals(materialInCheckVO.getCheckType()) && checkWeight(mesBarCode, actualQuantity, actualResult, checkResultVO))
                 || (CheckTypeEnum.COUNT.getCode().equals(materialInCheckVO.getCheckType()) && checkCount(materialInCheckVO, actualQuantity, actualResult, checkResultVO))) {
 
-            batchStorageIn(materialInCheckVO, actualQuantity, actualResult, checkResultVO.getAverageResult());
+            batchStorageIn(materialInCheckVO, materialInCheckDTO, checkResultVO.getAverageResult());
 
             checkResultVO.setActualResult(actualResult).setActualQuantity(actualQuantity);
             checkResultVO.setCheckFlag(true);
@@ -130,13 +130,14 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         return checkResultVO;
     }
 
-    private void batchStorageIn(MaterialInCheckVO materialInCheckVO, Integer actualQuantity, Double actualResult, Double averageResult) {
+    private void batchStorageIn(MaterialInCheckVO materialInCheckVO, MaterialInCheckDTO materialInCheckDTO, Double averageResult) {
         List<MaterialReceiveVO> materialReceiveVOS = materialRecevieMapper.selectSameBatchMaterialReceiveVO(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb());
         List<MaterialInDTO> materialInDTOList = materialReceiveVOS.stream().map(item -> {
             MaterialInDTO materialInDTO = buildMaterialInDTO(materialInCheckVO);
             materialInDTO.setSsccNumber(item.getSsccNumber());
-            materialInDTO.setActualQuantity(actualQuantity);
-            materialInDTO.setActualResult(actualResult);
+            materialInDTO.setActualQuantity(materialInCheckDTO.getActualQuantity());
+            materialInDTO.setActualResult(materialInCheckDTO.getActualResult());
+            materialInDTO.setOriginPalletQuantity(materialInDTO.getOriginPalletQuantity());
             materialInDTO.setAverageResult(averageResult);
             materialInDTO.setVirtualBinCode(Constants.VIRTUAL_BIN_CODE);
             return materialInDTO;
