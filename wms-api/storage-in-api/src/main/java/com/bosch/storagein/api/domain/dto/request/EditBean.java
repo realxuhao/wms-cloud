@@ -2,6 +2,7 @@ package com.bosch.storagein.api.domain.dto.request;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.ibatis.type.Alias;
 import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  * @description:
  */
 @Data
+@Alias("maeditbean")
 public class EditBean {
 
     @ApiModelProperty(value = "id列表")

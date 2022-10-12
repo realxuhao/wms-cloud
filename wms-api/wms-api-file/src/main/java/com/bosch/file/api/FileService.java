@@ -15,6 +15,10 @@ import java.util.List;
 @FeignClient(contextId = "masterFileService", name = ServiceNameConstants.FILE_SERVICE)
 public interface FileService {
 
-    @PostMapping(value = "/file/read",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public <T> R<List<T>> read(@RequestPart(value = "file") MultipartFile file,@RequestParam(value = "className") String className);
+    @PostMapping(value = "/file/masterDataImport",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public <T> R<List<T>> masterDataImport(@RequestPart(value = "file") MultipartFile file, @RequestParam(value = "className") String className);
+
+    @PostMapping(value = "/file/materialReceiveImport",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public <T> R<List<T>> materialReceiveImport(@RequestPart(value = "file") MultipartFile file,@RequestParam(value = "className") String className);
+
 }

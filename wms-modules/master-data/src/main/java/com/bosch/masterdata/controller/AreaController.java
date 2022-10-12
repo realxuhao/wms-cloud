@@ -10,9 +10,7 @@ import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.Area;
-import com.bosch.masterdata.api.domain.SupplierInfo;
 import com.bosch.masterdata.api.domain.dto.AreaDTO;
-import com.bosch.masterdata.api.domain.dto.SupplierInfoDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.enumeration.ClassType;
@@ -134,7 +132,7 @@ public class AreaController extends BaseController
     public R importExcel(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
         try {
             //解析文件服务
-            R result = fileService.read(file, ClassType.AREADTO.getDesc());
+            R result = fileService.masterDataImport(file, ClassType.AREADTO.getDesc());
             if (result.isSuccess()) {
                 Object data = result.getData();
                 List<AreaDTO> dtos = JSON.parseArray(JSON.toJSONString(data), AreaDTO.class);
@@ -173,7 +171,7 @@ public class AreaController extends BaseController
 
         try {
             //解析文件服务
-            R result = fileService.read(file, ClassType.AREADTO.getDesc());
+            R result = fileService.masterDataImport(file, ClassType.AREADTO.getDesc());
             if (result.isSuccess()) {
                 Object data = result.getData();
                 List<AreaDTO> dtos = JSON.parseArray(JSON.toJSONString(data), AreaDTO.class);

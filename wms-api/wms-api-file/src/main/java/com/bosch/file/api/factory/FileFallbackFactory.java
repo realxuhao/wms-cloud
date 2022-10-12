@@ -24,8 +24,13 @@ public class FileFallbackFactory implements FallbackFactory<FileService> {
     public FileService create(Throwable cause) {
         return new FileService() {
             @Override
-            public <T> R<List<T>> read(MultipartFile file, String className) {
-               return R.fail("文件服务调用失败");
+            public <T> R<List<T>> masterDataImport(MultipartFile file, String className) {
+               return R.fail("主数据文件服务调用失败");
+            }
+
+            @Override
+            public <T> R<List<T>> materialReceiveImport(MultipartFile file, String className) {
+                return R.fail("入库文件服务调用失败");
             }
         };
     }

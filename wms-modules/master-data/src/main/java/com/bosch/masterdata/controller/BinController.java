@@ -9,9 +9,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
-import com.bosch.masterdata.api.domain.Frame;
 import com.bosch.masterdata.api.domain.dto.BinDTO;
-import com.bosch.masterdata.api.domain.dto.FrameDTO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.enumeration.ClassType;
@@ -169,7 +167,7 @@ public class BinController extends BaseController
     public R importExcel(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
         try {
             //解析文件服务
-            R result = fileService.read(file, ClassType.BINDTO.getDesc());
+            R result = fileService.masterDataImport(file, ClassType.BINDTO.getDesc());
             if (result.isSuccess()) {
                 Object data = result.getData();
                 List<BinDTO> dtos = JSON.parseArray(JSON.toJSONString(data), BinDTO.class);
@@ -208,7 +206,7 @@ public class BinController extends BaseController
 
         try {
             //解析文件服务
-            R result = fileService.read(file, ClassType.BINDTO.getDesc());
+            R result = fileService.masterDataImport(file, ClassType.BINDTO.getDesc());
             if (result.isSuccess()) {
                 Object data = result.getData();
                 List<BinDTO> dtos = JSON.parseArray(JSON.toJSONString(data), BinDTO.class);

@@ -93,6 +93,8 @@
         <dependency>
             <groupId>com.ruoyi</groupId>
             <artifactId>master-data-api</artifactId>
+            <version>3.6.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.ruoyi</groupId>
@@ -100,6 +102,17 @@
             <version>3.6.0</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>wms-api-file</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.4.2</version>
+        </dependency>
+
 
     </dependencies>
 

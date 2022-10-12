@@ -16,8 +16,13 @@
     </description>
 
     <dependencies>
-    	
-    	<!-- SpringCloud Alibaba Nacos -->
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.6</version>
+        </dependency>
+
+        <!-- SpringCloud Alibaba Nacos -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
@@ -77,6 +82,12 @@
         <dependency>
             <groupId>com.ruoyi</groupId>
             <artifactId>master-data-api</artifactId>
+            <version>3.6.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>storage-in-api</artifactId>
             <version>3.6.0</version>
             <scope>compile</scope>
         </dependency>

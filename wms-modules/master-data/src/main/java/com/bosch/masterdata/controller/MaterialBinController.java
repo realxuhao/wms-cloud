@@ -163,7 +163,7 @@ public class MaterialBinController extends BaseController {
 
         try {
             //解析文件服务
-            R result = fileService.read(file,ClassType.MATERIALDTO.getDesc());
+            R result = fileService.masterDataImport(file,ClassType.MATERIALDTO.getDesc());
             if (result.isSuccess()){
                 Object data = result.getData();
                 List<MaterialDTO> materialDTOList = JSON.parseArray(JSON.toJSONString(data), MaterialDTO.class);

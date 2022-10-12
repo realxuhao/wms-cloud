@@ -269,7 +269,6 @@
         <module>wms-modules</module>
         <module>wms-api</module>
         <module>ruoyi-common</module>
-        <module>wms-api-file</module>
     </modules>
     <packaging>pom</packaging>
 

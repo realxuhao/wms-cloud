@@ -1,8 +1,13 @@
 package com.bosch.storagein.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bosch.masterdata.api.domain.Bin;
+import com.bosch.storagein.api.domain.MaterialReceive;
 import com.bosch.storagein.api.domain.dto.MaterialInDTO;
 import com.bosch.storagein.api.domain.vo.MaterialInVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -11,7 +16,9 @@ import java.util.List;
  * @since: 10/8/2022 14:36
  * @description:
  */
-public interface MaterialInMapper {
+@Mapper
+@Repository("materialInMapper")
+public interface MaterialInMapper extends BaseMapper<MaterialInDTO>{
 
     /**
      * 新增入库

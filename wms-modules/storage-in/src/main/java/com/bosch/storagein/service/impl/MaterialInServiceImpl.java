@@ -1,8 +1,10 @@
 package com.bosch.storagein.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.storagein.api.constants.Constants;
+import com.bosch.storagein.api.domain.MaterialReceive;
 import com.bosch.storagein.api.domain.dto.MaterialInCheckDTO;
 import com.bosch.storagein.api.domain.dto.MaterialInDTO;
 import com.bosch.storagein.api.domain.dto.MaterialReceiveDTO;
@@ -31,7 +33,7 @@ import java.util.stream.Collectors;
  * 入库service
  */
 @Service
-public class MaterialInServiceImpl implements IMaterialInService {
+public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, MaterialInDTO>  implements IMaterialInService {
 
     @Autowired
     private RemoteMaterialService remoteMaterialService;

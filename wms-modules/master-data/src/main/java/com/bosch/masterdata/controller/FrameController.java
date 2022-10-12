@@ -9,8 +9,6 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
-import com.bosch.masterdata.api.domain.Area;
-import com.bosch.masterdata.api.domain.dto.AreaDTO;
 import com.bosch.masterdata.api.domain.dto.FrameDTO;
 import com.bosch.masterdata.api.domain.vo.FrameVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
@@ -128,7 +126,7 @@ public class FrameController extends BaseController {
     public R importExcel(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
         try {
             //解析文件服务
-            R result = fileService.read(file, ClassType.FRAMEDTO.getDesc());
+            R result = fileService.masterDataImport(file, ClassType.FRAMEDTO.getDesc());
             if (result.isSuccess()) {
                 Object data = result.getData();
                 List<FrameDTO> dtos = JSON.parseArray(JSON.toJSONString(data), FrameDTO.class);
@@ -167,7 +165,7 @@ public class FrameController extends BaseController {
 
         try {
             //解析文件服务
-            R result = fileService.read(file, ClassType.FRAMEDTO.getDesc());
+            R result = fileService.masterDataImport(file, ClassType.FRAMEDTO.getDesc());
             if (result.isSuccess()) {
                 Object data = result.getData();
                 List<FrameDTO> dtos = JSON.parseArray(JSON.toJSONString(data), FrameDTO.class);

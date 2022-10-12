@@ -2,6 +2,8 @@ package com.bosch.storagein.service;
 
 
 
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.storagein.api.domain.MaterialReceive;
 import com.bosch.storagein.api.domain.dto.MaterialInCheckDTO;
 import com.bosch.storagein.api.domain.dto.MaterialInDTO;
 import com.bosch.storagein.api.domain.vo.MaterialCheckResultVO;
@@ -11,7 +13,7 @@ import com.ruoyi.common.core.domain.R;
 
 import java.util.List;
 
-public interface IMaterialInService {
+public interface IMaterialInService extends IService<MaterialInDTO> {
 
     /**
      * 查询抽样信息

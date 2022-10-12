@@ -9,12 +9,9 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
-import com.bosch.masterdata.api.domain.Material;
-import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.dto.SupplierInfoDTO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.enumeration.ClassType;
-import com.bosch.masterdata.service.IMaterialService;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
@@ -131,7 +128,7 @@ public class SupplierInfoController extends BaseController {
     public R importExcel(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
         try {
             //解析文件服务
-            R result = fileService.read(file, ClassType.SUPPLIERINFODTO.getDesc());
+            R result = fileService.masterDataImport(file, ClassType.SUPPLIERINFODTO.getDesc());
             if (result.isSuccess()) {
                 Object data = result.getData();
                 List<SupplierInfoDTO> dtos = JSON.parseArray(JSON.toJSONString(data), SupplierInfoDTO.class);
@@ -168,7 +165,7 @@ public class SupplierInfoController extends BaseController {
 
         try {
             //解析文件服务
-            R result = fileService.read(file, ClassType.SUPPLIERINFODTO.getDesc());
+            R result = fileService.masterDataImport(file, ClassType.SUPPLIERINFODTO.getDesc());
             if (result.isSuccess()) {
                 Object data = result.getData();
                 List<SupplierInfoDTO> dtos = JSON.parseArray(JSON.toJSONString(data), SupplierInfoDTO.class);

@@ -2,9 +2,13 @@ package com.bosch.storagein.mapper;
 
 
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bosch.storagein.api.domain.MaterialReceive;
 import com.bosch.storagein.api.domain.dto.MaterialReceiveDTO;
 import com.bosch.storagein.api.domain.vo.MaterialReceiveVO;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -14,7 +18,9 @@ import java.util.List;
  * @author xuhao
  * @date 2022-09-22
  */
-public interface MaterialRecevieMapper
+@Mapper
+@Repository("materialRecevieMapper")
+public interface MaterialRecevieMapper extends BaseMapper<MaterialReceive>
 {
     /**
      * 查询物料收货信息

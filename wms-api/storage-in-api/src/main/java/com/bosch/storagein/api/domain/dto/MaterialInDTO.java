@@ -1,5 +1,6 @@
 package com.bosch.storagein.api.domain.dto;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,6 +13,7 @@ import java.util.Date;
  * @description:
  */
 @Data
+@TableName("si_material_receive")
 public class MaterialInDTO extends PageDomain {
 
     /**

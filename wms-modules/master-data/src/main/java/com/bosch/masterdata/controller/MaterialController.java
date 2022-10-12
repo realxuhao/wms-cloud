@@ -2,8 +2,6 @@ package com.bosch.masterdata.controller;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson2.JSON;
@@ -14,7 +12,6 @@ import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.enumeration.ClassType;
-import com.bosch.masterdata.mapper.MaterialMapper;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
@@ -146,7 +143,7 @@ public class MaterialController extends BaseController
     public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
 
         //解析文件服务
-        R result = fileService.read(file,ClassType.MATERIALDTO.getDesc());
+        R result = fileService.masterDataImport(file,ClassType.MATERIALDTO.getDesc());
         if (result.isSuccess()){
             Object data = result.getData();
             List<MaterialDTO> materialDTOList = JSON.parseArray(JSON.toJSONString(data), MaterialDTO.class);
@@ -177,7 +174,7 @@ public class MaterialController extends BaseController
 
         try {
             //解析文件服务
-            R result = fileService.read(file,ClassType.MATERIALDTO.getDesc());
+            R result = fileService.masterDataImport(file,ClassType.MATERIALDTO.getDesc());
             if (result.isSuccess()){
                 Object data = result.getData();
                 List<MaterialDTO> materialDTOList = JSON.parseArray(JSON.toJSONString(data), MaterialDTO.class);
