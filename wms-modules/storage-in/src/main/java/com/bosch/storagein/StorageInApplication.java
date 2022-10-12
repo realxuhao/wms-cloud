@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableCustomSwagger2
 @EnableRyFeignClients
 @SpringBootApplication
-@EnableTransactionManagement
+//@EnableTransactionManagement
 public class StorageInApplication {
     public static void main(String[] args) {
         SpringApplication.run(StorageInApplication.class, args);

@@ -35,7 +35,8 @@
                actual_result,
                average_result,
                operate_user,
-               operate_time
+               operate_time,
+               origin_pallet_quantity
         from si_material_in
     </sql>
 
@@ -58,6 +59,7 @@
             <if test="operateTime != null">operate_time,</if>
             <if test="averageResult != null">average_result,</if>
             <if test="virtualBinCode != null">virtual_bin_code,</if>
+            <if test="originPalletQuantity != null">origin_pallet_quantity,</if>
 
 
         </trim>
@@ -75,6 +77,7 @@
             <if test="operateTime != null">#{operateTime},</if>
             <if test="averageResult != null">#{averageResult},</if>
             <if test="virtualBinCode != null">#{virtualBinCode},</if>
+            <if test="originPalletQuantity != null">#{originPalletQuantity},</if>
 
         </trim>
     </insert>
@@ -87,7 +90,7 @@
         VALUES
         <foreach collection="list" separator="," item="item">
             (#{item.ssccNumber},#{item.batchNb},#{item.materialNb},#{item.checkType},#{item.checkQuantity},#{item.minStandard},#{item.maxStandard},#{item.actualQuantity},#{item.actualResult}
-            ,#{item.operateUser},#{item.operateTime},#{item.averageResult},#{item.virtualBinCode},#{originPalletQuantity})
+            ,#{item.operateUser},#{item.operateTime},#{item.averageResult},#{item.virtualBinCode},#{item.originPalletQuantity})
         </foreach>
 
     </insert>

@@ -70,7 +70,7 @@ public class MaterialInController extends BaseController {
 
         }
 
-        return R.ok(materialInService.check(materialInCheckDTO));
+        return R.ok(checkResultVO);
     }
 
     @GetMapping(value = "/getInfo/{id}")

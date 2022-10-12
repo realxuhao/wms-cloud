@@ -96,4 +96,10 @@ public class MaterialInVO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date operateTime;
 
+    /**
+     * 原托数
+     */
+    @ApiModelProperty(value = "原托数")
+    private Integer originPalletQuantity;
+
 }
