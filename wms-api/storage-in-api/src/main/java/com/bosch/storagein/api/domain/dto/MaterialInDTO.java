@@ -89,6 +89,13 @@ public class MaterialInDTO extends PageDomain {
     private String operateUser;
 
     /**
+     * 虚拟货位
+     */
+    @ApiModelProperty(value = "虚拟货位")
+    private String virtualBinCode;
+
+
+    /**
      * 操作时间
      */
     @ApiModelProperty(value = "操作时间")

@@ -39,6 +39,9 @@
     </sql>
 
     <insert id="insertMaterialIn" parameterType="MaterialInDTO" useGeneratedKeys="true" keyProperty="id">
+
+
+
         insert into si_material_in
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="ssccNumber != null and ssccNumber != ''">sscc_number,</if>
@@ -54,6 +57,7 @@
             <if test="operateUser != null and materialNb !=''">operate_user,</if>
             <if test="operateTime != null">operate_time,</if>
             <if test="averageResult != null">average_result,</if>
+            <if test="virtualBinCode != null">virtual_bin_code,</if>
 
 
         </trim>
@@ -70,8 +74,20 @@
             <if test="operateUser != null and materialNb !=''">#{operateUser},</if>
             <if test="operateTime != null">#{operateTime},</if>
             <if test="averageResult != null">#{averageResult},</if>
+            <if test="virtualBinCode != null">#{virtualBinCode},</if>
 
         </trim>
+    </insert>
+
+
+    <insert id="batchInsert">
+        INSERT INTO si_material_in (sscc_number, batch_nb, material_nb, check_type, check_quantity,min_standard,max_standard,actual_quantity,actual_result,operate_user,operate_time,average_result,virtual_bin_code)
+        VALUES
+        <foreach collection="list" separator="," item="item">
+            (#{item.ssccNumber},#{item.batchNb},#{item.materialNb},#{item.checkType},#{item.checkQuantity},#{item.minStandard},#{item.maxStandard},#{item.actualQuantity},#{item.actualResult}
+            ,#{item.operateUser},#{item.operateTime},#{item.averageResult},#{item.virtualBinCode})
+        </foreach>
+
     </insert>
 
 

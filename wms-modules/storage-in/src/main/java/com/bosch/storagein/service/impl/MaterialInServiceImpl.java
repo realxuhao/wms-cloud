@@ -21,6 +21,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -53,19 +54,9 @@ public class MaterialInServiceImpl implements IMaterialInService {
     public MaterialCheckResultVO check(MaterialInCheckDTO materialInCheckDTO) {
 
         MaterialCheckResultVO materialCheckResultVO = dealCheck(materialInCheckDTO);
-
-        //校验通过后，更新收货表状态+分配虚拟货位
-        if (materialCheckResultVO.getCheckFlag()) {
-
-            materialRecevieMapper.updateStatusBySscc(MesBarCodeUtil.getSSCC(materialInCheckDTO.getMesBarCode()),
-                    MaterialStatusEnum.IN.getCode());
-
-            materialInMapper.updateVirtualBinCode(materialCheckResultVO.getSsccNumber(), Constants.VIRTUAL_BIN_CODE);
-        }
-
-
         return materialCheckResultVO;
     }
+
 
     @Override
     public MaterialInVO selectById(Long id) {
@@ -101,6 +92,7 @@ public class MaterialInServiceImpl implements IMaterialInService {
         return true;
     }
 
+
     private MaterialCheckResultVO dealCheck(MaterialInCheckDTO materialInCheckDTO) {
         Integer actualQuantity = materialInCheckDTO.getActualQuantity();
         Double actualResult = materialInCheckDTO.getActualResult();
@@ -111,11 +103,11 @@ public class MaterialInServiceImpl implements IMaterialInService {
         MaterialCheckResultVO checkResultVO = BeanConverUtil.conver(materialInCheckVO, MaterialCheckResultVO.class);
         checkResultVO.setOperateUser(SecurityUtils.getUsername());
         checkResultVO.setOperateTime(new Date());
-        //如果是免检或者该批次已经检验过，直接入库。
-        if (CheckTypeEnum.FREE.getCode().equals(materialInCheckVO.getCheckType()) ||
-                CheckTypeEnum.CHECKED.getCode().equals(materialInCheckVO.getCheckType())) {
-            MaterialInDTO materialInDTO = buildMaterialInDTO(mesBarCode, materialInCheckVO);
-            materialInMapper.insertMaterialIn(materialInDTO);
+        //如果是免检，直接入库。
+        if (CheckTypeEnum.FREE.getCode().equals(materialInCheckVO.getCheckType())) {
+
+            batchStorageIn(materialInCheckVO, actualQuantity, actualResult, checkResultVO.getAverageResult());
+
             checkResultVO.setCheckFlag(true);
             return checkResultVO;
         }
@@ -123,11 +115,8 @@ public class MaterialInServiceImpl implements IMaterialInService {
         //称重 或者 数数
         if ((CheckTypeEnum.WEIGHT.getCode().equals(materialInCheckVO.getCheckType()) && checkWeight(mesBarCode, actualQuantity, actualResult, checkResultVO))
                 || (CheckTypeEnum.COUNT.getCode().equals(materialInCheckVO.getCheckType()) && checkCount(materialInCheckVO, actualQuantity, actualResult, checkResultVO))) {
-            MaterialInDTO materialInDTO = buildMaterialInDTO(mesBarCode, materialInCheckVO);
-            materialInDTO.setActualQuantity(actualQuantity);
-            materialInDTO.setActualResult(actualResult);
-            materialInDTO.setAverageResult(checkResultVO.getAverageResult());
-            materialInMapper.insertMaterialIn(materialInDTO);
+
+            batchStorageIn(materialInCheckVO, actualQuantity, actualResult, checkResultVO.getAverageResult());
 
             checkResultVO.setActualResult(actualResult).setActualQuantity(actualQuantity);
             checkResultVO.setCheckFlag(true);
@@ -137,10 +126,27 @@ public class MaterialInServiceImpl implements IMaterialInService {
         return checkResultVO;
     }
 
+    private void batchStorageIn(MaterialInCheckVO materialInCheckVO, Integer actualQuantity, Double actualResult, Double averageResult) {
+        List<MaterialReceiveVO> materialReceiveVOS = materialRecevieMapper.selectSameBatchMaterialReceiveVO(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb());
+        List<MaterialInDTO> materialInDTOList = materialReceiveVOS.stream().map(item -> {
+            MaterialInDTO materialInDTO = buildMaterialInDTO(materialInCheckVO);
+            materialInDTO.setSsccNumber(item.getSsccNumber());
+            materialInDTO.setActualQuantity(actualQuantity);
+            materialInDTO.setActualResult(actualResult);
+            materialInDTO.setAverageResult(averageResult);
+            materialInDTO.setVirtualBinCode(Constants.VIRTUAL_BIN_CODE);
+            return materialInDTO;
+        }).collect(Collectors.toList());
+        materialInMapper.batchInsert(materialInDTOList);
+        materialRecevieMapper.batchUpdateStatus(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb(), MaterialStatusEnum.IN.getCode());
 
-    private MaterialInDTO buildMaterialInDTO(String mesBarCode, MaterialInCheckVO materialInCheckVO) {
+    }
+
+
+    private MaterialInDTO buildMaterialInDTO(MaterialInCheckVO materialInCheckVO) {
+        String mesBarCode = materialInCheckVO.getMesBarCode();
         MaterialInDTO materialInDTO = new MaterialInDTO();
-        materialInDTO.setSsccNumber(MesBarCodeUtil.getSSCC(mesBarCode));
+//        materialInDTO.setSsccNumber(MesBarCodeUtil.getSSCC(mesBarCode));
         materialInDTO.setBatchNb(MesBarCodeUtil.getBatchNb(mesBarCode));
         materialInDTO.setMaterialNb(MesBarCodeUtil.getMaterialNb(mesBarCode));
         materialInDTO.setCheckQuantity(materialInCheckVO.getCheckQuantity());
@@ -217,11 +223,24 @@ public class MaterialInServiceImpl implements IMaterialInService {
      */
     private MaterialInCheckVO buildMaterialCheckVO(MaterialVO materialVO, String mesBarCode) {
         MaterialInCheckVO materialInCheckVO = new MaterialInCheckVO();
+        materialInCheckVO.setMesBarCode(mesBarCode);
         materialInCheckVO.setSsccNumber(MesBarCodeUtil.getSSCC(mesBarCode));
         materialInCheckVO.setBatchNb(MesBarCodeUtil.getBatchNb(mesBarCode));
         materialInCheckVO.setMaterialNb(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
+        //获取收货列表里面的总托数
+        List<MaterialReceiveVO> sameBatchMaterials = materialRecevieMapper.selectSameBatchMaterialReceiveVO(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb());
+        if (!CollectionUtils.isEmpty(sameBatchMaterials)) {
+            materialInCheckVO.setTotalPallet(sameBatchMaterials.size());
+        }
+
         dealCheckType(materialInCheckVO, materialVO.getErrorProofingMethod());
+
+        //免检或者该批次已经检验过，直接返回
+        if (CheckTypeEnum.CHECKED.getCode().equals(materialInCheckVO.getCheckType()) || CheckTypeEnum.FREE.getCode().equals(materialInCheckVO.getCheckType())) {
+            return materialInCheckVO;
+        }
+
         materialInCheckVO.setMinStandard(materialVO.getLessDeviationRatio().doubleValue());
         materialInCheckVO.setMaxStandard(materialVO.getMoreDeviationRatio().doubleValue());
         materialInCheckVO.setUnit(materialVO.getUnit());
@@ -229,11 +248,6 @@ public class MaterialInServiceImpl implements IMaterialInService {
 
         //计算抽样数量
         dealCheckQuantity(materialInCheckVO, materialVO.getMinPackageNumber());
-
-        //免检或者该批次已经检验过，直接返回
-        if (CheckTypeEnum.CHECKED.getCode().equals(materialInCheckVO.getCheckType()) || CheckTypeEnum.FREE.getCode().equals(materialInCheckVO.getCheckType())) {
-            return materialInCheckVO;
-        }
 
 
         MaterialReceiveVO materialReceiveVO = materialRecevieMapper.selectMaterialReceiveVOBySncc(materialInCheckVO.getSsccNumber());

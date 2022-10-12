@@ -4,10 +4,20 @@ package com.bosch.storagein.api.domain.vo;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 
 @Data
 @NoArgsConstructor
+@Accessors(chain = true)
 public class MaterialInCheckVO {
+
+    /**
+     * MesBarCode
+     */
+    @ApiModelProperty(value = "MesBarCode")
+    private String mesBarCode;
+
+
 
     /**
      * SSCC码
@@ -80,6 +90,12 @@ public class MaterialInCheckVO {
      */
     @ApiModelProperty(value = "PO行号")
     private String poNumberItem;
+
+    /**
+     * 总托数
+     */
+    @ApiModelProperty(value = "总托数")
+    private int totalPallet;
 
 
 

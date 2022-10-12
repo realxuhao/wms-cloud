@@ -30,4 +30,6 @@ public interface MaterialInMapper {
     List<MaterialInVO> getByUserName(String username);
 
     List<MaterialInVO> selectMaterialInList(MaterialInDTO materialInDTO);
+
+    void batchInsert(@Param("list") List<MaterialInDTO> materialInDTOList);
 }

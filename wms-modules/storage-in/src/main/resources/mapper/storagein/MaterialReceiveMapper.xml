@@ -114,6 +114,17 @@
         </foreach>
     </update>
 
+    <update id="batchUpdateStatus">
+        update si_material_receive
+        set status = #{code}
+        where material_nb = #{materialNb} and batch_nb=#{batchNb} and delete_flag = 1
+    </update>
+
+
+    <select id="selectSameBatchMaterialReceiveVO"  resultMap="MaterialReceiveVOResult">
+        <include refid="selectMaterialReceiveVo"/>
+        where delete_flag=1 and material_nb = #{materialNb} and batch_nb = #{batchNb}
+    </select>
 
 
 

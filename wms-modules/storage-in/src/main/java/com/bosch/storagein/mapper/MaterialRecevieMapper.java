@@ -63,4 +63,8 @@ public interface MaterialRecevieMapper
     public int updateEditFlag(@Param("ids") List<Long> ids, @Param("editFlag") Integer editFlag);
 
 
+    public List<MaterialReceiveVO> selectSameBatchMaterialReceiveVO(@Param("materialNb")String materialNb,@Param("batchNb")String batchNb);
+
+
+    void batchUpdateStatus(@Param("materialNb") String materialNb, @Param("batchNb") String batchNb, @Param("code") Integer code);
 }
