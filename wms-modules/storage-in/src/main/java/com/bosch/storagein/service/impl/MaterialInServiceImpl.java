@@ -21,6 +21,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
@@ -31,6 +32,7 @@ import java.util.stream.Collectors;
  * 入库service
  */
 @Service
+@Transactional(rollbackFor = Exception.class)
 public class MaterialInServiceImpl implements IMaterialInService {
 
     @Autowired
