@@ -22,6 +22,8 @@
         <result property="deleteFlag" column="delete_flag"/>
         <result property="status" column="status"/>
         <result property="editFlag" column="edit_flag"/>
+        <result property="plantNb" column="plant_nb"/>
+
     </resultMap>
     <sql id="selectMaterialReceiveVo">
         select sm.id,
@@ -39,7 +41,8 @@
                sm.update_time,
                sm.delete_flag,
                sm.status,
-               sm.edit_flag
+               sm.edit_flag,
+               sm.plant_nb
         from si_material_receive sm
     </sql>
 
@@ -60,7 +63,8 @@
         sm.update_time,
         sm.delete_flag,
         sm.status,
-        sm.edit_flag
+        sm.edit_flag,
+        sm.plant_nb
         from si_material_receive sm left join md_material mm on sm.material_nb = mm.code
         where sm.delete_flag=1
         <if test="ssccNumber != null  and ssccNumber != ''">and sm.sscc_number = #{ssccNumber}</if>

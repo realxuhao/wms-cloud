@@ -42,5 +42,8 @@ public class MaterialCheckResultVO extends MaterialInCheckVO {
     @ApiModelProperty(value = "操作时间")
     private Date operateTime;
 
+    @ApiModelProperty(value = "内部返回标识",hidden = true)
+    private Integer responseCode;
+
 
 }

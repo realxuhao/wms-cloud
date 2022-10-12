@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.storagein.api.constants.Constants;
+import com.bosch.storagein.api.constants.ResponseConstants;
 import com.bosch.storagein.api.domain.MaterialReceive;
 import com.bosch.storagein.api.domain.dto.MaterialInCheckDTO;
 import com.bosch.storagein.api.domain.dto.MaterialInDTO;
@@ -70,7 +71,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
     }
 
     @Override
-    public List<MaterialInVO> selectBySsccNumber(String mesBarCode) {
+    public List<MaterialInVO> selectByMesBarCode(String mesBarCode) {
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         return materialInMapper.selectBySsccNumber(sscc);
     }
@@ -113,6 +114,13 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
             batchStorageIn(materialInCheckVO, materialInCheckDTO, checkResultVO.getAverageResult());
 
             checkResultVO.setCheckFlag(true);
+            return checkResultVO;
+        }
+
+
+        //校验抽样件数
+        if (materialInCheckDTO.getActualQuantity()< materialInCheckVO.getCheckQuantity()){
+            checkResultVO.setResponseCode(ResponseConstants.QUANTITY_INVALID);
             return checkResultVO;
         }
 

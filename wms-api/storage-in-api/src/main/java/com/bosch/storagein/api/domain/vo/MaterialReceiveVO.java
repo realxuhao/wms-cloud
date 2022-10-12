@@ -15,6 +15,13 @@ public class MaterialReceiveVO {
     @ApiModelProperty(value = "主键id")
     private Long id;
 
+
+    /**
+     * 仓库
+     */
+    @ApiModelProperty(value = "仓库")
+    private String plantNb;
+
     /**
      * SSCC码
      */

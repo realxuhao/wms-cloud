@@ -1,7 +1,6 @@
 package com.bosch.storagein.controller;
 
 
-
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.storagein.api.constants.*;
 import com.bosch.storagein.api.domain.dto.MaterialInCheckDTO;
@@ -64,14 +63,16 @@ public class MaterialInController extends BaseController {
     @ApiOperation("根据mesBarCode查询物料校验信息")
     @Log(title = "入库校验", businessType = BusinessType.INSERT)
     public R<MaterialCheckResultVO> check(@RequestBody MaterialInCheckDTO materialInCheckDTO) {
-        List<MaterialInVO> materialInVOS = materialInService.selectBySsccNumber(materialInCheckDTO.getMesBarCode());
+        List<MaterialInVO> materialInVOS = materialInService.selectByMesBarCode(materialInCheckDTO.getMesBarCode());
         if (!CollectionUtils.isEmpty(materialInVOS)) {
             return R.fail(null, ResponseConstants.HAS_IN, "重复入库");
         }
-        //校验抽样件数是否符合
-        if (!materialInService.checkSampleQuantity(materialInCheckDTO)){
+        MaterialCheckResultVO checkResultVO = materialInService.check(materialInCheckDTO);
+        if (checkResultVO != null && checkResultVO.getResponseCode() != null && checkResultVO.getResponseCode() == ResponseConstants.QUANTITY_INVALID) {
             return R.fail(null, ResponseConstants.QUANTITY_INVALID, "抽样件数不符合");
+
         }
+
         return R.ok(materialInService.check(materialInCheckDTO));
     }
 

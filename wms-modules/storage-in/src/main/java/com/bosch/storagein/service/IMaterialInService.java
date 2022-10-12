@@ -29,7 +29,7 @@ public interface IMaterialInService extends IService<MaterialInDTO> {
 
     MaterialInVO selectById(Long id);
 
-    List<MaterialInVO> selectBySsccNumber(String mesBarCode);
+    List<MaterialInVO> selectByMesBarCode(String mesBarCode);
 
     List<MaterialInVO> getByUserName(String username);
 
