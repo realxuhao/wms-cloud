@@ -211,6 +211,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
                                Double actualResult, MaterialCheckResultVO checkResultVO) {
         double res = Math.ceil(actualResult / actualQuantity);
         checkResultVO.setAverageResult(res);
+        checkResultVO.setActualResult(actualResult).setActualQuantity(actualQuantity);
         //TODO 补充计算说明
         if (res < materialInCheckVO.getMinStandard() ||
                 res > materialInCheckVO.getMaxStandard()) {
