@@ -136,7 +136,8 @@
         si.actual_result,
         si.average_result,
         si.operate_user,
-        si.operate_time
+        si.operate_time,
+        si.origin_pallet_quantity
         from si_material_in si left join md_material mm on si.material_nb = mm.code
         <where>
 

@@ -56,6 +56,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public MaterialCheckResultVO check(MaterialInCheckDTO materialInCheckDTO) {
 
         MaterialCheckResultVO materialCheckResultVO = dealCheck(materialInCheckDTO);
@@ -145,7 +146,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
             materialInDTO.setSsccNumber(item.getSsccNumber());
             materialInDTO.setActualQuantity(materialInCheckDTO.getActualQuantity());
             materialInDTO.setActualResult(materialInCheckDTO.getActualResult());
-            materialInDTO.setOriginPalletQuantity(materialInDTO.getOriginPalletQuantity());
+            materialInDTO.setOriginPalletQuantity(materialInCheckDTO.getOriginPalletQuantity());
             materialInDTO.setAverageResult(averageResult);
             materialInDTO.setVirtualBinCode(Constants.VIRTUAL_BIN_CODE);
             return materialInDTO;
