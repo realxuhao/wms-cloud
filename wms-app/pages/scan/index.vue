@@ -1,0 +1,118 @@
+<template>
+	<my-page nav-title="扫描SSCC码">
+			<view class="content" slot="page-main" @click="handleGotoCount">
+				<image src="../../static/sku-phone.png" class="m-b-8"></image>
+				<text>请将激光扫描头对准SSCC码区域</text>
+			</view>
+			
+			<uni-popup ref="alertDialog" type="dialog">
+					<uni-popup-dialog 
+					type="success" 
+					cancelText="取消" 
+					confirmText="确定" 
+					title="通知" 
+					content="该批次原材料已检验" 
+					@confirm="handleMaterialIn"
+					></uni-popup-dialog>
+			</uni-popup>
+			
+			<Message ref="message"></Message>
+	</my-page>
+</template>
+
+<script>
+	import Message from '@/components/Message'
+	
+	export default {
+	components:{
+		Message	
+	},
+	 onLoad() {  
+		   var _this = this  
+		   uni.$on('scancodedate',function(data){  
+			_this.code = data.code
+			
+			this.checkMaterialIn(this.code)
+			uni.$emit('stopScan')
+		   })  
+		},  
+		onUnload() {  
+		   // 移除监听事件      
+		   uni.$off('scancodedate')
+		},
+		data() {
+			return {
+				code:'20170826669006391110000015100961661611251128000060',
+				
+				msgType:'',
+				description:"",
+			};
+		},
+		methods:{
+			async checkMaterialIn(barCode){
+				try{
+					await this.$store.dispatch('materialIn/getAndCheckMaterialIn',barCode)
+					
+					this.handleGotoCount()
+				}catch(e){
+					if(e.code === 601){
+						this.msgType = 'warn'
+						this.description = '该批次原材料已检验，是否直接入库？'
+						this.$refs.alertDialog.open()
+					}else if(e.code === 602){
+						this.$refs.message.error('该原材料已入库，请勿重复操作！')
+					}else{
+						this.$refs.message.error(e.message)
+					}
+				}
+			},
+			async handleMaterialIn(){
+				try{
+					await this.$store.dispatch('material/postMaterialIn',{barCode:this.code})
+				}catch(e){
+					this.$refs.message.error(e.message)
+				}
+				
+				uni.$emit('startScan')
+			},
+			handleGotoCount(){
+				uni.navigateTo({
+					url:`/pages/materialCount/index?barCode=${this.code}`
+				})
+			}
+		}
+	}
+</script>
+
+<style lang="scss">
+	.wrapper{
+		display: flex;
+		flex-direction: column;
+	}
+	/deep/.uni-navbar--shadow{
+		box-shadow: none;
+	}
+	/deep/.uni-navbar--border{
+		border: none;
+	}
+	
+	.content{
+		height: 100%;
+		background-color: $primary-color;
+		flex: 1;
+		display: flex;
+		align-items: center;
+		// justify-content: center;
+		flex-direction: column;
+		image{
+			width: 180px;
+			// height: 160px;
+			margin-top: 120px;
+			margin-bottom: 32px;
+		}
+		text{
+			color: #fff;
+			font-size: 12px;
+		}
+	}
+</style>
