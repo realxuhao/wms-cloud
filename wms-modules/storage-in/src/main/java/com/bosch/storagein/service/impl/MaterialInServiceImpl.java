@@ -130,10 +130,10 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
 
             batchStorageIn(materialInCheckVO, materialInCheckDTO, checkResultVO.getAverageResult());
 
-            checkResultVO.setActualResult(actualResult).setActualQuantity(actualQuantity);
             checkResultVO.setCheckFlag(true);
             return checkResultVO;
         }
+
         checkResultVO.setCheckFlag(false);
         return checkResultVO;
     }
@@ -188,6 +188,8 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         double res = caculateResult / materialVO.getTransferWeightRatio().doubleValue();
 
         checkResultVO.setAverageResult(res);
+        checkResultVO.setActualResult(actualResult).setActualQuantity(actualQuantity);
+
 
         if (res < materialVO.getLessDeviationRatio().doubleValue() || res > materialVO.getMoreDeviationRatio().doubleValue()) {
             return false;

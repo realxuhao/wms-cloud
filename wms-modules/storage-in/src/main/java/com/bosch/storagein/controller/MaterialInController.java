@@ -45,9 +45,6 @@ public class MaterialInController extends BaseController {
     public R<MaterialInCheckVO> getCheckInfo(@PathVariable("mesBarCode") String mesBarCode) {
         List<MaterialReceiveVO> materialReceiveVOs = materialReceiveService.selectByMesBarCode(mesBarCode);
 
-        //        if (materialReceiveVO == null) {
-//            return R.fail(null, ResponseConstants.MES_BARCODE_NOT_EXIST, "该条码不存在");
-//        }
         List<Integer> collect = materialReceiveVOs.stream().map(MaterialReceiveVO::getStatus).collect(Collectors.toList());
         if (collect.contains(MaterialStatusEnum.IN.getCode())) {
             return R.fail(null, ResponseConstants.BATCH_HAS_IN, "该批次已有入库");
