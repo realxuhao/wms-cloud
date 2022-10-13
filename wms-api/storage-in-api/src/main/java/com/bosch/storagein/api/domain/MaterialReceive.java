@@ -1,7 +1,7 @@
 package com.bosch.storagein.api.domain;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.opencsv.bean.CsvBindByName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,6 +22,7 @@ public class MaterialReceive {
     /**
      * id
      */
+    @TableId(type = IdType.AUTO)
     @ExcelProperty(value = "id")
     @CsvBindByName(column = "id")
     private Long id;
@@ -122,28 +123,31 @@ public class MaterialReceive {
      */
     @ExcelProperty(value = "upload_user")
     @CsvBindByName(column = "upload_user")
-    private String upload_user;
+    @TableField(fill = FieldFill.INSERT)
+    private String uploadUser;
 
     /**
      * 上传时间
      */
     @ExcelProperty(value = "upload_time")
     @CsvBindByName(column = "upload_time")
-    private Date upload_time;
+    @TableField(value = "upload_time",fill = FieldFill.INSERT)
+    private Date uploadTime;
 
     /**
      * 更新人
      */
     @ExcelProperty(value = "update_user")
     @CsvBindByName(column = "update_user")
-    private String update_user;
+    @TableField( fill = FieldFill.UPDATE)
+    private String updateUser;
 
     /**
      * 更新时间
      */
-    @ExcelProperty(value = "update_time")
+    @TableField(value = "update_time", fill = FieldFill.UPDATE)
     @CsvBindByName(column = "update_time")
-    private Date update_time;
+    private Date updateTime;
 
     /**
      * 删除标记1:可用，0:删除

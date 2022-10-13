@@ -141,8 +141,8 @@ public class MaterialReceiveCotroller extends BaseController {
                         wrapper.eq(MaterialReceive::getSsccNumber,r.getSsccNumber());
                         boolean update = materialReceiveService.update(r, wrapper);
                         if (!update){
-                            r.setUpload_user(SecurityUtils.getUsername());
-                            r.setUpload_time(DateUtils.getNowDate());
+                            r.setUpdateTime(null);
+                            r.setUpdateUser(null);
                             materialReceiveService.save(r);
                         }
                     });
