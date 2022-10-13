@@ -45,6 +45,7 @@ class MaterialReceiveServiceImplTest {
     @Test
     void selectByMesBarCode() {
         List<MaterialReceiveVO> materialReceiveVOS = materialReceiveService.selectByMesBarCode(mesBarCode);
+        Assertions.assertNotNull(materialReceiveVOS);
     }
 
     @Test
