@@ -3,23 +3,37 @@
 			<view class="main" slot="page-main">
 				<view class="header m-b-8">
 					<view class="text-line m-b-8 ">
-						物料名称：{{materialInfo.materialName}}
+						<view class="label">物料名称：</view>
+						{{materialInfo.materialName}}
 					</view>
 					<view class="text-line m-b-8 ">
-						物料编码：{{materialInfo.materialNb}}
+						<view class="label">
+							物料编码：
+						</view>
+						{{materialInfo.materialNb}}
+					</view>
+					<view class="text-line  m-b-8">
+						<view class="label">批次：</view>
+						{{materialInfo.batchNb}}
 					</view>
 					<view class="text-line m-b-8">
-						总托数：<uni-tag size="small" type="success" :circle="false" :text="materialInfo.checkTypeDesc"></uni-tag>
+						<view class="label">总托数：</view>
+						<uni-tag size="small" type="success" :circle="false" :text="materialInfo.totalPallet+''"></uni-tag>
 					</view>
 					<view class="text-line m-b-8">
-						抽样件数：<uni-tag size="small" type="error" :circle="false" :text="materialInfo.checkQuantity+''"></uni-tag>
+						<view class="label">抽样件数：</view>
+						<uni-tag size="small" type="error" :circle="false" :text="materialInfo.checkQuantity+''"></uni-tag>
 					</view>
 					<view class="text-line ">
-						抽样方式：<uni-tag size="small" type="success" :circle="false" :text="materialInfo.checkTypeDesc"></uni-tag>
+						<view class="label">抽样方式：</view>
+						<uni-tag size="small" type="success" :circle="false" :text="materialInfo.checkTypeDesc"></uni-tag>
 					</view>
 				</view>
 				<view class="content">
 						<uni-forms :label-width="80" v-if="materialInfo.checkType===1" ref="numberform" :rules="numberRules" :modelValue="numberFormData" label-position="left">
+							<uni-forms-item label="原托数" name="originalPalletQuantity" required>
+								<uni-easyinput type="number" v-model="numberFormData.originalPalletQuantity" placeholder="原托数" />
+							</uni-forms-item>
 							<uni-forms-item label="实际件数" name="actualQuantity" required>
 								<uni-easyinput type="number" v-model="numberFormData.actualQuantity" placeholder="实际抽样件数" />
 							</uni-forms-item>
@@ -27,11 +41,14 @@
 								<uni-easyinput v-model="numberFormData.actualResult" placeholder="数数结果" />
 							</uni-forms-item>
 							
-							<o-btn block class="submit-btn" @click="handleNumberSubmit">提交</o-btn>
+							<o-btn block class="submit-btn primary-button" :loading="submitLoading" @click="handleNumberSubmit">提交</o-btn>
 						</uni-forms>
 					
 					
 						<uni-forms :label-width="80" v-if="materialInfo.checkType===0" ref="weightform" :rules="weightFormRules" :modelValue="weightFormData"  label-position="left">
+							<uni-forms-item label="原托数" name="originalPalletQuantity" required>
+								<uni-easyinput type="number" v-model="weightFormData.originalPalletQuantity" placeholder="原托数" />
+							</uni-forms-item>
 							<view class="count-item m-b-8" v-for="(item,index) in weightList" :key="index">
 								<view>
 									<uni-forms-item 
@@ -62,13 +79,56 @@
 									<uni-tag type="success	" class="action-add" @click="handleAddWeight" text="新增" />
 								</view>
 							</view>
-							<o-btn block class="submit-btn" @click="handleWeightSubmit">提交</o-btn>
+							<o-btn block class="submit-btn primary-button" :loading="submitLoading" @click="handleWeightSubmit">提交</o-btn>
 							</uni-forms>
 				</view>
 			</view>
 			
 			<Message ref="message"></Message>
 			
+		<uni-popup ref="popup" :is-mask-click="false">
+			<view class="result-content">
+				<view class="result-status">
+					<uni-icons custom-prefix="iconfont"
+					:class="resultData.checkFlag?'success-color':'error-color'"
+					:type="resultData.checkFlag?'icon-chenggong':'icon-shibai'" size="32"></uni-icons>
+					<text class="text" :class="resultData.checkFlag?'success-color':'error-color'">{{resultData.checkFlag?'入库成功':'入库失败'}}</text>
+				</view>
+				
+				<view class="data-box">
+					<view class="text-line m-b-8">
+						<view class="label">实际抽样件数：</view>
+						{{resultData.actualQuantity}}
+					</view>
+					<view class="text-line m-b-8">
+						<view class="label">目标抽样件数：</view>
+						{{resultData.checkQuantity}}
+					</view>
+					<view v-show="materialInfo.checkType===0">
+						<view class="text-line m-b-8">
+							<view class="label">实际重量每件：</view>
+							{{resultData.averageResult}} ({{resultData.unit}})
+						</view>
+						<view class="text-line">
+							<view class="label">目标重量每件：</view>
+							[{{resultData.minStandard}} ,{{resultData.maxStandard}}]（{{resultData.unit}})
+						</view>
+					</view>
+					<view v-show="materialInfo.checkType===1">
+						<view class="text-line m-b-8">
+							<view class="label">实际数量每件：</view>
+							{{resultData.averageResult}} ({{resultData.unit}})
+						</view>
+						<view class="text-line">
+							<view class="label">目标数量每件：
+							</view>
+							[{{resultData.minStandard}},{{resultData.maxStandard}}]（{{resultData.unit}})
+						</view>
+					</view>
+				</view>
+				<o-btn block class="primary-button" @click="handleGoBack">返回</o-btn>
+			</view>
+		</uni-popup>
 			
 		</my-page>
 </template>
@@ -79,13 +139,13 @@
 	function convertWeightForm (weightForm){
 		const keys =  Object.keys(weightForm)
 		const weightList = keys.filter(item => item.indexOf('weight')>-1)
-		const numberList = keys.filter(item => item.indexOf('weight')>-1)
+		const numberList = keys.filter(item => item.indexOf('number')>-1)
 		
 		const actualResult = weightList.reduce((count,item)=>{
 			const number = Number(weightForm[item])
 			return count+number
 		},0)
-		const actualQuantity = weightList.reduce((count,item)=>{
+		const actualQuantity = numberList.reduce((count,item)=>{
 			const number = Number(weightForm[item])
 			return count+number
 		},0)
@@ -105,6 +165,9 @@
 			this.barCode = options.barCode
 			this.getMaterialInfo(options.barCode)
 		},
+		mounted() {
+		// this.$refs.popup.open('center')	
+		},
 		data() {
 			return {
 				barCode:'',
@@ -118,6 +181,12 @@
 					actualResult:undefined,
 				},
 				numberRules:{
+					originalPalletQuantity:{
+						rules: [{
+							required: true,
+							errorMessage: '请输入原托数',
+						}]
+					},
 					actualQuantity:{
 						rules: [{
 							required: true,
@@ -134,10 +203,17 @@
 					},
 				},
 				weightFormData:{
+					originalPalletQuantity:'',
 					weight0:undefined,
 					number0:undefined
 				},
 				weightFormRules:{
+					originalPalletQuantity:{
+						rules: [{
+							required: true,
+							errorMessage: '请输入原托数',
+						}]
+					},
 					actualQuantity:{
 						rules: [{
 							required: true,
@@ -148,12 +224,19 @@
 				weightList:[
 					0
 				],
+				
+				resultData:{},
+				
+				submitLoading:false
 			}
 		},
 		methods: {
+			async handleGoBack(){
+				uni.navigateBack({delta:1})	
+			},
 			async getMaterialInfo(barCode){
 				try{
-					uni.showLoading()
+					uni.showLoading({title:'加载中'})
 					const data = await this.$store.dispatch('materialIn/getAndCheckMaterialIn',barCode)
 					this.materialInfo = data
 				}catch(e){
@@ -177,7 +260,8 @@
 				  .validate()
 				  .then((res) => {
 					  const data = convertWeightForm(res)
-				    this.postMaterialIn(data);
+					  
+				    this.postMaterialIn({...data,originalPalletQuantity:res.originalPalletQuantity});
 				  })
 				  .catch((err) => {});
 			},
@@ -189,18 +273,23 @@
 				  })
 				  .catch((err) => {});
 			},
-			async postMaterialIn(data){
+			async postMaterialIn(res){
 				try{
-					uni.showLoading()
-					await this.$store.dispatch('materialIn/postMaterialIn',{...data,mesBarCode:this.barCode})
-					
-					this.$refs.message.success('入库成功！')
-					
-					uni.navigateBack({delta:1})
+					uni.showLoading({
+						title:'正在提交'
+					})
+					this.submitLoading = true
+					const data = await this.$store.dispatch('materialIn/postMaterialIn',{
+						...res,
+						mesBarCode:this.barCode,
+						})
+					this.resultData = data
+					this.$refs.popup.open('center')
 				}catch(e){
 					this.$refs.message.error(e.message)
 				}finally{
 					uni.hideLoading()
+					this.submitLoading = false
 				}
 			}
 		}
@@ -215,14 +304,21 @@
 		display: flex;
 		flex-direction: column;
 	}
+	.text-line{
+		color: #333;
+		font-size: 14px;
+		display: flex;
+		align-items: center;
+		.label{
+			width: 72px;
+		}
+	}
+	
 .header{
 	background: #fff;
 	padding: 8px;
 	border-radius: 4px;
-	.text-line{
-		color: #333;
-		font-size: 14px;
-	}
+	
 	/deep/.uni-tag{
 		display: inline-block;
 		min-width: 80px;
@@ -258,13 +354,9 @@
 			display: block;
 		}
 	}
-	.uni-tag{
-		float: right;
-	}
+
 	.submit-btn{
 		margin-top: 48px;
-		background: $primary-color;
-		color: #fff;
 	}
 }
 /deep/.uni-forms{
@@ -273,6 +365,33 @@
 
 .no-margin{
 	margin-bottom: 8px;
+}
+
+.result-content{
+	width: 324px;
+	padding: 12px;
+	box-sizing: border-box;
+	background: #fff;
+	border-radius: 4px;
+	.result-status{
+		color: $uni-color-success;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 16px;
+		.text{
+			margin-left: 8px;
+			font-size: 14px;
+		}
+		
+	}
+	.label{
+		width: 100px;
+	}
+	.data-box{
+		margin-bottom: 16px;
+		padding: 0px 8px;
+	}
 }
 
 </style>

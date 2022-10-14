@@ -5,17 +5,6 @@
 				<text>请将激光扫描头对准SSCC码区域</text>
 			</view>
 			
-			<uni-popup ref="alertDialog" type="dialog">
-					<uni-popup-dialog 
-					type="success" 
-					cancelText="取消" 
-					confirmText="确定" 
-					title="通知" 
-					content="该批次原材料已检验" 
-					@confirm="handleMaterialIn"
-					></uni-popup-dialog>
-			</uni-popup>
-			
 			<Message ref="message"></Message>
 	</my-page>
 </template>
@@ -31,8 +20,8 @@
 		   var _this = this  
 		   uni.$on('scancodedate',function(data){  
 			_this.code = data.code
-			
-			this.checkMaterialIn(this.code)
+			console.log(data)
+			// this.checkMaterialIn(this.code)
 			uni.$emit('stopScan')
 		   })  
 		},  
@@ -43,9 +32,6 @@
 		data() {
 			return {
 				code:'20170826669006391110000015100961661611251128000060',
-				
-				msgType:'',
-				description:"",
 			};
 		},
 		methods:{
@@ -56,9 +42,7 @@
 					this.handleGotoCount()
 				}catch(e){
 					if(e.code === 601){
-						this.msgType = 'warn'
-						this.description = '该批次原材料已检验，是否直接入库？'
-						this.$refs.alertDialog.open()
+						this.$refs.message.error('该批次原材料已检验')
 					}else if(e.code === 602){
 						this.$refs.message.error('该原材料已入库，请勿重复操作！')
 					}else{

@@ -16,3 +16,19 @@
 .flex-column{
 	flex-direction: column;
 }
+
+.primary-button{
+	background: $primary-color !important;
+	color: #fff !important;
+}
+
+.primary-text-color{
+	color: $primary-color;
+}
+
+.success-color{
+	color: $uni-color-success !important;
+}
+.error-color{
+	color: $uni-color-error !important;
+}

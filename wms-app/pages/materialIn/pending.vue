@@ -12,14 +12,18 @@
       </view>
     </view>
 	<Empty v-show="!list.length"></Empty>
+	<Message ref="message"></Message>
   </view>
 </template>
 
 <script>
 import Empty from '@/components/Empty'
+import Message from '@/components/Message'
+	
 export default {
 	components:{
-		Empty
+		Empty,
+		Message
 	},
   data() {
     return {
@@ -37,7 +41,7 @@ export default {
 			this.list = rows
 			this.total = total
 		}catch(e){
-			//TODO handle the exception
+			this.$refs.message.error(e.message)
 		}
 	},
 	async loadData(){

@@ -1,30 +1,54 @@
 <template>
 	<view class="content">
-		<view class="card" v-for="item in list" :key="item.id">
-		  <view class="card-header">
-		    <text class="material-name">{{item.materialName}}</text>
-		    <text class="status">已入库</text>
-		  </view>
-		  <view class="card-text m-b-4">物料编码：{{item.materialNb}}</view>
-		  <view class="card-text sscc">
-		    <text>SSCC码：{{item.ssccNumber}}</text>
-		    <text class="time">{{item.operateTime}}</text>
-		  </view>
-		</view>
-		<Empty v-show="!list.length"></Empty>
+	
+	 <hr-pull-load
+	         @refresh='handleRefresh'
+	         @loadMore='handleLoadMore'
+	         :height='-1'
+	         :pullHeight='50'
+	         :maxHeight='100'
+	         :lowerThreshold='20'
+	         :bottomTips='bottomTips'
+	         :isAllowPull="true"
+	         :isTab='false'
+	         ref='hrPullLoad'>
+	         <!-- 插入自己的数据-->
+	           <view class="card" v-for="item in list" :key="item.id">
+	             <view class="card-header">
+	           	<text class="material-name">{{item.materialName}}</text>
+	           	<text class="status">已入库</text>
+	             </view>
+	             <view class="card-text m-b-4">物料编码：{{item.materialNb}}</view>
+	             <view class="card-text sscc">
+	           	<text>SSCC码：{{item.ssccNumber}}</text>
+	           	<text class="time">{{item.operateTime}}</text>
+	             </view>
+	             </view>
+				 <Empty v-show="!list.length"></Empty>
+	</hr-pull-load>
+	
+		<Message ref="message"></Message>
 	</view>
 </template>
 
 <script>
 import Empty from '@/components/Empty'
+import Message from '@/components/Message';
+import hrPullLoad from '@/components/hr-pull-load/hr-pull-load';
+
 export default {
 	components:{
-		Empty
+		Empty,
+		Message,
+		hrPullLoad
 	},
   data() {
     return {
 	  list:[],
-	  total:0
+	  total:0,
+	  pageSize:20,
+	  pageNum:1,
+	  bottomTips:'',
     };
   },
   created(){
@@ -33,16 +57,39 @@ export default {
   methods: {
 	async loadMaterialInHistoryList(){
 		try{
-			const {rows,total} = await this.$store.dispatch('materialIn/getMaterialInHistoryList')
-			this.list = rows
+			const options = {pageSize:this.pageSize,pageNum:this.pageNum}
+			const {rows,total} = await this.$store.dispatch('materialIn/getMaterialInHistoryList',options)
 			this.total = total
+			return rows
 		}catch(e){
-			//TODO handle the exception
+			this.$refs.message.error(e.message)
 		}
 	},
 	async loadData(){
-		this.loadMaterialInHistoryList()
-	}
+		const list = await this.loadMaterialInHistoryList()
+		this.list = list
+	},
+	async handleRefresh(){
+		this.pageNum = 1
+		const list = await this.loadMaterialInHistoryList()
+		this.list = list
+		
+		this.$refs.hrPullLoad.reSet();
+	},
+	
+    async handleLoadMore() {
+		const length = this.list.length;
+		if (length < this.total) {
+			this.pageNum +=1
+			const list = await this.loadMaterialInHistoryList()
+			
+			this.list = this.list.concat(list);
+		} else {
+			this.bottomTips = '没有更多数据了'
+		}
+		
+		this.$refs.hrPullLoad.reSet();
+	},
   },
 };
 </script>
