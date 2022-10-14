@@ -125,8 +125,9 @@
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <artifactId>mybatis-plus-annotation</artifactId>
             <version>3.4.2</version>
+            <scope>compile</scope>
         </dependency>
 
     </dependencies>
