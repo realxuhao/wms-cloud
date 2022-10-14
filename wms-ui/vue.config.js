@@ -75,7 +75,7 @@ const vueConfig = {
         modifyVars: {
           // less vars，customize ant design theme
 
-          // 'primary-color': '#F5222D',
+          // 'primary-color': '#F5222D'
           // 'link-color': '#F5222D',
           // 'border-radius-base': '4px'
         },
@@ -91,7 +91,7 @@ const vueConfig = {
     // If you want to turn on the proxy, please remove the mockjs /src/main.jsL11
     proxy: {
       '/api': {
-        target: 'http://localhost:8080',
+        target: 'http://192.168.96.161:8080',
         // ws: false,
         changeOrigin: false,
         pathRewrite: {
