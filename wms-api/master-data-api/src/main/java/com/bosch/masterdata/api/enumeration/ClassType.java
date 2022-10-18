@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public enum ImportTypeEnum {
-
-
+public enum ClassType {
     MATERIALDTO("MaterialDTO", new ArrayList<String>(Arrays.asList("物料名称","物料代码","物料类型","包装重量"
             ,"托盘重量","是否绑定托盘","是否带托盘","来料总重量","物料防错方式","允许负偏差比例","最小包装重量","最小包装数量","单位"))),
     MATERIALBINDTO("MaterialBinDTO", new ArrayList<String>(Arrays.asList())),
@@ -19,7 +17,7 @@ public enum ImportTypeEnum {
     private List<String> strings;
 
     public static List<String>  getValue(String key) {
-        for (ImportTypeEnum ele : values()) {
+        for (ClassType ele : values()) {
             if (ele.getDesc().equals(key)) {
                 return ele.getCode();
             }
@@ -27,7 +25,7 @@ public enum ImportTypeEnum {
         return null;
     }
 
-    private ImportTypeEnum(String desc, List<String> strings) {
+    private ClassType(String desc, List<String> strings) {
         this.desc = desc;
         this.strings = strings;
     }

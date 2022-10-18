@@ -13,7 +13,7 @@ import com.bosch.masterdata.api.domain.dto.MaterialBinDTO;
 import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
-import com.bosch.masterdata.enumeration.ClassType;
+import com.bosch.masterdata.api.enumeration.ClassType;
 import com.bosch.masterdata.service.IMaterialService;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;

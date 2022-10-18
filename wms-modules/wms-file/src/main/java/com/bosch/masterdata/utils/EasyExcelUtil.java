@@ -7,7 +7,8 @@ import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.bosch.masterdata.api.enumeration.ImportTypeEnum;
+import com.bosch.masterdata.api.enumeration.ClassType;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +48,7 @@ public class EasyExcelUtil {
         ExcelReaderBuilder read = EasyExcel.read(inputStream, clazz, listener);
         read.sheet().headRowNumber(1).doRead();
         List<String> head = listener.getHead();
-        boolean equals = head.equals(ImportTypeEnum.getValue(className));
+        boolean equals = head.equals(ClassType.getValue(className));
         if (!equals){
             throw new ServiceException("excel模板不正确");
         }

@@ -11,7 +11,7 @@ import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
-import com.bosch.masterdata.enumeration.ClassType;
+import com.bosch.masterdata.api.enumeration.ClassType;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
