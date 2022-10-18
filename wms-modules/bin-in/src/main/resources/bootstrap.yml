@@ -15,8 +15,6 @@ spring:
   application:
     # 应用名称
     name: bin-in
-  main:
-    allow-bean-definition-overriding: true
   profiles:
     # 环境配置
     active: dev
