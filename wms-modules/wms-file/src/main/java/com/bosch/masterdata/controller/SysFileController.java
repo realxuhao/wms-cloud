@@ -1,6 +1,7 @@
 package com.bosch.masterdata.controller;
 
 
+import com.alibaba.fastjson2.JSONObject;
 import com.bosch.file.api.domain.FileUpload;
 import com.bosch.masterdata.service.IFileUploadService;
 import com.bosch.masterdata.utils.CSVUtil;
@@ -21,6 +22,7 @@ import com.bosch.masterdata.service.ISysFileService;
 import com.bosch.system.api.domain.SysFile;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -111,9 +113,14 @@ public class SysFileController {
 
 
     @ApiOperation("download表")
-    @GetMapping(value = "/download")
-    public R download(@RequestParam(value = "fileName") String fileName) throws Exception {
+    @PostMapping(value = "/download")
+    public R download(@RequestBody String params) throws Exception {
         try {
+            JSONObject paramsJSONObject = JSONObject.parseObject(params);
+            String fileName = paramsJSONObject.getString("fileName");
+            if (fileName == null) {
+                return R.fail("参数为null");
+            }
             String fileUrl = sysFileService.downloadObject(fileName);
             
             return R.ok(fileUrl);
