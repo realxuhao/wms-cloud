@@ -1,6 +1,7 @@
 package com.bosch.file.api;
 
 import com.bosch.file.api.factory.FileFallbackFactory;
+import com.bosch.system.api.domain.SysFile;
 import com.ruoyi.common.core.constant.ServiceNameConstants;
 import com.ruoyi.common.core.domain.R;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -21,4 +22,9 @@ public interface FileService {
     @PostMapping(value = "/file/materialReceiveImport",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public <T> R<List<T>> materialReceiveImport(@RequestPart(value = "file") MultipartFile file,@RequestParam(value = "className") String className);
 
+    @PostMapping(value = "/file/upload",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public R<SysFile> upload(@RequestPart(value = "file") MultipartFile file);
+
+    @PostMapping(value = "/file/download")
+    public R download(@RequestParam(value = "fileName") String fileName);
 }

@@ -1,5 +1,8 @@
 package com.bosch.masterdata;
 
+import com.ruoyi.common.security.annotation.EnableCustomConfig;
+import com.ruoyi.common.security.annotation.EnableRyFeignClients;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -11,9 +14,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * 
  * @author ruoyi
  */
+@EnableCustomConfig
 @EnableCustomSwagger2
-@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class })
-@EnableFeignClients
+@EnableRyFeignClients
+@SpringBootApplication
 public class WMSFileApplication
 {
     public static void main(String[] args)

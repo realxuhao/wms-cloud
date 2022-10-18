@@ -1,11 +1,13 @@
 package com.bosch.masterdata.controller;
 
-import com.alibaba.excel.EasyExcel;
-import com.alibaba.excel.read.listener.PageReadListener;
-import com.alibaba.fastjson2.JSON;
+import com.bosch.file.api.domain.FileUpload;
+import com.bosch.masterdata.service.IFileUploadService;
 import com.bosch.masterdata.utils.CSVUtil;
 import com.bosch.masterdata.utils.EasyExcelUtil;
 import com.bosch.storagein.api.domain.MaterialReceive;
+import com.bosch.storagein.api.enumeration.ClassType;
+import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,11 +19,7 @@ import com.ruoyi.common.core.utils.file.FileUtils;
 import com.bosch.masterdata.service.ISysFileService;
 import com.bosch.system.api.domain.SysFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -34,8 +32,10 @@ import java.util.List;
 public class SysFileController {
     private static final Logger log = LoggerFactory.getLogger(SysFileController.class);
 
-    @Autowired
+    @Resource(name = "minioSysFileServiceImpl")
     private ISysFileService sysFileService;
+    @Autowired
+    private IFileUploadService fileUploadService;
 
     /**
      * 文件上传请求
@@ -48,6 +48,15 @@ public class SysFileController {
             SysFile sysFile = new SysFile();
             sysFile.setName(FileUtils.getName(url));
             sysFile.setUrl(url);
+            FileUpload fileUpload = new FileUpload();
+            fileUpload.setFileName(sysFile.getName());
+            fileUpload.setBusinessType("");
+            fileUpload.setFileUrl(sysFile.getUrl());
+            fileUpload.setCreateBy(SecurityUtils.getUsername());
+            fileUpload.setCreateTime(DateUtils.getNowDate());
+            fileUploadService.saveFile(fileUpload);
+            Long id = fileUpload.getId();
+            sysFile.setFileId(id);
             return R.ok(sysFile);
         } catch (Exception e) {
             log.error("上传文件失败", e);
@@ -87,10 +96,27 @@ public class SysFileController {
                                                           @RequestParam(value = "className") String className) throws Exception {
 
         try {
+
             List<MaterialReceive> csvData = CSVUtil.getCsvData(file.getInputStream(), MaterialReceive.class);
+            R<SysFile> upload = upload(file);
+            csvData.forEach(r->r.setFileId(upload.getData().getFileId().toString()));
             return R.ok(csvData);
         } catch (Exception e) {
             return R.fail("解析文件失败");
+        }
+
+    }
+
+
+    @ApiOperation("download表")
+    @PostMapping(value = "/download")
+    public R download(@RequestParam(value = "fileName") String fileName) throws Exception {
+        try {
+            String fileUrl = sysFileService.downloadObject(fileName);
+            
+            return R.ok(fileUrl);
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
         }
 
     }

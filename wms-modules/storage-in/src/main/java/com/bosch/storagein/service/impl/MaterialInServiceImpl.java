@@ -35,7 +35,6 @@ import java.util.stream.Collectors;
  * 入库service
  */
 @Service
-//@Transactional(rollbackFor = Exception.class)
 public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, MaterialInDTO>  implements IMaterialInService {
 
     @Autowired

@@ -2,6 +2,7 @@ package com.bosch.file.api.factory;
 
 
 import com.bosch.file.api.FileService;
+import com.bosch.system.api.domain.SysFile;
 import com.ruoyi.common.core.domain.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +32,16 @@ public class FileFallbackFactory implements FallbackFactory<FileService> {
             @Override
             public <T> R<List<T>> materialReceiveImport(MultipartFile file, String className) {
                 return R.fail("入库文件服务调用失败");
+            }
+
+            @Override
+            public R<SysFile> upload(MultipartFile file) {
+                return R.fail("miniIO上传失败");
+            }
+
+            @Override
+            public R download(String fileName) {
+                return R.fail("");
             }
         };
     }

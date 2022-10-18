@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.masterdata.mapper.FileUploadMapper">
+
+    <insert id="saveFile" parameterType="com.bosch.file.api.domain.FileUpload"
+            useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO file_upload (file_name, file_url, business_type, create_time,create_by)
+        VALUES ( #{fileName}, #{fileUrl}, #{businessType}, #{createTime},#{createBy});
+
+    </insert>
+</mapper>

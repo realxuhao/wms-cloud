@@ -130,6 +130,14 @@
         where delete_flag=1 and material_nb = #{materialNb} and batch_nb = #{batchNb}
     </select>
 
-
+    <update id="updateBatch" parameterType="com.bosch.storagein.api.domain.MaterialReceive">
+<!--        <foreach collection="list" item="item" separator=";">-->
+            UPDATE si_material_receive
+            SET plant_nb=#{plantNb}, sscc_number=#{ssccNumber}, material_nb=#{materialNb}, batch_nb=#{batchNb}, supplier_nb=#{supplierNb},
+             storage_location=#{storageLocation}, expire_date=#{expireDate}, quantity=#{quantity}, unit=#{unit}, from_area=#{fromArea},
+             from_purchase_order=#{fromPurchaseOrder}, to_picking_area=#{toPickingArea}, po_number_item=#{poNumberItem}, file_id=concat(concat(#{fileId},','),file_id)
+             WHERE  sscc_number=#{ssccNumber};
+<!--        </foreach>-->
+    </update>
 
 </mapper>

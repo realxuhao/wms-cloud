@@ -3,8 +3,6 @@ package com.bosch.storagein.controller;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
-import com.bosch.masterdata.api.domain.Bin;
-import com.bosch.masterdata.api.domain.dto.BinDTO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.storagein.api.domain.MaterialReceive;
 import com.bosch.storagein.api.domain.dto.MaterialReceiveDTO;
@@ -12,15 +10,12 @@ import com.bosch.storagein.api.domain.dto.request.EditBean;
 import com.bosch.storagein.api.domain.vo.MaterialReceiveVO;
 import com.bosch.storagein.api.enumeration.ClassType;
 import com.bosch.storagein.service.IMaterialReceiveService;
-import com.bosch.storagein.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
-import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.http.util.Asserts;
@@ -44,6 +39,7 @@ public class MaterialReceiveCotroller extends BaseController {
     private FileService fileService;
     @Autowired
     private IMaterialReceiveService materialReceiveService;
+
 
 
     @GetMapping("/list")
@@ -132,14 +128,16 @@ public class MaterialReceiveCotroller extends BaseController {
             //解析文件服务
             R result = fileService.materialReceiveImport(file, ClassType.MATERIALRECEIVE.getDesc());
             if (result.isSuccess()) {
+
                 Object data = result.getData();
                 List<MaterialReceive> dtos = JSON.parseArray(JSON.toJSONString(data), MaterialReceive.class);
                 if (!CollectionUtils.isEmpty(dtos)) {
 
                     dtos.forEach(r->{
-                        LambdaUpdateWrapper<MaterialReceive> wrapper=new LambdaUpdateWrapper<MaterialReceive>();
-                        wrapper.eq(MaterialReceive::getSsccNumber,r.getSsccNumber());
-                        boolean update = materialReceiveService.update(r, wrapper);
+//                        LambdaUpdateWrapper<MaterialReceive> wrapper=new LambdaUpdateWrapper<MaterialReceive>();
+//                        wrapper.eq(MaterialReceive::getSsccNumber,r.getSsccNumber());
+//                        boolean update = materialReceiveService.update(r, wrapper);
+                        boolean update =materialReceiveService.updateBatch(r);
                         if (!update){
                             r.setUpdateTime(null);
                             r.setUpdateUser(null);
@@ -155,5 +153,6 @@ public class MaterialReceiveCotroller extends BaseController {
         }
 
     }
+
 
 }

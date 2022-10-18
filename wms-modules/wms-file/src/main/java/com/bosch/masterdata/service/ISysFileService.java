@@ -17,4 +17,7 @@ public interface ISysFileService
      * @throws Exception
      */
     public String uploadFile(MultipartFile file) throws Exception;
+
+
+    public String downloadObject(String fileName);
 }

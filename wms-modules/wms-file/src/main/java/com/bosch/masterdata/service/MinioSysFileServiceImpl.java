@@ -1,5 +1,9 @@
 package com.bosch.masterdata.service;
 
+import io.minio.DownloadObjectArgs;
+import io.minio.GetPresignedObjectUrlArgs;
+import io.minio.http.Method;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -42,4 +46,28 @@ public class MinioSysFileServiceImpl implements ISysFileService
         client.putObject(args);
         return minioConfig.getUrl() + "/" + minioConfig.getBucketName() + "/" + fileName;
     }
+
+    @Override
+    @SneakyThrows
+    public String downloadObject(String fileName){
+        DownloadObjectArgs.Builder builder = DownloadObjectArgs.builder();
+
+        builder.bucket(minioConfig.getBucketName());
+        builder.object(fileName);
+        builder.filename(minioConfig.getDownloadPath()+fileName);
+        DownloadObjectArgs downloadObjectArgs = builder.build();
+
+        // 指定一个GET请求，返回获取文件对象的URL，此URL过期时间为一天
+        String url =
+                client.getPresignedObjectUrl(
+                        GetPresignedObjectUrlArgs.builder()
+                                .method(Method.GET)
+                                .bucket(minioConfig.getBucketName())
+                                .object(minioConfig.getDownloadPath()+fileName)
+                                .expiry(60 * 60 * 24)
+                                .build());
+
+        return url;
+    }
+
 }

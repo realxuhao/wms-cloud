@@ -3,6 +3,7 @@ package com.bosch.storagein.api.domain;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.*;
 import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvDate;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -168,5 +169,5 @@ public class MaterialReceive {
      */
     @ExcelProperty(value = "fileId")
     @CsvBindByName(column = "fileId")
-    private Integer fileId;
+    private String fileId;
 }
