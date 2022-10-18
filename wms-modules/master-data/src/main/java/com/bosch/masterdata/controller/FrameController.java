@@ -146,7 +146,7 @@ public class FrameController extends BaseController {
                 }
                 return R.ok("解析成功");
             } else {
-                return R.fail("文件服务调用失败");
+                return R.fail(result.getMsg());
             }
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
@@ -185,8 +185,10 @@ public class FrameController extends BaseController {
                         }
                     });
                 }
+                return R.ok("导入成功");
+            }else {
+                return R.fail(result.getMsg());
             }
-            return R.ok("导入成功");
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             return R.fail(e.getMessage());

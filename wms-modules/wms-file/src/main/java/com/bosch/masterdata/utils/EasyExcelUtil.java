@@ -1,8 +1,13 @@
 package com.bosch.masterdata.utils;
 
 import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
+import com.alibaba.excel.read.builder.ExcelReaderBuilder;
+import com.alibaba.excel.support.ExcelTypeEnum;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.bosch.masterdata.api.enumeration.ImportTypeEnum;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +16,9 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
 import com.ruoyi.common.core.exception.ServiceException;
+
 /**
  * excel工具类
  * easyexcel使用的3.0.2版本，跟以前版本有很大区别，且不兼容1.x版本
@@ -19,10 +26,10 @@ import com.ruoyi.common.core.exception.ServiceException;
 public class EasyExcelUtil {
     private static final Logger LOGGER = LoggerFactory.getLogger(EasyExcelUtil.class);
 
-    public static <T> List<T> read(String filePath, final Class<?> clazz) {
+    public static <T> List<T> read(String filePath, final Class<?> clazz, String className) {
         File f = new File(filePath);
         try (FileInputStream fis = new FileInputStream(f)) {
-            return read(fis, clazz);
+            return read(fis, clazz, className);
         } catch (FileNotFoundException e) {
             LOGGER.error("文件{}不存在", filePath, e);
         } catch (IOException e) {
@@ -31,16 +38,24 @@ public class EasyExcelUtil {
         return null;
     }
 
-    public static <T> List<T> read(InputStream inputStream, final Class<?> clazz) {
+    public static <T> List<T> read(InputStream inputStream, final Class<?> clazz, String className) {
         if (inputStream == null) {
             throw new ServiceException("解析出错了，文件流是null");
         }
         // 有个很重要的点 DataListener 不能被spring管理，要每次读取excel都要new,然后里面用到spring可以构造方法传进去
         DataListener<T> listener = new DataListener<>();
-        // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
-        EasyExcel.read(inputStream, clazz, listener).sheet().doRead();
+        ExcelReaderBuilder read = EasyExcel.read(inputStream, clazz, listener);
+        read.sheet().headRowNumber(1).doRead();
+        List<String> head = listener.getHead();
+        boolean equals = head.equals(ImportTypeEnum.getValue(className));
+        if (!equals){
+            throw new ServiceException("excel模板不正确");
+        }
+            // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
+            //EasyExcel.read(inputStream, clazz, listener).sheet().doRead();
         return listener.getRows();
     }
+
 
     public static void write(String outFile, List<?> list) {
         Class<?> clazz = list.get(0).getClass();

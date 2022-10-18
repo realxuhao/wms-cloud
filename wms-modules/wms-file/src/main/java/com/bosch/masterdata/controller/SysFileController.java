@@ -1,5 +1,6 @@
 package com.bosch.masterdata.controller;
 
+
 import com.bosch.file.api.domain.FileUpload;
 import com.bosch.masterdata.service.IFileUploadService;
 import com.bosch.masterdata.utils.CSVUtil;
@@ -76,10 +77,11 @@ public class SysFileController {
             "className") String className) throws Exception {
         try {
             Class<?> TClass = Class.forName("com.bosch.masterdata.api.domain.dto." + className);
-            List<T> read = EasyExcelUtil.read(file.getInputStream(), TClass);
+            List<T> read = EasyExcelUtil.read(file.getInputStream(), TClass,className);
+
             return R.ok(read);
         } catch (Exception e) {
-            return R.fail("解析文件失败");
+            return R.fail("解析文件失败,文件类型不匹配");
         }
 
     }
@@ -102,14 +104,14 @@ public class SysFileController {
             csvData.forEach(r->r.setFileId(upload.getData().getFileId().toString()));
             return R.ok(csvData);
         } catch (Exception e) {
-            return R.fail("解析文件失败");
+            return R.fail("解析文件失败,文件类型不匹配");
         }
 
     }
 
 
     @ApiOperation("download表")
-    @PostMapping(value = "/download")
+    @GetMapping(value = "/download")
     public R download(@RequestParam(value = "fileName") String fileName) throws Exception {
         try {
             String fileUrl = sysFileService.downloadObject(fileName);

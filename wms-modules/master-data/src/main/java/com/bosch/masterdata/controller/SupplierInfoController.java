@@ -54,7 +54,7 @@ public class SupplierInfoController extends BaseController {
      * 导出供应商列表
      */
     @RequiresPermissions("masterdata:info:export")
-    @Log(title = "供应商" , businessType = BusinessType.EXPORT)
+    @Log(title = "供应商", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SupplierInfo supplierInfo) {
         List<SupplierInfo> list = supplierInfoService.selectSupplierInfoList(supplierInfo);
@@ -68,7 +68,7 @@ public class SupplierInfoController extends BaseController {
      */
     //@RequiresPermissions("masterdata:info:remove")
     @ApiOperation("删除供应商")
-    @Log(title = "供应商" , businessType = BusinessType.DELETE)
+    @Log(title = "供应商", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(supplierInfoService.deleteSupplierInfoByIds(ids));
@@ -79,7 +79,7 @@ public class SupplierInfoController extends BaseController {
      */
     //@RequiresPermissions("masterdata:info:add")
     @ApiOperation("新增供应商")
-    @Log(title = "供应商" , businessType = BusinessType.INSERT)
+    @Log(title = "供应商", businessType = BusinessType.INSERT)
     @PostMapping("/addSupplierInfo")
     public AjaxResult addSupplierInfo(@RequestBody SupplierInfoDTO supplierInfoDTO) {
         return toAjax(supplierInfoService.insertSupplierInfo(supplierInfoDTO));
@@ -90,7 +90,7 @@ public class SupplierInfoController extends BaseController {
      */
     //@RequiresPermissions("masterdata:info:edit")
     @ApiOperation("修改供应商")
-    @Log(title = "供应商" , businessType = BusinessType.UPDATE)
+    @Log(title = "供应商", businessType = BusinessType.UPDATE)
     @PutMapping("/{id}")
     public AjaxResult edit(@PathVariable("id") Long id, @RequestBody SupplierInfoDTO supplierInfoDTO) {
         supplierInfoDTO.setId(id);
@@ -123,9 +123,9 @@ public class SupplierInfoController extends BaseController {
      * 批量上传供应商明细
      */
     @ApiOperation("批量上传供应商明细")
-    @PostMapping(value = "/import" , headers = "content-type=multipart/form-data")
+    @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
     @Transactional(rollbackFor = Exception.class)
-    public R importExcel(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
+    public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
         try {
             //解析文件服务
             R result = fileService.masterDataImport(file, ClassType.SUPPLIERINFODTO.getDesc());
@@ -146,7 +146,7 @@ public class SupplierInfoController extends BaseController {
                 }
                 return R.ok("解析成功");
             } else {
-                return R.fail("文件服务调用失败");
+                return R.fail(result.getMsg());
             }
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
@@ -159,9 +159,9 @@ public class SupplierInfoController extends BaseController {
      * 批量更新供应商明细
      */
     @ApiOperation("批量更新供应商明细")
-    @PostMapping(value = "/saveBatch" , headers = "content-type=multipart/form-data")
+    @PostMapping(value = "/saveBatch", headers = "content-type=multipart/form-data")
     @Transactional(rollbackFor = Exception.class)
-    public R saveBatch(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
+    public R saveBatch(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
 
         try {
             //解析文件服务
@@ -173,19 +173,22 @@ public class SupplierInfoController extends BaseController {
                     List<String> collect = dtos.stream().map(SupplierInfoDTO::getCode).collect(Collectors.toList());
                     //转换DO
                     List<SupplierInfo> dos = BeanConverUtil.converList(dtos, SupplierInfo.class);
-                    dos.forEach(r->{
-                        LambdaUpdateWrapper<SupplierInfo> wrapper=new LambdaUpdateWrapper<SupplierInfo>();
-                        wrapper.eq(SupplierInfo::getCode,r.getCode());
+                    dos.forEach(r -> {
+                        LambdaUpdateWrapper<SupplierInfo> wrapper = new LambdaUpdateWrapper<SupplierInfo>();
+                        wrapper.eq(SupplierInfo::getCode, r.getCode());
                         boolean update = supplierInfoService.update(r, wrapper);
-                        if (!update){
+                        if (!update) {
                             r.setCreateBy(SecurityUtils.getUsername());
                             r.setCreateTime(DateUtils.getNowDate());
                             supplierInfoService.save(r);
                         }
                     });
-                    }
                 }
                 return R.ok("导入成功");
+            } else {
+                return R.fail(result.getMsg());
+            }
+
 
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务

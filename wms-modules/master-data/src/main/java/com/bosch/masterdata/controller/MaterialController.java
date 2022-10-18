@@ -159,9 +159,8 @@ public class MaterialController extends BaseController
                 }
             }
             return R.ok(materialDTOList);
-        }
-        else {
-            return R.fail("文件服务调用失败");
+        }else {
+            return R.fail(result.getMsg());
         }
     }
     /**
@@ -195,9 +194,8 @@ public class MaterialController extends BaseController
                     });
                 }
                 return R.ok("导入成功");
-            }
-            else {
-                return R.fail("文件服务调用失败");
+            }else {
+                return R.fail(result.getMsg());
             }
         }catch (Exception e){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
