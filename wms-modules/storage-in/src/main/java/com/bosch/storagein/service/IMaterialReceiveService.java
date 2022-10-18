@@ -42,4 +42,5 @@ public interface IMaterialReceiveService extends IService<MaterialReceive> {
     public boolean validList(List<String> codes);
 
 
+    public boolean updateBatch(MaterialReceive materialReceive);
 }

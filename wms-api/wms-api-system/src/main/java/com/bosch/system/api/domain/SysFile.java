@@ -1,5 +1,6 @@
 package com.bosch.system.api.domain;
 
+import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -8,8 +9,10 @@ import org.apache.commons.lang3.builder.ToStringStyle;
  * 
  * @author ruoyi
  */
+@Data
 public class SysFile
 {
+    private Long fileId;
     /**
      * 文件名称
      */

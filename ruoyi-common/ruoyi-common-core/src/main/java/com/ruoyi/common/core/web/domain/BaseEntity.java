@@ -26,6 +26,7 @@ public class BaseEntity implements Serializable
     private String searchValue;
 
     /** 创建者 */
+    @TableField(fill = FieldFill.INSERT)
     @ApiModelProperty(value = "创建者")
     private String createBy;
 
@@ -36,6 +37,7 @@ public class BaseEntity implements Serializable
     private Date createTime;
 
     /** 更新者 */
+    @TableField(fill = FieldFill.UPDATE)
     @ApiModelProperty(value = "更新者")
     private String updateBy;
 

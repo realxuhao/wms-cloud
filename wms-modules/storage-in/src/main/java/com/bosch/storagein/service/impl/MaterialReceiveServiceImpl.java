@@ -74,4 +74,9 @@ public class MaterialReceiveServiceImpl extends ServiceImpl<MaterialRecevieMappe
         return  res>0;
     }
 
+    @Override
+    public boolean updateBatch(MaterialReceive materialReceive) {
+        return materialRecevieMapper.updateBatch(materialReceive)>0;
+    }
+
 }

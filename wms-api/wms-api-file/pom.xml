@@ -23,6 +23,10 @@
             <groupId>com.ruoyi</groupId>
             <artifactId>ruoyi-common-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.ruoyi</groupId>
+            <artifactId>wms-api-system</artifactId>
+        </dependency>
 
     </dependencies>
 

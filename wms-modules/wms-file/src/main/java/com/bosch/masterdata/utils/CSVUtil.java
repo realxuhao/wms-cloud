@@ -1,9 +1,12 @@
 package com.bosch.masterdata.utils;
 
+import com.opencsv.CSVReader;
+import com.opencsv.CSVWriter;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +25,11 @@ public class CSVUtil {
         InputStreamReader in;
         CsvToBean<T> csvToBean;
         try {
+
+            CsvToBeanBuilder csvToBeanBuilder = new CsvToBeanBuilder(new InputStreamReader(inputStream,
+                    StandardCharsets.UTF_8)).withSkipLines(1).withSeparator(',');
+            CSVReader reader = new CSVReader(new InputStreamReader(inputStream, "UTF-8"));
+            String[] strings = reader.readAll().get(0);
             //in = new InputStreamReader(Files.newInputStream(Paths.get(filePath)), StandardCharsets.UTF_8);
             in = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
             HeaderColumnNameMappingStrategy<T> strategy = new HeaderColumnNameMappingStrategy<>();

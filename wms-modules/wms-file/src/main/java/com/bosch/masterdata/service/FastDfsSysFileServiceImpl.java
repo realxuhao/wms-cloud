@@ -39,4 +39,9 @@ public class FastDfsSysFileServiceImpl implements ISysFileService
                 FileTypeUtils.getExtension(file), null);
         return domain + "/" + storePath.getFullPath();
     }
+
+    @Override
+    public String downloadObject(String fileName) {
+        return "";
+    }
 }

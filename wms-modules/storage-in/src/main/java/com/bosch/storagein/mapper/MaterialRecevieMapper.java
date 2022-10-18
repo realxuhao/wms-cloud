@@ -73,4 +73,6 @@ public interface MaterialRecevieMapper extends BaseMapper<MaterialReceive>
 
 
     void batchUpdateStatus(@Param("materialNb") String materialNb, @Param("batchNb") String batchNb, @Param("code") Integer code);
+
+    public int updateBatch(MaterialReceive materialReceive);
 }
