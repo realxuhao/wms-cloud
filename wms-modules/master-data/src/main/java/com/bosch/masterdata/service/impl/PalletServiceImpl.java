@@ -15,37 +15,34 @@ import com.bosch.masterdata.service.IPalletService;
 
 /**
  * 托盘Service业务层处理
- * 
+ *
  * @author xuhao
  * @date 2022-09-22
  */
 @Service
-public class PalletServiceImpl implements IPalletService 
-{
+public class PalletServiceImpl implements IPalletService {
     @Autowired
     private PalletMapper palletMapper;
 
     /**
      * 查询托盘
-     * 
+     *
      * @param id 托盘主键
      * @return 托盘
      */
     @Override
-    public Pallet selectPalletById(Long id)
-    {
+    public Pallet selectPalletById(Long id) {
         return palletMapper.selectPalletById(id);
     }
 
     /**
      * 查询托盘列表
-     * 
+     *
      * @param pallet 托盘
      * @return 托盘
      */
     @Override
-    public List<Pallet> selectPalletList(Pallet pallet)
-    {
+    public List<Pallet> selectPalletList(Pallet pallet) {
         return palletMapper.selectPalletList(pallet);
     }
 
@@ -53,18 +50,17 @@ public class PalletServiceImpl implements IPalletService
     public List<PalletVO> selectPalletList(PalletDTO palletDTO) {
         Pallet pallet = BeanConverUtil.conver(palletDTO, Pallet.class);
 
-        return BeanConverUtil.converList(palletMapper.selectPalletList(pallet),PalletVO.class);
+        return BeanConverUtil.converList(palletMapper.selectPalletList(pallet), PalletVO.class);
     }
 
     /**
      * 新增托盘
-     * 
+     *
      * @param pallet 托盘
      * @return 结果
      */
     @Override
-    public int insertPallet(Pallet pallet)
-    {
+    public int insertPallet(Pallet pallet) {
         pallet.setCreateTime(DateUtils.getNowDate());
         return palletMapper.insertPallet(pallet);
     }
@@ -79,13 +75,12 @@ public class PalletServiceImpl implements IPalletService
 
     /**
      * 修改托盘
-     * 
+     *
      * @param pallet 托盘
      * @return 结果
      */
     @Override
-    public int updatePallet(Pallet pallet)
-    {
+    public int updatePallet(Pallet pallet) {
         pallet.setUpdateTime(DateUtils.getNowDate());
         return palletMapper.updatePallet(pallet);
     }
@@ -100,25 +95,28 @@ public class PalletServiceImpl implements IPalletService
 
     /**
      * 批量删除托盘
-     * 
+     *
      * @param ids 需要删除的托盘主键
      * @return 结果
      */
     @Override
-    public int deletePalletByIds(Long[] ids)
-    {
+    public int deletePalletByIds(Long[] ids) {
         return palletMapper.deletePalletByIds(ids);
     }
 
     /**
      * 删除托盘信息
-     * 
+     *
      * @param id 托盘主键
      * @return 结果
      */
     @Override
-    public int deletePalletById(Long id)
-    {
+    public int deletePalletById(Long id) {
         return palletMapper.deletePalletById(id);
+    }
+
+    @Override
+    public Pallet selectPalletByType(String palletType) {
+        return palletMapper.selectPalletByType(palletType);
     }
 }

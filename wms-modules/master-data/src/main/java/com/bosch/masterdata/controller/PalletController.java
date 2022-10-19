@@ -158,4 +158,11 @@ public class PalletController extends BaseController
     {
         return AjaxResult.success(palletService.selectPalletById(id));
     }
+
+    @GetMapping(value = "/getByType/{palletType}")
+    @ApiOperation("根据类型获取托盘信息")
+    public R<Pallet> getByType(@PathVariable("palletType") String palletType)
+    {
+        return R.ok(palletService.selectPalletByType(palletType));
+    }
 }

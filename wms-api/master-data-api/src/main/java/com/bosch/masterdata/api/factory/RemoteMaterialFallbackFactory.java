@@ -1,9 +1,9 @@
 package com.bosch.masterdata.api.factory;
 
 import com.bosch.masterdata.api.RemoteMaterialService;
+import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.web.domain.AjaxResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
@@ -24,6 +24,11 @@ public class RemoteMaterialFallbackFactory implements FallbackFactory<RemoteMate
         return new RemoteMaterialService() {
             @Override
             public R<MaterialVO> getInfoByMaterialCode(String materialCode) {
+                return R.fail("主数据服务调用失败");
+            }
+
+            @Override
+            public R<Pallet> getByType(String palletType) {
                 return R.fail("主数据服务调用失败");
             }
 

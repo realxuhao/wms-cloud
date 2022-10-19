@@ -58,4 +58,6 @@ public interface PalletMapper
      * @return 结果
      */
     public int deletePalletByIds(Long[] ids);
+
+    Pallet selectPalletByType(String palletType);
 }

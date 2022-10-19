@@ -39,7 +39,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectPalletVo"/>
         where id = #{id}
     </select>
-        
+
+    <select id="selectPalletByType" resultType="com.bosch.masterdata.api.domain.Pallet">
+        <include refid="selectPalletVo"/>
+        where status =1 and  type = #{palletType}
+        limit 1
+    </select>
+
     <insert id="insertPallet" parameterType="Pallet" useGeneratedKeys="true" keyProperty="id">
         insert into md_pallet
         <trim prefix="(" suffix=")" suffixOverrides=",">

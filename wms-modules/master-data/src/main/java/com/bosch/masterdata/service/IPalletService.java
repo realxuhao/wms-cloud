@@ -63,4 +63,6 @@ public interface IPalletService
      * @return 结果
      */
     public int deletePalletById(Long id);
+
+    Pallet selectPalletByType(String palletType);
 }
