@@ -32,7 +32,7 @@ public interface MaterialInMapper extends BaseMapper<MaterialInDTO>{
 
     int updateVirtualBinCode(@Param("ssccNumber") String ssccNumber, @Param("virtualBinCode") String virtualBinCode);
 
-    List<MaterialInVO> selectBySsccNumber(String ssccNumber);
+    MaterialInVO selectBySsccNumber(String ssccNumber);
 
     List<MaterialInVO> getByUserName(String username);
 

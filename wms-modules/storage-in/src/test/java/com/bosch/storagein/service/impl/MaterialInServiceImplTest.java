@@ -1089,65 +1089,6 @@ class MaterialInServiceImplTest {
         assertThat(result).isEqualTo(expectedResult);
     }
 
-    @Test
-    void testSelectByMesBarCode() {
-        // Setup
-        final MaterialInVO materialInVO = new MaterialInVO();
-        materialInVO.setId(0L);
-        materialInVO.setSsccNumber("ssccNumber");
-        materialInVO.setBatchNb("batchNb");
-        materialInVO.setCheckType(0);
-        materialInVO.setMaterialNb("materialNb");
-        materialInVO.setMaterialName("materialName");
-        materialInVO.setCheckQuantity(0);
-        materialInVO.setMinStandard(0);
-        materialInVO.setMaxStandard(0);
-        materialInVO.setActualQuantity(0);
-        materialInVO.setActualResult(0.0);
-        materialInVO.setAverageResult(0.0);
-        materialInVO.setOperateUser("operateUser");
-        materialInVO.setOperateTime(new GregorianCalendar(2020, Calendar.JANUARY, 1).getTime());
-        materialInVO.setOriginPalletQuantity(0);
-        final List<MaterialInVO> expectedResult = Arrays.asList(materialInVO);
-
-        // Configure MaterialInMapper.selectBySsccNumber(...).
-        final MaterialInVO materialInVO1 = new MaterialInVO();
-        materialInVO1.setId(0L);
-        materialInVO1.setSsccNumber("ssccNumber");
-        materialInVO1.setBatchNb("batchNb");
-        materialInVO1.setCheckType(0);
-        materialInVO1.setMaterialNb("materialNb");
-        materialInVO1.setMaterialName("materialName");
-        materialInVO1.setCheckQuantity(0);
-        materialInVO1.setMinStandard(0);
-        materialInVO1.setMaxStandard(0);
-        materialInVO1.setActualQuantity(0);
-        materialInVO1.setActualResult(0.0);
-        materialInVO1.setAverageResult(0.0);
-        materialInVO1.setOperateUser("operateUser");
-        materialInVO1.setOperateTime(new GregorianCalendar(2020, Calendar.JANUARY, 1).getTime());
-        materialInVO1.setOriginPalletQuantity(0);
-        final List<MaterialInVO> materialInVOS = Arrays.asList(materialInVO1);
-        when(mockMaterialInMapper.selectBySsccNumber("ssccNumber")).thenReturn(materialInVOS);
-
-        // Run the test
-        final List<MaterialInVO> result = materialInServiceImplUnderTest.selectByMesBarCode("mesBarCode");
-
-        // Verify the results
-        assertThat(result).isEqualTo(expectedResult);
-    }
-
-    @Test
-    void testSelectByMesBarCode_MaterialInMapperReturnsNoItems() {
-        // Setup
-        when(mockMaterialInMapper.selectBySsccNumber("ssccNumber")).thenReturn(Collections.emptyList());
-
-        // Run the test
-        final List<MaterialInVO> result = materialInServiceImplUnderTest.selectByMesBarCode("mesBarCode");
-
-        // Verify the results
-        assertThat(result).isEqualTo(Collections.emptyList());
-    }
 
     @Test
     void testGetByUserName() {

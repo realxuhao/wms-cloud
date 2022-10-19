@@ -19,6 +19,7 @@
         <result property="averageResult" column="average_result"/>
         <result property="operateUser" column="operate_user"/>
         <result property="operateTime" column="operate_time"/>
+        <result property="quantity" column="quantity"/>
         <result property="originPalletQuantity" column="origin_pallet_quantity"/>
     </resultMap>
 
@@ -29,6 +30,7 @@
                material_nb,
                check_type,
                check_quantity,
+               quantity,
                min_standard,
                max_standard,
                actual_quantity,
@@ -85,11 +87,12 @@
 
     <insert id="batchInsert">
         INSERT INTO si_material_in (sscc_number, batch_nb, material_nb, check_type,
-        check_quantity,min_standard,max_standard,
+        check_quantity,min_standard,max_standard,quantity,
         actual_quantity,actual_result,operate_user,operate_time,average_result,virtual_bin_code,origin_pallet_quantity)
         VALUES
         <foreach collection="list" separator="," item="item">
-            (#{item.ssccNumber},#{item.batchNb},#{item.materialNb},#{item.checkType},#{item.checkQuantity},#{item.minStandard},#{item.maxStandard},#{item.actualQuantity},#{item.actualResult}
+            (#{item.ssccNumber},#{item.batchNb},#{item.materialNb},#{item.checkType},#{item.checkQuantity},#{item.minStandard},#{item.maxStandard},
+             #{item.quantity},#{item.actualQuantity},#{item.actualResult}
             ,#{item.operateUser},#{item.operateTime},#{item.averageResult},#{item.virtualBinCode},#{item.originPalletQuantity})
         </foreach>
 
@@ -113,6 +116,7 @@
     <select id="selectBySsccNumber" resultMap="selectMaterialInVoResult">
         <include refid="selectMaterialInVo"/>
         where sscc_number = #{ssccNumber}
+        limit 1
     </select>
 
 

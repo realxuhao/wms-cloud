@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * 入库service
  */
 @Service
-public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, MaterialInDTO>  implements IMaterialInService {
+public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, MaterialInDTO> implements IMaterialInService {
 
     @Autowired
     private RemoteMaterialService remoteMaterialService;
@@ -70,7 +70,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
     }
 
     @Override
-    public List<MaterialInVO> selectByMesBarCode(String mesBarCode) {
+    public MaterialInVO selectByMesBarCode(String mesBarCode) {
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         return materialInMapper.selectBySsccNumber(sscc);
     }
@@ -118,7 +118,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
 
 
         //校验抽样件数
-        if (materialInCheckDTO.getActualQuantity()< materialInCheckVO.getCheckQuantity()){
+        if (materialInCheckDTO.getActualQuantity() < materialInCheckVO.getCheckQuantity()) {
             checkResultVO.setResponseCode(ResponseConstants.QUANTITY_INVALID);
             return checkResultVO;
         }
@@ -147,6 +147,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
             materialInDTO.setOriginPalletQuantity(materialInCheckDTO.getOriginPalletQuantity());
             materialInDTO.setAverageResult(averageResult);
             materialInDTO.setVirtualBinCode(Constants.VIRTUAL_BIN_CODE);
+            materialInDTO.setQuantity(item.getQuantity());
             return materialInDTO;
         }).collect(Collectors.toList());
         materialInMapper.batchInsert(materialInDTOList);

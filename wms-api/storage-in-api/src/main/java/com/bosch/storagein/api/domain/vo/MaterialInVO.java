@@ -101,5 +101,11 @@ public class MaterialInVO {
      */
     @ApiModelProperty(value = "原托数")
     private Integer originPalletQuantity;
+    /**
+     * 该托的物料数量
+     */
+    @ApiModelProperty(value = "原托数")
+    private Integer quantity;
+
 
 }

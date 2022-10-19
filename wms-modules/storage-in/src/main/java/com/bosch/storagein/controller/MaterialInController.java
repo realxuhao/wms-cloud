@@ -60,8 +60,8 @@ public class MaterialInController extends BaseController {
     @ApiOperation("根据mesBarCode查询物料校验信息")
     @Log(title = "入库校验", businessType = BusinessType.INSERT)
     public R<MaterialCheckResultVO> check(@RequestBody MaterialInCheckDTO materialInCheckDTO) {
-        List<MaterialInVO> materialInVOS = materialInService.selectByMesBarCode(materialInCheckDTO.getMesBarCode());
-        if (!CollectionUtils.isEmpty(materialInVOS)) {
+        MaterialInVO materialInVO = materialInService.selectByMesBarCode(materialInCheckDTO.getMesBarCode());
+        if (materialInVO != null) {
             return R.fail(null, ResponseConstants.HAS_IN, "重复入库");
         }
         MaterialCheckResultVO checkResultVO = materialInService.check(materialInCheckDTO);
@@ -77,6 +77,12 @@ public class MaterialInController extends BaseController {
     @ApiOperation("获取入库详细信息")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(materialInService.selectById(id));
+    }
+
+    @GetMapping(value = "/getByMesBarCode/{mesBarCode}")
+    @ApiOperation("扫码获取入库详细信息")
+    public R<MaterialInVO> getByMesBarCode(@PathVariable("mesBarCode") String mesBarCode) {
+        return R.ok(materialInService.selectByMesBarCode(mesBarCode));
     }
 
     @PostMapping("/list")
