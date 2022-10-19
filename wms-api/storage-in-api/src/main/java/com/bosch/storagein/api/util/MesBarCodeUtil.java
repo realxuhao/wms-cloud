@@ -1,4 +1,4 @@
-package com.bosch.storagein.utils;
+package com.bosch.storagein.api.util;
 
 public class MesBarCodeUtil {
 

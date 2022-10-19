@@ -50,7 +50,7 @@ public class MaterialInVO {
     /**
      * 应检查数量
      */
-    @ApiModelProperty(value = "应检查数量")
+    @ApiModelProperty(value = "目标抽样件数")
     private Integer checkQuantity;
 
     /**
@@ -68,7 +68,7 @@ public class MaterialInVO {
     /**
      * 实际数量
      */
-    @ApiModelProperty(value = "实际数量")
+    @ApiModelProperty(value = "实际抽样数量")
     private Integer actualQuantity;
 
     /**
