@@ -81,7 +81,10 @@ public class SysFileController {
         try {
             Class<?> TClass = Class.forName("com.bosch.masterdata.api.domain.dto." + className);
             List<T> read = EasyExcelUtil.read(file.getInputStream(), TClass,className);
-
+            boolean check = EasyExcelUtil.check(read);
+            if (!check){
+                return R.fail("excel中存在重复数据");
+            }
             if(CollectionUtils.isEmpty(read)){
                 return R.fail("excel中无数据");
             }
@@ -106,6 +109,11 @@ public class SysFileController {
         try {
 
             List<MaterialReceive> csvData = CSVUtil.getCsvData(file.getInputStream(), MaterialReceive.class);
+            boolean check = CSVUtil.check(csvData);
+            if (!check){
+                return R.fail("excel中存在重复数据");
+            }
+
             R<SysFile> upload = upload(file);
             csvData.forEach(r->r.setFileId(upload.getData().getFileId().toString()));
             return R.ok(csvData);

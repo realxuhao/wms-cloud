@@ -70,4 +70,5 @@ public class MaterialReceiveServiceImpl extends ServiceImpl<MaterialRecevieMappe
         return materialRecevieMapper.updateBatch(materialReceive)>0;
     }
 
+
 }
