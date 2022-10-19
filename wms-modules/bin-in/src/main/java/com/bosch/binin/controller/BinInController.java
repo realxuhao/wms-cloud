@@ -1,11 +1,11 @@
 package com.bosch.binin.controller;
 
 
-import com.bosch.binin.domain.dto.BinAllocationDTO;
-import com.bosch.binin.domain.dto.BinInDTO;
-import com.bosch.binin.domain.dto.BinInQueryDTO;
-import com.bosch.binin.domain.vo.BinAllocationVO;
-import com.bosch.binin.domain.vo.BinInVO;
+import com.bosch.storagein.api.domain.dto.BinAllocationDTO;
+import com.bosch.storagein.api.domain.dto.BinInDTO;
+import com.bosch.storagein.api.domain.dto.BinInQueryDTO;
+import com.bosch.storagein.api.domain.vo.BinAllocationVO;
+import com.bosch.storagein.api.domain.vo.BinInVO;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;

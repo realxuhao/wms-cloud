@@ -31,4 +31,9 @@ public class ServiceNameConstants
      * 入库服务的serviceid
      */
     public static final String STORAGE_IN = "storage-in";
+
+    /**
+     * 上架服务的serviceid
+     */
+    public static final String BIN_IN = "bin-in";
 }

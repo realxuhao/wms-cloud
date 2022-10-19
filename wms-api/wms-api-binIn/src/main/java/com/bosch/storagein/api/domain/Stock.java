@@ -1,4 +1,4 @@
-package com.bosch.binin.domain;
+package com.bosch.storagein.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;

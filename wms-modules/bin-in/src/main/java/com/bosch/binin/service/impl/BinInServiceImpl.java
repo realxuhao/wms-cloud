@@ -1,32 +1,28 @@
 package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bosch.binin.domain.BinIn;
-import com.bosch.binin.domain.Stock;
-import com.bosch.binin.domain.dto.BinAllocationDTO;
-import com.bosch.binin.domain.dto.BinInQueryDTO;
-import com.bosch.binin.domain.vo.BinAllocationVO;
-import com.bosch.binin.domain.vo.BinInVO;
+import com.bosch.storagein.api.domain.BinIn;
+import com.bosch.storagein.api.domain.Stock;
+import com.bosch.storagein.api.domain.dto.BinAllocationDTO;
+import com.bosch.storagein.api.domain.dto.BinInQueryDTO;
+import com.bosch.storagein.api.domain.vo.BinAllocationVO;
+import com.bosch.storagein.api.domain.vo.BinInVO;
 import com.bosch.binin.mapper.BinInMapper;
 import com.bosch.binin.mapper.BinStockMapper;
 import com.bosch.binin.service.IBinInService;
-import com.bosch.binin.service.IBinStockService;
 import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.RemotePalletService;
-import com.bosch.storagein.api.RemoteMaterialInService;
+import com.bosch.storagein.api.RemoteBinInService;
 import com.bosch.storagein.api.domain.vo.MaterialInVO;
 import com.bosch.storagein.api.util.MesBarCodeUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
-import com.ruoyi.common.core.web.domain.AjaxResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.xml.transform.sax.SAXSource;
 import java.util.List;
 
 /**
@@ -48,7 +44,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     private RemotePalletService remotePalletService;
 
     @Autowired
-    private RemoteMaterialInService remoteMaterialInService;
+    private RemoteBinInService remoteMaterialInService;
 
     @Override
     public List<BinInVO> selectBinVOList(BinInQueryDTO queryDTO) {

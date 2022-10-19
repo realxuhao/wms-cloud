@@ -1,4 +1,4 @@
-package com.bosch.binin.domain.vo;
+package com.bosch.storagein.api.domain.vo;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

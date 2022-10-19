@@ -1,10 +1,9 @@
 package com.bosch.binin.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.bosch.binin.domain.BinIn;
-import com.bosch.binin.domain.dto.BinInQueryDTO;
-import com.bosch.binin.domain.vo.BinInVO;
-import com.bosch.masterdata.api.domain.Area;
+import com.bosch.storagein.api.domain.BinIn;
+import com.bosch.storagein.api.domain.dto.BinInQueryDTO;
+import com.bosch.storagein.api.domain.vo.BinInVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
