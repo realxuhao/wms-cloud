@@ -43,4 +43,5 @@ public interface IMaterialReceiveService extends IService<MaterialReceive> {
 
 
     public boolean updateBatch(MaterialReceive materialReceive);
+
 }

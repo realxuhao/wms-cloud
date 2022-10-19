@@ -117,7 +117,7 @@ public class MaterialReceive {
      */
     @ExcelProperty(value = "PONumberItem")
     @CsvBindByName(column = "PONumberItem")
-    private String poNumberItem;
+    private Integer poNumberItem;
 
     /**
      * 上传人

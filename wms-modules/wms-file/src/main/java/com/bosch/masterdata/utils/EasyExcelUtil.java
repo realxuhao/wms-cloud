@@ -6,9 +6,11 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.read.builder.ExcelReaderBuilder;
 import com.alibaba.excel.support.ExcelTypeEnum;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.masterdata.api.enumeration.ClassType;
 
+import com.bosch.storagein.api.domain.MaterialReceive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +19,7 @@ import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.ruoyi.common.core.exception.ServiceException;
 
@@ -85,6 +88,15 @@ public class EasyExcelUtil {
         String fileName = URLEncoder.encode(sheetName, "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
         EasyExcel.write(response.getOutputStream(), clazz).head(clazz).sheet(sheetName).doWrite(list);
+    }
+
+    public static<T> boolean  check(List<T> list) {
+        List<String> strings=new ArrayList<>();
+        list.forEach(r->{
+            strings.add(JSON.toJSONString(r));
+        });
+        List<String> collect = strings.stream().distinct().collect(Collectors.toList());
+        return collect.size()==list.size();
     }
 }
 
