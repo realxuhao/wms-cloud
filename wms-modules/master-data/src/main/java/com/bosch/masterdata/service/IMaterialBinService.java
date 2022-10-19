@@ -1,10 +1,12 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.api.domain.MaterialBin;
+import com.bosch.masterdata.api.domain.dto.FrameDTO;
 import com.bosch.masterdata.api.domain.dto.MaterialBinDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 
@@ -63,4 +65,20 @@ public interface IMaterialBinService extends IService<MaterialBin>
      * @return 结果
      */
     public int deleteMaterialBinById(Long id);
+
+    public Map<String,Long> getTypeMap(List<String> codes,int i);
+
+    /**
+     * 重复校验
+     * @param
+     * @return
+     */
+    public boolean validList(List<MaterialBinDTO> dtos);
+
+    /**
+     * 赋值
+     * @param dtos
+     * @return
+     */
+    public List<MaterialBinDTO> setValue(List<MaterialBinDTO> dtos);
 }
