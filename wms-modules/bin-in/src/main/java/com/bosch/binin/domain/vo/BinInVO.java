@@ -1,6 +1,8 @@
 package com.bosch.binin.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.util.Date;
 
@@ -9,6 +11,7 @@ import java.util.Date;
  * @since: 10/18/2022 13:24
  * @description: 上架VO
  */
+@Data
 public class BinInVO {
     /**
      * id
@@ -19,80 +22,82 @@ public class BinInVO {
     /**
      * 物料号
      */
-    @ApiModelProperty(value = "materialNb")
+    @ApiModelProperty(value = "物料号")
     private String materialNb;
 
     /**
      * 物料名称
      */
-    @ApiModelProperty(value = "materialName")
+    @ApiModelProperty(value = "物料名称")
     private String materialName;
 
     /**
      * 批次号
      */
-    @ApiModelProperty(value = "batchNb")
+    @ApiModelProperty(value = "批次号")
     private String batchNb;
 
 
     /**
      * 过期时间
      */
-    @ApiModelProperty(value = "expireDate")
+    @ApiModelProperty(value = "过期时间")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date expireDate;
 
     /**
      * 仓库编码
      */
-    @ApiModelProperty(value = "wareCode")
+    @ApiModelProperty(value = "仓库编码")
     private String wareCode;
 
     /**
      * 推荐库位编码
      */
-    @ApiModelProperty(value = "recommendBinCode")
+    @ApiModelProperty(value = "推荐库位编码")
     private String recommendBinCode;
 
     /**
      * 实际库位编码
      */
-    @ApiModelProperty(value = "actualBinCode")
+    @ApiModelProperty(value = "实际库位编码")
     private String actualBinCode;
 
     /**
      * 数量
      */
-    @ApiModelProperty(value = "quantity")
+    @ApiModelProperty(value = "数量")
     private Integer quantity;
 
     /**
      * 托盘编码
      */
-    @ApiModelProperty(value = "palletCode")
+    @ApiModelProperty(value = "托盘编码")
     private String palletCode;
 
     /**
      * 托盘类型
      */
-    @ApiModelProperty(value = "palletType")
+    @ApiModelProperty(value = "托盘类型")
     private String palletType;
 
     /**
-     * 状态(0：待入库,1:已入库)
+     * 状态(0：待上架,1:已上架)
      */
-    @ApiModelProperty(value = "state")
+    @ApiModelProperty(value = "state，状态(0：待上架,1:已上架)")
     private Integer state;
 
     /**
      * 创建人
      */
-    @ApiModelProperty(value = "createUser")
+    @ApiModelProperty(value = "创建人")
     private String createUser;
 
 
     /**
      * 创建时间
      */
-    @ApiModelProperty(value = "creteTime")
-    private Date creteTime;
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
 }

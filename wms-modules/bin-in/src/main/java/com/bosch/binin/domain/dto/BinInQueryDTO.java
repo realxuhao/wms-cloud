@@ -44,24 +44,12 @@ public class BinInQueryDTO extends PageDomain {
     @ApiModelProperty(value = "actualBinCode")
     private String actualBinCode;
 
-
-    /**
-     * 托盘编码
-     */
-    @ApiModelProperty(value = "palletCode")
-    private String palletCode;
-
     /**
      * 创建人
      */
     @ApiModelProperty(value = "createUser", hidden = true)
     private String createUser;
 
-    /**
-     * 托盘类型
-     */
-    @ApiModelProperty(value = "palletType")
-    private String palletType;
 
     /**
      * 状态(0：待入库,1:已入库)
