@@ -2,6 +2,7 @@ package com.bosch.masterdata.controller;
 
 
 import com.alibaba.fastjson2.JSONObject;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.file.api.domain.FileUpload;
 import com.bosch.masterdata.service.IFileUploadService;
 import com.bosch.masterdata.utils.CSVUtil;
@@ -81,6 +82,9 @@ public class SysFileController {
             Class<?> TClass = Class.forName("com.bosch.masterdata.api.domain.dto." + className);
             List<T> read = EasyExcelUtil.read(file.getInputStream(), TClass,className);
 
+            if(CollectionUtils.isEmpty(read)){
+                return R.fail("excel中无数据");
+            }
             return R.ok(read);
         } catch (Exception e) {
             return R.fail("解析文件失败,文件类型不匹配");

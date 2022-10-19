@@ -34,22 +34,22 @@ public class MaterialBinVO {
     private String materialName;
 
     /**
-     * 库位id
+     * 跨id
      */
-    @ApiModelProperty(value = "库位id")
-    private Long binId;
+    @ApiModelProperty(value = "跨id")
+    private Long frameId;
 
     /**
-     * 库位code
+     * 跨code
      */
-    @ApiModelProperty(value = "库位code")
-    private String binCode;
+    @ApiModelProperty(value = "跨code")
+    private String frameCode;
 
     /**
-     * 库位name
+     * name
      */
     @ApiModelProperty(value = "库位name")
-    private String binName;
+    private String frameName;
 
     /**
      * 分配至该库位的优先级

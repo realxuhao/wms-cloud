@@ -2,13 +2,17 @@ package com.bosch.masterdata.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
+import com.bosch.masterdata.api.domain.Area;
 import com.bosch.masterdata.api.domain.Material;
+import com.bosch.masterdata.api.domain.dto.AreaDTO;
 import com.bosch.masterdata.api.domain.dto.MaterialBinDTO;
 import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
@@ -123,72 +127,81 @@ public class MaterialBinController extends BaseController {
         return toAjax(materialBinService.deleteMaterialBinByIds(ids));
     }
 
-//    /**
-//     * 批量上传物料明细
-//     */
-//    @ApiOperation("批量上传物料明细")
-//    @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
-//    public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
-//
-//        //解析文件服务
-//        R result = fileService.read(file, ClassType.MATERIALBINDTO.getDesc());
-//        if (result.isSuccess()){
-//            Object data = result.getData();
-//            List<MaterialBinDTO> dtos = JSON.parseArray(JSON.toJSONString(data), MaterialBinDTO.class);
-//            if (CollectionUtils.isNotEmpty(dtos)){
-//                dtos.
-//                boolean valid = materialBinService.validMaterialList(materialDTOList);
-//                if (valid){
-//                    return R.fail(400,"存在重复数据");
-//                }else {
-//                    //物料类型id
-//                    List<MaterialDTO> materialDTOS = materialService.setMaterialList(materialDTOList);
-//                    List<Material> materials = BeanConverUtil.converList(materialDTOS, Material.class);
-//                    materialService.saveBatch(materials);
-//                }
-//            }
-//            return R.ok(materialDTOList);
-//        }
-//        else {
-//            return R.fail("文件服务调用失败");
-//        }
-//    }
     /**
-     * 批量上传分配规则
+     * 批量上传
      */
-    @ApiOperation("批量更新分配规则")
+    @ApiOperation("批量上传")
+    @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
+    @Transactional(rollbackFor = Exception.class)
+    public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
+        try {
+            //解析文件服务
+            R result = fileService.masterDataImport(file, ClassType.MATERIALBINDTO.getDesc());
+            if (result.isSuccess()) {
+                Object data = result.getData();
+                List<MaterialBinDTO> dtos = JSON.parseArray(JSON.toJSONString(data), MaterialBinDTO.class);
+                if (CollectionUtils.isNotEmpty(dtos)) {
+                    boolean b = materialBinService.validList(dtos);
+                    if (!b){
+                        return R.fail(400, "存在重复数据");
+                    }
+                    //dto赋值
+                    List<MaterialBinDTO> materialBinDTOS = materialBinService.setValue(dtos);
+                    //添加
+                    List<MaterialBin> dos = BeanConverUtil.converList(materialBinDTOS, MaterialBin.class);
+                    materialBinService.saveBatch(dos);
+                }else {
+                    return R.fail("excel中无数据");
+                }
+                return R.ok("解析成功");
+            } else {
+                return R.fail(result.getMsg());
+            }
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            return R.fail(e.getMessage());
+        }
+
+    }
+
+    /**
+     * 批量更新
+     */
+    @ApiOperation("批量更新")
     @PostMapping(value = "/saveBatch", headers = "content-type=multipart/form-data")
     @Transactional(rollbackFor = Exception.class)
     public R saveBatch(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
 
         try {
             //解析文件服务
-            R result = fileService.masterDataImport(file,ClassType.MATERIALDTO.getDesc());
-            if (result.isSuccess()){
+            R result = fileService.masterDataImport(file, ClassType.MATERIALBINDTO.getDesc());
+            if (result.isSuccess()) {
                 Object data = result.getData();
-                List<MaterialDTO> materialDTOList = JSON.parseArray(JSON.toJSONString(data), MaterialDTO.class);
-                if (CollectionUtils.isNotEmpty(materialDTOList)){
-                    //物料类型id
-                    List<MaterialDTO> materialDTOS = materialService.setMaterialList(materialDTOList);
-                    //转换物料DO
-                    List<Material> materials = BeanConverUtil.converList(materialDTOS, Material.class);
-                    materials.forEach(r->{
-                        LambdaUpdateWrapper<Material> wrapper=new LambdaUpdateWrapper<Material>();
-                        wrapper.eq(Material::getCode,r.getCode());
-                        boolean update = materialService.update(r, wrapper);
-                        if (!update){
+                List<MaterialBinDTO> dtos = JSON.parseArray(JSON.toJSONString(data), MaterialBinDTO.class);
+                if (CollectionUtils.isNotEmpty(dtos)) {
+                    //dto赋值
+                    List<MaterialBinDTO> materialBinDTOS = materialBinService.setValue(dtos);
+                    //转换DO
+                    List<MaterialBin> dos = BeanConverUtil.converList(materialBinDTOS, MaterialBin.class);
+                    dos.forEach(r -> {
+                        LambdaUpdateWrapper<MaterialBin> wrapper = new LambdaUpdateWrapper<MaterialBin>();
+                        wrapper.eq(MaterialBin::getMaterialCode, r.getMaterialCode());
+                        wrapper.eq(MaterialBin::getFrameCode, r.getFrameCode());
+                        boolean update = materialBinService.update(r, wrapper);
+                        if (!update) {
                             r.setCreateBy(SecurityUtils.getUsername());
                             r.setCreateTime(DateUtils.getNowDate());
-                            materialService.save(r);
+                            materialBinService.save(r);
                         }
                     });
+                }else {
+                    return R.fail("excel中无数据");
                 }
                 return R.ok("导入成功");
+            } else {
+                return R.fail(result.getMsg());
             }
-            else {
-                return R.fail("文件服务调用失败");
-            }
-        }catch (Exception e){
+        } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             return R.fail(e.getMessage());
         }

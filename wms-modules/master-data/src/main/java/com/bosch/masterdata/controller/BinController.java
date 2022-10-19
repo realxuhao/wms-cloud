@@ -159,9 +159,9 @@ public class BinController extends BaseController
     }
 
     /**
-     * 批量上传跨
+     * 批量上传
      */
-    @ApiOperation("批量上传跨")
+    @ApiOperation("批量上传")
     @PostMapping(value = "/import" , headers = "content-type=multipart/form-data")
     @Transactional(rollbackFor = Exception.class)
     public R importExcel(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
@@ -197,9 +197,9 @@ public class BinController extends BaseController
     }
 
     /**
-     * 批量更新跨
+     * 批量更新
      */
-    @ApiOperation("批量更新跨")
+    @ApiOperation("批量更新")
     @PostMapping(value = "/saveBatch" , headers = "content-type=multipart/form-data")
     @Transactional(rollbackFor = Exception.class)
     public R saveBatch(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
