@@ -1,20 +1,27 @@
 package com.bosch.binin.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.domain.BinIn;
+import com.bosch.binin.domain.Stock;
 import com.bosch.binin.domain.dto.BinAllocationDTO;
 import com.bosch.binin.domain.dto.BinInQueryDTO;
 import com.bosch.binin.domain.vo.BinAllocationVO;
 import com.bosch.binin.domain.vo.BinInVO;
 import com.bosch.binin.mapper.BinInMapper;
+import com.bosch.binin.mapper.BinStockMapper;
 import com.bosch.binin.service.IBinInService;
+import com.bosch.binin.service.IBinStockService;
 import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.RemotePalletService;
 import com.bosch.storagein.api.RemoteMaterialInService;
 import com.bosch.storagein.api.domain.vo.MaterialInVO;
+import com.bosch.storagein.api.util.MesBarCodeUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,6 +40,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Autowired
     private BinInMapper binInMapper;
+
+    @Autowired
+    private BinStockMapper binStockMapper;
 
     @Autowired
     private RemotePalletService remotePalletService;
@@ -64,7 +74,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Override
     public BinAllocationVO allocateBinCode(BinAllocationDTO binAllocationDTO) {
-        R<MaterialInVO> materialInVOResult = remoteMaterialInService.getByMesBarCode(binAllocationDTO.getMesBarCode());
+        String mesBarCode = binAllocationDTO.getMesBarCode();
+        R<MaterialInVO> materialInVOResult = remoteMaterialInService.getByMesBarCode(mesBarCode);
         if (StringUtils.isNull(materialInVOResult) || StringUtils.isNull(materialInVOResult.getData())) {
             throw new ServiceException("该物料：" + binAllocationDTO.getMesBarCode() + " 未入库");
         }
@@ -75,8 +86,14 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         MaterialInVO materialInVO = materialInVOResult.getData();
 
+        LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.eq(Stock::getId,"1");
 
 
+        BinIn binIn = BeanConverUtil.conver(binAllocationDTO, BinIn.class);
+        binIn.setMaterialNb(materialInVO.getMaterialNb());
+        binIn.setBatchNb(MesBarCodeUtil.getBatchNb(mesBarCode));
+        binIn.setQuantity(materialInVO.getQuantity());
         return null;
     }
 }
