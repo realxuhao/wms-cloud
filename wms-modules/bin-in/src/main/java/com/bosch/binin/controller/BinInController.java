@@ -8,7 +8,6 @@ import com.bosch.binin.domain.vo.BinAllocationVO;
 import com.bosch.binin.domain.vo.BinInVO;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
-import com.bosch.storagein.api.domain.vo.MaterialInVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.web.controller.BaseController;
@@ -17,7 +16,9 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -37,6 +38,7 @@ public class BinInController extends BaseController {
     @PostMapping(value = "/allocate")
     @ApiOperation("分配库位编码")
     public R<BinAllocationVO> allocate(@RequestBody BinAllocationDTO binAllocationDTO) {
+        binInService.allocateBinCode(binAllocationDTO);
         return R.ok(null);
     }
 
@@ -60,5 +62,13 @@ public class BinInController extends BaseController {
         return R.ok(null);
     }
 
+
+    @GetMapping(value = "/virtualPalletCode/{palletType}")
+    @ApiOperation("获取虚拟编码")
+    public R<Map> virtualPalletCode(@PathVariable("palletType") String palletType) {
+        Map hashMap = new HashMap();
+        hashMap.put("virtualPalletCode", binInService.virtualPalletCode(palletType));
+        return R.ok(hashMap);
+    }
 
 }
