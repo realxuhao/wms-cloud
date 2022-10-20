@@ -1,6 +1,7 @@
 package com.bosch.binin.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,7 +13,7 @@ import java.util.Date;
  */
 @Data
 @TableName("bi_in")
-public class BinIn {
+public class BinIn extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -71,16 +72,7 @@ public class BinIn {
      */
     private Integer state;
 
-    /**
-     * 创建人
-     */
-    private String createUser;
 
-
-    /**
-     * 创建时间
-     */
-    private Date creteTime;
 
 
 }

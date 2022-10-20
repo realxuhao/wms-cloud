@@ -1,6 +1,7 @@
 package com.bosch.binin.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,7 +13,7 @@ import java.util.Date;
  */
 @Data
 @TableName("bi_stock")
-public class Stock {
+public class Stock extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -50,10 +51,6 @@ public class Stock {
      */
     private Integer quantity;
 
-    /**
-     * 创建时间
-     */
-    private String creteTime;
 
     /**
      * 上架id
