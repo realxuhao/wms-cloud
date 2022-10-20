@@ -2,7 +2,6 @@ package com.bosch.binin.service.impl;
 
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.*;
-import com.bosch.binin.api.util.MesBarCodeUtil;
 import com.bosch.binin.mapper.BinInMapper;
 import com.bosch.binin.mapper.BinStockMapper;
 import com.bosch.binin.service.IBinAssignmentService;
@@ -12,6 +11,7 @@ import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.storagein.api.RemoteMaterialInService;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +41,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
         //获取托盘详情
         R<Pallet> byType = remotePalletService.getByType(binAllocationDTO.getPalletType());
         //获取物料详情
-        R<MaterialVO> materialVORes = remoteMaterialService.getInfoByMaterialCode(com.bosch.storagein.api.util.MesBarCodeUtil.getMaterialNb(mesBarCode));
+        R<MaterialVO> materialVORes = remoteMaterialService.getInfoByMaterialCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
 
 

@@ -1,12 +1,18 @@
 package com.ruoyi.common.core.utils;
 
+
+import java.util.Date;
+
 public class MesBarCodeUtil {
 
 //    public static String getMaterialCode(String mesBarCode) {
 //        return mesBarCode.split();
 //    }
-    public static String getExpireDate(String mesBarCode) {
-        return mesBarCode.substring(0,8);
+    public static Date getExpireDate(String mesBarCode) {
+        String date = mesBarCode.substring(0, 8);
+        Date parseDate = DateUtils.parseDate(date);
+
+        return parseDate;
     }
 
     public static String getSSCC(String mesBarCode){

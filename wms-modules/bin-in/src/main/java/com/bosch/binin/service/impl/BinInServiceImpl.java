@@ -106,9 +106,40 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         return binInMapper.currentUserData(queryDTO);
     }
 
+
+    private MaterialInVO getMaterialInVO(String mesBarCode) {
+        R<MaterialInVO> materialInVOResult = remoteMaterialInService.getByMesBarCode(mesBarCode);
+        if (StringUtils.isNull(materialInVOResult) || StringUtils.isNull(materialInVOResult.getData())) {
+            throw new ServiceException("该物料：" + mesBarCode + " 未入库");
+        }
+
+        if (R.FAIL == materialInVOResult.getCode()) {
+            throw new ServiceException(materialInVOResult.getMsg());
+        }
+
+        return materialInVOResult.getData();
+    }
+
     @Override
     public BinInVO generateInTask(BinInTaskDTO binInTaskDTO) {
         String mesBarCode = binInTaskDTO.getMesBarCode();
-        return null;
+        String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+        String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
+        MaterialInVO materialInVO = getMaterialInVO(mesBarCode);
+
+        BinIn binIn = new BinIn();
+        binIn.setSsccNumber(sscc);
+        binIn.setQuantity(materialInVO.getQuantity());
+        binIn.setMaterialNb(materialNb);
+        binIn.setBatchNb(materialInVO.getBatchNb());
+        binIn.setExpireDate(MesBarCodeUtil.getExpireDate(mesBarCode));
+        binIn.setPalletCode(binInTaskDTO.getPalletCode());
+        binIn.setPalletType(binInTaskDTO.getPalletType());
+        binIn.setRecommendBinCode(binIn.getRecommendBinCode());
+
+        binInMapper.insert(binIn);
+
+
+        return getByMesBarCode(mesBarCode);
     }
 }
