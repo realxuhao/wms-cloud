@@ -26,6 +26,12 @@ public class BinInVO {
     private String materialNb;
 
     /**
+     * sscc
+     */
+    @ApiModelProperty(value = "sscc")
+    private String ssccNumber;
+
+    /**
      * 物料名称
      */
     @ApiModelProperty(value = "物料名称")

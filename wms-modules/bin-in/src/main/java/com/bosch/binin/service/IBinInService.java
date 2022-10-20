@@ -21,4 +21,6 @@ public interface IBinInService extends IService<BinIn> {
     String virtualPalletCode(String palletType);
 
     BinAllocationVO allocateBinCode(BinAllocationDTO binAllocationDTO);
+
+    BinInVO getByMesBarCode(String mesBarCode);
 }

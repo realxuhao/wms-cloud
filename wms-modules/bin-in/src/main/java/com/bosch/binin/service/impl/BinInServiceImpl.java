@@ -83,7 +83,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         MaterialInVO materialInVO = materialInVOResult.getData();
 
         LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
-        stockQueryWrapper.eq(Stock::getId,"1");
+        stockQueryWrapper.eq(Stock::getId, "1");
 
 
         BinIn binIn = BeanConverUtil.conver(binAllocationDTO, BinIn.class);
@@ -91,5 +91,12 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setBatchNb(MesBarCodeUtil.getBatchNb(mesBarCode));
         binIn.setQuantity(materialInVO.getQuantity());
         return null;
+    }
+
+    @Override
+    public BinInVO getByMesBarCode(String mesBarCode) {
+        String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+        BinInVO binInVO = binInMapper.selectBySsccNumber(sscc);
+        return binInVO;
     }
 }

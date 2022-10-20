@@ -6,6 +6,7 @@
 
     <resultMap type="BinInVO" id="BinInVOResult">
         <result property="id" column="id"/>
+        <result property="ssccNumber" column="sscc_number"/>
         <result property="materialNb" column="material_nb"/>
         <result property="materialName" column="material_name"/>
         <result property="batchNb" column="batch_nb"/>
@@ -23,12 +24,14 @@
 
 
     <select id="selectBinVOList" resultMap="BinInVOResult">
-        select bi.id,bi.material_nb,mm.name as material_name,bi.batch_nb,bi.expire_date,bi.ware_code,bi.recommend_bin_code,
+        select bi.id,bi.material_nb,bi.sscc_number,mm.name as
+        material_name,bi.batch_nb,bi.expire_date,bi.ware_code,bi.recommend_bin_code,
         bi.actual_bin_code,bi.quantity,bi.pallet_code,bi.pallet_type,bi.state,
         bi.create_user,bi.create_time
         from bi_in bi left join md_material mm on bi.material_nb = mm.code
         <where>
             <if test="materialNb != null and materialNb != ''">and bi.material_nb = #{materialNb}</if>
+            <if test="ssccNumber != null and ssccNumber != ''">and bi.sscc_number = #{ssccNumber}</if>
             <if test="materialName != null  and materialName != ''">and mm.name like concat('%', #{name}, '%')</if>
             <if test="batchNb != null  and batchNb != ''">and bi.batch_nb = #{batchNb}</if>
             <if test="wareCode != null and wareCode != ''">and bi.ware_code = #{wareCode}</if>
@@ -37,6 +40,28 @@
             <if test="state != null ">and bi.state = #{state}</if>
 
         </where>
+
+    </select>
+    <select id="selectBySsccNumber" resultType="com.bosch.binin.api.domain.vo.BinInVO">
+        select bi.id,
+               bi.material_nb,
+               bi.sscc_number,
+               mm.name as material_name,
+               bi.batch_nb,
+               bi.expire_date,
+               bi.ware_code,
+               bi.recommend_bin_code,
+               bi.actual_bin_code,
+               bi.quantity,
+               bi.pallet_code,
+               bi.pallet_type,
+               bi.state,
+               bi.create_user,
+               bi.create_time
+        from bi_in bi
+                 left join md_material mm on bi.material_nb = mm.code
+        where bi.sscc_number = #{ssccNumber}
+
 
     </select>
 

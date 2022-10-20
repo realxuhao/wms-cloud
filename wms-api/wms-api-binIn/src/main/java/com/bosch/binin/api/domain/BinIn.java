@@ -72,6 +72,11 @@ public class BinIn extends BaseEntity {
      */
     private Integer state;
 
+    /**
+     * SSCC码
+     */
+    private String ssccNumber;
+
 
 
 

@@ -62,10 +62,11 @@ public class BinInController extends BaseController {
         return R.ok(null);
     }
 
-    @GetMapping(value = "/getByMesBarCode/{mesBarCOde}")
+    @GetMapping(value = "/getByMesBarCode/{mesBarCode}")
     @ApiOperation("扫码查询上架信息")
-    public R<BinInVO> getByMesBarCode(@PathVariable("mesBarCOde") String mesBarCOde) {
-        return R.ok(null);
+    public R<BinInVO> getByMesBarCode(@PathVariable("mesBarCode") String mesBarCode) {
+        BinInVO binInVO = binInService.getByMesBarCode(mesBarCode);
+        return R.ok(binInVO);
     }
 
 

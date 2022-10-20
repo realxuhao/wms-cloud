@@ -13,6 +13,12 @@ import lombok.Data;
 public class BinInQueryDTO extends PageDomain {
 
     /**
+     * sscc
+     */
+    @ApiModelProperty(value = "sscc")
+    private String ssccNumber;
+
+    /**
      * 物料号
      */
     @ApiModelProperty(value = "materialNb")

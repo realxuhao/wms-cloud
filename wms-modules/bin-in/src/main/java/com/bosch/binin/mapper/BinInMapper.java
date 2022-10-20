@@ -21,4 +21,5 @@ public interface BinInMapper extends BaseMapper<BinIn> {
 
     List<BinInVO> selectBinVOList(BinInQueryDTO queryDTO);
 
+    BinInVO selectBySsccNumber(String sscc);
 }
