@@ -68,9 +68,9 @@ public class BinIn extends BaseEntity {
     private String palletType;
 
     /**
-     * 状态(0：待入库,1:已入库)
+     * 状态(0：待上架,1:已上架)
      */
-    private Integer state;
+    private Integer status;
 
     /**
      * SSCC码

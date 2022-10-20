@@ -23,4 +23,6 @@ public interface IBinInService extends IService<BinIn> {
     BinAllocationVO allocateBinCode(BinAllocationDTO binAllocationDTO);
 
     BinInVO getByMesBarCode(String mesBarCode);
+
+    List<BinInVO> currentUserData(BinInQueryDTO queryDTO);
 }

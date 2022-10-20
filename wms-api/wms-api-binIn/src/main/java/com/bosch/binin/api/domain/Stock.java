@@ -22,6 +22,10 @@ public class Stock extends BaseEntity {
     private Long id;
 
     /**
+     * SSCC码
+     */
+    private String ssccNumber;
+    /**
      * 仓库编码
      */
     private String wareCode;
@@ -60,7 +64,7 @@ public class Stock extends BaseEntity {
     /**
      * 库存状态（0：不可用，1：可用）
      */
-    private Integer state;
+    private Integer status;
 
 
 }

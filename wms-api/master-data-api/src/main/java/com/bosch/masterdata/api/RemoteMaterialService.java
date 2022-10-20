@@ -18,8 +18,4 @@ public interface RemoteMaterialService {
     public R<MaterialVO> getInfoByMaterialCode(@PathVariable("materialCode") String materialCode);
 
 
-    @GetMapping(value = "/pallet/getByType/{palletType}")
-    public R<Pallet> getByType(@PathVariable("palletType") String palletType);
-
-
 }

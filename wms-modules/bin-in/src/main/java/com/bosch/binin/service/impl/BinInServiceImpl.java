@@ -99,4 +99,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         BinInVO binInVO = binInMapper.selectBySsccNumber(sscc);
         return binInVO;
     }
+
+    @Override
+    public List<BinInVO> currentUserData(BinInQueryDTO queryDTO) {
+        return binInMapper.currentUserData(queryDTO);
+    }
 }
