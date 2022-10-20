@@ -4,6 +4,7 @@ package com.bosch.binin.controller;
 import com.bosch.binin.api.domain.dto.BinAllocationDTO;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.BinInQueryDTO;
+import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.service.IBinInService;
@@ -40,6 +41,13 @@ public class BinInController extends BaseController {
     public R<BinAllocationVO> allocate(@RequestBody BinAllocationDTO binAllocationDTO) {
         binInService.allocateBinCode(binAllocationDTO);
         return R.ok(null);
+    }
+
+    @PostMapping(value = "/generateInTask")
+    @ApiOperation("生成上架任务")
+    public R<BinInVO> generateInTask(@RequestBody BinInTaskDTO binInTaskDTO) {
+        BinInVO binInVO = binInService.generateInTask(binInTaskDTO);
+        return R.ok(binInVO);
     }
 
     @PostMapping(value = "/in")

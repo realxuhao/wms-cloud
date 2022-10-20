@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.dto.BinAllocationDTO;
 import com.bosch.binin.api.domain.dto.BinInQueryDTO;
+import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 
@@ -23,4 +24,6 @@ public interface IBinInService extends IService<BinIn> {
     BinAllocationVO allocateBinCode(BinAllocationDTO binAllocationDTO);
 
     BinInVO getByMesBarCode(String mesBarCode);
+
+    BinInVO generateInTask(BinInTaskDTO binInTaskDTO);
 }

@@ -1,4 +1,4 @@
-package com.bosch.binin.api.util;
+package com.ruoyi.common.core.utils;
 
 public class MesBarCodeUtil {
 

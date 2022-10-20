@@ -18,7 +18,7 @@ import com.bosch.storagein.mapper.MaterialInMapper;
 import com.bosch.storagein.mapper.MaterialRecevieMapper;
 import com.bosch.storagein.service.IMaterialInService;
 import com.bosch.storagein.utils.BeanConverUtil;
-import com.bosch.storagein.api.util.MesBarCodeUtil;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;

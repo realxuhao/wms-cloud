@@ -2,6 +2,7 @@ package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.storagein.api.RemoteMaterialInService;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.Stock;
@@ -15,7 +16,7 @@ import com.bosch.binin.service.IBinInService;
 import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.RemotePalletService;
 import com.bosch.storagein.api.domain.vo.MaterialInVO;
-import com.bosch.binin.api.util.MesBarCodeUtil;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
@@ -98,5 +99,11 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         BinInVO binInVO = binInMapper.selectBySsccNumber(sscc);
         return binInVO;
+    }
+
+    @Override
+    public BinInVO generateInTask(BinInTaskDTO binInTaskDTO) {
+        String mesBarCode = binInTaskDTO.getMesBarCode();
+        return null;
     }
 }

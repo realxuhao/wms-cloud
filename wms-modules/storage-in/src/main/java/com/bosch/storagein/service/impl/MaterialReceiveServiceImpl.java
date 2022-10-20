@@ -8,7 +8,7 @@ import com.bosch.storagein.api.domain.dto.*;
 import com.bosch.storagein.api.domain.vo.*;
 import com.bosch.storagein.mapper.MaterialRecevieMapper;
 import com.bosch.storagein.service.IMaterialReceiveService;
-import com.bosch.storagein.api.util.MesBarCodeUtil;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
