@@ -7,11 +7,13 @@ import com.bosch.binin.api.domain.dto.BinInQueryDTO;
 import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.BinInVO;
+import com.bosch.binin.service.IBinAssignmentService;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,11 +37,13 @@ public class BinInController extends BaseController {
     @Autowired
     private IBinInService binInService;
 
+    @Autowired
+    private IBinAssignmentService binAssignmentService;
 
     @PostMapping(value = "/allocate")
     @ApiOperation("分配库位编码")
     public R<BinAllocationVO> allocate(@RequestBody BinAllocationDTO binAllocationDTO) {
-        binInService.allocateBinCode(binAllocationDTO);
+        binAssignmentService.getBinAllocationVO(binAllocationDTO);
         return R.ok(null);
     }
 
@@ -67,7 +71,13 @@ public class BinInController extends BaseController {
     @GetMapping(value = "/currentUserData")
     @ApiOperation("查询当前用户的上架列表")
     public R<PageVO<BinInVO>> currentUserData(BinInQueryDTO binInQueryDTO) {
-        return R.ok(null);
+        if(binInQueryDTO==null){
+            binInQueryDTO=new BinInQueryDTO();
+        }
+        binInQueryDTO.setCreateBy(SecurityUtils.getUsername());
+        startPage();
+        List<BinInVO> list = binInService.selectBinVOList(binInQueryDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
     @GetMapping(value = "/getByMesBarCode/{mesBarCode}")

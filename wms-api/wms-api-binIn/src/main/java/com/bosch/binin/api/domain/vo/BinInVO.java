@@ -90,14 +90,14 @@ public class BinInVO {
     /**
      * 状态(0：待上架,1:已上架)
      */
-    @ApiModelProperty(value = "state，状态(0：待上架,1:已上架)")
-    private Integer state;
+    @ApiModelProperty(value = "status，状态(0：待上架,1:已上架)")
+    private Integer status;
 
     /**
      * 创建人
      */
     @ApiModelProperty(value = "创建人")
-    private String createUser;
+    private String createBy;
 
 
     /**

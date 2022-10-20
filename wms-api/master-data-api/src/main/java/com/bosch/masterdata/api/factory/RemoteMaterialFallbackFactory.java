@@ -20,16 +20,11 @@ public class RemoteMaterialFallbackFactory implements FallbackFactory<RemoteMate
 
     @Override
     public RemoteMaterialService create(Throwable throwable) {
-        log.error("主数据服务调用失败:{}", throwable.getMessage());
+        log.error("物料查询服务调用失败:{}", throwable.getMessage());
         return new RemoteMaterialService() {
             @Override
             public R<MaterialVO> getInfoByMaterialCode(String materialCode) {
-                return R.fail("主数据服务调用失败");
-            }
-
-            @Override
-            public R<Pallet> getByType(String palletType) {
-                return R.fail("主数据服务调用失败");
+                return R.fail("物料明细查询失败");
             }
 
 

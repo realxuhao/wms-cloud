@@ -52,7 +52,7 @@ public class BinInQueryDTO extends PageDomain {
      * 创建人
      */
     @ApiModelProperty(value = "createUser", hidden = true)
-    private String createUser;
+    private String createBy;
 
 
     /**
