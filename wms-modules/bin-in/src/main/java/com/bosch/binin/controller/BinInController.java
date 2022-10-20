@@ -1,11 +1,11 @@
 package com.bosch.binin.controller;
 
 
-import com.bosch.storagein.api.domain.dto.BinAllocationDTO;
-import com.bosch.storagein.api.domain.dto.BinInDTO;
-import com.bosch.storagein.api.domain.dto.BinInQueryDTO;
-import com.bosch.storagein.api.domain.vo.BinAllocationVO;
-import com.bosch.storagein.api.domain.vo.BinInVO;
+import com.bosch.binin.api.domain.dto.BinAllocationDTO;
+import com.bosch.binin.api.domain.dto.BinInDTO;
+import com.bosch.binin.api.domain.dto.BinInQueryDTO;
+import com.bosch.binin.api.domain.vo.BinAllocationVO;
+import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
@@ -59,6 +59,12 @@ public class BinInController extends BaseController {
     @GetMapping(value = "/currentUserData")
     @ApiOperation("查询当前用户的上架列表")
     public R<PageVO<BinInVO>> currentUserData(BinInQueryDTO binInQueryDTO) {
+        return R.ok(null);
+    }
+
+    @GetMapping(value = "/getByMesBarCode/{mesBarCOde}")
+    @ApiOperation("扫码查询上架信息")
+    public R<BinInVO> getByMesBarCode(@PathVariable("mesBarCOde") String mesBarCOde) {
         return R.ok(null);
     }
 

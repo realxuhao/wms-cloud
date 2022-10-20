@@ -1,8 +1,7 @@
 package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bosch.storagein.api.domain.BinIn;
-import com.bosch.storagein.api.domain.Stock;
+import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.mapper.BinStockMapper;
 import com.bosch.binin.service.IBinStockService;
 import org.springframework.stereotype.Service;

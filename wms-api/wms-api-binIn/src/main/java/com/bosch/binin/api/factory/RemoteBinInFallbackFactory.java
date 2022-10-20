@@ -1,6 +1,6 @@
-package com.bosch.storagein.api.factory;
+package com.bosch.binin.api.factory;
 
-import com.bosch.storagein.api.RemoteBinInService;
+import com.bosch.binin.api.RemoteBinInService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;

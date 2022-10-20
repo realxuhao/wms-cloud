@@ -1,11 +1,11 @@
 package com.bosch.binin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.bosch.storagein.api.domain.BinIn;
-import com.bosch.storagein.api.domain.dto.BinAllocationDTO;
-import com.bosch.storagein.api.domain.dto.BinInQueryDTO;
-import com.bosch.storagein.api.domain.vo.BinAllocationVO;
-import com.bosch.storagein.api.domain.vo.BinInVO;
+import com.bosch.binin.api.domain.BinIn;
+import com.bosch.binin.api.domain.dto.BinAllocationDTO;
+import com.bosch.binin.api.domain.dto.BinInQueryDTO;
+import com.bosch.binin.api.domain.vo.BinAllocationVO;
+import com.bosch.binin.api.domain.vo.BinInVO;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.bosch.storagein.api.domain.dto;
+package com.bosch.binin.api.domain.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.bosch.storagein.api.domain.dto;
+package com.bosch.binin.api.domain.dto;
 
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
