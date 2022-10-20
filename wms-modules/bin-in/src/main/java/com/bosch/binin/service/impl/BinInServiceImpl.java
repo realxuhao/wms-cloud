@@ -2,6 +2,7 @@ package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.storagein.api.RemoteMaterialInService;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.Stock;
