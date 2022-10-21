@@ -82,32 +82,19 @@ public class BinController extends BaseController
      */
     @RequiresPermissions("masterdata:bin:query")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
+    public R<BinVO> getInfo(@PathVariable("id") Long id)
     {
-        return AjaxResult.success(binService.selectBinVOById(id));
+        try {
+            BinVO binVO = binService.selectBinVOById(id);
+            return R.ok(binVO);
+
+        }catch (Exception e){
+            return R.fail(e.getMessage());
+        }
+
     }
 
-    /**
-     * 新增库位
-     */
-//    @RequiresPermissions("masterdata:bin:add")
-//    @Log(title = "库位", businessType = BusinessType.INSERT)
-//    @PostMapping
-//    public AjaxResult add(@RequestBody Bin bin)
-//    {
-//        return toAjax(binService.insertBin(bin));
-//    }
 
-    /**
-     * 修改库位
-     */
-//    @RequiresPermissions("masterdata:bin:edit")
-//    @Log(title = "库位", businessType = BusinessType.UPDATE)
-//    @PutMapping
-//    public AjaxResult edit(@RequestBody Bin bin)
-//    {
-//        return toAjax(binService.updateBin(bin));
-//    }
 
     /**
      * 删除库位
