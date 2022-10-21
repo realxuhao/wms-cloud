@@ -16,9 +16,11 @@ import java.util.List;
 @FeignClient(contextId = "remoteMasterDataService", value = ServiceNameConstants.MASTER_DATA_SERVICE)
 public interface RemoteMasterDataService {
 
-
     @GetMapping(value = "/bin/{id}")
     public R<BinVO> getBinInfo(@PathVariable("id") Long id);
+
+    @GetMapping(value = "/bin/getInfoByCode/{code}")
+    public R<BinVO> getBinInfoByCode(@PathVariable("code") String code);
 
     @GetMapping(value = "/materialBin/getListByMaterial")
     public R<List<MaterialBinVO>> getListByMaterial(@RequestParam("materialCode") String materialCode);

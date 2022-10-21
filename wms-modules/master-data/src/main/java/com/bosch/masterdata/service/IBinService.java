@@ -27,6 +27,9 @@ public interface IBinService extends IService<Bin>
     public Bin selectBinById(Long id);
 
     public BinVO selectBinVOById(Long id);
+
+    public BinVO selectBinVOByCode(String code);
+
     /**
      * 查询库位列表
      * 

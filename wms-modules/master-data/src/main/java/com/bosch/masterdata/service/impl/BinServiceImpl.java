@@ -58,6 +58,10 @@ public class BinServiceImpl extends ServiceImpl<BinMapper, Bin> implements IBinS
         return binMapper.selectBinVOById(id);
     }
 
+    @Override
+    public BinVO selectBinVOByCode(String code) {
+        return binMapper.selectBinVOByCode(code);
+    }
     /**
      * 查询库位列表
      * 
