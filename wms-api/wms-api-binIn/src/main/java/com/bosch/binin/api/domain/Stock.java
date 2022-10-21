@@ -66,5 +66,14 @@ public class Stock extends BaseEntity {
      */
     private Integer status;
 
+    /**
+     * 跨id
+     */
+    private Long frameId;
+
+    /**
+     * 跨code
+     */
+    private String frameCode;
 
 }

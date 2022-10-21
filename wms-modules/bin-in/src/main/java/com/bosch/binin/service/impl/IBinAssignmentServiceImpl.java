@@ -23,6 +23,8 @@ import com.ruoyi.common.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,6 +48,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
 
     @Autowired
     private RemoteMasterDataService remoteMasterDataService;
+
     @Override
     public BinAllocationVO getBinAllocationVO(BinAllocationDTO binAllocationDTO) {
         String mesBarCode = binAllocationDTO.getMesBarCode();
@@ -55,28 +58,44 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
         //获取托盘详情
         R<Pallet> byType = remotePalletService.getByType(binAllocationDTO.getPalletType());
         //获取物料详情
-        R<MaterialVO> materialVORes = remoteMaterialService.getInfoByMaterialCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
-
+        R<MaterialVO> materialVORes =
+                remoteMaterialService.getInfoByMaterialCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
 
         R<BinVO> binInfo = remoteMasterDataService.getBinInfo(1L);
         //获取物料相关跨
         R<List<MaterialBinVO>> listByMaterial = remoteMasterDataService.getListByMaterial(materialNb);
         //获取同批次 同物料号 已占用跨 、库位
-        LambdaQueryWrapper<BinIn> binInWrapper=new LambdaQueryWrapper();
-        binInWrapper.eq(BinIn::getBatchNb,batchNb);
-        binInWrapper.eq(BinIn::getSsccNumber,sscc);
+        LambdaQueryWrapper<BinIn> binInWrapper = new LambdaQueryWrapper();
+        binInWrapper.eq(BinIn::getBatchNb, batchNb);
+        binInWrapper.eq(BinIn::getSsccNumber, sscc);
         binInWrapper.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING).or().eq(BinIn::getStatus, BinInStatusEnum.FINISH);
         List<BinIn> binIns = binInMapper.selectList(binInWrapper);
         //存在同批次数据
-        if (CollectionUtils.isNotEmpty(binIns)){
+        if (CollectionUtils.isNotEmpty(binIns)) {
             //1.判断同跨能否放入 （可用宽度重量，上架状态） 按照跨从小到大排序
-            List<BinIn> collect =
-                    binIns.stream().filter(r -> StringUtils.isEmpty(r.getActualBinCode()) ).collect(Collectors.toList());
+            List<String> bins = new ArrayList<>();
+            //实际库位
+            List<BinIn> actualBins =
+                    binIns.stream().filter(r -> StringUtils.isNotEmpty(r.getActualBinCode())).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(actualBins)) {
+                List<String> collect = actualBins.stream().map(BinIn::getActualBinCode).collect(Collectors.toList());
+                boolean b = CollectionUtils.isNotEmpty(collect) ? bins.addAll(collect) : null;
+            }
+            //推荐库位
+            List<BinIn> recommendBins =
+                    binIns.stream().filter(r -> StringUtils.isEmpty(r.getActualBinCode()) && StringUtils.isNotEmpty(r.getRecommendBinCode())).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(recommendBins)) {
+                List<String> collect =
+                        recommendBins.stream().map(BinIn::getRecommendBinCode).collect(Collectors.toList());
+                boolean b = CollectionUtils.isNotEmpty(collect) ? bins.addAll(collect) : null;
+            }
+            //占用库位排序
+            Collections.sort(bins);
 
             // 2.能放入 查找该跨上已占用库位、剩余库位，3.获取最小库位
 
-        }else {
+        } else {
             //根据可用宽度重量 查找最近能放入的跨
 
             //查找该跨上已占用库位，剩余库位
@@ -85,10 +104,29 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
         }
 
 
-
         //根据跨查找库位
 
         BinAllocationVO binAllocationVO = new BinAllocationVO();
         return binAllocationVO;
+    }
+
+
+    /**
+     * 判断是否能放入跨
+     *
+     * @param binCode
+     * @param materialCode
+     * @return
+     */
+    public boolean validateBin(String binCode, String materialCode) {
+        //获取来料每托重量
+
+        //获取托盘宽度
+
+        //获取跨承重，宽度
+
+        //获取跨上已
+
+        return false;
     }
 }

@@ -77,7 +77,15 @@ public class BinIn extends BaseEntity {
      */
     private String ssccNumber;
 
+    /**
+     * 跨id
+     */
+    private Long frameId;
 
+    /**
+     * 跨code
+     */
+    private String frameCode;
 
 
 }
