@@ -1,6 +1,7 @@
 package com.bosch.masterdata.api;
 
 import com.bosch.masterdata.api.domain.vo.BinVO;
+import com.bosch.masterdata.api.domain.vo.FrameVO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.factory.RemoteMaterialFallbackFactory;
@@ -24,4 +25,7 @@ public interface RemoteMasterDataService {
 
     @GetMapping(value = "/materialBin/getListByMaterial")
     public R<List<MaterialBinVO>> getListByMaterial(@RequestParam("materialCode") String materialCode);
+
+    @GetMapping(value = "/frame/getFrameInfo/{id}")
+    public R<FrameVO> getFrameInfo(@PathVariable("id") Long id);
 }
