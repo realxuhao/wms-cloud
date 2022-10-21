@@ -28,4 +28,6 @@ public interface RemoteMasterDataService {
 
     @GetMapping(value = "/frame/getFrameInfo/{id}")
     public R<FrameVO> getFrameInfo(@PathVariable("id") Long id);
+
+
 }
