@@ -81,4 +81,11 @@ public interface IMaterialBinService extends IService<MaterialBin>
      * @return
      */
     public List<MaterialBinDTO> setValue(List<MaterialBinDTO> dtos);
+
+    /**
+     * 根据物料code获取跨关系
+     * @param materialCode
+     * @return
+     */
+    public List<MaterialBinVO> getListByMaterial(String materialCode);
 }

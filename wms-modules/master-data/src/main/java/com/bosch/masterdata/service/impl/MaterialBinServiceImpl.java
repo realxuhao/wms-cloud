@@ -17,6 +17,7 @@ import com.bosch.masterdata.api.domain.dto.MaterialBinDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 import com.bosch.masterdata.mapper.FrameMapper;
 import com.bosch.masterdata.mapper.MaterialMapper;
+import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
@@ -167,5 +168,15 @@ public class MaterialBinServiceImpl  extends ServiceImpl<MaterialBinMapper, Mate
             x.setMaterialId(materialsMap.get(x.getMaterialCode()));
         });
         return dtos;
+    }
+
+    @Override
+    public List<MaterialBinVO> getListByMaterial(String materialCode) {
+        LambdaQueryWrapper<MaterialBin> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(MaterialBin::getMaterialCode, materialCode);
+        List<MaterialBin> materialBins = materialBinMapper.selectList(lambdaQueryWrapper);
+        List<MaterialBinVO> materialBinVOS = BeanConverUtil.converList(materialBins, MaterialBinVO.class);
+
+        return materialBinVOS;
     }
 }

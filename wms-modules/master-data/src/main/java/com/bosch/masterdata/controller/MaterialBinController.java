@@ -62,6 +62,23 @@ public class MaterialBinController extends BaseController {
     /**
      * 查询物料库位分配策略列表
      */
+
+    @GetMapping("/getListByMaterial")
+    @ApiOperation("查询物料库位规则列表")
+    public R<List<MaterialBinVO>> getListByMaterial(@RequestParam("materialCode") String materialCode) {
+        try {
+
+            List<MaterialBinVO> listByMaterial = materialBinService.getListByMaterial(materialCode);
+            return R.ok(listByMaterial);
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
+
+    }
+
+    /**
+     * 查询物料库位分配策略列表
+     */
     @RequiresPermissions("masterdata:bin:list")
     @GetMapping("/list")
     @ApiOperation("查询物料库位规则列表")
@@ -142,7 +159,7 @@ public class MaterialBinController extends BaseController {
                 List<MaterialBinDTO> dtos = JSON.parseArray(JSON.toJSONString(data), MaterialBinDTO.class);
                 if (CollectionUtils.isNotEmpty(dtos)) {
                     boolean b = materialBinService.validList(dtos);
-                    if (!b){
+                    if (!b) {
                         return R.fail(400, "存在重复数据");
                     }
                     //dto赋值
@@ -150,7 +167,7 @@ public class MaterialBinController extends BaseController {
                     //添加
                     List<MaterialBin> dos = BeanConverUtil.converList(materialBinDTOS, MaterialBin.class);
                     materialBinService.saveBatch(dos);
-                }else {
+                } else {
                     return R.fail("excel中无数据");
                 }
                 return R.ok("解析成功");
@@ -194,7 +211,7 @@ public class MaterialBinController extends BaseController {
                             materialBinService.save(r);
                         }
                     });
-                }else {
+                } else {
                     return R.fail("excel中无数据");
                 }
                 return R.ok("导入成功");
