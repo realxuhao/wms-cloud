@@ -14,7 +14,7 @@ public class BinInDTO {
     @ApiModelProperty(value = "mesBarCode")
     private String mesBarCode;
 
-    @ApiModelProperty(value = "实际托盘编码")
+    @ApiModelProperty(value = "实际库位编码")
     private String actualBinCode;
 
 }

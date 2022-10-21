@@ -64,6 +64,18 @@ public class BinInVO {
     private String recommendBinCode;
 
     /**
+     * 跨id
+     */
+    @ApiModelProperty(value = "跨id")
+    private Long frameId;
+
+    /**
+     * 跨code
+     */
+    @ApiModelProperty(value = "跨code")
+    private String frameCode;
+
+    /**
      * 实际库位编码
      */
     @ApiModelProperty(value = "实际库位编码")
