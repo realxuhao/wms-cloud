@@ -35,9 +35,27 @@
       </a-form-model>
 
       <div class="action-content">
-        <a-button type="primary" icon="plus" @click="handleAdd">
+        <a-button type="primary" class="m-r-8" icon="plus" @click="handleAdd">
           新建
         </a-button>
+
+        <a-tooltip placement="right">
+          <template slot="title">
+            <a style="color:#fff" @click="handleDownloadTemplate"><a-icon type="arrow-down" />下载模板</a>
+          </template>
+          <a-upload
+            :file-list="[]"
+            name="file"
+            :multiple="true"
+            :before-upload="()=>false"
+            @change="handleUpload"
+          >
+            <a-button :loading="uploadLoading" type="primary" icon="upload" >
+              导入
+            </a-button>
+          </a-upload>
+        </a-tooltip>
+
       </div>
       <a-table
         :columns="columns"
@@ -80,10 +98,10 @@
         <a-pagination
           show-size-changer
           show-less-items
-          :current="currentPage"
-          :page-size.sync="pageSize"
+          :current="queryForm.pageNum"
+          :page-size.sync="queryForm.pageSize"
           :total="paginationTotal"
-          @showSizeChange="loadTableList"
+          @showSizeChange="onShowSizeChange"
           @change="changePagination" />
       </div>
 
@@ -106,6 +124,8 @@
 <script>
 import UpdateDrawer from './UpdateDrawer'
 import DispatchBin from './DispatchBin'
+
+import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
   {
@@ -218,55 +238,75 @@ const columns = [
 
 export default {
   name: 'Material',
+  mixins: [mixinTableList],
   components: {
     UpdateDrawer,
     DispatchBin
   },
   data () {
     return {
-      visible: false,
-      updateType: 'add', // edit、add
-      currentUpdateId: undefined,
-
       dispatchRuleVisible: false,
 
       materialTypeListLoading: false,
       materialTypeList: [],
 
-      searchLoading: false,
-      queryForm: {
-        name: '',
-        code: '',
-        materialTypeId: undefined
-      },
-      pageSize: 20,
-      currentPage: 1,
-      paginationTotal: 0,
-      tableLoading: false,
       columns,
-      list: []
+      list: [],
+
+      uploadLoading: false
     }
   },
   methods: {
-    changeTab () {
-      this.currentPage = 1
-      this.loadData()
+    async handleDownloadTemplate () {
+      try {
+        this.$store.dispatch('file/downloadByFilename', '物料.xlsx')
+      } catch (error) {
+        this.$message.error(error.message)
+      }
     },
-    changePagination (page) {
-      this.currentPage = page
-      this.loadData()
+    async uploadBatchUpdate (formdata) {
+      try {
+        await this.$store.dispatch('material/uploadBatchUpdate', formdata)
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.uploadLoading = false
+      }
     },
+    async handleUpload (e) {
+      const { file } = e
 
-    async handleSearch () {
-      this.searchLoading = true
-      await this.loadTableList()
-      this.searchLoading = false
-    },
+      const formdata = new FormData()
 
-    handleEdit (record) {
-      this.updateType = 'edit'
-      this.visible = true
-      this.currentUpdateId = record.id
+      try {
+        formdata.append('file', file)
+
+        this.uploadLoading = true
+        await this.$store.dispatch('material/upload', formdata)
+
+        this.currentPage = 1
+        this.loadTableList()
+
+        this.uploadLoading = false
+
+        this.$message.success('导入成功！')
+      } catch (error) {
+        if (error.code === 400) {
+          this.$confirm({
+            title: '是否更新？',
+            content: '存在重复数据',
+            onOk: () => {
+              this.uploadBatchUpdate(formdata)
+            },
+            onCancel () {
+            }
+          })
+        } else {
+          this.$message.error(error.message)
+          this.uploadLoading = false
+        }
+      }
     },
 
     async handleDelete (record) {
@@ -279,12 +319,6 @@ export default {
         console.log(error)
         this.$message.error('删除失败，请联系系统管理员！')
       }
-    },
-
-    handleAdd () {
-      this.updateType = 'add'
-      this.visible = true
-      this.currentUpdateId = null
     },
 
     handleOpenDispathRule (record) {

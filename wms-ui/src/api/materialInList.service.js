@@ -16,8 +16,14 @@ const getReceiveList = async (parameter) => {
   return data
 }
 
-const uploadReceiveList = async (formdata) => {
+const upload = async (formdata) => {
   const url = `/material-receive/import`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
+
+const uploadBatchUpdate = async (formdata) => {
+  const url = `/material-receive/saveBatch`
   const { data } = await createAuthInstance(baseUrl).post(url, formdata)
   return data
 }
@@ -25,5 +31,6 @@ const uploadReceiveList = async (formdata) => {
 export const materialInListService = {
   getList,
   getReceiveList,
-  uploadReceiveList
+  upload,
+  uploadBatchUpdate
 }

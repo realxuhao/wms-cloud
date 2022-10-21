@@ -33,7 +33,7 @@ const errorParser = async (response) => {
     }
 
     if (data.code !== 200) {
-      return Promise.reject(data.msg)
+      return Promise.reject(new ApiError(data.msg, { isHandled: true, status, ...data }))
     }
     return response
   }

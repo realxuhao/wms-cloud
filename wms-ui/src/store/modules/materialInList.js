@@ -18,12 +18,16 @@ const materialInList = {
       const data = await materialInListService.getList(options)
       return data
     },
-    async upload ({ commit }, options) {
-      const data = await materialInListService.upload(options)
-      return data
-    },
     async getPaginationReceiveList ({ commit }, options) {
       const data = await materialInListService.getReceiveList(options)
+      return data
+    },
+    async upload ({ commit }, formdata) {
+      const data = await materialInListService.upload(formdata)
+      return data
+    },
+    async uploadBatchUpdate ({ commit }, formdata) {
+      const data = await materialInListService.uploadBatchUpdate(formdata)
       return data
     }
   }

@@ -19,6 +19,7 @@ import area from './modules/area'
 import ware from './modules/ware'
 import frame from './modules/frame'
 import bin from './modules/bin'
+import file from './modules/file'
 
 import materialInList from './modules/materialInList'
 
@@ -45,6 +46,8 @@ export default new Vuex.Store({
     ware,
     frame,
     bin,
+
+    file,
 
     materialInList
   },

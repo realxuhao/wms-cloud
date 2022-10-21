@@ -15,15 +15,22 @@
       </a-form-model>
 
       <div class="action-content">
-        <a-upload
-          :file-list="[]"
-          name="file"
-          :multiple="true"
-          :before-upload="()=>false"
-          @change="handleUpload"
-        >
-          <a-button :loading="uploadLoading" type="primary" icon="upload" @click="handleAdd"> 导入 </a-button>
-        </a-upload>
+        <a-tooltip placement="right">
+          <template slot="title">
+            <a style="color:#fff" @click="handleDownloadTemplate"><a-icon type="arrow-down" />下载模板</a>
+          </template>
+          <a-upload
+            :file-list="[]"
+            name="file"
+            :multiple="true"
+            :before-upload="()=>false"
+            @change="handleUpload"
+          >
+            <a-button :loading="uploadLoading" type="primary" icon="upload" >
+              导入
+            </a-button>
+          </a-upload>
+        </a-tooltip>
       </div>
       <a-table
         :columns="columns"
@@ -70,7 +77,7 @@ const columns = [
     title: '仓库',
     key: 'plantNb',
     dataIndex: 'plantNb',
-    width: 200
+    width: 90
   },
   {
     title: 'SSCC码',
@@ -82,19 +89,19 @@ const columns = [
     title: '物料名称',
     key: 'materialName',
     dataIndex: 'materialName',
-    width: 200
+    width: 100
   },
   {
     title: '物料编码',
     key: 'materialNb',
     dataIndex: 'materialNb',
-    width: 200
+    width: 140
   },
   {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
-    width: 200
+    width: 120
   },
   // {
   //   title: '供应商',
@@ -112,19 +119,19 @@ const columns = [
     title: '过期时间',
     key: 'expireDate',
     dataIndex: 'expireDate',
-    width: 200
+    width: 120
   },
   {
     title: '数量',
     key: 'quantity',
     dataIndex: 'quantity',
-    width: 200
+    width: 60
   },
   {
     title: '单位',
     key: 'unit',
     dataIndex: 'unit',
-    width: 200
+    width: 60
   },
   // {
   //   title: '来源区域',
@@ -136,7 +143,7 @@ const columns = [
     title: '来源PO号',
     key: 'fromPurchaseOrder',
     dataIndex: 'fromPurchaseOrder',
-    width: 200
+    width: 120
   },
   // {
   //   title: '目的分拣区域',
@@ -148,13 +155,13 @@ const columns = [
     title: 'PO行号',
     key: 'poNumberItem',
     dataIndex: 'poNumberItem',
-    width: 200
+    width: 100
   },
   {
     title: '上传人',
     key: 'uploadUser',
     dataIndex: 'uploadUser',
-    width: 200
+    width: 120
   },
   {
     title: '上传时间',
@@ -167,7 +174,7 @@ const columns = [
     key: 'status',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
-    width: 200
+    width: 100
   }
   // {
   //   title: '来源区域',
@@ -188,40 +195,54 @@ export default {
   mixins: [mixinTableList],
   data () {
     return {
-      tableLoading: false,
       uploadLoading: false,
       columns,
       list: []
     }
   },
   methods: {
-    async handleDelete (record) {
+    async uploadBatchUpdate (formdata) {
       try {
-        await this.$store.dispatch('area/destroy', record.id)
-        this.$message.success('删除成功！')
-
-        this.loadTableList()
-      } catch (error) {
-        console.log(error)
-        this.$message.error('删除失败，请联系系统管理员！')
-      }
-    },
-
-    async handleUpload (e) {
-      const { file } = e
-
-      try {
-        const formdata = new FormData()
-        formdata.append('file', file)
-
-        await this.$store.dispatch('materialInList/upload', formdata)
-        this.uploadLoading = true
-
+        await this.$store.dispatch('materialInList/uploadBatchUpdate', formdata)
         this.loadTableList()
       } catch (error) {
         this.$message.error(error.message)
       } finally {
         this.uploadLoading = false
+      }
+    },
+    async handleUpload (e) {
+      const { file } = e
+
+      const formdata = new FormData()
+
+      try {
+        formdata.append('file', file)
+
+        this.uploadLoading = true
+        await this.$store.dispatch('materialInList/upload', formdata)
+
+        this.currentPage = 1
+        this.loadTableList()
+
+        this.uploadLoading = false
+
+        this.$message.success('导入成功！')
+      } catch (error) {
+        if (error.code === 400) {
+          this.$confirm({
+            title: '是否更新？',
+            content: '存在重复数据',
+            onOk: () => {
+              this.uploadBatchUpdate(formdata)
+            },
+            onCancel () {
+            }
+          })
+        } else {
+          this.$message.error(error.message)
+          this.uploadLoading = false
+        }
       }
     },
 

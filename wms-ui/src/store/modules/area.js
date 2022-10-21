@@ -33,6 +33,14 @@ const area = {
     async destroy ({ commit }, id) {
       const data = await areaService.destroy(id)
       return data
+    },
+    async upload ({ commit }, formdata) {
+      const data = await areaService.upload(formdata)
+      return data
+    },
+    async uploadBatchUpdate ({ commit }, formdata) {
+      const data = await areaService.uploadBatchUpdate(formdata)
+      return data
     }
   }
 }

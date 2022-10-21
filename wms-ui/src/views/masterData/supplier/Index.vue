@@ -17,9 +17,25 @@
       </a-form-model>
 
       <div class="action-content">
-        <a-button type="primary" icon="plus" @click="handleAdd">
+        <a-button type="primary" class="m-r-8" icon="plus" @click="handleAdd">
           新建
         </a-button>
+        <a-tooltip placement="right">
+          <template slot="title">
+            <a style="color:#fff" @click="handleDownloadTemplate"><a-icon type="arrow-down" />下载模板</a>
+          </template>
+          <a-upload
+            :file-list="[]"
+            name="file"
+            :multiple="true"
+            :before-upload="()=>false"
+            @change="handleUpload"
+          >
+            <a-button :loading="uploadLoading" type="primary" icon="upload" >
+              导入
+            </a-button>
+          </a-upload>
+        </a-tooltip>
       </div>
       <a-table
         :columns="columns"
@@ -71,6 +87,8 @@
 <script>
 import UpdateDrawer from './UpdateDrawer'
 
+import { mixinTableList } from '@/utils/mixin/index'
+
 const columns = [
   {
     title: '编码',
@@ -106,51 +124,71 @@ const columns = [
 ]
 
 export default {
-  name: 'MaterialType',
+  name: 'Supplier',
+  mixins: [mixinTableList],
   components: {
     UpdateDrawer
   },
   data () {
     return {
-      visible: false,
-      updateType: 'add', // edit、add
-      currentUpdateId: 0,
-
-      searchLoading: false,
-      queryForm: {
-        name: '',
-        code: '',
-        pageSize: 20,
-        pageNum: 1
-      },
-      paginationTotal: 0,
-
-      tableLoading: false,
       columns,
-      list: []
+      list: [],
+
+      uploadLoading: false
     }
   },
   methods: {
-    onShowSizeChange () {
-      this.queryForm.pageNum = 1
-      this.loadTableList()
+    async handleDownloadTemplate () {
+      try {
+        this.$store.dispatch('file/downloadByFilename', '供应商.xlsx')
+      } catch (error) {
+        this.$message.error(error.message)
+      }
     },
-    changePagination (page) {
-      this.queryForm.pageNum = page
-      this.loadTableList()
+    async uploadBatchUpdate (formdata) {
+      try {
+        await this.$store.dispatch('supplier/uploadBatchUpdate', formdata)
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.uploadLoading = false
+      }
+    },
+    async handleUpload (e) {
+      const { file } = e
+
+      const formdata = new FormData()
+
+      try {
+        formdata.append('file', file)
+
+        this.uploadLoading = true
+        await this.$store.dispatch('supplier/upload', formdata)
+
+        this.loadTableList()
+
+        this.uploadLoading = false
+
+        this.$message.success('导入成功！')
+      } catch (error) {
+        if (error.code === 400) {
+          this.$confirm({
+            title: '是否更新？',
+            content: '存在重复数据',
+            onOk: () => {
+              this.uploadBatchUpdate(formdata)
+            },
+            onCancel () {
+            }
+          })
+        } else {
+          this.$message.error(error.message)
+          this.uploadLoading = false
+        }
+      }
     },
 
-    async handleSearch () {
-      this.searchLoading = true
-      await this.loadTableList()
-      this.searchLoading = false
-    },
-
-    handleEdit (record) {
-      this.updateType = 'edit'
-      this.visible = true
-      this.currentUpdateId = record.id
-    },
     async handleDelete (record) {
       try {
         await this.$store.dispatch('supplier/destroy', record.id)
@@ -161,12 +199,6 @@ export default {
         console.log(error)
         this.$message.error('删除失败，请联系系统管理员！')
       }
-    },
-
-    handleAdd () {
-      this.updateType = 'add'
-      this.visible = true
-      this.currentUpdateId = null
     },
 
     async loadTableList () {

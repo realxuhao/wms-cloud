@@ -15,7 +15,23 @@
       </a-form-model>
 
       <div class="action-content">
-        <a-button type="primary" icon="plus" @click="handleAdd"> 新建 </a-button>
+        <a-button type="primary" class="m-r-8" icon="plus" @click="handleAdd"> 新建 </a-button>
+        <a-tooltip placement="right">
+          <template slot="title">
+            <a style="color:#fff" @click="handleDownloadTemplate"><a-icon type="arrow-down" />下载模板</a>
+          </template>
+          <a-upload
+            :file-list="[]"
+            name="file"
+            :multiple="true"
+            :before-upload="()=>false"
+            @change="handleUpload"
+          >
+            <a-button :loading="uploadLoading" type="primary" icon="upload" >
+              导入
+            </a-button>
+          </a-upload>
+        </a-tooltip>
       </div>
       <a-table
         :columns="columns"
@@ -117,12 +133,65 @@ export default {
   },
   data () {
     return {
-      tableLoading: false,
       columns,
-      list: []
+      list: [],
+
+      uploadLoading: false
     }
   },
   methods: {
+    async handleDownloadTemplate () {
+      try {
+        this.$store.dispatch('file/downloadByFilename', '供应商.xlsx')
+      } catch (error) {
+        this.$message.error(error.message)
+      }
+    },
+    async uploadBatchUpdate (formdata) {
+      try {
+        await this.$store.dispatch('bin/uploadBatchUpdate', formdata)
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.uploadLoading = false
+      }
+    },
+    async handleUpload (e) {
+      const { file } = e
+
+      const formdata = new FormData()
+
+      try {
+        formdata.append('file', file)
+
+        this.uploadLoading = true
+        await this.$store.dispatch('bin/upload', formdata)
+
+        this.currentPage = 1
+        this.loadTableList()
+
+        this.uploadLoading = false
+
+        this.$message.success('导入成功！')
+      } catch (error) {
+        if (error.code === 400) {
+          this.$confirm({
+            title: '是否更新？',
+            content: '存在重复数据',
+            onOk: () => {
+              this.uploadBatchUpdate(formdata)
+            },
+            onCancel () {
+            }
+          })
+        } else {
+          this.$message.error(error.message)
+          this.uploadLoading = false
+        }
+      }
+    },
+
     async handleDelete (record) {
       try {
         await this.$store.dispatch('bin/destroy', record.id)

@@ -168,7 +168,7 @@ export default {
 
     requestFailed (err) {
       this.isLoginError = true
-      this.loginErrorInfo = err
+      this.loginErrorInfo = err.message
       this.form.code = undefined
       if (this.captchaEnabled) {
         this.getCode()

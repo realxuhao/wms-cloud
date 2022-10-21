@@ -15,15 +15,7 @@
       </a-form-model>
 
       <div class="action-content">
-        <a-upload
-          :file-list="[]"
-          name="file"
-          :multiple="true"
-          :before-upload="()=>false"
-          @change="handleUpload"
-        >
-          <a-button :loading="uploadLoading" type="primary" icon="upload" @click="handleAdd"> 导入 </a-button>
-        </a-upload>
+
       </div>
       <a-table
         :columns="columns"
@@ -34,14 +26,17 @@
         size="middle"
         :scroll="{ x: 1300 }"
       >
-        <template slot="status" slot-scope="text">
+        <template slot="checkType" slot-scope="text">
           <div >
             <a-tag color="orange" v-if="text===0">
-              未入库
+              手动
+            </a-tag>
+            <!-- <a-tag color="#87d068" v-else>
+              自动
             </a-tag>
             <a-tag color="#87d068" v-else>
-              已入库
-            </a-tag>
+              免检
+            </a-tag> -->
           </div>
         </template>
       </a-table>
@@ -88,60 +83,61 @@ const columns = [
     title: '检验方式',
     key: 'checkType',
     dataIndex: 'checkType',
+    scopedSlots: { customRender: 'checkType' },
     width: 200
   },
   {
-    title: '目标重量',
-    key: 'unit',
-    dataIndex: 'unit',
+    title: '应检查数量',
+    key: 'checkQuantity',
+    dataIndex: 'checkQuantity',
     width: 200
   },
   {
-    title: '来源区域',
-    key: 'fromArea',
-    dataIndex: 'fromArea',
+    title: '实际数量',
+    key: 'actualQuantity',
+    dataIndex: 'actualQuantity',
     width: 200
   },
   {
-    title: '来源PO号',
-    key: 'fromPurchaseOrder',
-    dataIndex: 'fromPurchaseOrder',
+    title: '结果',
+    key: 'actualResult',
+    dataIndex: 'actualResult',
     width: 200
   },
   {
-    title: '目的分拣区域',
-    key: 'toPickingArea',
-    dataIndex: 'toPickingArea',
+    title: '实际平均结果',
+    key: 'averageResult',
+    dataIndex: 'averageResult',
     width: 200
   },
   {
-    title: 'PO行号',
-    key: 'poNumberItem',
-    dataIndex: 'poNumberItem',
+    title: '最小标准',
+    key: 'minStandard',
+    dataIndex: 'minStandard',
     width: 200
   },
   {
-    title: '上传人',
-    key: 'uploadUser',
-    dataIndex: 'uploadUser',
+    title: '最大标准',
+    key: 'maxStandard',
+    dataIndex: 'maxStandard',
     width: 200
   },
   {
-    title: '上传时间',
-    key: 'uploadTime',
-    dataIndex: 'uploadTime',
+    title: '原托数',
+    key: 'originPalletQuantity',
+    dataIndex: 'originPalletQuantity',
     width: 200
   },
   {
-    title: '状态',
-    key: 'status',
-    dataIndex: 'status',
+    title: '操作人',
+    key: 'operateUser',
+    dataIndex: 'operateUser',
     width: 200
   },
   {
-    title: '来源区域',
-    key: 'fromArea',
-    dataIndex: 'fromArea',
+    title: '操作时间',
+    key: 'operateTime',
+    dataIndex: 'operateTime',
     width: 200
   },
   {
@@ -164,36 +160,6 @@ export default {
     }
   },
   methods: {
-    async handleDelete (record) {
-      try {
-        await this.$store.dispatch('area/destroy', record.id)
-        this.$message.success('删除成功！')
-
-        this.loadTableList()
-      } catch (error) {
-        console.log(error)
-        this.$message.error('删除失败，请联系系统管理员！')
-      }
-    },
-
-    async handleUpload (e) {
-      const { file } = e
-
-      try {
-        const formdata = new FormData()
-        formdata.append('file', file)
-
-        await this.$store.dispatch('materialInList/upload', formdata)
-        this.uploadLoading = true
-
-        this.loadTableList()
-      } catch (error) {
-        this.$message.error(error.message)
-      } finally {
-        this.uploadLoading = false
-      }
-    },
-
     async loadTableList () {
       try {
         this.tableLoading = true
@@ -204,7 +170,7 @@ export default {
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
-        this.$message.error(error)
+        this.$message.error(error.message)
       } finally {
         this.tableLoading = false
       }
