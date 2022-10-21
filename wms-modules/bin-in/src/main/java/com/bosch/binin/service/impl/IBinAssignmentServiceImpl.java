@@ -14,14 +14,17 @@ import com.bosch.masterdata.api.*;
 import com.bosch.masterdata.api.RemotePalletService;
 import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.domain.vo.BinVO;
+import com.bosch.masterdata.api.domain.vo.FrameVO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.storagein.api.RemoteMaterialInService;
+import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -51,6 +54,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
     private RemoteMasterDataService remoteMasterDataService;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BinAllocationVO getBinAllocationVO(BinAllocationDTO binAllocationDTO) {
         String mesBarCode = binAllocationDTO.getMesBarCode();
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
@@ -63,7 +67,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
                 remoteMaterialService.getInfoByMaterialCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
 
-        R<BinVO> binInfo = remoteMasterDataService.getBinInfo(1L);
+
         //获取物料相关跨
         R<List<MaterialBinVO>> listByMaterial = remoteMasterDataService.getListByMaterial(materialNb);
         //获取同批次 同物料号 已占用跨 、库位
@@ -119,13 +123,21 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
      * @param material
      * @return
      */
-    public boolean validateBin(String binCode, MaterialVO material,byType) {
+    public boolean validateBin(String binCode, MaterialVO material,Pallet pallet) {
         //获取来料每托重量
         BigDecimal totalWeight = material.getTotalWeight();
         //获取托盘宽度
-
-        //获取跨承重，宽度
-
+        BigDecimal width = pallet.getWidth();
+        //获取bin关联跨，再获取跨承重，宽度
+        R<BinVO> binResult = remoteMasterDataService.getBinInfoByCode(binCode);
+        if (binResult.isSuccess()){
+            BinVO bin = binResult.getData();
+            if (bin!=null){
+                R<FrameVO> frameInfo = remoteMasterDataService.getFrameInfo(bin.getFrameId());
+            }
+        }else {
+            return  false;
+        }
         //获取跨上已占用
 
         return false;

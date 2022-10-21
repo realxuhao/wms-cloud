@@ -84,6 +84,18 @@ public class FrameController extends BaseController {
         return AjaxResult.success(frameService.selectFrameById(id));
     }
 
+    @GetMapping(value = "getFrameInfo/{id}")
+    @ApiOperation("根据id查询跨详细信息")
+    public R<FrameVO> getFrameInfo(@PathVariable("id") Long id) {
+        try {
+            FrameVO frameVO = frameService.selectFrameById(id);
+            return R.ok(frameVO);
+        }catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
+
+    }
+
     /**
      * 新增跨
      */
