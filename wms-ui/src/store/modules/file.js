@@ -1,5 +1,5 @@
 import { fileService } from '@/api'
-import { download } from '@/utils/file'
+// import { download } from '@/utils/file'
 
 const file = {
   namespaced: true,
@@ -13,9 +13,9 @@ const file = {
   actions: {
     async downloadByFilename ({ commit }, filename) {
       const { data: url } = await fileService.getFileUrl(filename)
-      console.log(url)
-      const blobData = await fileService.getFileByUrl(url)
-      download(blobData)
+      window.open(url)
+      // const blobData = await fileService.getFileByUrl(url)
+      // download(blobData)
     }
   }
 }

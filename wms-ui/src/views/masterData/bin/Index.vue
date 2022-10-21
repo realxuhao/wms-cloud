@@ -142,7 +142,7 @@ export default {
   methods: {
     async handleDownloadTemplate () {
       try {
-        this.$store.dispatch('file/downloadByFilename', '供应商.xlsx')
+        this.$store.dispatch('file/downloadByFilename', '库位.xlsx')
       } catch (error) {
         this.$message.error(error.message)
       }

@@ -245,7 +245,13 @@ export default {
         }
       }
     },
-
+    async handleDownloadTemplate () {
+      try {
+        this.$store.dispatch('file/downloadByFilename', '入库.csv')
+      } catch (error) {
+        this.$message.error(error.message)
+      }
+    },
     async loadTableList () {
       try {
         this.tableLoading = true
