@@ -95,7 +95,21 @@ public class BinController extends BaseController
     }
 
 
+    /**
+     * 获取库位详细信息
+     */
+    @GetMapping(value = "/getInfoByCode/{code}")
+    public R<BinVO> getInfoByCode(@PathVariable("code") String code)
+    {
+        try {
+            BinVO binVO = binService.selectBinVOByCode(code);
+            return R.ok(binVO);
 
+        }catch (Exception e){
+            return R.fail(e.getMessage());
+        }
+
+    }
     /**
      * 删除库位
      */

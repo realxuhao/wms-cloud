@@ -23,6 +23,7 @@ import com.ruoyi.common.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -115,17 +116,17 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
      * 判断是否能放入跨
      *
      * @param binCode
-     * @param materialCode
+     * @param material
      * @return
      */
-    public boolean validateBin(String binCode, String materialCode) {
+    public boolean validateBin(String binCode, MaterialVO material,byType) {
         //获取来料每托重量
-
+        BigDecimal totalWeight = material.getTotalWeight();
         //获取托盘宽度
 
         //获取跨承重，宽度
 
-        //获取跨上已
+        //获取跨上已占用
 
         return false;
     }
