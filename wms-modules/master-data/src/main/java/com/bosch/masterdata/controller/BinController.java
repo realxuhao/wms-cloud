@@ -7,7 +7,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.dto.BinDTO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
@@ -104,6 +106,23 @@ public class BinController extends BaseController
         try {
             BinVO binVO = binService.selectBinVOByCode(code);
             return R.ok(binVO);
+
+        }catch (Exception e){
+            return R.fail(e.getMessage());
+        }
+
+    }
+    /**
+     * 根据跨id获取库位详细信息
+     */
+    @GetMapping(value = "/getInfoByFrameId/{frameId}")
+    public R<List<Bin> > getInfoByFrameId(@PathVariable("frameId") Long frameId)
+    {
+        try {
+
+            List<Bin> bins = binService.selectBinByFrameId(frameId);
+
+            return R.ok(bins);
 
         }catch (Exception e){
             return R.fail(e.getMessage());

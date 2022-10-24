@@ -1,5 +1,6 @@
 package com.bosch.masterdata.api;
 
+import com.bosch.masterdata.api.domain.Bin;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.FrameVO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
@@ -29,5 +30,9 @@ public interface RemoteMasterDataService {
     @GetMapping(value = "/frame/getFrameInfo/{id}")
     public R<FrameVO> getFrameInfo(@PathVariable("id") Long id);
 
+    @GetMapping(value = "/frame/getFrameInfoByCode/{code}")
+    public R<FrameVO> getFrameInfoByCode(@PathVariable("code") String code);
 
+    @GetMapping(value = "/bin/getInfoByFrameId/{frameId}")
+    public R<List<Bin> > getInfoByFrameId(@PathVariable("frameId") Long frameId);
 }

@@ -51,6 +51,10 @@ public class FrameServiceImpl extends ServiceImpl<FrameMapper, Frame>  implement
         return frameMapper.selectFrameById(id);
     }
 
+    @Override
+    public FrameVO selectFrameByCode(String code){
+        return frameMapper.selectFrameByCode(code);
+    }
     /**
      * 查询跨列表
      *

@@ -95,7 +95,17 @@ public class FrameController extends BaseController {
         }
 
     }
+    @GetMapping(value = "getFrameInfoByCode/{code}")
+    @ApiOperation("根据code查询跨详细信息")
+    public R<FrameVO> getFrameInfo(@PathVariable("code") String code) {
+        try {
+            FrameVO frameVO = frameService.selectFrameByCode(code);
+            return R.ok(frameVO);
+        }catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
 
+    }
     /**
      * 新增跨
      */

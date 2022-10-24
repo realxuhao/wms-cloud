@@ -26,6 +26,14 @@ public interface IFrameService extends IService<Frame>
      */
     public FrameVO selectFrameById(Long id);
 
+
+    /**
+     * 查询跨
+     *
+     * @param code
+     * @return 跨
+     */
+    public FrameVO selectFrameByCode(String code);
     /**
      * 查询跨列表
      * 
