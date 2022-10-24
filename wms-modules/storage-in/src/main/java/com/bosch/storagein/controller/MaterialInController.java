@@ -87,7 +87,7 @@ public class MaterialInController extends BaseController {
 
     @GetMapping("/list")
     @ApiOperation("查询入库列表")
-    public R<PageVO<MaterialInVO>> list(@RequestBody MaterialInDTO materialInDTO) {
+    public R<PageVO<MaterialInVO>> list(MaterialInDTO materialInDTO) {
         startPage();
         List<MaterialInVO> list = materialInService.selectMaterialInList(materialInDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));

@@ -124,7 +124,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         }
 
         //称重 或者 数数
-        if ((CheckTypeEnum.WEIGHT.getCode().equals(materialInCheckVO.getCheckType()) && checkWeight(mesBarCode, actualQuantity, actualResult, checkResultVO))
+        if ((CheckTypeEnum.WEIGHT.getCode().equals(materialInCheckVO.getCheckType()) && checkWeight(mesBarCode, actualQuantity, actualResult, checkResultVO,materialInCheckDTO.getWeightTimes()))
                 || (CheckTypeEnum.COUNT.getCode().equals(materialInCheckVO.getCheckType()) && checkCount(materialInCheckVO, actualQuantity, actualResult, checkResultVO))) {
 
             batchStorageIn(materialInCheckVO, materialInCheckDTO, checkResultVO.getAverageResult());
@@ -180,11 +180,11 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
      * @return
      */
     private Boolean checkWeight(String mesBarCode, Integer actualQuantity,
-                                Double actualResult, MaterialCheckResultVO checkResultVO) {
+                                Double actualResult, MaterialCheckResultVO checkResultVO,Integer weightTimes) {
         //计算平均值
         //TODO 补充计算说明
         MaterialVO materialVO = getMaterialVOByMesBarCode(mesBarCode);
-        double caculateResult = (actualResult - materialVO.getPackageWeight().doubleValue() * actualQuantity) / actualQuantity - (materialVO.getPackageWeight().doubleValue() - materialVO.getMinPackageNetWeight().doubleValue());
+        double caculateResult = (actualResult - materialVO.getPalletWeight().doubleValue() * weightTimes) / actualQuantity - (materialVO.getPackageWeight().doubleValue() - materialVO.getMinPackageNetWeight().doubleValue());
         double res = caculateResult / materialVO.getTransferWeightRatio().doubleValue();
 
         checkResultVO.setAverageResult(res);
