@@ -34,30 +34,38 @@
         <result property="createTime" column="createTime"/>
     </resultMap>
     <sql id="selectBinVo">
-        select id, frame_id, name, code, create_by, update_by, create_time, update_time, status, remark from md_bin
+        select id,
+               frame_id,
+               name,
+               code,
+               create_by,
+               update_by,
+               create_time,
+               update_time,
+               status,
+               remark
+        from md_bin
     </sql>
     <sql id="binVOList">
-        SELECT
-        b.id,
-	b.frame_id,
-	b.CODE as code,
-	b.NAME as name,
-	w.CODE as wareCode ,
-	w.NAME as wareName,
-	w.id as wareId,
-  a.code as areaCode,
-	a.name as areaName,
-	a.id as areaId,
-	f.code as frameCode,
-	f.name as frameName,
-	f.width as frameWidth,
-	f.bear_weight as frameBearWeight,
-		b.create_time as createTime
-FROM
-	md_bin AS b
-	LEFT JOIN md_frame AS f ON b.frame_id = f.id
-	LEFT JOIN md_area AS a ON f.area_id = a.id
-	LEFT JOIN md_ware AS w ON a.ware_id = w.id
+        SELECT b.id,
+               b.frame_id,
+               b.CODE        as code,
+               b.NAME        as name,
+               w.CODE        as wareCode,
+               w.NAME        as wareName,
+               w.id          as wareId,
+               a.code        as areaCode,
+               a.name        as areaName,
+               a.id          as areaId,
+               f.code        as frameCode,
+               f.name        as frameName,
+               f.width       as frameWidth,
+               f.bear_weight as frameBearWeight,
+               b.create_time as createTime
+        FROM md_bin AS b
+                 LEFT JOIN md_frame AS f ON b.frame_id = f.id
+                 LEFT JOIN md_area AS a ON f.area_id = a.id
+                 LEFT JOIN md_ware AS w ON a.ware_id = w.id
     </sql>
     <select id="selectBinList" parameterType="Bin" resultMap="BinResult">
         <include refid="selectBinVo"/>
@@ -137,7 +145,9 @@ FROM
     </update>
 
     <delete id="deleteBinById" parameterType="Long">
-        delete from md_bin where id = #{id}
+        delete
+        from md_bin
+        where id = #{id}
     </delete>
 
     <delete id="deleteBinByIds" parameterType="String">

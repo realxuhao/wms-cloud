@@ -57,6 +57,7 @@ public class BinInController extends BaseController {
     @PostMapping(value = "/in")
     @ApiOperation("实际上架")
     public R<BinInVO> in(@RequestBody BinInDTO binInDTO) {
+        binInService.performBinIn(binInDTO);
         return R.ok(null);
     }
 

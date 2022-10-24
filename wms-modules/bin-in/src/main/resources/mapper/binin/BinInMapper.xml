@@ -60,7 +60,7 @@
                bi.create_time
         from bi_in bi
                  left join md_material mm on bi.material_nb = mm.code
-        where bi.sscc_number = #{ssccNumber}
+        where bi.sscc_number = #{sscc}
 
 
     </select>

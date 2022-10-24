@@ -47,6 +47,7 @@ public class MaterialInDTO extends PageDomain {
     private Integer checkType;
 
 
+
     /**
      * 应检查数量
      */
@@ -111,6 +112,6 @@ public class MaterialInDTO extends PageDomain {
     /**
      * 该托的物料数量
      */
-    @ApiModelProperty(value = "原托数")
+    @ApiModelProperty(value = "该托的物料数量")
     private Integer quantity;
 }

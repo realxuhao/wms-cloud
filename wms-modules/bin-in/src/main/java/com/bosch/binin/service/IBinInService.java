@@ -3,6 +3,7 @@ package com.bosch.binin.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.dto.BinAllocationDTO;
+import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.BinInQueryDTO;
 import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.binin.api.domain.vo.BinAllocationVO;
@@ -21,11 +22,11 @@ public interface IBinInService extends IService<BinIn> {
 
     String virtualPalletCode(String palletType);
 
-    BinAllocationVO allocateBinCode(BinAllocationDTO binAllocationDTO);
-
     BinInVO getByMesBarCode(String mesBarCode);
 
     BinInVO generateInTask(BinInTaskDTO binInTaskDTO);
 
     List<BinInVO> currentUserData(BinInQueryDTO queryDTO);
+
+    BinInVO performBinIn(BinInDTO binInDTO);
 }
