@@ -35,15 +35,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 物料信息Controller
- * 
+ *
  * @author xuhao
  * @date 2022-09-22
  */
 @Api(tags = "物料接口")
 @RestController
 @RequestMapping("/material")
-public class MaterialController extends BaseController
-{
+public class MaterialController extends BaseController {
     @Autowired
     private IMaterialService materialService;
 
@@ -56,13 +55,11 @@ public class MaterialController extends BaseController
     @RequiresPermissions("masterdata:material:export")
     @Log(title = "物料信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, Material material)
-    {
+    public void export(HttpServletResponse response, Material material) {
         List<Material> list = materialService.validMaterialList(material);
         ExcelUtil<Material> util = new ExcelUtil<Material>(Material.class);
         util.exportExcel(response, list, "物料信息数据");
     }
-
 
 
     /**
@@ -70,9 +67,8 @@ public class MaterialController extends BaseController
      */
     @RequiresPermissions("masterdata:material:remove")
     @Log(title = "物料信息", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(materialService.deleteMaterialByIds(ids));
     }
 
@@ -81,13 +77,19 @@ public class MaterialController extends BaseController
      */
     @ApiOperation("查询物料列表")
     @GetMapping("/materialVOList")
-    public R<PageVO<MaterialVO>> list(MaterialDTO materialDTO)
-    {
+    public R<PageVO<MaterialVO>> list(MaterialDTO materialDTO) {
+        if (materialDTO == null) {
+            materialDTO = new MaterialDTO();
+        }
+        if (materialDTO.getStatus() == null) {
+            materialDTO.setStatus(1L);
+        }
         startPage();
         List<MaterialVO> list = materialService.selectMaterialVOList(materialDTO);
 
-        return R.ok(new PageVO<>(list,new PageInfo<>(list).getTotal()));
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
+
     /**
      * 新增物料信息
      */
@@ -95,8 +97,7 @@ public class MaterialController extends BaseController
     @ApiOperation("新增物料")
     @Log(title = "物料信息", businessType = BusinessType.INSERT)
     @PostMapping("/addMaterial")
-    public AjaxResult addMaterial(@RequestBody MaterialDTO materialDTO)
-    {
+    public AjaxResult addMaterial(@RequestBody MaterialDTO materialDTO) {
         return toAjax(materialService.insertMaterialDTO(materialDTO));
     }
 
@@ -107,8 +108,7 @@ public class MaterialController extends BaseController
     @ApiOperation("修改物料")
     @Log(title = "物料信息", businessType = BusinessType.UPDATE)
     @PutMapping("/{id}")
-    public AjaxResult edit(@PathVariable("id") Long id,@RequestBody MaterialDTO materialDTO)
-    {
+    public AjaxResult edit(@PathVariable("id") Long id, @RequestBody MaterialDTO materialDTO) {
         materialDTO.setId(id);
         return toAjax(materialService.updateMaterial(materialDTO));
     }
@@ -119,8 +119,7 @@ public class MaterialController extends BaseController
     //@RequiresPermissions("masterdata:material:query")
     @GetMapping(value = "/{id}")
     @ApiOperation("获取物料详情")
-    public AjaxResult getInfo(@PathVariable("id") Long id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(materialService.selectMaterialVOById(id));
     }
 
@@ -130,8 +129,7 @@ public class MaterialController extends BaseController
     //@RequiresPermissions("masterdata:material:query")
     @GetMapping(value = "/getByMaterialCode/{materialCode}")
     @ApiOperation("根据物料编码获取获取物料详情")
-    public R<MaterialVO> getInfoByMaterialCode(@PathVariable("materialCode") String materialCode)
-    {
+    public R<MaterialVO> getInfoByMaterialCode(@PathVariable("materialCode") String materialCode) {
         return R.ok(materialService.selectMaterialVOBymaterialCode(materialCode));
     }
 
@@ -143,28 +141,29 @@ public class MaterialController extends BaseController
     public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
 
         //解析文件服务
-        R result = fileService.masterDataImport(file,ClassType.MATERIALDTO.getDesc());
-        if (result.isSuccess()){
+        R result = fileService.masterDataImport(file, ClassType.MATERIALDTO.getDesc());
+        if (result.isSuccess()) {
             Object data = result.getData();
             List<MaterialDTO> materialDTOList = JSON.parseArray(JSON.toJSONString(data), MaterialDTO.class);
-            if (CollectionUtils.isNotEmpty(materialDTOList)){
+            if (CollectionUtils.isNotEmpty(materialDTOList)) {
                 boolean valid = materialService.validMaterialList(materialDTOList);
-                if (valid){
-                    return R.fail(400,"存在重复数据");
-                }else {
+                if (valid) {
+                    return R.fail(400, "存在重复数据");
+                } else {
                     //物料类型id
                     List<MaterialDTO> materialDTOS = materialService.setMaterialList(materialDTOList);
                     List<Material> materials = BeanConverUtil.converList(materialDTOS, Material.class);
                     materialService.saveBatch(materials);
                 }
-            }else {
+            } else {
                 return R.fail("excel中无数据");
             }
             return R.ok(materialDTOList);
-        }else {
+        } else {
             return R.fail(result.getMsg());
         }
     }
+
     /**
      * 批量上传物料明细
      */
@@ -175,20 +174,20 @@ public class MaterialController extends BaseController
 
         try {
             //解析文件服务
-            R result = fileService.masterDataImport(file,ClassType.MATERIALDTO.getDesc());
-            if (result.isSuccess()){
+            R result = fileService.masterDataImport(file, ClassType.MATERIALDTO.getDesc());
+            if (result.isSuccess()) {
                 Object data = result.getData();
                 List<MaterialDTO> materialDTOList = JSON.parseArray(JSON.toJSONString(data), MaterialDTO.class);
-                if (CollectionUtils.isNotEmpty(materialDTOList)){
+                if (CollectionUtils.isNotEmpty(materialDTOList)) {
                     //物料类型id
                     List<MaterialDTO> materialDTOS = materialService.setMaterialList(materialDTOList);
                     //转换物料DO
                     List<Material> materials = BeanConverUtil.converList(materialDTOS, Material.class);
-                    materials.forEach(r->{
-                        LambdaUpdateWrapper<Material> wrapper=new LambdaUpdateWrapper<Material>();
-                        wrapper.eq(Material::getCode,r.getCode());
+                    materials.forEach(r -> {
+                        LambdaUpdateWrapper<Material> wrapper = new LambdaUpdateWrapper<Material>();
+                        wrapper.eq(Material::getCode, r.getCode());
                         boolean update = materialService.update(r, wrapper);
-                        if (!update){
+                        if (!update) {
                             r.setCreateBy(SecurityUtils.getUsername());
                             r.setCreateTime(DateUtils.getNowDate());
                             materialService.save(r);
@@ -196,10 +195,10 @@ public class MaterialController extends BaseController
                     });
                 }
                 return R.ok("导入成功");
-            }else {
+            } else {
                 return R.fail(result.getMsg());
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             return R.fail(e.getMessage());
         }

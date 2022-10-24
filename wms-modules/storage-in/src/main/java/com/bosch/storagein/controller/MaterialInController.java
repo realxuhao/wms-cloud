@@ -85,7 +85,7 @@ public class MaterialInController extends BaseController {
         return R.ok(materialInService.selectByMesBarCode(mesBarCode));
     }
 
-    @PostMapping("/list")
+    @GetMapping("/list")
     @ApiOperation("查询入库列表")
     public R<PageVO<MaterialInVO>> list(@RequestBody MaterialInDTO materialInDTO) {
         startPage();

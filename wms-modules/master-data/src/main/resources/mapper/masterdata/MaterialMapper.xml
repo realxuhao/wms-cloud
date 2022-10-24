@@ -94,7 +94,7 @@
             <if test="minPackageNetWeight != null ">and min_package_net_weight = #{minPackageNetWeight}</if>
             <if test="lessDeviationRatio != null ">and less_deviation_ratio = #{lessDeviationRatio}</if>
             <if test="moreDeviationRatio != null ">and more_deviation_ratio = #{moreDeviationRatio}</if>
-            <if test="status != null ">and status = #{status}</if>
+            <if test="status != null and status != '' ">and status = #{status}</if>
         </where>
     </select>
 
@@ -191,12 +191,13 @@
         where id = #{id}
     </delete>
 
-    <delete id="deleteMaterialByIds" parameterType="String">
-        delete from md_material where id in
+    <update id="deleteMaterialByIds" parameterType="String">
+        update md_material set status = 0 where id in
+--         delete from md_material
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 
     <select id="selectMaterialVOList" parameterType="MaterialDTO" resultMap="MaterialVOResult">
         SELECT
@@ -228,23 +229,23 @@
         LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
 
         <where>
-            <if test="code != null  and code != ''">and code = #{code}</if>
-            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
-            <if test="minPackageNumber != null ">and min_package_number = #{minPackageNumber}</if>
-            <if test="materialTypeId != null ">and material_type_id = #{materialTypeId}</if>
-            <if test="unit != null  and unit != ''">and unit = #{unit}</if>
+            <if test="code != null  and code != ''">and m.code = #{code}</if>
+            <if test="name != null  and name != ''">and m.name like concat('%', #{name}, '%')</if>
+            <if test="minPackageNumber != null ">and m.min_package_number = #{minPackageNumber}</if>
+            <if test="materialTypeId != null ">and m.material_type_id = #{materialTypeId}</if>
+            <if test="unit != null  and unit != ''">and m.unit = #{unit}</if>
             <if test="errorProofingMethod != null  and errorProofingMethod != ''">and error_proofing_method =
                 #{errorProofingMethod}
             </if>
-            <if test="hasPallet != null ">and has_pallet = #{hasPallet}</if>
-            <if test="bindPallet != null ">and bind_pallet = #{bindPallet}</if>
-            <if test="packageWeight != null ">and package_weight = #{packageWeight}</if>
-            <if test="palletWeight != null ">and pallet_weight = #{palletWeight}</if>
-            <if test="totalWeight != null ">and total_weight = #{totalWeight}</if>
-            <if test="minPackageNetWeight != null ">and min_package_net_weight = #{minPackageNetWeight}</if>
-            <if test="lessDeviationRatio != null ">and less_deviation_ratio = #{lessDeviationRatio}</if>
-            <if test="moreDeviationRatio != null ">and more_deviation_ratio = #{moreDeviationRatio}</if>
-            <if test="status != null ">and status = #{status}</if>
+            <if test="hasPallet != null ">and m.has_pallet = #{hasPallet}</if>
+            <if test="bindPallet != null ">and m.bind_pallet = #{bindPallet}</if>
+            <if test="packageWeight != null ">and m.package_weight = #{packageWeight}</if>
+            <if test="palletWeight != null ">and m.pallet_weight = #{palletWeight}</if>
+            <if test="totalWeight != null ">and m.total_weight = #{totalWeight}</if>
+            <if test="minPackageNetWeight != null ">and m.min_package_net_weight = #{minPackageNetWeight}</if>
+            <if test="lessDeviationRatio != null ">and m.less_deviation_ratio = #{lessDeviationRatio}</if>
+            <if test="moreDeviationRatio != null ">and m.more_deviation_ratio = #{moreDeviationRatio}</if>
+            <if test="status != null ">and m.status = #{status}</if>
         </where>
     </select>
 
