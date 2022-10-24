@@ -32,7 +32,7 @@ public class MaterialReceive {
      * 仓库
      */
     @ExcelProperty(value = "PlantNb")
-    @CsvBindByName(column = "PlantNb")
+    @CsvBindByName(column = "\uFEFFPlantNb")
     private String plantNb;
 
     /**

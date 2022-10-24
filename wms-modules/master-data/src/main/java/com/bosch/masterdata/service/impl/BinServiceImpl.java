@@ -54,6 +54,15 @@ public class BinServiceImpl extends ServiceImpl<BinMapper, Bin> implements IBinS
     }
 
     @Override
+    public List<Bin>  selectBinByFrameId(Long frameId)
+    {
+        LambdaQueryWrapper<Bin> lambdaQueryWrapper=new LambdaQueryWrapper();
+        lambdaQueryWrapper.eq(Bin::getFrameId,frameId);
+        List<Bin> bins = binMapper.selectList(lambdaQueryWrapper);
+        return bins;
+    }
+
+    @Override
     public BinVO selectBinVOById(Long id) {
         return binMapper.selectBinVOById(id);
     }

@@ -28,6 +28,8 @@ public interface FrameMapper extends BaseMapper<Frame>
      */
     public FrameVO selectFrameById(Long id);
 
+
+    public FrameVO selectFrameByCode(String code);
     /**
      * 查询跨列表
      * 
