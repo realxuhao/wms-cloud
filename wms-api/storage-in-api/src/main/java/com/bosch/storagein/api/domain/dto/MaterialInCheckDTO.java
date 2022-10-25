@@ -23,3 +23,5 @@ public class MaterialInCheckDTO {
     @ApiModelProperty(value = "称重次数")
     private Integer weightTimes;
 }
+
+

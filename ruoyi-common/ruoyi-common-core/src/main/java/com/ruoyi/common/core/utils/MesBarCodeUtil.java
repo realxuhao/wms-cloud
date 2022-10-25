@@ -32,7 +32,7 @@ public class MesBarCodeUtil {
     }
 
     public static void main(String[] args) {
-        String mesBarCode="20170826669006391110000015100961661611251128000060";
+        String mesBarCode="20240322669006391110024752103110422203291126000050";
         System.out.println(getExpireDate(mesBarCode));
         System.out.println(getSSCC(mesBarCode));
         System.out.println(getMaterialNb(mesBarCode));
@@ -40,6 +40,10 @@ public class MesBarCodeUtil {
         System.out.println(getQuantity(mesBarCode));
     }
 
+//    20240322669006391110024752103110422203291126000050
+    //20250213669006391110024585103025072202141190001000
+
+//20240322669006391110024752103110432203291127000050
 
 
 }

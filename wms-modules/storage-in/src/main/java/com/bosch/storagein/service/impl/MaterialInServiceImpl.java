@@ -269,7 +269,6 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         MaterialReceiveVO materialReceiveVO = materialRecevieMapper.selectMaterialReceiveVOBySncc(materialInCheckVO.getSsccNumber());
         materialInCheckVO.setFromPurchaseOrder(materialReceiveVO.getFromPurchaseOrder());
         materialInCheckVO.setPoNumberItem(materialReceiveVO.getPoNumberItem());
-
         return materialInCheckVO;
 
     }
