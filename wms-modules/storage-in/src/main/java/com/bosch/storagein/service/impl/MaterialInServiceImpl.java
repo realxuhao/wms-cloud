@@ -243,6 +243,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         materialInCheckVO.setSsccNumber(MesBarCodeUtil.getSSCC(mesBarCode));
         materialInCheckVO.setBatchNb(MesBarCodeUtil.getBatchNb(mesBarCode));
         materialInCheckVO.setMaterialNb(MesBarCodeUtil.getMaterialNb(mesBarCode));
+        materialInCheckVO.setMaterialName(materialVO.getName());
 
         //获取收货列表里面的总托数
         List<MaterialReceiveVO> sameBatchMaterials = materialRecevieMapper.selectSameBatchMaterialReceiveVO(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb());
