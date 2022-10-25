@@ -8,24 +8,21 @@ export default {
             scanCode: ''
         };
     },
-    created: function(option) {
-        this.initScan();
-        this.startScan();
-		this.setScannerEnabled(true)
-    },
-    onHide: function() {
-        this.stopScan();
-    },
+   created() {
+   	this.initScan();
+	this.startScan()
+   },
+   
+   onLoad() {
+   	uni.$on('stopScan',function(){
+   		_this.stopScan();
+   	})  
+   },
+   
     destroyed: function() {
-        /*页面退出时一定要卸载监听,否则下次进来时会重复，造成扫一次出2个以上的结果*/
         this.stopScan();
     },
-	onLoad() {
-	   var _this = this  
-	   uni.$on('stopScan',function(){  
-		   _this.stopScan();
-	   })  
-	},
+
     methods: {
         initScan() {
             let _this = this;
@@ -34,13 +31,13 @@ export default {
             var IntentFilter = plus.android.importClass('android.content.IntentFilter');
             filter = new IntentFilter();
             filter.addAction("com.android.server.scannerservice.broadcast");//
-			
 			// 你的广播动作
             receiver = plus.android.implements('io.dcloud.feature.internal.reflect.BroadcastReceiver', {
                 onReceive: function(context, intent) {
+					console.log(1111)
                     plus.android.importClass(intent);
                     let code = intent.getStringExtra('scannerdata'); // 换你的广播标签
-					console.log(code)
+					console.log('code',code)
                     _this.queryCode(code);
                 }
             });
@@ -67,7 +64,7 @@ export default {
             }, 150);
             var id = code;
 				
-			this.setScannerEnabled(false)
+			// this.setScannerEnabled(false)
 			
             uni.$emit('scancodedate', { code: id });
         }

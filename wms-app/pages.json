@@ -8,15 +8,18 @@
 		},
 		{
 			"path": "pages/materialIn/index"
+		},
+		{
+			"path": "pages/scan/index"
+		},
+		{
+			"path": "pages/materialCount/index"
+		},
+		{
+			"path": "pages/binIn/binIn"
 		}
-	    ,{
-            "path" : "pages/scan/index"
-        }
-        ,{
-            "path" : "pages/materialCount/index"
-        }
-    ],
+	],
 	"globalStyle": {
-		"navigationStyle":"custom"
+		"navigationStyle": "custom"
 	}
 }

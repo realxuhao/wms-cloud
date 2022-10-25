@@ -1,6 +1,5 @@
 <template>
 	<view class="content">
-	
 	 <hr-pull-load
 	         @refresh='handleRefresh'
 	         @loadMore='handleLoadMore'
@@ -24,9 +23,8 @@
 	           	<text class="time">{{item.operateTime}}</text>
 	             </view>
 	             </view>
-				 <Empty v-show="!list.length"></Empty>
+			<Empty v-if="!list.length"></Empty>
 	</hr-pull-load>
-	
 		<Message ref="message"></Message>
 	</view>
 </template>
@@ -46,7 +44,7 @@ export default {
     return {
 	  list:[],
 	  total:0,
-	  pageSize:20,
+	  pageSize:10,
 	  pageNum:1,
 	  bottomTips:'',
     };
@@ -55,40 +53,44 @@ export default {
   	  this.loadData()
   },
   methods: {
-	async loadMaterialInHistoryList(){
+	async getMaterialInHistoryList(){
+		const options = {pageSize:this.pageSize,pageNum:this.pageNum}
+		const {rows,total} = await this.$store.dispatch('materialIn/getMaterialInHistoryList',options)
+		return {rows,total}
+	},
+	async loadData(){
 		try{
-			const options = {pageSize:this.pageSize,pageNum:this.pageNum}
-			const {rows,total} = await this.$store.dispatch('materialIn/getMaterialInHistoryList',options)
+			this.pageNum = 1
+			const {rows,total} = await this.getMaterialInHistoryList()
+			this.list = rows
 			this.total = total
-			return rows
 		}catch(e){
 			this.$refs.message.error(e.message)
 		}
 	},
-	async loadData(){
-		const list = await this.loadMaterialInHistoryList()
-		this.list = list
-	},
 	async handleRefresh(){
-		this.pageNum = 1
-		const list = await this.loadMaterialInHistoryList()
-		this.list = list
-		
+		await this.loadData()
 		this.$refs.hrPullLoad.reSet();
 	},
 	
     async handleLoadMore() {
-		const length = this.list.length;
-		if (length < this.total) {
-			this.pageNum +=1
-			const list = await this.loadMaterialInHistoryList()
-			
-			this.list = this.list.concat(list);
-		} else {
-			this.bottomTips = '没有更多数据了'
+		try{
+			const length = this.list.length;
+			if (length < this.total) {
+				this.bottomTips = 'loading'
+				this.pageNum +=1
+				const {rows} = await this.getMaterialInHistoryList()
+				
+				this.list = this.list.concat(rows);
+			} else {
+				this.bottomTips = 'nomore'
+			}
+		}catch(e){
+			console.log(e.message)
+			this.$refs.message.error(e.message)
+		}finally{
+			this.$refs.hrPullLoad.reSet();
 		}
-		
-		this.$refs.hrPullLoad.reSet();
 	},
   },
 };

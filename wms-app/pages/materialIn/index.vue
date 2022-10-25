@@ -7,8 +7,6 @@
 		  <view class="action" @click="handleGotoScan">
 			  <uni-icons type="scan" size="28" color="#fff"></uni-icons>
 		  </view>
-	  </view>
-	  
   </my-page>
 </template>
 

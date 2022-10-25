@@ -1,27 +1,28 @@
 <template>
-	<my-page nav-title="扫描SSCC码">
+	<my-page nav-title="扫描SSCC码" >
 			<view class="content" slot="page-main" @click="handleGotoCount">
 				<image src="../../static/sku-phone.png" class="m-b-8"></image>
 				<text>请将激光扫描头对准SSCC码区域</text>
 			</view>
-			
 			<Message ref="message"></Message>
+			<ScanCode></ScanCode>
 	</my-page>
 </template>
 
 <script>
 	import Message from '@/components/Message'
+	import ScanCode from '@/components/ScanCode'
 	
 	export default {
 	components:{
-		Message	
+		Message,
+		ScanCode
 	},
 	 onLoad() {  
 		   var _this = this  
 		   uni.$on('scancodedate',function(data){  
 			_this.code = data.code
-			console.log(data)
-			// this.checkMaterialIn(this.code)
+			_this.checkMaterialIn(data.code)
 			uni.$emit('stopScan')
 		   })  
 		},  
@@ -31,7 +32,7 @@
 		},
 		data() {
 			return {
-				code:'20170826669006391110000015100961661611251128000060',
+				code:'',
 			};
 		},
 		methods:{
