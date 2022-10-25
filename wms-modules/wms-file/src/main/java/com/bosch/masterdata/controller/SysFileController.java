@@ -90,6 +90,9 @@ public class SysFileController {
             }
             return R.ok(read);
         } catch (Exception e) {
+            if(e.getMessage()=="excel模板不正确"){
+                return R.fail(e.getMessage());
+            }
             return R.fail("解析文件失败,文件类型不匹配");
         }
 

@@ -34,8 +34,8 @@ public class MaterialDTO extends PageDomain {
     /**
      * 最小包装数量
      */
-    @ExcelProperty(value = "最小包装数量")
-    @ApiModelProperty(value = "最小包装数量")
+    @ExcelProperty(value = "最小包装量")
+    @ApiModelProperty(value = "最小包装量")
     private Long minPackageNumber;
 
     /**
@@ -55,14 +55,16 @@ public class MaterialDTO extends PageDomain {
     /**
      * 单位
      */
-    @ExcelProperty(value = "单位")
+    @ExcelProperty(value = "单位\n" +
+            "[KG,M,L,㎡]")
     @ApiModelProperty(value = "单位")
     private String unit;
 
     /**
      * 物料防错方式
      */
-    @ExcelProperty(value = "物料防错方式")
+    @ExcelProperty(value = "物料防错方式\n" +
+            "[点数,称重,免检]")
     @ApiModelProperty(value = "物料防错方式")
     private String errorProofingMethod;
 
@@ -83,49 +85,57 @@ public class MaterialDTO extends PageDomain {
     /**
      * 包装重量
      */
-    @ExcelProperty(value = "包装重量")
+    @ExcelProperty(value = "最小包装毛重\n" +
+            "[只针对称重物料]")
     @ApiModelProperty(value = "包装重量")
     private Long packageWeight;
 
     /**
      * 托盘重量
      */
-    @ExcelProperty(value = "托盘重量")
-    @ApiModelProperty(value = "托盘重量")
+    @ExcelProperty(value = "托盘重量\n" +
+            "[只针对称重物料]")
+    @ApiModelProperty(value = "托盘重量[只针对称重物料]")
     private Long palletWeight;
 
     /**
      * 来料总重量（每托）
      */
-    @ExcelProperty(value = "来料总重量")
-    @ApiModelProperty(value = "来料总重量")
+    @ExcelProperty(value = "来料总重量（每托）")
+    @ApiModelProperty(value = "来料总重量（每托）")
     private Long totalWeight;
 
     /**
      * 最小包装重量(净重)
      */
-    @ExcelProperty(value = "最小包装重量(净重)")
+    @ExcelProperty(value = "最小包装净重\n" +
+            "[只针对称重物料]")
     @ApiModelProperty(value = "最小包装重量(净重)")
     private BigDecimal minPackageNetWeight;
 
     /**
      * 允许负偏差比例【绝对值】
      */
-    @ExcelProperty(value = "允许负偏差比例【绝对值】")
-    @ApiModelProperty(value = "允许负偏差比例【绝对值】")
+    @ExcelProperty(value = "最小包装量\n" +
+            "允许最小值")
+    @ApiModelProperty(value = "最小包装量\n" +
+            "允许最小值")
     private BigDecimal lessDeviationRatio;
 
     /**
      * 转化重量参数
      */
-    @ApiModelProperty(value = "转化重量参数")
+    @ExcelProperty(value = "标准计数单位[L,Kg,m,㎡]对应的重量值")
+    @ApiModelProperty(value = "标准计数单位[L,Kg,m,㎡]对应的重量值")
     private BigDecimal transferWeightRatio;
 
     /**
      * 允许正偏差比例【绝对值】
      */
-    @ExcelProperty(value = "允许正偏差比例【绝对值】")
-    @ApiModelProperty(value = "允许正偏差比例【绝对值】")
+    @ExcelProperty(value = "最小包装量\n" +
+            "允许最大值")
+    @ApiModelProperty(value = "最小包装量\n" +
+            "允许最大值")
     private BigDecimal moreDeviationRatio;
 
     /**
