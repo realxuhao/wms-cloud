@@ -60,7 +60,7 @@ const errorParser = async (response) => {
     return Promise.reject(new ApiError('Unauthorized', { isHandled: true, status }))
   }
 
-  const errorMessage = (data && data.errorMessage) ? data.errorMessage : 'Unknown Network Error'
+  const errorMessage = (data && data.msg) ? data.msg : 'Unknown Network Error'
   return Promise.reject(new ApiError(errorMessage, { isHandled: false, status }))
 }
 

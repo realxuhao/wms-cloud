@@ -103,18 +103,6 @@ const columns = [
     dataIndex: 'batchNb',
     width: 120
   },
-  // {
-  //   title: '供应商',
-  //   key: 'supplierNb',
-  //   dataIndex: 'storageLocation',
-  //   width: 200
-  // },
-  // {
-  //   title: '存储区域',
-  //   key: 'storageLocation',
-  //   dataIndex: 'storageLocation',
-  //   width: 200
-  // },
   {
     title: '过期时间',
     key: 'expireDate',
