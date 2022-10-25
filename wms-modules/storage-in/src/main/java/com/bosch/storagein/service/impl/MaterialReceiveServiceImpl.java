@@ -66,7 +66,7 @@ public class MaterialReceiveServiceImpl extends ServiceImpl<MaterialRecevieMappe
     }
 
     @Override
-    public boolean updateBatch(MaterialReceive materialReceive) {
+    public boolean updateBatchReceive(MaterialReceive materialReceive) {
         return materialRecevieMapper.updateBatch(materialReceive)>0;
     }
 

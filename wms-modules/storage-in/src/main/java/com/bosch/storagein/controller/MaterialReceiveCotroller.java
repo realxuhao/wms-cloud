@@ -137,7 +137,7 @@ public class MaterialReceiveCotroller extends BaseController {
 //                        LambdaUpdateWrapper<MaterialReceive> wrapper=new LambdaUpdateWrapper<MaterialReceive>();
 //                        wrapper.eq(MaterialReceive::getSsccNumber,r.getSsccNumber());
 //                        boolean update = materialReceiveService.update(r, wrapper);
-                        boolean update =materialReceiveService.updateBatch(r);
+                        boolean update =materialReceiveService.updateBatchReceive(r);
                         if (!update){
                             r.setUpdateTime(null);
                             r.setUpdateUser(null);
@@ -145,8 +145,12 @@ public class MaterialReceiveCotroller extends BaseController {
                         }
                     });
                 }
+                return R.ok("导入成功");
             }
-            return R.ok("导入成功");
+            else {
+                return R.fail(result.getMsg());
+            }
+
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             return R.fail(e.getMessage());

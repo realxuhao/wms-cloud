@@ -25,6 +25,7 @@ import com.bosch.system.api.domain.SysFile;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 文件请求处理
@@ -99,14 +100,14 @@ public class SysFileController {
     }
 
     /**
-     * 入库解析文件
+     * 入库解析csv文件
      *
      * @param file 文件信息
      * @return 结果
      */
-    @ApiOperation("解析excel表")
-    @PostMapping(value = "/materialReceiveImport")
-    public R<List<MaterialReceive>> materialReceiveImport(@RequestPart(value = "file") MultipartFile file,
+    @ApiOperation("解析csv表")
+    @PostMapping(value = "/materialcsvReceiveImport")
+    public R<List<MaterialReceive>> materialcsvReceiveImport(@RequestPart(value = "file") MultipartFile file,
                                                           @RequestParam(value = "className") String className) throws Exception {
 
         try {
@@ -122,6 +123,45 @@ public class SysFileController {
             return R.ok(csvData);
         } catch (Exception e) {
             return R.fail("解析文件失败,文件类型不匹配");
+        }
+
+    }
+
+
+    /**
+     * 入库解析文件
+     *
+     * @param file 文件信息
+     * @return 结果
+     */
+    @ApiOperation("解析excel表")
+    @PostMapping(value = "/materialReceiveImport")
+    public R<List<MaterialReceive>> materialReceiveImport(@RequestPart(value = "file") MultipartFile file,
+                                                          @RequestParam(value = "className") String className) throws Exception {
+
+        try {
+            Class<?> TClass = Class.forName("com.bosch.storagein.api.domain." + className);
+            List<MaterialReceive> read = EasyExcelUtil.read(file.getInputStream(), MaterialReceive.class,className);
+
+            if(CollectionUtils.isEmpty(read)){
+                return R.fail("excel中无数据");
+            }
+            boolean check = EasyExcelUtil.check(read);
+            if (!check){
+                return R.fail("excel中存在重复数据");
+            }
+            boolean checkssccNumber = EasyExcelUtil.check(read.stream().map(MaterialReceive::getSsccNumber).collect(Collectors.toList()));
+            if (!checkssccNumber){
+                return R.fail("excel中存在重复ssccNumber");
+            }
+            R<SysFile> upload = upload(file);
+            if (!upload.isSuccess()){
+                return R.fail("上传文件服务失败");
+            }
+            read.forEach(r->r.setFileId(upload.getData().getFileId().toString()));
+            return R.ok(read);
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
         }
 
     }

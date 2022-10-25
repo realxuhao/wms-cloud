@@ -124,7 +124,7 @@ public class MaterialReceive {
      */
     @ExcelProperty(value = "upload_user")
     @CsvBindByName(column = "upload_user")
-    @TableField(fill = FieldFill.INSERT)
+    @TableField(value = "upload_user",fill = FieldFill.INSERT)
     private String uploadUser;
 
     /**
@@ -140,7 +140,7 @@ public class MaterialReceive {
      */
     @ExcelProperty(value = "update_user")
     @CsvBindByName(column = "update_user")
-    @TableField( fill = FieldFill.UPDATE)
+    @TableField( value = "update_user",fill = FieldFill.UPDATE)
     private String updateUser;
 
     /**
