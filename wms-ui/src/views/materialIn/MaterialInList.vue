@@ -29,14 +29,14 @@
         <template slot="checkType" slot-scope="text">
           <div >
             <a-tag color="orange" v-if="text===0">
-              手动
+              称重
             </a-tag>
-            <!-- <a-tag color="#87d068" v-else>
-              自动
+            <a-tag color="blue" v-if="text===1">
+              数数
             </a-tag>
-            <a-tag color="#87d068" v-else>
+            <a-tag color="#87d068" v-if="text===2">
               免检
-            </a-tag> -->
+            </a-tag>
           </div>
         </template>
       </a-table>
