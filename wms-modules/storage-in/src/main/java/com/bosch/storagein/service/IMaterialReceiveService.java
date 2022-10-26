@@ -44,4 +44,11 @@ public interface IMaterialReceiveService extends IService<MaterialReceive> {
 
     public boolean updateBatchReceive(MaterialReceive materialReceive);
 
+    /**
+     * 入库状态校验
+     * @param codes
+     * @return
+     */
+    public boolean validReceive(List<String> codes);
+
 }

@@ -150,10 +150,12 @@ public class SysFileController {
             if (!check){
                 return R.fail("excel中存在重复数据");
             }
-            boolean checkssccNumber = EasyExcelUtil.check(read.stream().map(MaterialReceive::getSsccNumber).collect(Collectors.toList()));
+            List<String> ssccList = read.stream().map(MaterialReceive::getSsccNumber).collect(Collectors.toList());
+            boolean checkssccNumber = EasyExcelUtil.check(ssccList);
             if (!checkssccNumber){
                 return R.fail("excel中存在重复ssccNumber");
             }
+
             R<SysFile> upload = upload(file);
             if (!upload.isSuccess()){
                 return R.fail("上传文件服务失败");

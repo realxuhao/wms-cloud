@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.storagein.api.domain.MaterialReceive;
 import com.bosch.storagein.api.domain.dto.*;
 import com.bosch.storagein.api.domain.vo.*;
+import com.bosch.storagein.api.enumeration.MaterialStatusEnum;
 import com.bosch.storagein.mapper.MaterialRecevieMapper;
 import com.bosch.storagein.service.IMaterialReceiveService;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
@@ -70,5 +71,13 @@ public class MaterialReceiveServiceImpl extends ServiceImpl<MaterialRecevieMappe
         return materialRecevieMapper.updateBatch(materialReceive)>0;
     }
 
+    @Override
+    public boolean validReceive(List<String> codes) {
 
+        LambdaQueryWrapper<MaterialReceive> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(MaterialReceive::getStatus, MaterialStatusEnum.IN.getCode());
+        lambdaQueryWrapper.in(MaterialReceive::getSsccNumber,codes);
+        Integer res = materialRecevieMapper.selectCount(lambdaQueryWrapper);
+        return  res>0;
+    }
 }

@@ -95,10 +95,15 @@ public class MaterialReceiveCotroller extends BaseController {
                 Object data = result.getData();
                 List<MaterialReceive> dtos = JSON.parseArray(JSON.toJSONString(data), MaterialReceive.class);
                 if (!CollectionUtils.isEmpty(dtos)) {
-                    List<String> collect = dtos.stream().map(MaterialReceive::getSsccNumber).collect(Collectors.toList());
+                    List<String> ssccList = dtos.stream().map(MaterialReceive::getSsccNumber).collect(Collectors.toList());
 
-                    boolean valid = materialReceiveService.validList(collect);
-                    if (valid) {
+                    //查询是否有已上架状态的sscc码
+                    boolean validReceive = materialReceiveService.validReceive(ssccList);
+                    if (validReceive){
+                        return R.fail("excel中存在已入库状态的SSCCNumber,请修改后上传");
+                    }
+                    boolean validList = materialReceiveService.validList(ssccList);
+                    if (validList) {
                         return R.fail(400, "存在重复数据");
                     } else {
                         //添加
@@ -134,9 +139,6 @@ public class MaterialReceiveCotroller extends BaseController {
                 if (!CollectionUtils.isEmpty(dtos)) {
 
                     dtos.forEach(r->{
-//                        LambdaUpdateWrapper<MaterialReceive> wrapper=new LambdaUpdateWrapper<MaterialReceive>();
-//                        wrapper.eq(MaterialReceive::getSsccNumber,r.getSsccNumber());
-//                        boolean update = materialReceiveService.update(r, wrapper);
                         boolean update =materialReceiveService.updateBatchReceive(r);
                         if (!update){
                             r.setUpdateTime(null);
