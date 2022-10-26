@@ -135,7 +135,10 @@
             UPDATE si_material_receive
             SET plant_nb=#{plantNb}, sscc_number=#{ssccNumber}, material_nb=#{materialNb}, batch_nb=#{batchNb}, supplier_nb=#{supplierNb},
              storage_location=#{storageLocation}, expire_date=#{expireDate}, quantity=#{quantity}, unit=#{unit}, from_area=#{fromArea},
-             from_purchase_order=#{fromPurchaseOrder}, to_picking_area=#{toPickingArea}, po_number_item=#{poNumberItem}, file_id=concat(concat(#{fileId},','),file_id)
+             from_purchase_order=#{fromPurchaseOrder}, to_picking_area=#{toPickingArea}, po_number_item=#{poNumberItem},
+             update_user=#{updateUser},
+        update_time=#{updateTime},
+              file_id=concat(concat(#{fileId},','),file_id)
              WHERE  sscc_number=#{ssccNumber};
 <!--        </foreach>-->
     </update>
