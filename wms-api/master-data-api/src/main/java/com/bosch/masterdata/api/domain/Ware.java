@@ -22,6 +22,14 @@ public class Ware extends BaseEntity
     /** id */
     private Long id;
 
+    /** 工厂编码 */
+    @Excel(name = "工厂编码")
+    private String factoryCode;
+
+    /** 工厂名称 */
+    @Excel(name = "工厂名称")
+    private String factoryName;
+
     /** 仓库编码 */
     @Excel(name = "仓库编码")
     private String code;

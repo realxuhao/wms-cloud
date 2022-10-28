@@ -8,6 +8,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="id"    column="id"    />
         <result property="code"    column="code"    />
         <result property="name"    column="name"    />
+        <result property="factoryCode"    column="factory_code"    />
+        <result property="factoryName"    column="factory_name"    />
         <result property="location"    column="location"    />
         <result property="createBy"    column="create_by"    />
         <result property="updateBy"    column="update_by"    />
@@ -18,12 +20,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </resultMap>
 
     <sql id="selectWareVo">
-        select id, code, name, location, create_by, update_by, create_time, update_time, status, remark from md_ware
+        select id,factory_code,factory_name, code, name, location, create_by, update_by, create_time, update_time, status, remark from md_ware
     </sql>
 
     <select id="selectWareList" parameterType="Ware" resultMap="WareResult">
         <include refid="selectWareVo"/>
-        <where>  
+        <where>
+            <if test="factoryCode != null  and factoryCode != ''"> and factory_code = #{factoryCode}</if>
+            <if test="factoryName != null  and factoryName != ''"> and factory_name like concat('%', #{factoryName}, '%')</if>
             <if test="code != null  and code != ''"> and code = #{code}</if>
             <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
             <if test="location != null  and location != ''"> and location = #{location}</if>
@@ -40,6 +44,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         insert into md_ware
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">id,</if>
+            <if test="factoryCode != null and factoryCode != ''">factory_code,</if>
+            <if test="factoryName != null and factoryName != ''">factory_name,</if>
             <if test="code != null and code != ''">code,</if>
             <if test="name != null and name != ''">name,</if>
             <if test="location != null and location != ''">location,</if>
@@ -52,6 +58,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
+            <if test="factoryCode != null and factoryCode != ''">#{factoryCode},</if>
+            <if test="factoryName != null and factoryName != ''">#{factoryName},</if>
             <if test="code != null and code != ''">#{code},</if>
             <if test="name != null and name != ''">#{name},</if>
             <if test="location != null and location != ''">#{location},</if>
@@ -67,6 +75,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <update id="updateWare" parameterType="Ware">
         update md_ware
         <trim prefix="SET" suffixOverrides=",">
+            <if test="factoryCode != null and factoryCode != ''">factory_code = #{factoryCode},</if>
+            <if test="factoryName != null and factoryName != ''">factory_name = #{factoryName},</if>
             <if test="code != null and code != ''">code = #{code},</if>
             <if test="name != null and name != ''">name = #{name},</if>
             <if test="location != null and location != ''">location = #{location},</if>

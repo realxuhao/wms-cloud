@@ -1,5 +1,6 @@
 package com.bosch.masterdata.api.domain.dto;
 
+import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,6 +12,14 @@ public class WareDTO extends PageDomain {
      */
     @ApiModelProperty(value = "id")
     private Long id;
+
+    /** 工厂编码 */
+    @ApiModelProperty(name = "工厂编码")
+    private String factoryCode;
+
+    /** 工厂名称 */
+    @ApiModelProperty(name = "工厂名称")
+    private String factoryName;
 
     /**
      * 仓库编码
