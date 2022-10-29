@@ -18,8 +18,8 @@ public class ResponseConstants {
     public static final Integer QUANTITY_INVALID = 603;
 
     /**
-     * mesBarCode不存在
+     * 物料主数据不存在
      */
-    public static final Integer MES_BARCODE_NOT_EXIST = 602;
+    public static final Integer MATERIAL_DATA_NOT_EXIST = 604;
 
 }

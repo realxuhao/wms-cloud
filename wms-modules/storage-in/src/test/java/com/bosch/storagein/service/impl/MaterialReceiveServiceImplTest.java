@@ -30,7 +30,7 @@ class MaterialReceiveServiceImplTest {
         // Setup
         final MaterialReceiveDTO materialReceiveDTO = new MaterialReceiveDTO();
         materialReceiveDTO.setSsccNumber("ssccNumber");
-        materialReceiveDTO.setBatchNumber("batchNumber");
+        materialReceiveDTO.setBatchNb("batchNumber");
         materialReceiveDTO.setMaterialNb("materialNb");
         materialReceiveDTO.setBatchNb("batchNb");
         materialReceiveDTO.setFromPurchaseOrder("fromPurchaseOrder");
@@ -89,7 +89,7 @@ class MaterialReceiveServiceImplTest {
         // Setup
         final MaterialReceiveDTO materialReceiveDTO = new MaterialReceiveDTO();
         materialReceiveDTO.setSsccNumber("ssccNumber");
-        materialReceiveDTO.setBatchNumber("batchNumber");
+        materialReceiveDTO.setBatchNb("batchNumber");
         materialReceiveDTO.setMaterialNb("materialNb");
         materialReceiveDTO.setBatchNb("batchNb");
         materialReceiveDTO.setFromPurchaseOrder("fromPurchaseOrder");

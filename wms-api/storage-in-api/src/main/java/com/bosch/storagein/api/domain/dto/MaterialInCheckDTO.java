@@ -18,7 +18,7 @@ public class MaterialInCheckDTO {
     private Double actualResult;
 
     @ApiModelProperty(value = "原托数")
-    private Integer originPalletQuantity;
+    private Integer originalPalletQuantity;
 
     @ApiModelProperty(value = "称重次数")
     private Integer weightTimes;

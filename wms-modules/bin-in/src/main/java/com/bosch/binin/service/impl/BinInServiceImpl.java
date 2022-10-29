@@ -46,6 +46,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     private BinInMapper binInMapper;
 
     @Autowired
+    private BinStockMapper binStockMapper;
+
+    @Autowired
     private RemotePalletService remotePalletService;
 
     @Autowired
@@ -128,11 +131,13 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setActualFrameCode(actualBinVO.getFrameCode());
         binIn.setActualFrameId(actualBinVO.getFrameId());
         binIn.setUpdateBy(SecurityUtils.getUsername());
+        binIn.setStatus(BinInStatusEnum.FINISH.value());
         binIn.setUpdateTime(new Date());
         saveOrUpdate(binIn);
 
         //插入库存
         Stock stock=new Stock();
+        stock.setWareCode(actualBinVO.getWareCode());
         stock.setSsccNumber(binIn.getSsccNumber());
         stock.setWareCode(binIn.getWareCode());
         stock.setBinCode(binIn.getActualBinCode());
@@ -144,6 +149,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         stock.setStatus(BinStockStatusEnum.FINISH.value());
         stock.setCreateBy(SecurityUtils.getUsername());
         stock.setCreateTime(new Date());
+        binStockMapper.insert(stock);
 
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
     }
@@ -193,8 +199,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setStatus(BinInStatusEnum.PROCESSING.value());
 
         BinVO binVO = getBinVOByBinCode(binInTaskDTO.getRecommendBinCode());
-        binIn.setActualFrameId(binVO.getFrameId());
-        binIn.setActualFrameCode(binVO.getFrameCode());
+        binIn.setRecommendFrameId(binVO.getFrameId());
+        binIn.setRecommendFrameCode(binVO.getFrameCode());
 
         binInMapper.insert(binIn);
 

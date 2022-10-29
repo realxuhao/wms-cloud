@@ -1,6 +1,9 @@
 package com.bosch.storagein.controller;
 
 
+import com.bosch.masterdata.api.RemoteMaterialService;
+import com.bosch.masterdata.api.domain.Pallet;
+import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.storagein.api.constants.*;
 import com.bosch.storagein.api.domain.dto.MaterialInCheckDTO;
@@ -12,6 +15,9 @@ import com.bosch.storagein.service.IMaterialInService;
 import com.bosch.storagein.service.IMaterialReceiveService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
@@ -37,17 +43,26 @@ public class MaterialInController extends BaseController {
     @Autowired
     private IMaterialReceiveService materialReceiveService;
 
+    @Autowired
+    private RemoteMaterialService remoteMaterialService;
+
     /**
      * 根据mesBarCode查询物料校验信息
      */
     @GetMapping(value = "/getCheckByBarCode/{mesBarCode}")
     @ApiOperation("根据mesBarCode查询物料校验信息")
     public R<MaterialInCheckVO> getCheckInfo(@PathVariable("mesBarCode") String mesBarCode) {
+
+        R<MaterialVO> materialVORes = remoteMaterialService.getInfoByMaterialCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
+        if (StringUtils.isNull(materialVORes) || StringUtils.isNull(materialVORes.getData())) {
+            return R.fail(null, ResponseConstants.MATERIAL_DATA_NOT_EXIST, "该物料主数据不存在");
+        }
+
         List<MaterialReceiveVO> materialReceiveVOs = materialReceiveService.selectByMesBarCode(mesBarCode);
 
         List<Integer> collect = materialReceiveVOs.stream().map(MaterialReceiveVO::getStatus).collect(Collectors.toList());
         if (collect.contains(MaterialStatusEnum.IN.getCode())) {
-            return R.fail(null, ResponseConstants.BATCH_HAS_IN, "该批次已有入库");
+            return R.fail(null, ResponseConstants.BATCH_HAS_IN, "该批次已入库");
         }
         return R.ok(materialInService.getMaterialCheckInfo(mesBarCode));
     }

@@ -20,7 +20,7 @@
         <result property="operateUser" column="operate_user"/>
         <result property="operateTime" column="operate_time"/>
         <result property="quantity" column="quantity"/>
-        <result property="originPalletQuantity" column="origin_pallet_quantity"/>
+        <result property="originalPalletQuantity" column="original_pallet_quantity"/>
     </resultMap>
 
     <sql id="selectMaterialInVo">
@@ -38,7 +38,7 @@
                average_result,
                operate_user,
                operate_time,
-               origin_pallet_quantity
+               original_pallet_quantity
         from si_material_in
     </sql>
 
@@ -61,7 +61,7 @@
             <if test="operateTime != null">operate_time,</if>
             <if test="averageResult != null">average_result,</if>
             <if test="virtualBinCode != null">virtual_bin_code,</if>
-            <if test="originPalletQuantity != null">origin_pallet_quantity,</if>
+            <if test="originalPalletQuantity != null">original_pallet_quantity,</if>
 
 
         </trim>
@@ -79,7 +79,7 @@
             <if test="operateTime != null">#{operateTime},</if>
             <if test="averageResult != null">#{averageResult},</if>
             <if test="virtualBinCode != null">#{virtualBinCode},</if>
-            <if test="originPalletQuantity != null">#{originPalletQuantity},</if>
+            <if test="originalPalletQuantity != null">#{originalPalletQuantity},</if>
 
         </trim>
     </insert>
@@ -88,12 +88,12 @@
     <insert id="batchInsert">
         INSERT INTO si_material_in (sscc_number, batch_nb, material_nb, check_type,
         check_quantity,min_standard,max_standard,quantity,
-        actual_quantity,actual_result,operate_user,operate_time,average_result,virtual_bin_code,origin_pallet_quantity)
+        actual_quantity,actual_result,operate_user,operate_time,average_result,virtual_bin_code,original_pallet_quantity)
         VALUES
         <foreach collection="list" separator="," item="item">
             (#{item.ssccNumber},#{item.batchNb},#{item.materialNb},#{item.checkType},#{item.checkQuantity},#{item.minStandard},#{item.maxStandard},
              #{item.quantity},#{item.actualQuantity},#{item.actualResult}
-            ,#{item.operateUser},#{item.operateTime},#{item.averageResult},#{item.virtualBinCode},#{item.originPalletQuantity})
+            ,#{item.operateUser},#{item.operateTime},#{item.averageResult},#{item.virtualBinCode},#{item.originalPalletQuantity})
         </foreach>
 
     </insert>
@@ -141,7 +141,7 @@
         si.average_result,
         si.operate_user,
         si.operate_time,
-        si.origin_pallet_quantity
+        si.original_pallet_quantity
         from si_material_in si left join md_material mm on si.material_nb = mm.code
         <where>
 

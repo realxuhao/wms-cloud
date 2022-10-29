@@ -17,11 +17,11 @@ public class MaterialReceiveDTO extends PageDomain {
     @ApiModelProperty(value = "SSCC码")
     private String ssccNumber;
 
-    /**
-     * 批次号
-     */
-    @ApiModelProperty(value = "批次号")
-    private String batchNumber;
+//    /**
+//     * 批次号
+//     */
+//    @ApiModelProperty(value = "批次号")
+//    private String batchNumber;
 
     /**
      * 物料号

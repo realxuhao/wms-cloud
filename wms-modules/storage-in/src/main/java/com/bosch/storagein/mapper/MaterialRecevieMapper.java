@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -72,7 +73,7 @@ public interface MaterialRecevieMapper extends BaseMapper<MaterialReceive>
     public List<MaterialReceiveVO> selectSameBatchMaterialReceiveVO(@Param("materialNb")String materialNb,@Param("batchNb")String batchNb);
 
 
-    void batchUpdateStatus(@Param("materialNb") String materialNb, @Param("batchNb") String batchNb, @Param("code") Integer code);
+    void batchUpdateStatus(@Param("materialNb") String materialNb, @Param("batchNb") String batchNb, @Param("code") Integer code, @Param("updateUser") String updateUser, @Param("updateTime")Date updateTime);
 
     public int updateBatch(MaterialReceive materialReceive);
 }

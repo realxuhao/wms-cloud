@@ -107,7 +107,7 @@ public class MaterialInDTO extends PageDomain {
      * 原托数
      */
     @ApiModelProperty(value = "原托数")
-    private Integer originPalletQuantity;
+    private Integer originalPalletQuantity;
 
     /**
      * 该托的物料数量

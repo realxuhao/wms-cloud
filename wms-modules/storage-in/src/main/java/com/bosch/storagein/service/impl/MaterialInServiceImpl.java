@@ -144,14 +144,15 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
             materialInDTO.setSsccNumber(item.getSsccNumber());
             materialInDTO.setActualQuantity(materialInCheckDTO.getActualQuantity());
             materialInDTO.setActualResult(materialInCheckDTO.getActualResult());
-            materialInDTO.setOriginPalletQuantity(materialInCheckDTO.getOriginPalletQuantity());
+            materialInDTO.setOriginalPalletQuantity(materialInCheckDTO.getOriginalPalletQuantity());
             materialInDTO.setAverageResult(averageResult);
             materialInDTO.setVirtualBinCode(Constants.VIRTUAL_BIN_CODE);
             materialInDTO.setQuantity(item.getQuantity());
             return materialInDTO;
         }).collect(Collectors.toList());
         materialInMapper.batchInsert(materialInDTOList);
-        materialRecevieMapper.batchUpdateStatus(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb(), MaterialStatusEnum.IN.getCode());
+        materialRecevieMapper.batchUpdateStatus(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb(), MaterialStatusEnum.IN.getCode(),
+                SecurityUtils.getUsername(),new Date());
 
     }
 
@@ -277,13 +278,13 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
     private void dealCheckQuantity(MaterialInCheckVO materialInCheckVO, Long minPackageNumber) {
         MaterialReceiveDTO searchDTO = new MaterialReceiveDTO();
         searchDTO.setMaterialNb(materialInCheckVO.getMaterialNb());
-        searchDTO.setBatchNumber(materialInCheckVO.getBatchNb());
+        searchDTO.setBatchNb(materialInCheckVO.getBatchNb());
         List<MaterialReceiveVO> list = materialRecevieMapper.selectMaterialReceiveVOList(searchDTO);
 
         //获取该物料下的该批次的总数量
         int total = list.stream().mapToInt(MaterialReceiveVO::getQuantity).sum();
         //计算最小包装数量
-        Integer totalPackage = (int) Math.ceil(Double.valueOf(total / minPackageNumber));
+        Integer totalPackage = (int) Math.ceil(Double.valueOf(total) / Double.valueOf(minPackageNumber));
 
         materialInCheckVO.setCheckQuantity(getCheckQuantity(totalPackage));
 
@@ -298,7 +299,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
     private void dealCheckType(MaterialInCheckVO materialInCheckVO, String errorProofingMethod) {
         MaterialReceiveDTO searchDTO = new MaterialReceiveDTO();
         searchDTO.setMaterialNb(materialInCheckVO.getMaterialNb());
-        searchDTO.setBatchNumber(materialInCheckVO.getBatchNb());
+        searchDTO.setBatchNb(materialInCheckVO.getBatchNb());
         List<MaterialReceiveVO> list = materialRecevieMapper.selectMaterialReceiveVOList(searchDTO);
 
         List<Integer> status = list.stream().map(MaterialReceiveVO::getStatus).collect(Collectors.toList());

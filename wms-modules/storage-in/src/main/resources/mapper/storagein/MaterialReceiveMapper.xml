@@ -120,7 +120,7 @@
 
     <update id="batchUpdateStatus">
         update si_material_receive
-        set status = #{code}
+        set status = #{code},update_user=#{updateUser},update_time=#{updateTime}
         where material_nb = #{materialNb} and batch_nb=#{batchNb} and delete_flag = 1
     </update>
 

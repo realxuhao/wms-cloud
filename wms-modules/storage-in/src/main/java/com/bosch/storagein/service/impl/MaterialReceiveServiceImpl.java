@@ -42,7 +42,7 @@ public class MaterialReceiveServiceImpl extends ServiceImpl<MaterialRecevieMappe
     public List<MaterialReceiveVO> selectByMesBarCode(String mesBarCode) {
         MaterialReceiveDTO materialReceiveDTO = new MaterialReceiveDTO();
         materialReceiveDTO.setMaterialNb(MesBarCodeUtil.getMaterialNb(mesBarCode));
-        materialReceiveDTO.setBatchNumber(MesBarCodeUtil.getBatchNb(mesBarCode));
+        materialReceiveDTO.setBatchNb(MesBarCodeUtil.getBatchNb(mesBarCode));
 
         return materialRecevieMapper.selectMaterialReceiveVOList(materialReceiveDTO);
     }

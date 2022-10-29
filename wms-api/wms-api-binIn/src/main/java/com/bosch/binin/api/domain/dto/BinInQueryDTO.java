@@ -21,44 +21,44 @@ public class BinInQueryDTO extends PageDomain {
     /**
      * 物料号
      */
-    @ApiModelProperty(value = "materialNb")
+    @ApiModelProperty(value = "物料号")
     private String materialNb;
 
     /**
      * 物料名称
      */
-    @ApiModelProperty(value = "materialName")
+    @ApiModelProperty(value = "物料名称")
     private String materialName;
 
     /**
      * 批次号
      */
-    @ApiModelProperty(value = "batchNb")
+    @ApiModelProperty(value = "批次号")
     private String batchNb;
 
     /**
      * 仓库编码
      */
-    @ApiModelProperty(value = "wareCode")
+    @ApiModelProperty(value = "仓库编码")
     private String wareCode;
 
     /**
      * 实际库位编码
      */
-    @ApiModelProperty(value = "actualBinCode")
+    @ApiModelProperty(value = "实际库位编码")
     private String actualBinCode;
 
     /**
      * 创建人
      */
-    @ApiModelProperty(value = "createUser", hidden = true)
+    @ApiModelProperty(value = "创建人", hidden = true)
     private String createBy;
 
 
     /**
      * 状态(0：待入库,1:已入库)
      */
-    @ApiModelProperty(value = "state")
-    private Integer state;
+    @ApiModelProperty(value = "状态(0：待入库,1:已入库)")
+    private Integer status;
 
 }
