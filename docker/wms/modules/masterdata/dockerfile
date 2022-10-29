@@ -10,6 +10,6 @@ RUN mkdir -p /home/wms
 # 指定路径
 WORKDIR /home/wms
 # 复制jar文件到路径
-COPY ./jar/wms-modules-gen.jar /home/wms/wms-modules-gen.jar
-# 启动代码生成服务
-ENTRYPOINT ["java","-jar","wms-modules-gen.jar"]
+COPY ./jar/master-data.jar /home/wms/master-data.jar
+# 启动系统服务
+ENTRYPOINT ["java","-jar","master-data.jar"]

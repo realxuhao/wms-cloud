@@ -31,7 +31,7 @@ base(){
 
 # 启动程序模块（必须）
 modules(){
-	docker-compose up -d wms-nginx wms-gateway wms-auth wms-modules-system
+	docker-compose up -d  wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in
 }
 
 # 关闭所有环境/模块

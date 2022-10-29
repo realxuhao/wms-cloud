@@ -21,6 +21,7 @@ services:
     image: mysql:5.7
     build:
       context: ./mysql
+    platform: linux/x86_64
     ports:
       - "3306:3306"
     volumes:
@@ -36,8 +37,9 @@ services:
           '--lower-case-table-names=1'
         ]
     environment:
-      MYSQL_DATABASE: 'ry-cloud'
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: 'wms-cloud'
+      MYSQL_ROOT_PASSWORD: 123456
+
   wms-redis:
     container_name: wms-redis
     image: redis
@@ -100,28 +102,6 @@ services:
     links:
       - wms-redis
       - wms-mysql
-  wms-modules-gen:
-    container_name: wms-modules-gen
-    build:
-      context: ./wms/modules/gen
-      dockerfile: dockerfile
-    ports:
-      - "9202:9202"
-    depends_on:
-      - wms-mysql
-    links:
-      - wms-mysql
-  wms-modules-job:
-    container_name: wms-modules-job
-    build:
-      context: ./wms/modules/job
-      dockerfile: dockerfile
-    ports:
-      - "9203:9203"
-    depends_on:
-      - wms-mysql
-    links:
-      - wms-mysql
   wms-modules-file:
     container_name: wms-modules-file
     build:
@@ -129,12 +109,50 @@ services:
       dockerfile: dockerfile
     ports:
       - "9300:9300"
-    volumes:
-    - ./wms/uploadPath:/home/wms/uploadPath
-  ruoyi-visual-monitor:
-    container_name: ruoyi-visual-monitor
+    depends_on:
+      - wms-redis
+      - wms-mysql
+    links:
+      - wms-redis
+      - wms-mysql
+  master-data:
+    container_name: master-data
     build:
-      context: ./ruoyi/visual/monitor
+      context: ./wms/modules/masterdata
       dockerfile: dockerfile
     ports:
-      - "9100:9100"
+      - "8888:8888"
+    depends_on:
+      - wms-redis
+      - wms-mysql
+    links:
+      - wms-redis
+      - wms-mysql
+  storage-in:
+    container_name: storage-in
+    build:
+      context: ./wms/modules/storagein
+      dockerfile: dockerfile
+    ports:
+      - "8889:8889"
+    depends_on:
+      - wms-redis
+      - wms-mysql
+    links:
+      - wms-redis
+      - wms-mysql
+
+  bin-in:
+    container_name: bin-in
+    build:
+      context: ./wms/modules/binin
+      dockerfile: dockerfile
+    ports:
+      - "8890:8890"
+    depends_on:
+      - wms-redis
+      - wms-mysql
+    links:
+      - wms-redis
+      - wms-mysql
+
