@@ -10,6 +10,6 @@ RUN mkdir -p /home/wms
 # 指定路径
 WORKDIR /home/wms
 # 复制jar文件到路径
-COPY ./jar/wms-modules-job.jar /home/wms/wms-modules-job.jar
-# 启动定时任务服务
-ENTRYPOINT ["java","-jar","wms-modules-job.jar"]
+COPY ./jar/wms-modules-storagein.jar /home/wms/wms-modules-storagein.jar
+# 启动系统服务
+ENTRYPOINT ["java","-jar","wms-modules-storagein.jar"]

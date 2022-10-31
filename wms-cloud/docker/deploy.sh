@@ -29,6 +29,10 @@ base(){
 	docker-compose up -d wms-mysql wms-redis wms-nacos
 }
 
+auth(){
+  docker-compose up -d wms-auth
+}
+
 # 启动程序模块（必须）
 modules(){
 	docker-compose up -d  wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in
@@ -51,6 +55,9 @@ case "$1" in
 ;;
 "base")
 	base
+;;
+"auth")
+	auth
 ;;
 "modules")
 	modules

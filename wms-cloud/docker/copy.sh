@@ -21,19 +21,19 @@ echo "begin copy wms-auth "
 cp ../wms-auth/target/wms-auth.jar ./wms/auth/jar
 
 echo "begin copy wms-modules-system "
-cp ../wms-modules/wms-system/target/wms-modules-system.jar ./wms/modules/system/jar
+cp ../wms-modules/wms-modules-system/target/wms-modules-system.jar ./wms/modules/system/jar
 
 echo "begin copy wms-modules-file "
-cp ../wms-modules/wms-file/target/wms-modules-file.jar ./wms/modules/file/jar
+cp ../wms-modules/wms-modules-file/target/wms-modules-file.jar ./wms/modules/file/jar
 
 echo "begin copy master-data "
-cp ../wms-modules/master-data/target/master-data.jar ./wms/modules/masterdata/jar
+cp ../wms-modules/wms-modules-masterdata/target/wms-modules-masterdata.jar ./wms/modules/masterdata/jar
 
 echo "begin copy storage-in "
-cp ../wms-modules/storage-in/target/storage-in.jar ./wms/modules/storagein/jar
+cp ../wms-modules/wms-modules-storagein/target/wms-modules-storagein.jar ./wms/modules/storagein/jar
 
 echo "begin copy bin-in "
-cp ../wms-modules/bin-in/target/bin-in.jar ./wms/modules/binin/jar
+cp ../wms-modules/wms-modules-binin/target/wms-modules-binin.jar ./wms/modules/binin/jar
 
 
 

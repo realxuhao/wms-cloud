@@ -14,7 +14,7 @@
         <module>wms-modules-job</module>
         <module>wms-modules-file</module>
         <module>wms-modules-masterdata</module>
-        <module>wms-modules-storaginin</module>
+        <module>wms-modules-storagein</module>
         <module>wms-modules-binin</module>
     </modules>
 

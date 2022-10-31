@@ -12,4 +12,4 @@ WORKDIR /home/wms
 # 复制jar文件到路径
 COPY ./jar/wms-auth.jar /home/wms/wms-auth.jar
 # 启动认证服务
-ENTRYPOINT ["java","-jar","wms-auth.jar"]
+ENTRYPOINT ["java","-jar","-Dspring.profiles.active=dev","wms-auth.jar"]

@@ -10,6 +10,6 @@ RUN mkdir -p /home/wms
 # 指定路径
 WORKDIR /home/wms
 # 复制jar文件到路径
-COPY ./jar/bin-in.jar /home/wms/bin-in.jar
+COPY ./jar/wms-modules-binin.jar /home/wms/wms-modules-binin.jar
 # 启动文件服务
-ENTRYPOINT ["java","-jar","bin-in.jar"]
+ENTRYPOINT ["java","-jar","wms-modules-binin.jar"]
