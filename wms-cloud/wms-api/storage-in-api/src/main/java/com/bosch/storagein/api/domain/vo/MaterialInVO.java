@@ -20,6 +20,18 @@ public class MaterialInVO {
     private Long id;
 
     /**
+     * 工厂
+     */
+    @ApiModelProperty(value = "工厂")
+    private String plantNb;
+
+    /**
+     * 仓库编码
+     */
+    @ApiModelProperty(value = "仓库编码")
+    private String wareCode;
+
+    /**
      * SSCC码
      */
     @ApiModelProperty(value = "SSCC码")

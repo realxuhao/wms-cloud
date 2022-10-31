@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.storagein.api.domain.MaterialReceive;
 import com.bosch.storagein.api.domain.dto.MaterialInCheckDTO;
 import com.bosch.storagein.api.domain.dto.MaterialInDTO;
+import com.bosch.storagein.api.domain.dto.MaterialQueryDTO;
 import com.bosch.storagein.api.domain.vo.MaterialCheckResultVO;
 import com.bosch.storagein.api.domain.vo.MaterialInCheckVO;
 import com.bosch.storagein.api.domain.vo.MaterialInVO;
@@ -33,7 +34,7 @@ public interface IMaterialInService extends IService<MaterialInDTO> {
 
     List<MaterialInVO> getByUserName(String username);
 
-    List<MaterialInVO> selectMaterialInList(MaterialInDTO materialInDTO);
+    List<MaterialInVO> selectMaterialInList(MaterialQueryDTO queryDTO);
 
     boolean checkSampleQuantity(MaterialInCheckDTO materialInCheckDTO);
 }

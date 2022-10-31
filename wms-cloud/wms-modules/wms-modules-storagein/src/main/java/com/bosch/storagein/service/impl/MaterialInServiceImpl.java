@@ -7,6 +7,7 @@ import com.bosch.storagein.api.constants.Constants;
 import com.bosch.storagein.api.constants.ResponseConstants;
 import com.bosch.storagein.api.domain.dto.MaterialInCheckDTO;
 import com.bosch.storagein.api.domain.dto.MaterialInDTO;
+import com.bosch.storagein.api.domain.dto.MaterialQueryDTO;
 import com.bosch.storagein.api.domain.dto.MaterialReceiveDTO;
 import com.bosch.storagein.api.domain.vo.MaterialCheckResultVO;
 import com.bosch.storagein.api.domain.vo.MaterialInCheckVO;
@@ -81,8 +82,8 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
     }
 
     @Override
-    public List<MaterialInVO> selectMaterialInList(MaterialInDTO materialInDTO) {
-        return materialInMapper.selectMaterialInList(materialInDTO);
+    public List<MaterialInVO> selectMaterialInList(MaterialQueryDTO queryDTO) {
+        return materialInMapper.selectMaterialInList(queryDTO);
     }
 
     @Override
@@ -148,6 +149,8 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
             materialInDTO.setAverageResult(averageResult);
             materialInDTO.setVirtualBinCode(Constants.VIRTUAL_BIN_CODE);
             materialInDTO.setQuantity(item.getQuantity());
+            materialInDTO.setPlantNb(item.getPlantNb());
+            materialInDTO.setWareCode(SecurityUtils.getWareCode());
             return materialInDTO;
         }).collect(Collectors.toList());
         materialInMapper.batchInsert(materialInDTOList);

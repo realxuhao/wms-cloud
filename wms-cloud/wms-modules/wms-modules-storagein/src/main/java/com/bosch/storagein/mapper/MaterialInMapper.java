@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.masterdata.api.domain.Bin;
 import com.bosch.storagein.api.domain.MaterialReceive;
 import com.bosch.storagein.api.domain.dto.MaterialInDTO;
+import com.bosch.storagein.api.domain.dto.MaterialQueryDTO;
 import com.bosch.storagein.api.domain.vo.MaterialInVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -36,7 +37,7 @@ public interface MaterialInMapper extends BaseMapper<MaterialInDTO>{
 
     List<MaterialInVO> getByUserName(String username);
 
-    List<MaterialInVO> selectMaterialInList(MaterialInDTO materialInDTO);
+    List<MaterialInVO> selectMaterialInList(MaterialQueryDTO queryDTO);
 
     void batchInsert(@Param("list") List<MaterialInDTO> materialInDTOList);
 }

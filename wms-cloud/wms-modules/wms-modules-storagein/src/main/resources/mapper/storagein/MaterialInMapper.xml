@@ -6,6 +6,8 @@
 
     <resultMap type="MaterialInVO" id="selectMaterialInVoResult">
         <result property="id" column="id"/>
+        <result property="plantNb" column="plant_nb"/>
+        <result property="wareCode" column="ware_code"/>
         <result property="ssccNumber" column="sscc_number"/>
         <result property="batchNb" column="batch_nb"/>
         <result property="materialNb" column="material_nb"/>
@@ -25,6 +27,8 @@
 
     <sql id="selectMaterialInVo">
         select id,
+               plant_nb,
+               ware_code,
                sscc_number,
                batch_nb,
                material_nb,
@@ -86,12 +90,12 @@
 
 
     <insert id="batchInsert">
-        INSERT INTO si_material_in (sscc_number, batch_nb, material_nb, check_type,
+        INSERT INTO si_material_in (plant_nb,ware_code,sscc_number, batch_nb, material_nb, check_type,
         check_quantity,min_standard,max_standard,quantity,
         actual_quantity,actual_result,operate_user,operate_time,average_result,virtual_bin_code,original_pallet_quantity)
         VALUES
         <foreach collection="list" separator="," item="item">
-            (#{item.ssccNumber},#{item.batchNb},#{item.materialNb},#{item.checkType},#{item.checkQuantity},#{item.minStandard},#{item.maxStandard},
+            (#{item.plantNb},#{item.wareCode},#{item.ssccNumber},#{item.batchNb},#{item.materialNb},#{item.checkType},#{item.checkQuantity},#{item.minStandard},#{item.maxStandard},
              #{item.quantity},#{item.actualQuantity},#{item.actualResult}
             ,#{item.operateUser},#{item.operateTime},#{item.averageResult},#{item.virtualBinCode},#{item.originalPalletQuantity})
         </foreach>
@@ -103,7 +107,6 @@
         update si_material_in
         set virtual_bin_code = #{virtualBinCode}
         where sscc_number = #{ssccNumber}
-
     </update>
 
 
@@ -128,6 +131,8 @@
 
     <select id="selectMaterialInList" resultMap="selectMaterialInVoResult">
         select si.id,
+               si.plant_nb,
+               si.ware_code,
         si.sscc_number,
         si.batch_nb,
         si.material_nb,
@@ -146,8 +151,9 @@
         <where>
 
             <if test="ssccNumber != null  and ssccNumber != ''">and sscc_number = #{ssccNumber}</if>
+            <if test="materialNb != null  and materialNb != ''">and material_nb = #{materialNb}</if>
             <if test="batchNb != null  and batchNb != ''">and batch_nb = #{batchNb}</if>
-
+            <if test="batchNb != null">and check_type = #{checkType}</if>
             <if test="operateUser != null  and operateUser != ''">and operate_user = #{operateUser}</if>
         </where>
         order by operate_time desc

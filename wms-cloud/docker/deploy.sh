@@ -33,9 +33,17 @@ auth(){
   docker-compose up -d wms-auth
 }
 
-# 启动程序模块（必须）
+nginx(){
+  docker-compose up -d wms-nginx
+}
+
 modules(){
-	docker-compose up -d  wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in
+  docker-compose up -d  wms-gateway wms-auth wms-modules-system
+}
+
+# 启动程序模块（必须）
+wms(){
+	docker-compose up -d  wms-modules-file master-data storage-in bin-in
 }
 
 # 关闭所有环境/模块
@@ -59,8 +67,14 @@ case "$1" in
 "auth")
 	auth
 ;;
+"nginx")
+	nginx
+;;
 "modules")
 	modules
+;;
+"wms")
+	wms
 ;;
 "stop")
 	stop

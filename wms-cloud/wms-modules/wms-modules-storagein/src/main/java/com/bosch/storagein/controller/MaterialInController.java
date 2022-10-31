@@ -102,19 +102,19 @@ public class MaterialInController extends BaseController {
 
     @GetMapping("/list")
     @ApiOperation("查询入库列表")
-    public R<PageVO<MaterialInVO>> list(MaterialInDTO materialInDTO) {
+    public R<PageVO<MaterialInVO>> list(MaterialQueryDTO queryDTO) {
         startPage();
-        List<MaterialInVO> list = materialInService.selectMaterialInList(materialInDTO);
+        List<MaterialInVO> list = materialInService.selectMaterialInList(queryDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
     @GetMapping("/currentUserData")
     @ApiOperation("获取当前用户的入库记录")
     public R<PageVO<MaterialInVO>> currentUserData() {
-        MaterialInDTO materialInDTO = new MaterialInDTO();
-        materialInDTO.setOperateUser(SecurityUtils.getUsername());
+        MaterialQueryDTO queryDTO = new MaterialQueryDTO();
+        queryDTO.setOperateUser(SecurityUtils.getUsername());
         startPage();
-        List<MaterialInVO> list = materialInService.selectMaterialInList(materialInDTO);
+        List<MaterialInVO> list = materialInService.selectMaterialInList(queryDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
