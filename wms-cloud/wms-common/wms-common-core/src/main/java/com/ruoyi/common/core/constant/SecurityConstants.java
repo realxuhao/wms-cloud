@@ -20,7 +20,7 @@ public class SecurityConstants
     /**
      * 仓库字段
      */
-    public static final String WARE_CODE = "wareCode";
+    public static final String WARE_CODE = "ware_code";
 
 
 

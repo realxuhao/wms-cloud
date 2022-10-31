@@ -26,14 +26,12 @@
         <dependency>
             <groupId>com.bosch</groupId>
             <artifactId>wms-api-system</artifactId>
-            <version>3.6.0</version>
         </dependency>
 
         <!-- RuoYi Common Redis-->
         <dependency>
             <groupId>com.bosch</groupId>
             <artifactId>wms-common-redis</artifactId>
-            <version>3.6.0</version>
         </dependency>
 
     </dependencies>

@@ -192,15 +192,15 @@
 
             <!-- 核心模块 -->
             <dependency>
-                <groupId>com.ruoyi</groupId>
-                <artifactId>ruoyi-common-core</artifactId>
+                <groupId>com.bosch</groupId>
+                <artifactId>wms-common-core</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 
             <!-- 接口模块 -->
             <dependency>
-                <groupId>com.ruoyi</groupId>
-                <artifactId>ruoyi-common-swagger</artifactId>
+                <groupId>com.bosch</groupId>
+                <artifactId>wms-common-swagger</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 

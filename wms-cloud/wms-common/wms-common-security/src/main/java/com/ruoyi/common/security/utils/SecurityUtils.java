@@ -32,6 +32,17 @@ public class SecurityUtils
         return SecurityContextHolder.getUserName();
     }
 
+
+    /**
+     * 获取当前请求的仓库代码
+     */
+    public static String getWareCode()
+    {
+        return SecurityContextHolder.getWareCode();
+    }
+
+
+
     /**
      * 获取用户key
      */
