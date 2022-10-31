@@ -61,21 +61,21 @@
         <!-- RuoYi Common DataSource -->
         <dependency>
             <groupId>com.bosch</groupId>
-            <artifactId>bosch-common-datasource</artifactId>
+            <artifactId>wms-common-datasource</artifactId>
             <version>3.6.0</version>
         </dependency>
 
         <!-- RuoYi Common DataScope -->
         <dependency>
             <groupId>com.bosch</groupId>
-            <artifactId>bosch-common-datascope</artifactId>
+            <artifactId>wms-common-datascope</artifactId>
             <version>3.6.0</version>
         </dependency>
 
         <!-- RuoYi Common Log -->
         <dependency>
             <groupId>com.bosch</groupId>
-            <artifactId>bosch-common-log</artifactId>
+            <artifactId>wms-common-log</artifactId>
             <version>3.6.0</version>
         </dependency>
 

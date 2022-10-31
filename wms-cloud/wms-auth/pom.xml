@@ -49,7 +49,7 @@
         <!-- RuoYi Common Security-->
         <dependency>
             <groupId>com.bosch</groupId>
-            <artifactId>bosch-common-security</artifactId>
+            <artifactId>wms-common-security</artifactId>
             <version>3.6.0</version>
         </dependency>
         

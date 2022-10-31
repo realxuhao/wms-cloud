@@ -69,14 +69,14 @@
         <!-- RuoYi Common Log -->
         <dependency>
             <groupId>com.bosch</groupId>
-            <artifactId>bosch-common-log</artifactId>
+            <artifactId>wms-common-log</artifactId>
             <version>3.6.0</version>
         </dependency>
         
         <!-- RuoYi Common Swagger -->
         <dependency>
             <groupId>com.bosch</groupId>
-            <artifactId>bosch-common-swagger</artifactId>
+            <artifactId>wms-common-swagger</artifactId>
             <version>3.6.0</version>
         </dependency>
 

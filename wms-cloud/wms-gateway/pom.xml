@@ -73,7 +73,7 @@
         <!-- RuoYi Common Redis-->
         <dependency>
             <groupId>com.bosch</groupId>
-            <artifactId>bosch-common-redis</artifactId>
+            <artifactId>wms-common-redis</artifactId>
             <version>3.6.0</version>
         </dependency>
 

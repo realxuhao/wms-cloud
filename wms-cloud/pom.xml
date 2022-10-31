@@ -207,35 +207,35 @@
             <!-- 安全模块 -->
             <dependency>
                 <groupId>com.bosch</groupId>
-                <artifactId>bosch-common-security</artifactId>
+                <artifactId>wms-common-security</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 
             <!-- 权限范围 -->
             <dependency>
                 <groupId>com.bosch</groupId>
-                <artifactId>bosch-common-datascope</artifactId>
+                <artifactId>wms-common-datascope</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 
             <!-- 多数据源 -->
             <dependency>
                 <groupId>com.bosch</groupId>
-                <artifactId>bosch-common-datasource</artifactId>
+                <artifactId>wms-common-datasource</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 
             <!-- 日志记录 -->
             <dependency>
                 <groupId>com.bosch</groupId>
-                <artifactId>bosch-common-log</artifactId>
+                <artifactId>wms-common-log</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 
             <!-- 缓存服务 -->
             <dependency>
                 <groupId>com.bosch</groupId>
-                <artifactId>bosch-common-redis</artifactId>
+                <artifactId>wms-common-redis</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 

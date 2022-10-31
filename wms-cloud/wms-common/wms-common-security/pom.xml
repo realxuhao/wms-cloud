@@ -8,10 +8,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     
-    <artifactId>bosch-common-security</artifactId>
+    <artifactId>wms-common-security</artifactId>
 
     <description>
-        bosch-common-security安全模块
+        wms-common-security安全模块
     </description>
 
     <dependencies>
@@ -26,12 +26,14 @@
         <dependency>
             <groupId>com.bosch</groupId>
             <artifactId>wms-api-system</artifactId>
+            <version>3.6.0</version>
         </dependency>
 
         <!-- RuoYi Common Redis-->
         <dependency>
             <groupId>com.bosch</groupId>
-            <artifactId>bosch-common-redis</artifactId>
+            <artifactId>wms-common-redis</artifactId>
+            <version>3.6.0</version>
         </dependency>
 
     </dependencies>

@@ -9,10 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     
-    <artifactId>bosch-common-datasource</artifactId>
+    <artifactId>wms-common-datasource</artifactId>
 	
     <description>
-        bosch-common-datasource多数据源
+        wms-common-datasource多数据源
     </description>
 
     <dependencies>

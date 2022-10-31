@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     
-    <artifactId>bosch-common-datascope</artifactId>
+    <artifactId>wms-common-datascope</artifactId>
 	
     <description>
         ruoyi-common-datascope权限范围
@@ -20,7 +20,7 @@
         <!-- RuoYi Common Security -->
         <dependency>
             <groupId>com.bosch</groupId>
-            <artifactId>bosch-common-security</artifactId>
+            <artifactId>wms-common-security</artifactId>
             <version>3.6.0</version>
         </dependency>
         

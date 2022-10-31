@@ -9,10 +9,10 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     
-    <artifactId>bosch-common-redis</artifactId>
+    <artifactId>wms-common-redis</artifactId>
 	
     <description>
-        bosch-common-redis缓存服务
+        wms-common-redis缓存服务
     </description>
 
     <dependencies>
@@ -25,8 +25,9 @@
         
         <!-- RuoYi Common Core-->
         <dependency>
-            <groupId>com.ruoyi</groupId>
-            <artifactId>ruoyi-common-core</artifactId>
+            <groupId>com.bosch</groupId>
+            <artifactId>wms-common-core</artifactId>
+            <version>3.6.0</version>
         </dependency>
         
     </dependencies>
