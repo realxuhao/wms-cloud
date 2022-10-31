@@ -34,10 +34,25 @@ const destroy = async (id) => {
   return data
 }
 
+const upload = async (formdata) => {
+  const url = `/bin/import`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
+
+const uploadBatchUpdate = async (formdata) => {
+  const url = `/bin/saveBatch`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
+
 export const binService = {
   getList,
   getOne,
   edit,
   add,
-  destroy
+  destroy,
+
+  upload,
+  uploadBatchUpdate
 }

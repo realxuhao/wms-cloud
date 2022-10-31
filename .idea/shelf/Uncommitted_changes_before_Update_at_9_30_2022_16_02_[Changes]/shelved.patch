@@ -1,0 +1,39 @@
+Index: wms-modules/wms-file/src/main/java/com/bosch/masterdata/domain/dto/MaterialDTO.java
+===================================================================
+diff --git a/wms-modules/wms-file/src/main/java/com/bosch/masterdata/domain/dto/MaterialDTO.java b/wms-modules/wms-file/src/main/java/com/bosch/masterdata/api/domain/dto/MaterialDTO.java
+rename from wms-modules/wms-file/src/main/java/com/bosch/masterdata/domain/dto/MaterialDTO.java
+rename to wms-modules/wms-file/src/main/java/com/bosch/masterdata/api/domain/dto/MaterialDTO.java
+--- a/wms-modules/wms-file/src/main/java/com/bosch/masterdata/domain/dto/MaterialDTO.java	
++++ b/wms-modules/wms-file/src/main/java/com/bosch/masterdata/api/domain/dto/MaterialDTO.java	
+@@ -1,4 +1,4 @@
+-package com.bosch.masterdata.domain.dto;
++package com.bosch.masterdata.api.domain.dto;
+ 
+ import com.alibaba.excel.annotation.ExcelProperty;
+ import com.ruoyi.common.core.annotation.Excel;
+Index: wms-modules/wms-file/src/main/java/com/bosch/masterdata/domain/dto/WareDTO.java
+===================================================================
+diff --git a/wms-modules/wms-file/src/main/java/com/bosch/masterdata/domain/dto/WareDTO.java b/wms-modules/wms-file/src/main/java/com/bosch/masterdata/api/domain/dto/WareDTO.java
+rename from wms-modules/wms-file/src/main/java/com/bosch/masterdata/domain/dto/WareDTO.java
+rename to wms-modules/wms-file/src/main/java/com/bosch/masterdata/api/domain/dto/WareDTO.java
+--- a/wms-modules/wms-file/src/main/java/com/bosch/masterdata/domain/dto/WareDTO.java	
++++ b/wms-modules/wms-file/src/main/java/com/bosch/masterdata/api/domain/dto/WareDTO.java	
+@@ -1,4 +1,4 @@
+-package com.bosch.masterdata.domain.dto;
++package com.bosch.masterdata.api.domain.dto;
+ 
+ import com.alibaba.excel.annotation.ExcelProperty;
+ import com.ruoyi.common.core.web.page.PageDomain;
+Index: wms-modules/master-data/src/main/java/com/bosch/masterdata/domain/vo/PageVO.java
+===================================================================
+diff --git a/wms-modules/master-data/src/main/java/com/bosch/masterdata/domain/vo/PageVO.java b/wms-modules/storage-in/src/main/java/com/bosch/storagein/domian/vo/PageVO.java
+rename from wms-modules/master-data/src/main/java/com/bosch/masterdata/domain/vo/PageVO.java
+rename to wms-modules/storage-in/src/main/java/com/bosch/storagein/domian/vo/PageVO.java
+--- a/wms-modules/master-data/src/main/java/com/bosch/masterdata/domain/vo/PageVO.java	
++++ b/wms-modules/storage-in/src/main/java/com/bosch/storagein/domian/vo/PageVO.java	
+@@ -1,4 +1,4 @@
+-package com.bosch.masterdata.domain.vo;
++package com.bosch.storagein.domian.vo;
+ 
+ import lombok.AllArgsConstructor;
+ import lombok.Data;

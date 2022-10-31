@@ -37,7 +37,7 @@
           ]"
           placeholder="物料类型">
           <a-select-option :value="item.id" v-for="item in materialTypeList" :key="item.id">
-            {{ item.description }}
+            {{ item.code }}
           </a-select-option>
         </a-select>
       </a-form-item>
@@ -158,8 +158,17 @@
             { rules: [{ required: true, message: '请选择单位' }], initialValue: 'kg' }
           ]"
           placeholder="物料防错方式">
-          <a-select-option value="kg">
-            kg
+          <a-select-option value="KG">
+            KG
+          </a-select-option>
+          <a-select-option value="M">
+            M
+          </a-select-option>
+          <a-select-option value="L">
+            L
+          </a-select-option>
+          <a-select-option value="㎡">
+            ㎡
           </a-select-option>
         </a-select>
       </a-form-item>

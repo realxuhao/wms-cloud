@@ -24,17 +24,17 @@
             { rules: [{ required: true, message: '请输入名称!' }] }
           ]" />
       </a-form-item>
-      <a-form-item label="承重">
+      <a-form-item label="承重（kg）">
         <a-input-number
-          placeholder="承重"
+          placeholder="承重（kg）"
           v-decorator="[
             'bearWeight',
             { rules: [{ required: true, message: '请输入承重!' }] }
           ]" />
       </a-form-item>
-      <a-form-item label="宽">
+      <a-form-item label="宽度（m）">
         <a-input
-          placeholder="宽"
+          placeholder="宽度（m）"
           v-decorator="[
             'width',
             { rules: [{ required: true, message: '请输入宽!' }] }

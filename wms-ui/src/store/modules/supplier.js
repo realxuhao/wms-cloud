@@ -29,6 +29,14 @@ const supplier = {
     async destroy ({ commit }, id) {
       const data = await supplierService.destroy(id)
       return data
+    },
+    async upload ({ commit }, formdata) {
+      const data = await supplierService.upload(formdata)
+      return data
+    },
+    async uploadBatchUpdate ({ commit }, formdata) {
+      const data = await supplierService.uploadBatchUpdate(formdata)
+      return data
     }
   }
 }

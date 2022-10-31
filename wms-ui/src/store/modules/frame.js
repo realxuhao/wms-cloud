@@ -33,6 +33,14 @@ const frame = {
     async destroy ({ commit }, id) {
       const data = await frameService.destroy(id)
       return data
+    },
+    async upload ({ commit }, formdata) {
+      const data = await frameService.upload(formdata)
+      return data
+    },
+    async uploadBatchUpdate ({ commit }, formdata) {
+      const data = await frameService.uploadBatchUpdate(formdata)
+      return data
     }
   }
 }

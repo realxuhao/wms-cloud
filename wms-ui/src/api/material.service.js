@@ -50,6 +50,18 @@ const destroyDispatchBin = async (id) => {
   return data
 }
 
+const upload = async (formdata) => {
+  const url = `/material/import`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
+
+const uploadBatchUpdate = async (formdata) => {
+  const url = `/material/saveBatch`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
+
 export const materialService = {
   getList,
   getOne,
@@ -59,5 +71,7 @@ export const materialService = {
 
   getDispatchBinList,
   addDispatchBin,
-  destroyDispatchBin
+  destroyDispatchBin,
+  upload,
+  uploadBatchUpdate
 }

@@ -19,6 +19,9 @@ import area from './modules/area'
 import ware from './modules/ware'
 import frame from './modules/frame'
 import bin from './modules/bin'
+import file from './modules/file'
+
+import materialInList from './modules/materialInList'
 
 // dynamic router permission control (Experimental)
 // import permission from './modules/async-router'
@@ -42,7 +45,11 @@ export default new Vuex.Store({
     area,
     ware,
     frame,
-    bin
+    bin,
+
+    file,
+
+    materialInList
   },
   state: {
 

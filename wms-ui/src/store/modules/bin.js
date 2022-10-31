@@ -33,6 +33,14 @@ const bin = {
     async destroy ({ commit }, id) {
       const data = await binService.destroy(id)
       return data
+    },
+    async upload ({ commit }, formdata) {
+      const data = await binService.upload(formdata)
+      return data
+    },
+    async uploadBatchUpdate ({ commit }, formdata) {
+      const data = await binService.uploadBatchUpdate(formdata)
+      return data
     }
   }
 }

@@ -34,10 +34,25 @@ const destroy = async (id) => {
   return data
 }
 
+const upload = async (formdata) => {
+  const url = `/area/import`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
+
+const uploadBatchUpdate = async (formdata) => {
+  const url = `/area/saveBatch`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
+
 export const areaService = {
   getList,
   getOne,
   edit,
   add,
-  destroy
+  destroy,
+
+  upload,
+  uploadBatchUpdate
 }

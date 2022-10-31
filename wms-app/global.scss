@@ -1,0 +1,38 @@
+
+
+.m-b-4{
+	margin-bottom: 4px;
+}
+.m-b-8{
+	margin-bottom: 8px;
+}
+.m-b-12{
+	margin-bottom: 12px;
+}
+
+.flex{
+	display: flex;
+}
+.flex-column{
+	flex-direction: column;
+}
+
+.primary-button{
+	background: $primary-color !important;
+	color: #fff !important;
+}
+
+.primary-text-color{
+	color: $primary-color;
+}
+
+.success-color{
+	color: $uni-color-success !important;
+}
+.error-color{
+	color: $uni-color-error !important;
+}
+
+.text-center{
+	text-align: center;
+}

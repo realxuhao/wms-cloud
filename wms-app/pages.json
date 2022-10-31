@@ -1,0 +1,25 @@
+{
+	"pages": [
+		{
+			"path": "pages/login/index"
+		},
+		{
+			"path": "pages/home/index"
+		},
+		{
+			"path": "pages/materialIn/index"
+		},
+		{
+			"path": "pages/scan/index"
+		},
+		{
+			"path": "pages/materialCount/index"
+		},
+		{
+			"path": "pages/binIn/binIn"
+		}
+	],
+	"globalStyle": {
+		"navigationStyle": "custom"
+	}
+}
