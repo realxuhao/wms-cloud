@@ -3,31 +3,32 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.ruoyi</groupId>
-        <artifactId>ruoyi-common</artifactId>
+        <groupId>com.bosch</groupId>
+        <artifactId>wms-common</artifactId>
         <version>3.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     
-    <artifactId>ruoyi-common-redis</artifactId>
+    <artifactId>bosch-common-swagger</artifactId>
 	
     <description>
-        ruoyi-common-redis缓存服务
+        bosch-common-swagger系统接口
     </description>
 
-    <dependencies>
-		
-        <!-- SpringBoot Boot Redis -->
+	<dependencies>
+
+        <!-- SpringBoot Web -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        
-        <!-- RuoYi Common Core-->
+
+        <!-- Swagger -->
         <dependency>
-            <groupId>com.ruoyi</groupId>
-            <artifactId>ruoyi-common-core</artifactId>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${swagger.fox.version}</version>
         </dependency>
-        
-    </dependencies>
+
+	</dependencies>
 </project>

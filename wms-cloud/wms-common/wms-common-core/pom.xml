@@ -3,16 +3,16 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.ruoyi</groupId>
-        <artifactId>ruoyi-common</artifactId>
+        <groupId>com.bosch</groupId>
+        <artifactId>wms-common</artifactId>
         <version>3.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ruoyi-common-core</artifactId>
+    <artifactId>wms-common-core</artifactId>
     
     <description>
-        ruoyi-common-core核心模块
+        wms-common-core核心模块
     </description>
 
     <dependencies>

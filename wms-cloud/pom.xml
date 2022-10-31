@@ -4,13 +4,12 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.ruoyi</groupId>
-    <artifactId>ruoyi</artifactId>
+    <groupId>com.bosch</groupId>
+    <artifactId>nutricia-wms</artifactId>
     <version>3.6.0</version>
 
-    <name>ruoyi</name>
-    <url>http://www.ruoyi.vip</url>
-    <description>若依微服务系统</description>
+    <name>bosch</name>
+    <description>nutricia-wms微服务系统</description>
 
     <properties>
         <ruoyi.version>3.6.0</ruoyi.version>
@@ -207,54 +206,54 @@
 
             <!-- 安全模块 -->
             <dependency>
-                <groupId>com.ruoyi</groupId>
-                <artifactId>ruoyi-common-security</artifactId>
+                <groupId>com.bosch</groupId>
+                <artifactId>bosch-common-security</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 
             <!-- 权限范围 -->
             <dependency>
-                <groupId>com.ruoyi</groupId>
-                <artifactId>ruoyi-common-datascope</artifactId>
+                <groupId>com.bosch</groupId>
+                <artifactId>bosch-common-datascope</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 
             <!-- 多数据源 -->
             <dependency>
-                <groupId>com.ruoyi</groupId>
-                <artifactId>ruoyi-common-datasource</artifactId>
+                <groupId>com.bosch</groupId>
+                <artifactId>bosch-common-datasource</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 
             <!-- 日志记录 -->
             <dependency>
-                <groupId>com.ruoyi</groupId>
-                <artifactId>ruoyi-common-log</artifactId>
+                <groupId>com.bosch</groupId>
+                <artifactId>bosch-common-log</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 
             <!-- 缓存服务 -->
             <dependency>
-                <groupId>com.ruoyi</groupId>
-                <artifactId>ruoyi-common-redis</artifactId>
+                <groupId>com.bosch</groupId>
+                <artifactId>bosch-common-redis</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 
             <!-- 系统接口 -->
             <dependency>
-                <groupId>com.ruoyi</groupId>
+                <groupId>com.bosch</groupId>
                 <artifactId>wms-api-system</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
             <!-- 文件接口 -->
             <dependency>
-                <groupId>com.ruoyi</groupId>
+                <groupId>com.bosch</groupId>
                 <artifactId>wms-api-file</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>com.ruoyi</groupId>
+                <groupId>com.bosch</groupId>
                 <artifactId>master-data-api</artifactId>
                 <version>${ruoyi.version}</version>
             </dependency>
@@ -265,10 +264,10 @@
     <modules>
         <module>wms-auth</module>
         <module>wms-gateway</module>
-        <module>ruoyi-visual</module>
+<!--        <module>ruoyi-visual</module>-->
         <module>wms-modules</module>
         <module>wms-api</module>
-        <module>ruoyi-common</module>
+        <module>wms-common</module>
     </modules>
     <packaging>pom</packaging>
 

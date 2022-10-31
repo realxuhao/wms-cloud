@@ -3,16 +3,16 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.ruoyi</groupId>
-        <artifactId>ruoyi-common</artifactId>
+        <groupId>com.bosch</groupId>
+        <artifactId>wms-common</artifactId>
         <version>3.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     
-    <artifactId>ruoyi-common-datasource</artifactId>
+    <artifactId>bosch-common-datasource</artifactId>
 	
     <description>
-        ruoyi-common-datasource多数据源
+        bosch-common-datasource多数据源
     </description>
 
     <dependencies>

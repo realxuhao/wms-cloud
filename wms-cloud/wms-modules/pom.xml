@@ -2,20 +2,20 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.ruoyi</groupId>
-        <artifactId>ruoyi</artifactId>
+        <groupId>com.bosch</groupId>
+        <artifactId>nutricia-wms</artifactId>
         <version>3.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <modules>
-        <module>wms-system</module>
-        <module>wms-gen</module>
-        <module>wms-job</module>
-        <module>wms-file</module>
-        <module>master-data</module>
-        <module>storage-in</module>
-        <module>bin-in</module>
+        <module>wms-modules-system</module>
+        <module>wms-modules-gen</module>
+        <module>wms-modules-job</module>
+        <module>wms-modules-file</module>
+        <module>wms-modules-masterdata</module>
+        <module>wms-modules-storaginin</module>
+        <module>wms-modules-binin</module>
     </modules>
 
     <artifactId>wms-modules</artifactId>

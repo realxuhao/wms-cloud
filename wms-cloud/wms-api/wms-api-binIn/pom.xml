@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <parent>
         <artifactId>wms-api</artifactId>
-        <groupId>com.ruoyi</groupId>
+        <groupId>com.bosch</groupId>
         <version>3.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -35,8 +35,9 @@
             <artifactId>jackson-annotations</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.ruoyi</groupId>
-            <artifactId>ruoyi-common-core</artifactId>
+            <groupId>com.bosch</groupId>
+            <artifactId>wms-common-core</artifactId>
+            <version>3.6.0</version>
         </dependency>
     </dependencies>
 </project>

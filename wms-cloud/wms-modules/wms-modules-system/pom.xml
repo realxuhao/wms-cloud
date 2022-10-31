@@ -3,20 +3,20 @@
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>com.ruoyi</groupId>
+        <groupId>com.bosch</groupId>
         <artifactId>wms-modules</artifactId>
         <version>3.6.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-
-    <artifactId>wms-modules-job</artifactId>
+	
+    <artifactId>wms-modules-system</artifactId>
 
     <description>
-        wms-modules-job定时任务
+        wms-modules-system系统模块
     </description>
-
+	
     <dependencies>
-    	
+
     	<!-- SpringCloud Alibaba Nacos -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
@@ -29,13 +29,13 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
         
-        <!-- SpringCloud Alibaba Sentinel -->
+    	<!-- SpringCloud Alibaba Sentinel -->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
         </dependency>
         
-        <!-- SpringBoot Actuator -->
+    	<!-- SpringBoot Actuator -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-actuator</artifactId>
@@ -48,36 +48,40 @@
             <version>${swagger.fox.version}</version>
         </dependency>
 		
-        <!-- Quartz -->
-        <dependency>
-            <groupId>org.quartz-scheduler</groupId>
-            <artifactId>quartz</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.mchange</groupId>
-                    <artifactId>c3p0</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        
         <!-- Mysql Connector -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
         
+        <!-- RuoYi Common DataSource -->
+        <dependency>
+            <groupId>com.bosch</groupId>
+            <artifactId>bosch-common-datasource</artifactId>
+            <version>3.6.0</version>
+        </dependency>
+        
+        <!-- RuoYi Common DataScope -->
+        <dependency>
+            <groupId>com.bosch</groupId>
+            <artifactId>bosch-common-datascope</artifactId>
+            <version>3.6.0</version>
+        </dependency>
+        
         <!-- RuoYi Common Log -->
         <dependency>
-            <groupId>com.ruoyi</groupId>
-            <artifactId>ruoyi-common-log</artifactId>
+            <groupId>com.bosch</groupId>
+            <artifactId>bosch-common-log</artifactId>
+            <version>3.6.0</version>
         </dependency>
         
         <!-- RuoYi Common Swagger -->
         <dependency>
-            <groupId>com.ruoyi</groupId>
-            <artifactId>ruoyi-common-swagger</artifactId>
+            <groupId>com.bosch</groupId>
+            <artifactId>bosch-common-swagger</artifactId>
+            <version>3.6.0</version>
         </dependency>
-        
+
     </dependencies>
 
     <build>
