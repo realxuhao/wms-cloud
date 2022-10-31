@@ -29,7 +29,7 @@ class MaterialReceiveServiceImplTest {
     void testSelectMaterialReceiveList() {
         // Setup
         final MaterialReceiveDTO materialReceiveDTO = new MaterialReceiveDTO();
-        materialReceiveDTO.setSsccNumber("ssccNumber");
+//        materialReceiveDTO.setSsccNumber("ssccNumber");
         materialReceiveDTO.setBatchNb("batchNumber");
         materialReceiveDTO.setMaterialNb("materialNb");
         materialReceiveDTO.setBatchNb("batchNb");
@@ -88,7 +88,7 @@ class MaterialReceiveServiceImplTest {
     void testSelectMaterialReceiveList_MaterialRecevieMapperReturnsNoItems() {
         // Setup
         final MaterialReceiveDTO materialReceiveDTO = new MaterialReceiveDTO();
-        materialReceiveDTO.setSsccNumber("ssccNumber");
+//        materialReceiveDTO.setSsccNumber("ssccNumber");
         materialReceiveDTO.setBatchNb("batchNumber");
         materialReceiveDTO.setMaterialNb("materialNb");
         materialReceiveDTO.setBatchNb("batchNb");
