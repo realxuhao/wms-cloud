@@ -75,7 +75,7 @@
         <if test="startExpireDate != null and endExpireDate != null">and str_to_date(sm.expire_date, '%d/%m/%y') between
             #{startExpireDate} and #{endExpireDate}
         </if>
-        <if test="status != null  and status != ''">and sm.status = #{status}</if>
+        <if test="status != null">and sm.status = #{status}</if>
     </select>
 
     <select id="selectMaterialReceiveVOBySncc" parameterType="string" resultMap="MaterialReceiveVOResult">
