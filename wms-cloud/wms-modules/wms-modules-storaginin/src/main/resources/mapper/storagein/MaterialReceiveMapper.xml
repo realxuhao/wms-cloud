@@ -67,11 +67,13 @@
         sm.plant_nb
         from si_material_receive sm left join md_material mm on sm.material_nb = mm.code
         where sm.delete_flag=1
-        <if test="ssccNumber != null  and ssccNumber != ''">and sm.sscc_number = #{ssccNumber}</if>
+        <if test="plantNb != null  and plantNb != ''">and sm.plant_nb = #{plantNb}</if>
         <if test="materialNb != null  and materialNb != ''">and sm.material_nb = #{materialNb}</if>
-        <if test="batchNb != null  and batchNb != ''">and sm.batch_nb = #{batchNb}</if>
         <if test="fromPurchaseOrder != null and fromPurchaseOrder != ''">and sm.from_purchase_order =
             #{fromPurchaseOrder}
+        </if>
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(sm.expire_date, '%d/%m/%y') between
+            #{startExpireDate} and #{endExpireDate}
         </if>
         <if test="status != null  and status != ''">and sm.status = #{status}</if>
     </select>
@@ -120,27 +122,33 @@
 
     <update id="batchUpdateStatus">
         update si_material_receive
-        set status = #{code},update_user=#{updateUser},update_time=#{updateTime}
-        where material_nb = #{materialNb} and batch_nb=#{batchNb} and delete_flag = 1
+        set status     = #{code},
+            update_user=#{updateUser},
+            update_time=#{updateTime}
+        where material_nb = #{materialNb}
+          and batch_nb = #{batchNb}
+          and delete_flag = 1
     </update>
 
 
-    <select id="selectSameBatchMaterialReceiveVO"  resultMap="MaterialReceiveVOResult">
+    <select id="selectSameBatchMaterialReceiveVO" resultMap="MaterialReceiveVOResult">
         <include refid="selectMaterialReceiveVo"/>
         where delete_flag=1 and material_nb = #{materialNb} and batch_nb = #{batchNb}
     </select>
 
     <update id="updateBatch" parameterType="com.bosch.storagein.api.domain.MaterialReceive">
-<!--        <foreach collection="list" item="item" separator=";">-->
-            UPDATE si_material_receive
-            SET plant_nb=#{plantNb}, sscc_number=#{ssccNumber}, material_nb=#{materialNb}, batch_nb=#{batchNb}, supplier_nb=#{supplierNb},
-             storage_location=#{storageLocation}, expire_date=#{expireDate}, quantity=#{quantity}, unit=#{unit}, from_area=#{fromArea},
-             from_purchase_order=#{fromPurchaseOrder}, to_picking_area=#{toPickingArea}, po_number_item=#{poNumberItem},
-             update_user=#{updateUser},
+        <!--        <foreach collection="list" item="item" separator=";">-->
+        UPDATE si_material_receive
+        SET plant_nb=#{plantNb}, sscc_number=#{ssccNumber}, material_nb=#{materialNb}, batch_nb=#{batchNb},
+        supplier_nb=#{supplierNb},
+        storage_location=#{storageLocation}, expire_date=#{expireDate}, quantity=#{quantity}, unit=#{unit},
+        from_area=#{fromArea},
+        from_purchase_order=#{fromPurchaseOrder}, to_picking_area=#{toPickingArea}, po_number_item=#{poNumberItem},
+        update_user=#{updateUser},
         update_time=#{updateTime},
-              file_id=concat(concat(#{fileId},','),file_id)
-             WHERE  sscc_number=#{ssccNumber};
-<!--        </foreach>-->
+        file_id=concat(concat(#{fileId},','),file_id)
+        WHERE sscc_number=#{ssccNumber};
+        <!--        </foreach>-->
     </update>
 
 </mapper>

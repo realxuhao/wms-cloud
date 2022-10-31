@@ -19,7 +19,7 @@ public class MaterialReceiveVO {
     /**
      * 仓库
      */
-    @ApiModelProperty(value = "仓库")
+    @ApiModelProperty(value = "工厂")
     private String plantNb;
 
     /**

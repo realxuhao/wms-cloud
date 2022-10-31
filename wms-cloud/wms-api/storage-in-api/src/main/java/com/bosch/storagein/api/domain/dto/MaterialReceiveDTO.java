@@ -1,8 +1,11 @@
 package com.bosch.storagein.api.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.Date;
 
 @Data
 public class MaterialReceiveDTO extends PageDomain {
@@ -11,11 +14,16 @@ public class MaterialReceiveDTO extends PageDomain {
 //    @ApiModelProperty(value = "主键id")
 //    private Long id;
 
-    /**
-     * SSCC码
-     */
-    @ApiModelProperty(value = "SSCC码")
-    private String ssccNumber;
+
+    @ApiModelProperty(value = "工厂")
+    private String plantNb;
+
+
+//    /**
+//     * SSCC码
+//     */
+//    @ApiModelProperty(value = "SSCC码")
+//    private String ssccNumber;
 
 //    /**
 //     * 批次号
@@ -44,6 +52,21 @@ public class MaterialReceiveDTO extends PageDomain {
     @ApiModelProperty(value = "来源PO号")
     private String fromPurchaseOrder;
 
+    /**
+     * BBD(过期时间)
+     */
+    @ApiModelProperty(value = "BBD过期开始时间")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date startExpireDate;
+
+
+    /**
+     * BBD(过期时间)
+     */
+    @ApiModelProperty(value = "BBD过期结束时间")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date endExpireDate;
+
 //    /** PO行号 */
 //    @ApiModelProperty(value = "PO行号")
 //    private String poNumberItem;
@@ -68,6 +91,9 @@ public class MaterialReceiveDTO extends PageDomain {
 //    @ApiModelProperty(value = "删除标记1:可用，0:删除")
 //    private Integer deleteFlag;
 //
+
+
+
     /**
      * 物料流转状态:0:待入库，1：已入库
      */
