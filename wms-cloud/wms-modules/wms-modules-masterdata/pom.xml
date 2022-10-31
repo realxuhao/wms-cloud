@@ -62,28 +62,24 @@
         <dependency>
             <groupId>com.bosch</groupId>
             <artifactId>wms-common-datasource</artifactId>
-            <version>3.6.0</version>
         </dependency>
         
         <!-- RuoYi Common DataScope -->
         <dependency>
             <groupId>com.bosch</groupId>
             <artifactId>wms-common-datascope</artifactId>
-            <version>3.6.0</version>
         </dependency>
         
         <!-- RuoYi Common Log -->
         <dependency>
             <groupId>com.bosch</groupId>
             <artifactId>wms-common-log</artifactId>
-            <version>3.6.0</version>
         </dependency>
         
         <!-- RuoYi Common Swagger -->
         <dependency>
             <groupId>com.bosch</groupId>
             <artifactId>wms-common-swagger</artifactId>
-            <version>3.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -99,7 +95,6 @@
         <dependency>
             <groupId>com.bosch</groupId>
             <artifactId>wms-api-file</artifactId>
-            <version>3.6.0</version>
         </dependency>
         <dependency>
             <groupId>com.bosch</groupId>

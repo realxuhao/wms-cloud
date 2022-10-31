@@ -95,10 +95,8 @@
 
 
         <dependency>
-            <groupId>com.ruoyi</groupId>
+            <groupId>com.bosch</groupId>
             <artifactId>master-data-api</artifactId>
-            <version>3.6.0</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>com.bosch</groupId>

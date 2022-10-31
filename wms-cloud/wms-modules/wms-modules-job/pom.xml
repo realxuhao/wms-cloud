@@ -70,14 +70,12 @@
         <dependency>
             <groupId>com.bosch</groupId>
             <artifactId>wms-common-log</artifactId>
-            <version>3.6.0</version>
         </dependency>
         
         <!-- RuoYi Common Swagger -->
         <dependency>
             <groupId>com.bosch</groupId>
             <artifactId>wms-common-swagger</artifactId>
-            <version>3.6.0</version>
         </dependency>
         
     </dependencies>

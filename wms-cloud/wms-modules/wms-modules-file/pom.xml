@@ -98,14 +98,12 @@
         <dependency>
             <groupId>com.bosch</groupId>
             <artifactId>wms-api-system</artifactId>
-            <version>3.6.0</version>
         </dependency>
         
         <!-- RuoYi Common Swagger -->
         <dependency>
-            <groupId>com.ruoyi</groupId>
-            <artifactId>ruoyi-common-swagger</artifactId>
-            <version>3.6.0</version>
+            <groupId>com.bosch</groupId>
+            <artifactId>wms-common-swagger</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -131,7 +129,6 @@
         <dependency>
             <groupId>com.bosch</groupId>
             <artifactId>wms-api-file</artifactId>
-            <version>3.6.0</version>
         </dependency>
 
         <dependency>

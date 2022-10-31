@@ -50,7 +50,6 @@
         <dependency>
             <groupId>com.bosch</groupId>
             <artifactId>wms-common-security</artifactId>
-            <version>3.6.0</version>
         </dependency>
         
     </dependencies>

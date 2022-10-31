@@ -19,8 +19,8 @@
 		
         <!-- RuoYi Common Core-->
         <dependency>
-            <groupId>com.ruoyi</groupId>
-            <artifactId>ruoyi-common-core</artifactId>
+            <groupId>com.bosch</groupId>
+            <artifactId>wms-common-core</artifactId>
         </dependency>
         
     </dependencies>
