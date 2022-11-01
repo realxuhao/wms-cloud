@@ -11,6 +11,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="code"    column="code"    />
         <result property="width"    column="width"    />
         <result property="bearWeight"    column="bear_weight"    />
+        <result property="height"    column="height"    />
+        <result property="typeCode"    column="type_code"    />
         <result property="createBy"    column="create_by"    />
         <result property="updateBy"    column="update_by"    />
         <result property="createTime"    column="create_time"    />
@@ -31,48 +33,52 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="name"    column="name"    />
         <result property="width"    column="width"    />
         <result property="bearWeight"    column="bear_weight"    />
+        <result property="height"    column="height"    />
+        <result property="typeCode"    column="type_code"    />
         <result property="createTime"    column="create_time"    />
     </resultMap>
 
 
     <sql id="selectFrameVo">
-        select id, area_id, name, code, width, bear_weight, create_by, update_by, create_time, update_time, status, remark from md_frame
+        select id, area_id, name, code, width, bear_weight,height,type_code, create_by, update_by, create_time, update_time, status, remark from md_frame
     </sql>
 
 
 
     <select id="selectFrameList" parameterType="FrameDTO" resultMap="FrameVOResult">
         select f.id as id,w.id as ware_id ,w.code as ware_code,w.name as ware_name,
-               a.id as area_id, a.name as area_name,a.code as area_code,f.code as code,
+               a.id as area_id, a.name as area_name,a.code as area_code,f.code as code,f.height as height,f.type_code as type_code,
                f.name as name,f.width as width,f.bear_weight as bear_weight,f.create_time as create_time
         from md_frame f
             left join md_area a on f.area_id=a.id
-            left join md_ware w on w.id=a.id
+            left join md_ware w on w.id=a.ware_id
         <where>
             <if test="areaId != null "> and f.area_id = #{areaId}</if>
             <if test="name != null  and name != ''"> and f.name like concat('%', #{name}, '%')</if>
             <if test="code != null  and code != ''"> and f.code = #{code}</if>
             <if test="width != null "> and f.width = #{width}</if>
             <if test="bearWeight != null "> and f.bear_weight = #{bearWeight}</if>
+            <if test="height != null "> and f.height = #{height}</if>
+            <if test="typeCode != null "> and f.type_code = #{typeCode}</if>
         </where>
     </select>
     
     <select id="selectFrameById" parameterType="Long" resultMap="FrameVOResult">
         select f.id as id,w.id as ware_id ,w.code as ware_code,w.name as ware_name,
-               a.id as area_id, a.name as area_name,a.code as area_code,f.code as code,
+               a.id as area_id, a.name as area_name,a.code as area_code,f.code as code,f.height as height,f.type_code as type_code,
                f.name as name,f.width as width,f.bear_weight as bear_weight,f.create_time as create_time
         from md_frame f
                  left join md_area a on f.area_id=a.id
-                 left join md_ware w on w.id=a.id
+                 left join md_ware w on w.id=a.ware_id
         where f.id = #{id}
     </select>
     <select id="selectFrameByCode" resultMap="FrameVOResult">
         select f.id as id,w.id as ware_id ,w.code as ware_code,w.name as ware_name,
-               a.id as area_id, a.name as area_name,a.code as area_code,f.code as code,
+               a.id as area_id, a.name as area_name,a.code as area_code,f.code as code,f.height as height,f.type_code as type_code,
                f.name as name,f.width as width,f.bear_weight as bear_weight,f.create_time as create_time
         from md_frame f
                  left join md_area a on f.area_id=a.id
-                 left join md_ware w on w.id=a.id
+                 left join md_ware w on w.id=a.ware_id
         where f.code = #{code}
     </select>
     <insert id="insertFrame" parameterType="Frame" useGeneratedKeys="true" keyProperty="id">
@@ -83,6 +89,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="code != null and code != ''">code,</if>
             <if test="width != null">width,</if>
             <if test="bearWeight != null">bear_weight,</if>
+            <if test="height != null">height,</if>
+            <if test="typeCode != null">type_code,</if>
             <if test="createBy != null">create_by,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="createTime != null">create_time,</if>
@@ -95,6 +103,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="name != null">#{name},</if>
             <if test="code != null and code != ''">#{code},</if>
             <if test="width != null">#{width},</if>
+            <if test="height != null">#{height},</if>
+            <if test="typeCode != null">#{typeCode},</if>
             <if test="bearWeight != null">#{bearWeight},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="updateBy != null">#{updateBy},</if>
@@ -112,6 +122,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="name != null">name = #{name},</if>
             <if test="code != null and code != ''">code = #{code},</if>
             <if test="width != null">width = #{width},</if>
+            <if test="height != null">height = #{height},</if>
+            <if test="typeCode != null">type_code = #{typeCode},</if>
             <if test="bearWeight != null">bear_weight = #{bearWeight},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>

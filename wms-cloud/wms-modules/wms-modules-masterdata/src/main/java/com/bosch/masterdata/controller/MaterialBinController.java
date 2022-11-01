@@ -203,7 +203,7 @@ public class MaterialBinController extends BaseController {
                     dos.forEach(r -> {
                         LambdaUpdateWrapper<MaterialBin> wrapper = new LambdaUpdateWrapper<MaterialBin>();
                         wrapper.eq(MaterialBin::getMaterialCode, r.getMaterialCode());
-                        wrapper.eq(MaterialBin::getFrameCode, r.getFrameCode());
+                        wrapper.eq(MaterialBin::getFrameTypeCode, r.getFrameTypeCode());
                         boolean update = materialBinService.update(r, wrapper);
                         if (!update) {
                             r.setCreateBy(SecurityUtils.getUsername());

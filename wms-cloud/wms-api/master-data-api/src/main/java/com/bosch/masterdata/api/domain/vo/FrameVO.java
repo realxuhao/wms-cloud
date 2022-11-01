@@ -1,6 +1,7 @@
 package com.bosch.masterdata.api.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.core.annotation.Excel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -54,6 +55,17 @@ public class FrameVO {
     /** 承重 */
     @ApiModelProperty(value = "承重")
     private BigDecimal bearWeight;
+
+    /**
+     * 跨类型编码
+     */
+    @ApiModelProperty(value = "跨类型编码")
+    private String typeCode;
+    /**
+     * 高度
+     */
+    @ApiModelProperty(value = "高度")
+    private BigDecimal height;
 
     /** 创建时间 */
     @ApiModelProperty(value = "创建时间")

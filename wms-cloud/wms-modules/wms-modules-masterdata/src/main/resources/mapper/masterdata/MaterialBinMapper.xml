@@ -8,8 +8,8 @@
         <result property="id" column="id"/>
         <result property="materialId" column="material_id"/>
         <result property="materialCode" column="material_code"/>
-        <result property="frameId" column="frame_id"/>
-        <result property="frameCode" column="frame_code"/>
+
+        <result property="frameTypeCode" column="frame_type_code"/>
         <result property="priorityLevel" column="priority_level"/>
         <result property="createBy" column="create_by"/>
         <result property="updateBy" column="update_by"/>
@@ -24,8 +24,8 @@
         <result property="materialId" column="material_id"/>
         <result property="materialCode" column="material_code"/>
         <result property="materialName" column="material_name"/>
-        <result property="frameId" column="frame_id"/>
-        <result property="frameCode" column="frame_code"/>
+
+        <result property="frameTypeCode" column="frame_type_code"/>
         <result property="createTime" column="create_time"/>
         <result property="frameName" column="frame_name"/>
         <result property="priorityLevel" column="priority_level"/>
@@ -35,7 +35,7 @@
     <sql id="selectMaterialBinVo">
         select id,
                material_id,
-               frame_id,
+               frame_type_code,
                priority_level,
                create_by,
                update_by,
@@ -49,45 +49,43 @@
     <select id="selectMaterialBinList" parameterType="MaterialBinDTO" resultMap="MaterialBinVOResult">
         SELECT
         mb.id AS id,
-        mb.frame_id AS frame_id,
+        mb.frame_type_code AS frame_type_code,
         mb.material_id AS material_id,
         mb.priority_level AS priority_level,
         mb.create_time AS create_time,
         m.code as material_code,
         m.name as material_name,
-        m.id as material_id,
-        b.CODE AS frame_code,
-        b.NAME AS frame_name
+        m.id as material_id
         FROM
         md_material_frame mb
-        LEFT JOIN md_frame b ON mb.frame_id = b.id
         LEFT JOIN md_material m ON mb.material_id = m.id
         where mb.material_id = m.id
         <if test="materialId != null ">and mb.material_id = #{materialId}</if>
-<!--        <where>-->
-<!--            <if test="materialId != null ">and mb.material_id = #{materialId}</if>-->
-<!--            <if test="frameId != null ">and mb.frame_id = #{frameId}</if>-->
-<!--            <if test="priorityLevel != null ">and mb.priority_level = #{priorityLevel}</if>-->
-<!--            <if test="materialCode != null ">and m.code = #{materialCode}</if>-->
-<!--            <if test="materialName != null ">and m.name = #{name}</if>-->
-<!--            <if test="binCode != null ">and b.code = #{binCode}</if>-->
-<!--            <if test="binName != null ">and b.name = #{binName}</if>-->
-<!--            <if test="status != null ">and mb.status = #{status}</if>-->
-<!--        </where>-->
+        <!--        <where>-->
+        <!--            <if test="materialId != null ">and mb.material_id = #{materialId}</if>-->
+        <!--            <if test="frameId != null ">and mb.frame_id = #{frameId}</if>-->
+        <!--            <if test="priorityLevel != null ">and mb.priority_level = #{priorityLevel}</if>-->
+        <!--            <if test="materialCode != null ">and m.code = #{materialCode}</if>-->
+        <!--            <if test="materialName != null ">and m.name = #{name}</if>-->
+        <!--            <if test="binCode != null ">and b.code = #{binCode}</if>-->
+        <!--            <if test="binName != null ">and b.name = #{binName}</if>-->
+        <!--            <if test="status != null ">and mb.status = #{status}</if>-->
+        <!--        </where>-->
     </select>
 
     <select id="selectMaterialBinById" parameterType="Long" resultMap="MaterialBinVOResult">
         SELECT
             mb.id AS id,
-            mb.frame_id AS frame_id,
+            mb.frame_type_code AS frame_type_code,
             mb.material_id AS material_id,
             mb.priority_level AS priority_level,
             mb.create_time AS create_time,
-            b.CODE AS frame_code,
-            b.NAME AS frame_name
+                    m.code as material_code,
+        m.name as material_name,
+        m.id as material_id
         FROM
             md_material_frame mb
-                LEFT JOIN md_frame b ON mb.frame_id = b.id
+             LEFT JOIN md_material m ON mb.material_id = m.id
         where  mb.id = #{id}
     </select>
 
@@ -95,7 +93,7 @@
         insert into md_material_frame
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="materialId != null">material_id,</if>
-            <if test="frameId != null">frame_id,</if>
+            <if test="frameTypeCode != null">frame_type_code,</if>
             <if test="priorityLevel != null">priority_level,</if>
             <if test="createBy != null">create_by,</if>
             <if test="updateBy != null">update_by,</if>
@@ -106,7 +104,7 @@
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="materialId != null">#{materialId},</if>
-            <if test="frameId != null">#{frameId},</if>
+            <if test="frameTypeCode != null">#{frameTypeCode},</if>
             <if test="priorityLevel != null">#{priorityLevel},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="updateBy != null">#{updateBy},</if>
@@ -117,11 +115,11 @@
         </trim>
     </insert>
 
-    <update id="updateMaterialBin" parameterType="MaterialBin">
+    <update id="updateMaterialBin" parameterType="MaterialBin">frame_type_code
         update md_material_frame
         <trim prefix="SET" suffixOverrides=",">
             <if test="materialId != null">material_id = #{materialId},</if>
-            <if test="frameId != null">frame_id = #{frameId},</if>
+            <if test="frameTypeCode != null">frame_type_code = #{frameTypeCode},</if>
             <if test="priorityLevel != null">priority_level = #{priorityLevel},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>

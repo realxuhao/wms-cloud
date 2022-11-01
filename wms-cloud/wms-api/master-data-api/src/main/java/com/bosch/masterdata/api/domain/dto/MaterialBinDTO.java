@@ -23,18 +23,14 @@ public class MaterialBinDTO extends PageDomain {
     @ApiModelProperty(value = "物料code")
     private String materialCode;
 
-    /** id */
-    @ExcelProperty( "跨id")
-    @ApiModelProperty(value = "跨id")
-    private Long frameId;
 
-    /** 库位code */
-    @ExcelProperty( "跨编码")
-    @ApiModelProperty(value = "跨code")
-    private String frameCode;
+    /** 可用跨编码 */
+    @ExcelProperty( "可用跨编码")
+    @ApiModelProperty(value = "可用跨编码")
+    private String frameTypeCode;
 
     /** 分配至该库位的优先级 */
-    @ExcelProperty( "分配至该库位的优先级")
+    @ExcelProperty( "优先级")
     @ApiModelProperty(value = "分配至该库位的优先级")
     private Long priorityLevel;
 

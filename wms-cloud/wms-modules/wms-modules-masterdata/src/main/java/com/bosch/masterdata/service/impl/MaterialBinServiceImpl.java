@@ -136,7 +136,7 @@ public class MaterialBinServiceImpl  extends ServiceImpl<MaterialBinMapper, Mate
     public boolean validList(List<MaterialBinDTO> dtos) {
         for (MaterialBinDTO dto : dtos) {
             LambdaQueryWrapper<MaterialBin> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-            lambdaQueryWrapper.eq(MaterialBin::getFrameCode, dto.getFrameCode());
+            lambdaQueryWrapper.eq(MaterialBin::getFrameTypeCode, dto.getFrameTypeCode());
             lambdaQueryWrapper.eq(MaterialBin::getMaterialCode, dto.getMaterialCode());
             MaterialBin materialBin = materialBinMapper.selectOne(lambdaQueryWrapper);
             if (materialBin != null) {
@@ -149,19 +149,19 @@ public class MaterialBinServiceImpl  extends ServiceImpl<MaterialBinMapper, Mate
 
     public List<MaterialBinDTO> setValue(List<MaterialBinDTO> dtos) {
         //获取集合
-        List<String> frames =
-                dtos.stream().map(MaterialBinDTO::getFrameCode).collect(Collectors.toList());
+//        List<String> frames =
+//                dtos.stream().map(MaterialBinDTO::getFrameCode).collect(Collectors.toList());
         List<String> materials =
                 dtos.stream().map(MaterialBinDTO::getMaterialCode).collect(Collectors.toList());
         //获取map
-        Map<String,Long> framesMap = getTypeMap(frames,1);
+//        Map<String,Long> framesMap = getTypeMap(frames,1);
         Map<String,Long> materialsMap = getTypeMap(materials,2);
         //绑定id
         dtos.forEach(x->{
-            if (framesMap.get(x.getFrameCode())==null){
-                throw new ServiceException("包含不存在的跨编码");
-            }
-            x.setFrameId(framesMap.get(x.getFrameCode()));
+//            if (framesMap.get(x.getFrameCode())==null){
+//                throw new ServiceException("包含不存在的跨编码");
+//            }
+//            x.setFrameId(framesMap.get(x.getFrameCode()));
             if (materialsMap.get(x.getMaterialCode())==null){
                 throw new ServiceException("包含不存在的物料代码");
             }

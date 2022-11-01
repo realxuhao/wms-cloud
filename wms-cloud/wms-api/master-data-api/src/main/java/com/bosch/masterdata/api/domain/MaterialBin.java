@@ -1,5 +1,6 @@
 package com.bosch.masterdata.api.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,13 +32,11 @@ public class MaterialBin extends BaseEntity
     @ApiModelProperty(value = "物料code")
     private String materialCode;
 
-    /** id */
-    @ApiModelProperty(value = "跨id")
-    private Long frameId;
+    /** 可用跨编码 */
+    @ApiModelProperty(value = "可用跨编码")
+    private String frameTypeCode;
 
-    /** 库位code */
-    @ApiModelProperty(value = "跨code")
-    private String frameCode;
+
 
     /** 分配至该库位的优先级 */
     @Excel(name = "分配至该库位的优先级")

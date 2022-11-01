@@ -18,8 +18,11 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.ruoyi.common.core.exception.ServiceException;
 
@@ -51,7 +54,8 @@ public class EasyExcelUtil {
         ExcelReaderBuilder read = EasyExcel.read(inputStream, clazz, listener);
         read.sheet().headRowNumber(1).doRead();
         List<String> head = listener.getHead();
-        boolean equals = head.equals(ClassType.getValue(className));
+        List<String> collect = head.stream().filter(Objects::nonNull).collect(Collectors.toList());
+        boolean equals = collect.equals(ClassType.getValue(className));
         if (!equals){
             throw new ServiceException("excel模板不正确");
         }

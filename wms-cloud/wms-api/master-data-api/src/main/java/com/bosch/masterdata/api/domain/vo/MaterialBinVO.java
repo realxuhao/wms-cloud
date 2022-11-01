@@ -33,17 +33,11 @@ public class MaterialBinVO {
     @ApiModelProperty(value = "物料名称")
     private String materialName;
 
-    /**
-     * 跨id
-     */
-    @ApiModelProperty(value = "跨id")
-    private Long frameId;
 
-    /**
-     * 跨code
-     */
-    @ApiModelProperty(value = "跨code")
-    private String frameCode;
+
+    /** 可用跨编码 */
+    @ApiModelProperty(value = "可用跨编码")
+    private String frameTypeCode;
 
     /**
      * name

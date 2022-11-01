@@ -2,7 +2,9 @@ package com.bosch.masterdata.api.domain;
 
 import java.math.BigDecimal;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -43,6 +45,19 @@ public class Frame extends BaseEntity
     /** 承重 */
     @Excel(name = "承重")
     private BigDecimal bearWeight;
+
+    /**
+     * 跨类型编码
+     */
+    @Excel(name = "跨类型编码")
+    private String typeCode;
+
+
+    /**
+     * 高度
+     */
+    @Excel(name = "高度")
+    private BigDecimal height;
 
     /** 状态（1：启用，0：停用） */
     @Excel(name = "状态", readConverterExp = "1=：启用，0：停用")
