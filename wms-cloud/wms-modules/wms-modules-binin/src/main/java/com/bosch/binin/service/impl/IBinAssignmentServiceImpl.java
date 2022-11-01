@@ -74,18 +74,23 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
         //可用库位
         List<MaterialBinVO> materialBinVOList=new ArrayList<>();
 
-        List<String> frameCodes=new ArrayList<>();
-        //获取物料相关跨
+        List<String> frameTypeCodes=new ArrayList<>();
+        //根据物料号 获取物料跨关系
         R<List<MaterialBinVO>> listByMaterial = remoteMasterDataService.getListByMaterial(materialNb);
         if (listByMaterial.isSuccess()){
+            if(listByMaterial.getData()==null){
+                throw new ServiceException("该物料号未维护可用跨") ;
+            }
             materialBinVOList=listByMaterial.getData().stream().
-                    sorted(Comparator.comparing(MaterialBinVO::getFrameCode, Comparator.naturalOrder())).
+                    sorted(Comparator.comparing(MaterialBinVO::getPriorityLevel, Comparator.naturalOrder())).
                     collect(Collectors.toList());
-            frameCodes=materialBinVOList.stream().map(MaterialBinVO::getFrameCode).collect(Collectors.toList());
-            Collections.sort(frameCodes);
+            frameTypeCodes=materialBinVOList.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
+            Collections.sort(frameTypeCodes);
         }else {
             throw new ServiceException("获取物料相关跨失败") ;
         }
+
+
         //获取同批次 同物料号 已占用跨 、库位
         LambdaQueryWrapper<BinIn> binInWrapper = new LambdaQueryWrapper();
         binInWrapper.eq(BinIn::getBatchNb, batchNb);

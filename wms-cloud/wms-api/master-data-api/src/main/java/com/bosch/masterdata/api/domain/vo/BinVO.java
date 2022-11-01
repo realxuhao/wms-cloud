@@ -58,6 +58,9 @@ public class BinVO {
     @ApiModelProperty(value = "跨名称")
     private String frameName;
 
+    /** 跨类型编码 */
+    @ApiModelProperty(value = "跨类型编码")
+    private String frameTypeCode;
     /** 宽度 */
     @ApiModelProperty(value = "宽度")
     private BigDecimal frameWidth;

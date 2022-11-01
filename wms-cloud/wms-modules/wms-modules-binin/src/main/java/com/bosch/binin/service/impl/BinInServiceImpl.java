@@ -123,8 +123,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             }
 
             List<MaterialBinVO> materialBinVOS = materialBinVOResullt.getData();
-            List<String> frameCodeList = materialBinVOS.stream().map(MaterialBinVO::getFrameCode).collect(Collectors.toList());
-            if (StringUtils.isEmpty(frameCodeList) || !frameCodeList.contains(actualBinVO.getFrameCode())) {
+            List<String> frameCodeList = materialBinVOS.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
+            if (StringUtils.isEmpty(frameCodeList) || !frameCodeList.contains(actualBinVO.getFrameTypeCode())) {
                 throw new ServiceException("该物料" + materialNb + " 不能分配到" + binInDTO.getActualBinCode());
             }
         }

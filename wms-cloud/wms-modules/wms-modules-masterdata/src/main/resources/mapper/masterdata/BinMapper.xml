@@ -29,6 +29,7 @@
         <result property="areaId" column="areaId"/>
         <result property="frameCode" column="frameCode"/>
         <result property="frameName" column="frameName"/>
+        <result property="frameTypeCode" column="frameTypeCode"/>
         <result property="frameWidth" column="frameWidth"/>
         <result property="frameBearWeight" column="frameBearWeight"/>
         <result property="createTime" column="createTime"/>
@@ -59,6 +60,7 @@
                a.id          as areaId,
                f.code        as frameCode,
                f.name        as frameName,
+                f.type_code        as frameTypeCode,
                f.width       as frameWidth,
                f.bear_weight as frameBearWeight,
                b.create_time as createTime
