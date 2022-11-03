@@ -6,7 +6,6 @@ import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
-import com.bosch.binin.api.enumeration.BinStockStatusEnum;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
@@ -15,19 +14,20 @@ import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.dto.BinInQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.mapper.BinInMapper;
-import com.bosch.binin.mapper.BinStockMapper;
+import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.RemotePalletService;
 import com.bosch.storagein.api.domain.vo.MaterialInVO;
+import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import io.seata.spring.boot.autoconfigure.SeataTCCFenceAutoConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -46,7 +46,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     private BinInMapper binInMapper;
 
     @Autowired
-    private BinStockMapper binStockMapper;
+    private StockMapper stockMapper;
+
 
     @Autowired
     private RemotePalletService remotePalletService;
@@ -93,6 +94,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BinInVO performBinIn(BinInDTO binInDTO) {
         String mesBarCode = binInDTO.getMesBarCode();
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
@@ -100,7 +102,6 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         LambdaQueryWrapper<BinIn> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(BinIn::getSsccNumber, sscc);
-
         BinIn binIn = binInMapper.selectOne(lambdaQueryWrapper);
 
 
@@ -109,7 +110,6 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         }
 
         BinVO actualBinVO = getBinVOByBinCode(binInDTO.getActualBinCode());
-
 
         if (!binInDTO.getActualBinCode().equals(binIn.getRecommendBinCode())) {
             //不在的时候，看actual bin code在不在分配规则内
@@ -136,7 +136,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         saveOrUpdate(binIn);
 
         //插入库存
-        Stock stock=new Stock();
+        Stock stock = new Stock();
         stock.setWareCode(actualBinVO.getWareCode());
         stock.setSsccNumber(binIn.getSsccNumber());
         stock.setWareCode(binIn.getWareCode());
@@ -144,12 +144,17 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         stock.setMaterialNb(binIn.getMaterialNb());
         stock.setBatchNb(binIn.getBatchNb());
         stock.setExpireDate(binIn.getExpireDate());
-        stock.setQuantity(binIn.getQuantity());
+        stock.setTotalStock(binIn.getQuantity());
+        stock.setFreezeStock(0);
+        stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
         stock.setBinInId(binIn.getId());
-        stock.setStatus(BinStockStatusEnum.FINISH.value());
         stock.setCreateBy(SecurityUtils.getUsername());
         stock.setCreateTime(new Date());
-        binStockMapper.insert(stock);
+        stockMapper.insert(stock);
+
+
+        //TODO 处理库存日志表
+
 
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
     }
@@ -164,6 +169,24 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             throw new ServiceException(binInfoByCodeResult.getMsg());
         }
         return binInfoByCodeResult.getData();
+    }
+
+    private void validMaterialBinRule(BinVO binVO, String materialNb) {
+        //不在的时候，看actual bin code在不在分配规则内
+        R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
+        if (StringUtils.isNull(materialBinVOResullt) || StringUtils.isNull(materialBinVOResullt.getData())) {
+            throw new ServiceException("该物料：" + materialNb + " 暂无分配规则");
+        }
+
+        if (R.FAIL == materialBinVOResullt.getCode()) {
+            throw new ServiceException(materialBinVOResullt.getMsg());
+        }
+
+        List<MaterialBinVO> materialBinVOS = materialBinVOResullt.getData();
+        List<String> frameCodeList = materialBinVOS.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
+        if (StringUtils.isEmpty(frameCodeList) || !frameCodeList.contains(binVO.getFrameTypeCode())) {
+            throw new ServiceException("该物料" + materialNb + " 不能分配到" + binVO.getCode());
+        }
     }
 
 
@@ -187,6 +210,12 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
         MaterialInVO materialInVO = getMaterialInVO(mesBarCode);
 
+        //校验是否能放在这个库位
+        BinVO binVO = getBinVOByBinCode(binInTaskDTO.getRecommendBinCode());
+        validMaterialBinRule(binVO, materialNb);
+
+        //校验承重
+
         BinIn binIn = new BinIn();
         binIn.setSsccNumber(sscc);
         binIn.setQuantity(materialInVO.getQuantity());
@@ -197,10 +226,10 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setPalletType(binInTaskDTO.getPalletType());
         binIn.setRecommendBinCode(binInTaskDTO.getRecommendBinCode());
         binIn.setStatus(BinInStatusEnum.PROCESSING.value());
-
-        BinVO binVO = getBinVOByBinCode(binInTaskDTO.getRecommendBinCode());
         binIn.setRecommendFrameId(binVO.getFrameId());
         binIn.setRecommendFrameCode(binVO.getFrameCode());
+        binIn.setWareCode(SecurityUtils.getWareCode());
+        binIn.setMoveType(MoveTypeEnums.BININ.getCode());
 
         binInMapper.insert(binIn);
 

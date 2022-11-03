@@ -2,8 +2,12 @@ package com.bosch.binin.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.dto.StockQueryDTO;
+import com.bosch.binin.api.domain.vo.StockVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author: UWH4SZH
@@ -11,6 +15,7 @@ import org.springframework.stereotype.Repository;
  * @description:
  */
 @Mapper
-@Repository("binStockMapper")
-public interface BinStockMapper extends BaseMapper<Stock> {
+@Repository("stockMapper")
+public interface StockMapper extends BaseMapper<Stock> {
+    List<StockVO> selectStockVOList(StockQueryDTO stockQueryDTO);
 }

@@ -19,6 +19,7 @@ import com.bosch.storagein.mapper.MaterialInMapper;
 import com.bosch.storagein.mapper.MaterialRecevieMapper;
 import com.bosch.storagein.service.IMaterialInService;
 import com.bosch.storagein.utils.BeanConverUtil;
+import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -125,7 +126,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         }
 
         //称重 或者 数数
-        if ((CheckTypeEnum.WEIGHT.getCode().equals(materialInCheckVO.getCheckType()) && checkWeight(mesBarCode, actualQuantity, actualResult, checkResultVO,materialInCheckDTO.getWeightTimes()))
+        if ((CheckTypeEnum.WEIGHT.getCode().equals(materialInCheckVO.getCheckType()) && checkWeight(mesBarCode, actualQuantity, actualResult, checkResultVO, materialInCheckDTO.getWeightTimes()))
                 || (CheckTypeEnum.COUNT.getCode().equals(materialInCheckVO.getCheckType()) && checkCount(materialInCheckVO, actualQuantity, actualResult, checkResultVO))) {
 
             batchStorageIn(materialInCheckVO, materialInCheckDTO, checkResultVO.getAverageResult());
@@ -151,11 +152,13 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
             materialInDTO.setQuantity(item.getQuantity());
             materialInDTO.setPlantNb(item.getPlantNb());
             materialInDTO.setWareCode(SecurityUtils.getWareCode());
+            materialInDTO.setMoveType(MoveTypeEnums.STORAGEIN.getCode());
+            materialInDTO.setFromPurchaseOrder(item.getFromPurchaseOrder());
             return materialInDTO;
         }).collect(Collectors.toList());
         materialInMapper.batchInsert(materialInDTOList);
         materialRecevieMapper.batchUpdateStatus(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb(), MaterialStatusEnum.IN.getCode(),
-                SecurityUtils.getUsername(),new Date());
+                SecurityUtils.getUsername(), new Date());
 
     }
 
@@ -184,7 +187,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
      * @return
      */
     private Boolean checkWeight(String mesBarCode, Integer actualQuantity,
-                                Double actualResult, MaterialCheckResultVO checkResultVO,Integer weightTimes) {
+                                Double actualResult, MaterialCheckResultVO checkResultVO, Integer weightTimes) {
         //计算平均值
         //TODO 补充计算说明
         MaterialVO materialVO = getMaterialVOByMesBarCode(mesBarCode);

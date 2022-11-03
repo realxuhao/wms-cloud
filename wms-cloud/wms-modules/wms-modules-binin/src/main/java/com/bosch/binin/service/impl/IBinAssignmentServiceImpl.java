@@ -8,22 +8,19 @@ import com.bosch.binin.api.domain.vo.*;
 
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.mapper.BinInMapper;
-import com.bosch.binin.mapper.BinStockMapper;
+import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.service.IBinAssignmentService;
 import com.bosch.masterdata.api.*;
 import com.bosch.masterdata.api.RemotePalletService;
 import com.bosch.masterdata.api.domain.Bin;
 import com.bosch.masterdata.api.domain.Pallet;
-import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.FrameVO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.storagein.api.RemoteMaterialInService;
-import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
-import com.ruoyi.common.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,7 +39,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
     private BinInMapper binInMapper;
 
     @Autowired
-    private BinStockMapper binStockMapper;
+    private StockMapper stockMapper;
 
     @Autowired
     private RemotePalletService remotePalletService;

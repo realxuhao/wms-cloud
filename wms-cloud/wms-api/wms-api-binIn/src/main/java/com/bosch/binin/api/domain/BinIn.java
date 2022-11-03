@@ -96,5 +96,16 @@ public class BinIn extends BaseEntity {
      */
     private String actualFrameCode;
 
+    /**
+     * 移动类型
+     */
+    private String moveType;
+
+    /**
+     * PO号
+     */
+    private String fromPurchaseOrder;
+
+
 
 }

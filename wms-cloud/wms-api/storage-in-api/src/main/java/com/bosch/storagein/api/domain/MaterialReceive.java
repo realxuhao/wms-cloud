@@ -170,4 +170,9 @@ public class MaterialReceive {
     @ExcelProperty(value = "fileId")
     @CsvBindByName(column = "fileId")
     private String fileId;
+
+    /**
+     * 移动类型
+     */
+    private String moveType;
 }

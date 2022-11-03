@@ -23,10 +23,12 @@ port(){
 	firewall-cmd --add-port=9300/tcp --permanent
 	service firewalld restart
 }
-
+db(){
+	docker-compose up -d wms-mysql
+}
 # 启动基础环境（必须）
-base(){
-	docker-compose up -d wms-mysql wms-redis wms-nacos
+nacos(){
+	docker-compose up -d  wms-nacos
 }
 
 auth(){
@@ -61,8 +63,11 @@ case "$1" in
 "port")
 	port
 ;;
-"base")
-	base
+"db")
+	db
+;;
+"nacos")
+	nacos
 ;;
 "auth")
 	auth

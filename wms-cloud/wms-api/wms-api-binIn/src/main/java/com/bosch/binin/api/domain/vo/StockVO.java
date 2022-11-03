@@ -1,20 +1,21 @@
-package com.bosch.binin.api.domain;
+package com.bosch.binin.api.domain.vo;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.ruoyi.common.core.web.domain.BaseEntity;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
 
 /**
- * @author: UWH4SZH
- * @since: 10/18/2022 13:08
- * @description:　库存
- */
+ * @program: wms-cloud
+ * @description:
+ * @author: xuhao
+ * @create: 2022-11-02 15:16
+ **/
 @Data
-@TableName("bi_stock")
-public class Stock extends BaseEntity {
-    private static final long serialVersionUID = 1L;
+public class StockVO {
 
     /**
      * id
@@ -30,6 +31,13 @@ public class Stock extends BaseEntity {
      * 工厂
      */
     private String plantNb;
+
+
+    /**
+     * PO号
+     */
+    private String fromPurchaseOrder;
+
 
     /**
      * 仓库编码
@@ -49,6 +57,11 @@ public class Stock extends BaseEntity {
      * 物料号
      */
     private String materialNb;
+
+    /**
+     * 物料名称
+     */
+    private String materialName;
 
     /**
      * 批次号
@@ -75,16 +88,16 @@ public class Stock extends BaseEntity {
      */
     private Integer availableStock;
 
-    /**
-     * PO号
-     */
-    private String fromPurchaseOrder;
-
 
     /**
      * 上架id
      */
     private Long binInId;
 
+    /** 创建者 */
+    private String createBy;
+
+    /** 创建时间 */
+    private Date createTime;
 
 }

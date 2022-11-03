@@ -58,7 +58,11 @@ public class MaterialInDTO extends PageDomain {
     @ApiModelProperty(value = "检验类型，0：称重，1：数数，2：免检，3：该批次已检")
     private Integer checkType;
 
-
+    /**
+     * 来源PO号
+     */
+    @ApiModelProperty(value = "来源PO号")
+    private String fromPurchaseOrder;
 
     /**
      * 应检查数量
@@ -126,4 +130,10 @@ public class MaterialInDTO extends PageDomain {
      */
     @ApiModelProperty(value = "该托的物料数量")
     private Integer quantity;
+
+    /**
+     * 移动类型
+     */
+    @ApiModelProperty(value = "移动类型")
+    private String moveType;
 }

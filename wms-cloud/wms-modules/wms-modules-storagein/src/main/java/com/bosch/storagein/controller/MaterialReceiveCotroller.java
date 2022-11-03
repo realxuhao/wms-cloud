@@ -12,6 +12,7 @@ import com.bosch.storagein.api.enumeration.ClassType;
 import com.bosch.storagein.service.IMaterialReceiveService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
@@ -107,6 +108,7 @@ public class MaterialReceiveCotroller extends BaseController {
                         return R.fail(400, "存在重复数据");
                     } else {
                         //添加
+                        dtos.forEach(item->item.setMoveType(MoveTypeEnums.RECEIVE.getCode()));
                         materialReceiveService.saveBatch(dtos);
                     }
                 }
@@ -139,6 +141,7 @@ public class MaterialReceiveCotroller extends BaseController {
                 if (!CollectionUtils.isEmpty(dtos)) {
 
                     dtos.forEach(r->{
+                        r.setMoveType(MoveTypeEnums.RECEIVE.getCode());
                         boolean update =materialReceiveService.updateBatchReceive(r);
                         if (!update){
                             r.setUpdateTime(null);
