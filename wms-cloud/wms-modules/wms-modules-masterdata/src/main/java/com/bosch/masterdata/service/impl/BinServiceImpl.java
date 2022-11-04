@@ -53,6 +53,10 @@ public class BinServiceImpl extends ServiceImpl<BinMapper, Bin> implements IBinS
         return binMapper.selectBinById(id);
     }
 
+    public List<BinVO> selectBinVOByFrameType(String code)
+    {
+        return binMapper.selectBinVOByFrameType(code);
+    }
     @Override
     public List<Bin>  selectBinByFrameId(Long frameId)
     {

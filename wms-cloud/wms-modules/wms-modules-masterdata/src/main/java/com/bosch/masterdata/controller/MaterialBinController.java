@@ -1,5 +1,6 @@
 package com.bosch.masterdata.controller;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
+import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.Area;
 import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.api.domain.dto.AreaDTO;
@@ -59,6 +61,7 @@ public class MaterialBinController extends BaseController {
     @Autowired
     private FileService fileService;
 
+
     /**
      * 查询物料库位分配策略列表
      */
@@ -85,6 +88,7 @@ public class MaterialBinController extends BaseController {
     public R<PageVO<MaterialBinVO>> list(MaterialBinDTO materialBinDTO) {
         startPage();
         List<MaterialBinVO> list = materialBinService.selectMaterialBinList(materialBinDTO);
+
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 

@@ -33,6 +33,13 @@ public interface RemoteMasterDataService {
     @GetMapping(value = "/frame/getFrameInfoByCode/{code}")
     public R<FrameVO> getFrameInfoByCode(@PathVariable("code") String code);
 
+    @GetMapping(value = "/frame/getFrameInfoByType/{type}")
+    public R<List<FrameVO>> getFrameInfoByType(@PathVariable("type") String type);
+
     @GetMapping(value = "/bin/getInfoByFrameId/{frameId}")
     public R<List<Bin> > getInfoByFrameId(@PathVariable("frameId") Long frameId);
+
+    //根据跨类型获取所有库位
+    @GetMapping(value = "/bin/selectBinVOByFrameType/{typeCode}")
+    public R<List<BinVO> > selectBinVOByFrameType(@PathVariable("typeCode") String typeCode);
 }

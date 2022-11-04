@@ -97,10 +97,24 @@ public class FrameController extends BaseController {
     }
     @GetMapping(value = "getFrameInfoByCode/{code}")
     @ApiOperation("根据code查询跨详细信息")
-    public R<FrameVO> getFrameInfo(@PathVariable("code") String code) {
+    public R<FrameVO> getFrameInfoByCode(@PathVariable("code") String code) {
         try {
             FrameVO frameVO = frameService.selectFrameByCode(code);
             return R.ok(frameVO);
+        }catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
+
+    }
+
+    @GetMapping(value = "getFrameInfoByType/{type}")
+    @ApiOperation("根据type查询跨详细信息")
+    public R<List<FrameVO>> getFrameInfoByType(@PathVariable("type") String type) {
+        try {
+            FrameDTO frameDTO=new FrameDTO();
+            frameDTO.setTypeCode(type);
+            List<FrameVO> frameVOS = frameService.selectFrameList(frameDTO);
+            return R.ok(frameVOS);
         }catch (Exception e) {
             return R.fail(e.getMessage());
         }

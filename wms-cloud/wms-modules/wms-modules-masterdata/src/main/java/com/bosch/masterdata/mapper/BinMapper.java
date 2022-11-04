@@ -32,6 +32,8 @@ public interface BinMapper extends BaseMapper<Bin>
 
     public BinVO selectBinVOByCode(String code);
 
+    public List<BinVO> selectBinVOByFrameType(String code);
+
     /**
      * 查询库位列表
      * 

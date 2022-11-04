@@ -25,6 +25,14 @@ public interface IBinService extends IService<Bin>
      * @return 库位
      */
     public Bin selectBinById(Long id);
+
+
+    /**
+     * 根据跨类型查询所有库位
+     * @param code
+     * @return
+     */
+    public List<BinVO> selectBinVOByFrameType(String code);
     /**
      * 查询库位
      *

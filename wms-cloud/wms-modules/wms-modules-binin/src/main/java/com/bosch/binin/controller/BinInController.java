@@ -9,6 +9,8 @@ import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.service.IBinAssignmentService;
 import com.bosch.binin.service.IBinInService;
+import com.bosch.masterdata.api.RemoteMasterDataService;
+import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
@@ -40,11 +42,21 @@ public class BinInController extends BaseController {
     @Autowired
     private IBinAssignmentService binAssignmentService;
 
+    @Autowired
+    private RemoteMasterDataService remoteMasterDataService;
+
     @PostMapping(value = "/allocate")
     @ApiOperation("分配库位编码")
     public R<BinAllocationVO> allocate(@RequestBody BinAllocationDTO binAllocationDTO) {
-        binAssignmentService.getBinAllocationVO(binAllocationDTO);
-        return R.ok(null);
+
+        try {
+            binAssignmentService.getBinAllocationVO(binAllocationDTO);
+            return R.ok(null);
+        }catch (Exception e){
+            return R.fail(e.getMessage());
+        }
+        //Object listR = remoteMasterDataService.selectBinVOByFrameType("");
+
     }
 
     @PostMapping(value = "/generateInTask")

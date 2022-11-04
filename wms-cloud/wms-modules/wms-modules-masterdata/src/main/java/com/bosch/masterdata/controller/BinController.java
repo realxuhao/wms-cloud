@@ -36,6 +36,7 @@ import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.page.TableDataInfo;
 import org.springframework.web.multipart.MultipartFile;
+import org.stringtemplate.v4.ST;
 
 /**
  * 库位Controller
@@ -96,7 +97,21 @@ public class BinController extends BaseController
 
     }
 
+    /**
+     * 根据frametype获取库位详细信息
+     */
+    @GetMapping(value = "/selectBinVOByFrameType/{typeCode}")
+    public R<List<BinVO>> selectBinVOByFrameType(@PathVariable("typeCode") String typeCode)
+    {
+        try {
+            List<BinVO> binVOS = binService.selectBinVOByFrameType(typeCode);
+            return R.ok(binVOS);
 
+        }catch (Exception e){
+            return R.fail(e.getMessage());
+        }
+
+    }
     /**
      * 获取库位详细信息
      */

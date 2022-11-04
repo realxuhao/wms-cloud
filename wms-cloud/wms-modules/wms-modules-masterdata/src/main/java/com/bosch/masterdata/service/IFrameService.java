@@ -34,6 +34,8 @@ public interface IFrameService extends IService<Frame>
      * @return 跨
      */
     public FrameVO selectFrameByCode(String code);
+
+
     /**
      * 查询跨列表
      * 

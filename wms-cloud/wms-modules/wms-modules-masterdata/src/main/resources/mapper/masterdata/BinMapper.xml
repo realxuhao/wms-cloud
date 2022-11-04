@@ -100,7 +100,10 @@
         <include refid="binVOList"/>
         where b.code = #{code}
     </select>
-
+    <select id="selectBinVOByFrameType"  resultMap="BinVOResult">
+        <include refid="binVOList"/>
+        where f.type_code = #{code}
+    </select>
 
     <insert id="insertBin" parameterType="Bin">
         insert into md_bin
