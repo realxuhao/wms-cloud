@@ -120,4 +120,11 @@ public class MaterialInVO {
     private Integer quantity;
 
 
+    /**
+     * 来源PO号
+     */
+    @ApiModelProperty(value = "来源PO号")
+    private String fromPurchaseOrder;
+
+
 }

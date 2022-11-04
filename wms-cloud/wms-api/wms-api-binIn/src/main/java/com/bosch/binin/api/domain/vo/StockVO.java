@@ -100,4 +100,9 @@ public class StockVO {
     /** 创建时间 */
     private Date createTime;
 
+    /**
+     * 质检状态
+     */
+    private String qualityStatus;
+
 }

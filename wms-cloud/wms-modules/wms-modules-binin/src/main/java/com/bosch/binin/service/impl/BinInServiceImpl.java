@@ -2,10 +2,12 @@ package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.StockLog;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
+import com.bosch.binin.mapper.StockLogMapper;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
@@ -20,15 +22,18 @@ import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.RemotePalletService;
 import com.bosch.storagein.api.domain.vo.MaterialInVO;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
+import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +52,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Autowired
     private StockMapper stockMapper;
+
+    @Autowired
+    private StockLogMapper stockLogMapper;
 
 
     @Autowired
@@ -150,11 +158,14 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         stock.setBinInId(binIn.getId());
         stock.setCreateBy(SecurityUtils.getUsername());
         stock.setCreateTime(new Date());
+        stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+        stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
         stockMapper.insert(stock);
 
-
-        //TODO 处理库存日志表
-
+        //处理库存日志表
+        StockLog stockLog = BeanConverUtil.conver(stock, StockLog.class);
+        stockLog.setMoveType(MoveTypeEnums.BININ.getCode());
+        stockLogMapper.insert(stockLog);
 
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
     }
@@ -208,19 +219,22 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         String mesBarCode = binInTaskDTO.getMesBarCode();
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
+        String batchNb = MesBarCodeUtil.getBatchNb(mesBarCode);
         MaterialInVO materialInVO = getMaterialInVO(mesBarCode);
 
         //校验是否能放在这个库位
         BinVO binVO = getBinVOByBinCode(binInTaskDTO.getRecommendBinCode());
         validMaterialBinRule(binVO, materialNb);
 
-        //校验承重
+        //TODO 校验承重
+
+
 
         BinIn binIn = new BinIn();
         binIn.setSsccNumber(sscc);
         binIn.setQuantity(materialInVO.getQuantity());
         binIn.setMaterialNb(materialNb);
-        binIn.setBatchNb(materialInVO.getBatchNb());
+        binIn.setBatchNb(batchNb);
         binIn.setExpireDate(MesBarCodeUtil.getExpireDate(mesBarCode));
         binIn.setPalletCode(binInTaskDTO.getPalletCode());
         binIn.setPalletType(binInTaskDTO.getPalletType());
@@ -230,9 +244,12 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setRecommendFrameCode(binVO.getFrameCode());
         binIn.setWareCode(SecurityUtils.getWareCode());
         binIn.setMoveType(MoveTypeEnums.BININ.getCode());
+        binIn.setFromPurchaseOrder(materialInVO.getFromPurchaseOrder());
 
         binInMapper.insert(binIn);
 
         return getByMesBarCode(mesBarCode);
     }
+
+
 }

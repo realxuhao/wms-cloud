@@ -63,4 +63,9 @@ public class StockQueryDTO extends PageDomain {
      * 过期时间
      */
     private Date endExpireDate;
+
+    /**
+     * 质检状态
+     */
+    private String qualityStatus;
 }

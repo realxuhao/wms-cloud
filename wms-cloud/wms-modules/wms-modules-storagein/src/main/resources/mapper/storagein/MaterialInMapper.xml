@@ -23,6 +23,7 @@
         <result property="operateTime" column="operate_time"/>
         <result property="quantity" column="quantity"/>
         <result property="originalPalletQuantity" column="original_pallet_quantity"/>
+        <result property="fromPurchaseOrder" column="from_purchase_order"/>
     </resultMap>
 
     <sql id="selectMaterialInVo">
@@ -146,7 +147,8 @@
         si.average_result,
         si.operate_user,
         si.operate_time,
-        si.original_pallet_quantity
+        si.original_pallet_quantity,
+        si.from_purchase_order
         from si_material_in si left join md_material mm on si.material_nb = mm.code
         where si.delete_flag=0
         <if test="ssccNumber != null  and ssccNumber != ''">and sscc_number = #{ssccNumber}</if>

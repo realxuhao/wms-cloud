@@ -22,6 +22,7 @@
         <result property="binInId" column="bin_in_id"/>
         <result property="createBy" column="create_by"/>
         <result property="createTime" column="create_time"/>
+        <result property="qualityStatus" column="quality_status"/>
     </resultMap>
     <select id="selectStockVOList" resultMap="StockVOResult">
         select bs.id as id,
@@ -40,7 +41,8 @@
         bs.available_stock as available_stock,
         bs.bin_in_id as bin_in_id,
         bs.create_by as create_by,
-        bs.create_time as create_time
+        bs.create_time as create_time,
+        bs.quality_status as quality_status
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code
@@ -60,6 +62,7 @@
                 between
                 #{startExpireDate} and #{endExpireDate}
             </if>
+            <if test="qualityStatus != null and qualityStatus != ''">and bs.quality_status = #{qualityStatus}</if>
         </where>
 
     </select>

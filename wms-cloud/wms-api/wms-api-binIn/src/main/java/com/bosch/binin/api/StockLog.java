@@ -1,4 +1,4 @@
-package com.bosch.binin.api.domain;
+package com.bosch.binin.api;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
@@ -12,14 +12,9 @@ import java.util.Date;
  * @description:　库存
  */
 @Data
-@TableName("bi_stock")
-public class Stock extends BaseEntity {
+@TableName("bi_stock_log")
+public class StockLog extends BaseEntity {
     private static final long serialVersionUID = 1L;
-
-    /**
-     * id
-     */
-    private Long id;
 
     /**
      * SSCC码
@@ -87,10 +82,8 @@ public class Stock extends BaseEntity {
     private Long binInId;
 
     /**
-     * 质检状态
+     * 移动类型
      */
-    private String qualityStatus;
-
-
+    private String moveType;
 
 }
