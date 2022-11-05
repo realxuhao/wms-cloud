@@ -23,29 +23,20 @@ port(){
 	firewall-cmd --add-port=9300/tcp --permanent
 	service firewalld restart
 }
-db(){
-	docker-compose up -d wms-mysql
-}
+
+
+
 # 启动基础环境（必须）
+base(){
+	docker-compose up -d wms-mysql wms-redis wms-minio wms-nacos
+}
 nacos(){
-	docker-compose up -d  wms-nacos
-}
-
-auth(){
-  docker-compose up -d wms-auth
-}
-
-nginx(){
-  docker-compose up -d wms-nginx
-}
-
-modules(){
-  docker-compose up -d  wms-gateway wms-auth wms-modules-system
+	docker-compose up -d wms-nacos
 }
 
 # 启动程序模块（必须）
-wms(){
-	docker-compose up -d  wms-modules-file master-data storage-in bin-in
+modules(){
+	docker-compose up -d  wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in
 }
 
 # 关闭所有环境/模块
@@ -63,17 +54,11 @@ case "$1" in
 "port")
 	port
 ;;
-"db")
-	db
+"base")
+	base
 ;;
 "nacos")
 	nacos
-;;
-"auth")
-	auth
-;;
-"nginx")
-	nginx
 ;;
 "modules")
 	modules

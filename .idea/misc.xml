@@ -8,6 +8,8 @@
         <option value="$PROJECT_DIR$/ruoyi-modules/main-data/pom.xml" />
         <option value="$PROJECT_DIR$/wms-api/ruoyi-api-system/pom.xml" />
         <option value="$PROJECT_DIR$/wms-modules/bin-in/pom.xml" />
+        <option value="$PROJECT_DIR$/wms-cloud/pom.xml" />
+        <option value="$PROJECT_DIR$/wms-cloud/wms-modules/wms-modules-storagein/pom.xml" />
       </list>
     </option>
   </component>

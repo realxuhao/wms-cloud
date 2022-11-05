@@ -14,24 +14,23 @@
         <module name="wms-auth" />
         <module name="wms-modules-job" />
         <module name="wms-api-file" />
-        <module name="ruoyi-common-datascope" />
         <module name="wms-api-system" />
-        <module name="ruoyi-common-redis" />
-        <module name="ruoyi-common-swagger" />
-        <module name="ruoyi-common-core" />
-        <module name="ruoyi-common-security" />
+        <module name="wms-modules-storagein" />
+        <module name="wms-modules-binin" />
+        <module name="wms-common-datasource" />
+        <module name="wms-common-core" />
+        <module name="wms-common-redis" />
         <module name="wms-modules-file" />
         <module name="main_data" />
-        <module name="master-data" />
-        <module name="ruoyi-common-datasource" />
-        <module name="wms-gateway" />
+        <module name="wms-modules-masterdata" />
+        <module name="wms-common-datascope" />
+        <module name="wms-common-swagger" />
+        <module name="wms-common-security" />
         <module name="master-data-api" />
+        <module name="wms-gateway" />
         <module name="wms-api-binIn" />
+        <module name="wms-common-log" />
         <module name="wms-modules-system" />
-        <module name="ruoyi-visual-monitor" />
-        <module name="ruoyi-common-log" />
-        <module name="storage-in" />
-        <module name="bin-in" />
         <module name="wms-modules-gen" />
         <module name="storage-in-api" />
       </profile>
@@ -48,6 +47,7 @@
       <module name="ruoyi-modules-gen" target="1.8" />
       <module name="ruoyi-modules-job" target="1.8" />
       <module name="ruoyi-modules-system" target="1.8" />
+      <module name="storage-in" target="1.8" />
       <module name="storage-service" target="1.8" />
     </bytecodeTargetLevel>
   </component>

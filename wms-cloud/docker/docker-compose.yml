@@ -28,6 +28,8 @@ services:
       - ./mysql/conf:/etc/mysql/conf.d
       - ./mysql/logs:/logs
       - ./mysql/data:/var/lib/mysql
+          #初始数据库
+#      - ./mysql/db/*.sql:/docker-entrypoint-initdb.d/*.sql
     command: [
           'mysqld',
           '--innodb-buffer-pool-size=80M',
@@ -37,8 +39,8 @@ services:
           '--lower-case-table-names=1'
         ]
     environment:
-      MYSQL_DATABASE: 'wms-cloud'
-      MYSQL_ROOT_PASSWORD: 123456
+#      MYSQL_DATABASE: 'wms-cloud'
+      MYSQL_ROOT_PASSWORD: nutircia-so
 
   wms-redis:
     container_name: wms-redis
@@ -51,6 +53,23 @@ services:
       - ./redis/conf/redis.conf:/home/wms/redis/redis.conf
       - ./redis/data:/data
     command: redis-server /home/wms/redis/redis.conf
+
+  wms-minio:
+    container_name: wms-minio
+    image: minio/minio
+    ports:
+      - 8001:9000 # api 端口
+      - 8002:9001 # 控制台端口
+    environment:
+      MINIO_ACCESS_KEY: admin    #管理后台用户名
+      MINIO_SECRET_KEY: nutricia-so #管理后台密码，最小8个字符
+    volumes:
+      - ./minio/data:/data               #映射当前目录下的data目录至容器内/data目录
+      - ./minio/config:/root/.minio/     #映射配置目录
+    command: server --console-address ':9001' /data  #指定容器中的目录 /data
+    privileged: true
+    restart: always
+
   wms-nginx:
     container_name: wms-nginx
     image: nginx
@@ -58,8 +77,10 @@ services:
       context: ./nginx
     ports:
       - "80:80"
+      - "8777:8777"
     volumes:
       - ./nginx/html/dist:/home/wms/projects/wms-ui
+      - ./nginx/html/app:/home/wms/projects/wms-app
       - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/logs:/var/log/nginx
       - ./nginx/conf.d:/etc/nginx/conf.d

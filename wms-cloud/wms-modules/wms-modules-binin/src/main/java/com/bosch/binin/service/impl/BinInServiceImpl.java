@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -131,6 +132,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             }
 
             List<MaterialBinVO> materialBinVOS = materialBinVOResullt.getData();
+
+
+
             List<String> frameCodeList = materialBinVOS.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
             if (StringUtils.isEmpty(frameCodeList) || !frameCodeList.contains(actualBinVO.getFrameTypeCode())) {
                 throw new ServiceException("该物料" + materialNb + " 不能分配到" + binInDTO.getActualBinCode());

@@ -4,12 +4,14 @@ FROM nginx
 MAINTAINER wms
 
 # 挂载目录
-VOLUME /home/wms/projects/wms-ui
+VOLUME /home/wms/projects
 # 创建目录
-RUN mkdir -p /home/wms/projects/wms-ui
+RUN mkdir -p /home/wms/projects/dist
+RUN mkdir -p /home/wms/projects/h5
 # 指定路径
-WORKDIR /home/wms/projects/wms-ui
+WORKDIR /home/wms/projects
 # 复制conf文件到路径
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 # 复制html文件到路径
-COPY ./html/dist /home/wms/projects/wms-ui
+COPY ./html /home/wms/projects
+

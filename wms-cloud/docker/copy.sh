@@ -9,8 +9,8 @@ usage() {
 
 
 # copy html
-echo "begin copy html "
-cp -r ../wms-ui/dist/** ./nginx/html/dist
+#echo "begin copy html "
+#cp -r ../wms-ui/dist/** ./nginx/html/dist
 
 
 # copy jar

@@ -1,0 +1,11 @@
+# 基础镜像
+FROM minio/minio
+# author
+MAINTAINER wms
+
+# 挂载目录
+VOLUME /home/wms/minio
+# 创建目录
+RUN mkdir -p /home/wms/minio
+# 指定路径
+WORKDIR /home/wms/minio
