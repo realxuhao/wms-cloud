@@ -9,8 +9,10 @@ import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.mapper.StockLogMapper;
 import com.bosch.masterdata.api.RemoteMasterDataService;
+import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
+import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.storagein.api.RemoteMaterialInService;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.dto.BinInQueryDTO;
@@ -57,6 +59,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     @Autowired
     private StockLogMapper stockLogMapper;
 
+    @Autowired
+    private RemoteMaterialService remoteMaterialService;
 
     @Autowired
     private RemotePalletService remotePalletService;
@@ -93,7 +97,25 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     @Override
     public BinInVO getByMesBarCode(String mesBarCode) {
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+        String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
         BinInVO binInVO = binInMapper.selectBySsccNumber(sscc);
+        if (binInVO == null) {
+            binInVO=new BinInVO();
+            binInVO.setSsccNumber(sscc);
+            binInVO.setMaterialNb(materialNb);
+            R<MaterialVO> materialVORes = remoteMaterialService.getInfoByMaterialCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
+            if (StringUtils.isNull(materialVORes) || StringUtils.isNull(materialVORes.getData())) {
+                throw new ServiceException("该物料：" + materialNb + " 不存在");
+            }
+
+            if (R.FAIL == materialVORes.getCode()) {
+                throw new ServiceException(materialVORes.getMsg());
+            }
+
+            MaterialVO materialVO = materialVORes.getData();
+            binInVO.setMaterialName(materialVO.getName());
+        }
+
         return binInVO;
     }
 

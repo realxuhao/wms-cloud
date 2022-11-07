@@ -19,6 +19,13 @@ public class BinInVO {
     @ApiModelProperty(value = "id")
     private Long id;
 
+
+    /**
+     * 工厂
+     */
+    @ApiModelProperty(value = "工厂")
+    private String plantNb;
+
     /**
      * 物料号
      */
