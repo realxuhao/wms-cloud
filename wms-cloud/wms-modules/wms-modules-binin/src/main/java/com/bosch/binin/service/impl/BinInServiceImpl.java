@@ -153,6 +153,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         //插入库存
         Stock stock = new Stock();
+        stock.setPlantNb(binIn.getPlantNb());
         stock.setWareCode(actualBinVO.getWareCode());
         stock.setSsccNumber(binIn.getSsccNumber());
         stock.setWareCode(binIn.getWareCode());
@@ -253,6 +254,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setWareCode(SecurityUtils.getWareCode());
         binIn.setMoveType(MoveTypeEnums.BININ.getCode());
         binIn.setFromPurchaseOrder(materialInVO.getFromPurchaseOrder());
+        binIn.setPlantNb(materialInVO.getPlantNb());
 
         binInMapper.insert(binIn);
 

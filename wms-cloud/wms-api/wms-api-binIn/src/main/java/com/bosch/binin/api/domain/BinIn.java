@@ -2,6 +2,7 @@ package com.bosch.binin.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -36,6 +37,11 @@ public class BinIn extends BaseEntity {
      * 过期时间
      */
     private Date expireDate;
+
+    /**
+     * 工厂
+     */
+    private String plantNb;
 
     /**
      * 仓库编码

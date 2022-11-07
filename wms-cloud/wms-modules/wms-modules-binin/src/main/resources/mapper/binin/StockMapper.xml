@@ -10,6 +10,7 @@
         <result property="plantNb" column="plant_nb"/>
         <result property="fromPurchaseOrder" column="from_purchase_order"/>
         <result property="wareCode" column="ware_code"/>
+        <result property="areaCode" column="area_code"/>
         <result property="frameCode" column="frame_code"/>
         <result property="binCode" column="bin_code"/>
         <result property="materialNb" column="material_nb"/>
@@ -27,7 +28,7 @@
     <select id="selectStockVOList" resultMap="StockVOResult">
         select bs.id as id,
         bs.sscc_number as sscc_number,
-        mw.factory_code as plant_nb,
+        bs.plant_nb as plant_nb,
         bs.from_purchase_order as from_purchase_order,
         bs.ware_code as ware_code,
         bs.frame_code as frame_code,
@@ -42,18 +43,21 @@
         bs.bin_in_id as bin_in_id,
         bs.create_by as create_by,
         bs.create_time as create_time,
-        bs.quality_status as quality_status
+        bs.quality_status as quality_status,
+               ma.code as area_code
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code
+            left join md_area ma on ma.ware_id = mw.id
         left join md_material mm on bs.material_nb = mm.code
         <where>
             <if test="ssccNumber != null and ssccNumber != ''">and bs.sscc_number = #{ssccNumber}</if>
-            <if test="plantNb != null and plantNb != ''">and mw.factory_code = #{plantNb}</if>
+            <if test="plantNb != null and plantNb != ''">and bs.plant_nb = #{plantNb}</if>
             <if test="fromPurchaseOrder != null and fromPurchaseOrder != ''">and bs.from_purchase_order =
                 #{fromPurchaseOrder}
             </if>
             <if test="wareCode != null and wareCode != ''">and bs.ware_code = #{wareCode}</if>
+            <if test="areaCode != null and areaCode != ''">and ma.code = #{areaCode}</if>
             <if test="frameCode != null and frameCode != ''">and bs.frame_code = #{frameCode}</if>
             <if test="binCode != null and binCode != ''">and bs.bin_code = #{binCode}</if>
             <if test="materialNb != null and materialNb != ''">and bs.material_nb = #{materialNb}</if>
