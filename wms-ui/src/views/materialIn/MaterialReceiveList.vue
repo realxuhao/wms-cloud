@@ -235,7 +235,7 @@ export default {
     },
     async handleDownloadTemplate () {
       try {
-        this.$store.dispatch('file/downloadByFilename', '入库.csv')
+        this.$store.dispatch('file/downloadByFilename', '入库.xlsx')
       } catch (error) {
         this.$message.error(error.message)
       }

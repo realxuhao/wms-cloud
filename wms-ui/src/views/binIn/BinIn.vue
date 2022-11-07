@@ -6,8 +6,8 @@
         <a-form-model-item label="批次号">
           <a-input v-model="queryForm.batchNb" placeholder="批次号" />
         </a-form-model-item>
-        <a-form-model-item label="物料名">
-          <a-input v-model="queryForm.materialName" placeholder="物料名" />
+        <a-form-model-item label="物料编码">
+          <a-input v-model="queryForm.materialNb" placeholder="物料编码" />
         </a-form-model-item>
         <a-form-model-item>
           <a-button type="primary" icon="search" @click="handleSearch" :loading="searchLoading"> 搜索 </a-button>
@@ -26,19 +26,6 @@
         size="middle"
         :scroll="{ x: 1300 }"
       >
-        <template slot="checkType" slot-scope="text">
-          <div >
-            <a-tag color="orange" v-if="text===0">
-              称重
-            </a-tag>
-            <a-tag color="blue" v-if="text===1">
-              数数
-            </a-tag>
-            <a-tag color="#87d068" v-if="text===2">
-              免检
-            </a-tag>
-          </div>
-        </template>
       </a-table>
 
       <div class="pagination-con">
@@ -68,82 +55,69 @@ const columns = [
     width: 200
   },
   {
-    title: '物料编码',
-    key: 'materialNb',
-    dataIndex: 'materialNb',
-    width: 200
-  },
-  {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
-    width: 200
+    width: 120
   },
   {
-    title: '检验方式',
-    key: 'checkType',
-    dataIndex: 'checkType',
-    scopedSlots: { customRender: 'checkType' },
-    width: 200
+    title: '物料编码',
+    key: 'materialNb',
+    dataIndex: 'materialNb',
+    width: 120
   },
   {
-    title: '应检查数量',
-    key: 'checkQuantity',
-    dataIndex: 'checkQuantity',
-    width: 200
+    title: '物料名称',
+    key: 'materialName',
+    dataIndex: 'materialName',
+    width: 120
   },
   {
-    title: '实际数量',
-    key: 'actualQuantity',
-    dataIndex: 'actualQuantity',
-    width: 200
+    title: '仓库编码',
+    key: 'wareCode',
+    dataIndex: 'wareCode',
+    width: 120
   },
   {
-    title: '结果',
-    key: 'actualResult',
-    dataIndex: 'actualResult',
-    width: 200
+    title: '跨编码',
+    key: 'frameCode',
+    dataIndex: 'frameCode',
+    width: 120
   },
   {
-    title: '实际平均结果',
-    key: 'averageResult',
-    dataIndex: 'averageResult',
-    width: 200
+    title: '托盘编码',
+    key: 'palletCode',
+    dataIndex: 'palletCode',
+    width: 120
   },
   {
-    title: '最小标准',
-    key: 'minStandard',
-    dataIndex: 'minStandard',
-    width: 200
+    title: '托盘类型',
+    key: 'palletType',
+    dataIndex: 'palletType',
+    width: 120
   },
   {
-    title: '最大标准',
-    key: 'maxStandard',
-    dataIndex: 'maxStandard',
-    width: 200
+    title: '数量',
+    key: 'quantity',
+    dataIndex: 'quantity',
+    width: 80
   },
   {
-    title: '原托数',
-    key: 'originalPalletQuantity',
-    dataIndex: 'originalPalletQuantity',
-    width: 200
+    title: '推荐库位编码',
+    key: 'recommendBinCode',
+    dataIndex: 'recommendBinCode',
+    width: 120
   },
   {
-    title: '操作人',
-    key: 'operateUser',
-    dataIndex: 'operateUser',
-    width: 200
-  },
-  {
-    title: '操作时间',
-    key: 'operateTime',
-    dataIndex: 'operateTime',
-    width: 200
+    title: '实际库位编码',
+    key: 'actualBinCode',
+    dataIndex: 'actualBinCode',
+    width: 120
   }
 ]
 
 export default {
-  name: 'Area',
+  name: 'BinIn',
   mixins: [mixinTableList],
   data () {
     return {
@@ -160,7 +134,7 @@ export default {
 
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('materialInList/getPaginationList', this.queryForm)
+        } = await this.$store.dispatch('binIn/getPaginationList', this.queryForm)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {

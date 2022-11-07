@@ -115,6 +115,22 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           }
         ]
+      },
+      {
+        path: '/bin-in',
+        name: 'binIn',
+        component: RouteView,
+        redirect: '/bin-in/list',
+        meta: { title: '原材料上架', icon: 'hdd', permission: [] },
+        children: [
+          {
+            path: '/bin-in/list',
+            name: 'binInList',
+            component: () => import('@/views/binIn/BinIn'),
+            meta: { title: '上架记录', permission: [] },
+            hideChildrenInMenu: true
+          }
+        ]
       }
       // account
       // {

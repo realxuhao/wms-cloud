@@ -20,6 +20,7 @@ import ware from './modules/ware'
 import frame from './modules/frame'
 import bin from './modules/bin'
 import file from './modules/file'
+import binIn from './modules/binIn'
 
 import materialInList from './modules/materialInList'
 
@@ -49,7 +50,8 @@ export default new Vuex.Store({
 
     file,
 
-    materialInList
+    materialInList,
+    binIn
   },
   state: {
 
