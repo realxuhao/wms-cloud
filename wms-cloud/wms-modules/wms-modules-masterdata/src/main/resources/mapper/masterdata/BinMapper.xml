@@ -49,7 +49,7 @@
     </sql>
     <sql id="binVOList">
         SELECT b.id,
-               b.frame_id,
+               b.frame_id as frame_id,
                b.CODE        as code,
                b.NAME        as name,
                w.CODE        as wareCode,

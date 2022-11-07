@@ -43,7 +43,8 @@
                average_result,
                operate_user,
                operate_time,
-               original_pallet_quantity
+               original_pallet_quantity,
+               from_purchase_order
         from si_material_in
     </sql>
 

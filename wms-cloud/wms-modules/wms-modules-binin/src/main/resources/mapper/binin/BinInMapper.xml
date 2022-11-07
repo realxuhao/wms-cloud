@@ -59,6 +59,7 @@
                  left join md_material mm on bi.material_nb = mm.code
         where bi.sscc_number = #{sscc}
           and delete_flag = 0
+        order by bi.create_time desc limit 1
 
 
     </select>

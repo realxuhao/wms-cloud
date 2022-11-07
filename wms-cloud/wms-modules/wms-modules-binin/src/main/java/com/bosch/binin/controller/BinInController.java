@@ -10,10 +10,10 @@ import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.service.IBinAssignmentService;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.masterdata.api.RemoteMasterDataService;
-import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
@@ -52,7 +52,7 @@ public class BinInController extends BaseController {
         try {
             binAssignmentService.getBinAllocationVO(binAllocationDTO);
             return R.ok(null);
-        }catch (Exception e){
+        } catch (Exception e) {
             return R.fail(e.getMessage());
         }
         //Object listR = remoteMasterDataService.selectBinVOByFrameType("");
@@ -62,15 +62,18 @@ public class BinInController extends BaseController {
     @PostMapping(value = "/generateInTask")
     @ApiOperation("生成上架任务")
     public R<BinInVO> generateInTask(@RequestBody BinInTaskDTO binInTaskDTO) {
-        BinInVO binInVO = binInService.generateInTask(binInTaskDTO);
-        return R.ok(binInVO);
+        BinInVO binInVOByMesBarCode = binInService.getByMesBarCode(binInTaskDTO.getMesBarCode());
+        if (binInVOByMesBarCode != null) {
+            throw new ServiceException("该物料已有上架任务或者已上架");
+        }
+        return R.ok(binInService.generateInTask(binInTaskDTO));
     }
 
     @PostMapping(value = "/in")
     @ApiOperation("实际上架")
     public R<BinInVO> in(@RequestBody BinInDTO binInDTO) {
-        binInService.performBinIn(binInDTO);
-        return R.ok(null);
+
+        return R.ok(binInService.performBinIn(binInDTO));
     }
 
     @GetMapping(value = "/list")
@@ -84,8 +87,8 @@ public class BinInController extends BaseController {
     @GetMapping(value = "/currentUserData")
     @ApiOperation("查询当前用户的上架列表")
     public R<PageVO<BinInVO>> currentUserData(BinInQueryDTO binInQueryDTO) {
-        if(binInQueryDTO==null){
-            binInQueryDTO=new BinInQueryDTO();
+        if (binInQueryDTO == null) {
+            binInQueryDTO = new BinInQueryDTO();
         }
         binInQueryDTO.setCreateBy(SecurityUtils.getUsername());
         startPage();

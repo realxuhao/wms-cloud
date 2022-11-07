@@ -110,12 +110,16 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
 
         LambdaQueryWrapper<BinIn> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(BinIn::getSsccNumber, sscc);
+        lambdaQueryWrapper.eq(BinIn::getSsccNumber, sscc).eq(BinIn::getDeleteFlag, 0);
         BinIn binIn = binInMapper.selectOne(lambdaQueryWrapper);
 
 
         if (binIn == null) {
-            throw new ServiceException("该物料上架信息不存在");
+            throw new ServiceException("物料号" + materialNb + "暂无上架任务");
+        }
+
+        if (BinInStatusEnum.FINISH.value() == binIn.getStatus()) {
+            throw new ServiceException("物料号" + materialNb + "已经上架");
         }
 
         BinVO actualBinVO = getBinVOByBinCode(binInDTO.getActualBinCode());
@@ -134,12 +138,12 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             List<MaterialBinVO> materialBinVOS = materialBinVOResullt.getData();
 
 
-
             List<String> frameCodeList = materialBinVOS.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
             if (StringUtils.isEmpty(frameCodeList) || !frameCodeList.contains(actualBinVO.getFrameTypeCode())) {
                 throw new ServiceException("该物料" + materialNb + " 不能分配到" + binInDTO.getActualBinCode());
             }
         }
+        binIn.setActualBinCode(binInDTO.getActualBinCode());
         binIn.setActualFrameCode(actualBinVO.getFrameCode());
         binIn.setActualFrameId(actualBinVO.getFrameId());
         binIn.setUpdateBy(SecurityUtils.getUsername());
@@ -153,6 +157,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         stock.setSsccNumber(binIn.getSsccNumber());
         stock.setWareCode(binIn.getWareCode());
         stock.setBinCode(binIn.getActualBinCode());
+        stock.setFrameCode(binIn.getActualFrameCode());
         stock.setMaterialNb(binIn.getMaterialNb());
         stock.setBatchNb(binIn.getBatchNb());
         stock.setExpireDate(binIn.getExpireDate());
@@ -231,7 +236,6 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         validMaterialBinRule(binVO, materialNb);
 
         //TODO 校验承重
-
 
 
         BinIn binIn = new BinIn();

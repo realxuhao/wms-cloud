@@ -107,5 +107,11 @@ public class BinIn extends BaseEntity {
     private String fromPurchaseOrder;
 
 
+    /**
+     * PO号
+     */
+    private Integer deleteFlag;
+
+
 
 }
