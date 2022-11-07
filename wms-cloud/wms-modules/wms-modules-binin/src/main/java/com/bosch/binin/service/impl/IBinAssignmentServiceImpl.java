@@ -74,6 +74,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
         LambdaQueryWrapper<BinIn> binInWrapper = new LambdaQueryWrapper();
         binInWrapper.eq(BinIn::getBatchNb, batchNb);
         binInWrapper.eq(BinIn::getSsccNumber, sscc);
+        binInWrapper.eq(BinIn::getMaterialNb, materialNb);
         binInWrapper.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING).or().eq(BinIn::getStatus, BinInStatusEnum.FINISH);
         List<BinIn> binIns = binInMapper.selectList(binInWrapper);
 
@@ -176,7 +177,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
                     }
                 }
             }
-        throw new ServiceException("未找到合适的库位");
+        throw new ServiceException("根据跨类型在主数据中未找到跨的数据");
 //        return binAllocationVO;
     }
 
@@ -191,9 +192,9 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
             changes.add(splitr[0]+"."+splitr[2]+"."+splitr[1]);
         });
        Collections.sort(changes);
-        frames.forEach(r->{
+        changes.forEach(r->{
             String[] splitr = r.split("\\.");
-            result.add(splitr[0]+splitr[2]+splitr[1]);
+            result.add(splitr[0]+"."+splitr[2]+"."+splitr[1]);
 
         });
         return  result;
@@ -288,7 +289,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
                     //宽度
                     BigDecimal frameWidth = frameData.getWidth();
                     //获取跨上剩余承重，宽度
-                    frameRemainVO = getBins(frameData.getId());
+                    frameRemainVO = getBins(frameData.getId(),frameCode,pallet);
                     if (frameBearWeight.subtract(frameRemainVO.getFrameBearWeight()).compareTo(totalWeight) < 0) {
                         return null;
                     }
@@ -303,7 +304,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
             }
             //获取跨上剩余承重
         } catch (Exception e) {
-            throw new ServiceException("判断是否能放入跨出错");
+            throw new ServiceException(e.getMessage());
         }
     }
 
@@ -314,7 +315,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public FrameRemainVO getBins(Long frameId) {
+    public FrameRemainVO getBins(Long frameId,String frameCode,Pallet pallet) {
         try {
             List<BinIn> list = new ArrayList<>();
             List<String> usedBins = new ArrayList<>();
@@ -345,16 +346,19 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
             R<List<Bin>> infoByFrameId = remoteMasterDataService.getInfoByFrameId(frameId);
             if (infoByFrameId.isSuccess()) {
                 List<Bin> data = infoByFrameId.getData();
+                if(CollectionUtils.isEmpty(data)){
+                    throw new ServiceException(frameCode+"跨上未获取到库位");
+                }
                 List<String> canUseBins = data.stream().map(Bin::getCode).collect(Collectors.toList());
                 //自然排序
                 Collections.sort(canUseBins);
 
-                canUseBins.forEach(r -> {
+                for (String r : canUseBins) {
                     if (!usedBins.contains(r)) {
                         frameRemain.setRecommendBinCode(r);
+                        return frameRemain;
                     }
-
-                });
+                }
 
             } else {
                 throw new ServiceException("根据frameid获取最小库位失败");
@@ -363,7 +367,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
 
             return frameRemain;
         } catch (Exception e) {
-            throw new ServiceException("");
+            throw new ServiceException(e.getMessage());
         }
 
     }
@@ -398,11 +402,15 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
                         throw new ServiceException("未获取到物料详情");
                     }
                 }
+            }else {
+                //跨上未有占用
+                frameRemainVO.setFrameBearWeight(new BigDecimal(0));
+                frameRemainVO.setFrameWidth(new BigDecimal(0));
             }
 
             return frameRemainVO;
         } catch (Exception e) {
-            throw new ServiceException("获取跨上承重失败");
+            throw new ServiceException(e.getMessage());
         }
 
     }

@@ -50,8 +50,8 @@ public class BinInController extends BaseController {
     public R<BinAllocationVO> allocate(@RequestBody BinAllocationDTO binAllocationDTO) {
 
         try {
-            binAssignmentService.getBinAllocationVO(binAllocationDTO);
-            return R.ok(null);
+
+            return R.ok(binAssignmentService.getBinAllocationVO(binAllocationDTO));
         } catch (Exception e) {
             return R.fail(e.getMessage());
         }
