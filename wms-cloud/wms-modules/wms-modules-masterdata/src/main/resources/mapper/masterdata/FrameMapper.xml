@@ -103,9 +103,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="name != null">#{name},</if>
             <if test="code != null and code != ''">#{code},</if>
             <if test="width != null">#{width},</if>
+            <if test="bearWeight != null">#{bearWeight},</if>
             <if test="height != null">#{height},</if>
             <if test="typeCode != null">#{typeCode},</if>
-            <if test="bearWeight != null">#{bearWeight},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="createTime != null">#{createTime},</if>
