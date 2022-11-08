@@ -132,9 +132,9 @@ export default {
 
       this.$emit('change', false)
     },
-    async handleGetAreaList () {
-      const { wareId } = this.form.getFieldsValue()
-
+    async handleGetAreaList (wareId) {
+      // const { wareId } = this.form.getFieldsValue()
+      console.log(wareId)
       try {
         this.form.setFieldsValue({ areaId: null })
         this.form.setFieldsValue({ frameId: null })
@@ -147,13 +147,7 @@ export default {
         this.areaLoading = false
       }
     },
-    async handleGetFrameList () {
-      const { areaId } = this.form.getFieldsValue()
-
-      if (!areaId) {
-        return
-      }
-
+    async handleGetFrameList (areaId) {
       try {
         this.form.setFieldsValue({ areaId: null })
         this.frameLoading = true

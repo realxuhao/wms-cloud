@@ -93,6 +93,12 @@ const columns = [
     width: 200
   },
   {
+    title: '仓库编码',
+    key: 'wareCode',
+    dataIndex: 'wareCode',
+    width: 200
+  },
+  {
     title: '仓库名称',
     key: 'wareName',
     dataIndex: 'wareName',

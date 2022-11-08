@@ -1,6 +1,6 @@
 <template>
 	<my-page nav-title="扫描SSCC码" >
-			<view class="content" slot="page-main" @click="handleGoto">
+			<view class="content" slot="page-main" @click="handleGotoOperation">
 				<image src="/static/sku-phone.png" class="m-b-8"></image>
 				<text>请将激光扫描头对准SSCC码区域</text>
 			</view>
@@ -22,7 +22,7 @@
 		   var _this = this  
 		   uni.$on('scancodedate',function(data){  
 			_this.code = data.code
-			_this.checkMaterialIn(data.code)
+			_this.checkBinIn(data.code)
 			uni.$emit('stopScan')
 		   })  
 		},  
@@ -36,33 +36,21 @@
 			};
 		},
 		methods:{
-			async checkMaterialIn(barCode){
+			async checkBinIn(barCode){
 				try{
-					await this.$store.dispatch('materialIn/getAndCheckMaterialIn',barCode)
-					
-					this.handleGoto()
-				}catch(e){
-					if(e.code === 601){
-						this.$refs.message.error('该批次原材料已检验')
-					}else if(e.code === 602){
-						this.$refs.message.error('该原材料已入库，请勿重复操作！')
-					}else{
-						this.$refs.message.error(e.message)
+					const data = await this.$store.dispatch('binIn/getByMesBarCode',barCode)
+					if(!data && data.status ===1 ){
+						throw Error('已上架，请勿重复操作')
 					}
-				}
-			},
-			async handleMaterialIn(){
-				try{
-					await this.$store.dispatch('material/postMaterialIn',{barCode:this.code})
+					this.handleGotoOperation()
 				}catch(e){
 					this.$refs.message.error(e.message)
+					uni.$emit('startScan')
 				}
-				
-				uni.$emit('startScan')
 			},
-			handleGoto(){
+			handleGotoOperation(){
 				uni.navigateTo({
-					url:`/pages/materialCount/index?barCode=${this.code}`
+					url:`/pages/binIn/operation?barCode=${this.code}`
 				})
 			}
 		}

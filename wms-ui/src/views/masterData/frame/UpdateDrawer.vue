@@ -8,36 +8,52 @@
     @close="onClose"
   >
     <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-form-item label="编码">
+      <a-form-item label="跨类型">
         <a-input
-          placeholder="编码"
+          placeholder="跨类型"
+          v-decorator="[
+            'typeCode',
+            { rules: [{ required: true, message: '请输入跨类型!' }] }
+          ]" />
+      </a-form-item>
+      <a-form-item label="跨编码">
+        <a-input
+          placeholder="跨编码"
           v-decorator="[
             'code',
-            { rules: [{ required: true, message: '请输入编码!' }] }
+            { rules: [{ required: true, message: '请输入跨编码!' }] }
           ]" />
       </a-form-item>
-      <a-form-item label="名称">
+      <a-form-item label="跨名称">
         <a-input
-          placeholder="名称"
+          placeholder="跨名称"
           v-decorator="[
             'name',
-            { rules: [{ required: true, message: '请输入名称!' }] }
+            { rules: [{ required: true, message: '请输入跨名称!' }] }
           ]" />
       </a-form-item>
-      <a-form-item label="承重（kg）">
+      <a-form-item label="承重[kg]">
         <a-input-number
-          placeholder="承重（kg）"
+          placeholder="承重[kg]"
           v-decorator="[
             'bearWeight',
             { rules: [{ required: true, message: '请输入承重!' }] }
           ]" />
       </a-form-item>
-      <a-form-item label="宽度（m）">
-        <a-input
-          placeholder="宽度（m）"
+      <a-form-item label="宽度[m]">
+        <a-input-number
+          placeholder="宽度[m]"
           v-decorator="[
             'width',
-            { rules: [{ required: true, message: '请输入宽!' }] }
+            { rules: [{ required: true, message: '请输入宽度!' }] }
+          ]" />
+      </a-form-item>
+      <a-form-item label="高度[m]">
+        <a-input-number
+          placeholder="高度[m]"
+          v-decorator="[
+            'height',
+            { rules: [{ required: true, message: '请输入高度!' }] }
           ]" />
       </a-form-item>
       <a-form-item label="仓库">
@@ -137,9 +153,7 @@ export default {
 
       this.$emit('change', false)
     },
-    async handleGetAreaList () {
-      const { wareId } = this.form.getFieldsValue()
-
+    async handleGetAreaList (wareId) {
       try {
         this.form.setFieldsValue({ areaId: null })
         this.areaLoading = true

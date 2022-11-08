@@ -14,7 +14,7 @@ const request = (options) => {
 	// 请求头
 	const headers = {
 		...(options.header || {}),
-		'Authorization': 'Bearer ' + getToken()
+		'Authorization': 'Bearer ' + getToken(),
 	}
 	options.header = headers
 

@@ -65,13 +65,25 @@ import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
   {
-    title: '编码',
+    title: '工厂编码',
+    key: 'factoryCode',
+    dataIndex: 'factoryCode',
+    width: 200
+  },
+  {
+    title: '工厂名称',
+    key: 'factoryName',
+    dataIndex: 'factoryName',
+    width: 200
+  },
+  {
+    title: '仓库编码',
     key: 'code',
     dataIndex: 'code',
     width: 200
   },
   {
-    title: '名称',
+    title: '仓库名称',
     key: 'name',
     dataIndex: 'name',
     width: 200

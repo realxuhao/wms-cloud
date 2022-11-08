@@ -2,7 +2,7 @@
   <view class="content">
     <view class="avator-wrapper">
       <view class="avator">
-        <image class="img" src="../../static/logo.png" mode="widthFix"></image>
+        <!-- <image class="img" src="../../static/logo.png" mode="widthFix"></image> -->
         <h2>WMS 仓储管理</h2>
       </view>
     </view>
