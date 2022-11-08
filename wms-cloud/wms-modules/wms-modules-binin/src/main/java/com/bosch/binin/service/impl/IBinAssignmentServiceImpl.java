@@ -103,7 +103,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
         List<MaterialBinVO> materialBinVOList = new ArrayList<>();
 
         List<String> frameTypeCodes = new ArrayList<>();
-        //根据物料号 获取物料跨关系
+        //根据物料号 登陆人仓库 获取物料跨关系
         R<List<MaterialBinVO>> listByMaterial = remoteMasterDataService.getListByMaterial(materialNb);
         if (!listByMaterial.isSuccess()) {
             throw new ServiceException("获取物料相关跨失败");

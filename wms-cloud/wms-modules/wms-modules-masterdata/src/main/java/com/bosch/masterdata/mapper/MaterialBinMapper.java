@@ -67,4 +67,11 @@ public interface MaterialBinMapper extends BaseMapper<MaterialBin>
      * @return 结果
      */
     public int deleteMaterialBinByIds(Long[] ids);
+
+    /**
+     * 根据登陆人仓库 选择可用物料跨关系
+     * @param code
+     * @return
+     */
+    public  List<MaterialBinVO> selectByWareCode(String code);
 }

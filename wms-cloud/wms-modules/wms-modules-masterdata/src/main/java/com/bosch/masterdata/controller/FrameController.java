@@ -1,6 +1,7 @@
 package com.bosch.masterdata.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -105,6 +106,23 @@ public class FrameController extends BaseController {
             return R.fail(e.getMessage());
         }
 
+    }
+
+    @GetMapping(value = "/getFrameType")
+    @ApiOperation("查询跨类型")
+    public R<List<String>> getFrameType() {
+        try {
+            List<Frame> frames= frameService.list();
+            List<String> types=new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(frames)){
+                List<String> collect = frames.stream().map(Frame::getTypeCode).distinct().collect(Collectors.toList());
+                types.addAll(collect);
+            }
+
+            return R.ok(types);
+        }catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
     }
 
     @GetMapping(value = "getFrameInfoByType/{type}")

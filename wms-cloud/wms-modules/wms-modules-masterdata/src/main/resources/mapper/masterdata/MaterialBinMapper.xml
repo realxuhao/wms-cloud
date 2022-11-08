@@ -143,4 +143,26 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectByWareCode" parameterType="String" resultMap="MaterialBinVOResult">
+        SELECT
+        mf.id AS id,
+        mf.frame_type_code AS frame_type_code,
+        mf.material_id AS material_id,
+        mf.priority_level AS priority_level,
+        mf.create_time AS create_time,
+        m.code as material_code,
+        m.name as material_name,
+        m.id as material_id
+        FROM
+        md_material_frame mf
+        LEFT JOIN md_material m ON mf.material_id = m.id
+        WHERE mf.frame_type_code IN (
+		  SELECT type_code FROM md_frame f
+		  LEFT JOIN md_area a ON f.area_id=a.id
+        LEFT JOIN md_ware w ON w.id=a.ware_id
+        WHERE 1=1
+        <if test="code != null  and code != ''">AND w.code LIKE   concat('%', #{code}, '%')</if>
+          )
+    </select>
 </mapper>
