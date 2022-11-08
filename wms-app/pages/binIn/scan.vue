@@ -1,6 +1,6 @@
 <template>
 	<my-page nav-title="扫描SSCC码" >
-			<view class="content" slot="page-main" @click="handleGotoCount">
+			<view class="content" slot="page-main" @click="handleGotoOperation">
 				<image src="/static/sku-phone.png" class="m-b-8"></image>
 				<text>请将激光扫描头对准SSCC码区域</text>
 			</view>
