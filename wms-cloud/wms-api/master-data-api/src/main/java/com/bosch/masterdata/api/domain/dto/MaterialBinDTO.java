@@ -5,6 +5,7 @@ import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.NonNull;
 
 @Data
 public class MaterialBinDTO extends PageDomain {
