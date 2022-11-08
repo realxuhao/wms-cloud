@@ -144,13 +144,13 @@ export default {
     })
 
     return (
-      <div class="ant-pro-multi-tab">
+      <div class="ant-pro-multi-tab" style="margin:0">
         <div class="ant-pro-multi-tab-wrapper">
           <a-tabs
             hideAdd
             type={'editable-card'}
             v-model={this.activeKey}
-            tabBarStyle={{ background: '#FFF', margin: 0, paddingLeft: '16px', paddingTop: '1px' }}
+            tabBarStyle={{ background: '#FFF', margin: 0 }}
             {...{ on: { edit: onEdit } }}>
             {panes}
           </a-tabs>

@@ -118,8 +118,9 @@
 	
 	function convertPalletList(rows){
 		const list = rows.map(item =>{
+			const text = `类型：${item.type}；宽：${item.width}；高：${item.height}`
 			return {
-				text:item.type,
+				text,
 				value:item.type
 			}
 		})
