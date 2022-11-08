@@ -13,7 +13,7 @@
 					<uni-icons custom-prefix="iconfont" class="icon icon-ruku" type="icon-ruku"></uni-icons>
 					<view class="text">原材料入库</view>
 				</view>
-				<view class="list-item">
+				<view class="list-item" @click="handleGoto('/pages/binIn/binIn')">
 					<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" type="icon-shangjia2"></uni-icons>
 					<view class="text">原材料上架</view>
 				</view>

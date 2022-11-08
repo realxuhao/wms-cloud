@@ -17,8 +17,14 @@
 		},
 		{
 			"path": "pages/binIn/binIn"
-		}
-	],
+		},
+		{
+			"path": "pages/binIn/scan"
+		},
+		{
+            "path" : "pages/binIn/operation"
+        }
+    ],
 	"globalStyle": {
 		"navigationStyle": "custom"
 	}

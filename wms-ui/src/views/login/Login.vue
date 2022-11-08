@@ -1,10 +1,10 @@
 <template>
   <div class="main">
     <div class="header">
-      <div class="logo">
+      <!-- <div class="logo">
         <img src="@/assets/logo.png" alt="">
-      </div>
-      <h3>WMS</h3>
+      </div> -->
+      <h3>WMS仓储管理</h3>
     </div>
     <a-form-model
       layout="vertical"

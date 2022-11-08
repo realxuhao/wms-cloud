@@ -26,6 +26,16 @@
         size="middle"
         :scroll="{ x: 1300 }"
       >
+        <template slot="status" slot-scope="text">
+          <div >
+            <a-tag color="orange" v-if="text===0">
+              待上架
+            </a-tag>
+            <a-tag color="#87d068" v-if="text===1">
+              已上架
+            </a-tag>
+          </div>
+        </template>
       </a-table>
 
       <div class="pagination-con">
@@ -107,6 +117,19 @@ const columns = [
     key: 'actualBinCode',
     dataIndex: 'actualBinCode',
     width: 120
+  },
+  {
+    title: '状态',
+    key: 'status',
+    dataIndex: 'status',
+    width: 80,
+    scopedSlots: { customRender: 'status' }
+  },
+  {
+    title: '操作人',
+    key: 'createBy',
+    dataIndex: 'createBy',
+    width: 80
   }
 ]
 

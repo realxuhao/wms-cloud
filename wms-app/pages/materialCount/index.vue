@@ -18,15 +18,18 @@
 					</view>
 					<view class="text-line m-b-8">
 						<view class="label">总托数：</view>
-						<uni-tag size="small" type="success" :circle="false" :text="materialInfo.totalPallet+''"></uni-tag>
+						<!-- <uni-tag size="small"  :circle="false" :text="materialInfo.totalPallet+''"></uni-tag> -->
+						{{materialInfo.totalPallet}}
 					</view>
 					<view class="text-line m-b-8" v-show="materialInfo.checkType!==2">
 						<view class="label">抽样件数：</view>
-						<uni-tag size="small" type="error" :circle="false" :text="materialInfo.checkQuantity+''"></uni-tag>
+						{{materialInfo.checkQuantity}}
+						<!-- <uni-tag size="small"  :circle="false" :text="materialInfo.checkQuantity+''"></uni-tag> -->
 					</view>
 					<view class="text-line ">
 						<view class="label">抽样方式：</view>
-						<uni-tag size="small" type="success" :circle="false" :text="materialInfo.checkTypeDesc"></uni-tag>
+						<!-- <uni-tag size="small"  :circle="false" :text="materialInfo.checkTypeDesc"></uni-tag> -->
+						{{materialInfo.checkTypeDesc}}
 					</view>
 				</view>
 				<view class="content">
