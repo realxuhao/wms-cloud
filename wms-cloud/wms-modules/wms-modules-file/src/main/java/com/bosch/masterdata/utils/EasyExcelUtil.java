@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.masterdata.api.enumeration.ClassType;
 
 import com.bosch.storagein.api.domain.MaterialReceive;
+import com.ruoyi.common.core.utils.bean.PropertyUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +62,16 @@ public class EasyExcelUtil {
         }
             // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
             //EasyExcel.read(inputStream, clazz, listener).sheet().doRead();
-        return listener.getRows();
+        List<T> rows = listener.getRows();
+        List<T> results=new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(rows)){
+            for (T row : rows) {
+                if(!PropertyUtils.isEmpty(row)){
+                    results.add(row);
+                }
+            }
+        }
+        return results;
     }
 
 
