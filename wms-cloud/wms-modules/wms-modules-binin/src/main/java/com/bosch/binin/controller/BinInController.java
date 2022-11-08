@@ -14,6 +14,7 @@ import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
@@ -63,7 +64,7 @@ public class BinInController extends BaseController {
     @ApiOperation("生成上架任务")
     public R<BinInVO> generateInTask(@RequestBody BinInTaskDTO binInTaskDTO) {
         BinInVO binInVOByMesBarCode = binInService.getByMesBarCode(binInTaskDTO.getMesBarCode());
-        if (binInVOByMesBarCode != null) {
+        if (binInVOByMesBarCode != null && StringUtils.isNotEmpty(binInVOByMesBarCode.getRecommendBinCode())) {
             throw new ServiceException("该物料已有上架任务或者已上架");
         }
         return R.ok(binInService.generateInTask(binInTaskDTO));

@@ -15,6 +15,12 @@ public class BinInQueryDTO extends PageDomain {
     /**
      * sscc
      */
+    @ApiModelProperty(value = "plantNb")
+    private String plantNb;
+
+    /**
+     * sscc
+     */
     @ApiModelProperty(value = "sscc")
     private String ssccNumber;
 
@@ -60,5 +66,12 @@ public class BinInQueryDTO extends PageDomain {
      */
     @ApiModelProperty(value = "状态(0：待入库,1:已入库)")
     private Integer status;
+
+
+    /**
+     * 移动类型
+     */
+    @ApiModelProperty(value = "移动类型")
+    private String moveType;
 
 }
