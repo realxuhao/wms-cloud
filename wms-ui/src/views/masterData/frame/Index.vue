@@ -81,13 +81,13 @@ import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
   {
-    title: '编码',
+    title: '跨编码',
     key: 'code',
     dataIndex: 'code',
     width: 200
   },
   {
-    title: '名称',
+    title: '跨名称',
     key: 'name',
     dataIndex: 'name',
     width: 200

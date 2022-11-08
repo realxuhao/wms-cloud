@@ -8,20 +8,36 @@
     @close="onClose"
   >
     <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-form-item label="编码">
+      <a-form-item label="工厂编码">
         <a-input
-          placeholder="编码"
+          placeholder="工厂编码"
           v-decorator="[
-            'code',
-            { rules: [{ required: true, message: '请输入编码!' }] }
+            'factoryCode',
+            { rules: [{ required: true, message: '请输入工厂编码!' }] }
           ]" />
       </a-form-item>
-      <a-form-item label="名称">
+      <a-form-item label="工厂名称">
         <a-input
-          placeholder="名称"
+          placeholder="工厂名称"
+          v-decorator="[
+            'factoryName',
+            { rules: [{ required: true, message: '请输入工厂名称!' }] }
+          ]" />
+      </a-form-item>
+      <a-form-item label="仓库编码">
+        <a-input
+          placeholder="仓库编码"
+          v-decorator="[
+            'code',
+            { rules: [{ required: true, message: '请输入仓库编码!' }] }
+          ]" />
+      </a-form-item>
+      <a-form-item label="仓库名称">
+        <a-input
+          placeholder="仓库名称"
           v-decorator="[
             'name',
-            { rules: [{ required: true, message: '请输入名称!' }] }
+            { rules: [{ required: true, message: '请输入仓库名称!' }] }
           ]" />
       </a-form-item>
       <a-form-item label="地点">

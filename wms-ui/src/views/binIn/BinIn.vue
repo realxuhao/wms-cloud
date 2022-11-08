@@ -49,16 +49,16 @@ import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
   {
+    title: '仓库编码',
+    key: 'wareCode',
+    dataIndex: 'wareCode',
+    width: 120
+  },
+  {
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
     width: 200
-  },
-  {
-    title: '批次号',
-    key: 'batchNb',
-    dataIndex: 'batchNb',
-    width: 120
   },
   {
     title: '物料编码',
@@ -73,15 +73,9 @@ const columns = [
     width: 120
   },
   {
-    title: '仓库编码',
-    key: 'wareCode',
-    dataIndex: 'wareCode',
-    width: 120
-  },
-  {
-    title: '跨编码',
-    key: 'frameCode',
-    dataIndex: 'frameCode',
+    title: '批次号',
+    key: 'batchNb',
+    dataIndex: 'batchNb',
     width: 120
   },
   {
