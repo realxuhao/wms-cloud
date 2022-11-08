@@ -41,7 +41,7 @@
           ]" />
       </a-form-item>
       <a-form-item label="宽度[m]">
-        <a-input
+        <a-input-number
           placeholder="宽度[m]"
           v-decorator="[
             'width',
@@ -49,7 +49,7 @@
           ]" />
       </a-form-item>
       <a-form-item label="高度[m]">
-        <a-input
+        <a-input-number
           placeholder="高度[m]"
           v-decorator="[
             'height',
