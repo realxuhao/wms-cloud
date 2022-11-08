@@ -24,7 +24,7 @@
 		</view>
 		
 		<view class="action-content">
-			开发中敬请期待
+			<!-- 开发中敬请期待 -->
 		</view>
 	</view>
 </template>
