@@ -81,33 +81,51 @@ import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
   {
+    title: '跨类型',
+    key: 'typeCode',
+    dataIndex: 'typeCode',
+    width: 80
+  },
+  {
     title: '跨编码',
     key: 'code',
     dataIndex: 'code',
-    width: 200
+    width: 120
   },
   {
     title: '跨名称',
     key: 'name',
     dataIndex: 'name',
-    width: 200
+    width: 120
   },
   {
-    title: '承重（kg）',
+    title: '承重[kg]',
     key: 'bearWeight',
     dataIndex: 'bearWeight',
-    width: 200
+    width: 120
   },
   {
-    title: '宽度（m）',
+    title: '宽度[m]',
     key: 'width',
     dataIndex: 'width',
-    width: 200
+    width: 120
+  },
+  {
+    title: '高度[m]',
+    key: 'height',
+    dataIndex: 'height',
+    width: 120
   },
   {
     title: '存储区名称',
     key: 'areaName',
     dataIndex: 'areaName',
+    width: 200
+  },
+  {
+    title: '存储区编码',
+    key: 'areaCode',
+    dataIndex: 'areaCode',
     width: 200
   },
   {
@@ -140,7 +158,8 @@ export default {
   data () {
     return {
       columns,
-      list: []
+      list: [],
+      uploadLoading: false
     }
   },
   methods: {
