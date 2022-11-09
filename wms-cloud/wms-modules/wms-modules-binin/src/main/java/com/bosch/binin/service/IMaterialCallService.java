@@ -13,7 +13,7 @@ import java.util.List;
  * @author: xuhao
  * @create: 2022-11-09 14:45
  **/
-public interface MaterialCallService {
+public interface IMaterialCallService {
     List<MaterialCallVO> selectStockVOList(List<MaterialCall> materialCalls);
 
 }
