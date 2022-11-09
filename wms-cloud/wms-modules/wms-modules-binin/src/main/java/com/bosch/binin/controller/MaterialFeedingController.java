@@ -1,5 +1,6 @@
 package com.bosch.binin.controller;
 
+import com.bosch.binin.api.domain.MaterialCall;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.ruoyi.common.core.domain.R;
@@ -28,9 +29,20 @@ public class MaterialFeedingController {
 
     @PostMapping(value = "/call")
     @ApiOperation("叫料")
-    public R<BinInVO> in(@RequestParam("file") MultipartFile file,
-                         @RequestParam("sortType") String sortType,
-                         @RequestParam("cell") String cell) {
+    public R<MaterialCall> call(@RequestParam("file") MultipartFile file,
+                                @RequestParam("sortType") String sortType,
+                                @RequestParam("cell") String cell) {
+
+
+        return  null;
+    }
+
+
+
+
+    @PostMapping(value = "/call/list")
+    @ApiOperation("叫料需求列表查询")
+    public R<MaterialCall> list() {
 
 
         return  null;
