@@ -23,7 +23,7 @@ public class MaterialCall extends BaseEntity {
     private Long id;
 
     /**
-     * 物料号
+     * 订单号
      */
     private String oderNb;
 
@@ -59,6 +59,10 @@ public class MaterialCall extends BaseEntity {
      */
     private Integer sortType;
 
+    /**
+     * 删除标记，0：可用，1：已删除
+     */
+    private Integer deleteFlag;
 
 
 }
