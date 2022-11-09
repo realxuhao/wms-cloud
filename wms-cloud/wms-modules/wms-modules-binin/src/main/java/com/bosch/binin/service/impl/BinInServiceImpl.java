@@ -96,6 +96,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Override
     public BinInVO getByMesBarCode(String mesBarCode) {
+        MaterialInVO materialInVO = getMaterialInVO(mesBarCode);
+
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
         BinInVO binInVO = binInMapper.selectBySsccNumber(sscc);
@@ -236,7 +238,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     private MaterialInVO getMaterialInVO(String mesBarCode) {
         R<MaterialInVO> materialInVOResult = remoteMaterialInService.getByMesBarCode(mesBarCode);
         if (StringUtils.isNull(materialInVOResult) || StringUtils.isNull(materialInVOResult.getData())) {
-            throw new ServiceException("该物料：" + mesBarCode + " 未入库");
+            throw new ServiceException("该物料：" + MesBarCodeUtil.getMaterialNb(mesBarCode) + " 未入库");
         }
 
         if (R.FAIL == materialInVOResult.getCode()) {

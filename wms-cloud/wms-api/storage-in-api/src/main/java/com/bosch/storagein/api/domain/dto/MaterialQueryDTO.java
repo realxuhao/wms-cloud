@@ -43,4 +43,11 @@ public class MaterialQueryDTO extends PageDomain {
     @ApiModelProperty(value = "操作人")
     private String operateUser;
 
+
+    /**
+     * 仓库号
+     */
+    @ApiModelProperty(value = "仓库号")
+    private String wareCode;
+
 }

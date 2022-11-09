@@ -80,6 +80,12 @@ public class BinInController extends BaseController {
     @GetMapping(value = "/list")
     @ApiOperation("查询上架列表")
     public R<PageVO<BinInVO>> list(BinInQueryDTO binInQueryDTO) {
+        if (binInQueryDTO == null) {
+            binInQueryDTO = new BinInQueryDTO();
+        }
+        if (StringUtils.isEmpty(binInQueryDTO.getWareCode())) {
+            binInQueryDTO.setWareCode(SecurityUtils.getWareCode());
+        }
         startPage();
         List<BinInVO> list = binInService.selectBinVOList(binInQueryDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
@@ -90,8 +96,12 @@ public class BinInController extends BaseController {
     public R<PageVO<BinInVO>> currentUserData(BinInQueryDTO binInQueryDTO) {
         if (binInQueryDTO == null) {
             binInQueryDTO = new BinInQueryDTO();
+
         }
         binInQueryDTO.setCreateBy(SecurityUtils.getUsername());
+        if (StringUtils.isEmpty(binInQueryDTO.getWareCode())) {
+            binInQueryDTO.setWareCode(SecurityUtils.getWareCode());
+        }
         startPage();
         List<BinInVO> list = binInService.selectBinVOList(binInQueryDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));

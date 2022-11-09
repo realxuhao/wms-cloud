@@ -12,7 +12,7 @@ import feign.RequestTemplate;
 
 /**
  * feign 请求拦截器
- * 
+ *
  * @author ruoyi
  */
 @Component
@@ -46,7 +46,11 @@ public class FeignRequestInterceptor implements RequestInterceptor
             {
                 requestTemplate.header(SecurityConstants.AUTHORIZATION_HEADER, authentication);
             }
-
+            String wareCode = headers.get(SecurityConstants.WARE_CODE);
+            if (StringUtils.isNotEmpty(wareCode))
+            {
+                requestTemplate.header(SecurityConstants.WARE_CODE, wareCode);
+            }
             // 配置客户端IP
             requestTemplate.header("X-Forwarded-For", IpUtils.getIpAddr(ServletUtils.getRequest()));
         }
