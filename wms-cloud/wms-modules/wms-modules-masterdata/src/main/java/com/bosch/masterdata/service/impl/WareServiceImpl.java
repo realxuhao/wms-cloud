@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.masterdata.api.domain.Area;
+import com.bosch.masterdata.api.domain.vo.FactoryVO;
 import com.bosch.masterdata.mapper.AreaMapper;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -20,7 +21,7 @@ import com.bosch.masterdata.service.IWareService;
  * @date 2022-09-26
  */
 @Service
-public class WareServiceImpl extends ServiceImpl<WareMapper, Ware>  implements IWareService {
+public class WareServiceImpl extends ServiceImpl<WareMapper, Ware> implements IWareService {
     @Autowired
     private WareMapper wareMapper;
 
@@ -43,6 +44,9 @@ public class WareServiceImpl extends ServiceImpl<WareMapper, Ware>  implements I
      */
     @Override
     public List<Ware> selectWareList(Ware ware) {
+        if (ware.getStatus() == null) {
+            ware.setStatus(1L);
+        }
         return wareMapper.selectWareList(ware);
     }
 
@@ -91,5 +95,10 @@ public class WareServiceImpl extends ServiceImpl<WareMapper, Ware>  implements I
     @Override
     public int deleteWareById(String id) {
         return wareMapper.deleteWareById(id);
+    }
+
+    @Override
+    public List<FactoryVO> selectFactoryList() {
+        return wareMapper.selectFactoryList();
     }
 }
