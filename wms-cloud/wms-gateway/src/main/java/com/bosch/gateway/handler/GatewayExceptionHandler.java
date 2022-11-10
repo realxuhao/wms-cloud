@@ -52,7 +52,7 @@ public class GatewayExceptionHandler implements ErrorWebExceptionHandler
         }else if (ex instanceof MalformedJwtException){
             MalformedJwtException malformedJwtException=(MalformedJwtException) ex;
             msg=malformedJwtException.getMessage();
-            return ServletUtils.webFluxResponseWriter(response,HttpStatus.UNAUTHORIZED,msg,R.FAIL);
+            return ServletUtils.webFluxResponseWriter(response,HttpStatus.OK,msg,HttpStatus.UNAUTHORIZED.value());
         }
         else
         {
