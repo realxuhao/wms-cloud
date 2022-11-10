@@ -20,13 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class MaterialFeedingController {
 
 
-    @Autowired
 
 
 
     @PostMapping(value = "/call")
     @ApiOperation("叫料")
-    public R<MaterialCall> call(@RequestParam("file") MultipartFile file,
+    public R<MaterialCall> call(@RequestParam(value = "file") MultipartFile file,
                                 @RequestParam("sortType") String sortType,
                                 @RequestParam("cell") String cell) {
 
