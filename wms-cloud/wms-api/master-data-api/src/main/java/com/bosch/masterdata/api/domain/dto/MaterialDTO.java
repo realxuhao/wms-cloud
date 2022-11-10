@@ -34,8 +34,8 @@ public class MaterialDTO extends PageDomain {
     /**
      * 最小包装数量
      */
-    @ExcelProperty(value = "最小包装量")
-    @ApiModelProperty(value = "最小包装量")
+    @ExcelProperty(value = "最小包装数量")
+    @ApiModelProperty(value = "最小包装数量")
     private Long minPackageNumber;
 
     /**
@@ -125,8 +125,8 @@ public class MaterialDTO extends PageDomain {
     /**
      * 转化重量参数
      */
-    @ExcelProperty(value = "标准计数单位[L,Kg,m,㎡]对应的重量值")
-    @ApiModelProperty(value = "标准计数单位[L,Kg,m,㎡]对应的重量值")
+    @ExcelProperty(value = "标准计数单位[L,Kg,m,㎡]对应的重量值[只针对称重物料]")
+    @ApiModelProperty(value = "标准计数单位[L,Kg,m,㎡]对应的重量值[只针对称重物料]")
     private BigDecimal transferWeightRatio;
 
     /**

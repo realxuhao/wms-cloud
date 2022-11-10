@@ -11,7 +11,7 @@ public enum ClassType {
             "最小包装量\n允许最大值","标准计数单位[L,Kg,m,㎡]对应的重量值[只针对称重物料]"))),
     MATERIALBINDTO("MaterialBinDTO", new ArrayList<String>(Arrays.asList("物料代码","优先级","可用跨编码","备注"))),
     SUPPLIERINFODTO("SupplierInfoDTO", new ArrayList<String>(Arrays.asList("供应商编码","供应商名称","供应商时间窗口"))),
-    AREADTO("AreaDTO",new ArrayList<String>(Arrays.asList("仓库Code","存储区编码","存储区名称"))),
+    AREADTO("AreaDTO",new ArrayList<String>(Arrays.asList("仓库编码","仓库描述","存储区编码","存储区名称"))),
     FRAMEDTO("FrameDTO",new ArrayList<String>(Arrays.asList("存储区编码","存储区描述","跨类型编码","跨名称","宽度[CM]","承重[KG]","高度[CM]","跨类型编码（暂定）"))),
     BINDTO("BinDTO",new ArrayList<String>(Arrays.asList("跨Code","库位编码","库位描述[选填]"))),
     MATERIALRECEIVE("MaterialReceive",new ArrayList<String>(Arrays.asList(
