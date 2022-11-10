@@ -206,7 +206,7 @@
 				uni.navigateBack({delta:1})	
 			},
 			async handlePalletTypechange(e) {
-				const palletTypeId = e.detail.value[0].text
+				const palletTypeId = e.detail.value[0].value
 				await this.getPalletTypeCode(palletTypeId)
 			},
 			async getPalletList(){
