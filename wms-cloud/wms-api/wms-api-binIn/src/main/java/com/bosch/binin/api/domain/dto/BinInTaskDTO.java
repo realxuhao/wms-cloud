@@ -16,12 +16,4 @@ public class BinInTaskDTO extends BinAllocationDTO {
     @ApiModelProperty(value = "推荐库位")
     private String recommendBinCode;
 
-    public static void main(String[] args) {
-        String s="w.w.w";
-        String[] split = s.split("\\.");
-
-        System.out.println(split.length);
-    }
-
-
 }

@@ -1,5 +1,7 @@
 package com.bosch.binin.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialCall;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.vo.MaterialCallVO;
@@ -13,7 +15,7 @@ import java.util.List;
  * @author: xuhao
  * @create: 2022-11-09 14:45
  **/
-public interface IMaterialCallService {
+public interface IMaterialCallService extends IService<MaterialCall> {
     List<MaterialCallVO> selectStockVOList(List<MaterialCall> materialCalls);
 
 }

@@ -136,6 +136,12 @@
             <artifactId>mybatis-plus-boot-starter</artifactId>
             <version>3.4.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.bosch</groupId>
+            <artifactId>wms-api-binIn</artifactId>
+            <version>3.6.0</version>
+            <scope>compile</scope>
+        </dependency>
 
     </dependencies>
 

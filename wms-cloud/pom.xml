@@ -268,7 +268,6 @@
         <module>wms-modules</module>
         <module>wms-api</module>
         <module>wms-common</module>
-        <module>wms-modules-monitor</module>
     </modules>
     <packaging>pom</packaging>
 
