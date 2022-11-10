@@ -54,6 +54,7 @@ public class BinInController extends BaseController {
 
             return R.ok(binAssignmentService.getBinAllocationVO(binAllocationDTO));
         } catch (Exception e) {
+            logger.error(e.getMessage());
             return R.fail(e.getMessage());
         }
         //Object listR = remoteMasterDataService.selectBinVOByFrameType("");

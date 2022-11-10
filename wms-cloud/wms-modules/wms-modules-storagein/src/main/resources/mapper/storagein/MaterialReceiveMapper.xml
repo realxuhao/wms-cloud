@@ -74,8 +74,16 @@
         <if test="fromPurchaseOrder != null and fromPurchaseOrder != ''">and sm.from_purchase_order =
             #{fromPurchaseOrder}
         </if>
+        <if test="poNumberItem != null and poNumberItem != ''">and sm.po_number_item =
+            #{poNumberItem}
+        </if>
+
         <if test="startExpireDate != null and endExpireDate != null">and str_to_date(sm.expire_date, '%d/%m/%y') between
             #{startExpireDate} and #{endExpireDate}
+        </if>
+
+        <if test="startUploadTime != null and endUploadTime != null">and str_to_date(sm.upload_time, '%d/%m/%y') between
+            #{startUploadTime} and #{endUploadTime}
         </if>
         <if test="status != null">and sm.status = #{status}</if>
     </select>
