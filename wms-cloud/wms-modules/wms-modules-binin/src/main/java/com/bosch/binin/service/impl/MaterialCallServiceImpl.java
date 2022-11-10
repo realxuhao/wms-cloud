@@ -39,7 +39,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
                     .eq(StringUtils.isNotEmpty(queryDTO.getCell()), MaterialCall::getCell, queryDTO.getCell())
                     .eq(StringUtils.isNotEmpty(queryDTO.getOderNb()), MaterialCall::getOderNb, queryDTO.getOderNb())
                     .apply(ObjectUtils.allNotNull(queryDTO.getStartCreateTime()), "date_format (create_time,'%Y-%m-%d') >= date_format ({0},'%Y-%m-%d')", queryDTO.getStartCreateTime())
-                    .apply(ObjectUtils.allNotNull(queryDTO.getStartCreateTime()), "date_format (create_time,'%Y-%m-%d') <= date_format ({0},'%Y-%m-%d')", queryDTO.getEndCreateDate());
+                    .apply(ObjectUtils.allNotNull(queryDTO.getEndCreateTime()), "date_format (create_time,'%Y-%m-%d') <= date_format ({0},'%Y-%m-%d')", queryDTO.getEndCreateTime());
         }
         List<MaterialCall> materialCalls = materialCallMapper.selectList(queryWrapper);
         List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(materialCalls, MaterialCallVO.class);

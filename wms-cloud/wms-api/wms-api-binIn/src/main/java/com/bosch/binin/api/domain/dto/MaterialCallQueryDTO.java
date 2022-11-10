@@ -41,5 +41,5 @@ public class MaterialCallQueryDTO {
      * 结束上传时间
      */
     @ApiModelProperty(value = "结束上传时间")
-    private Date endCreateDate;
+    private Date endCreateTime;
 }
