@@ -1,16 +1,26 @@
 package com.bosch.binin.controller;
 
 import com.bosch.binin.api.domain.MaterialCall;
+import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
+import com.bosch.binin.api.domain.vo.BinInVO;
+import com.bosch.binin.api.domain.vo.MaterialCallVO;
 import com.bosch.binin.api.enumeration.BinInFileTypeEnum;
+import com.bosch.binin.service.IMaterialCallService;
 import com.bosch.file.api.FileService;
+import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.web.controller.BaseController;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 /**
  * @program: wms-cloud
@@ -20,11 +30,16 @@ import org.springframework.web.multipart.MultipartFile;
  **/
 
 @Controller
-public class MaterialFeedingController {
+public class MaterialFeedingController extends BaseController {
 
 
     @Autowired
     private FileService fileService;
+
+    @Autowired
+    private IMaterialCallService materialCallService;
+
+
 
 
     @PostMapping(value = "/call")
@@ -41,12 +56,13 @@ public class MaterialFeedingController {
 
 
 
-    @PostMapping(value = "/call/list")
+    @GetMapping(value = "/call/list")
     @ApiOperation("叫料需求列表查询")
-    public R<MaterialCall> list() {
+    public R<PageVO<MaterialCallVO>> list(MaterialCallQueryDTO queryDTO) {
+        startPage();
+        List<MaterialCallVO> list = materialCallService.getMaterialCallList(queryDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
 
-
-        return  null;
     }
 
 }
