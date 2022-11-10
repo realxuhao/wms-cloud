@@ -1,0 +1,193 @@
+version : '3.8'
+services:
+  wms-nacos:
+    container_name: wms-nacos
+    image: nacos/nacos-server
+    build:
+      context: ./nacos
+    environment:
+      - MODE=standalone
+    volumes:
+      - ./nacos/logs/:/home/nacos/logs
+      - ./nacos/conf/application.properties:/home/nacos/conf/application.properties
+    ports:
+      - "8848:8848"
+      - "9848:9848"
+      - "9849:9849"
+    depends_on:
+      - wms-mysql
+  wms-mysql:
+    container_name: wms-mysql
+    image: mysql:5.7
+    build:
+      context: ./mysql
+    platform: linux/x86_64
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/conf:/etc/mysql/conf.d
+      - ./mysql/logs:/logs
+      - ./mysql/data:/var/lib/mysql
+          #初始数据库
+#      - ./mysql/db/*.sql:/docker-entrypoint-initdb.d/*.sql
+    command: [
+          'mysqld',
+          '--innodb-buffer-pool-size=80M',
+          '--character-set-server=utf8mb4',
+          '--collation-server=utf8mb4_unicode_ci',
+          '--default-time-zone=+8:00',
+          '--lower-case-table-names=1'
+        ]
+    environment:
+#      MYSQL_DATABASE: 'wms-cloud'
+      MYSQL_ROOT_PASSWORD: nutircia-so
+
+  wms-redis:
+    container_name: wms-redis
+    image: redis
+    build:
+      context: ./redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./redis/conf/redis.conf:/home/wms/redis/redis.conf
+      - ./redis/data:/data
+    command: redis-server /home/wms/redis/redis.conf
+
+  wms-minio:
+    container_name: wms-minio
+    image: minio/minio
+    ports:
+      - 8001:9000 # api 端口
+      - 8002:9001 # 控制台端口
+    environment:
+      MINIO_ACCESS_KEY: admin    #管理后台用户名
+      MINIO_SECRET_KEY: nutricia-so #管理后台密码，最小8个字符
+    volumes:
+      - ./minio/data:/data               #映射当前目录下的data目录至容器内/data目录
+      - ./minio/config:/root/.minio/     #映射配置目录
+    command: server --console-address ':9001' /data  #指定容器中的目录 /data
+    privileged: true
+    restart: always
+
+  wms-nginx:
+    container_name: wms-nginx
+    image: nginx
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+      - "8777:8777"
+    volumes:
+      - ./nginx/html/dist:/home/wms/projects/wms-ui
+      - ./nginx/html/app:/home/wms/projects/wms-app
+      - ./nginx/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/logs:/var/log/nginx
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - wms-gateway
+    links:
+      - wms-gateway
+  wms-gateway:
+    container_name: wms-gateway
+    build:
+      context: ./wms/gateway
+      dockerfile: dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - wms-redis
+    links:
+      - wms-redis
+    environment:
+      NACOS_HOST: wms-nacos
+  wms-auth:
+    container_name: wms-auth
+    build:
+      context: ./wms/auth
+      dockerfile: dockerfile
+    ports:
+      - "9200:9200"
+    depends_on:
+      - wms-redis
+    links:
+      - wms-redis
+    environment:
+      NACOS_HOST: wms-nacos
+  wms-modules-system:
+    container_name: wms-modules-system
+    build:
+      context: ./wms/modules/system
+      dockerfile: dockerfile
+    ports:
+      - "9201:9201"
+    depends_on:
+      - wms-redis
+      - wms-mysql
+    links:
+      - wms-redis
+      - wms-mysql
+    environment:
+      NACOS_HOST: wms-nacos
+  wms-modules-file:
+    container_name: wms-modules-file
+    build:
+      context: ./wms/modules/file
+      dockerfile: dockerfile
+    ports:
+      - "9300:9300"
+    depends_on:
+      - wms-redis
+      - wms-mysql
+    links:
+      - wms-redis
+      - wms-mysql
+    environment:
+      NACOS_HOST: wms-nacos
+  master-data:
+    container_name: master-data
+    build:
+      context: ./wms/modules/masterdata
+      dockerfile: dockerfile
+    ports:
+      - "8888:8888"
+    depends_on:
+      - wms-redis
+      - wms-mysql
+    links:
+      - wms-redis
+      - wms-mysql
+    environment:
+      NACOS_HOST: wms-nacos
+  storage-in:
+    container_name: storage-in
+    build:
+      context: ./wms/modules/storagein
+      dockerfile: dockerfile
+    ports:
+      - "8889:8889"
+    depends_on:
+      - wms-redis
+      - wms-mysql
+    links:
+      - wms-redis
+      - wms-mysql
+    environment:
+      NACOS_HOST: wms-nacos
+
+  bin-in:
+    container_name: bin-in
+    build:
+      context: ./wms/modules/binin
+      dockerfile: dockerfile
+    ports:
+      - "8890:8890"
+    depends_on:
+      - wms-redis
+      - wms-mysql
+    links:
+      - wms-redis
+      - wms-mysql
+    environment:
+      NACOS_HOST: wms-nacos
+

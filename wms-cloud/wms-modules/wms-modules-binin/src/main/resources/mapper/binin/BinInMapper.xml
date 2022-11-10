@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.binin.mapper.BinInMapper">
+
+    <resultMap type="BinInVO" id="BinInVOResult">
+        <result property="id" column="id"/>
+        <result property="ssccNumber" column="sscc_number"/>
+        <result property="materialNb" column="material_nb"/>
+        <result property="materialName" column="material_name"/>
+        <result property="batchNb" column="batch_nb"/>
+        <result property="expireDate" column="expire_date"/>
+        <result property="plantNb" column="plant_nb"/>
+        <result property="wareCode" column="ware_code"/>
+        <result property="recommendBinCode" column="recommend_bin_code"/>
+        <result property="actualBinCode" column="actual_bin_code"/>
+        <result property="quantity" column="quantity"/>
+        <result property="palletCode" column="pallet_code"/>
+        <result property="palletType" column="pallet_type"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="moveType" column="move_type"/>
+
+    </resultMap>
+
+
+    <select id="selectBinVOList" resultMap="BinInVOResult">
+        select bi.id,bi.material_nb,bi.sscc_number,mm.name as
+        material_name,bi.batch_nb,bi.expire_date,bi.ware_code,bi.recommend_bin_code,
+        bi.actual_bin_code,bi.quantity,bi.pallet_code,bi.pallet_type,bi.status,
+        bi.create_by,bi.create_time,bi.plant_nb,bi.move_type
+        from bi_in bi left join md_material mm on bi.material_nb = mm.code
+        where bi.delete_flag=0
+        <if test="materialNb != null and materialNb != ''">and bi.material_nb = #{materialNb}</if>
+        <if test="ssccNumber != null and ssccNumber != ''">and bi.sscc_number = #{ssccNumber}</if>
+        <if test="moveType != null and moveType != ''">and bi.move_type = #{moveType}</if>
+        <if test="materialName != null  and materialName != ''">and mm.name like concat('%', #{name}, '%')</if>
+        <if test="batchNb != null  and batchNb != ''">and bi.batch_nb = #{batchNb}</if>
+        <if test="plantNb != null and plantNb != ''">and bi.plant_nb = #{plantNb}</if>
+        <if test="wareCode != null and wareCode != ''">and bi.ware_code = #{wareCode}</if>
+        <if test="actualBinCode != null and actualBinCode != ''">and bi.actual_bin_code = #{actualBinCode}</if>
+        <if test="createBy != null and createBy != ''">and bi.create_by = #{createBy}</if>
+        <if test="status != null ">and bi.status = #{status}</if>
+    </select>
+    <select id="selectBySsccNumber" resultType="com.bosch.binin.api.domain.vo.BinInVO">
+        select bi.id,
+               bi.material_nb,
+               bi.sscc_number,
+               mm.name as material_name,
+               bi.batch_nb,
+               bi.expire_date,
+               bi.plant_nb,
+               bi.ware_code,
+               bi.recommend_bin_code,
+               bi.actual_bin_code,
+               bi.quantity,
+               bi.pallet_code,
+               bi.pallet_type,
+               bi.status,
+               bi.create_by,
+               bi.create_time
+        from bi_in bi
+                 left join md_material mm on bi.material_nb = mm.code
+        where bi.sscc_number = #{sscc}
+          and delete_flag = 0
+        order by bi.create_time desc limit 1
+
+
+    </select>
+    <select id="currentUserData" resultMap="BinInVOResult">
+        select bi.id,bi.material_nb,mm.name as
+        material_name,bi.batch_nb,bi.expire_date,bi.ware_code,bi.recommend_bin_code,
+        bi.actual_bin_code,bi.quantity,bi.pallet_code,bi.pallet_type,bi.status,
+        bi.create_by,bi.create_time
+        from bi_in bi left join md_material mm on bi.material_nb = mm.code
+        where bi.delete_flag=0
+        <if test="materialNb != null and materialNb != ''">and bi.material_nb = #{materialNb}</if>
+        <if test="materialName != null  and materialName != ''">and mm.name like concat('%', #{name}, '%')</if>
+        <if test="batchNb != null  and batchNb != ''">and bi.batch_nb = #{batchNb}</if>
+        <if test="wareCode != null and wareCode != ''">and bi.ware_code = #{wareCode}</if>
+        <if test="actualBinCode != null and actualBinCode != ''">and bi.actual_bin_code = #{actualBinCode}</if>
+        <if test="createBy != null and createBy != ''">and bi.create_by = #{createBy}</if>
+        <if test="status != null ">and bi.status = #{status}</if>
+    </select>
+</mapper>

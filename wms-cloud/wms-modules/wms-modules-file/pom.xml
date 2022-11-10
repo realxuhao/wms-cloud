@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>com.bosch</groupId>
+        <artifactId>wms-modules</artifactId>
+        <version>3.6.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>wms-modules-file</artifactId>
+
+    <description>
+        wms-modules-file文件服务
+    </description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.opencsv</groupId>
+            <artifactId>opencsv</artifactId>
+            <version>5.6</version>
+        </dependency>
+        <!-- SpringCloud Alibaba Nacos -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-discovery</artifactId>
+        </dependency>
+
+        <!-- SpringCloud Alibaba Nacos Config -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
+        </dependency>
+
+        <!-- SpringCloud Alibaba Sentinel -->
+        <dependency>
+            <groupId>com.alibaba.cloud</groupId>
+            <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
+        </dependency>
+
+        <!-- SpringBoot Actuator -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
+        <!-- Swagger UI -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger-ui</artifactId>
+            <version>${swagger.fox.version}</version>
+        </dependency>
+
+        <!-- Mysql Connector -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+
+        <!-- RuoYi Common DataSource -->
+        <dependency>
+            <groupId>com.bosch</groupId>
+            <artifactId>wms-common-datasource</artifactId>
+            <version>3.6.0</version>
+        </dependency>
+
+        <!-- RuoYi Common DataScope -->
+        <dependency>
+            <groupId>com.bosch</groupId>
+            <artifactId>wms-common-datascope</artifactId>
+            <version>3.6.0</version>
+        </dependency>
+
+        <!-- RuoYi Common Log -->
+        <dependency>
+            <groupId>com.bosch</groupId>
+            <artifactId>wms-common-log</artifactId>
+            <version>3.6.0</version>
+        </dependency>
+
+
+		
+        <!-- FastDFS -->
+        <dependency>
+            <groupId>com.github.tobato</groupId>
+            <artifactId>fastdfs-client</artifactId>
+        </dependency>
+        
+        <!-- Minio -->
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
+        </dependency>
+
+        <!-- RuoYi Api System -->
+        <dependency>
+            <groupId>com.bosch</groupId>
+            <artifactId>wms-api-system</artifactId>
+        </dependency>
+        
+        <!-- RuoYi Common Swagger -->
+        <dependency>
+            <groupId>com.bosch</groupId>
+            <artifactId>wms-common-swagger</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>easyexcel</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.bosch</groupId>
+            <artifactId>master-data-api</artifactId>
+            <version>3.6.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.bosch</groupId>
+            <artifactId>storage-in-api</artifactId>
+            <version>3.6.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.bosch</groupId>
+            <artifactId>wms-api-file</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.4.2</version>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>${project.artifactId}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+   
+</project>

@@ -1,0 +1,2 @@
+com.bosch.masterdata.api.factory.RemoteMaterialFallbackFactory
+com.bosch.masterdata.api.factory.RemotePalletFallbackFactory

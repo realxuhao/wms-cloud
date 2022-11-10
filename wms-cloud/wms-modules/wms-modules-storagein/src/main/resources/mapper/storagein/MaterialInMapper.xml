@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.storagein.mapper.MaterialInMapper">
+
+    <resultMap type="MaterialInVO" id="selectMaterialInVoResult">
+        <result property="id" column="id"/>
+        <result property="plantNb" column="plant_nb"/>
+        <result property="wareCode" column="ware_code"/>
+        <result property="ssccNumber" column="sscc_number"/>
+        <result property="batchNb" column="batch_nb"/>
+        <result property="materialNb" column="material_nb"/>
+        <result property="materialName" column="material_name"/>
+        <result property="checkType" column="check_type"/>
+        <result property="checkQuantity" column="check_quantity"/>
+        <result property="minStandard" column="min_standard"/>
+        <result property="maxStandard" column="max_standard"/>
+        <result property="actualQuantity" column="actual_quantity"/>
+        <result property="actualResult" column="actual_result"/>
+        <result property="averageResult" column="average_result"/>
+        <result property="operateUser" column="operate_user"/>
+        <result property="operateTime" column="operate_time"/>
+        <result property="quantity" column="quantity"/>
+        <result property="originalPalletQuantity" column="original_pallet_quantity"/>
+        <result property="fromPurchaseOrder" column="from_purchase_order"/>
+    </resultMap>
+
+    <sql id="selectMaterialInVo">
+        select id,
+               plant_nb,
+               ware_code,
+               sscc_number,
+               batch_nb,
+               material_nb,
+               check_type,
+               check_quantity,
+               quantity,
+               min_standard,
+               max_standard,
+               actual_quantity,
+               actual_result,
+               average_result,
+               operate_user,
+               operate_time,
+               original_pallet_quantity,
+               from_purchase_order
+        from si_material_in
+    </sql>
+
+    <insert id="insertMaterialIn" parameterType="MaterialInDTO" useGeneratedKeys="true" keyProperty="id">
+
+
+        insert into si_material_in
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ssccNumber != null and ssccNumber != ''">sscc_number,</if>
+            <if test="batchNb != null and batchNb != ''">batch_nb,</if>
+            <if test="materialNb != null and materialNb !=''">material_nb,</if>
+            <if test="checkType != null">check_type,</if>
+
+            <if test="checkQuantity != null">check_quantity,</if>
+            <if test="minStandard != null">min_standard,</if>
+            <if test="maxStandard != null">max_standard,</if>
+            <if test="actualQuantity != null">actual_quantity,</if>
+            <if test="actualResult != null">actual_result,</if>
+            <if test="operateUser != null and materialNb !=''">operate_user,</if>
+            <if test="operateTime != null">operate_time,</if>
+            <if test="averageResult != null">average_result,</if>
+            <if test="virtualBinCode != null">virtual_bin_code,</if>
+            <if test="originalPalletQuantity != null">original_pallet_quantity,</if>
+
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ssccNumber != null and ssccNumber != ''">#{ssccNumber},</if>
+            <if test="batchNb != null and batchNb != ''">#{batchNb},</if>
+            <if test="materialNb != null and materialNb !=''">#{materialNb},</if>
+            <if test="checkType != null">#{checkType},</if>
+            <if test="checkQuantity != null">#{checkQuantity},</if>
+            <if test="minStandard != null">#{minStandard},</if>
+            <if test="maxStandard != null">#{maxStandard},</if>
+            <if test="actualQuantity != null">#{actualQuantity},</if>
+            <if test="actualResult != null">#{actualResult},</if>
+            <if test="operateUser != null and materialNb !=''">#{operateUser},</if>
+            <if test="operateTime != null">#{operateTime},</if>
+            <if test="averageResult != null">#{averageResult},</if>
+            <if test="virtualBinCode != null">#{virtualBinCode},</if>
+            <if test="originalPalletQuantity != null">#{originalPalletQuantity},</if>
+
+        </trim>
+    </insert>
+
+
+    <insert id="batchInsert">
+        INSERT INTO si_material_in (plant_nb,ware_code,sscc_number, batch_nb, material_nb, check_type,
+        check_quantity,min_standard,max_standard,quantity,actual_quantity,actual_result,operate_user,
+        operate_time,average_result,virtual_bin_code,original_pallet_quantity,move_type,from_purchase_order)
+        VALUES
+        <foreach collection="list" separator="," item="item">
+            (#{item.plantNb},#{item.wareCode},#{item.ssccNumber},#{item.batchNb},#{item.materialNb},#{item.checkType},#{item.checkQuantity},#{item.minStandard},#{item.maxStandard},
+            #{item.quantity},#{item.actualQuantity},#{item.actualResult}
+            ,#{item.operateUser},#{item.operateTime},#{item.averageResult},#{item.virtualBinCode},#{item.originalPalletQuantity},#{item.moveType},#{item.fromPurchaseOrder})
+        </foreach>
+
+    </insert>
+
+
+    <update id="updateVirtualBinCode">
+        update si_material_in
+        set virtual_bin_code = #{virtualBinCode}
+        where sscc_number = #{ssccNumber}
+    </update>
+
+
+    <select id="selectById" resultMap="selectMaterialInVoResult">
+        <include refid="selectMaterialInVo"/>
+        where id = #{id}
+    </select>
+
+
+    <select id="selectBySsccNumber" resultMap="selectMaterialInVoResult">
+        <include refid="selectMaterialInVo"/>
+        where sscc_number = #{ssccNumber}
+        limit 1
+    </select>
+
+
+    <select id="getByUserName" resultMap="selectMaterialInVoResult">
+        <include refid="selectMaterialInVo"/>
+        where operate_user = #{username} and si.delete_flag=0
+    </select>
+
+
+    <select id="selectMaterialInList" resultMap="selectMaterialInVoResult">
+        select si.id,
+        si.plant_nb,
+        si.ware_code,
+        si.sscc_number,
+        si.batch_nb,
+        si.material_nb,
+        si.check_type,
+        mm.name as material_name,
+        si.check_quantity,
+        si.min_standard,
+        si.max_standard,
+        si.actual_quantity,
+        si.actual_result,
+        si.average_result,
+        si.operate_user,
+        si.operate_time,
+        si.original_pallet_quantity,
+        si.from_purchase_order
+        from si_material_in si left join md_material mm on si.material_nb = mm.code
+        where si.delete_flag=0
+        <if test="ssccNumber != null  and ssccNumber != ''">and si.sscc_number = #{ssccNumber}</if>
+        <if test="materialNb != null  and materialNb != ''">and si.material_nb = #{materialNb}</if>
+        <if test="wareCode != null  and wareCode != ''">and si.ware_code = #{wareCode}</if>
+
+        <if test="batchNb != null  and batchNb != ''">and si.batch_nb = #{batchNb}</if>
+        <if test="checkType != null">and si.check_type = #{checkType}</if>
+        <if test="operateUser != null  and operateUser != ''">and si.operate_user = #{operateUser}</if>
+        order by operate_time desc
+    </select>
+
+</mapper>

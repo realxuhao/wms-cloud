@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.masterdata.mapper.MaterialBinMapper">
+
+    <resultMap type="MaterialBin" id="MaterialBinResult">
+        <result property="id" column="id"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialCode" column="material_code"/>
+
+        <result property="frameTypeCode" column="frame_type_code"/>
+        <result property="priorityLevel" column="priority_level"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <resultMap type="MaterialBinVO" id="MaterialBinVOResult">
+        <result property="id" column="id"/>
+        <result property="materialId" column="material_id"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="materialName" column="material_name"/>
+
+        <result property="frameTypeCode" column="frame_type_code"/>
+        <result property="createTime" column="create_time"/>
+        <result property="frameName" column="frame_name"/>
+        <result property="priorityLevel" column="priority_level"/>
+        <result property="createTime" column="create_time"/>
+    </resultMap>
+
+    <sql id="selectMaterialBinVo">
+        select id,
+               material_id,
+               frame_type_code,
+               priority_level,
+               create_by,
+               update_by,
+               create_time,
+               update_time,
+               status,
+               remark
+        from md_material_frame
+    </sql>
+
+    <select id="selectMaterialBinList" parameterType="MaterialBinDTO" resultMap="MaterialBinVOResult">
+        SELECT
+        mb.id AS id,
+        mb.frame_type_code AS frame_type_code,
+        mb.material_id AS material_id,
+        mb.priority_level AS priority_level,
+        mb.create_time AS create_time,
+        m.code as material_code,
+        m.name as material_name,
+        m.id as material_id
+        FROM
+        md_material_frame mb
+        LEFT JOIN md_material m ON mb.material_id = m.id
+        where mb.material_id = m.id
+        <if test="materialId != null ">and mb.material_id = #{materialId}</if>
+        <!--        <where>-->
+        <!--            <if test="materialId != null ">and mb.material_id = #{materialId}</if>-->
+        <!--            <if test="frameId != null ">and mb.frame_id = #{frameId}</if>-->
+        <!--            <if test="priorityLevel != null ">and mb.priority_level = #{priorityLevel}</if>-->
+        <!--            <if test="materialCode != null ">and m.code = #{materialCode}</if>-->
+        <!--            <if test="materialName != null ">and m.name = #{name}</if>-->
+        <!--            <if test="binCode != null ">and b.code = #{binCode}</if>-->
+        <!--            <if test="binName != null ">and b.name = #{binName}</if>-->
+        <!--            <if test="status != null ">and mb.status = #{status}</if>-->
+        <!--        </where>-->
+    </select>
+
+    <select id="selectMaterialBinById" parameterType="Long" resultMap="MaterialBinVOResult">
+        SELECT
+            mb.id AS id,
+            mb.frame_type_code AS frame_type_code,
+            mb.material_id AS material_id,
+            mb.priority_level AS priority_level,
+            mb.create_time AS create_time,
+                    m.code as material_code,
+        m.name as material_name,
+        m.id as material_id
+        FROM
+            md_material_frame mb
+             LEFT JOIN md_material m ON mb.material_id = m.id
+        where  mb.id = #{id}
+    </select>
+
+    <insert id="insertMaterialBin" parameterType="MaterialBin" useGeneratedKeys="true" keyProperty="id">
+        insert into md_material_frame
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="materialId != null">material_id,</if>
+            <if test="frameTypeCode != null">frame_type_code,</if>
+            <if test="priorityLevel != null">priority_level,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="materialId != null">#{materialId},</if>
+            <if test="frameTypeCode != null">#{frameTypeCode},</if>
+            <if test="priorityLevel != null">#{priorityLevel},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMaterialBin" parameterType="MaterialBin">frame_type_code
+        update md_material_frame
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="materialId != null">material_id = #{materialId},</if>
+            <if test="frameTypeCode != null">frame_type_code = #{frameTypeCode},</if>
+            <if test="priorityLevel != null">priority_level = #{priorityLevel},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMaterialBinById" parameterType="Long">
+        delete
+        from md_material_frame
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteMaterialBinByIds" parameterType="String">
+        delete from md_material_frame where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectByWareCode" parameterType="String" resultMap="MaterialBinVOResult">
+        SELECT
+        mf.id AS id,
+        mf.frame_type_code AS frame_type_code,
+        mf.material_id AS material_id,
+        mf.priority_level AS priority_level,
+        mf.create_time AS create_time,
+        m.code as material_code,
+        m.name as material_name,
+        m.id as material_id
+        FROM
+        md_material_frame mf
+        LEFT JOIN md_material m ON mf.material_id = m.id
+        WHERE mf.frame_type_code IN (
+		  SELECT type_code FROM md_frame f
+		  LEFT JOIN md_area a ON f.area_id=a.id
+        LEFT JOIN md_ware w ON w.id=a.ware_id
+        WHERE 1=1
+        <if test="code != null  and code != ''">AND w.code LIKE   concat('%', #{code}, '%')</if>
+          )
+    </select>
+</mapper>

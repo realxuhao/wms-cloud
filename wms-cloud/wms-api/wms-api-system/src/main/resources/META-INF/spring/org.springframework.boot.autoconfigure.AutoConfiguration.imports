@@ -1,0 +1,3 @@
+com.bosch.system.api.factory.RemoteUserFallbackFactory
+com.bosch.system.api.factory.RemoteLogFallbackFactory
+com.bosch.system.api.factory.RemoteFileFallbackFactory
