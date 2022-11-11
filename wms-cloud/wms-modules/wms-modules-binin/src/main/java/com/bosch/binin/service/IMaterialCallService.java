@@ -1,14 +1,18 @@
 package com.bosch.binin.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialCall;
+import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.vo.MaterialCallVO;
 import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.masterdata.api.domain.Frame;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: wms-cloud
@@ -20,5 +24,7 @@ public interface IMaterialCallService extends IService<MaterialCall> {
 
 
     List<MaterialCallVO> getMaterialCallList(MaterialCallQueryDTO queryDTO);
+
+    public boolean validList( List<MaterialCallDTO> dtos) ;
 
 }

@@ -5,6 +5,7 @@ import com.ruoyi.common.security.annotation.EnableRyFeignClients;
 import com.ruoyi.common.swagger.annotation.EnableCustomSwagger2;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableCustomSwagger2
 @EnableRyFeignClients
 @SpringBootApplication
+@EnableDiscoveryClient
 public class BinInApplication {
     public static void main(String[] args) {
         SpringApplication.run(BinInApplication.class, args);

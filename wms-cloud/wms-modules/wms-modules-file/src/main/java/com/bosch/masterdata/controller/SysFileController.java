@@ -3,12 +3,12 @@ package com.bosch.masterdata.controller;
 
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.file.api.domain.FileUpload;
 import com.bosch.masterdata.service.IFileUploadService;
 import com.bosch.masterdata.utils.CSVUtil;
 import com.bosch.masterdata.utils.EasyExcelUtil;
 import com.bosch.storagein.api.domain.MaterialReceive;
-import com.bosch.storagein.api.enumeration.ClassType;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.ApiOperation;
@@ -23,7 +23,7 @@ import com.bosch.masterdata.service.ISysFileService;
 import com.bosch.system.api.domain.SysFile;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -161,6 +161,47 @@ public class SysFileController {
                 return R.fail("上传文件服务失败");
             }
             read.forEach(r->r.setFileId(upload.getData().getFileId().toString()));
+            return R.ok(read);
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
+
+    }
+    /**
+     * 叫料解析文件
+     *
+     * @param file 文件信息
+     * @return 结果
+     */
+    @ApiOperation("解析excel表")
+    @PostMapping(value = "/materialCallImport")
+    public R<List<MaterialCallDTO>> materialCallImport(@RequestPart(value = "file") MultipartFile file,
+                                                          @RequestParam(value = "className") String className) throws Exception {
+
+        try {
+            Class<?> TClass = Class.forName("com.bosch.binin.api.domain.dto." + className);
+            List<MaterialCallDTO> read = EasyExcelUtil.read(file.getInputStream(), MaterialCallDTO.class,className);
+
+            if(CollectionUtils.isEmpty(read)){
+                return R.fail("excel中无数据");
+            }
+            boolean check = EasyExcelUtil.check(read);
+            if (!check){
+                return R.fail("excel中存在重复数据");
+            }
+//            HashSet<String> hs = new HashSet<>();
+//            read.forEach(r->{
+//                hs.add(r.getOrderNb()+r.getMaterialNb());
+//            });
+//            if (!(hs.stream().count()==read.stream().count())){
+//                return R.fail("excel中存在重复订单号和物料代码");
+//            }
+
+            R<SysFile> upload = upload(file);
+            if (!upload.isSuccess()){
+                return R.fail("上传文件服务失败");
+            }
+            //read.forEach(r->r.setFileId(upload.getData().getFileId().toString()));
             return R.ok(read);
         } catch (Exception e) {
             return R.fail(e.getMessage());

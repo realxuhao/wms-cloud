@@ -34,7 +34,7 @@ spring:
         ds1:
           nacos:
             server-addr: ${NACOS_HOST:localhost}:8848
-            dataId: sentinel-ruoyi-gateway
+            dataId: sentinel-wms-gateway
             groupId: DEFAULT_GROUP
             data-type: json
             rule-type: flow

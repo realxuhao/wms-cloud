@@ -2,7 +2,9 @@ package com.bosch.binin.api.domain.dto;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
+@Data
 public class MaterialCallDTO {
 
     /**
@@ -17,7 +19,7 @@ public class MaterialCallDTO {
      */
     @ExcelProperty( "订单号")
     @ApiModelProperty(value = "订单号")
-    private String oderNb;
+    private String orderNb;
 
     /**
      * 物料号

@@ -59,18 +59,19 @@
         FROM
         md_material_frame mb
         LEFT JOIN md_material m ON mb.material_id = m.id
-        where mb.material_id = m.id
-        <if test="materialId != null ">and mb.material_id = #{materialId}</if>
-        <!--        <where>-->
-        <!--            <if test="materialId != null ">and mb.material_id = #{materialId}</if>-->
-        <!--            <if test="frameId != null ">and mb.frame_id = #{frameId}</if>-->
-        <!--            <if test="priorityLevel != null ">and mb.priority_level = #{priorityLevel}</if>-->
-        <!--            <if test="materialCode != null ">and m.code = #{materialCode}</if>-->
-        <!--            <if test="materialName != null ">and m.name = #{name}</if>-->
-        <!--            <if test="binCode != null ">and b.code = #{binCode}</if>-->
-        <!--            <if test="binName != null ">and b.name = #{binName}</if>-->
-        <!--            <if test="status != null ">and mb.status = #{status}</if>-->
-        <!--        </where>-->
+<!--        where mb.material_id = m.id-->
+<!--        <if test="materialId != null ">and mb.material_id = #{materialId}</if>-->
+                <where>
+                    mb.material_id = m.id
+                    <if test="materialId != null ">and mb.material_id = #{materialId}</if>
+                    <if test="frameId != null ">and mb.frame_id = #{frameId}</if>
+                    <if test="priorityLevel != null ">and mb.priority_level = #{priorityLevel}</if>
+                    <if test="materialCode != null ">and m.code = #{materialCode}</if>
+                    <if test="materialName != null ">and m.name = #{name}</if>
+                    <if test="binCode != null ">and b.code = #{binCode}</if>
+                    <if test="binName != null ">and b.name = #{binName}</if>
+                    <if test="status != null ">and mb.status = #{status}</if>
+                </where>
     </select>
 
     <select id="selectMaterialBinById" parameterType="Long" resultMap="MaterialBinVOResult">

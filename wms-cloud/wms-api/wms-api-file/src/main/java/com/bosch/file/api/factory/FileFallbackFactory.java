@@ -18,15 +18,12 @@ import java.util.List;
  * @author ruoyi
  */
 @Component
-public class FileFallbackFactory implements FallbackFactory<FileService> {
+public class FileFallbackFactory implements FileService {
     private static final Logger log = LoggerFactory.getLogger(FileFallbackFactory.class);
 
-    @Override
-    public FileService create(Throwable cause) {
-        return new FileService() {
             @Override
             public <T> R<List<T>> masterDataImport(MultipartFile file, String className) {
-               return R.fail("主数据文件服务调用失败");
+                return R.fail("主数据文件服务调用失败");
             }
 
             @Override
@@ -43,6 +40,12 @@ public class FileFallbackFactory implements FallbackFactory<FileService> {
             public R download(String fileName) {
                 return R.fail("");
             }
-        };
-    }
+
+            @Override
+            public <T> R<List<T>> materialCallImport(MultipartFile file, String className) {
+                return R.fail("叫料excel导入失败");
+            }
+
+
+
 }

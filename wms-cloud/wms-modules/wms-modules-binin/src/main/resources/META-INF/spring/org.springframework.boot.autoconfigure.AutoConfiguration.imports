@@ -1,0 +1,2 @@
+com.bosch.file.api.factory.FileFallbackFactory
+com.bosch.file.api.factory.StockFeignServiceFallback

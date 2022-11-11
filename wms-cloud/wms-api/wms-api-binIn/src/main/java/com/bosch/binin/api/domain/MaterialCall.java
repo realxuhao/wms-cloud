@@ -25,7 +25,7 @@ public class MaterialCall extends BaseEntity {
     /**
      * 订单号
      */
-    private String oderNb;
+    private String orderNb;
 
     /**
      * 物料号

@@ -58,7 +58,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
     public BinAllocationVO getBinAllocationVO(BinAllocationDTO binAllocationDTO) {
 
 
-         String mesBarCode = binAllocationDTO.getMesBarCode();
+        String mesBarCode = binAllocationDTO.getMesBarCode();
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         String batchNb = MesBarCodeUtil.getBatchNb(mesBarCode);
         String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
@@ -428,7 +428,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
         //实际bin
 
         if (CollectionUtils.isNotEmpty(binIns)) {
-            Map<String, String> collect = binIns.stream().collect(Collectors.toMap(BinIn::getActualBinCode,
+            Map<String, String> collect = binIns.stream().filter(a->a.getActualBinCode()!=null&&a.getActualFrameCode()!=null).collect(Collectors.toMap(BinIn::getActualBinCode,
                     BinIn::getActualFrameCode));
             usedBins.putAll(collect);
         }
@@ -438,8 +438,8 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
                         .collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(recommendBins)) {
             Map<String, String> collect =
-                    recommendBins.stream().collect(Collectors.toMap(BinIn::getActualBinCode,
-                            BinIn::getActualFrameCode));
+                    recommendBins.stream().collect(Collectors.toMap(BinIn::getRecommendBinCode,
+                            BinIn::getRecommendFrameCode));
             usedBins.putAll(collect);
         }
         return usedBins;
