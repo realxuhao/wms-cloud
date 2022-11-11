@@ -6,34 +6,49 @@
         <a-row :gutter="16">
           <a-col :span="4">
             <a-form-model-item label="工厂编码">
-              <a-input v-model="queryForm.plantNb" placeholder="工厂编码" />
+              <a-input v-model="queryForm.plantNb" placeholder="工厂编码" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
             <a-form-model-item label="仓库编码">
-              <a-input v-model="queryForm.wareCode" placeholder="仓库编码" />
+              <a-input v-model="queryForm.wareCode" placeholder="仓库编码" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-item label="SSCC码">
-              <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
-            </a-form-item>
+            <a-form-model-item label="存储区编码">
+              <a-input v-model="queryForm.areaCode" placeholder="仓库编码" allow-clear/>
+            </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-item label="物料编码" >
-              <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
+            <a-form-item label="库位编码">
+              <a-input v-model="queryForm.binCode" placeholder="库位编码" allow-clear/>
             </a-form-item>
           </a-col>
 
           <template v-if="advanced">
             <a-col :span="4">
+              <a-form-item label="托盘编码">
+                <a-input v-model="queryForm.palletCode" placeholder="托盘编码" allow-clear/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-item label="SSCC码">
+                <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-item label="物料编码" >
+                <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="4">
               <a-form-model-item label="批次号">
-                <a-input v-model="queryForm.batchNb" placeholder="批次号" />
+                <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
               </a-form-model-item>
             </a-col>
             <a-col :span="4">
               <a-form-item label="操作人">
-                <a-input v-model="queryForm.operateUser" placeholder="操作人" />
+                <a-input v-model="queryForm.operateUser" placeholder="操作人" allow-clear/>
               </a-form-item>
             </a-col>
           </template>
@@ -109,9 +124,27 @@ const columns = [
     width: 120
   },
   {
+    title: '存储区编码',
+    key: 'areaCode',
+    dataIndex: 'areaCode  ',
+    width: 120
+  },
+  {
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
+    width: 140
+  },
+  {
+    title: '库位编码',
+    key: 'binCode',
+    dataIndex: 'binCode',
+    width: 140
+  },
+  {
+    title: '托盘编码',
+    key: 'palletCode',
+    dataIndex: 'palletCode',
     width: 140
   },
   {
@@ -164,7 +197,10 @@ const queryFormAttr = () => {
     wareCode: '',
     ssccNumber: '',
     materialNb: '',
-    batchNb: ''
+    batchNb: '',
+    areaCode: '',
+    binCode: '',
+    palletCode: ''
   }
 }
 

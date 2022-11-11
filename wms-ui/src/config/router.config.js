@@ -143,7 +143,7 @@ export const asyncRouterMap = [
             path: '/stock/list',
             name: 'stockList',
             component: () => import('@/views/stock/Stock'),
-            meta: { title: '库存清单', permission: [] },
+            meta: { title: '库存查询', permission: [] },
             hideChildrenInMenu: true
           }
         ]

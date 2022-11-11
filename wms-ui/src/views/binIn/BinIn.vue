@@ -5,17 +5,37 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           <a-col :span="4">
-            <a-form-model-item label="批次号">
-              <a-input v-model="queryForm.batchNb" placeholder="批次号" />
+            <a-form-model-item label="工厂编码">
+              <a-input v-model="queryForm.plantNb" placeholder="工厂编码" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="物料编码">
-              <a-input v-model="queryForm.materialNb" placeholder="物料编码" />
+            <a-form-model-item label="仓库编码">
+              <a-input v-model="queryForm.wareCode" placeholder="仓库编码" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <template v-if="advanced">
+          <a-col :span="4">
+            <a-form-item label="SSCC码">
+              <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="批次号">
+              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
 
+          <template v-if="advanced">
+            <a-col :span="4">
+              <a-form-model-item label="物料编码">
+                <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-item label="托盘编码">
+                <a-input v-model="queryForm.palletCode" placeholder="托盘编码" allow-clear/>
+              </a-form-item>
+            </a-col>
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
@@ -73,6 +93,12 @@
 import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
+  {
+    title: '工厂编码',
+    key: 'plantNb',
+    dataIndex: 'plantNb',
+    width: 120
+  },
   {
     title: '仓库编码',
     key: 'wareCode',
@@ -150,6 +176,9 @@ const columns = [
 
 const queryFormAttr = () => {
   return {
+    plantNb: '',
+    wareCode: '',
+    ssccNumber: '',
     materialNb: '',
     batchNb: ''
   }

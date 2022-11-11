@@ -6,12 +6,12 @@
         <a-row :gutter="16">
           <a-col :span="4">
             <a-form-model-item label="工厂编码">
-              <a-input v-model="queryForm.plantNb" placeholder="工厂编码" />
+              <a-input v-model="queryForm.plantNb" placeholder="工厂编码" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
             <a-form-model-item label="仓库编码">
-              <a-input v-model="queryForm.wareCode" placeholder="仓库编码" />
+              <a-input v-model="queryForm.wareCode" placeholder="仓库编码" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
@@ -28,7 +28,7 @@
           <template v-if="advanced">
             <a-col :span="4">
               <a-form-model-item label="批次号">
-                <a-input v-model="queryForm.batchNb" placeholder="批次号" />
+                <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
               </a-form-model-item>
             </a-col>
             <a-col :span="4">
@@ -45,7 +45,7 @@
             </a-col>
             <a-col :span="4">
               <a-form-item label="操作人">
-                <a-input v-model="queryForm.operateUser" placeholder="操作人" />
+                <a-input v-model="queryForm.operateUser" placeholder="操作人" allow-clear/>
               </a-form-item>
             </a-col>
           </template>

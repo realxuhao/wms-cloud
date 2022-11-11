@@ -6,7 +6,7 @@
         <a-row :gutter="16">
           <a-col :span="4">
             <a-form-model-item label="托盘前缀编码">
-              <a-input v-model="queryForm.virtualPrefixCode" placeholder="托盘前缀编码" />
+              <a-input v-model="queryForm.virtualPrefixCode" placeholder="托盘前缀编码" allow-clear/>
             </a-form-model-item>
           </a-col>
           <template v-if="advanced">

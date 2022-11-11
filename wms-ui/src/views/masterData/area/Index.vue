@@ -6,13 +6,13 @@
         <a-row :gutter="16">
           <a-col :span="4">
             <a-form-model-item label="编码">
-              <a-input v-model="queryForm.code" placeholder="编码" />
+              <a-input v-model="queryForm.code" placeholder="编码" allow-clear/>
             </a-form-model-item>
 
           </a-col>
           <a-col :span="4">
             <a-form-model-item label="名称">
-              <a-input v-model="queryForm.name" placeholder="名称" />
+              <a-input v-model="queryForm.name" placeholder="名称" allow-clear/>
             </a-form-model-item>
           </a-col>
 
