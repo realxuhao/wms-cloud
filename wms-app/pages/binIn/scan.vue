@@ -1,41 +1,39 @@
 <template>
 	<my-page nav-title="扫描SSCC码" >
-			<view class="content" slot="page-main" @click="handleGotoOperation">
+			<view class="content" slot="page-main" >
 				<image src="/static/sku-phone.png" class="m-b-8"></image>
 				<text>请将激光扫描头对准SSCC码区域</text>
 			</view>
 			<Message ref="message"></Message>
-			<ScanCode></ScanCode>
 	</my-page>
 </template>
 
 <script>
+	import Bus from '@/utils/bus'
 	import Message from '@/components/Message'
-	import ScanCode from '@/components/ScanCode'
 	
 	export default {
-	components:{
-		Message,
-		ScanCode
-	},
-	 onLoad() {  
-		   var _this = this  
-		   uni.$on('scancodedate',function(data){  
-			_this.code = data.code
-			_this.checkBinIn(data.code)
-			uni.$emit('stopScan')
-		   })  
-		},  
-		onUnload() {  
-		   // 移除监听事件      
-		   uni.$off('scancodedate')
+		components:{
+			Message,
 		},
 		data() {
 			return {
 				code:'',
 			};
 		},
+		onShow(){
+			console.log('show')
+			Bus.$on('scancodedate',this.scanCodeCallback)
+		},
+		destroyed() {
+			Bus.$off("scancodedate");
+		},
 		methods:{
+			async scanCodeCallback(data){
+				this.code = data.code
+				await this.checkBinIn(data.code)
+				Bus.$emit('stopScan')
+			},
 			async checkBinIn(barCode){
 				try{
 					const data = await this.$store.dispatch('binIn/getByMesBarCode',barCode)
@@ -45,10 +43,11 @@
 					this.handleGotoOperation()
 				}catch(e){
 					this.$refs.message.error(e.message)
-					uni.$emit('startScan')
+					Bus.$emit('startScan')
 				}
 			},
 			handleGotoOperation(){
+				Bus.$off("scancodedate",this.scanCodeCallback);
 				uni.navigateTo({
 					url:`/pages/binIn/operation?barCode=${this.code}`
 				})
@@ -85,7 +84,7 @@
 		}
 		text{
 			color: #fff;
-			font-size: 12px;
+			font-size: 16px;
 		}
 	}
 </style>

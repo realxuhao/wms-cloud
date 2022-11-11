@@ -33,7 +33,7 @@ const destroy = async (id) => {
   return data
 }
 
-const getDispatchBinList = async (parameter) => {
+const getDispatchFrameTypeList = async (parameter) => {
   const url = `/materialBin/list?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(baseUrl).get(url)
   return data
@@ -69,7 +69,7 @@ export const materialService = {
   add,
   destroy,
 
-  getDispatchBinList,
+  getDispatchFrameTypeList,
   addDispatchBin,
   destroyDispatchBin,
   upload,

@@ -10,11 +10,14 @@ const request = (options) => {
 	if (!options.data) {
 		options.data = {};
 	}
-
+	
+	const plant = uni.getStorageSync('plant')
+	const wareId = plant.wareId
 	// 请求头
 	const headers = {
 		...(options.header || {}),
 		'Authorization': 'Bearer ' + getToken(),
+		// 'wareId': wareId	
 	}
 	options.header = headers
 

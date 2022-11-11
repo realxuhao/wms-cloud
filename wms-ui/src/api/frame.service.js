@@ -46,6 +46,12 @@ const uploadBatchUpdate = async (formdata) => {
   return data
 }
 
+const getFrameTypeList = async (parameter) => {
+  const url = `/frame/getFrameType?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url, parameter)
+  return data
+}
+
 export const frameService = {
   getList,
   getOne,
@@ -53,6 +59,6 @@ export const frameService = {
   add,
   destroy,
   upload,
-  uploadBatchUpdate
-
+  uploadBatchUpdate,
+  getFrameTypeList
 }

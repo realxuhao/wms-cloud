@@ -5,8 +5,8 @@
   "scripts": {
     "lint": "vue-cli-service lint"
   },
-  "dependencies": {},
-  "devDependencies": {
-  
-  }
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {}
 }

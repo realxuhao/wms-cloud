@@ -15,25 +15,40 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-item label="SSCC码">
-              <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
-            </a-form-item>
+            <a-form-model-item label="存储区编码">
+              <a-input v-model="queryForm.areaCode" placeholder="仓库编码" allow-clear/>
+            </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="批次号">
-              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
-            </a-form-model-item>
+            <a-form-item label="库位编码">
+              <a-input v-model="queryForm.binCode" placeholder="库位编码" allow-clear/>
+            </a-form-item>
           </a-col>
 
           <template v-if="advanced">
             <a-col :span="4">
-              <a-form-model-item label="物料编码">
+              <a-form-item label="托盘编码">
+                <a-input v-model="queryForm.palletCode" placeholder="托盘编码" allow-clear/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-item label="SSCC码">
+                <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-item label="物料编码" >
                 <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-model-item label="批次号">
+                <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
               </a-form-model-item>
             </a-col>
             <a-col :span="4">
-              <a-form-item label="托盘编码">
-                <a-input v-model="queryForm.palletCode" placeholder="托盘编码" allow-clear/>
+              <a-form-item label="操作人">
+                <a-input v-model="queryForm.operateUser" placeholder="操作人" allow-clear/>
               </a-form-item>
             </a-col>
           </template>
@@ -61,13 +76,16 @@
         size="middle"
         :scroll="{ x: 1300 }"
       >
-        <template slot="status" slot-scope="text">
+        <template slot="checkType" slot-scope="text">
           <div >
             <a-tag color="orange" v-if="text===0">
-              待上架
+              称重
             </a-tag>
-            <a-tag color="#87d068" v-if="text===1">
-              已上架
+            <a-tag color="blue" v-if="text===1">
+              数数
+            </a-tag>
+            <a-tag color="#87d068" v-if="text===2">
+              免检
             </a-tag>
           </div>
         </template>
@@ -106,21 +124,33 @@ const columns = [
     width: 120
   },
   {
+    title: '存储区编码',
+    key: 'areaCode',
+    dataIndex: 'areaCode  ',
+    width: 120
+  },
+  {
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
-    width: 200
+    width: 140
+  },
+  {
+    title: '库位编码',
+    key: 'binCode',
+    dataIndex: 'binCode',
+    width: 140
+  },
+  {
+    title: '托盘编码',
+    key: 'palletCode',
+    dataIndex: 'palletCode',
+    width: 140
   },
   {
     title: '物料编码',
     key: 'materialNb',
     dataIndex: 'materialNb',
-    width: 120
-  },
-  {
-    title: '物料名称',
-    key: 'materialName',
-    dataIndex: 'materialName',
     width: 120
   },
   {
@@ -130,47 +160,34 @@ const columns = [
     width: 120
   },
   {
-    title: '托盘编码',
-    key: 'palletCode',
-    dataIndex: 'palletCode',
-    width: 120
-  },
-  {
-    title: '托盘类型',
-    key: 'palletType',
-    dataIndex: 'palletType',
-    width: 120
-  },
-  {
-    title: '数量',
-    key: 'quantity',
-    dataIndex: 'quantity',
+    title: '质检状态',
+    key: 'qualityStatus',
+    dataIndex: 'qualityStatus',
     width: 80
   },
   {
-    title: '推荐库位编码',
-    key: 'recommendBinCode',
-    dataIndex: 'recommendBinCode',
+    title: '库存量',
+    key: 'totalStock',
+    dataIndex: 'totalStock',
     width: 120
   },
   {
-    title: '实际库位编码',
-    key: 'actualBinCode',
-    dataIndex: 'actualBinCode',
+    title: '冻结库存',
+    key: 'freezeStock',
+    dataIndex: 'freezeStock',
     width: 120
-  },
-  {
-    title: '状态',
-    key: 'status',
-    dataIndex: 'status',
-    width: 80,
-    scopedSlots: { customRender: 'status' }
   },
   {
     title: '操作人',
     key: 'createBy',
     dataIndex: 'createBy',
-    width: 80
+    width: 120
+  },
+  {
+    title: '操作时间',
+    key: 'operateTime',
+    dataIndex: 'operateTime',
+    width: 200
   }
 ]
 
@@ -180,24 +197,27 @@ const queryFormAttr = () => {
     wareCode: '',
     ssccNumber: '',
     materialNb: '',
-    batchNb: ''
+    batchNb: '',
+    areaCode: '',
+    binCode: '',
+    palletCode: ''
   }
 }
 
 export default {
-  name: 'BinIn',
+  name: 'Area',
   mixins: [mixinTableList],
   data () {
     return {
       tableLoading: false,
       uploadLoading: false,
-      columns,
-      list: [],
       queryForm: {
         pageSize: 20,
         pageNum: 1,
         ...queryFormAttr()
-      }
+      },
+      columns,
+      list: []
     }
   },
   methods: {
@@ -211,7 +231,7 @@ export default {
 
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('binIn/getPaginationList', this.queryForm)
+        } = await this.$store.dispatch('stock/getPaginationList', this.queryForm)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -220,7 +240,6 @@ export default {
         this.tableLoading = false
       }
     },
-
     async loadData () {
       this.loadTableList()
     }

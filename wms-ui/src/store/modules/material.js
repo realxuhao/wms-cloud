@@ -31,8 +31,8 @@ const material = {
       return data
     },
 
-    async getDispatchBinList ({ commit }, options) {
-      const data = await materialService.getDispatchBinList(options)
+    async getDispatchFrameTypeList ({ commit }, options) {
+      const data = await materialService.getDispatchFrameTypeList(options)
       return data
     },
     async addDiapatchBin ({ commit }, options) {

@@ -51,7 +51,7 @@
 							</uni-data-picker>
 						</uni-forms-item>
 						<uni-forms-item label="托盘编码" name="palletTypeCode" required>
-							<uni-easyinput  v-model="palletForm.palletTypeCode" placeholder="托盘编码" />
+							<uni-easyinput  v-model="palletForm.palletTypeCode"  placeholder="托盘编码" />
 						</uni-forms-item>
 						<uni-forms-item label="推荐库位" name="recommendBinCode" required>
 							<uni-easyinput  v-model="palletForm.recommendBinCode" disabled placeholder="系统自动生成" />
@@ -65,10 +65,14 @@
 							<uni-easyinput  v-model="binInForm.barCode" />
 						</uni-forms-item>
 						<uni-forms-item label="SSCC码" name="mesBarCode" required>
-							<uni-easyinput  v-model="binInForm.mesBarCode" placeholder="请扫描SSCC码" />
+							<view class="custom-input" :class="focusInput==='mesBarCode'?'focus':''" @click="()=>handleSetFocusInput('mesBarCode')">
+								<text :class="!binInForm.mesBarCode?'placeholder-text':''">{{binInForm.mesBarCode||'请扫描SSCC码'}}</text>
+							</view>
 						</uni-forms-item>
 						<uni-forms-item label="目标库位" name="recommendBinCode" required>
-							<uni-easyinput  v-model="binInForm.recommendBinCode" placeholder="请扫描目标库位" />
+							<view class="custom-input" :class="focusInput==='recommendBinCode'?'focus':''" @click="()=>handleSetFocusInput('recommendBinCode')">
+								<text :class="!binInForm.recommendBinCode?'placeholder-text':''">{{binInForm.recommendBinCode||'请扫描SSCC码'}}</text>
+							</view>
 						</uni-forms-item>
 						<o-btn block class="submit-btn primary-button" :loading="submitLoading"  @click="handlePostBinIn">提交</o-btn>
 					</uni-forms>
@@ -115,6 +119,7 @@
 
 <script>
 	import Message from '@/components/Message'
+	import Bus from '@/utils/bus'
 	
 	function convertPalletList(rows){
 		const list = rows.map(item =>{
@@ -129,12 +134,15 @@
 	
 	export default {
 		components:{
-			Message	
+			Message,
 		},
 		onLoad(options){
 			this.barCode = options.barCode
 			this.binInForm.barCode = options.barCode
 			this.getByMesBarCode(options.barCode)
+		},
+		onLaunch() {
+			Bus.$off("scancodedate");
 		},
 		data() {
 			return {
@@ -180,7 +188,7 @@
 							},
 							{
 								validateFunction:function(rule,value,data,callback){
-									if (value !==data.barCode) {
+									if (value != data.barCode) {
 										callback('当前SSCC码和扫描SSCC码不一致')
 									}
 									return true
@@ -198,10 +206,22 @@
 					barCode:undefined, //url barCode
 					mesBarCode:undefined,
 					recommendBinCode:undefined
-				}
+				},
+				
+				focusInput:'mesBarCode'
 			};
 		},
 		methods:{
+			handleSetFocusInput(focusName){
+				this.focusInput = focusName
+				uni.hideKeyboard()
+			},
+			async initScanCode(){
+				const _this = this
+				Bus.$on('scancodedate',function(data){
+					_this.binInForm[_this.focusInput] = data.code.trim()
+				})
+			},
 			async handleGoBack(){
 				uni.navigateBack({delta:1})	
 			},
@@ -228,6 +248,9 @@
 						throw Error('已上架，请勿重复操作')
 					}
 					this.materialInfo = data
+					if(data.recommendBinCode){
+						this.initScanCode()
+					}
 				}catch(e){
 					this.$refs.message.error(e.message)
 				}
@@ -309,7 +332,11 @@
 		},
 		mounted() {
 			this.lodaData()
-			// this.$refs.popup.open()
+		},
+		watch:{
+			'binInForm.mesBarCode'(value){
+				this.focusInput = 'recommendBinCode'
+			}
 		}
 	}
 </script>

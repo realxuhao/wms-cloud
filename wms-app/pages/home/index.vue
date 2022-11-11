@@ -3,9 +3,12 @@
 		<view class="header">
 			<view>
 				<view class="bar"></view>
-				<uni-nav-bar
-				  title="WMS 仓储管理"
-				/>
+				<uni-nav-bar>
+				 <view class="nav-title" @click="handleOpenPicker">
+					<text class="nav-title-name">{{plantName||'请选择工厂/仓库'}}</text>
+					<uni-icons class="icon" type="bottom" size="16"></uni-icons>
+				 </view>
+				 </uni-nav-bar>
 			</view>
 			
 			<view class="list header-box">
@@ -26,17 +29,98 @@
 		<view class="action-content">
 			<!-- 开发中敬请期待 -->
 		</view>
+		<ScanCode></ScanCode>
+		<uni-data-picker
+			ref="picker"
+			popup-title="请选择工厂/仓库" 
+			:localdata="dataTree"
+			@change="handleChangePlant"
+		>
+		</uni-data-picker>
 	</view>
 </template>
 
 <script>
+	import ScanCode from '@/components/ScanCode'
+	import _ from 'lodash'
+	
 	export default{
-		methods:{
-			handleGoto(url){
-				uni.navigateTo({
-					url
-				})
+		components:{
+			ScanCode,
+		},
+		data(){
+			return {
+				dataTree:[
+					{
+						text: "工厂1",
+						value: "1-0",
+						children:[
+							{
+								text: "1号库",
+								value: "1-1"
+							}
+						]
+					}
+				],
+				plantName:''
 			}
+		},
+		computed:{
+			
+		},
+		methods:{
+			async loadPlantList(){
+				const data = await this.$store.dispatch('plant/getList')
+				const plantList = _.uniqBy(data,['factoryCode'])
+				const list = []
+				_.each(plantList,(plant,index)=>{
+					const plantIndex = index+1
+					const obj = {text:plant.factoryCode,children:[],value:`${plantIndex}-${index}`}
+					_.each(data,(item,itemIndex) =>{
+						if(item.factoryCode === plant.factoryCode){
+							const ware = {text:item.code,value:`${plantIndex}-${itemIndex+1}`,code:item.code}
+							obj.children.push(ware)
+						}
+					})
+					list.push(obj)
+				})
+				
+				console.log(list)
+				this.dataTree = list
+			},
+			handleGoto(url){
+				if(!this.plantName){
+					uni.showToast({
+						title: '请选择工厂/仓库',
+						icon:'none',
+						duration: 2000
+					})
+					return
+				}
+				
+				uni.navigateTo({url})
+			},
+			handleChangePlant(val){
+				const {detail:{value}} = val
+				const plantName = `${value[0].text}/${value[1].text}`
+				
+				const wareCode = value[1].text
+				uni.setStorageSync('plant',{
+						name:plantName,
+						wareCode
+					})
+				
+				this.plantName = plantName
+			},
+			handleOpenPicker(){
+				this.$refs.picker.show()
+			}
+		},
+		mounted() {
+			const plant = uni.getStorageSync('plant')
+			this.plantName = plant.name
+			
+			this.loadPlantList()
 		}
 	}
 </script>
@@ -99,6 +183,25 @@
 	}
 	
 	/deep/.uni-navbar--border{
-		border-bottom-color:transparent;
+		border-bottom-color:transparent !important;
+	}
+	
+	/deep/.uni-navbar__header-container{
+		justify-content: center;
+		align-items: center;
+		.nav-title{
+			font-size: 14px;
+			color: #fff;
+			text-align: center;
+			.icon{
+				color: #fff !important;
+				margin-left: 8px;
+			}
+		}
+	}
+	
+	/deep/.uni-data-tree-input{
+		display: none;
+		z-index: -1;
 	}
 </style>

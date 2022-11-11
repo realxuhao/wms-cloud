@@ -3,36 +3,53 @@
 
     <!-- table -->
     <div class="table-content">
-      <a-form-model class="search-content" layout="inline" :model="queryForm">
-        <a-form-model-item label="物料名称">
-          <a-input v-model="queryForm.name" placeholder="物料名称" />
-        </a-form-model-item>
-        <a-form-model-item label="物料代码">
-          <a-input v-model="queryForm.code" placeholder="物料代码" />
-        </a-form-model-item>
-        <a-form-model-item label="物料类型">
-          <a-select
-            allowClear
-            show-search
-            :filter-option="filterOption"
-            option-filter-prop="children"
-            class="width180"
-            placeholder="物料类型"
-            v-model="queryForm.materialTypeId"
-            :loading="materialTypeListLoading">
-            <a-select-option
-              :value="item.id"
-              v-for="item in materialTypeList"
-              :key="item.id">
-              {{ item.description }}</a-select-option>
-          </a-select>
-        </a-form-model-item>
-        <a-form-model-item >
-          <a-button type="primary" icon="search" @click="handleSearch" :loading="searchLoading">
-            搜索
-          </a-button>
-        </a-form-model-item>
-      </a-form-model>
+      <a-form layout="inline" class="search-content">
+        <a-row :gutter="16">
+          <a-col :span="4">
+            <a-form-model-item label="物料名称">
+              <a-input v-model="queryForm.name" placeholder="物料名称" allow-clear/>
+            </a-form-model-item>
+
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="物料代码">
+              <a-input v-model="queryForm.code" placeholder="物料代码" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="物料类型">
+              <a-select
+                allowClear
+                show-search
+                :filter-option="filterOption"
+                option-filter-prop="children"
+                style="width:100%"
+                placeholder="物料类型"
+                v-model="queryForm.materialTypeId"
+                :loading="materialTypeListLoading">
+                <a-select-option
+                  :value="item.id"
+                  v-for="item in materialTypeList"
+                  :key="item.id">
+                  {{ item.code }}</a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <template v-if="advanced">
+
+          </template>
+          <a-col span="4">
+            <span class="table-page-search-submitButtons" >
+              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+              <a @click="toggleAdvanced" style="margin-left: 8px">
+                {{ advanced ? '收起' : '展开' }}
+                <a-icon :type="advanced ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
+        </a-row>
+      </a-form>
 
       <div class="action-content">
         <a-button type="primary" class="m-r-8" icon="plus" @click="handleAdd">
@@ -79,7 +96,9 @@
               <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
             <a-divider type="vertical" />
-            <a class="primary-color" @click="handleOpenDispathRule(record)"><a-icon class="m-r-4" type="setting" />分配库位</a>
+            <a
+              class="primary-color"
+              @click="handleOpenDispathRule(record)"><a-icon class="m-r-4" type="setting" />分配跨类型</a>
           </div>
         </template>
 
@@ -236,6 +255,14 @@ const columns = [
   }
 ]
 
+const queryFormAttr = () => {
+  return {
+    code: '',
+    name: '',
+    materialTypeId: ''
+  }
+}
+
 export default {
   name: 'Material',
   mixins: [mixinTableList],
@@ -252,11 +279,19 @@ export default {
 
       columns,
       list: [],
-
+      queryForm: {
+        pageSize: 20,
+        pageNum: 1,
+        ...queryFormAttr()
+      },
       uploadLoading: false
     }
   },
   methods: {
+    handleResetQuery () {
+      this.queryForm = { ...this.queryForm, ...queryFormAttr() }
+      this.handleSearch()
+    },
     async handleDownloadTemplate () {
       try {
         this.$store.dispatch('file/downloadByFilename', '物料.xlsx')

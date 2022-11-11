@@ -6,22 +6,20 @@
     :visible="visible"
     @close="onClose"
   >
-
     <a-button class="m-b-8" v-show="!formVisible" type="primary" icon="plus" @click="handleAdd">
       新建
     </a-button>
 
     <a-form v-show="formVisible" class="search-content m-b-8" layout="inline" :form="form">
-      <a-form-item label="库位">
+      <a-form-item label="跨类型">
         <a-select
           show-search
-          :filter-option="filterOption"
           class="width180"
           v-decorator="[
-            'binId',
-            { rules: [{ required: true, message: '请选择库位!' },] }
+            'frameTypeCode',
+            { rules: [{ required: true, message: '请选择跨类型!' },] }
           ]">
-          <a-select-option v-for="item in binList" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+          <a-select-option v-for="item in frameTypeList" :key="item" :value="item">{{ item }}</a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item label="优先级">
@@ -74,9 +72,9 @@ const columns = [
     width: 200
   },
   {
-    title: '库位名称',
-    key: 'binName',
-    dataIndex: 'binName',
+    title: '跨类型',
+    key: 'frameTypeCode',
+    dataIndex: 'frameTypeCode',
     width: 200
   },
   {
@@ -94,6 +92,7 @@ const columns = [
 ]
 
 export default {
+  name: 'MaterialDispatchBin',
   props: {
     id: {
       type: Number,
@@ -117,7 +116,7 @@ export default {
       list: [],
       tableLoading: false,
 
-      binList: [],
+      frameTypeList: [],
       formVisible: false
     }
   },
@@ -137,14 +136,9 @@ export default {
     onClose () {
       this.form.resetFields()
       this.formVisible = false
-      this.binList = []
+      this.frameTypeList = []
 
       this.$emit('change', false)
-    },
-    filterOption (input, option) {
-      return (
-        option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
-      )
     },
     async handleAdd () {
       this.formVisible = true
@@ -158,7 +152,7 @@ export default {
         await this.$store.dispatch('material/destroyDispatchBin', record.id)
         this.$message.success('删除成功！')
 
-        this.loadDispatchBinList()
+        this.loadDispatchFrameTypeList()
       } catch (error) {
         console.log(error)
         this.$message.error('删除失败，请联系系统管理员！')
@@ -179,7 +173,7 @@ export default {
           await this.$store.dispatch('material/addDiapatchBin', { ...values, materialId: this.id })
 
           this.formVisible = false
-          this.loadDispatchBinList()
+          this.loadDispatchFrameTypeList()
           this.$message.success('添加成功')
         } catch (error) {
           this.$message.error(error)
@@ -188,11 +182,11 @@ export default {
         }
       })
     },
-    async loadDispatchBinList () {
+    async loadDispatchFrameTypeList () {
       try {
         this.tableLoading = true
 
-        const { data: { rows } } = await this.$store.dispatch('material/getDispatchBinList', { id: this.id })
+        const { data: { rows } } = await this.$store.dispatch('material/getDispatchFrameTypeList', { materialId: this.id })
         this.list = rows
       } catch (error) {
         this.$message.error(error)
@@ -200,17 +194,17 @@ export default {
         this.tableLoading = false
       }
     },
-    async getBinList () {
+    async getFrameTypeList () {
       try {
-        const data = await this.$store.dispatch('bin/getList')
-        this.binList = data
+        const data = await this.$store.dispatch('frame/getFrameTypeList')
+        this.frameTypeList = data
       } catch (error) {
         this.$message.error(error)
       }
     },
     async loadData () {
-      await this.loadDispatchBinList()
-      await this.getBinList()
+      await this.loadDispatchFrameTypeList()
+      await this.getFrameTypeList()
     }
   },
   watch: {

@@ -1,5 +1,5 @@
 <template>
-  <uni-popup ref="message" type="message">
+  <uni-popup ref="message" type="message" class="uni-popup-content">
     <uni-popup-message
       :type="msgType"
       :message="messageText"
@@ -41,3 +41,9 @@ export default {
   },
 };
 </script>
+
+<style lang="scss">
+.uni-popup-content{
+	margin-top: var(--status-bar-height);;
+}
+</style>
