@@ -19,17 +19,6 @@ public class MaterialReceiveDTO extends PageDomain {
     private String plantNb;
 
 
-//    /**
-//     * SSCC码
-//     */
-//    @ApiModelProperty(value = "SSCC码")
-//    private String ssccNumber;
-
-//    /**
-//     * 批次号
-//     */
-//    @ApiModelProperty(value = "批次号")
-//    private String batchNumber;
 
     /**
      * 物料号
@@ -41,10 +30,6 @@ public class MaterialReceiveDTO extends PageDomain {
     @ApiModelProperty(value = "批次")
     private String batchNb;
 
-
-//    /** BBD(过期时间) */
-//    @ApiModelProperty(value = "BBD过期时间")
-//    private String expireDate;
 
     /**
      * 来源PO号
@@ -67,17 +52,21 @@ public class MaterialReceiveDTO extends PageDomain {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date endExpireDate;
 
-//    /** PO行号 */
-//    @ApiModelProperty(value = "PO行号")
-//    private String poNumberItem;
+    /** PO行号 */
+    @ApiModelProperty(value = "PO行号")
+    private String poNumberItem;
 //
 //    /** 上传人 */
 //    @ApiModelProperty(value = "上传人")
 //    private String upload_user;
 //
-//    /** 上传时间 */
-//    @ApiModelProperty(value = "上传时间")
-//    private Date uploadTime;
+    /** 上传时间 */
+    @ApiModelProperty(value = "开始上传时间")
+    private Date startUploadTime;
+
+    /** 上传时间 */
+    @ApiModelProperty(value = "结束上传时间")
+    private Date endUploadTime;
 //
 //    /** 更新人 */
 //    @ApiModelProperty(value = "更新人")

@@ -32,6 +32,10 @@ public class MaterialCall extends BaseEntity {
      */
     private String materialNb;
 
+    /**
+     * 物料名称
+     */
+    private String materialName;
 
     /**
      * 数量

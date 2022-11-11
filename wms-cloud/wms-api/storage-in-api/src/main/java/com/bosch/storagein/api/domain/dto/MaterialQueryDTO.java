@@ -4,6 +4,8 @@ import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * @program: wms-cloud
  * @description:
@@ -43,6 +45,20 @@ public class MaterialQueryDTO extends PageDomain {
     @ApiModelProperty(value = "操作人")
     private String operateUser;
 
+    /** 上传时间 */
+    @ApiModelProperty(value = "开始操作时间")
+    private Date startOperateTime;
+
+    /** 上传时间 */
+    @ApiModelProperty(value = "结束操作时间")
+    private Date endOperateTime;
+
+
+    /**
+     * 工厂
+     */
+    @ApiModelProperty(value = "仓库号")
+    private String plantNb;
 
     /**
      * 仓库号

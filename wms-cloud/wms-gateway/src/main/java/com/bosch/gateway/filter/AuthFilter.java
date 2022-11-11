@@ -54,7 +54,7 @@ public class AuthFilter implements GlobalFilter, Ordered
         String token = getToken(request);
         if (StringUtils.isEmpty(token))
         {
-            return unauthorizedResponse(exchange, "令牌不能为空");
+            return unauthorizedResponse(exchange, "令牌不能为空！");
         }
         Claims claims = JwtUtils.parseToken(token);
         if (claims == null)
