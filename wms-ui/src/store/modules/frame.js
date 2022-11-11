@@ -14,6 +14,11 @@ const frame = {
       const { data: { rows } } = await frameService.getList({ ...options, pageSize: 0 })
       return rows
     },
+    async getFrameTypeList ({ commit }, options) {
+      const { data } = await frameService.getFrameTypeList({ ...options, pageSize: 0 })
+      console.log(data)
+      return data
+    },
     async getPaginationList ({ commit }, options) {
       const data = await frameService.getList(options)
       return data

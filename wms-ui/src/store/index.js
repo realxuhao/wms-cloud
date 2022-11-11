@@ -21,6 +21,7 @@ import frame from './modules/frame'
 import bin from './modules/bin'
 import file from './modules/file'
 import binIn from './modules/binIn'
+import stock from './modules/stock'
 
 import materialInList from './modules/materialInList'
 
@@ -47,6 +48,7 @@ export default new Vuex.Store({
     ware,
     frame,
     bin,
+    stock,
 
     file,
 

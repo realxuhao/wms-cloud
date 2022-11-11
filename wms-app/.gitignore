@@ -3,3 +3,4 @@ unpackage/cache
 unpackage/dist
 unpackage/release
 unpackage/resources
+node_modules/

@@ -55,16 +55,17 @@ export default {
   
   .action{
 	  border: 1px solid $uni-border-color;
-	  width: 48px;
-	  height: 48px;
+	  width: 60px;
+	  height: 60px;
 	  display: flex;
 	  justify-content: center;
 	  align-items: center;
 	  border-radius: 50%;
 	  color: #fff;
 	  position: fixed;
-	  bottom: 20px;
-	  right: 20px;
+	  bottom: 60px;
+	  right: 40px;
 	  background: rgba(84,27,134,0.7);
+	  box-shadow: 0 1px 3px 2px rgba(0,0,0,0.5);
   }
 </style>

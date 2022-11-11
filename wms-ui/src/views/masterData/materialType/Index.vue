@@ -2,19 +2,34 @@
   <div class="wrapper">
     <!-- table -->
     <div class="table-content">
-      <a-form-model class="search-content" layout="inline" :model="queryForm">
-        <a-form-model-item label="编码">
-          <a-input v-model="queryForm.code" placeholder="编码" />
-        </a-form-model-item>
-        <a-form-model-item label="描述">
-          <a-input v-model="queryForm.description" placeholder="描述" />
-        </a-form-model-item>
-        <a-form-model-item >
-          <a-button type="primary" icon="search" @click="handleSearch" :loading="searchLoading">
-            搜索
-          </a-button>
-        </a-form-model-item>
-      </a-form-model>
+      <a-form layout="inline" class="search-content">
+        <a-row :gutter="16">
+          <a-col :span="4">
+            <a-form-model-item label="编码">
+              <a-input v-model="queryForm.code" placeholder="编码" />
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="描述">
+              <a-input v-model="queryForm.description" placeholder="描述" />
+            </a-form-model-item>
+          </a-col>
+
+          <template v-if="advanced">
+
+          </template>
+          <a-col span="4">
+            <span class="table-page-search-submitButtons" >
+              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+              <a @click="toggleAdvanced" style="margin-left: 8px">
+                {{ advanced ? '收起' : '展开' }}
+                <a-icon :type="advanced ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
+        </a-row>
+      </a-form>
 
       <div class="action-content">
         <a-button type="primary" icon="plus" @click="handleAdd">
@@ -70,6 +85,7 @@
 
 <script>
 import UpdateDrawer from './UpdateDrawer'
+import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
   {
@@ -105,51 +121,36 @@ const columns = [
   }
 ]
 
+const queryFormAttr = () => {
+  return {
+    code: '',
+    name: ''
+  }
+}
+
 export default {
   name: 'MaterialType',
+  mixins: [mixinTableList],
+
   components: {
     UpdateDrawer
   },
   data () {
     return {
-      visible: false,
-      updateType: 'add', // edit、add
-      currentUpdateId: 0,
-
-      searchLoading: false,
       queryForm: {
-        name: '',
-        code: '',
         pageSize: 20,
-        pageNum: 1
+        pageNum: 1,
+        ...queryFormAttr()
       },
-      paginationTotal: 0,
 
-      tableLoading: false,
       columns,
       list: []
     }
   },
   methods: {
-    changePagination (page) {
-      this.queryForm.pageNum = page
-      this.loadTableList()
-    },
-    onShowSizeChange () {
-      this.queryForm.pageNum = 1
-      this.loadTableList()
-    },
-
-    async handleSearch () {
-      this.searchLoading = true
-      await this.loadTableList()
-      this.searchLoading = false
-    },
-
-    handleEdit (record) {
-      this.updateType = 'edit'
-      this.visible = true
-      this.currentUpdateId = record.id
+    handleResetQuery () {
+      this.queryForm = { ...this.queryForm, ...queryFormAttr() }
+      this.handleSearch()
     },
     async handleDelete (record) {
       try {
@@ -162,13 +163,6 @@ export default {
         this.$message.error('删除失败，请联系系统管理员！')
       }
     },
-
-    handleAdd () {
-      this.updateType = 'add'
-      this.visible = true
-      this.currentUpdateId = null
-    },
-
     async loadTableList () {
       try {
         this.tableLoading = true

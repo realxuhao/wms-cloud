@@ -131,6 +131,22 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           }
         ]
+      },
+      {
+        path: '/stock',
+        name: 'stock',
+        component: RouteView,
+        redirect: '/bin-in/list',
+        meta: { title: '库存管理', icon: 'hdd', permission: [] },
+        children: [
+          {
+            path: '/stock/list',
+            name: 'stockList',
+            component: () => import('@/views/stock/Stock'),
+            meta: { title: '库存清单', permission: [] },
+            hideChildrenInMenu: true
+          }
+        ]
       }
       // account
       // {

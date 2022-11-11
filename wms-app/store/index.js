@@ -4,6 +4,7 @@ import Vuex from 'vuex'
 import user from './modules/user'
 import materialIn from './modules/materialIn'
 import binIn from './modules/binIn'
+import plant from './modules/plant'
 
 import getters from './getters'
 
@@ -13,7 +14,8 @@ export default new Vuex.Store({
   modules: {
     user,
 	materialIn,
-	binIn
+	binIn,
+	plant
   },
   state: {
 

@@ -5,10 +5,11 @@ const mixinTableList = {
       updateType: 'add', // edit、add
       currentUpdateId: 0,
 
+      // 高级搜索 展开/关闭
+      advanced: false,
+
       searchLoading: false,
       queryForm: {
-        name: '',
-        code: '',
         pageSize: 20,
         pageNum: 1
       },
@@ -41,6 +42,9 @@ const mixinTableList = {
       this.updateType = 'add'
       this.visible = true
       this.currentUpdateId = null
+    },
+    toggleAdvanced () {
+      this.advanced = !this.advanced
     }
   }
 }
