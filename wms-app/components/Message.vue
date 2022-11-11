@@ -16,7 +16,7 @@ export default {
     return {
       msgType: "success",
       messageText: "",
-      duration: 2000,
+      duration: 3000,
     };
   },
   methods: {
