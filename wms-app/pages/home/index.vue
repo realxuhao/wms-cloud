@@ -26,11 +26,16 @@
 		<view class="action-content">
 			<!-- 开发中敬请期待 -->
 		</view>
+		<ScanCode></ScanCode>
 	</view>
 </template>
 
 <script>
+	import ScanCode from '@/components/ScanCode'
 	export default{
+		components:{
+			ScanCode
+		},
 		methods:{
 			handleGoto(url){
 				uni.navigateTo({
@@ -99,6 +104,6 @@
 	}
 	
 	/deep/.uni-navbar--border{
-		border-bottom-color:transparent;
+		border-bottom-color:transparent !important;
 	}
 </style>

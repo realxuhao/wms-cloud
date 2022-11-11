@@ -33,7 +33,6 @@ export default {
       console.log(id);
     },
 	handleGotoScan() {
-		console.log(111)
 	  uni.navigateTo({
 	    url: "/pages/binIn/scan",
 	  });

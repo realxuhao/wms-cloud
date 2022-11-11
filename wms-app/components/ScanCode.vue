@@ -1,5 +1,7 @@
 <template></template>
 <script>
+import Bus from "@/utils/bus"
+
 var main, receiver, filter,settingFilter;
 var _codeQueryTag = false;
 export default {
@@ -9,14 +11,18 @@ export default {
         };
     },
    created() {
-   	this.initScan();
-	this.startScan()
+		this.initScan();
+		this.startScan()
    },
    
    onLoad() {
-   	uni.$on('stopScan',function(){
+	const _this = this
+   	Bus.$on('stopScan',function(){
    		_this.stopScan();
    	})  
+	Bus.$on('startScan',function(){
+		_this.startScan()
+	})
    },
    
     destroyed: function() {
@@ -34,10 +40,8 @@ export default {
 			// 你的广播动作
             receiver = plus.android.implements('io.dcloud.feature.internal.reflect.BroadcastReceiver', {
                 onReceive: function(context, intent) {
-					console.log(1111)
                     plus.android.importClass(intent);
                     let code = intent.getStringExtra('scannerdata'); // 换你的广播标签
-					console.log('code',code)
                     _this.queryCode(code);
                 }
             });
@@ -66,7 +70,7 @@ export default {
 				
 			// this.setScannerEnabled(false)
 			
-            uni.$emit('scancodedate', { code: id });
+            Bus.$emit('scancodedate', { code: id });
         }
     }
 };

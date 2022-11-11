@@ -5,30 +5,22 @@
 				<text>请将激光扫描头对准SSCC码区域</text>
 			</view>
 			<Message ref="message"></Message>
-			<ScanCode></ScanCode>
 	</my-page>
 </template>
 
 <script>
 	import Message from '@/components/Message'
-	import ScanCode from '@/components/ScanCode'
+	import Bus from '@/utils/bus'
 	
 	export default {
-	components:{
-		Message,
-		ScanCode
-	},
-	 onLoad() {  
-		   var _this = this  
-		   uni.$on('scancodedate',function(data){  
-			_this.code = data.code
-			_this.checkMaterialIn(data.code)
-			uni.$emit('stopScan')
-		   })  
-		},  
-		onUnload() {  
-		   // 移除监听事件      
-		   uni.$off('scancodedate')
+		components:{
+			Message,
+		},
+		onShow(){
+			Bus.$on('scancodedate',this.scanCodeCallback)
+		},
+		destroyed() {
+			Bus.$off("scancodedate");
 		},
 		data() {
 			return {
@@ -36,6 +28,11 @@
 			};
 		},
 		methods:{
+			async scanCodeCallback(data){
+				this.code = data.code
+				await this.checkMaterialIn(data.code)
+				Bus.$emit('stopScan')
+			},
 			async checkMaterialIn(barCode){
 				try{
 					await this.$store.dispatch('materialIn/getAndCheckMaterialIn',barCode)
@@ -61,6 +58,7 @@
 				uni.$emit('startScan')
 			},
 			handleGoto(){
+				Bus.$off("scancodedate",this.scanCodeCallback);
 				uni.navigateTo({
 					url:`/pages/materialCount/index?barCode=${this.code}`
 				})
@@ -97,7 +95,7 @@
 		}
 		text{
 			color: #fff;
-			font-size: 12px;
+			font-size: 16px;
 		}
 	}
 </style>
