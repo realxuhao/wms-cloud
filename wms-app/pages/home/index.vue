@@ -50,18 +50,7 @@
 		},
 		data(){
 			return {
-				dataTree:[
-					{
-						text: "工厂1",
-						value: "1-0",
-						children:[
-							{
-								text: "1号库",
-								value: "1-1"
-							}
-						]
-					}
-				],
+				dataTree:[],
 				plantName:''
 			}
 		},

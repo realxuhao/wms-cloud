@@ -34,7 +34,7 @@ export default {
     },
 	handleGotoScan() {
 	  uni.navigateTo({
-	    url: "/pages/scan/index",
+	    url: "/pages/materialIn/scan",
 	  });
 	},
   },

@@ -12,12 +12,12 @@ const request = (options) => {
 	}
 	
 	const plant = uni.getStorageSync('plant')
-	const wareId = plant.wareId
+	const wareCode = plant.wareCode
 	// 请求头
 	const headers = {
 		...(options.header || {}),
 		'Authorization': 'Bearer ' + getToken(),
-		// 'wareId': wareId	
+		'ware_code': wareCode	
 	}
 	options.header = headers
 

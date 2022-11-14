@@ -83,6 +83,12 @@ public class BinIn extends BaseEntity {
      */
     private String ssccNumber;
 
+
+    /**
+     * area码
+     */
+    private String areaCode;
+
     /**
      * 推荐跨id
      */

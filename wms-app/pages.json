@@ -10,10 +10,10 @@
 			"path": "pages/materialIn/index"
 		},
 		{
-			"path": "pages/scan/index"
+			"path": "pages/materialIn/scan"
 		},
 		{
-			"path": "pages/materialCount/index"
+			"path": "pages/materialIn/operator"
 		},
 		{
 			"path": "pages/binIn/binIn"

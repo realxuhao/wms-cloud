@@ -173,6 +173,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setUpdateBy(SecurityUtils.getUsername());
         binIn.setStatus(BinInStatusEnum.FINISH.value());
         binIn.setUpdateTime(new Date());
+        binIn.setAreaCode(actualBinVO.getAreaCode());
         saveOrUpdate(binIn);
 
         //插入库存
@@ -194,6 +195,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         stock.setCreateTime(new Date());
         stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
         stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
+        stock.setAreaCode(binIn.getAreaCode());
         stockMapper.insert(stock);
 
         //处理库存日志表
@@ -276,6 +278,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setRecommendFrameId(binVO.getFrameId());
         binIn.setRecommendFrameCode(binVO.getFrameCode());
         binIn.setWareCode(SecurityUtils.getWareCode());
+
         binIn.setMoveType(MoveTypeEnums.BININ.getCode());
         binIn.setFromPurchaseOrder(materialInVO.getFromPurchaseOrder());
         binIn.setPlantNb(materialInVO.getPlantNb());
