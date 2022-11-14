@@ -75,7 +75,9 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
         binInWrapper.eq(BinIn::getBatchNb, batchNb);
         binInWrapper.eq(BinIn::getSsccNumber, sscc);
         binInWrapper.eq(BinIn::getMaterialNb, materialNb);
-        binInWrapper.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING).or().eq(BinIn::getStatus, BinInStatusEnum.FINISH);
+        binInWrapper.eq(BinIn::getDeleteFlag,0);
+        binInWrapper.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value()).or().eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
+
         List<BinIn> binIns = binInMapper.selectList(binInWrapper);
 
         //已占库位和跨的map
@@ -177,7 +179,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
                     }
                 }
             }
-        throw new ServiceException("根据跨类型在主数据中未找到跨的数据");
+        throw new ServiceException("未找到合适库位");
 //        return binAllocationVO;
     }
 
@@ -322,7 +324,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
             //已上架 查询实际库位
             LambdaQueryWrapper<BinIn> queryActual = new LambdaQueryWrapper<>();
             queryActual.eq(BinIn::getActualFrameId, frameId);
-            queryActual.eq(BinIn::getStatus, BinInStatusEnum.FINISH);
+            queryActual.eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
             List<BinIn> actualBins = binInMapper.selectList(queryActual);
             if (CollectionUtils.isNotEmpty(actualBins)) {
                 list.addAll(actualBins);
@@ -332,12 +334,12 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
             //未上架 查询分配库位
             LambdaQueryWrapper<BinIn> queryRecommend = new LambdaQueryWrapper<>();
             queryRecommend.eq(BinIn::getRecommendFrameId, frameId);
-            queryRecommend.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING);
-            List<BinIn> recommendBins = binInMapper.selectList(queryActual);
+            queryRecommend.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value());
+            List<BinIn> recommendBins = binInMapper.selectList(queryRecommend);
             if (CollectionUtils.isNotEmpty(recommendBins)) {
                 list.addAll(recommendBins);
                 //获取已使用库位
-                usedBins.addAll(actualBins.stream().map(BinIn::getRecommendBinCode).collect(Collectors.toList()));
+                usedBins.addAll(recommendBins.stream().map(BinIn::getRecommendBinCode).collect(Collectors.toList()));
             }
 
             //获取承重宽度
@@ -381,6 +383,8 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
     public FrameRemainVO getFrameRemain(List<BinIn> actualBins) {
         try {
             FrameRemainVO frameRemainVO = new FrameRemainVO();
+            frameRemainVO.setFrameBearWeight(new BigDecimal(0));
+            frameRemainVO.setFrameWidth(new BigDecimal(0));
             if (CollectionUtils.isNotEmpty(actualBins)) {
                 for (BinIn actualBin : actualBins) {
                     //获取托盘详情
