@@ -85,7 +85,6 @@
 					list.push(obj)
 				})
 				
-				console.log(list)
 				this.dataTree = list
 			},
 			handleGoto(url){
@@ -129,10 +128,11 @@
 	.wrapper{
 		min-height: 100vh;
 		background: rgb(241,242,247);
+		box-sizing: border-box;
 	}
 	.header{
 		background: $primary-color;
-		padding:0px 8px;
+		padding:16px 8px 0px 8px;
 		height: 160px;
 		border-bottom-left-radius:60px ;
 		border-bottom-right-radius: 60px;
@@ -190,7 +190,7 @@
 		justify-content: center;
 		align-items: center;
 		.nav-title{
-			font-size: 14px;
+			font-size: 18px;
 			color: #fff;
 			text-align: center;
 			.icon{
