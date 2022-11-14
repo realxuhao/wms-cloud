@@ -35,6 +35,11 @@ public class Stock extends BaseEntity {
      * 仓库编码
      */
     private String wareCode;
+
+    /**
+     * 区域编码
+     */
+    private String areaCode;
     /**
      * 跨编码
      */

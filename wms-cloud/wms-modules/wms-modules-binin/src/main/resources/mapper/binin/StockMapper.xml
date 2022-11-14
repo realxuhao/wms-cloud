@@ -43,12 +43,12 @@
         bs.bin_in_id as bin_in_id,
         bs.create_by as create_by,
         bs.create_time as create_time,
-        bs.quality_status as quality_status,
-               ma.code as area_code
+        bs.quality_status as quality_status
+--         ma.code as area_code
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code
-            left join md_area ma on ma.ware_id = mw.id
+--         left join md_area ma on ma.ware_id = mw.id
         left join md_material mm on bs.material_nb = mm.code
         <where>
             <if test="ssccNumber != null and ssccNumber != ''">and bs.sscc_number = #{ssccNumber}</if>
@@ -57,7 +57,6 @@
                 #{fromPurchaseOrder}
             </if>
             <if test="wareCode != null and wareCode != ''">and bs.ware_code = #{wareCode}</if>
-            <if test="areaCode != null and areaCode != ''">and ma.code = #{areaCode}</if>
             <if test="frameCode != null and frameCode != ''">and bs.frame_code = #{frameCode}</if>
             <if test="binCode != null and binCode != ''">and bs.bin_code = #{binCode}</if>
             <if test="materialNb != null and materialNb != ''">and bs.material_nb = #{materialNb}</if>

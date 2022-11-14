@@ -97,19 +97,19 @@ public class StockVO {
      * 总库存
      */
     @ApiModelProperty(value = "库存量")
-    private Integer totalStock;
+    private Double totalStock;
 
     /**
      * 冻结库存
      */
     @ApiModelProperty(value = "冻结库存")
-    private Integer freezeStock;
+    private Double freezeStock;
 
     /**
      * 可用库存
      */
     @ApiModelProperty(value = "可用库存")
-    private Integer availableStock;
+    private Double availableStock;
 
 
     /**
