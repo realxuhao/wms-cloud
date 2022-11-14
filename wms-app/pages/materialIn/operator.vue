@@ -150,7 +150,8 @@
 						</view>
 					</view>
 				</view>
-				<o-btn block class="primary-button" @click="handleGoBack">返回</o-btn>
+				<o-btn block class="primary-button" v-if="resultData.checkFlag" @click="handleGoBack">返回</o-btn>
+				<o-btn block class="primary-button" v-else @click="handleOk">确定</o-btn>
 			</view>
 		</uni-popup>
 		</my-page>
@@ -181,9 +182,9 @@
 	}
 	
 	export default {
-	components:{
-		Message	
-	},
+		components:{
+			Message	
+		},
 		name:"MaterialCount",
 		onLoad: function (options) { 
 			this.barCode = options.barCode
@@ -267,6 +268,9 @@
 			}
 		},
 		methods: {
+			handleOk(){
+				this.$refs.popup.close()
+			},
 			async handleGoBack(){
 				uni.navigateBack({delta:1})	
 			},

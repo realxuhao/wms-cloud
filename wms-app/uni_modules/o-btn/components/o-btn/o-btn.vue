@@ -124,7 +124,7 @@
 		'orange' #F97316 #fff,'yellow' #e7a43f #fff,'brown' #a5673f #fff,
 		'pink' #EC4899 #fff,'purple' #ab47bc #fff,'black' #333 #fff,
 		'grey' #78909C #fff,'gray' #BDBDBD #fff,'white' #fff #888,
-		'default' #fff #888,'primary' #409EFF #fff,'success' #22C55E #fff,
+		'default' #fff #333,'primary' #409EFF #fff,'success' #22C55E #fff,
 		'info' #78909C #fff, 'warning' #e7a43f #fff, 'error' #F56C6C #fff,
 		'cyan' #06B6D4 #fff,
 	);
@@ -148,7 +148,7 @@
 		vertical-align: middle;
 		&.o-btn{margin:4rpx;}
 		&[type=default]{
-			border-color: #ebedef;
+			border-color: #d9d9d9;
 		}
 		
 		text.icon{

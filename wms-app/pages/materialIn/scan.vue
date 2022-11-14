@@ -60,7 +60,7 @@
 			handleGoto(){
 				Bus.$off("scancodedate",this.scanCodeCallback);
 				uni.navigateTo({
-					url:`/pages/materialCount/index?barCode=${this.code}`
+					url:`/pages/materialIn/operator?barCode=${this.code}`
 				})
 			}
 		}
