@@ -176,7 +176,7 @@ public class MaterialBinServiceImpl  extends ServiceImpl<MaterialBinMapper, Mate
 //        lambdaQueryWrapper.eq(MaterialBin::getMaterialCode, materialCode);
 //        List<MaterialBin> materialBins = materialBinMapper.selectList(lambdaQueryWrapper);
 //        List<MaterialBinVO> materialBinVOS = BeanConverUtil.converList(materialBins, MaterialBinVO.class);
-        List<MaterialBinVO> materialBinVOS = materialBinMapper.selectByWareCode(SecurityUtils.getWareCode());
+        List<MaterialBinVO> materialBinVOS = materialBinMapper.selectByWareCode(materialCode,SecurityUtils.getWareCode());
         return materialBinVOS;
     }
 }
