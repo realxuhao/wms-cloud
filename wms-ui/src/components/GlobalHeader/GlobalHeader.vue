@@ -8,6 +8,8 @@
         <div v-if="mode === 'sidemenu'" class="header">
           <a-icon v-if="device==='mobile'" class="trigger" :type="collapsed ? 'menu-fold' : 'menu-unfold'" @click="toggle"/>
           <a-icon v-else class="trigger" :type="collapsed ? 'menu-unfold' : 'menu-fold'" @click="toggle"/>
+          <MultiTab></MultiTab>
+
           <user-menu></user-menu>
         </div>
         <div v-else :class="['top-nav-header-index', theme]">
@@ -30,13 +32,15 @@ import UserMenu from '../tools/UserMenu'
 import SMenu from '../Menu/'
 import Logo from '../tools/Logo'
 import { mixin } from '@/utils/mixin'
+import MultiTab from '@/components/MultiTab'
 
 export default {
   name: 'GlobalHeader',
   components: {
     UserMenu,
     SMenu,
-    Logo
+    Logo,
+    MultiTab
   },
   mixins: [mixin],
   props: {
@@ -121,5 +125,17 @@ export default {
 }
 .showHeader-enter, .showHeader-leave-to {
   opacity: 0;
+}
+.header{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/deep/.ant-tabs-bar{
+  border-bottom: none !important;
+}
+/deep/.ant-tabs-tab-active{
+  border-bottom:1px solid #e8e8e8 !important;
 }
 </style>

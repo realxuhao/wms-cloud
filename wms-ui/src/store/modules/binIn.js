@@ -13,6 +13,10 @@ const binIn = {
     async getPaginationList ({ commit }, options) {
       const data = await binInService.getList(options)
       return data
+    },
+    async delete ({ commit }, id) {
+      const data = await binInService.delete(id)
+      return data
     }
   }
 }

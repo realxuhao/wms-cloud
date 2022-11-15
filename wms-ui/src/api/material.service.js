@@ -62,6 +62,18 @@ const uploadBatchUpdate = async (formdata) => {
   return data
 }
 
+const uploadMaterialBin = async (formdata) => {
+  const url = `/materialBin/import`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
+
+const uploadMaterialBinBatchUpdate = async (formdata) => {
+  const url = `/materialBin/saveBatch`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
+
 export const materialService = {
   getList,
   getOne,
@@ -73,5 +85,7 @@ export const materialService = {
   addDispatchBin,
   destroyDispatchBin,
   upload,
-  uploadBatchUpdate
+  uploadBatchUpdate,
+  uploadMaterialBin,
+  uploadMaterialBinBatchUpdate
 }

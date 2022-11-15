@@ -4,7 +4,8 @@
 		<view class="page-header" v-if="showNavBar">
 			<slot name="page-header">
 				<uni-nav-bar
-				  shadow
+				  :shadow="shadow"
+				  :border="border"
 				  :title="navTitle"
 				  left-icon="left"
 				  @clickLeft="handleBack"
@@ -20,6 +21,14 @@
 <script>
 	export default{
 		props:{
+			shadow:{
+				type:Boolean,
+				default:true
+			},
+			border:{
+				type:Boolean,
+				default:true
+			},
 			navTitle:{
 				type:String,
 				required:false

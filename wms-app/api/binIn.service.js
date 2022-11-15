@@ -71,7 +71,6 @@ const allocate = async (data) =>{
 	const url = '/binin/bin-in/allocate'
 	const method = 'POST'
 	
-	console.log(data)
 	return request({
 		url,
 		method,

@@ -6,9 +6,31 @@
     :visible="visible"
     @close="onClose"
   >
-    <a-button class="m-b-8" v-show="!formVisible" type="primary" icon="plus" @click="handleAdd">
-      新建
-    </a-button>
+    <div v-show="!formVisible">
+      <a-button
+        class="m-b-8 m-r-8"
+        type="primary"
+        icon="plus"
+        @click="handleAdd">
+        新建
+      </a-button>
+      <a-tooltip placement="right">
+        <template slot="title">
+          <a style="color:#fff" @click="handleDownloadTemplate"><a-icon type="arrow-down" />下载模板</a>
+        </template>
+        <a-upload
+          :file-list="[]"
+          name="file"
+          :multiple="true"
+          :before-upload="()=>false"
+          @change="handleUpload"
+        >
+          <a-button :loading="uploadLoading" type="primary" icon="upload" >
+            导入
+          </a-button>
+        </a-upload>
+      </a-tooltip>
+    </div>
 
     <a-form v-show="formVisible" class="search-content m-b-8" layout="inline" :form="form">
       <a-form-item label="跨类型">
@@ -33,7 +55,6 @@
       <a-form-item label="">
         <a-button class="m-r-8" type="primary" @click="handleSubmit" :loading="submitLoading">确认</a-button>
         <a-button @click="handleCancel" :loading="submitLoading">取消</a-button>
-
       </a-form-item>
     </a-form>
 
@@ -117,7 +138,8 @@ export default {
       tableLoading: false,
 
       frameTypeList: [],
-      formVisible: false
+      formVisible: false,
+      uploadLoading: false
     }
   },
   model: {
@@ -133,6 +155,57 @@ export default {
     }
   },
   methods: {
+    async handleDownloadTemplate () {
+      try {
+        this.$store.dispatch('file/downloadByFilename', '物料跨对应关系表.xlsx')
+      } catch (error) {
+        this.$message.error(error.message)
+      }
+    },
+    async uploadBatchUpdate (formdata) {
+      try {
+        await this.$store.dispatch('material/uploadMaterialBinBatchUpdate', formdata)
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.uploadLoading = false
+      }
+    },
+    async handleUpload (e) {
+      const { file } = e
+
+      const formdata = new FormData()
+
+      try {
+        formdata.append('file', file)
+
+        this.uploadLoading = true
+        await this.$store.dispatch('material/uploadMaterialBin', formdata)
+
+        this.currentPage = 1
+        this.loadTableList()
+
+        this.uploadLoading = false
+
+        this.$message.success('导入成功！')
+      } catch (error) {
+        if (error.code === 400) {
+          this.$confirm({
+            title: '是否更新？',
+            content: '存在重复数据',
+            onOk: () => {
+              this.uploadBatchUpdate(formdata)
+            },
+            onCancel () {
+            }
+          })
+        } else {
+          this.$message.error(error.message)
+          this.uploadLoading = false
+        }
+      }
+    },
     onClose () {
       this.form.resetFields()
       this.formVisible = false

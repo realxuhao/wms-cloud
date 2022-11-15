@@ -59,7 +59,6 @@
         rowKey="id"
         :pagination="false"
         size="middle"
-        :scroll="{ x: 1300 }"
       >
         <template slot="status" slot-scope="text">
           <div >
@@ -69,6 +68,13 @@
             <a-tag color="#87d068" v-if="text===1">
               已上架
             </a-tag>
+          </div>
+        </template>
+        <template slot="action" slot-scope="text, record">
+          <div class="action-con">
+            <a-popconfirm v-show="record.status===0" title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
+              <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
+            </a-popconfirm>
           </div>
         </template>
       </a-table>
@@ -171,6 +177,12 @@ const columns = [
     key: 'createBy',
     dataIndex: 'createBy',
     width: 80
+  },
+  {
+    title: '操作',
+    key: 'action',
+    width: 120,
+    scopedSlots: { customRender: 'action' }
   }
 ]
 
@@ -201,6 +213,16 @@ export default {
     }
   },
   methods: {
+    async handleDelete (row) {
+      try {
+        await this.$store.dispatch('binIn/delete', row.id)
+        this.$message.success('删除成功！')
+
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      }
+    },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()

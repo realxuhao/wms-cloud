@@ -10,12 +10,39 @@
 	margin-bottom: 12px;
 }
 
-.flex{
-	display: flex;
-}
+// flex
 .flex-column{
 	flex-direction: column;
 }
+
+.flex{display: flex;display:-webkit-flex;}
+.flex-row{flex-direction: row;}
+.flex-col{flex-direction: column;}
+.flex-ai{align-items: center;}
+.flex-jc{justify-content: center;}
+/****主轴水平、垂直方向***/
+.flex-rowc{display: flex;flex-direction: row;justify-content: center;align-items: center;}//水平垂直居中
+.flex-rowl{display: flex;flex-direction: row;justify-content: flex-start;align-items: center;}//主轴为水平方向，起点在左端，垂直居中
+.flex-rowr{display: flex;flex-direction: row;justify-content: flex-end;align-items: center;}//主轴为水平方向，起点在右端，垂直居中
+.flex-colc{display: flex;flex-direction: column;justify-content: center;align-items: center;}主轴为垂直方向，垂直居中
+.flex-colt{display: flex;flex-direction: column;justify-content: center;align-items: flex-start;}主轴为垂直方向，起点在上沿，水平居中
+.flex-colb{display: flex;flex-direction: column;justify-content: center;align-items: flex-end;}主轴为垂直方向，起点在下沿，水平居中
+.flex-between{display: flex;justify-content: space-between;align-items: center;flex-direction: row;}//两端对齐，项目之间的间隔都相等
+.flex-around{display: flex;justify-content: space-around;align-items: center;flex-direction: row;}//每个项目两侧的间隔相等
+
+**水平方向（一个固定宽度，一个自适应填充）**
+/* 固定宽度 */
+.fixedWidth{flex:0 0 auto;}
+/* 自适应宽度 */
+.autoFullWidth{flex:1 1 auto;}
+
+**垂直方向（一个固定高度，一个自适应填充）**
+/**固定高度*/
+.fixedHig{flex: 0;}
+/**自动填充剩余区域*/
+.autoFullHig{flex: 1;}
+
+
 
 .primary-button{
 	background: $primary-color !important;

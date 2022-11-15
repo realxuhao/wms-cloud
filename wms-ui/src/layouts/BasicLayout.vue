@@ -34,7 +34,7 @@
       :to="to"
     ></SideMenu>
 
-    <a-layout :class="[layoutMode, `content-width-${contentWidth}`]" :style="{ paddingLeft: contentPaddingLeft, minHeight: '100vh' }">
+    <a-layout :class="[layoutMode, `content-width-${contentWidth}`]" :style="{ paddingLeft: contentPaddingLeft, height: '100vh' }">
       <!-- layout header -->
       <GlobalHeader
         :mode="layoutMode"
@@ -49,8 +49,7 @@
       />
 
       <!-- layout content -->
-      <a-layout-content :style="{ height: '100%',margin:'8px 8px 0px 8px',paddingTop: fixedHeader ? '64px' : '0' }">
-        <MultiTab></MultiTab>
+      <a-layout-content :style="{ height: '100%',margin:'8px 8px 0px 8px',overflow:'auto',paddingTop: fixedHeader ? '64px' : '0' }">
         <transition name="page-transition">
           <RouteView />
         </transition>
@@ -79,7 +78,6 @@ import SideMenu from '@/components/Menu/SideMenu'
 import GlobalHeader from '@/components/GlobalHeader'
 import GlobalFooter from '@/components/GlobalFooter'
 import SettingDrawer from '@/components/SettingDrawer'
-import MultiTab from '@/components/MultiTab'
 
 export default {
   name: 'BasicLayout',
@@ -89,8 +87,7 @@ export default {
     SideMenu,
     GlobalHeader,
     GlobalFooter,
-    SettingDrawer,
-    MultiTab
+    SettingDrawer
   },
   data () {
     return {

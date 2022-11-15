@@ -15,14 +15,14 @@ export default {
 		this.startScan()
    },
    
-   onLoad() {
-	const _this = this
-   	Bus.$on('stopScan',function(){
-   		_this.stopScan();
-   	})  
-	Bus.$on('startScan',function(){
-		_this.startScan()
-	})
+   mounted() {	   
+		const _this = this
+		Bus.$on('stopScan',function(){
+			_this.stopScan();
+		})  
+		Bus.$on('startScan',function(){
+			_this.startScan()
+		})
    },
    
     destroyed: function() {
@@ -46,6 +46,7 @@ export default {
                 }
             });
 			
+			this.setScannerEnabled(true)
         },
 		setScannerEnabled(enable){
 			var Intent = plus.android.importClass('android.content.Intent');

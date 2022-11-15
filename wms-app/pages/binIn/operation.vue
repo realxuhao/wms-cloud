@@ -41,17 +41,29 @@
 			
 				<view class="content">
 					<uni-forms v-if="!materialInfo.recommendBinCode" :label-width="80" ref="palletForm" :rules="palletRules" :modelValue="palletForm" label-position="left">
-						<uni-forms-item label="托盘类型" name="pallet" required>
+						<uni-forms-item ref="palletType" label="托盘类型" name="palletType" required>
 							<uni-data-picker 
 							placeholder="请选择托盘类型" 
 							popup-title="请选择托盘类型" 
 							:localdata="palletTypeList" 
-							@change="handlePalletTypechange"
+							@change="handlePalletTypeChange"
 							v-model="palletForm.palletType">
 							</uni-data-picker>
 						</uni-forms-item>
 						<uni-forms-item label="托盘编码" name="palletTypeCode" required>
-							<uni-easyinput  v-model="palletForm.palletTypeCode"  placeholder="托盘编码" />
+							<view class="flex flex-ai">
+								<view class="custom-input" :class="editFieldName==='palletForm.palletTypeCode'?'focus':''" @click="()=>handleSetEditFieldName('palletForm.palletTypeCode')">
+									<text :class="!palletForm.palletTypeCode?'placeholder-text':''">{{palletForm.palletTypeCode||'请扫描托盘编码'}}</text>
+								</view>
+								<view class="generate-pallet-code" @click="handleGeneratePalletCode">
+									<o-btn size="sm" :loading="generatePalletCodeLoading">
+										<uni-icons
+										type="plusempty" 
+										size="16"/>自动生成
+									</o-btn>
+								</view>
+								
+							</view>
 						</uni-forms-item>
 						<uni-forms-item label="推荐库位" name="recommendBinCode" required>
 							<uni-easyinput  v-model="palletForm.recommendBinCode" disabled placeholder="系统自动生成" />
@@ -65,12 +77,12 @@
 							<uni-easyinput  v-model="binInForm.barCode" />
 						</uni-forms-item>
 						<uni-forms-item label="SSCC码" name="mesBarCode" required>
-							<view class="custom-input" :class="focusInput==='mesBarCode'?'focus':''" @click="()=>handleSetFocusInput('mesBarCode')">
+							<view class="custom-input" :class="editFieldName==='binInForm.mesBarCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.mesBarCode')">
 								<text :class="!binInForm.mesBarCode?'placeholder-text':''">{{binInForm.mesBarCode||'请扫描SSCC码'}}</text>
 							</view>
 						</uni-forms-item>
 						<uni-forms-item label="目标库位" name="recommendBinCode" required>
-							<view class="custom-input" :class="focusInput==='recommendBinCode'?'focus':''" @click="()=>handleSetFocusInput('recommendBinCode')">
+							<view class="custom-input" :class="editFieldName==='binInForm.recommendBinCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.recommendBinCode')">
 								<text :class="!binInForm.recommendBinCode?'placeholder-text':''">{{binInForm.recommendBinCode||'请扫描SSCC码'}}</text>
 							</view>
 						</uni-forms-item>
@@ -120,6 +132,7 @@
 <script>
 	import Message from '@/components/Message'
 	import Bus from '@/utils/bus'
+	import _ from 'lodash'
 	
 	function convertPalletList(rows){
 		const list = rows.map(item =>{
@@ -136,17 +149,10 @@
 		components:{
 			Message,
 		},
-		onLoad(options){
-			this.barCode = options.barCode
-			this.binInForm.barCode = options.barCode
-			this.getByMesBarCode(options.barCode)
-		},
-		onLaunch() {
-			Bus.$off("scancodedate");
-		},
 		data() {
 			return {
 				submitLoading:false,
+				generatePalletCodeLoading:false,
 				materialInfo:{},
 				barCode:undefined,
 				palletTypeList:[],
@@ -208,26 +214,54 @@
 					recommendBinCode:undefined
 				},
 				
-				focusInput:'mesBarCode'
+				editFieldName:undefined  //'binInForm.mesBarCode','binInForm.recommendBinCode'
 			};
 		},
+		onLoad(options){
+			this.barCode = options.barCode
+			this.binInForm.barCode = options.barCode
+			this.getByMesBarCode(options.barCode)
+			
+			this.initScanCode()
+		},
+		onLaunch() {
+			Bus.$off("scancodedate");
+		},
 		methods:{
-			handleSetFocusInput(focusName){
-				this.focusInput = focusName
-				uni.hideKeyboard()
+			handleSetEditFieldName(editFieldName){
+				this.editFieldName = editFieldName
 			},
 			async initScanCode(){
-				const _this = this
-				Bus.$on('scancodedate',function(data){
-					_this.binInForm[_this.focusInput] = data.code.trim()
+				Bus.$on('scancodedate',(data)=>{
+					const code = data.code.trim()
+					if(this.editFieldName){
+						_.set(this,this.editFieldName,code)
+					}
 				})
+			},
+			async handlePalletTypeChange(){
+					this.palletForm.palletTypeCode = undefined
+					this.editFieldName = 'palletForm.palletTypeCode'
+			},
+			async handleGeneratePalletCode(){
+				if(!this.palletForm.palletType){
+					this.$refs.palletType.onFieldChange()
+					return
+				}
+				try{
+					this.generatePalletCodeLoading = true
+					const data = await this.$store.dispatch('binIn/getPalletTypeCode',this.palletForm.palletType)
+					
+					this.palletForm.palletTypeCode = data.virtualPalletCode
+					this.editFieldName = undefined
+				}catch(e){
+					this.$refs.message.error(e.message)
+				}finally{
+					this.generatePalletCodeLoading = false
+				}
 			},
 			async handleGoBack(){
 				uni.navigateBack({delta:1})	
-			},
-			async handlePalletTypechange(e) {
-				const palletTypeId = e.detail.value[0].value
-				await this.getPalletTypeCode(palletTypeId)
 			},
 			async getPalletList(){
 				const data = await this.$store.dispatch('binIn/getPalletList')
@@ -236,11 +270,6 @@
 			async lodaData(){
 				this.getPalletList()
 			},
-			async getPalletTypeCode(palletTypeId){
-				const data = await this.$store.dispatch('binIn/getPalletTypeCode',palletTypeId)
-				this.palletForm.palletTypeCode = data.virtualPalletCode
-				await this.allocate()
-			},
 			async getByMesBarCode(barCode){
 				try{
 					const data = await this.$store.dispatch('binIn/getByMesBarCode',barCode)
@@ -248,9 +277,6 @@
 						throw Error('已上架，请勿重复操作')
 					}
 					this.materialInfo = data
-					if(data.recommendBinCode){
-						this.initScanCode()
-					}
 				}catch(e){
 					this.$refs.message.error(e.message)
 				}
@@ -336,7 +362,12 @@
 		watch:{
 			'binInForm.mesBarCode'(value){
 				this.focusInput = 'recommendBinCode'
-			}
+			},
+			'palletForm.palletTypeCode'(value){
+				if(value){
+					this.allocate()
+				}
+			},
 		}
 	}
 </script>
@@ -402,5 +433,9 @@
 			padding: 0px 8px;
 		}
 	}
-	
+	.flex{
+		.custom-input{
+			flex: 1;
+		}
+	}
 </style>

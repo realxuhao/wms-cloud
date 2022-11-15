@@ -1,5 +1,5 @@
 <template>
-	<my-page nav-title="扫描SSCC码" >
+	<my-page nav-title="扫描SSCC码" :shadow="false" :border="false">
 			<view class="content" slot="page-main" >
 				<image src="/static/sku-phone.png" class="m-b-8"></image>
 				<text>请将激光扫描头对准SSCC码区域</text>
@@ -29,12 +29,13 @@
 		},
 		methods:{
 			async scanCodeCallback(data){
-				this.code = data.code
-				await this.checkMaterialIn(data.code)
 				Bus.$emit('stopScan')
+				this.code = data.code
+				this.checkMaterialIn(data.code)
 			},
 			async checkMaterialIn(barCode){
 				try{
+					uni.showLoading()
 					await this.$store.dispatch('materialIn/getAndCheckMaterialIn',barCode)
 					
 					this.handleGoto()
@@ -46,16 +47,10 @@
 					}else{
 						this.$refs.message.error(e.message)
 					}
+				}finally{
+					Bus.$emit('startScan')
+					uni.hideLoading()
 				}
-			},
-			async handleMaterialIn(){
-				try{
-					await this.$store.dispatch('material/postMaterialIn',{barCode:this.code})
-				}catch(e){
-					this.$refs.message.error(e.message)
-				}
-				
-				uni.$emit('startScan')
 			},
 			handleGoto(){
 				Bus.$off("scancodedate",this.scanCodeCallback);

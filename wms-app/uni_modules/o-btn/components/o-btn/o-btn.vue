@@ -5,8 +5,8 @@
 		<text v-if="iconFont&&!Loading" class="icon" :class="icon"></text>
 		<image v-if="iconImg&&!Loading" class="icon" mode="aspectFit" :src="icon"></image>
 		
-		<text v-if="Loading&&loadingText">{{loadingText}}</text>
-		<text v-else><slot /></text>
+		<view v-if="Loading&&loadingText">{{loadingText}}</view>
+		<view v-else><slot /></view>
 
 	</button>
 </template>

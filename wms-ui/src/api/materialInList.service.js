@@ -28,9 +28,16 @@ const uploadBatchUpdate = async (formdata) => {
   return data
 }
 
+const deleteMaterialReveive = async (id) => {
+  const url = `/material-receive/${id}`
+  const { data } = await createAuthInstance(baseUrl).delete(url)
+  return data
+}
+
 export const materialInListService = {
   getList,
   getReceiveList,
   upload,
-  uploadBatchUpdate
+  uploadBatchUpdate,
+  deleteMaterialReveive
 }

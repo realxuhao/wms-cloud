@@ -10,6 +10,13 @@ const getList = async (parameter) => {
   return data
 }
 
+const destory = async (id) => {
+  const url = `/bin-in/${id}`
+  const { data } = await createAuthInstance(baseUrl).delete(url)
+  return data
+}
+
 export const binInService = {
-  getList
+  getList,
+  delete: destory
 }

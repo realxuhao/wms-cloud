@@ -29,6 +29,10 @@ const materialInList = {
     async uploadBatchUpdate ({ commit }, formdata) {
       const data = await materialInListService.uploadBatchUpdate(formdata)
       return data
+    },
+    async deleteMaterialReveive ({ commit }, id) {
+      const data = await materialInListService.deleteMaterialReveive(id)
+      return data
     }
   }
 }

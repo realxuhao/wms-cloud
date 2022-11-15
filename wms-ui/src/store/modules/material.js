@@ -43,6 +43,14 @@ const material = {
       const data = await materialService.destroyDispatchBin(id)
       return data
     },
+    async uploadMaterialBin ({ commit }, formdata) {
+      const data = await materialService.uploadMaterialBin(formdata)
+      return data
+    },
+    async uploadMaterialBinBatchUpdate ({ commit }, formdata) {
+      const data = await materialService.uploadBatchUpdate(formdata)
+      return data
+    },
     async upload ({ commit }, formdata) {
       const data = await materialService.upload(formdata)
       return data
@@ -51,6 +59,7 @@ const material = {
       const data = await materialService.uploadBatchUpdate(formdata)
       return data
     }
+
   }
 }
 

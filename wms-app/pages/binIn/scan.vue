@@ -1,5 +1,5 @@
 <template>
-	<my-page nav-title="扫描SSCC码" >
+	<my-page nav-title="扫描SSCC码" :shadow="false" :border="false">
 			<view class="content" slot="page-main" >
 				<image src="/static/sku-phone.png" class="m-b-8"></image>
 				<text>请将激光扫描头对准SSCC码区域</text>
@@ -22,7 +22,6 @@
 			};
 		},
 		onShow(){
-			console.log('show')
 			Bus.$on('scancodedate',this.scanCodeCallback)
 		},
 		destroyed() {
@@ -30,12 +29,13 @@
 		},
 		methods:{
 			async scanCodeCallback(data){
-				this.code = data.code
-				await this.checkBinIn(data.code)
 				Bus.$emit('stopScan')
+				this.code = data.code
+				this.checkBinIn(data.code)
 			},
 			async checkBinIn(barCode){
 				try{
+					uni.showLoading()
 					const data = await this.$store.dispatch('binIn/getByMesBarCode',barCode)
 					if(!data && data.status ===1 ){
 						throw Error('已上架，请勿重复操作')
@@ -43,6 +43,9 @@
 					this.handleGotoOperation()
 				}catch(e){
 					this.$refs.message.error(e.message)
+				}finally{
+					uni.hideLoading()
+					console.log(1111)
 					Bus.$emit('startScan')
 				}
 			},
@@ -60,12 +63,6 @@
 	.wrapper{
 		display: flex;
 		flex-direction: column;
-	}
-	/deep/.uni-navbar--shadow{
-		box-shadow: none;
-	}
-	/deep/.uni-navbar--border{
-		border: none;
 	}
 	
 	.content{
