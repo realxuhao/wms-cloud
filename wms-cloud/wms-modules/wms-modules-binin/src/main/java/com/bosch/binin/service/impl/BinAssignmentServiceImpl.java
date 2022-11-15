@@ -20,6 +20,7 @@ import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.storagein.api.RemoteMaterialInService;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
-public class IBinAssignmentServiceImpl implements IBinAssignmentService {
+public class BinAssignmentServiceImpl implements IBinAssignmentService {
 
     @Autowired
     private BinInMapper binInMapper;
@@ -75,7 +76,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
         binInWrapper.eq(BinIn::getBatchNb, batchNb);
         binInWrapper.eq(BinIn::getSsccNumber, sscc);
         binInWrapper.eq(BinIn::getMaterialNb, materialNb);
-        binInWrapper.eq(BinIn::getDeleteFlag,0);
+        binInWrapper.eq(BinIn::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
         binInWrapper.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value()).or().eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
 
         List<BinIn> binIns = binInMapper.selectList(binInWrapper);
@@ -237,8 +238,6 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
                     continue;
                 }
                 int usedIndex = framesByType.indexOf(frame);
-
-
                 for (int moveFlag = 0; moveFlag < framesByType.size(); moveFlag++) {
                     //取上一个
                     if ((usedIndex - moveFlag) >= 0) {
@@ -247,7 +246,6 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
                         if (frameRemainVO != null) {
                             return frameRemainVO.getRecommendBinCode();
                         }
-
                     }
                     //取下一个
                     if ((usedIndex + moveFlag) < framesByType.size()) {
@@ -324,6 +322,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
             //已上架 查询实际库位
             LambdaQueryWrapper<BinIn> queryActual = new LambdaQueryWrapper<>();
             queryActual.eq(BinIn::getActualFrameId, frameId);
+            queryActual.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
             queryActual.eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
             List<BinIn> actualBins = binInMapper.selectList(queryActual);
             if (CollectionUtils.isNotEmpty(actualBins)) {
@@ -334,6 +333,7 @@ public class IBinAssignmentServiceImpl implements IBinAssignmentService {
             //未上架 查询分配库位
             LambdaQueryWrapper<BinIn> queryRecommend = new LambdaQueryWrapper<>();
             queryRecommend.eq(BinIn::getRecommendFrameId, frameId);
+            queryRecommend.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
             queryRecommend.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value());
             List<BinIn> recommendBins = binInMapper.selectList(queryRecommend);
             if (CollectionUtils.isNotEmpty(recommendBins)) {
