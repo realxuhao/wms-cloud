@@ -12,13 +12,18 @@ import com.bosch.binin.service.IMaterialCallService;
 import com.bosch.file.api.FileFeignService;
 import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.Bin;
+import com.bosch.masterdata.api.domain.Department;
 import com.bosch.masterdata.api.domain.dto.BinDTO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
+import com.ruoyi.common.security.annotation.RequiresPermissions;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -107,5 +113,16 @@ public class MaterialFeedingController extends BaseController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
 
     }
-
+    /**
+     * 导出叫料需求列表
+     */
+    @Log(title = "叫料需求", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    public void export(HttpServletResponse response, MaterialCallQueryDTO queryDTO)
+    {
+        startPage();
+        List<MaterialCallVO> list = materialCallService.getMaterialCallList(queryDTO);
+        ExcelUtil<MaterialCallVO> util = new ExcelUtil<MaterialCallVO>(MaterialCallVO.class);
+        util.exportExcel(response, list, "叫料需求");
+    }
 }

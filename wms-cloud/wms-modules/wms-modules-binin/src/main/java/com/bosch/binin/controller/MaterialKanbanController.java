@@ -36,13 +36,6 @@ public class MaterialKanbanController {
     @PostMapping(value = "/list")
     @ApiOperation("查询kanban列表")
     public R<PageVO<MaterialKanbanVO>> list(@RequestBody MaterialKanbanDTO materialKanbanDTO) {
-        if (materialKanbanDTO == null) {
-            materialKanbanDTO = new MaterialKanbanDTO();
-            materialKanbanDTO.setPageNum(0);
-            materialKanbanDTO.setPageSize(0);
-        }
-
-        //startPage();
 
         IPage<MaterialKanbanVO> materialKanbanIPage = materialKanbanService.pageList(materialKanbanDTO);
 
