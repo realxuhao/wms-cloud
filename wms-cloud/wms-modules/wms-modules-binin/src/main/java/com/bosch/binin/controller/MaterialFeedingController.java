@@ -8,6 +8,7 @@ import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.MaterialCallVO;
 
+import com.bosch.binin.api.domain.vo.RequirementResultVO;
 import com.bosch.binin.service.IMaterialCallService;
 import com.bosch.file.api.FileFeignService;
 import com.bosch.file.api.FileService;
@@ -16,6 +17,7 @@ import com.bosch.masterdata.api.domain.Department;
 import com.bosch.masterdata.api.domain.dto.BinDTO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
@@ -25,6 +27,8 @@ import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.annotation.RequiresPermissions;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -67,8 +71,13 @@ public class MaterialFeedingController extends BaseController {
 
     @PostMapping(value = "/call")
     @ApiOperation("叫料")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "文件",name = "file",dataType = "File"),
+            @ApiImplicitParam(value = "排序类型,0基于有效期，1、基于先主库后外库",name = "sortType",dataType = "Integer"),
+            @ApiImplicitParam(value = "cell",name = "cell",dataType = "String")
+    })
     @Transactional(rollbackFor = Exception.class)
-    public R<List<MaterialCallDTO>> call(@RequestParam(value = "file") MultipartFile file,
+    public R<RequirementResultVO> call(@RequestParam(value = "file") MultipartFile file,
                                 @RequestParam("sortType") Integer sortType,
                                 @RequestParam("cell") String cell) {
 //        return R.fail(fileFeignService.reduct());
@@ -90,9 +99,11 @@ public class MaterialFeedingController extends BaseController {
                         //添加
                         List<MaterialCall> dos = BeanConverUtil.converList(dtos, MaterialCall.class);
                         materialCallService.saveBatch(dos);
+                        RequirementResultVO requirementResultVO = materialCallService.converToRequirement(dos, sortType, cell);
+                        return R.ok(requirementResultVO);
                     }
                 }
-                return R.ok(dtos);
+                return R.ok(null);
             }else {
                 return R.fail(result.getMsg());
             }
@@ -110,7 +121,8 @@ public class MaterialFeedingController extends BaseController {
     public R<PageVO<MaterialCallVO>> list(MaterialCallQueryDTO queryDTO) {
         startPage();
         List<MaterialCallVO> list = materialCallService.getMaterialCallList(queryDTO);
-        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+        PageInfo<MaterialCallVO> materialCallVOPageInfo = new PageInfo<>(list);
+        return R.ok(new PageVO<>(list, materialCallVOPageInfo.getTotal()));
 
     }
     /**

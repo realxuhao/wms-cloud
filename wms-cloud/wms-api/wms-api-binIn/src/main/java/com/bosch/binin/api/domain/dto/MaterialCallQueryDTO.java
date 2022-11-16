@@ -32,6 +32,10 @@ public class MaterialCallQueryDTO extends PageDomain {
     @ApiModelProperty(value = "部门")
     private String cell;
 
+    /** 创建者 */
+    @ApiModelProperty(value = "创建者")
+    private String createBy;
+
     /**
      * 开始上传时间
      */
@@ -43,4 +47,9 @@ public class MaterialCallQueryDTO extends PageDomain {
      */
     @ApiModelProperty(value = "结束上传时间")
     private Date endCreateTime;
+
+    @ApiModelProperty(value = "状态：0:未执行，1:已执行")
+    private Integer status;
+
+
 }

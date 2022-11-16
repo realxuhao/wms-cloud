@@ -16,6 +16,9 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.core.web.domain.AjaxResult;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -124,5 +127,13 @@ public class BinInController extends BaseController {
         hashMap.put("virtualPalletCode", binInService.virtualPalletCode(palletType));
         return R.ok(hashMap);
     }
+
+
+    @ApiOperation("逻辑删除上架任务")
+    @DeleteMapping("/{id}")
+    public AjaxResult remove(@PathVariable Long id) {
+        return toAjax(binInService.deleteBinInById(id));
+    }
+
 
 }

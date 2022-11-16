@@ -81,6 +81,7 @@ public class MaterialKanban extends BaseEntity {
      */
     private Integer type;
     /**
+     * 状态:状态：0:未执行，1:已执行
      * 状态:待下发（源工厂为7751的没有）、已下发、已下架（下架时PDA扫描SSCC）、配送完成（产线PDA扫描接收）
      */
     private Integer status;

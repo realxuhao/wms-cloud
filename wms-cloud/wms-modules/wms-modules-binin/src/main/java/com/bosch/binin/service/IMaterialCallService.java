@@ -8,6 +8,7 @@ import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.vo.MaterialCallVO;
+import com.bosch.binin.api.domain.vo.RequirementResultVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.masterdata.api.domain.Frame;
 
@@ -27,4 +28,5 @@ public interface IMaterialCallService extends IService<MaterialCall> {
 
     public boolean validList( List<MaterialCallDTO> dtos) ;
 
+    RequirementResultVO converToRequirement(List<MaterialCall> dos, Integer sortType, String cell);
 }

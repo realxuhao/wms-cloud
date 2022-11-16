@@ -53,12 +53,31 @@ public class MaterialCallVO {
 
 
     /**
-     * 数量
+     * 需求量
      */
     @Excel(name = "数量")
     @ExcelProperty(value = "数量")
-    @ApiModelProperty(value = "数量")
+    @ApiModelProperty(value = "需求量")
     private Double quantity;
+
+    /**
+     * 配送量
+     */
+    @ApiModelProperty(value = "配送量")
+    private Double deliveryQuantity;
+
+    /**
+     * 差值
+     */
+    @ApiModelProperty(value = "差值")
+    private Double diffQuantity;
+
+
+    /**
+     * 状态：0:未执行，1:已执行
+     */
+    @ApiModelProperty(value = "状态：0:未执行，1:已执行")
+    private Integer status;
 
     /**
      * 单位

@@ -2,6 +2,7 @@ package com.bosch.binin.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -38,9 +39,19 @@ public class MaterialCall extends BaseEntity {
     private String materialName;
 
     /**
-     * 数量
+     * 需求量
      */
     private Double quantity;
+
+    /**
+     * 配送量
+     */
+    private Double deliveryQuantity;
+
+    /**
+     * 差值
+     */
+    private Double diffQuantity;
 
     /**
      * 单位
@@ -67,6 +78,11 @@ public class MaterialCall extends BaseEntity {
      * 删除标记，0：可用，1：已删除
      */
     private Integer deleteFlag;
+
+    /**
+     * 状态：0:未执行，1:已执行
+     */
+    private Integer status;
 
 
 }
