@@ -83,9 +83,9 @@ public class MaterialBinController extends BaseController {
      * 查询物料库位分配策略列表
      */
     @RequiresPermissions("masterdata:bin:list")
-    @GetMapping("/list")
+    @PostMapping("/list")
     @ApiOperation("查询物料库位规则列表")
-    public R<PageVO<MaterialBinVO>> list(MaterialBinDTO materialBinDTO) {
+    public R<PageVO<MaterialBinVO>> list(@RequestBody MaterialBinDTO materialBinDTO) {
         startPage();
         List<MaterialBinVO> list = materialBinService.selectMaterialBinList(materialBinDTO);
 

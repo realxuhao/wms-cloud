@@ -1,5 +1,6 @@
 package com.bosch.binin.api.domain.dto;
 
+import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,7 +13,7 @@ import java.util.Date;
  * @create: 2022-11-10 13:49
  **/
 @Data
-public class MaterialCallQueryDTO {
+public class MaterialCallQueryDTO extends PageDomain {
     /**
      * 订单号
      */
