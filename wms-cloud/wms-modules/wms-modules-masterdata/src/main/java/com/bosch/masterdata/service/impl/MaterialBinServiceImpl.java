@@ -73,6 +73,13 @@ public class MaterialBinServiceImpl extends ServiceImpl<MaterialBinMapper, Mater
      */
     @Override
     public int insertMaterialBin(MaterialBin materialBin) {
+        LambdaQueryWrapper<Material> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Material::getId,materialBin.getMaterialId());
+        Material material = materialMapper.selectOne(lambdaQueryWrapper);
+        if(material==null){
+            throw  new ServiceException("通过物料id未找到物料code");
+        }
+        materialBin.setMaterialCode(material.getCode());
         materialBin.setCreateTime(DateUtils.getNowDate());
         materialBin.setCreateBy(SecurityUtils.getUsername());
         return materialBinMapper.insertMaterialBin(materialBin);
