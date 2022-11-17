@@ -290,6 +290,9 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
                     BigDecimal frameWidth = frameData.getWidth();
                     //获取跨上剩余承重，宽度
                     frameRemainVO = getBins(frameData.getId(),frameCode,pallet);
+                    if (StringUtils.isEmpty(frameRemainVO.getRecommendBinCode()) ){
+                        return null;
+                    }
                     if (frameBearWeight.subtract(frameRemainVO.getFrameBearWeight()).compareTo(totalWeight) < 0) {
                         return null;
                     }
