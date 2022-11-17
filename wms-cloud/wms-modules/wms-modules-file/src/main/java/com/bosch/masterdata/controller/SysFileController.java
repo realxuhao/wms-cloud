@@ -197,10 +197,10 @@ public class SysFileController {
 //                return R.fail("excel中存在重复订单号和物料代码");
 //            }
 
-            R<SysFile> upload = upload(file);
-            if (!upload.isSuccess()){
-                return R.fail("上传文件服务失败");
-            }
+//            R<SysFile> upload = upload(file);
+//            if (!upload.isSuccess()){
+//                return R.fail("上传文件服务失败");
+//            }
             //read.forEach(r->r.setFileId(upload.getData().getFileId().toString()));
             return R.ok(read);
         } catch (Exception e) {
@@ -225,6 +225,7 @@ public class SysFileController {
         } catch (Exception e) {
             return R.fail(e.getMessage());
         }
-
     }
+
+
 }

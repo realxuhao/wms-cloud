@@ -69,6 +69,37 @@
         </where>
 
     </select>
+    <select id="selectStockVOListBySSCCList" resultMap="StockVOResult">
+        select bs.id as id,
+        bs.sscc_number as sscc_number,
+        bs.plant_nb as plant_nb,
+        bs.from_purchase_order as from_purchase_order,
+        bs.ware_code as ware_code,
+        bs.frame_code as frame_code,
+        bs.bin_code as bin_code,
+        bs.material_nb as material_nb,
+        mm.name as material_name,
+        bs.batch_nb as batch_nb,
+        bs.expire_date as expire_date,
+        bs.total_stock as total_stock,
+        bs.freeze_stock as freeze_stock,
+        bs.available_stock as available_stock,
+        bs.bin_in_id as bin_in_id,
+        bs.create_by as create_by,
+        bs.create_time as create_time,
+        bs.quality_status as quality_status
+        --         ma.code as area_code
+        from bi_stock bs
+        left join md_ware mw
+        on mw.code = bs.ware_code
+        --         left join md_area ma on ma.ware_id = mw.id
+        left join md_material mm on bs.material_nb = mm.code
+        where  bs.sscc_number in
+        <foreach collection="ssccList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </select>
 
 
 </mapper>

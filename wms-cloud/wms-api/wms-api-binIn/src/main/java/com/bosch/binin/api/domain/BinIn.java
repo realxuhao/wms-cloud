@@ -61,7 +61,7 @@ public class BinIn extends BaseEntity {
     /**
      * 数量
      */
-    private Integer quantity;
+    private Double quantity;
 
     /**
      * 托盘编码

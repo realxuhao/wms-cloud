@@ -64,13 +64,9 @@
                 <where>
                     mb.material_id = m.id
                     <if test="materialId != null ">and mb.material_id = #{materialId}</if>
-                    <if test="frameId != null ">and mb.frame_id = #{frameId}</if>
                     <if test="priorityLevel != null ">and mb.priority_level = #{priorityLevel}</if>
+                    <if test="frameTypeCode != null ">and mb.frame_type_code = #{frameTypeCode}</if>
                     <if test="materialCode != null ">and m.code = #{materialCode}</if>
-                    <if test="materialName != null ">and m.name = #{name}</if>
-                    <if test="binCode != null ">and b.code = #{binCode}</if>
-                    <if test="binName != null ">and b.name = #{binName}</if>
-                    <if test="status != null ">and mb.status = #{status}</if>
                 </where>
     </select>
 
@@ -102,6 +98,7 @@
             <if test="updateTime != null">update_time,</if>
             <if test="status != null">status,</if>
             <if test="remark != null">remark,</if>
+            <if test="materialCode != null">material_code,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="materialId != null">#{materialId},</if>
@@ -113,10 +110,11 @@
             <if test="updateTime != null">#{updateTime},</if>
             <if test="status != null">#{status},</if>
             <if test="remark != null">#{remark},</if>
+            <if test="materialCode != null">#{materialCode},</if>
         </trim>
     </insert>
 
-    <update id="updateMaterialBin" parameterType="MaterialBin">frame_type_code
+    <update id="updateMaterialBin" parameterType="MaterialBin">
         update md_material_frame
         <trim prefix="SET" suffixOverrides=",">
             <if test="materialId != null">material_id = #{materialId},</if>
@@ -128,6 +126,7 @@
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="status != null">status = #{status},</if>
             <if test="remark != null">remark = #{remark},</if>
+            <if test="materialCode != null">material_code = #{materialCode},</if>
         </trim>
         where id = #{id}
     </update>
@@ -145,7 +144,7 @@
         </foreach>
     </delete>
 
-    <select id="selectByWareCode" parameterType="String" resultMap="MaterialBinVOResult">
+    <select id="selectByWareCode"  resultMap="MaterialBinVOResult">
         SELECT
         mf.id AS id,
         mf.frame_type_code AS frame_type_code,
@@ -158,12 +157,12 @@
         FROM
         md_material_frame mf
         LEFT JOIN md_material m ON mf.material_id = m.id
-        WHERE mf.frame_type_code IN (
+        WHERE mf.material_code =#{materialCode} and mf.frame_type_code IN (
 		  SELECT type_code FROM md_frame f
 		  LEFT JOIN md_area a ON f.area_id=a.id
         LEFT JOIN md_ware w ON w.id=a.ware_id
         WHERE 1=1
-        <if test="code != null  and code != ''">AND w.code LIKE   concat('%', #{code}, '%')</if>
+        <if test="wareCode != null  and wareCode != ''">AND w.code LIKE   concat('%', #{wareCode}, '%')</if>
           )
     </select>
 </mapper>

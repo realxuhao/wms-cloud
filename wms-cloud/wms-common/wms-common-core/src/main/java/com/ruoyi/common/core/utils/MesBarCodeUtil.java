@@ -1,51 +1,80 @@
 package com.ruoyi.common.core.utils;
 
 
+import com.ruoyi.common.core.exception.ServiceException;
+
 import java.text.ParseException;
 import java.util.Date;
 
 public class MesBarCodeUtil {
 
-//    public static String getMaterialCode(String mesBarCode) {
-//        return mesBarCode.split();
-//    }
     public static Date getExpireDate(String mesBarCode) {
-        String date = mesBarCode.substring(0, 8);
+        String date = "";
+        try {
+            date = mesBarCode.substring(0, 8);
+        } catch (Exception e) {
+            throw new ServiceException("mesBarCode格式错误");
+        }
         Date parseDate = null;
-        String format="yyyy-MM-dd";
+        String format = "yyyy-MM-dd";
 
         try {
-            parseDate=org.apache.commons.lang3.time.DateUtils.parseDate(date,format,"yyyyMMdd");
-        }catch (ParseException e){
+            parseDate = org.apache.commons.lang3.time.DateUtils.parseDate(date, format, "yyyyMMdd");
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return parseDate;
     }
 
-    public static String getSSCC(String mesBarCode){
-        return mesBarCode.substring(8,26);
+    public static String getSSCC(String mesBarCode) {
+        String sscc = "";
+        try {
+            sscc = mesBarCode.substring(8, 26);
+        } catch (Exception e) {
+            throw new ServiceException("mesBarCode格式错误");
+        }
+        return sscc;
     }
 
-    public static String getMaterialNb(String mesBarCode){
-        return mesBarCode.substring(26,34);
+    public static String getMaterialNb(String mesBarCode) {
+        String materialNb = "";
+        try {
+            materialNb = mesBarCode.substring(26, 34);
+        } catch (Exception e) {
+            throw new ServiceException("mesBarCode格式错误");
+        }
+        return materialNb;
     }
 
-    public static String getBatchNb(String mesBarCode){
-        return mesBarCode.substring(34,44);
+    public static String getBatchNb(String mesBarCode) {
+        String batchNb = "";
+        try {
+            batchNb = mesBarCode.substring(34, 44);
+        } catch (Exception e) {
+            throw new ServiceException("mesBarCode格式错误");
+        }
+
+        return batchNb;
     }
 
-    public static String getQuantity(String mesBarCode){
-        return mesBarCode.substring(44,50);
+    public static String getQuantity(String mesBarCode) {
+        String quantity = "";
+        try {
+            quantity = mesBarCode.substring(44, 50);
+        } catch (Exception e) {
+            throw new ServiceException("mesBarCode格式错误");
+        }
+        return quantity;
     }
 
     public static void main(String[] args) {
-        String mesBarCode="20250213669006391110024585103025072202141190001000";
+        String mesBarCode = "20250213669006391110024585103025072202141190001000";
         System.out.println(getExpireDate(mesBarCode));
         System.out.println(getSSCC(mesBarCode));
         System.out.println(getMaterialNb(mesBarCode));
         System.out.println(getBatchNb(mesBarCode));
         System.out.println(getQuantity(mesBarCode));
-        double ceil = Math.ceil(Double.valueOf(50)/Double.valueOf(1000));
+        double ceil = Math.ceil(Double.valueOf(50) / Double.valueOf(1000));
         System.out.println(ceil);
         double ceil1 = Math.ceil(50 / 1000);
         System.out.println(ceil1);

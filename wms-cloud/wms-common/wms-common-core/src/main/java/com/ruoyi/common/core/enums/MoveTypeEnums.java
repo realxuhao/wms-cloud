@@ -3,7 +3,8 @@ package com.ruoyi.common.core.enums;
 public enum  MoveTypeEnums {
     RECEIVE("0", "收货"),
     STORAGEIN("1", "入库"),
-    BININ("2", "上架");
+    BININ("2", "上架"),
+    CALL("3","生产叫料");
 
     private final String code;
     private final String info;

@@ -29,4 +29,6 @@ public interface IBinInService extends IService<BinIn> {
     List<BinInVO> currentUserData(BinInQueryDTO queryDTO);
 
     BinInVO performBinIn(BinInDTO binInDTO);
+
+    int deleteBinInById(Long id);
 }

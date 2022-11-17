@@ -8,7 +8,9 @@ import com.bosch.masterdata.api.domain.MaterialBin;
 import com.bosch.masterdata.api.domain.dto.MaterialBinDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * 物料库位分配策略Mapper接口
@@ -70,8 +72,8 @@ public interface MaterialBinMapper extends BaseMapper<MaterialBin>
 
     /**
      * 根据登陆人仓库 选择可用物料跨关系
-     * @param code
+     * @param
      * @return
      */
-    public  List<MaterialBinVO> selectByWareCode(String code);
+    public  List<MaterialBinVO> selectByWareCode(@Param("materialCode") String materialCode, @Param("wareCode")String wareCode);
 }

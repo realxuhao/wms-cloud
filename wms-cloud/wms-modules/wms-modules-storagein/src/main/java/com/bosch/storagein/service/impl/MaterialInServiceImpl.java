@@ -74,6 +74,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
     @Override
     public MaterialInVO selectByMesBarCode(String mesBarCode) {
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+
         return materialInMapper.selectBySsccNumber(sscc);
     }
 

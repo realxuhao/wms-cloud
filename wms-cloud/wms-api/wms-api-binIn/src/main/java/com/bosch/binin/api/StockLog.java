@@ -58,17 +58,17 @@ public class StockLog extends BaseEntity {
     /**
      * 总库存
      */
-    private Integer totalStock;
+    private Double totalStock;
 
     /**
      * 冻结库存
      */
-    private Integer freezeStock;
+    private Double freezeStock;
 
     /**
      * 可用库存
      */
-    private Integer availableStock;
+    private Double availableStock;
 
     /**
      * PO号
