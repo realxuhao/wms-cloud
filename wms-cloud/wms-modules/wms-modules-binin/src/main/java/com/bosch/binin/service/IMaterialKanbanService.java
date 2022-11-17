@@ -6,9 +6,14 @@ import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
+import com.bosch.binin.api.domain.vo.StockVO;
 import com.ruoyi.common.core.web.page.PageDomain;
+
+import java.util.List;
 
 public interface IMaterialKanbanService extends IService<MaterialKanban> {
 
     IPage<MaterialKanbanVO> pageList(MaterialKanbanDTO dto);
+
+    List<StockVO> getStockInfo(String materialNb, String wareCode);
 }
