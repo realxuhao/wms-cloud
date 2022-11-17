@@ -8,6 +8,10 @@ import com.bosch.binin.service.IMaterialKanbanService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.web.domain.AjaxResult;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
+import com.ruoyi.common.security.annotation.RequiresPermissions;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,5 +45,22 @@ public class MaterialKanbanController {
                                          @RequestParam("wareCode") String wareCode) {
         List<StockVO> stockVOS = materialKanbanService.getStockInfo(materialNb, wareCode);
         return R.ok(stockVOS);
+    }
+
+    /**
+     * 删除kanban
+     */
+    @Log(title = "kanban", businessType = BusinessType.DELETE)
+    @ApiOperation("删除kanban")
+    @DeleteMapping("/{ids}")
+    public R remove(@PathVariable Long[] ids)
+    {
+        int i =0;
+        try {
+             i = materialKanbanService.deleteByIds(ids);
+        }catch (Exception ex){
+            return R.fail(ex.getMessage());
+        }
+        return R.ok(i);
     }
 }

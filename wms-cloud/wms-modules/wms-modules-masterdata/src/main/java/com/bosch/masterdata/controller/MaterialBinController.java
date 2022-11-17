@@ -2,6 +2,7 @@ package com.bosch.masterdata.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -121,8 +122,19 @@ public class MaterialBinController extends BaseController {
     @Log(title = "物料库位分配策略", businessType = BusinessType.INSERT)
     @ApiOperation("新增物料库位分配策略")
     @PostMapping
-    public AjaxResult add(@RequestBody MaterialBinDTO materialBinDTO) {
-        return toAjax(materialBinService.insertMaterialBin(BeanConverUtil.conver(materialBinDTO, MaterialBin.class)));
+    public R add(@RequestBody MaterialBinDTO materialBinDTO) {
+
+        try {
+
+            boolean b = materialBinService.validOne(materialBinDTO);
+            if (!b) {
+                return R.fail(400, "存在重复数据");
+            }
+            return R.ok(materialBinService.insertMaterialBin(BeanConverUtil.conver(materialBinDTO, MaterialBin.class)));
+        }catch (Exception ex){
+            return R.fail(ex.getMessage());
+        }
+
     }
 
     /**

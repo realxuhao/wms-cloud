@@ -35,13 +35,14 @@ import com.bosch.masterdata.service.IMaterialBinService;
  * @date 2022-09-22
  */
 @Service
-public class MaterialBinServiceImpl  extends ServiceImpl<MaterialBinMapper, MaterialBin> implements   IMaterialBinService {
+public class MaterialBinServiceImpl extends ServiceImpl<MaterialBinMapper, MaterialBin> implements IMaterialBinService {
     @Autowired
     private MaterialBinMapper materialBinMapper;
     @Autowired
     private MaterialMapper materialMapper;
     @Autowired
     private FrameMapper frameMapper;
+
     /**
      * 查询物料库位分配策略
      *
@@ -112,24 +113,24 @@ public class MaterialBinServiceImpl  extends ServiceImpl<MaterialBinMapper, Mate
     }
 
     @Override
-    public Map<String,Long> getTypeMap(List<String> codes,int i) {
-        Map<String,Long> collect=new HashMap<>();
-        if (i==1){
-            LambdaQueryWrapper<Frame> queryWrapper=new LambdaQueryWrapper<Frame>();
-            queryWrapper.in(Frame::getCode,codes);
+    public Map<String, Long> getTypeMap(List<String> codes, int i) {
+        Map<String, Long> collect = new HashMap<>();
+        if (i == 1) {
+            LambdaQueryWrapper<Frame> queryWrapper = new LambdaQueryWrapper<Frame>();
+            queryWrapper.in(Frame::getCode, codes);
             List<Frame> frames = frameMapper.selectList(queryWrapper);
-            if (CollectionUtils.isNotEmpty(frames)){
-                collect = frames.stream().collect(Collectors.toMap(Frame::getCode,Frame::getId));
+            if (CollectionUtils.isNotEmpty(frames)) {
+                collect = frames.stream().collect(Collectors.toMap(Frame::getCode, Frame::getId));
             }
-            return  collect;
-        }else {
-            LambdaQueryWrapper<Material> queryWrapper=new LambdaQueryWrapper<Material>();
-            queryWrapper.in(Material::getCode,codes);
+            return collect;
+        } else {
+            LambdaQueryWrapper<Material> queryWrapper = new LambdaQueryWrapper<Material>();
+            queryWrapper.in(Material::getCode, codes);
             List<Material> materials = materialMapper.selectList(queryWrapper);
-            if (CollectionUtils.isNotEmpty(materials)){
-                collect = materials.stream().collect(Collectors.toMap(Material::getCode,Material::getId));
+            if (CollectionUtils.isNotEmpty(materials)) {
+                collect = materials.stream().collect(Collectors.toMap(Material::getCode, Material::getId));
             }
-            return  collect;
+            return collect;
         }
     }
 
@@ -146,6 +147,18 @@ public class MaterialBinServiceImpl  extends ServiceImpl<MaterialBinMapper, Mate
         return true;
     }
 
+    public boolean validOne(MaterialBinDTO dto) {
+
+        LambdaQueryWrapper<MaterialBin> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(MaterialBin::getFrameTypeCode, dto.getFrameTypeCode());
+        lambdaQueryWrapper.eq(MaterialBin::getMaterialId, dto.getMaterialId());
+        Integer integer = materialBinMapper.selectCount(lambdaQueryWrapper);
+        if (integer > 0) {
+            return false;
+        }
+
+        return true;
+    }
 
     public List<MaterialBinDTO> setValue(List<MaterialBinDTO> dtos) {
         //获取集合
@@ -155,14 +168,14 @@ public class MaterialBinServiceImpl  extends ServiceImpl<MaterialBinMapper, Mate
                 dtos.stream().map(MaterialBinDTO::getMaterialCode).collect(Collectors.toList());
         //获取map
 //        Map<String,Long> framesMap = getTypeMap(frames,1);
-        Map<String,Long> materialsMap = getTypeMap(materials,2);
+        Map<String, Long> materialsMap = getTypeMap(materials, 2);
         //绑定id
-        dtos.forEach(x->{
+        dtos.forEach(x -> {
 //            if (framesMap.get(x.getFrameCode())==null){
 //                throw new ServiceException("包含不存在的跨编码");
 //            }
 //            x.setFrameId(framesMap.get(x.getFrameCode()));
-            if (materialsMap.get(x.getMaterialCode())==null){
+            if (materialsMap.get(x.getMaterialCode()) == null) {
                 throw new ServiceException("包含不存在的物料代码");
             }
             x.setMaterialId(materialsMap.get(x.getMaterialCode()));
@@ -176,7 +189,8 @@ public class MaterialBinServiceImpl  extends ServiceImpl<MaterialBinMapper, Mate
 //        lambdaQueryWrapper.eq(MaterialBin::getMaterialCode, materialCode);
 //        List<MaterialBin> materialBins = materialBinMapper.selectList(lambdaQueryWrapper);
 //        List<MaterialBinVO> materialBinVOS = BeanConverUtil.converList(materialBins, MaterialBinVO.class);
-        List<MaterialBinVO> materialBinVOS = materialBinMapper.selectByWareCode(materialCode,SecurityUtils.getWareCode());
+        List<MaterialBinVO> materialBinVOS = materialBinMapper.selectByWareCode(materialCode,
+                SecurityUtils.getWareCode());
         return materialBinVOS;
     }
 }
