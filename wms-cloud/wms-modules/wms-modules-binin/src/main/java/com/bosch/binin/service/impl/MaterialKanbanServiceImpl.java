@@ -8,51 +8,58 @@ import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
+import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.mapper.BinInMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
+import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IMaterialKanbanService;
+import com.bosch.binin.service.IStockService;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.page.PageDomain;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper, MaterialKanban> implements IMaterialKanbanService {
 
 
+    @Resource
+    MaterialKanbanMapper materialKanbanMapper;
 
-        @Resource
-        MaterialKanbanMapper materialKanbanMapper;
+    @Autowired
+    private StockMapper stockMapper;
 
-        @Override
-        public IPage<MaterialKanbanVO> pageList(MaterialKanbanDTO dto) {
-            IPage<MaterialKanban> page= new Page<>();
-            if (dto.getPageNum()!=null&& dto.getPageSize()!=null){
-                page= new Page<>(dto.getPageNum(), dto.getPageSize());
-            }
-            //查询条件
-            LambdaQueryWrapper<MaterialKanban> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-            lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getOrderNumber()), MaterialKanban::getOrderNumber,dto.getOrderNumber());
-            lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getFactoryCode()), MaterialKanban::getFactoryCode,dto.getFactoryCode());
-            lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getWareCode()), MaterialKanban::getWareCode,dto.getWareCode());
-            lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getAreaCode()), MaterialKanban::getAreaCode,dto.getAreaCode());
-            lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getMaterialCode()), MaterialKanban::getMaterialCode,dto.getMaterialCode());
-            lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getSsccNumber()), MaterialKanban::getSsccNumber,dto.getSsccNumber());
-            lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getBinCode()), MaterialKanban::getBinCode,dto.getBinCode());
-            lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getCell()), MaterialKanban::getCell,dto.getCell());
-            lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getCreateBy()), MaterialKanban::getCreateBy,dto.getCreateBy());
-            lambdaQueryWrapper.ge(dto.getCreateTimeStart()!=null, MaterialKanban::getCreateTime,dto.getCreateTimeStart());
-            lambdaQueryWrapper.le(dto.getCreateTimeEnd()!=null, MaterialKanban::getCreateTime,dto.getCreateTimeEnd());
-            lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getUpdateBy()), MaterialKanban::getUpdateBy,dto.getUpdateBy());
-            lambdaQueryWrapper.ge(dto.getUpdateTimeStart()!=null, MaterialKanban::getUpdateTime,dto.getUpdateTimeStart());
-            lambdaQueryWrapper.le(dto.getUpdateTimeEnd()!=null, MaterialKanban::getUpdateTime,dto.getUpdateTimeEnd());
-            lambdaQueryWrapper.like(dto.getType()!=null, MaterialKanban::getType,dto.getType());
-            lambdaQueryWrapper.like(dto.getStatus()!=null, MaterialKanban::getStatus,dto.getStatus());
+    @Override
+    public IPage<MaterialKanbanVO> pageList(MaterialKanbanDTO dto) {
+        IPage<MaterialKanban> page = new Page<>();
+        if (dto.getPageNum() != null && dto.getPageSize() != null) {
+            page = new Page<>(dto.getPageNum(), dto.getPageSize());
+        }
+        //查询条件
+        LambdaQueryWrapper<MaterialKanban> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getOrderNumber()), MaterialKanban::getOrderNumber, dto.getOrderNumber());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getFactoryCode()), MaterialKanban::getFactoryCode, dto.getFactoryCode());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getWareCode()), MaterialKanban::getWareCode, dto.getWareCode());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getAreaCode()), MaterialKanban::getAreaCode, dto.getAreaCode());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getMaterialCode()), MaterialKanban::getMaterialCode, dto.getMaterialCode());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getSsccNumber()), MaterialKanban::getSsccNumber, dto.getSsccNumber());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getBinCode()), MaterialKanban::getBinCode, dto.getBinCode());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getCell()), MaterialKanban::getCell, dto.getCell());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getCreateBy()), MaterialKanban::getCreateBy, dto.getCreateBy());
+        lambdaQueryWrapper.ge(dto.getCreateTimeStart() != null, MaterialKanban::getCreateTime, dto.getCreateTimeStart());
+        lambdaQueryWrapper.le(dto.getCreateTimeEnd() != null, MaterialKanban::getCreateTime, dto.getCreateTimeEnd());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getUpdateBy()), MaterialKanban::getUpdateBy, dto.getUpdateBy());
+        lambdaQueryWrapper.ge(dto.getUpdateTimeStart() != null, MaterialKanban::getUpdateTime, dto.getUpdateTimeStart());
+        lambdaQueryWrapper.le(dto.getUpdateTimeEnd() != null, MaterialKanban::getUpdateTime, dto.getUpdateTimeEnd());
+        lambdaQueryWrapper.like(dto.getType() != null, MaterialKanban::getType, dto.getType());
+        lambdaQueryWrapper.like(dto.getStatus() != null, MaterialKanban::getStatus, dto.getStatus());
 
             IPage<MaterialKanban> materialKanbanIPage = materialKanbanMapper.selectPage(page, lambdaQueryWrapper);
             //mp提供了convert方法,将数据重新封装
@@ -62,6 +69,18 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
                 return v;
             });
         }
+
+    @Override
+    public List<StockVO> getStockInfo(String materialNb, String wareCode) {
+        LambdaQueryWrapper<MaterialKanban> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(MaterialKanban::getMaterialCode, materialNb);
+        lambdaQueryWrapper.eq(MaterialKanban::getWareCode, wareCode);
+        List<MaterialKanban> kanbanList = materialKanbanMapper.selectList(lambdaQueryWrapper);
+        List<String> ssccList = kanbanList.stream().map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
+
+        List<StockVO> stockVOS = stockMapper.selectStockVOListBySSCCList(ssccList);
+        return stockVOS;
+    }
 
 
 }

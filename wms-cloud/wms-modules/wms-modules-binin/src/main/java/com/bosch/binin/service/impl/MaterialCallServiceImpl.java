@@ -12,6 +12,7 @@ import com.bosch.binin.api.domain.vo.MaterialCallVO;
 import com.bosch.binin.api.domain.vo.RequirementResultVO;
 import com.bosch.binin.api.enumeration.RequirementActionTypeEnum;
 import com.bosch.binin.api.enumeration.MaterialCallSortTypeEnum;
+import com.bosch.binin.api.enumeration.RequirementPerformTypeEnum;
 import com.bosch.binin.mapper.MaterialCallMapper;
 import com.bosch.binin.service.IMaterialCallService;
 import com.bosch.binin.service.IMaterialKanbanService;
@@ -54,7 +55,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
     private IMaterialKanbanService kanbanService;
 
     @Override
-    public List<MaterialCallVO> getMaterialCallList(MaterialCallQueryDTO queryDTO) {
+    public List<MaterialCall> getMaterialCallList(MaterialCallQueryDTO queryDTO) {
 
         LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper();
         if (queryDTO != null) {
@@ -69,8 +70,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
                     .orderByDesc(MaterialCall::getCreateTime);
         }
         List<MaterialCall> materialCalls = materialCallMapper.selectList(queryWrapper);
-        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(materialCalls, MaterialCallVO.class);
-        return materialCallVOS;
+        return materialCalls;
     }
 
 
@@ -92,6 +92,11 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         if (CollectionUtils.isEmpty(dos)) {
             return null;
         }
+
+        dealMaterialCall(dos);
+
+        updateBatchById(dos);
+
         Map<String, Double> materialQtyMap = dos.stream().
                 collect(Collectors.groupingBy(item -> item.getOrderNb() + "-" + item.getMaterialNb(),
                         Collectors.summingDouble(MaterialCall::getQuantity)));
@@ -113,11 +118,39 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
                     unStatisfiedMaterialNbs, fullStatisfiedMaterialNbs, noStockMaterialNbs);
             //处理筛选出来的库存列表
             dealUseMaterialStockList(useMaterialStockList, sortType, quantity, orderNb, cell);
-
-
         });
         return RequirementResultVO.builder().fullStatisfiedMaterialNbs(fullStatisfiedMaterialNbs).noStockMaterialNbs(noStockMaterialNbs).unStatisfiedMaterialNbs(unStatisfiedMaterialNbs).build();
     }
+
+
+    private void dealMaterialCall(List<MaterialCall> dos) {
+
+        Map<String, List<MaterialCall>> sameOrderMaterialCallList = dos.stream().
+                collect(Collectors.groupingBy(item -> item.getOrderNb() + "-" + item.getMaterialNb()));
+
+        sameOrderMaterialCallList.forEach((materialOrder, materialCallList) -> {
+            String[] split = materialOrder.split("-");
+            String materialNb = split[1];
+            String orderNb = split[0];
+            List<Stock> stockList = getUseMaterialByNb(materialNb);
+            Double stockSum = stockList.stream().collect(Collectors.summingDouble(Stock::getAvailableStock));
+            int temp = 0;
+            for (MaterialCall materialCall : materialCallList) {
+                temp += materialCall.getQuantity();
+                if (stockSum - temp >= 0) {
+                    materialCall.setDeliveryQuantity(materialCall.getQuantity());
+                    materialCall.setDiffQuantity(Double.valueOf(0));
+                } else {
+                    Double actual = stockSum - temp + materialCall.getQuantity();
+                    materialCall.setDeliveryQuantity(actual > 0 ? actual : 0);
+                    materialCall.setDiffQuantity(materialCall.getQuantity() - materialCall.getDeliveryQuantity());
+                }
+            }
+        });
+
+
+    }
+
 
     private void dealUseMaterialStockList(List<Stock> useMaterialStockList, Integer sortType,
                                           Double quantity, String orderNb, String cell) {
@@ -147,7 +180,8 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             kanban.setCell(cell);
             kanban.setType(RequirementActionTypeEnum.FULL_BIN_DOWN.value());
             kanban.setQuantity(stock.getAvailableStock());
-            kanban.setStatus(stock.getPlantNb() == "7751" ? 0 : 1);
+            kanban.setStatus(stock.getPlantNb().equals("7751") ? RequirementPerformTypeEnum.HAS_ISSUED.value()
+                    : RequirementPerformTypeEnum.WAIT_ISSUE.value());
             kanban.setCreateBy(SecurityUtils.getUsername());
             kanban.setCreateTime(new Date());
             kanban.setMoveType(MoveTypeEnums.CALL.getCode());
@@ -178,15 +212,24 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
 
     }
 
+
+    private List<Stock> getUseMaterialByNb(String materialNb) {
+        LambdaQueryWrapper<Stock> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Stock::getMaterialNb, materialNb);
+        lambdaQueryWrapper.eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode());
+        List<Stock> stockList = stockService.list(lambdaQueryWrapper);
+        if (CollectionUtils.isEmpty(stockList)) {
+            stockList = new ArrayList<>();
+        }
+        return stockList;
+    }
+
     private List<Stock> getUseMaterialStock(String orderNb, String materialNb, Integer sortType, Double quantity,
                                             List<RequirementResultVO.MaterialOrder> unStatisfiedMaterialNbs,
                                             List<RequirementResultVO.MaterialOrder> fullStatisfiedMaterialNbs,
                                             List<RequirementResultVO.MaterialOrder> noStockMaterialNbs) {
         //根据库存列表查询出来
-        LambdaQueryWrapper<Stock> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(Stock::getMaterialNb, materialNb);
-        lambdaQueryWrapper.eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode());
-        List<Stock> stockList = stockService.list(lambdaQueryWrapper);
+        List<Stock> stockList = getUseMaterialByNb(materialNb);
         List<Stock> sortedStockList = new ArrayList<>();
         if (MaterialCallSortTypeEnum.BBD_FIRST.value().equals(sortType)) {
             sortedStockList = stockList.stream().filter(item -> item.getAvailableStock() != 0).sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getPlantNb)).collect(Collectors.toList());
