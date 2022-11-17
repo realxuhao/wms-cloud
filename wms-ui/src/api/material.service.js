@@ -34,8 +34,8 @@ const destroy = async (id) => {
 }
 
 const getDispatchFrameTypeList = async (parameter) => {
-  const url = `/materialBin/list?${qs.stringify(parameter)}`
-  const { data } = await createAuthInstance(baseUrl).get(url)
+  const url = `/materialBin/list`
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter)
   return data
 }
 

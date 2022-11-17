@@ -24,6 +24,7 @@ import binIn from './modules/binIn'
 import stock from './modules/stock'
 
 import materialInList from './modules/materialInList'
+import materialFeeding from './modules/materialFeeding'
 
 // dynamic router permission control (Experimental)
 // import permission from './modules/async-router'
@@ -49,6 +50,7 @@ export default new Vuex.Store({
     frame,
     bin,
     stock,
+    materialFeeding,
 
     file,
 

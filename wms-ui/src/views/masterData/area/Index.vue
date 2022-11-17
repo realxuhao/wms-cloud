@@ -194,7 +194,7 @@ export default {
         this.uploadLoading = true
         await this.$store.dispatch('area/upload', formdata)
 
-        this.currentPage = 1
+        this.queryForm.pageNum = 1
         this.loadTableList()
 
         this.uploadLoading = false

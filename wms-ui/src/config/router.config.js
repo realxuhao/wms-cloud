@@ -147,6 +147,22 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           }
         ]
+      },
+      {
+        path: '/feeding',
+        name: 'stock',
+        component: RouteView,
+        redirect: '/feeding/list',
+        meta: { title: '生产叫料管理', icon: 'hdd', permission: [] },
+        children: [
+          {
+            path: '/feeding/list',
+            name: 'feedingList',
+            component: () => import('@/views/materialFeeding/MaterialFeeding'),
+            meta: { title: '叫料记录', permission: [] },
+            hideChildrenInMenu: true
+          }
+        ]
       }
       // account
       // {
