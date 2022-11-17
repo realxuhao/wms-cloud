@@ -63,12 +63,14 @@ public class MaterialCallVO {
     /**
      * 配送量
      */
+    @Excel(name = "配送量")
     @ApiModelProperty(value = "配送量")
     private Double deliveryQuantity;
 
     /**
      * 差值
      */
+    @Excel(name = "差值")
     @ApiModelProperty(value = "差值")
     private Double diffQuantity;
 
@@ -76,6 +78,7 @@ public class MaterialCallVO {
     /**
      * 状态：0:未执行，1:已执行
      */
+    @Excel(name = "状态",readConverterExp = "0=未执行,1=已执行")
     @ApiModelProperty(value = "状态：0:未执行，1:已执行")
     private Integer status;
 
@@ -107,7 +110,7 @@ public class MaterialCallVO {
     /**
      * 排序类型
      */
-    @Excel(name = "排序类型")
+    @Excel(name = "排序类型",readConverterExp = "0=BBD优先,1=基于先主库后外库")
     @ExcelProperty(value = "排序类型")
     @ApiModelProperty(value = "排序类型")
     private Integer sortType;
@@ -119,7 +122,7 @@ public class MaterialCallVO {
     private String createBy;
 
     /** 创建时间 */
-    @Excel(name = "创建时间")
+    @Excel(name = "创建时间",dateFormat = "yyyy-MM-dd HH:mm:ss")
     @ExcelProperty(value = "创建时间")
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -132,7 +135,7 @@ public class MaterialCallVO {
     private String updateBy;
 
     /** 更新时间 */
-    @Excel(name = "更新时间")
+    @Excel(name = "更新时间",dateFormat = "yyyy-MM-dd HH:mm:ss")
     @ExcelProperty(value = "更新时间")
     @ApiModelProperty(value = "更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

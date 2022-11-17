@@ -55,9 +55,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             lambdaQueryWrapper.like(dto.getStatus()!=null, MaterialKanban::getStatus,dto.getStatus());
 
             IPage<MaterialKanban> materialKanbanIPage = materialKanbanMapper.selectPage(page, lambdaQueryWrapper);
-            List<MaterialKanbanVO> ts = BeanConverUtil.converList(materialKanbanIPage.getRecords(), MaterialKanbanVO.class);
             //mp提供了convert方法,将数据重新封装
-            return materialKanbanIPage.convert(u->{
+           return materialKanbanIPage.convert(u->{
                 MaterialKanbanVO v = new MaterialKanbanVO();
                 BeanUtils.copyProperties(u, v);//拷贝
                 return v;
