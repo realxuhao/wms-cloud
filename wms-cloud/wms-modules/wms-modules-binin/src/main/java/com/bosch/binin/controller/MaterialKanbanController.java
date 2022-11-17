@@ -31,7 +31,7 @@ public class MaterialKanbanController {
 
         IPage<MaterialKanbanVO> materialKanbanIPage = materialKanbanService.pageList(materialKanbanDTO);
 
-        return R.ok(new PageVO<>(materialKanbanIPage.getRecords(), new PageInfo<>(materialKanbanIPage.getRecords()).getTotal()));
+        return R.ok(new PageVO<>(materialKanbanIPage.getRecords(), materialKanbanIPage.getTotal()));
     }
 
 
