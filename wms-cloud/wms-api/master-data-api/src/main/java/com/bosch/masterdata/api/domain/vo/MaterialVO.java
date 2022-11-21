@@ -91,4 +91,10 @@ public class MaterialVO {
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
+
+    /**
+     * 托盘类型
+     */
+    @ApiModelProperty(value = "托盘类型")
+    private String palletType;
 }

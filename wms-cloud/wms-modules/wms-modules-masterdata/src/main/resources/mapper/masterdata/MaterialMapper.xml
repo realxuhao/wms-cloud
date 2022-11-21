@@ -47,6 +47,7 @@
         <result property="lessDeviationRatio" column="less_deviation_ratio"/>
         <result property="moreDeviationRatio" column="more_deviation_ratio"/>
         <result property="transferWeightRatio" column="transfer_weight_ratio"/>
+        <result property="palletType" column="pallet_type"/>
 
         <result property="status" column="status"/>
     </resultMap>
@@ -301,7 +302,8 @@
                m.create_time,
                m.update_time,
                m.STATUS,
-               m.remark
+               m.remark,
+               m.pallet_type
         FROM md_material m
                  LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
         where m.CODE = #{materialCode}

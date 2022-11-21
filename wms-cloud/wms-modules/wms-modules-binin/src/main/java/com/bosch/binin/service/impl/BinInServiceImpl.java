@@ -5,8 +5,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.StockLog;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.dto.BinAllocationDTO;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.BinInTaskDTO;
+import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.FrameRemainVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.mapper.StockLogMapper;
@@ -105,14 +107,11 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
+        String batchNb = MesBarCodeUtil.getBatchNb(mesBarCode);
         BinInVO binInVO = binInMapper.selectBySsccNumber(sscc);
+        MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
+
         if (binInVO == null) {
-            binInVO = new BinInVO();
-            binInVO.setSsccNumber(sscc);
-            binInVO.setMaterialNb(materialNb);
-
-            MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
-
             R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
             if (StringUtils.isNull(materialBinVOResullt) || CollectionUtils.isEmpty(materialBinVOResullt.getData())) {
                 throw new ServiceException("该物料：" + materialNb + " 暂无分配规则");
@@ -122,11 +121,50 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
                 throw new ServiceException(materialBinVOResullt.getMsg());
             }
 
+            BinAllocationDTO allocationDTO = new BinAllocationDTO();
+            allocationDTO.setMesBarCode(mesBarCode);
+            //获取托盘
+            allocationDTO.setPalletType(materialVO.getPalletType());
 
-            binInVO.setMaterialName(materialVO.getName());
+            //获取托盘详情
+            R<Pallet> palletR = remotePalletService.getByType(materialVO.getPalletType());
+            if (!palletR.isSuccess()) {
+                throw new ServiceException("获取托盘详情失败");
+            }
+            Pallet pallet = palletR.getData();
+            if (pallet == null) {
+                throw new ServiceException("未获取到托盘数据");
+            }
+
+
+            BinAllocationVO binAllocationVO = binAssignmentService.getBinAllocationVO(allocationDTO);
+
+            BinVO binVO = getBinVOByBinCode(binAllocationVO.getRecommendBinCode());
+
+
+            BinIn binIn = new BinIn();
+            binIn.setSsccNumber(sscc);
+            binIn.setQuantity(materialInVO.getQuantity());
+            binIn.setMaterialNb(materialNb);
+            binIn.setBatchNb(batchNb);
+            binIn.setExpireDate(MesBarCodeUtil.getExpireDate(mesBarCode));
+            binIn.setPalletType(materialVO.getPalletType());
+            //设置托盘编码,虚拟托盘直接分配编码
+            binIn.setPalletCode(pallet.getIsVirtual().equals(1) ? "V-" + pallet.getVirtualPrefixCode() + "-" + System.currentTimeMillis() : null);
+            binIn.setRecommendBinCode(binAllocationVO.getRecommendBinCode());
+            binIn.setStatus(BinInStatusEnum.PROCESSING.value());
+            binIn.setRecommendFrameId(binVO.getFrameId());
+            binIn.setRecommendFrameCode(binVO.getFrameCode());
+            binIn.setWareCode(SecurityUtils.getWareCode());
+
+            binIn.setMoveType(MoveTypeEnums.BININ.getCode());
+            binIn.setFromPurchaseOrder(materialInVO.getFromPurchaseOrder());
+            binIn.setPlantNb(materialInVO.getPlantNb());
+            binInMapper.insert(binIn);
         }
 
-        return binInVO;
+
+        return binInMapper.selectBySsccNumber(sscc);
     }
 
     private MaterialVO getMaterialVOByCode(String materialNb) {
@@ -167,6 +205,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             throw new ServiceException("物料号" + materialNb + "已经上架");
         }
 
+        if (StringUtils.isEmpty(binIn.getPalletCode()) && StringUtils.isEmpty(binInDTO.getPalletCode())) {
+            throw new ServiceException("实物托盘码不能为空");
+        }
         BinVO actualBinVO = getBinVOByBinCode(binInDTO.getActualBinCode());
 
         if (!binInDTO.getActualBinCode().equals(binIn.getRecommendBinCode())) {
@@ -195,6 +236,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setStatus(BinInStatusEnum.FINISH.value());
         binIn.setUpdateTime(new Date());
         binIn.setAreaCode(actualBinVO.getAreaCode());
+        if (StringUtils.isEmpty(binIn.getPalletCode())) {
+            binIn.setPalletCode(binInDTO.getPalletCode());
+        }
         saveOrUpdate(binIn);
 
         //插入库存

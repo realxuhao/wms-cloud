@@ -66,7 +66,7 @@
         sm.edit_flag,
         sm.plant_nb
         from si_material_receive sm left join md_material mm on sm.material_nb = mm.code
-        where sm.delete_flag=0
+        where sm.delete_flag=0 and mm.delete_flag=0
         <if test="plantNb != null  and plantNb != ''">and sm.plant_nb = #{plantNb}</if>
         <if test="materialNb != null  and materialNb != ''">and sm.material_nb = #{materialNb}</if>
         <if test="batchNb != null  and batchNb != ''">and sm.batch_nb = #{batchNb}</if>

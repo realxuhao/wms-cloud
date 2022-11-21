@@ -174,7 +174,7 @@ class MaterialReceiveServiceImplTest {
                 .thenReturn(materialReceiveVOS);
 
         // Run the test
-        final List<MaterialReceiveVO> result = materialReceiveServiceImplUnderTest.selectByMesBarCode("mesBarCode");
+        final List<MaterialReceiveVO> result = materialReceiveServiceImplUnderTest.selectSameBatchMaterial("mesBarCode");
 
         // Verify the results
         assertThat(result).isEqualTo(expectedResult);
@@ -187,7 +187,7 @@ class MaterialReceiveServiceImplTest {
                 .thenReturn(Collections.emptyList());
 
         // Run the test
-        final List<MaterialReceiveVO> result = materialReceiveServiceImplUnderTest.selectByMesBarCode("mesBarCode");
+        final List<MaterialReceiveVO> result = materialReceiveServiceImplUnderTest.selectSameBatchMaterial("mesBarCode");
 
         // Verify the results
         assertThat(result).isEqualTo(Collections.emptyList());

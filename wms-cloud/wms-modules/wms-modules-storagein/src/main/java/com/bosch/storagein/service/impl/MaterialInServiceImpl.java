@@ -112,9 +112,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         checkResultVO.setOperateTime(new Date());
         //如果是免检，直接入库。
         if (CheckTypeEnum.FREE.getCode().equals(materialInCheckVO.getCheckType())) {
-
             batchStorageIn(materialInCheckVO, materialInCheckDTO, checkResultVO.getAverageResult());
-
             checkResultVO.setCheckFlag(true);
             return checkResultVO;
         }
@@ -129,9 +127,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         //称重 或者 数数
         if ((CheckTypeEnum.WEIGHT.getCode().equals(materialInCheckVO.getCheckType()) && checkWeight(mesBarCode, actualQuantity, actualResult, checkResultVO, materialInCheckDTO.getWeightTimes()))
                 || (CheckTypeEnum.COUNT.getCode().equals(materialInCheckVO.getCheckType()) && checkCount(materialInCheckVO, actualQuantity, actualResult, checkResultVO))) {
-
             batchStorageIn(materialInCheckVO, materialInCheckDTO, checkResultVO.getAverageResult());
-
             checkResultVO.setCheckFlag(true);
             return checkResultVO;
         }
@@ -155,6 +151,10 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
             materialInDTO.setWareCode(SecurityUtils.getWareCode());
             materialInDTO.setMoveType(MoveTypeEnums.STORAGEIN.getCode());
             materialInDTO.setFromPurchaseOrder(item.getFromPurchaseOrder());
+
+            //调用分配库位接口
+
+
             return materialInDTO;
         }).collect(Collectors.toList());
         materialInMapper.batchInsert(materialInDTOList);

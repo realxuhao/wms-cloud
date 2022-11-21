@@ -27,7 +27,7 @@ public interface IMaterialReceiveService extends IService<MaterialReceive> {
 
     public Integer deleteMaterialReceiveByIds(Long[] ids);
 
-    public  List<MaterialReceiveVO> selectByMesBarCode(String mesBarCode);
+    public  List<MaterialReceiveVO> selectSameBatchMaterial(String mesBarCode);
 
     MaterialReceiveVO selectById(Long id);
 
@@ -50,5 +50,7 @@ public interface IMaterialReceiveService extends IService<MaterialReceive> {
      * @return
      */
     public boolean validReceive(List<String> codes);
+
+    public MaterialReceiveVO selectByMesBarCode(String mesbarCode);
 
 }

@@ -9,8 +9,10 @@ import com.bosch.storagein.api.domain.vo.*;
 import com.bosch.storagein.api.enumeration.MaterialStatusEnum;
 import com.bosch.storagein.mapper.MaterialRecevieMapper;
 import com.bosch.storagein.service.IMaterialReceiveService;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
+import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -55,7 +57,7 @@ public class MaterialReceiveServiceImpl extends ServiceImpl<MaterialRecevieMappe
     }
 
     @Override
-    public List<MaterialReceiveVO> selectByMesBarCode(String mesBarCode) {
+    public List<MaterialReceiveVO> selectSameBatchMaterial(String mesBarCode) {
         MaterialReceiveDTO materialReceiveDTO = new MaterialReceiveDTO();
         materialReceiveDTO.setMaterialNb(MesBarCodeUtil.getMaterialNb(mesBarCode));
         materialReceiveDTO.setBatchNb(MesBarCodeUtil.getBatchNb(mesBarCode));
@@ -95,5 +97,14 @@ public class MaterialReceiveServiceImpl extends ServiceImpl<MaterialRecevieMappe
         lambdaQueryWrapper.in(MaterialReceive::getSsccNumber, codes);
         Integer res = materialRecevieMapper.selectCount(lambdaQueryWrapper);
         return res > 0;
+    }
+
+    @Override
+    public MaterialReceiveVO selectByMesBarCode(String mesbarCode) {
+        LambdaQueryWrapper<MaterialReceive> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(MaterialReceive::getMaterialNb, MesBarCodeUtil.getMaterialNb(mesbarCode));
+        lambdaQueryWrapper.eq(MaterialReceive::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        MaterialReceive materialReceive = materialRecevieMapper.selectOne(lambdaQueryWrapper);
+        return BeanConverUtil.conver(materialReceive,MaterialReceiveVO.class);
     }
 }

@@ -17,10 +17,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="update_time"    />
         <result property="status"    column="status"    />
         <result property="remark"    column="remark"    />
+        <result property="isVirtual"    column="is_virtual"    />
+
     </resultMap>
 
     <sql id="selectPalletVo">
-        select id, type, length, width, height, virtual_prefix_code, create_by, update_by, create_time, update_time, status, remark from md_pallet
+        select id, type, length, width, height, virtual_prefix_code, create_by, update_by, create_time, update_time, status, remark,is_virtual from md_pallet
     </sql>
 
     <select id="selectPalletList" parameterType="Pallet" resultMap="PalletResult">

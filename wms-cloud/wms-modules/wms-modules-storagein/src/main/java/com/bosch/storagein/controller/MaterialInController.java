@@ -2,7 +2,6 @@ package com.bosch.storagein.controller;
 
 
 import com.bosch.masterdata.api.RemoteMaterialService;
-import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.storagein.api.constants.*;
@@ -15,7 +14,6 @@ import com.bosch.storagein.service.IMaterialInService;
 import com.bosch.storagein.service.IMaterialReceiveService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
@@ -26,10 +24,10 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -54,11 +52,19 @@ public class MaterialInController extends BaseController {
     public R<MaterialInCheckVO> getCheckInfo(@PathVariable("mesBarCode") String mesBarCode) {
 
         R<MaterialVO> materialVORes = remoteMaterialService.getInfoByMaterialCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
+
+
         if (StringUtils.isNull(materialVORes) || StringUtils.isNull(materialVORes.getData())) {
-            return R.fail(null, ResponseConstants.MATERIAL_DATA_NOT_EXIST, "该物料主数据不存在");
+            return R.fail(null, ResponseConstants.MATERIAL_DATA_NOT_EXIST, "物料" + MesBarCodeUtil.getMaterialNb(mesBarCode) + "主数据不存在");
         }
 
-        List<MaterialReceiveVO> materialReceiveVOs = materialReceiveService.selectByMesBarCode(mesBarCode);
+        List<MaterialReceiveVO> materialReceiveVOs = materialReceiveService.selectSameBatchMaterial(mesBarCode);
+
+        MaterialReceiveVO materialReceiveVO = materialReceiveService.selectByMesBarCode(mesBarCode);
+        if (Objects.isNull(materialReceiveVO)) {
+            return R.fail(null, "收货清单不存在此物料：" + MesBarCodeUtil.getMaterialNb(mesBarCode));
+        }
+
 
         List<Integer> collect = materialReceiveVOs.stream().map(MaterialReceiveVO::getStatus).collect(Collectors.toList());
         if (collect.contains(MaterialStatusEnum.IN.getCode())) {
@@ -72,7 +78,7 @@ public class MaterialInController extends BaseController {
      * 原材料入库校验接口
      */
     @PostMapping(value = "/check")
-    @ApiOperation("根据mesBarCode查询物料校验信息")
+    @ApiOperation("原材料入库校验接口")
     @Log(title = "入库校验", businessType = BusinessType.INSERT)
     public R<MaterialCheckResultVO> check(@RequestBody MaterialInCheckDTO materialInCheckDTO) {
         MaterialInVO materialInVO = materialInService.selectByMesBarCode(materialInCheckDTO.getMesBarCode());
@@ -82,9 +88,7 @@ public class MaterialInController extends BaseController {
         MaterialCheckResultVO checkResultVO = materialInService.check(materialInCheckDTO);
         if (checkResultVO != null && checkResultVO.getResponseCode() != null && checkResultVO.getResponseCode() == ResponseConstants.QUANTITY_INVALID) {
             return R.fail(null, ResponseConstants.QUANTITY_INVALID, "抽样件数不符合");
-
         }
-
         return R.ok(checkResultVO);
     }
 
@@ -103,10 +107,10 @@ public class MaterialInController extends BaseController {
     @GetMapping("/list")
     @ApiOperation("查询入库列表")
     public R<PageVO<MaterialInVO>> list(MaterialQueryDTO queryDTO) {
-        if (queryDTO==null){
-            queryDTO=new MaterialQueryDTO();
+        if (queryDTO == null) {
+            queryDTO = new MaterialQueryDTO();
         }
-        if (StringUtils.isEmpty(queryDTO.getWareCode())){
+        if (StringUtils.isEmpty(queryDTO.getWareCode())) {
             queryDTO.setWareCode(SecurityUtils.getWareCode());
         }
 
