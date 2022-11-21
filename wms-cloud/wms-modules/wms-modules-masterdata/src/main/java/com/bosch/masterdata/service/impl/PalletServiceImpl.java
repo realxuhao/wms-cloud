@@ -2,8 +2,11 @@ package com.bosch.masterdata.service.impl;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.domain.MaterialBin;
 import com.bosch.masterdata.api.domain.dto.PalletDTO;
 import com.bosch.masterdata.api.domain.vo.PalletVO;
+import com.bosch.masterdata.mapper.MaterialBinMapper;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -20,7 +23,7 @@ import com.bosch.masterdata.service.IPalletService;
  * @date 2022-09-22
  */
 @Service
-public class PalletServiceImpl implements IPalletService {
+public class PalletServiceImpl extends ServiceImpl<PalletMapper, Pallet>  implements IPalletService {
     @Autowired
     private PalletMapper palletMapper;
 

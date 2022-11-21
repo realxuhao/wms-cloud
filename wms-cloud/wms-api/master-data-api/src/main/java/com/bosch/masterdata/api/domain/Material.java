@@ -93,5 +93,20 @@ public class Material extends BaseEntity
     @ApiModelProperty(value = "转化重量参数")
     private BigDecimal transferWeightRatio;
 
+    /**
+     * 托盘id
+     */
+    @ApiModelProperty(value = "托盘id")
+    private Long palletId;
 
+    /**
+     * 托盘类型
+     */
+    @ApiModelProperty(value = "托盘类型")
+    private String palletType;
+    /**
+     * deleteFlag
+     */
+    @ApiModelProperty(value = "deleteFlag")
+    private Integer deleteFlag;
 }

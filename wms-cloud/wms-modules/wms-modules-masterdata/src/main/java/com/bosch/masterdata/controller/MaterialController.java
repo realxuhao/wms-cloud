@@ -97,8 +97,8 @@ public class MaterialController extends BaseController {
     @ApiOperation("新增物料")
     @Log(title = "物料信息", businessType = BusinessType.INSERT)
     @PostMapping("/addMaterial")
-    public AjaxResult addMaterial(@RequestBody MaterialDTO materialDTO) {
-        return toAjax(materialService.insertMaterialDTO(materialDTO));
+    public R addMaterial(@RequestBody MaterialDTO materialDTO) {
+        return R.ok(materialService.insertMaterialDTO(materialDTO));
     }
 
     /**

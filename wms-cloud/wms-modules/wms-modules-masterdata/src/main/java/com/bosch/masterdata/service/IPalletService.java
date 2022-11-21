@@ -1,6 +1,9 @@
 package com.bosch.masterdata.service;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.domain.dto.PalletDTO;
 import com.bosch.masterdata.api.domain.vo.PalletVO;
@@ -11,7 +14,7 @@ import com.bosch.masterdata.api.domain.vo.PalletVO;
  * @author xuhao
  * @date 2022-09-22
  */
-public interface IPalletService 
+public interface IPalletService extends IService<Pallet>
 {
     /**
      * 查询托盘

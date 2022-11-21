@@ -1,7 +1,12 @@
 package com.bosch.masterdata.mapper;
 
 import java.util.List;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bosch.masterdata.api.domain.MaterialBin;
 import com.bosch.masterdata.api.domain.Pallet;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
 /**
  * 托盘Mapper接口
@@ -9,7 +14,9 @@ import com.bosch.masterdata.api.domain.Pallet;
  * @author xuhao
  * @date 2022-09-22
  */
-public interface PalletMapper 
+@Mapper
+@Repository("palletMapper")
+public interface PalletMapper extends BaseMapper<Pallet>
 {
     /**
      * 查询托盘

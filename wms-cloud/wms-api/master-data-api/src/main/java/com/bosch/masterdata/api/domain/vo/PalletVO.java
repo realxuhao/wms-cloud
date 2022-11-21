@@ -34,4 +34,17 @@ public class PalletVO {
     /** 状态（1：启用，0：停用） */
     @ApiModelProperty(value = "状态（1：启用，0：停用）")
     private Long status;
+
+
+    /**
+     * 删除标记1：删除，0:可用
+     */
+    @ApiModelProperty(value = "删除标记1：删除，0:可用")
+    private Integer deleteFlag;
+
+    /**
+     * 是否是虚拟托盘 1：实物，0:虚拟
+     */
+    @ApiModelProperty(value = "是否是虚拟托盘 1：实物，0:虚拟")
+    private Integer isVirtual;
 }

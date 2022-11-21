@@ -44,5 +44,9 @@ public class WareDTO extends PageDomain {
      */
     @ApiModelProperty(value = "备注")
     private String remark;
-
+    /**
+     * 是否是虚拟托盘 1：实物，0:虚拟
+     */
+    @ApiModelProperty(value = "是否是虚拟托盘 1：实物，0:虚拟")
+    private Integer isVirtual;
 }
