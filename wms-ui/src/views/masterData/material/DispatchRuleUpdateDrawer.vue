@@ -12,6 +12,7 @@
         <a-select
           show-search
           style="width:100%"
+          :filter-option="filterOption"
           v-decorator="[
             'materialId',
             { rules: [{ required: true, message: '请选择物料!' },] }
@@ -22,6 +23,7 @@
       <a-form-item label="跨类型">
         <a-select
           show-search
+          :filter-option="filterOption"
           style="width:100%"
           v-decorator="[
             'frameTypeCode',
