@@ -32,7 +32,7 @@
           </a-radio>
         </a-radio-group>
       </a-form-item>
-      <a-form-item label="Dragger">
+      <a-form-item label="Excel文件">
         <div class="dropbox">
           <a-upload-dragger
             :file-list="[]"
