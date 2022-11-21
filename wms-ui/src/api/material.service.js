@@ -39,8 +39,19 @@ const getDispatchFrameTypeList = async (parameter) => {
   return data
 }
 
+const getDispatchRuleOne = async (id) => {
+  const url = `/materialBin/${id}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
 const addDispatchBin = async (options) => {
   const { data } = await createAuthInstance(baseUrl).post('/materialBin', options)
+  return data
+}
+const editDispatchRule = async (id, options) => {
+  const url = `/materialBin/${id}`
+  const { data } = await createAuthInstance(baseUrl).put(url, options)
   return data
 }
 
@@ -82,7 +93,9 @@ export const materialService = {
   destroy,
 
   getDispatchFrameTypeList,
+  getDispatchRuleOne,
   addDispatchBin,
+  editDispatchRule,
   destroyDispatchBin,
   upload,
   uploadBatchUpdate,

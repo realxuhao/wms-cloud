@@ -11,6 +11,10 @@ const material = {
 
   actions: {
     async getList ({ commit }, options) {
+      const { data: { rows } } = await materialService.getList({ pageSize: 0 })
+      return rows
+    },
+    async getPaginationList ({ commit }, options) {
       const data = await materialService.getList(options)
       return data
     },
@@ -35,8 +39,16 @@ const material = {
       const data = await materialService.getDispatchFrameTypeList(options)
       return data
     },
-    async addDiapatchBin ({ commit }, options) {
+    async getDispatchRuleOne ({ commit }, id) {
+      const data = await materialService.getDispatchRuleOne(id)
+      return data
+    },
+    async addDiapatchRule ({ commit }, options) {
       const data = await materialService.addDispatchBin(options)
+      return data
+    },
+    async editDispatchRule ({ commit }, { id, updateEntity }) {
+      const data = await materialService.editDispatchRule(id, updateEntity)
       return data
     },
     async destroyDispatchBin ({ commit }, id) {

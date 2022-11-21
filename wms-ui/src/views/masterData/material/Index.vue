@@ -12,8 +12,8 @@
 
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="物料代码">
-              <a-input v-model="queryForm.code" placeholder="物料代码" allow-clear/>
+            <a-form-model-item label="物料编码">
+              <a-input v-model="queryForm.code" placeholder="物料编码" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
@@ -96,9 +96,9 @@
               <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
             <a-divider type="vertical" />
-            <a
+            <!-- <a
               class="primary-color"
-              @click="handleOpenDispathRule(record)"><a-icon class="m-r-4" type="setting" />分配跨类型</a>
+              @click="handleOpenDispathRule(record)"><a-icon class="m-r-4" type="setting" />分配跨类型</a> -->
           </div>
         </template>
 
@@ -133,16 +133,11 @@
       @on-ok="loadTableList"
     ></UpdateDrawer>
 
-    <DispatchBin
-      v-model="dispatchRuleVisible"
-      :id="currentUpdateId"
-    ></DispatchBin>
   </div>
 </template>
 
 <script>
 import UpdateDrawer from './UpdateDrawer'
-import DispatchBin from './DispatchBin'
 
 import { mixinTableList } from '@/utils/mixin/index'
 
@@ -156,7 +151,7 @@ const columns = [
 
   },
   {
-    title: '物料代码',
+    title: '物料编码',
     dataIndex: 'code',
     key: 'code',
     width: 200
@@ -267,8 +262,7 @@ export default {
   name: 'Material',
   mixins: [mixinTableList],
   components: {
-    UpdateDrawer,
-    DispatchBin
+    UpdateDrawer
   },
   data () {
     return {
@@ -364,7 +358,7 @@ export default {
       try {
         this.tableLoading = true
 
-        const { data: { rows, total } } = await this.$store.dispatch('material/getList', this.queryForm)
+        const { data: { rows, total } } = await this.$store.dispatch('material/getPaginationList', this.queryForm)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -392,7 +386,6 @@ export default {
         this.materialTypeListLoading = false
       }
     },
-
     async loadData () {
       this.loadTableList()
       this.loadMaterialTypeList()

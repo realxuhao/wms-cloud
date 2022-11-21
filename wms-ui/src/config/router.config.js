@@ -18,7 +18,7 @@ export const asyncRouterMap = [
         path: '/master-data',
         name: 'masterData',
         component: RouteView,
-        redirect: '/master-data/material',
+        redirect: '/master-data/material-type',
         meta: { title: '主数据', icon: 'hdd', permission: [] },
         children: [
           {
@@ -32,7 +32,14 @@ export const asyncRouterMap = [
             path: '/master-data/material',
             name: 'material',
             component: () => import('@/views/masterData/material/Index'),
-            meta: { title: '物料主数据管理', permission: [] },
+            meta: { title: '物料管理', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/master-data/material/dispatch-rule',
+            name: 'materialDispatchRule',
+            component: () => import('@/views/masterData/material/DispatchRule'),
+            meta: { title: '物料上架规则', permission: [] },
             hideChildrenInMenu: true
           },
           {

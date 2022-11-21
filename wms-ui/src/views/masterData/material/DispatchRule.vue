@@ -1,5 +1,5 @@
 <template>
-  <a-drawer
+  <!-- <a-drawer
     width="800px"
     title="设置分配规则"
     placement="right"
@@ -58,26 +58,104 @@
       </a-form-item>
     </a-form>
 
-    <a-table
-      :columns="columns"
-      :data-source="list"
-      :loading="tableLoading"
-      rowKey="id"
-      :pagination="false"
-      size="middle"
-    >
-      <template slot="action" slot-scope="text, record">
-        <div class="action-con">
-          <a-popconfirm title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
-            <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
-          </a-popconfirm>
-        </div>
-      </template>
-    </a-table>
-  </a-drawer>
+  </a-drawer> -->
+  <div class="wrapper">
+    <div class="table-content">
+      <a-form layout="inline" class="search-content">
+        <a-row :gutter="16">
+          <a-col :span="4">
+            <a-form-model-item label="物料名称">
+              <a-input v-model="queryForm.materialName" placeholder="物料名称" allow-clear/>
+            </a-form-model-item>
+
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="物料编码">
+              <a-input v-model="queryForm.materialCode" placeholder="物料编码" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="跨类型">
+              <a-select
+                show-search
+                v-model="queryForm.frameTypeCode"
+                style="width:100%"
+              >
+                <a-select-option v-for="item in frameTypeList" :key="item" :value="item">{{ item }}</a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col span="4">
+            <span class="table-page-search-submitButtons" >
+              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+              <a @click="toggleAdvanced" style="margin-left: 8px">
+                {{ advanced ? '收起' : '展开' }}
+                <a-icon :type="advanced ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
+        </a-row>
+      </a-form>
+
+      <div class="action-content">
+        <a-button type="primary" class="m-r-8" icon="plus" @click="handleAdd">
+          新建
+        </a-button>
+
+        <a-tooltip placement="right">
+          <template slot="title">
+            <a style="color:#fff" @click="handleDownloadTemplate"><a-icon type="arrow-down" />下载模板</a>
+          </template>
+          <a-upload
+            :file-list="[]"
+            name="file"
+            :multiple="true"
+            :before-upload="()=>false"
+            @change="handleUpload"
+          >
+            <a-button :loading="uploadLoading" type="primary" icon="upload" >
+              导入
+            </a-button>
+          </a-upload>
+        </a-tooltip>
+
+      </div>
+      <a-table
+        :columns="columns"
+        :data-source="list"
+        :loading="tableLoading"
+        rowKey="id"
+        :pagination="false"
+        size="middle"
+      >
+        <template slot="action" slot-scope="text, record">
+          <div class="action-con">
+            <a class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
+            <a-divider type="vertical" />
+            <a-popconfirm title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
+              <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
+            </a-popconfirm>
+          </div>
+        </template>
+      </a-table>
+    </div>
+
+    <UpdateDrawer
+      v-model="visible"
+      :updateType="updateType"
+      :id="currentUpdateId"
+      @on-ok="loadTableList"
+      :frameTypeList="frameTypeList"
+      :materialList="materialList"
+    ></UpdateDrawer>
+  </div>
 </template>
 
 <script>
+import { mixinTableList } from '@/utils/mixin/index'
+import UpdateDrawer from './DispatchRuleUpdateDrawer'
+
 const labelCol = {
   span: 5
 }
@@ -112,21 +190,19 @@ const columns = [
   }
 ]
 
+const queryFormAttr = () => {
+  return {
+    code: '',
+    name: '',
+    frameType: ''
+  }
+}
+
 export default {
-  name: 'MaterialDispatchBin',
-  props: {
-    id: {
-      type: Number,
-      default () {
-        return 0
-      }
-    },
-    visible: {
-      type: Boolean,
-      default () {
-        return false
-      }
-    }
+  name: 'MaterialDispatchRule',
+  mixins: [mixinTableList],
+  components: {
+    UpdateDrawer
   },
   data () {
     return {
@@ -136,15 +212,17 @@ export default {
       columns,
       list: [],
       tableLoading: false,
+      queryForm: {
+        pageSize: 20,
+        pageNum: 1,
+        ...queryFormAttr()
+      },
 
       frameTypeList: [],
+      materialList: [],
       formVisible: false,
       uploadLoading: false
     }
-  },
-  model: {
-    prop: 'visible',
-    event: 'change'
   },
   computed: {
     labelCol () {
@@ -155,6 +233,10 @@ export default {
     }
   },
   methods: {
+    handleResetQuery () {
+      this.queryForm = { ...this.queryForm, ...queryFormAttr() }
+      this.handleSearch()
+    },
     async handleDownloadTemplate () {
       try {
         this.$store.dispatch('file/downloadByFilename', '物料跨对应关系表.xlsx')
@@ -206,60 +288,23 @@ export default {
         }
       }
     },
-    onClose () {
-      this.form.resetFields()
-      this.formVisible = false
-      this.frameTypeList = []
-
-      this.$emit('change', false)
-    },
-    async handleAdd () {
-      this.formVisible = true
-    },
-    async handleCancel () {
-      this.formVisible = false
-      this.form.resetFields()
-    },
     async handleDelete (record) {
       try {
         await this.$store.dispatch('material/destroyDispatchBin', record.id)
         this.$message.success('删除成功！')
 
-        this.loadDispatchFrameTypeList()
+        this.loadTableList()
       } catch (error) {
         console.log(error)
         this.$message.error('删除失败，请联系系统管理员！')
       }
     },
-    async handleSubmit (e) {
-      e.preventDefault()
-      this.form.validateFieldsAndScroll(async (err, values) => {
-        if (err) {
-          console.log('Received values of form: ', values)
-          return
-        }
 
-        try {
-          this.submitLoading = true
-          this.formVisible = true
-
-          await this.$store.dispatch('material/addDiapatchBin', { ...values, materialId: this.id })
-
-          this.formVisible = false
-          this.loadDispatchFrameTypeList()
-          this.$message.success('添加成功')
-        } catch (error) {
-          this.$message.error(error)
-        } finally {
-          this.submitLoading = false
-        }
-      })
-    },
-    async loadDispatchFrameTypeList () {
+    async loadTableList () {
       try {
         this.tableLoading = true
 
-        const { data: { rows } } = await this.$store.dispatch('material/getDispatchFrameTypeList', { materialId: this.id })
+        const { data: { rows } } = await this.$store.dispatch('material/getDispatchFrameTypeList', this.queryForm)
         this.list = rows
       } catch (error) {
         this.$message.error(error)
@@ -275,39 +320,27 @@ export default {
         this.$message.error(error)
       }
     },
+    async getMaterialList () {
+      try {
+        const rows = await this.$store.dispatch('material/getList')
+        this.materialList = rows
+      } catch (error) {
+        console.log(error)
+        this.$message.error('获取物料列表失败，请联系管理员！')
+      }
+    },
     async loadData () {
-      await this.loadDispatchFrameTypeList()
-      await this.getFrameTypeList()
+      await this.loadTableList()
+      this.getFrameTypeList()
+      this.getMaterialList()
     }
   },
-  watch: {
-    visible (val) {
-      if (val) {
-        this.loadData()
-      }
-    }
+  mounted () {
+    this.loadData()
   }
 }
 </script>
 
 <style lang="less" scoped>
-.action{
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  border-top: 1px solid #e9e9e9;
-  padding: 10px 16px;
-  background: #fff;
-  text-align: right;
-  z-index: 1;
-}
-/deep/.ant-drawer-body{
-  // overflow-y: auto;
-  padding-bottom: 60px;
-}
 
-/deep/.ant-input-number{
-  width: 100%;
-}
 </style>

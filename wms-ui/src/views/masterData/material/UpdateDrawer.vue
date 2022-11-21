@@ -16,12 +16,12 @@
             { rules: [{ required: true, message: '请输入物料名称!' }] }
           ]" />
       </a-form-item>
-      <a-form-item label="物料代码">
+      <a-form-item label="物料编码">
         <a-input
-          placeholder="物料代码"
+          placeholder="物料编码"
           v-decorator="[
             'code',
-            { rules: [{ required: true, message: '请输入物料代码!' }] }
+            { rules: [{ required: true, message: '请输入物料编码!' }] }
           ]" />
       </a-form-item>
       <a-form-item label="物料类型">

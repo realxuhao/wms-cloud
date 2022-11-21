@@ -7,51 +7,36 @@
     :visible="visible"
     @close="onClose"
   >
-    <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-form-item label="托盘长度">
-        <a-input-number
-          placeholder="托盘长度"
+    <a-form class="search-content m-b-8" :label-col="labelCol" :wrapper-col="wrapperCol" :form="form">
+      <a-form-item label="物料">
+        <a-select
+          show-search
+          style="width:100%"
           v-decorator="[
-            'length',
-            { rules: [{ required: true, message: '请输入托盘长度!' },] }
+            'materialId',
+            { rules: [{ required: true, message: '请选择物料!' },] }
           ]">
-        </a-input-number>
+          <a-select-option v-for="item in materialList" :key="item.id" :value="item.id">{{ item.code }}</a-select-option>
+        </a-select>
       </a-form-item>
-      <a-form-item label="托盘宽度">
-        <a-input-number
-          placeholder="托盘宽度"
+      <a-form-item label="跨类型">
+        <a-select
+          show-search
+          style="width:100%"
           v-decorator="[
-            'width',
-            { rules: [{ required: true, message: '请选择托盘宽度!' }] }
+            'frameTypeCode',
+            { rules: [{ required: true, message: '请选择跨类型!' },] }
           ]">
-        </a-input-number>
+          <a-select-option v-for="item in frameTypeList" :key="item" :value="item">{{ item }}</a-select-option>
+        </a-select>
       </a-form-item>
-      <a-form-item label="托盘高度">
+      <a-form-item label="优先级">
         <a-input
-          placeholder="托盘高度"
+          placeholder="优先级"
           v-decorator="[
-            'height',
-            { rules: [{ required: true, message: '请输入托盘高度!' },] }
-          ]">
-        </a-input>
-      </a-form-item>
-      <a-form-item label="托盘类型">
-        <a-input
-          placeholder="托盘类型"
-          v-decorator="[
-            'height',
-            { type: [{ required: true, message: '请选择托盘类型!' },] }
-          ]">
-        </a-input>
-      </a-form-item>
-      <a-form-item label="托盘前缀编码">
-        <a-input
-          placeholder="托盘前缀编码"
-          v-decorator="[
-            'virtualPrefixCode',
-            { rules: [{ required: true, message: '请输入托盘前缀编码!' },] }
-          ]">
-        </a-input>
+            'priorityLevel',
+            { rules: [{ required: true, message: '请输入优先级!' }] }
+          ]" />
       </a-form-item>
     </a-form>
 
@@ -73,7 +58,7 @@ const labelCol = {
   span: 5
 }
 const wrapperCol = {
-  span: 19
+  span: 18
 }
 
 export default {
@@ -95,6 +80,14 @@ export default {
       default () {
         return ''
       }
+    },
+    frameTypeList: {
+      type: Array,
+      default: () => []
+    },
+    materialList: {
+      type: Array,
+      default: () => []
     }
   },
   data () {
@@ -124,15 +117,20 @@ export default {
 
       this.$emit('change', false)
     },
+    filterOption (input, option) {
+      return (
+        option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      )
+    },
     async getAndUpdateForm () {
-      const { data } = await this.$store.dispatch('pallet/getOne', this.id)
-      const columns = ['length', 'width', 'height', 'type', 'virtualPrefixCode']
+      const { data } = await this.$store.dispatch('material/getDispatchRuleOne', this.id)
+      const columns = ['priorityLevel', 'materialId', 'frameTypeCode']
       this.form.setFieldsValue(_.pick(data, columns))
     },
-    async loadData () {
 
+    async loadData () {
     },
-    handleSubmit (e) {
+    async handleSubmit (e) {
       e.preventDefault()
       this.form.validateFieldsAndScroll(async (err, values) => {
         if (err) {
@@ -143,16 +141,18 @@ export default {
         try {
           this.submitLoading = true
 
+          this.submitLoading = true
+
           if (this.updateType === 'edit') {
-            await this.$store.dispatch('pallet/edit', { id: this.id, updateEntity: values })
+            await this.$store.dispatch('material/editDispatchRule', { id: this.id, updateEntity: values })
           } else {
-            await this.$store.dispatch('pallet/add', values)
+            await this.$store.dispatch('material/addDiapatchRule', { ...values })
           }
 
           this.$emit('on-ok')
           this.onClose()
         } catch (error) {
-          this.$message.error(error)
+          this.$message.error(error.message)
         } finally {
           this.submitLoading = false
         }
