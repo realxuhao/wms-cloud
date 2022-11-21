@@ -40,13 +40,7 @@
 					
 					this.handleGoto()
 				}catch(e){
-					if(e.code === 601){
-						this.$refs.message.error('该批次原材料已检验')
-					}else if(e.code === 602){
-						this.$refs.message.error('该原材料已入库，请勿重复操作！')
-					}else{
-						this.$refs.message.error(e.message)
-					}
+					this.$refs.message.error(e.message)
 				}finally{
 					Bus.$emit('startScan')
 					uni.hideLoading()
