@@ -9,4 +9,12 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository("materialKanbanMapper")
 public interface MaterialKanbanMapper extends BaseMapper<MaterialKanban> {
+
+    /**
+     * 批量删除
+     *
+     * @param ids 需要删除的数据主键集合
+     * @return 结果
+     */
+    public int deleteByIds(Long[] ids);
 }

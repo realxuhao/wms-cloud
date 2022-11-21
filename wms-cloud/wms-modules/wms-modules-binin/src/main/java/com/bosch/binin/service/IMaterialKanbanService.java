@@ -16,4 +16,6 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     IPage<MaterialKanbanVO> pageList(MaterialKanbanDTO dto);
 
     List<StockVO> getStockInfo(String materialNb, String wareCode);
+
+    int deleteByIds(Long[] ids);
 }

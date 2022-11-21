@@ -186,7 +186,7 @@ public class BinController extends BaseController
      */
     @ApiOperation("修改库位")
     @Log(title = "库位", businessType = BusinessType.UPDATE)
-    @PutMapping("{/id}")
+    @PutMapping("/{id}")
     public AjaxResult edit(@PathVariable("id") Long id,@RequestBody BinDTO binDTO)
     {
         binDTO.setId(id);

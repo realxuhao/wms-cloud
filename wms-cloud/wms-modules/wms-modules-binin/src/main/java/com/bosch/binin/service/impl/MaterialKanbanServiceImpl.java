@@ -81,6 +81,17 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         List<StockVO> stockVOS = stockMapper.selectStockVOListBySSCCList(ssccList);
         return stockVOS;
     }
+    /**
+     * 批量删除
+     *
+     * @param ids 需要删除的主键
+     * @return 结果
+     */
+    @Override
+    public int deleteByIds(Long[] ids)
+    {
+        return materialKanbanMapper.deleteByIds(ids);
+    }
 
 
 }

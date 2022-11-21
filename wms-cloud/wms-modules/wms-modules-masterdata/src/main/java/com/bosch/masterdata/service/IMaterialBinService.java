@@ -75,6 +75,7 @@ public interface IMaterialBinService extends IService<MaterialBin>
      */
     public boolean validList(List<MaterialBinDTO> dtos);
 
+    public boolean validOne(MaterialBinDTO dto);
     /**
      * 赋值
      * @param dtos
