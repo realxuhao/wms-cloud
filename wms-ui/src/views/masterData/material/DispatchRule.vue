@@ -192,9 +192,9 @@ const columns = [
 
 const queryFormAttr = () => {
   return {
-    code: '',
-    name: '',
-    frameType: ''
+    materialCode: '',
+    materialName: '',
+    frameTypeCode: ''
   }
 }
 

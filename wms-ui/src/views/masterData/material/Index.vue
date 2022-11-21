@@ -95,7 +95,6 @@
             >
               <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
-            <a-divider type="vertical" />
             <!-- <a
               class="primary-color"
               @click="handleOpenDispathRule(record)"><a-icon class="m-r-4" type="setting" />分配跨类型</a> -->
@@ -245,7 +244,7 @@ const columns = [
     title: '操作',
     key: 'action',
     fixed: 'right',
-    width: 240,
+    width: 160,
     scopedSlots: { customRender: 'action' }
   }
 ]
