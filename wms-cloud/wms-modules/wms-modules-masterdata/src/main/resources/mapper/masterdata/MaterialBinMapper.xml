@@ -63,10 +63,10 @@
 <!--        <if test="materialId != null ">and mb.material_id = #{materialId}</if>-->
                 <where>
                     mb.material_id = m.id
-                    <if test="materialId != null ">and mb.material_id = #{materialId}</if>
-                    <if test="priorityLevel != null ">and mb.priority_level = #{priorityLevel}</if>
-                    <if test="frameTypeCode != null ">and mb.frame_type_code = #{frameTypeCode}</if>
-                    <if test="materialCode != null ">and m.code = #{materialCode}</if>
+                    <if test="materialId != null and materialId != 0">and mb.material_id = #{materialId}</if>
+                    <if test="priorityLevel != null and priorityLevel != ''">and mb.priority_level = #{priorityLevel}</if>
+                    <if test="frameTypeCode != null and frameTypeCode != ''">and mb.frame_type_code = #{frameTypeCode}</if>
+                    <if test="materialCode != null and materialCode != ''">and m.code = #{materialCode}</if>
                 </where>
     </select>
 
@@ -89,44 +89,44 @@
     <insert id="insertMaterialBin" parameterType="MaterialBin" useGeneratedKeys="true" keyProperty="id">
         insert into md_material_frame
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="materialId != null">material_id,</if>
-            <if test="frameTypeCode != null">frame_type_code,</if>
-            <if test="priorityLevel != null">priority_level,</if>
-            <if test="createBy != null">create_by,</if>
-            <if test="updateBy != null">update_by,</if>
+            <if test="materialId != null and materialId != 0">material_id,</if>
+            <if test="frameTypeCode != null and frameTypeCode != ''">frame_type_code,</if>
+            <if test="priorityLevel != null and priorityLevel != ''">priority_level,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
             <if test="createTime != null">create_time,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="status != null">status,</if>
-            <if test="remark != null">remark,</if>
-            <if test="materialCode != null">material_code,</if>
+            <if test="remark != null and remark != '' ">remark,</if>
+            <if test="materialCode != null and materialCode != ''">material_code,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="materialId != null">#{materialId},</if>
-            <if test="frameTypeCode != null">#{frameTypeCode},</if>
-            <if test="priorityLevel != null">#{priorityLevel},</if>
-            <if test="createBy != null">#{createBy},</if>
-            <if test="updateBy != null">#{updateBy},</if>
+            <if test="materialId != null and materialId != 0">#{materialId},</if>
+            <if test="frameTypeCode != null and frameTypeCode != ''">#{frameTypeCode},</if>
+            <if test="priorityLevel != null and priorityLevel != ''">#{priorityLevel},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateTime != null">#{updateTime},</if>
             <if test="status != null">#{status},</if>
-            <if test="remark != null">#{remark},</if>
-            <if test="materialCode != null">#{materialCode},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            <if test="materialCode != null and materialCode != ''">#{materialCode},</if>
         </trim>
     </insert>
 
     <update id="updateMaterialBin" parameterType="MaterialBin">
         update md_material_frame
         <trim prefix="SET" suffixOverrides=",">
-            <if test="materialId != null">material_id = #{materialId},</if>
-            <if test="frameTypeCode != null">frame_type_code = #{frameTypeCode},</if>
-            <if test="priorityLevel != null">priority_level = #{priorityLevel},</if>
-            <if test="createBy != null">create_by = #{createBy},</if>
-            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="materialId != null and materialId != 0">material_id = #{materialId},</if>
+            <if test="frameTypeCode != null and frameTypeCode != ''">frame_type_code = #{frameTypeCode},</if>
+            <if test="priorityLevel != null and priorityLevel != '' ">priority_level = #{priorityLevel},</if>
+            <if test="createBy != null and createBy != '' ">create_by = #{createBy},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="status != null">status = #{status},</if>
-            <if test="remark != null">remark = #{remark},</if>
-            <if test="materialCode != null">material_code = #{materialCode},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="materialCode != null and materialCode != ''">material_code = #{materialCode},</if>
         </trim>
         where id = #{id}
     </update>

@@ -1,7 +1,9 @@
 package com.bosch.masterdata.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import com.bosch.masterdata.api.domain.dto.PalletDTO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
@@ -12,6 +14,7 @@ import com.ruoyi.common.core.domain.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -91,9 +94,15 @@ public class PalletController extends BaseController
     @Log(title = "托盘", businessType = BusinessType.INSERT)
     @PostMapping
     @ApiOperation("新增托盘")
-    public R add(@RequestBody PalletDTO palletDTO)
+    public R add(@Validated @RequestBody PalletDTO palletDTO)
     {
         try {
+            List<PalletDTO> dtos=new ArrayList<>();
+            dtos.add(palletDTO);
+            boolean b = palletService.validList(dtos);
+            if (b){
+                return R.fail(400,"存在重复类型");
+            }
             Pallet pallet = BeanConverUtil.conver(palletDTO, Pallet.class);
             return R.ok(palletService.save(pallet));
         }catch (Exception ex){
@@ -109,10 +118,20 @@ public class PalletController extends BaseController
     @Log(title = "托盘", businessType = BusinessType.UPDATE)
     @PutMapping("/{id}")
     @ApiOperation("修改托盘")
-    public AjaxResult edit(@PathVariable("id") Long id,@RequestBody PalletDTO palletDTO)
+    public R edit(@PathVariable("id") Long id,@RequestBody PalletDTO palletDTO)
     {
-        palletDTO.setId(id);
-        return toAjax(palletService.updatePallet(palletDTO));
+        try {
+            List<PalletDTO> dtos=new ArrayList<>();
+            dtos.add(palletDTO);
+            boolean b = palletService.validList(dtos);
+            if (b){
+                return R.fail(400,"存在重复类型");
+            }
+            Pallet pallet = BeanConverUtil.conver(palletDTO, Pallet.class);
+            return R.ok(palletService.updateById(pallet));
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
     }
     /**
      * 获取托盘详细信息

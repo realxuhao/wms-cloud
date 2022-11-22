@@ -15,11 +15,11 @@ public class RestExceptionHandler {
      * @param e the e
      * @return ResultData
      */
-    @ExceptionHandler(Exception.class)
-    @ResponseStatus
-    public R<String> exception(Exception e) {
-        log.error("全局异常信息 ex={}", e.getMessage(), e);
-        return R.fail(ReturnCode.RC500.getCode(), e.getMessage());
-    }
+//    @ExceptionHandler(Exception.class)
+//    @ResponseStatus
+//    public R<String> exception(Exception e) {
+//        log.error("全局异常信息 ex={}", e.getMessage(), e);
+//        return R.fail(ReturnCode.RC500.getCode(), e.getMessage());
+//    }
 
 }

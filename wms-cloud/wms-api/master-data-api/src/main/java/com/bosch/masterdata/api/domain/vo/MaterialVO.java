@@ -1,5 +1,6 @@
 package com.bosch.masterdata.api.domain.vo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.annotation.Excel;
 import io.swagger.annotations.ApiModelProperty;
@@ -97,4 +98,10 @@ public class MaterialVO {
      */
     @ApiModelProperty(value = "托盘类型")
     private String palletType;
+
+    /**
+     * 托盘id
+     */
+    @ApiModelProperty(value = "托盘id")
+    private Long palletId;
 }

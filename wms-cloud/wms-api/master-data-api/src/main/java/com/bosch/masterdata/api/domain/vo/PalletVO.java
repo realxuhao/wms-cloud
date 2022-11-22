@@ -45,6 +45,6 @@ public class PalletVO {
     /**
      * 是否是虚拟托盘 1：实物，0:虚拟
      */
-    @ApiModelProperty(value = "是否是虚拟托盘 1：实物，0:虚拟")
+    @ApiModelProperty(value = "是否是虚拟托盘 0：实物，1:虚拟")
     private Integer isVirtual;
 }

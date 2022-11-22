@@ -6,6 +6,7 @@ import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
 
 @Data
@@ -149,4 +150,17 @@ public class MaterialDTO extends PageDomain {
     @ExcelProperty(value = "备注")
     /** 备注 */
     private String remark;
+    /**
+     * 托盘id
+     */
+    @ExcelProperty(value = "托盘id")
+    @ApiModelProperty(value = "托盘id")
+    private Long palletId;
+
+    /**
+     * 托盘类型
+     */
+    @ExcelProperty(value = "托盘类型")
+    @ApiModelProperty(value = "托盘类型")
+    private String palletType;
 }

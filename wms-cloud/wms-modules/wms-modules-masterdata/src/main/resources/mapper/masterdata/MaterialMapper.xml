@@ -27,6 +27,9 @@
         <result property="updateTime" column="update_time"/>
         <result property="status" column="status"/>
         <result property="remark" column="remark"/>
+        <result property="palletId" column="pallet_id"/>
+        <result property="palletType" column="pallet_type"/>
+        <result property="deleteFlag" column="delete_flag"/>
     </resultMap>
     <resultMap type="MaterialVO" id="MaterialVOResult">
         <result property="id" column="id"/>
@@ -50,6 +53,8 @@
         <result property="palletType" column="pallet_type"/>
 
         <result property="status" column="status"/>
+        <result property="palletId" column="pallet_id"/>
+        <result property="palletType" column="pallet_type"/>
     </resultMap>
     <sql id="selectMaterialVo">
         select id,
@@ -72,7 +77,10 @@
                create_time,
                update_time,
                status,
-               remark
+               remark,
+               pallet_id,
+               pallet_type,
+               delete_flag
         from md_material
     </sql>
 
@@ -96,6 +104,9 @@
             <if test="lessDeviationRatio != null ">and less_deviation_ratio = #{lessDeviationRatio}</if>
             <if test="moreDeviationRatio != null ">and more_deviation_ratio = #{moreDeviationRatio}</if>
             <if test="status != null and status != '' ">and status = #{status}</if>
+            <if test="palletId != null  ">and pallet_id = #{palletId}</if>
+            <if test="palletType != null and palletType != '' ">and pallet_type = #{palletType}</if>
+            <if test="deleteFlag != null  ">and delete_flag = #{deleteFlag}</if>
         </where>
     </select>
 
@@ -128,6 +139,8 @@
             <if test="updateTime != null">update_time,</if>
             <if test="status != null">status,</if>
             <if test="remark != null">remark,</if>
+            <if test="palletId != null">pallet_id,</if>
+            <if test="palletType != null">pallet_type,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="code != null and code != ''">#{code},</if>
@@ -152,6 +165,8 @@
             <if test="updateTime != null">#{updateTime},</if>
             <if test="status != null">#{status},</if>
             <if test="remark != null">#{remark},</if>
+            <if test="palletId != null">#{palletId},</if>
+            <if test="palletType != null">#{palletType},</if>
         </trim>
     </insert>
 
@@ -182,6 +197,9 @@
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="status != null">status = #{status},</if>
             <if test="remark != null">remark = #{remark},</if>
+            <if test="palletId != null">pallet_id = #{palletId},</if>
+            <if test="palletType != null">pallet_type = #{palletType},</if>
+            <if test="deleteFlag != null  ">and delete_flag = #{deleteFlag}</if>
         </trim>
         where id = #{id}
     </update>
@@ -194,7 +212,7 @@
 
     <update id="deleteMaterialByIds" parameterType="String">
         update md_material set status = 0 where id in
---         delete from md_material
+        -- delete from md_material
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
@@ -224,7 +242,9 @@
         m.create_time,
         m.update_time,
         m.STATUS,
-        m.remark
+        m.remark,
+        m.pallet_id,
+        m.pallet_type
         FROM
         md_material m
         LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
@@ -247,6 +267,8 @@
             <if test="lessDeviationRatio != null ">and m.less_deviation_ratio = #{lessDeviationRatio}</if>
             <if test="moreDeviationRatio != null ">and m.more_deviation_ratio = #{moreDeviationRatio}</if>
             <if test="status != null ">and m.status = #{status}</if>
+            <if test="palletId != null ">and m.pallet_id = #{palletId}</if>
+            <if test="palletType != null ">and m.pallet_type = #{palletType}</if>
         </where>
     </select>
 
@@ -273,7 +295,9 @@
                m.create_time,
                m.update_time,
                m.STATUS,
-               m.remark
+               m.remark,
+               m.pallet_id,
+               m.pallet_type
         FROM md_material m
                  LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
         where m.id = #{id}
@@ -303,6 +327,7 @@
                m.update_time,
                m.STATUS,
                m.remark,
+               m.pallet_id,
                m.pallet_type
         FROM md_material m
                  LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
@@ -316,7 +341,6 @@
             (#{item.code})
         </foreach>
     </select>
-
 
 
 </mapper>

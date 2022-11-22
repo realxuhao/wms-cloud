@@ -103,12 +103,12 @@
             <if test="code != null and code != ''">code = #{code},</if>
             <if test="name != null and name != ''">name = #{name},</if>
             <if test="location != null and location != ''">location = #{location},</if>
-            <if test="createBy != null">create_by = #{createBy},</if>
-            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="updateTime != null">update_time = #{updateTime},</if>
-            <if test="status != null">status = #{status},</if>
-            <if test="remark != null">remark = #{remark},</if>
+            <if test="status != null ">status = #{status},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
         </trim>
         where id = #{id}
     </update>

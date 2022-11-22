@@ -57,7 +57,7 @@ public class Pallet extends BaseEntity
     private Integer deleteFlag;
 
     /**
-     * isVirtual
+     * 是否是虚拟托盘 0：实物，1:虚拟
      */
     private Integer isVirtual;
 }

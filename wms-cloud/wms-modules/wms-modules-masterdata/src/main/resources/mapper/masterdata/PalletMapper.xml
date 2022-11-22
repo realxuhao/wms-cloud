@@ -34,6 +34,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="height != null "> and height = #{height}</if>
             <if test="virtualPrefixCode != null  and virtualPrefixCode != ''"> and virtual_prefix_code = #{virtualPrefixCode}</if>
             <if test="status != null "> and status = #{status}</if>
+            <if test="isVirtual != null "> and is_virtual = #{isVirtual}</if>
+            <if test="deleteFlag != null "> and delete_flag = #{deleteFlag}</if>
         </where>
     </select>
     
@@ -44,7 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectPalletByType" resultType="com.bosch.masterdata.api.domain.Pallet">
         <include refid="selectPalletVo"/>
-        where status =1 and  type = #{palletType}
+        where status =1 and  delete_flag=0 and  type = #{palletType}
         limit 1
     </select>
 
@@ -62,6 +64,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time,</if>
             <if test="status != null">status,</if>
             <if test="remark != null">remark,</if>
+            <if test="isVirtual != null">is_virtual,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="type != null and type != ''">#{type},</if>
@@ -75,6 +78,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">#{updateTime},</if>
             <if test="status != null">#{status},</if>
             <if test="remark != null">#{remark},</if>
+            <if test="isVirtual != null">#{isVirtual},</if>
          </trim>
     </insert>
 
@@ -92,18 +96,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="status != null">status = #{status},</if>
             <if test="remark != null">remark = #{remark},</if>
+            <if test="isVirtual != null">is_virtual = #{isVirtual},</if>
         </trim>
         where id = #{id}
     </update>
 
-    <delete id="deletePalletById" parameterType="Long">
-        delete from md_pallet where id = #{id}
-    </delete>
+    <update id="deletePalletById" parameterType="Long">
+        update md_pallet SET delete_flag='1' where id = #{id}
+    </update>
 
-    <delete id="deletePalletByIds" parameterType="String">
-        delete from md_pallet where id in 
+    <update id="deletePalletByIds" parameterType="String">
+        update md_pallet SET delete_flag='1' where id in
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
-    </delete>
+    </update>
 </mapper>
