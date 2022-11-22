@@ -68,8 +68,8 @@ public class MaterialFeedingController extends BaseController {
     })
     @Transactional(rollbackFor = Exception.class)
     public R call(@RequestParam(value = "file") MultipartFile file,
-                                       @RequestParam("sortType") Integer sortType,
-                                       @RequestParam("cell") String cell) {
+                  @RequestParam("sortType") Integer sortType,
+                  @RequestParam("cell") String cell) {
 //        return R.fail(fileFeignService.reduct());
         try {
             //解析文件服务
@@ -104,9 +104,9 @@ public class MaterialFeedingController extends BaseController {
 
     @PostMapping(value = "/call/system")
     @ApiOperation("系统生成叫料任务接口")
-    public R<RequirementResultVO> systemGenerateJob(MaterialCalJobRequestDTO.SystemGenerateJob systemGenerateJob){
-//        RequirementResultVO requirementResultVO = materialCallService.converToRequirement(dos, sortType, cell);
-        return null;
+    public R<RequirementResultVO> systemGenerateJob(@RequestBody MaterialCalJobRequestDTO.SystemGenerateJob systemGenerateJob) {
+        RequirementResultVO requirementResultVO = materialCallService.systemGenerateJob(systemGenerateJob);
+        return R.ok(requirementResultVO);
     }
 
 
@@ -136,8 +136,6 @@ public class MaterialFeedingController extends BaseController {
         ExcelUtil<MaterialCallVO> util = new ExcelUtil<MaterialCallVO>(MaterialCallVO.class);
         util.exportExcel(response, materialCallVOS, "叫料需求");
     }
-
-
 
 
 }

@@ -1,9 +1,11 @@
 package com.bosch.binin.api.domain.vo;
 
+import com.sun.tools.doclets.formats.html.LinkInfoImpl;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.List;
  **/
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class RequirementResultVO {
 
     //部分满足的物料号
@@ -28,6 +32,9 @@ public class RequirementResultVO {
     @ApiModelProperty(value = "没有满足的物料号")
     private List<MaterialOrder> noStockMaterialNbs;
 
+    @ApiModelProperty(value = "库存不足的物料")
+    private List<NotEnoughStock> notEnoughStocks;
+
 
     @Data
     @Builder
@@ -37,4 +44,13 @@ public class RequirementResultVO {
         @ApiModelProperty(value = "物料号")
         private String materialNb;
     }
+
+    @Data
+    public static class NotEnoughStock {
+        @ApiModelProperty(value = "物料号")
+        private String materialNb;
+        @ApiModelProperty(value = "可用库存")
+        private Double avaliableQuantity;
+    }
+
 }

@@ -6,10 +6,11 @@ import com.bosch.binin.api.StockLog;
 import com.bosch.binin.api.domain.MaterialCall;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.dto.MaterialCalJobRequestDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
-import com.bosch.binin.api.domain.vo.MaterialCallVO;
 import com.bosch.binin.api.domain.vo.RequirementResultVO;
+import com.bosch.binin.api.enumeration.MaterialCallStatusEnum;
 import com.bosch.binin.api.enumeration.RequirementActionTypeEnum;
 import com.bosch.binin.api.enumeration.MaterialCallSortTypeEnum;
 import com.bosch.binin.api.enumeration.RequirementPerformTypeEnum;
@@ -21,6 +22,7 @@ import com.bosch.binin.service.IStockService;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -83,24 +85,44 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
 //        dtos.forEach(r->{
 //            wrapper.or(wp->wp.eq(MaterialCall::getOrderNb,r.getOrderNb()).eq(MaterialCall::getMaterialNb,r.getMaterialNb()));
 //        });
+
         Integer integer = materialCallMapper.selectCount(wrapper);
 
         return integer > 0;
     }
 
+    private List<RequirementResultVO.NotEnoughStock> dealUnEnoughStock(List<MaterialCall> dos) {
+
+        List<String> materials = dos.stream().map(MaterialCall::getMaterialNb).collect(Collectors.toList());
+        LambdaQueryWrapper<Stock> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(Stock::getMaterialNb, materials);
+        lambdaQueryWrapper.eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode());
+        lambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<Stock> stockList = stockService.list(lambdaQueryWrapper);
+        Map<String, Double> materialAvailableStockMap = stockList.stream().collect(Collectors.groupingBy(Stock::getMaterialNb, Collectors.summingDouble(Stock::getAvailableStock)));
+        List<RequirementResultVO.NotEnoughStock> notEnoughStockList = new ArrayList<>();
+        dos.stream().forEach(item -> {
+            Double requireQuantity = item.getQuantity();
+            Double stockQuantity = materialAvailableStockMap.get(item.getMaterialNb());
+            if (requireQuantity > stockQuantity) {
+                RequirementResultVO.NotEnoughStock notEnoughStock = new RequirementResultVO.NotEnoughStock();
+                notEnoughStock.setMaterialNb(item.getMaterialNb());
+                notEnoughStock.setAvaliableQuantity(stockQuantity);
+                notEnoughStockList.add(notEnoughStock);
+            }
+
+        });
+        return notEnoughStockList;
+
+
+    }
+
     @Override
-    public RequirementResultVO converToRequirement(List<MaterialCall> dos, Integer sortType, String cell) {
+    public RequirementResultVO converToRequirement(List<MaterialCall> dos, boolean continueFlag) {
         if (CollectionUtils.isEmpty(dos)) {
             return null;
         }
 
-        dealMaterialCall(dos);
-
-        updateBatchById(dos);
-
-        Map<String, Double> materialQtyMap = dos.stream().
-                collect(Collectors.groupingBy(item -> item.getOrderNb() + "-" + item.getMaterialNb(),
-                        Collectors.summingDouble(MaterialCall::getQuantity)));
 
         //部分满足的物料号
         List<RequirementResultVO.MaterialOrder> unStatisfiedMaterialNbs = new ArrayList<>();
@@ -109,52 +131,72 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         //没有库存的物料号
         List<RequirementResultVO.MaterialOrder> noStockMaterialNbs = new ArrayList<>();
 
-        materialQtyMap.forEach((materialNbOrderNb, quantity) -> {
-            String[] split = materialNbOrderNb.split("-");
-            String materialNb = split[1];
-            String orderNb = split[0];
 
+        RequirementResultVO requirementResultVO = RequirementResultVO.builder().fullStatisfiedMaterialNbs(fullStatisfiedMaterialNbs).noStockMaterialNbs(noStockMaterialNbs).unStatisfiedMaterialNbs(unStatisfiedMaterialNbs).build();
+
+        dos.forEach(item -> {
+            List<Stock> useMaterialStockList = new ArrayList<>();
             //先查询出来需要用到的结果
-            List<Stock> useMaterialStockList = getUseMaterialStock(orderNb, materialNb, sortType, quantity,
-                    unStatisfiedMaterialNbs, fullStatisfiedMaterialNbs, noStockMaterialNbs);
+            getUseMaterialStock(item, useMaterialStockList, requirementResultVO);
             //处理筛选出来的库存列表
-            dealUseMaterialStockList(useMaterialStockList, sortType, quantity, orderNb, cell);
+            dealUseMaterialStockList(useMaterialStockList, item);
+
         });
+
+        //如果有不满足的需求的，需要提示给前端
+        if ((!CollectionUtils.isEmpty(unStatisfiedMaterialNbs) || !CollectionUtils.isEmpty(noStockMaterialNbs)) && !continueFlag) {
+            //返回前端提示
+
+        }
+
+        dos.forEach(item -> {
+
+        });
+
         return RequirementResultVO.builder().fullStatisfiedMaterialNbs(fullStatisfiedMaterialNbs).noStockMaterialNbs(noStockMaterialNbs).unStatisfiedMaterialNbs(unStatisfiedMaterialNbs).build();
     }
 
+    @Override
+    public RequirementResultVO systemGenerateJob(MaterialCalJobRequestDTO.SystemGenerateJob systemGenerateJob) {
+        if (Objects.isNull(systemGenerateJob) || CollectionUtils.isEmpty(systemGenerateJob.getCallIds())) {
+            throw new ServiceException("请选择需求记录后再进行生成");
+        }
 
-    private void dealMaterialCall(List<MaterialCall> dos) {
 
-        Map<String, List<MaterialCall>> sameOrderMaterialCallList = dos.stream().
-                collect(Collectors.groupingBy(item -> item.getOrderNb() + "-" + item.getMaterialNb()));
+        LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(MaterialCall::getId, systemGenerateJob.getCallIds());
+        queryWrapper.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<MaterialCall> callList = materialCallMapper.selectList(queryWrapper);
+        //校验是否含有已经执行过的需求
+        List<MaterialCall> hasPerformedList = callList.stream().filter(item -> item.getStatus() == MaterialCallStatusEnum.HAS_ISSUED.code()).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(hasPerformedList)) {
+            throw new ServiceException("包含已经执行过的需求");
+        }
 
-        sameOrderMaterialCallList.forEach((materialOrder, materialCallList) -> {
-            String[] split = materialOrder.split("-");
-            String materialNb = split[1];
-            String orderNb = split[0];
-            List<Stock> stockList = getUseMaterialByNb(materialNb);
-            Double stockSum = stockList.stream().collect(Collectors.summingDouble(Stock::getAvailableStock));
-            int temp = 0;
-            for (MaterialCall materialCall : materialCallList) {
-                temp += materialCall.getQuantity();
-                if (stockSum - temp >= 0) {
-//                    materialCall.setDeliveryQuantity(materialCall.getQuantity());
-//                    materialCall.setDiffQuantity(Double.valueOf(0));
-                } else {
-                    Double actual = stockSum - temp + materialCall.getQuantity();
-//                    materialCall.setDeliveryQuantity(actual > 0 ? actual : 0);
-//                    materialCall.setDiffQuantity(materialCall.getQuantity() - materialCall.getDeliveryQuantity());
-                }
-            }
+        RequirementResultVO requirementResultVO = new RequirementResultVO();
+        List<RequirementResultVO.NotEnoughStock> notEnoughStockList = dealUnEnoughStock(callList);
+        if (!CollectionUtils.isEmpty(notEnoughStockList) && !systemGenerateJob.isContinueFlag()) {
+            requirementResultVO.setNotEnoughStocks(notEnoughStockList);
+            return requirementResultVO;
+        }
+
+
+        requirementResultVO = converToRequirement(callList, systemGenerateJob.isContinueFlag());
+
+
+        callList.forEach(item -> {
+            item.setUpdateBy(SecurityUtils.getUsername());
+            item.setUpdateTime(new Date());
+            item.setStatus(MaterialCallStatusEnum.HAS_ISSUED.code());
         });
+        updateBatchById(callList);
 
 
+        return requirementResultVO;
     }
 
 
-    private void dealUseMaterialStockList(List<Stock> useMaterialStockList, Integer sortType,
-                                          Double quantity, String orderNb, String cell) {
+    private void dealUseMaterialStockList(List<Stock> useMaterialStockList, MaterialCall call) {
         if (CollectionUtils.isEmpty(useMaterialStockList)) {
             return;
         }
@@ -162,27 +204,26 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         Double stockSum = useMaterialStockList.stream().collect(Collectors.summingDouble(Stock::getAvailableStock));
         Double deviation = null;
         boolean splitFlag = false;
-        if (stockSum > quantity) {
+        if (stockSum > call.getQuantity()) {
             splitFlag = true;
-            deviation = stockSum - quantity;
+            deviation = stockSum - call.getQuantity();
         }
 
         List<MaterialKanban> kanbanList = new ArrayList<>();
         for (int i = 0; i < useMaterialStockList.size(); i++) {
             Stock stock = useMaterialStockList.get(i);
             MaterialKanban kanban = new MaterialKanban();
-            kanban.setOrderNumber(orderNb);
+            kanban.setOrderNumber(call.getOrderNb());
             kanban.setFactoryCode(stock.getPlantNb());
             kanban.setWareCode(stock.getWareCode());
             kanban.setAreaCode(stock.getAreaCode());
             kanban.setBinCode(stock.getBinCode());
             kanban.setMaterialCode(stock.getMaterialNb());
             kanban.setSsccNumber(stock.getSsccNumber());
-            kanban.setCell(cell);
+            kanban.setCell(call.getCell());
             kanban.setType(RequirementActionTypeEnum.FULL_BIN_DOWN.value());
             kanban.setQuantity(stock.getAvailableStock());
-            kanban.setStatus(stock.getPlantNb().equals("7751") ? RequirementPerformTypeEnum.HAS_ISSUED.value()
-                    : RequirementPerformTypeEnum.WAIT_ISSUE.value());
+            kanban.setStatus(RequirementPerformTypeEnum.WAIT_ISSUE.value());
             kanban.setCreateBy(SecurityUtils.getUsername());
             kanban.setCreateTime(new Date());
             kanban.setMoveType(MoveTypeEnums.CALL.getCode());
@@ -226,46 +267,44 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         return stockList;
     }
 
-    private List<Stock> getUseMaterialStock(String orderNb, String materialNb, Integer sortType, Double quantity,
-                                            List<RequirementResultVO.MaterialOrder> unStatisfiedMaterialNbs,
-                                            List<RequirementResultVO.MaterialOrder> fullStatisfiedMaterialNbs,
-                                            List<RequirementResultVO.MaterialOrder> noStockMaterialNbs) {
+    private void getUseMaterialStock(MaterialCall call, List<Stock> useMaterialStockList,
+                                     RequirementResultVO requirementResultVO) {
         //根据库存列表查询出来
-        List<Stock> stockList = getUseMaterialByNb(materialNb);
+        List<Stock> stockList = getUseMaterialByNb(call.getMaterialNb());
         List<Stock> sortedStockList = new ArrayList<>();
-        if (MaterialCallSortTypeEnum.BBD_FIRST.value().equals(sortType)) {
+        if (MaterialCallSortTypeEnum.BBD_FIRST.value().equals(call.getSortType())) {
             sortedStockList = stockList.stream().filter(item -> item.getAvailableStock() != 0).sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getPlantNb)).collect(Collectors.toList());
-        } else if (MaterialCallSortTypeEnum.MAIN_WARE_FIRST.value().equals(sortType)) {
+        } else if (MaterialCallSortTypeEnum.MAIN_WARE_FIRST.value().equals(call.getSortType())) {
             sortedStockList = stockList.stream().filter(item -> item.getAvailableStock() != 0).sorted(Comparator.comparing(Stock::getPlantNb).thenComparing(Stock::getExpireDate)).collect(Collectors.toList());
         }
         if (CollectionUtils.isEmpty(sortedStockList)) {
-            noStockMaterialNbs.add(RequirementResultVO.MaterialOrder.builder().materialNb(materialNb).orderNb(orderNb).build());
-            return new ArrayList<>();
+            requirementResultVO.getNoStockMaterialNbs().add(RequirementResultVO.MaterialOrder.builder().materialNb(call.getMaterialNb()).orderNb(call.getOrderNb()).build());
+            return;
         }
         double count = 0;
-        List<Stock> res = new ArrayList<>();
         for (Stock stock : sortedStockList) {
             count += stock.getAvailableStock();
-            res.add(stock);
-            if (count >= quantity) {
+            useMaterialStockList.add(stock);
+            if (count >= call.getQuantity()) {
                 break;
             }
         }
         if (count == 0) {
-            noStockMaterialNbs.add(RequirementResultVO.MaterialOrder.builder().materialNb(materialNb).orderNb(orderNb).build());
+            call.setIssuedQuantity((double) 0);
+            requirementResultVO.getNoStockMaterialNbs().add(RequirementResultVO.MaterialOrder.builder().materialNb(call.getMaterialNb()).orderNb(call.getOrderNb()).build());
 
         }
         //计算部分满足还是全部满足
         //完全满足
-        if (count >= quantity) {
-            fullStatisfiedMaterialNbs.add(RequirementResultVO.MaterialOrder.builder().materialNb(materialNb).orderNb(orderNb).build());
+        if (count >= call.getQuantity()) {
+            call.setIssuedQuantity(call.getQuantity());
+            requirementResultVO.getFullStatisfiedMaterialNbs().add(RequirementResultVO.MaterialOrder.builder().materialNb(call.getMaterialNb()).orderNb(call.getOrderNb()).build());
         }
         //部分满足
-        if (count != 0 && count < quantity) {
-            unStatisfiedMaterialNbs.add(RequirementResultVO.MaterialOrder.builder().materialNb(materialNb).orderNb(orderNb).build());
+        if (count != 0 && count < call.getQuantity()) {
+            call.setIssuedQuantity(count);
+            requirementResultVO.getUnStatisfiedMaterialNbs().add(RequirementResultVO.MaterialOrder.builder().materialNb(call.getMaterialNb()).orderNb(call.getOrderNb()).build());
         }
-
-        return res;
     }
 
 

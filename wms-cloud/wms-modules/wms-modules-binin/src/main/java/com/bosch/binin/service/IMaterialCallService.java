@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialCall;
+import com.bosch.binin.api.domain.dto.MaterialCalJobRequestDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
@@ -28,5 +29,7 @@ public interface IMaterialCallService extends IService<MaterialCall> {
 
     public boolean validList( List<MaterialCallDTO> dtos) ;
 
-    RequirementResultVO converToRequirement(List<MaterialCall> dos, Integer sortType, String cell);
+    RequirementResultVO converToRequirement(List<MaterialCall> dos,boolean continueFlag);
+
+    RequirementResultVO systemGenerateJob(MaterialCalJobRequestDTO.SystemGenerateJob systemGenerateJob);
 }

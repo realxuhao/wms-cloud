@@ -20,6 +20,8 @@ public class MaterialCalJobRequestDTO {
     public static class SystemGenerateJob {
         @ApiModelProperty(value = "订单号")
         private List<Long> callIds;
+        @ApiModelProperty(value = "是否继续，默认false")
+        private boolean continueFlag;
     }
 
 
