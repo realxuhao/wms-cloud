@@ -24,7 +24,7 @@
 							</view>
 							{{materialInfo.palletType}}
 						</view>
-						<view class="text-line m-b-8 " v-show="materialInfo.palletCode">
+						<view class="text-line m-b-8 ">
 							<view class="label">
 								托盘编码：
 							</view>
@@ -39,18 +39,51 @@
 					</view>
 				</view>
 			
-				<view class="content">		
-					<uni-forms  :label-width="80" ref="binInForm" :rules="binInFormRules" :modelValue="binInForm" label-position="left">
-						<uni-forms-item  v-if="!materialInfo.palletCode" label="托盘编码" name="palletTypeCode" required >
+				<view class="content">
+					<uni-forms v-if="!materialInfo.recommendBinCode" :label-width="80" ref="palletForm" :rules="palletRules" :modelValue="palletForm" label-position="left">
+						<uni-forms-item ref="palletType" label="托盘类型" name="palletType" required>
+							<uni-data-picker 
+							placeholder="请选择托盘类型" 
+							popup-title="请选择托盘类型" 
+							:localdata="palletTypeList" 
+							@change="handlePalletTypeChange"
+							v-model="palletForm.palletType">
+							</uni-data-picker>
+						</uni-forms-item>
+						<uni-forms-item label="托盘编码" name="palletTypeCode" required>
 							<view class="flex flex-ai">
-								<view class="custom-input" :class="editFieldName==='binInForm.palletTypeCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.palletTypeCode')">
-									<text :class="!binInForm.palletTypeCode?'placeholder-text':''">{{binInForm.palletTypeCode||'请扫描托盘编码'}}</text>
+								<view class="custom-input" :class="editFieldName==='palletForm.palletTypeCode'?'focus':''" @click="()=>handleSetEditFieldName('palletForm.palletTypeCode')">
+									<text :class="!palletForm.palletTypeCode?'placeholder-text':''">{{palletForm.palletTypeCode||'请扫描托盘编码'}}</text>
 								</view>
+								<view class="generate-pallet-code" @click="handleGeneratePalletCode">
+									<o-btn size="sm" :loading="generatePalletCodeLoading">
+										<uni-icons
+										type="plusempty" 
+										size="16"/>自动生成
+									</o-btn>
+								</view>
+								
+							</view>
+						</uni-forms-item>
+						<uni-forms-item label="推荐库位" name="recommendBinCode" required>
+							<uni-easyinput  v-model="palletForm.recommendBinCode" disabled placeholder="系统自动生成" />
+						</uni-forms-item>
+						<o-btn block class="submit-btn primary-button" :loading="submitLoading"  @click="handleGenerateInTask">提交</o-btn>
+					</uni-forms>
+					
+					<!-- v-if="materialInfo.recommendBinCode" -->
+					<uni-forms  v-if="materialInfo.recommendBinCode" :label-width="80" ref="binInForm" :rules="binInFormRules" :modelValue="binInForm" label-position="left">
+						<uni-forms-item label="barCode" name="barCode" style="display: none;">
+							<uni-easyinput  v-model="binInForm.barCode" />
+						</uni-forms-item>
+						<uni-forms-item label="SSCC码" name="mesBarCode" required>
+							<view class="custom-input" :class="editFieldName==='binInForm.mesBarCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.mesBarCode')">
+								<text :class="!binInForm.mesBarCode?'placeholder-text':''">{{binInForm.mesBarCode||'请扫描SSCC码'}}</text>
 							</view>
 						</uni-forms-item>
 						<uni-forms-item label="目标库位" name="recommendBinCode" required>
 							<view class="custom-input" :class="editFieldName==='binInForm.recommendBinCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.recommendBinCode')">
-								<text :class="!binInForm.recommendBinCode?'placeholder-text':''">{{binInForm.recommendBinCode||'请扫描目标库位'}}</text>
+								<text :class="!binInForm.recommendBinCode?'placeholder-text':''">{{binInForm.recommendBinCode||'请扫描SSCC码'}}</text>
 							</view>
 						</uni-forms-item>
 						<o-btn block class="submit-btn primary-button" :loading="submitLoading"  @click="handlePostBinIn">提交</o-btn>
@@ -126,29 +159,62 @@
 				palletForm:{
 					
 				},
+				palletRules:{
+					palletType:{
+						rules: [{
+							required: true,
+							errorMessage: '请选择托盘类型',
+						}]
+					},
+					palletTypeCode:{
+						rules: [{
+							required: true,
+							errorMessage: '托盘编码不能为空',
+						}]
+					},
+					recommendBinCode:{
+						rules: [{
+							required: true,
+							errorMessage: '推荐库位不能为空',
+						}]
+					},
+				},
 				binInFormRules:{
 					recommendBinCode:{
 						rules: [{
 							required: true,
-							errorMessage: '目标库位不能为空',
+							errorMessage: '推荐库位不能为空',
 						}]
 					},
-					palletTypeCode:{
+					mesBarCode:{
 						rules: [
 							{
 								required: true,
-								errorMessage: '托盘编码不能为空',
+								errorMessage: 'SSCC码不能为空',
+							},
+							{
+								validateFunction:function(rule,value,data,callback){
+									if (value != data.barCode) {
+										callback('当前SSCC码和扫描SSCC码不一致')
+									}
+									return true
+								}
 							},
 						]
 					}
 				},
-				binInForm:{
-					mesBarCode:undefined,
-					recommendBinCode:undefined,
+				palletForm:{
 					palletTypeCode:undefined,
+					palletType:undefined,
+					recommendBinCode:undefined
+				},
+				binInForm:{
+					barCode:undefined, //url barCode
+					mesBarCode:undefined,
+					recommendBinCode:undefined
 				},
 				
-				editFieldName:"binInForm.palletTypeCode"  //'binInForm.mesBarCode','binInForm.recommendBinCode'
+				editFieldName:undefined  //'binInForm.mesBarCode','binInForm.recommendBinCode'
 			};
 		},
 		onLoad(options){
@@ -173,10 +239,34 @@
 					}
 				})
 			},
+			async handlePalletTypeChange(){
+					this.palletForm.palletTypeCode = undefined
+					this.editFieldName = 'palletForm.palletTypeCode'
+			},
+			async handleGeneratePalletCode(){
+				if(!this.palletForm.palletType){
+					this.$refs.palletType.onFieldChange()
+					return
+				}
+				try{
+					this.generatePalletCodeLoading = true
+					const data = await this.$store.dispatch('binIn/getPalletTypeCode',this.palletForm.palletType)
+					
+					this.palletForm.palletTypeCode = data.virtualPalletCode
+					this.editFieldName = undefined
+				}catch(e){
+					this.$refs.message.error(e.message)
+				}finally{
+					this.generatePalletCodeLoading = false
+				}
+			},
 			async handleGoBack(){
 				uni.navigateBack({delta:1})	
 			},
-		
+			async getPalletList(){
+				const data = await this.$store.dispatch('binIn/getPalletList')
+				this.palletTypeList = convertPalletList(data)
+			},
 			async lodaData(){
 				this.getPalletList()
 			},
@@ -190,6 +280,46 @@
 				}catch(e){
 					this.$refs.message.error(e.message)
 				}
+			},
+			async handleGenerateInTask(){
+				this.$refs.palletForm
+				  .validate()
+				  .then(async (res) => {
+					try{
+						uni.showLoading({
+							title:'正在提交'
+						})
+						this.submitLoading = true
+						const options = {
+							mesBarCode:this.barCode,
+							palletCode:this.palletForm.palletTypeCode,
+							palletType:this.palletForm.palletType,
+							recommendBinCode:this.palletForm.recommendBinCode
+						}
+						await this.$store.dispatch('binIn/generateInTask',options)
+						
+						await this.getByMesBarCode(this.barCode)
+					}catch(e){
+						this.$refs.message.error(e.message)
+					}finally{
+						uni.hideLoading()
+						this.submitLoading = false
+					}
+				  }).catch((err) => {});
+			},
+			async allocate(){
+				try{
+					const options = {
+						mesBarCode:this.barCode,
+						palletCode:this.palletForm.palletTypeCode,
+						palletType:this.palletForm.palletType
+					}
+					const data = await this.$store.dispatch('binIn/allocate',options)
+					this.palletForm.recommendBinCode = data.recommendBinCode
+				}catch(e){
+					this.$refs.message.error('获取推荐库位失败')
+				}
+				
 			},
 			async handlePostBinIn(){
 				this.$refs.binInForm
@@ -214,7 +344,6 @@
 					const options = {
 						mesBarCode:this.barCode,
 						actualBinCode:this.binInForm.recommendBinCode,
-						palletCode:this.binInForm.palletTypeCode
 					}
 					const data = await this.$store.dispatch('binIn/postBinIn',options)
 					this.$refs.popup.open()
@@ -231,8 +360,13 @@
 			this.lodaData()
 		},
 		watch:{
-			'binInForm.palletTypeCode'(value){
-				this.editFieldName = 'binInForm.recommendBinCode'
+			'binInForm.mesBarCode'(value){
+				this.focusInput = 'recommendBinCode'
+			},
+			'palletForm.palletTypeCode'(value){
+				if(value){
+					this.allocate()
+				}
 			},
 		}
 	}
