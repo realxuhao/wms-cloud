@@ -31,4 +31,6 @@ public interface IBinInService extends IService<BinIn> {
     BinInVO performBinIn(BinInDTO binInDTO);
 
     int deleteBinInById(Long id);
+
+    List<BinInVO> selectProcessingBinVOList(BinInQueryDTO binInQueryDTO);
 }

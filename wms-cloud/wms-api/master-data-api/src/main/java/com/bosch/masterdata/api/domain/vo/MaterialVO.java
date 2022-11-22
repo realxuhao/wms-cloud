@@ -68,11 +68,11 @@ public class MaterialVO {
     private BigDecimal minPackageNetWeight;
 
     /** 允许负偏差比例【绝对值】 */
-    @ApiModelProperty(value = "允许负偏差比例【绝对值】")
+    @ApiModelProperty(value = "允许的最大值")
     private BigDecimal lessDeviationRatio;
 
     /** 允许正偏差比例【绝对值】 */
-    @ApiModelProperty(value = "允许正偏差比例【绝对值】")
+    @ApiModelProperty(value = "允许的最小值")
     private BigDecimal moreDeviationRatio;
 
     /**转化重量参数 */

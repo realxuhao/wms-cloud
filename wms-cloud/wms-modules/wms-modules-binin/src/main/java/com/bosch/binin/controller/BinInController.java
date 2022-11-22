@@ -82,6 +82,21 @@ public class BinInController extends BaseController {
         return R.ok(binInService.performBinIn(binInDTO));
     }
 
+
+    @GetMapping(value = "/processingList")
+    @ApiOperation("查询待上架列表")
+    public R<PageVO<BinInVO>> processingList(BinInQueryDTO binInQueryDTO) {
+        if (binInQueryDTO == null) {
+            binInQueryDTO = new BinInQueryDTO();
+        }
+        if (StringUtils.isEmpty(binInQueryDTO.getWareCode())) {
+            binInQueryDTO.setWareCode(SecurityUtils.getWareCode());
+        }
+        startPage();
+        List<BinInVO> list = binInService.selectProcessingBinVOList(binInQueryDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
     @GetMapping(value = "/list")
     @ApiOperation("查询上架列表")
     public R<PageVO<BinInVO>> list(BinInQueryDTO binInQueryDTO) {

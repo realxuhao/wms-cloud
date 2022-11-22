@@ -84,4 +84,31 @@
         <if test="createBy != null and createBy != ''">and bi.create_by = #{createBy}</if>
         <if test="status != null ">and bi.status = #{status}</if>
     </select>
+    <select id="selectProcessingBinVOList" resultMap="BinInVOResult">
+        select si.id,
+               si.plant_nb,
+               si.ware_code,
+               si.sscc_number,
+               si.batch_nb,
+               si.material_nb,
+               si.check_type,
+               mm.name as material_name,
+               si.check_quantity,
+               si.min_standard,
+               si.max_standard,
+               si.actual_quantity,
+               si.actual_result,
+               si.average_result,
+               si.operate_user,
+               si.operate_time,
+               si.original_pallet_quantity,
+               si.from_purchase_order
+        from si_material_in si
+                 left join md_material mm on si.material_nb = mm.code
+        where si.delete_flag = 0
+          and mm.delete_flag = 0
+          and si.sscc_number not in (select bi.sscc_number from bi_in bi where bi.delete_flag = 0)
+        order by operate_time desc
+
+    </select>
 </mapper>

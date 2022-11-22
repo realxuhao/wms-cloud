@@ -281,6 +281,11 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         return binInMapper.updateById(binIn);
     }
 
+    @Override
+    public List<BinInVO> selectProcessingBinVOList(BinInQueryDTO binInQueryDTO) {
+        return binInMapper.selectProcessingBinVOList(binInQueryDTO);
+    }
+
     private BinVO getBinVOByBinCode(String binCode) {
         R<BinVO> binInfoByCodeResult = remoteMasterDataService.getBinInfoByCode(binCode);
         if (StringUtils.isNull(binInfoByCodeResult) || StringUtils.isNull(binInfoByCodeResult.getData())) {
