@@ -1,9 +1,14 @@
 package com.bosch.masterdata.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.masterdata.api.domain.MaterialBin;
+import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.dto.PalletDTO;
 import com.bosch.masterdata.api.domain.vo.PalletVO;
 import com.bosch.masterdata.mapper.MaterialBinMapper;
@@ -121,5 +126,20 @@ public class PalletServiceImpl extends ServiceImpl<PalletMapper, Pallet>  implem
     @Override
     public Pallet selectPalletByType(String palletType) {
         return palletMapper.selectPalletByType(palletType);
+    }
+
+
+    @Override
+    public boolean validList(List<PalletDTO> dtos) {
+
+        List<String> types=new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(dtos)){
+            List<String> collect = dtos.stream().map(PalletDTO::getType).collect(Collectors.toList());
+            types.addAll(collect);
+        }
+        LambdaQueryWrapper<Pallet> queryWrapper=new LambdaQueryWrapper<>();
+        queryWrapper.in(Pallet::getType,types);
+        Integer integer = palletMapper.selectCount(queryWrapper);
+        return  integer>0;
     }
 }

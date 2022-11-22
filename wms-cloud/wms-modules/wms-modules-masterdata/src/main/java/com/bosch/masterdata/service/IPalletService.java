@@ -68,4 +68,7 @@ public interface IPalletService extends IService<Pallet>
     public int deletePalletById(Long id);
 
     Pallet selectPalletByType(String palletType);
+
+    //验证是否有相同数据
+    boolean validList(List<PalletDTO> dtos);
 }
