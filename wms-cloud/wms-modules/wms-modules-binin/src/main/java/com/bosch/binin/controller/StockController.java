@@ -10,12 +10,11 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.web.controller.BaseController;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,5 +40,17 @@ public class StockController extends BaseController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
+
+    @GetMapping(value = "/listByRule")
+    @ApiOperation("根据规则查询某个物料的库存")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "物料号", name = "materialNb", dataType = "String"),
+            @ApiImplicitParam(value = "排序类型,0基于有效期，1、基于先主库后外库", name = "sortType", dataType = "Integer")
+    })
+    public R<PageVO<StockVO>> listByRule(StockQueryDTO stockQuerySTO) {
+        startPage();
+        List<StockVO> list = stockService.selectStockVOBySortType(stockQuerySTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
 
 }

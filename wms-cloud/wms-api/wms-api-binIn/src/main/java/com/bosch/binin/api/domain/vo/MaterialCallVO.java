@@ -61,18 +61,11 @@ public class MaterialCallVO {
     private Double quantity;
 
     /**
-     * 配送量
+     * 已下发量
      */
-    @Excel(name = "配送量")
-    @ApiModelProperty(value = "配送量")
-    private Double deliveryQuantity;
-
-    /**
-     * 差值
-     */
-    @Excel(name = "差值")
-    @ApiModelProperty(value = "差值")
-    private Double diffQuantity;
+    @Excel(name = "已下发量")
+    @ApiModelProperty(value = "已下发量")
+    private Double issuedQuantity;
 
 
     /**

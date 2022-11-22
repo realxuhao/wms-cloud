@@ -44,14 +44,9 @@ public class MaterialCall extends BaseEntity {
     private Double quantity;
 
     /**
-     * 配送量
+     * 已下发量
      */
-    private Double deliveryQuantity;
-
-    /**
-     * 差值
-     */
-    private Double diffQuantity;
+    private Double issuedQuantity;
 
     /**
      * 单位

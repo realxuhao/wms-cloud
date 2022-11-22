@@ -18,6 +18,7 @@ import com.bosch.binin.service.IMaterialCallService;
 import com.bosch.binin.service.IMaterialKanbanService;
 import com.bosch.binin.service.IStockLogService;
 import com.bosch.binin.service.IStockService;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.utils.StringUtils;
@@ -60,10 +61,10 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper();
         if (queryDTO != null) {
             queryWrapper.eq(StringUtils.isNotEmpty(queryDTO.getMaterialNb()), MaterialCall::getMaterialNb, queryDTO.getMaterialNb())
-                    .eq(StringUtils.isNotEmpty(queryDTO.getCell()), MaterialCall::getCell, queryDTO.getCell())
-                    .eq(StringUtils.isNotEmpty(queryDTO.getOrderNb()), MaterialCall::getOrderNb, queryDTO.getOrderNb())
-                    .eq(StringUtils.isNotEmpty(queryDTO.getCreateBy()), MaterialCall::getCreateBy, queryDTO.getCreateBy())
-                    .eq(ObjectUtils.isNotEmpty(queryDTO.getStatus()), MaterialCall::getStatus, queryDTO.getStatus())
+                    .like(StringUtils.isNotEmpty(queryDTO.getCell()), MaterialCall::getCell, queryDTO.getCell())
+                    .like(StringUtils.isNotEmpty(queryDTO.getOrderNb()), MaterialCall::getOrderNb, queryDTO.getOrderNb())
+                    .like(StringUtils.isNotEmpty(queryDTO.getCreateBy()), MaterialCall::getCreateBy, queryDTO.getCreateBy())
+                    .like(ObjectUtils.isNotEmpty(queryDTO.getStatus()), MaterialCall::getStatus, queryDTO.getStatus())
                     .apply(ObjectUtils.allNotNull(queryDTO.getStartCreateTime()), "date_format (create_time,'%Y-%m-%d') >= date_format ({0},'%Y-%m-%d')", queryDTO.getStartCreateTime())
                     .apply(ObjectUtils.allNotNull(queryDTO.getEndCreateTime()), "date_format (create_time,'%Y-%m-%d') <= date_format ({0},'%Y-%m-%d')", queryDTO.getEndCreateTime())
                     .orderByAsc(MaterialCall::getStatus)
@@ -138,12 +139,12 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             for (MaterialCall materialCall : materialCallList) {
                 temp += materialCall.getQuantity();
                 if (stockSum - temp >= 0) {
-                    materialCall.setDeliveryQuantity(materialCall.getQuantity());
-                    materialCall.setDiffQuantity(Double.valueOf(0));
+//                    materialCall.setDeliveryQuantity(materialCall.getQuantity());
+//                    materialCall.setDiffQuantity(Double.valueOf(0));
                 } else {
                     Double actual = stockSum - temp + materialCall.getQuantity();
-                    materialCall.setDeliveryQuantity(actual > 0 ? actual : 0);
-                    materialCall.setDiffQuantity(materialCall.getQuantity() - materialCall.getDeliveryQuantity());
+//                    materialCall.setDeliveryQuantity(actual > 0 ? actual : 0);
+//                    materialCall.setDiffQuantity(materialCall.getQuantity() - materialCall.getDeliveryQuantity());
                 }
             }
         });
@@ -217,6 +218,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         LambdaQueryWrapper<Stock> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(Stock::getMaterialNb, materialNb);
         lambdaQueryWrapper.eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode());
+        lambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<Stock> stockList = stockService.list(lambdaQueryWrapper);
         if (CollectionUtils.isEmpty(stockList)) {
             stockList = new ArrayList<>();

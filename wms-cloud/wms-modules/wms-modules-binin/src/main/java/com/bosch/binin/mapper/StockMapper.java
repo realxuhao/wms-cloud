@@ -22,4 +22,6 @@ public interface StockMapper extends BaseMapper<Stock> {
     List<StockVO> selectStockVOList(StockQueryDTO stockQueryDTO);
 
     List<StockVO> selectStockVOListBySSCCList(@Param("ssccList") List<String> ssccList);
+
+    List<StockVO> selectStockVOBySortType(StockQueryDTO stockQueryDTO);
 }

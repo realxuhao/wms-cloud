@@ -96,6 +96,11 @@ public class Stock extends BaseEntity {
      */
     private String qualityStatus;
 
+    /**
+     * 质检状态
+     */
+    private Integer deleteFlag;
+
 
 
 }

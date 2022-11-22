@@ -3,6 +3,7 @@ package com.bosch.binin.controller;
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.bosch.binin.api.domain.MaterialCall;
+import com.bosch.binin.api.domain.dto.MaterialCalJobRequestDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
 import com.bosch.binin.api.domain.vo.MaterialCallVO;
@@ -66,7 +67,7 @@ public class MaterialFeedingController extends BaseController {
             @ApiImplicitParam(value = "cell", name = "cell", dataType = "String")
     })
     @Transactional(rollbackFor = Exception.class)
-    public R<RequirementResultVO> call(@RequestParam(value = "file") MultipartFile file,
+    public R call(@RequestParam(value = "file") MultipartFile file,
                                        @RequestParam("sortType") Integer sortType,
                                        @RequestParam("cell") String cell) {
 //        return R.fail(fileFeignService.reduct());
@@ -87,9 +88,8 @@ public class MaterialFeedingController extends BaseController {
                         });
                         //添加
                         List<MaterialCall> dos = BeanConverUtil.converList(dtos, MaterialCall.class);
-                        materialCallService.saveBatch(dos);
-                        RequirementResultVO requirementResultVO = materialCallService.converToRequirement(dos, sortType, cell);
-                        return R.ok(requirementResultVO);
+                        boolean b = materialCallService.saveBatch(dos);
+                        return R.ok(b);
                     }
                 }
                 return R.ok(null);
@@ -100,6 +100,13 @@ public class MaterialFeedingController extends BaseController {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             return R.fail(e.getMessage());
         }
+    }
+
+    @PostMapping(value = "/call/system")
+    @ApiOperation("系统生成叫料任务接口")
+    public R<RequirementResultVO> systemGenerateJob(MaterialCalJobRequestDTO.SystemGenerateJob systemGenerateJob){
+//        RequirementResultVO requirementResultVO = materialCallService.converToRequirement(dos, sortType, cell);
+        return null;
     }
 
 
