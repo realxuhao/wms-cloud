@@ -12,10 +12,12 @@ import com.bosch.binin.api.domain.vo.RequirementResultVO;
 import com.bosch.binin.service.IMaterialCallService;
 import com.bosch.file.api.FileFeignService;
 import com.bosch.file.api.FileService;
+import com.bosch.masterdata.api.domain.dto.BinDTO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
@@ -36,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @program: wms-cloud
@@ -110,7 +113,16 @@ public class MaterialFeedingController extends BaseController {
     }
 
 
-    @GetMapping(value = "/call/list")
+    @PutMapping(value = "/call/{id}")
+    @ApiOperation("更新需求量")
+    public R updateCallQuantity(@PathVariable Long id, @RequestBody MaterialCallDTO callDTO) {
+        if (Objects.isNull(id)) {
+            throw new ServiceException("id不能为空");
+        }
+        return R.ok(materialCallService.updateCallQuantity(callDTO));
+    }
+
+    @GetMapping(value = "/call")
     @ApiOperation("叫料需求列表查询")
     public R<PageVO<MaterialCallVO>> list(MaterialCallQueryDTO queryDTO) {
         startPage();

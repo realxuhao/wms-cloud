@@ -32,4 +32,6 @@ public interface IMaterialCallService extends IService<MaterialCall> {
     RequirementResultVO converToRequirement(List<MaterialCall> dos,boolean continueFlag);
 
     RequirementResultVO systemGenerateJob(MaterialCalJobRequestDTO.SystemGenerateJob systemGenerateJob);
+
+    int updateCallQuantity(MaterialCallDTO callDTO);
 }

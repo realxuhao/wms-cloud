@@ -148,7 +148,6 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             //返回前端提示
 
         }
-
         dos.forEach(item -> {
 
         });
@@ -193,6 +192,20 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
 
 
         return requirementResultVO;
+    }
+
+    @Override
+    public int updateCallQuantity(MaterialCallDTO callDTO) {
+        if (Objects.isNull(callDTO) || Objects.isNull(callDTO.getId()) || Objects.isNull(callDTO.getQuantity())) {
+            throw new ServiceException("id或者quantity不能为空");
+        }
+        MaterialCall materialCall = materialCallMapper.selectById(callDTO.getId());
+        if (materialCall == null || MaterialCallStatusEnum.HAS_ISSUED.code().equals(materialCall.getStatus())) {
+            throw new ServiceException("该需求已经下发，不能修改");
+        }
+        MaterialCall call = BeanConverUtil.conver(callDTO, MaterialCall.class);
+
+        return materialCallMapper.updateById(call);
     }
 
 
