@@ -185,10 +185,10 @@ public class SysFileController {
             if(CollectionUtils.isEmpty(read)){
                 return R.fail("excel中无数据");
             }
-            boolean check = EasyExcelUtil.check(read);
-            if (!check){
-                return R.fail("excel中存在重复数据");
-            }
+//            boolean check = EasyExcelUtil.check(read);
+//            if (!check){
+//                return R.fail("excel中存在重复数据");
+//            }
 //            HashSet<String> hs = new HashSet<>();
 //            read.forEach(r->{
 //                hs.add(r.getOrderNb()+r.getMaterialNb());

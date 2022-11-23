@@ -19,6 +19,8 @@ import com.bosch.masterdata.api.enumeration.ClassType;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
@@ -38,7 +40,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Objects;
 
 /**
@@ -72,9 +76,8 @@ public class MaterialFeedingController extends BaseController {
     })
     @Transactional(rollbackFor = Exception.class)
     public R call(@RequestParam(value = "file") MultipartFile file,
-                  @RequestParam("sortType") Integer sortType,
-                  @RequestParam("cell") String cell) {
-//        return R.fail(fileFeignService.reduct());
+                                       @RequestParam("sortType") Integer sortType,
+                                       @RequestParam("cell") String cell) {
         try {
             //解析文件服务
             R result = fileService.materialCallImport(file, ClassType.MATERIALCALL.getDesc());
@@ -87,13 +90,30 @@ public class MaterialFeedingController extends BaseController {
                         return R.fail(400, "已录入相同订单号的记录");
                     } else {
                         dtos.forEach(r -> {
+                            if (r.getQuantity()==null||r.getQuantity()<0){
+                                throw  new ServiceException("数量输入有误",400);
+                            }
                             r.setSortType(sortType);
                             r.setCell(cell);
                         });
+
+//                        List<Student> studentList = new ArrayList<>();
+//                        list.parallelStream().collect(Collectors.groupingBy(o -> (o.getUid() + o.getUname()), Collectors.toList())).forEach((id, transfer) -> {
+//                            transfer.stream().reduce((a, b) -> new Student(a.getUid(), a.getUname(), a.getScore() + b.getScore())).ifPresent(studentList::add);
+//                        });
+
+                        List<MaterialCallDTO> dtoList=new ArrayList<>();
+                        dtos.parallelStream().collect(Collectors.groupingBy(o ->(o.getOrderNb()+o.getMaterialNb()),Collectors.toList())).forEach((num,dto) ->{
+                            dto.stream().reduce((a,b)->{
+                                a.setQuantity(a.getQuantity()+b.getQuantity());
+
+                                return  a;
+                            }).ifPresent(dtoList::add);
+                                });
                         //添加
-                        List<MaterialCall> dos = BeanConverUtil.converList(dtos, MaterialCall.class);
-                        boolean b = materialCallService.saveBatch(dos);
-                        return R.ok(b);
+                        List<MaterialCall> dos = BeanConverUtil.converList(dtoList, MaterialCall.class);
+
+                        return R.ok(materialCallService.saveBatch(dos));
                     }
                 }
                 return R.ok(null);
@@ -156,6 +176,8 @@ public class MaterialFeedingController extends BaseController {
         ExcelUtil<MaterialCallVO> util = new ExcelUtil<MaterialCallVO>(MaterialCallVO.class);
         util.exportExcel(response, materialCallVOS, "叫料需求");
     }
+
+
 
 
 }

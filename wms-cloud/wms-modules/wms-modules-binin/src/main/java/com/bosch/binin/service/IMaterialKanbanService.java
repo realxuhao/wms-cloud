@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialKanban;
+import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.ruoyi.common.core.web.page.PageDomain;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,4 +20,15 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     List<StockVO> getStockInfo(String materialNb, String wareCode);
 
     int deleteByIds(Long[] ids);
+
+    boolean checkStock(List<MaterialKanbanDTO> materialKanbanDTOS);
+
+    List<Stock> selectStockList(List<MaterialKanbanDTO> dtos);
+
+    /**
+     * 库存表数据转换看板数据
+     * @param stocks
+     * @return
+     */
+    List<MaterialKanban> setValue(List<Stock> stocks,List<MaterialKanbanDTO> dtos);
 }

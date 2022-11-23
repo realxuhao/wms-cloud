@@ -14,6 +14,7 @@ import com.bosch.binin.api.domain.vo.RequirementResultVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.masterdata.api.domain.Frame;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -28,7 +29,7 @@ public interface IMaterialCallService extends IService<MaterialCall> {
 
     List<MaterialCall> getMaterialCallList(MaterialCallQueryDTO queryDTO);
 
-    public boolean validList( List<MaterialCallDTO> dtos) ;
+    public boolean validList(List<MaterialCallDTO> dtos) ;
 
     RequirementResultVO converToRequirement(List<MaterialCall> dos,boolean continueFlag);
 
@@ -37,4 +38,7 @@ public interface IMaterialCallService extends IService<MaterialCall> {
     int updateCallQuantity(MaterialCallDTO callDTO);
 
     MaterialCallCheckResultVO systemGenerateJobCheck(MaterialCalJobRequestDTO.SystemGenerateJob systemGenerateJob);
+
+    //<需求状态>变为：已下发或部分下发
+    int updateCallStatus(MaterialCall materialCall);
 }

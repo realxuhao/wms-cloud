@@ -189,13 +189,13 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         //绑定物料类型id
         materialDTOList.forEach(x -> {
             //绑定物料类型id
-            if (typeMap.get(x.getMaterialType()) == null) {
-                throw new ServiceException("Excel中包含主数据中不存在的物料类型：" + x.getMaterialType());
+            if (typeMap.get(x.getMaterialType())==null){
+                throw new ServiceException("输入数据中包含主数据中不存在的物料类型："+x.getMaterialType());
             }
             x.setMaterialTypeId(typeMap.get(x.getMaterialType()));
             //托盘id
-            if (palletMap.get(x.getPalletType()) == null) {
-                throw new ServiceException("Excel中包含主数据中不存在的托盘类型：" + x.getPalletType());
+            if (palletMap.get(x.getPalletType())==null){
+                throw new ServiceException("输入数据中包含主数据中不存在的托盘类型："+x.getPalletType());
             }
             x.setPalletId(typeMap.get(x.getPalletType()));
         });

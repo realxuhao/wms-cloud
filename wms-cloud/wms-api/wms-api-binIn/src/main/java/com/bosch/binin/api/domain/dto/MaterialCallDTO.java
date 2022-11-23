@@ -4,6 +4,9 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 @Data
 public class MaterialCallDTO {
 
@@ -40,6 +43,8 @@ public class MaterialCallDTO {
      */
     @ExcelProperty( "数量")
     @ApiModelProperty(value = "数量")
+    @NotNull(message = "数量不能为空")
+    @Min(value = 0,message = "数量必须大于0")
     private Double quantity;
 
     /**

@@ -65,7 +65,7 @@ public class MaterialKanban extends BaseEntity {
      */
     private Double quantity;
     /**
-     * 移动类型
+     * 移动类型 （0： 收货，1：入库，2：上架，3：生产叫料）
      */
     private String moveType;
     /**
@@ -77,7 +77,7 @@ public class MaterialKanban extends BaseEntity {
      */
     private String cell;
     /**
-     * 动作类型（整托下架、拆托下架）
+     * 动作类型（0：整托下架 1：拆托下架）
      */
     private Integer type;
     /**

@@ -1,6 +1,7 @@
 package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.StockLog;
 import com.bosch.binin.api.domain.MaterialCall;
@@ -32,8 +33,11 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import java.util.*;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 /**
@@ -43,6 +47,7 @@ import java.util.stream.Collectors;
  * @create: 2022-11-10 14:12
  **/
 @Service
+@Validated
 public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, MaterialCall> implements IMaterialCallService {
 
 
@@ -218,6 +223,30 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         callCheckResultVO.setNotEnoughStockList(notEnoughStockList);
         callCheckResultVO.setCheckFlag(false);
         return callCheckResultVO;
+    }
+
+    @Override
+    public int updateCallStatus(MaterialCall materialCallNew) {
+        //获取叫料表中的数据
+        LambdaQueryWrapper<MaterialCall> qw=new LambdaQueryWrapper<>();
+        qw.eq(MaterialCall::getOrderNb,materialCallNew.getOrderNb());
+        qw.eq(MaterialCall::getMaterialNb,materialCallNew.getMaterialNb());
+        MaterialCall materialCallDB = materialCallMapper.selectOne(qw);
+
+        if(materialCallDB==null){
+            throw new ServiceException("未查询到相同订单号、物料号的叫料需求");
+        }
+        double newQuantity = DoubleMathUtil.doubleMathCalculation(materialCallNew.getIssuedQuantity(),
+                materialCallDB.getIssuedQuantity(), "+");
+
+        //更新叫料表
+        if (materialCallDB.getQuantity()<=newQuantity){
+            materialCallDB.setStatus(MaterialCallStatusEnum.FULL_ISSUED.code());
+        }else {
+            materialCallDB.setStatus(MaterialCallStatusEnum.PART_ISSUED.code());
+        }
+        materialCallDB.setIssuedQuantity(newQuantity);
+        return materialCallMapper.updateById(materialCallDB);
     }
 
 

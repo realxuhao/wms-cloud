@@ -61,12 +61,12 @@ public class MaterialKanbanDTO extends PageDomain {
     /**
      * 动作类型（整托下架、拆托下架）
      */
-    @ApiModelProperty(value = "动作类型")
+    @ApiModelProperty(value = "动作类型（0：整托下架 1：拆托下架）")
     private Integer type;
     /**
      * 状态
      */
-    @ApiModelProperty(value = "状态")
+    @ApiModelProperty(value = "状态：0：待下发（源工厂为7751的没有） 1：已下发 2：已下架（下架时PDA扫描SSCC）、配送完成（产线PDA扫描接收）")
     private Integer status;
 
     /** 创建者 */
@@ -94,4 +94,10 @@ public class MaterialKanbanDTO extends PageDomain {
     @ApiModelProperty(value = "更新时间止")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTimeEnd;
+
+    /**
+     * 数量
+     */
+    @ApiModelProperty(value = "数量")
+    private Double quantity;
 }

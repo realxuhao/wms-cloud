@@ -6,23 +6,30 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialKanban;
+import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.binin.api.enumeration.KanbanPerformTypeEnum;
+import com.bosch.binin.api.enumeration.RequirementActionTypeEnum;
 import com.bosch.binin.mapper.BinInMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IMaterialKanbanService;
 import com.bosch.binin.service.IStockService;
+import com.bosch.binin.utils.BeanConverUtil;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.enums.MoveTypeEnums;
+import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.page.PageDomain;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,31 +51,41 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         }
         //查询条件
         LambdaQueryWrapper<MaterialKanban> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getOrderNumber()), MaterialKanban::getOrderNumber, dto.getOrderNumber());
-        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getFactoryCode()), MaterialKanban::getFactoryCode, dto.getFactoryCode());
-        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getWareCode()), MaterialKanban::getWareCode, dto.getWareCode());
-        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getAreaCode()), MaterialKanban::getAreaCode, dto.getAreaCode());
-        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getMaterialCode()), MaterialKanban::getMaterialCode, dto.getMaterialCode());
-        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getSsccNumber()), MaterialKanban::getSsccNumber, dto.getSsccNumber());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getOrderNumber()), MaterialKanban::getOrderNumber,
+                dto.getOrderNumber());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getFactoryCode()), MaterialKanban::getFactoryCode,
+                dto.getFactoryCode());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getWareCode()), MaterialKanban::getWareCode,
+                dto.getWareCode());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getAreaCode()), MaterialKanban::getAreaCode,
+                dto.getAreaCode());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getMaterialCode()), MaterialKanban::getMaterialCode,
+                dto.getMaterialCode());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getSsccNumber()), MaterialKanban::getSsccNumber,
+                dto.getSsccNumber());
         lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getBinCode()), MaterialKanban::getBinCode, dto.getBinCode());
         lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getCell()), MaterialKanban::getCell, dto.getCell());
-        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getCreateBy()), MaterialKanban::getCreateBy, dto.getCreateBy());
-        lambdaQueryWrapper.ge(dto.getCreateTimeStart() != null, MaterialKanban::getCreateTime, dto.getCreateTimeStart());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getCreateBy()), MaterialKanban::getCreateBy,
+                dto.getCreateBy());
+        lambdaQueryWrapper.ge(dto.getCreateTimeStart() != null, MaterialKanban::getCreateTime,
+                dto.getCreateTimeStart());
         lambdaQueryWrapper.le(dto.getCreateTimeEnd() != null, MaterialKanban::getCreateTime, dto.getCreateTimeEnd());
-        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getUpdateBy()), MaterialKanban::getUpdateBy, dto.getUpdateBy());
-        lambdaQueryWrapper.ge(dto.getUpdateTimeStart() != null, MaterialKanban::getUpdateTime, dto.getUpdateTimeStart());
+        lambdaQueryWrapper.like(StringUtils.isNotEmpty(dto.getUpdateBy()), MaterialKanban::getUpdateBy,
+                dto.getUpdateBy());
+        lambdaQueryWrapper.ge(dto.getUpdateTimeStart() != null, MaterialKanban::getUpdateTime,
+                dto.getUpdateTimeStart());
         lambdaQueryWrapper.le(dto.getUpdateTimeEnd() != null, MaterialKanban::getUpdateTime, dto.getUpdateTimeEnd());
         lambdaQueryWrapper.like(dto.getType() != null, MaterialKanban::getType, dto.getType());
         lambdaQueryWrapper.like(dto.getStatus() != null, MaterialKanban::getStatus, dto.getStatus());
 
-            IPage<MaterialKanban> materialKanbanIPage = materialKanbanMapper.selectPage(page, lambdaQueryWrapper);
-            //mp提供了convert方法,将数据重新封装
-           return materialKanbanIPage.convert(u->{
-                MaterialKanbanVO v = new MaterialKanbanVO();
-                BeanUtils.copyProperties(u, v);//拷贝
-                return v;
-            });
-        }
+        IPage<MaterialKanban> materialKanbanIPage = materialKanbanMapper.selectPage(page, lambdaQueryWrapper);
+        //mp提供了convert方法,将数据重新封装
+        return materialKanbanIPage.convert(u -> {
+            MaterialKanbanVO v = new MaterialKanbanVO();
+            BeanUtils.copyProperties(u, v);//拷贝
+            return v;
+        });
+    }
 
     @Override
     public List<StockVO> getStockInfo(String materialNb, String wareCode) {
@@ -81,6 +98,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         List<StockVO> stockVOS = stockMapper.selectStockVOListBySSCCList(ssccList);
         return stockVOS;
     }
+
     /**
      * 批量删除
      *
@@ -88,9 +106,60 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
      * @return 结果
      */
     @Override
-    public int deleteByIds(Long[] ids)
-    {
+    public int deleteByIds(Long[] ids) {
         return materialKanbanMapper.deleteByIds(ids);
+    }
+
+    /**
+     * 校验库存表sscc码对应可用库存
+     *
+     * @param dtos
+     * @return
+     */
+    @Override
+    public boolean checkStock(List<MaterialKanbanDTO> dtos) {
+
+        Integer integer = stockMapper.selectCountByList(dtos);
+
+
+        return integer == dtos.size();
+    }
+
+    @Override
+    public List<Stock> selectStockList(List<MaterialKanbanDTO> dtos) {
+
+        return stockMapper.selectStockList(dtos);
+    }
+
+    /**
+     * 库存表数据转换看板数据
+     *
+     * @param stocks
+     * @return
+     */
+    @Override
+    public List<MaterialKanban> setValue(List<Stock> stocks, List<MaterialKanbanDTO> dtos) {
+        List<MaterialKanban> materialKanbans = new ArrayList<>();
+        stocks.forEach(r -> {
+            MaterialKanban conver = BeanConverUtil.conver(r, MaterialKanban.class);
+            //根据sscc获取前端传入的数量
+            MaterialKanbanDTO dto =
+                    dtos.stream().filter(x -> x.getSsccNumber().equals(r.getSsccNumber())).findFirst().orElse(new MaterialKanbanDTO());
+            conver.setOrderNumber(dto.getOrderNumber());
+            conver.setFactoryCode(r.getPlantNb());
+            conver.setMaterialCode(r.getMaterialNb());
+            conver.setQuantity(dto.getQuantity());
+            conver.setMoveType(MoveTypeEnums.CALL.getCode());
+            conver.setCell(dto.getCell());
+            conver.setType(dto.getQuantity()==r.getAvailableStock()? RequirementActionTypeEnum.FULL_BIN_DOWN.value():RequirementActionTypeEnum.PART_BIN_DOWN.value());
+            conver.setStatus(KanbanPerformTypeEnum.WAIT_ISSUE.value());
+            conver.setUpdateBy(null);
+            conver.setUpdateTime(null);
+            conver.setCreateBy(null);
+            conver.setCreateTime(null);
+            materialKanbans.add(conver);
+        });
+        return materialKanbans;
     }
 
 

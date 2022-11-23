@@ -137,5 +137,19 @@
         </choose>
     </select>
 
+    <select id="selectCountByList"  resultType="int">
+        SELECT COUNT( * ) FROM bi_stock WHERE quality_status = 'U' AND delete_flag = 0 AND
 
+        <foreach collection="dtos" index="index" item="item" open="(" separator="or" close=")">
+            (sscc_number = #{item.ssccNumber} AND <![CDATA[available_stock >= #{item.quantity}]]>)
+        </foreach>
+	</select>
+
+    <select id="selectStockList"  resultType="com.bosch.binin.api.domain.Stock">
+        SELECT  *  FROM bi_stock WHERE quality_status = 'U' AND delete_flag = 0 AND
+
+        <foreach collection="dtos" index="index" item="item" open="(" separator="or" close=")">
+            (sscc_number = #{item.ssccNumber} AND <![CDATA[available_stock >= #{item.quantity}]]>)
+        </foreach>
+    </select>
 </mapper>

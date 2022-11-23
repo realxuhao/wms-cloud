@@ -2,6 +2,7 @@ package com.bosch.binin.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -24,4 +25,9 @@ public interface StockMapper extends BaseMapper<Stock> {
     List<StockVO> selectStockVOListBySSCCList(@Param("ssccList") List<String> ssccList);
 
     List<StockVO> selectStockVOBySortType(StockQueryDTO stockQueryDTO);
+
+    int selectCountByList(@Param("dtos") List<MaterialKanbanDTO> dtos);
+
+    List<Stock> selectStockList(@Param("dtos") List<MaterialKanbanDTO> dtos);
+
 }
