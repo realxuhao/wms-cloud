@@ -2,7 +2,10 @@ package com.bosch.binin.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -14,6 +17,9 @@ import java.util.Date;
  **/
 @Data
 @TableName("ware_shift")
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class WareShift extends BaseEntity {
     private static final long serialVersionUID = 1L;
 

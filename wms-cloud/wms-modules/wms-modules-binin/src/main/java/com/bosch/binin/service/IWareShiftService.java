@@ -10,6 +10,6 @@ import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
  * @author: xuhao
  * @create: 2022-11-16 20:48
  **/
-public interface IMaterialShiftService extends IService<WareShift> {
-    void addShiftRequirement(AddShiftTaskDTO dto);
+public interface IWareShiftService extends IService<WareShift> {
+    Boolean addShiftRequirement(AddShiftTaskDTO dto);
 }
