@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
  **/
 @RestController
 @Api(tags = "移库")
-@RequestMapping("/material-shift")
-public class MaterialShiftController {
+@RequestMapping("/ware-shift")
+public class WareShiftController {
 
     @Autowired
     private IMaterialShiftService shiftService;

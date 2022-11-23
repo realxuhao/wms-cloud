@@ -1,8 +1,7 @@
 package com.bosch.binin.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.bosch.binin.api.StockLog;
-import com.bosch.binin.api.domain.MaterialShift;
+import com.bosch.binin.api.domain.WareShift;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -14,5 +13,5 @@ import org.springframework.stereotype.Repository;
  **/
 @Mapper
 @Repository("materialShiftMapper")
-public interface MaterialShiftMapper  extends BaseMapper<MaterialShift> {
+public interface MaterialShiftMapper  extends BaseMapper<WareShift> {
 }

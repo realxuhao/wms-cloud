@@ -3,7 +3,7 @@ package com.bosch.binin.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.MaterialKanban;
-import com.bosch.binin.api.domain.MaterialShift;
+import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
 import com.bosch.binin.mapper.MaterialShiftMapper;
 import com.bosch.binin.service.IMaterialKanbanService;
@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
  * @create: 2022-11-16 20:48
  **/
 @Service
-public class MaterialShiftServiceImpl extends ServiceImpl<MaterialShiftMapper, MaterialShift> implements IMaterialShiftService {
+public class MaterialShiftServiceImpl extends ServiceImpl<MaterialShiftMapper, WareShift> implements IMaterialShiftService {
 
 
     @Autowired
@@ -36,6 +36,10 @@ public class MaterialShiftServiceImpl extends ServiceImpl<MaterialShiftMapper, M
         if (CollectionUtils.isEmpty(ssccNbList)) {
             return;
         }
+
+        //先去再次校验一下库存
+
+
         //先找出来有job的
         LambdaQueryWrapper<MaterialKanban> kanbanLambdaQueryWrapper = new LambdaQueryWrapper<>();
         kanbanLambdaQueryWrapper.in(MaterialKanban::getSsccNumber, ssccNbList);
@@ -43,7 +47,6 @@ public class MaterialShiftServiceImpl extends ServiceImpl<MaterialShiftMapper, M
         kanbanLambdaQueryWrapper.select(MaterialKanban::getSsccNumber);
         List<MaterialKanban> list = kanbanService.list(kanbanLambdaQueryWrapper);
         List<String> jobSsccList = list.stream().map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
-
 
 
 

@@ -24,6 +24,7 @@ import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.ibatis.binding.MapperMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ import javax.annotation.Resource;
  * @date 2022-09-22
  */
 @Service
-public  class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> implements IMaterialService {
+public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> implements IMaterialService {
     @Resource
     private MaterialMapper materialMapper;
 
@@ -51,6 +52,7 @@ public  class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> 
     private PalletMapper palletMapper;
     @Autowired
     private IMaterialTypeService materialTypeService;
+
     /**
      * 查询物料信息
      *
@@ -83,17 +85,6 @@ public  class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> 
         return materialMapper.selectMaterialVOList(materialDTO);
     }
 
-    /**
-     * 新增物料信息
-     *
-     * @param material 物料信息
-     * @return 结果
-     */
-    @Override
-    public int insertMaterial(Material material) {
-        material.setCreateTime(DateUtils.getNowDate());
-        return materialMapper.insertMaterial(material);
-    }
 
     /**
      * 新增物料DTO
@@ -103,26 +94,27 @@ public  class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> 
      */
     @Override
     public int insertMaterialDTO(MaterialDTO materialDTO) {
+        if (ObjectUtils.isNotEmpty(materialDTO) && ObjectUtils.isNotEmpty(materialDTO.getPalletId())) {
+            Pallet pallet = palletMapper.selectPalletById(materialDTO.getPalletId());
+            if (pallet != null) {
+                materialDTO.setPalletType(pallet.getType());
+            }
+        }
         Material material = BeanConverUtil.conver(materialDTO, Material.class);
         material.setCreateTime(DateUtils.getNowDate());
         material.setCreateBy(SecurityUtils.getUsername());
         return materialMapper.insertMaterial(material);
     }
 
-    /**
-     * 修改物料信息
-     *
-     * @param material 物料信息
-     * @return 结果
-     */
-    @Override
-    public int updateMaterial(Material material) {
-        material.setUpdateTime(DateUtils.getNowDate());
-        return materialMapper.updateMaterial(material);
-    }
 
     @Override
     public int updateMaterial(MaterialDTO materialDTO) {
+        if (ObjectUtils.isNotEmpty(materialDTO) && ObjectUtils.isNotEmpty(materialDTO.getPalletId())) {
+            Pallet pallet = palletMapper.selectPalletById(materialDTO.getPalletId());
+            if (pallet != null) {
+                materialDTO.setPalletType(pallet.getType());
+            }
+        }
         Material material = BeanConverUtil.conver(materialDTO, Material.class);
         material.setUpdateTime(DateUtils.getNowDate());
         material.setCreateBy(SecurityUtils.getUsername());
@@ -158,50 +150,52 @@ public  class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> 
 
     @Override
     public boolean validMaterialList(List<MaterialDTO> materials) {
-        return  materialMapper.validateRecord(materials)>0;
+        return materialMapper.validateRecord(materials) > 0;
     }
 
     @Override
-    public Map<String,Long> getTypeMap(List<String> codes) {
-        Map<String,Long> collect=new HashMap<>();
-        LambdaQueryWrapper<MaterialType> queryWrapper=new LambdaQueryWrapper<MaterialType>();
-        queryWrapper.in(MaterialType::getCode,codes);
+    public Map<String, Long> getTypeMap(List<String> codes) {
+        Map<String, Long> collect = new HashMap<>();
+        LambdaQueryWrapper<MaterialType> queryWrapper = new LambdaQueryWrapper<MaterialType>();
+        queryWrapper.in(MaterialType::getCode, codes);
         List<MaterialType> materialTypes = materialTypeMapper.selectList(queryWrapper);
-        if (CollectionUtils.isNotEmpty(materialTypes)){
-            collect = materialTypes.stream().collect(Collectors.toMap(MaterialType::getCode,MaterialType::getId));
+        if (CollectionUtils.isNotEmpty(materialTypes)) {
+            collect = materialTypes.stream().collect(Collectors.toMap(MaterialType::getCode, MaterialType::getId));
         }
-        return  collect;
+        return collect;
     }
-    public Map<String,Long> getPalletMap(List<String> codes) {
-        Map<String,Long> collect=new HashMap<>();
-        LambdaQueryWrapper<Pallet> queryWrapper=new LambdaQueryWrapper<Pallet>();
-        queryWrapper.in(Pallet::getType,codes);
+
+    public Map<String, Long> getPalletMap(List<String> codes) {
+        Map<String, Long> collect = new HashMap<>();
+        LambdaQueryWrapper<Pallet> queryWrapper = new LambdaQueryWrapper<Pallet>();
+        queryWrapper.in(Pallet::getType, codes);
         List<Pallet> pallets = palletMapper.selectList(queryWrapper);
-        if (CollectionUtils.isNotEmpty(pallets)){
-            collect = pallets.stream().collect(Collectors.toMap(Pallet::getType,Pallet::getId));
+        if (CollectionUtils.isNotEmpty(pallets)) {
+            collect = pallets.stream().collect(Collectors.toMap(Pallet::getType, Pallet::getId));
         }
-        return  collect;
+        return collect;
     }
+
     @Override
     public List<MaterialDTO> setMaterialList(List<MaterialDTO> materialDTOList) {
         //获取物料类型集合
         List<String> types =
                 materialDTOList.stream().map(MaterialDTO::getMaterialType).collect(Collectors.toList());
         //获取物料类型map
-        Map<String,Long> typeMap = getTypeMap(types);
+        Map<String, Long> typeMap = getTypeMap(types);
         //获取托盘类型
         List<String> palletTypes = materialDTOList.stream().map(MaterialDTO::getPalletType).collect(Collectors.toList());
         Map<String, Long> palletMap = getPalletMap(palletTypes);
         //绑定物料类型id
-        materialDTOList.forEach(x->{
+        materialDTOList.forEach(x -> {
             //绑定物料类型id
-            if (typeMap.get(x.getMaterialType())==null){
-                throw new ServiceException("Excel中包含主数据中不存在的物料类型："+x.getMaterialType());
+            if (typeMap.get(x.getMaterialType()) == null) {
+                throw new ServiceException("Excel中包含主数据中不存在的物料类型：" + x.getMaterialType());
             }
             x.setMaterialTypeId(typeMap.get(x.getMaterialType()));
             //托盘id
-            if (palletMap.get(x.getPalletType())==null){
-                throw new ServiceException("Excel中包含主数据中不存在的托盘类型："+x.getPalletType());
+            if (palletMap.get(x.getPalletType()) == null) {
+                throw new ServiceException("Excel中包含主数据中不存在的托盘类型：" + x.getPalletType());
             }
             x.setPalletId(typeMap.get(x.getPalletType()));
         });

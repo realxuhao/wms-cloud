@@ -13,8 +13,8 @@ import java.util.Date;
  * @create: 2022-11-16 20:43
  **/
 @Data
-@TableName("material_shift")
-public class MaterialShift  extends BaseEntity {
+@TableName("ware_shift")
+public class WareShift extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
 
