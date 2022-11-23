@@ -48,7 +48,7 @@ public class MaterialCallQueryDTO extends PageDomain {
     @ApiModelProperty(value = "结束上传时间")
     private Date endCreateTime;
 
-    @ApiModelProperty(value = "状态：0:未执行，1:已执行")
+    @ApiModelProperty(value = "0=未下发,1=部分下发,2=已全部下发")
     private Integer status;
 
 

@@ -6,6 +6,7 @@ import com.bosch.binin.api.domain.MaterialCall;
 import com.bosch.binin.api.domain.dto.MaterialCalJobRequestDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
+import com.bosch.binin.api.domain.vo.MaterialCallCheckResultVO;
 import com.bosch.binin.api.domain.vo.MaterialCallVO;
 
 import com.bosch.binin.api.domain.vo.RequirementResultVO;
@@ -105,6 +106,13 @@ public class MaterialFeedingController extends BaseController {
         }
     }
 
+    @PostMapping(value = "/call/checkStock")
+    @ApiOperation("系统生成叫料任务需要先进行check库存校验")
+    public R<MaterialCallCheckResultVO> systemGenerateJobCheck(@RequestBody MaterialCalJobRequestDTO.SystemGenerateJob systemGenerateJob) {
+
+        return R.ok(materialCallService.systemGenerateJobCheck(systemGenerateJob));
+    }
+
     @PostMapping(value = "/call/system")
     @ApiOperation("系统生成叫料任务接口")
     public R<RequirementResultVO> systemGenerateJob(@RequestBody MaterialCalJobRequestDTO.SystemGenerateJob systemGenerateJob) {
@@ -122,7 +130,7 @@ public class MaterialFeedingController extends BaseController {
         return R.ok(materialCallService.updateCallQuantity(callDTO));
     }
 
-    @GetMapping(value = "/call")
+    @GetMapping(value = "/call/list")
     @ApiOperation("叫料需求列表查询")
     public R<PageVO<MaterialCallVO>> list(MaterialCallQueryDTO queryDTO) {
         startPage();

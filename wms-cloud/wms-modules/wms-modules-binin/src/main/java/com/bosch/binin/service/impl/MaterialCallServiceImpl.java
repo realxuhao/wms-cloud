@@ -9,11 +9,12 @@ import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.MaterialCalJobRequestDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
+import com.bosch.binin.api.domain.vo.MaterialCallCheckResultVO;
 import com.bosch.binin.api.domain.vo.RequirementResultVO;
 import com.bosch.binin.api.enumeration.MaterialCallStatusEnum;
 import com.bosch.binin.api.enumeration.RequirementActionTypeEnum;
 import com.bosch.binin.api.enumeration.MaterialCallSortTypeEnum;
-import com.bosch.binin.api.enumeration.RequirementPerformTypeEnum;
+import com.bosch.binin.api.enumeration.KanbanPerformTypeEnum;
 import com.bosch.binin.mapper.MaterialCallMapper;
 import com.bosch.binin.service.IMaterialCallService;
 import com.bosch.binin.service.IMaterialKanbanService;
@@ -23,6 +24,7 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -91,7 +93,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         return integer > 0;
     }
 
-    private List<RequirementResultVO.NotEnoughStock> dealUnEnoughStock(List<MaterialCall> dos) {
+    private List<MaterialCallCheckResultVO.NotEnoughStock> dealUnEnoughStock(List<MaterialCall> dos) {
 
         List<String> materials = dos.stream().map(MaterialCall::getMaterialNb).collect(Collectors.toList());
         LambdaQueryWrapper<Stock> lambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -100,12 +102,13 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         lambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<Stock> stockList = stockService.list(lambdaQueryWrapper);
         Map<String, Double> materialAvailableStockMap = stockList.stream().collect(Collectors.groupingBy(Stock::getMaterialNb, Collectors.summingDouble(Stock::getAvailableStock)));
-        List<RequirementResultVO.NotEnoughStock> notEnoughStockList = new ArrayList<>();
+        List<MaterialCallCheckResultVO.NotEnoughStock> notEnoughStockList = new ArrayList<>();
         dos.stream().forEach(item -> {
-            Double requireQuantity = item.getQuantity();
+            item.setUnIssuedQuantity(DoubleMathUtil.doubleMathCalculation(item.getQuantity(), item.getIssuedQuantity(), "-"));
+            Double requireQuantity = item.getUnIssuedQuantity();
             Double stockQuantity = materialAvailableStockMap.get(item.getMaterialNb());
             if (requireQuantity > stockQuantity) {
-                RequirementResultVO.NotEnoughStock notEnoughStock = new RequirementResultVO.NotEnoughStock();
+                MaterialCallCheckResultVO.NotEnoughStock notEnoughStock = new MaterialCallCheckResultVO.NotEnoughStock();
                 notEnoughStock.setMaterialNb(item.getMaterialNb());
                 notEnoughStock.setAvaliableQuantity(stockQuantity);
                 notEnoughStockList.add(notEnoughStock);
@@ -135,20 +138,15 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         RequirementResultVO requirementResultVO = RequirementResultVO.builder().fullStatisfiedMaterialNbs(fullStatisfiedMaterialNbs).noStockMaterialNbs(noStockMaterialNbs).unStatisfiedMaterialNbs(unStatisfiedMaterialNbs).build();
 
         dos.forEach(item -> {
+            item.setUnIssuedQuantity(DoubleMathUtil.doubleMathCalculation(item.getQuantity(), item.getIssuedQuantity(), "-"));
+
             List<Stock> useMaterialStockList = new ArrayList<>();
             //先查询出来需要用到的结果
             getUseMaterialStock(item, useMaterialStockList, requirementResultVO);
             //处理筛选出来的库存列表
             dealUseMaterialStockList(useMaterialStockList, item);
-
-        });
-
-        //如果有不满足的需求的，需要提示给前端
-        if ((!CollectionUtils.isEmpty(unStatisfiedMaterialNbs) || !CollectionUtils.isEmpty(noStockMaterialNbs)) && !continueFlag) {
-            //返回前端提示
-
-        }
-        dos.forEach(item -> {
+            item.setUpdateBy(SecurityUtils.getUsername());
+            item.setUpdateTime(new Date());
 
         });
 
@@ -166,28 +164,15 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         queryWrapper.in(MaterialCall::getId, systemGenerateJob.getCallIds());
         queryWrapper.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<MaterialCall> callList = materialCallMapper.selectList(queryWrapper);
-        //校验是否含有已经执行过的需求
-        List<MaterialCall> hasPerformedList = callList.stream().filter(item -> item.getStatus() == MaterialCallStatusEnum.HAS_ISSUED.code()).collect(Collectors.toList());
+        //校验是否含有已经完全下发过的需求
+        List<MaterialCall> hasPerformedList = callList.stream().filter(item -> item.getStatus() == MaterialCallStatusEnum.FULL_ISSUED.code()).collect(Collectors.toList());
         if (!CollectionUtils.isEmpty(hasPerformedList)) {
             throw new ServiceException("包含已经执行过的需求");
         }
 
-        RequirementResultVO requirementResultVO = new RequirementResultVO();
-        List<RequirementResultVO.NotEnoughStock> notEnoughStockList = dealUnEnoughStock(callList);
-        if (!CollectionUtils.isEmpty(notEnoughStockList) && !systemGenerateJob.isContinueFlag()) {
-            requirementResultVO.setNotEnoughStocks(notEnoughStockList);
-            return requirementResultVO;
-        }
+        RequirementResultVO requirementResultVO = converToRequirement(callList, systemGenerateJob.isContinueFlag());
 
-
-        requirementResultVO = converToRequirement(callList, systemGenerateJob.isContinueFlag());
-
-
-        callList.forEach(item -> {
-            item.setUpdateBy(SecurityUtils.getUsername());
-            item.setUpdateTime(new Date());
-            item.setStatus(MaterialCallStatusEnum.HAS_ISSUED.code());
-        });
+        //需要更新需求
         updateBatchById(callList);
 
 
@@ -200,12 +185,39 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             throw new ServiceException("id或者quantity不能为空");
         }
         MaterialCall materialCall = materialCallMapper.selectById(callDTO.getId());
-        if (materialCall == null || MaterialCallStatusEnum.HAS_ISSUED.code().equals(materialCall.getStatus())) {
+        if (materialCall == null || MaterialCallStatusEnum.FULL_ISSUED.code().equals(materialCall.getStatus()) || MaterialCallStatusEnum.PART_ISSUED.code().equals(materialCall.getStatus())) {
             throw new ServiceException("该需求已经下发，不能修改");
         }
         MaterialCall call = BeanConverUtil.conver(callDTO, MaterialCall.class);
 
         return materialCallMapper.updateById(call);
+    }
+
+    @Override
+    public MaterialCallCheckResultVO systemGenerateJobCheck(MaterialCalJobRequestDTO.SystemGenerateJob systemGenerateJob) {
+        if (Objects.isNull(systemGenerateJob) || CollectionUtils.isEmpty(systemGenerateJob.getCallIds())) {
+            throw new ServiceException("请选择需求记录后再进行生成");
+        }
+
+
+        LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(MaterialCall::getId, systemGenerateJob.getCallIds());
+        queryWrapper.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<MaterialCall> callList = materialCallMapper.selectList(queryWrapper);
+        //校验是否含有已经完全下发过的需求
+        List<MaterialCall> hasPerformedList = callList.stream().filter(item -> item.getStatus() == MaterialCallStatusEnum.FULL_ISSUED.code()).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(hasPerformedList)) {
+            throw new ServiceException("包含已经执行过的需求");
+        }
+        List<MaterialCallCheckResultVO.NotEnoughStock> notEnoughStockList = dealUnEnoughStock(callList);
+        MaterialCallCheckResultVO callCheckResultVO = new MaterialCallCheckResultVO();
+        if (CollectionUtils.isEmpty(notEnoughStockList)) {
+            callCheckResultVO.setCheckFlag(true);
+            return callCheckResultVO;
+        }
+        callCheckResultVO.setNotEnoughStockList(notEnoughStockList);
+        callCheckResultVO.setCheckFlag(false);
+        return callCheckResultVO;
     }
 
 
@@ -217,9 +229,9 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         Double stockSum = useMaterialStockList.stream().collect(Collectors.summingDouble(Stock::getAvailableStock));
         Double deviation = null;
         boolean splitFlag = false;
-        if (stockSum > call.getQuantity()) {
+        if (stockSum > call.getUnIssuedQuantity()) {
             splitFlag = true;
-            deviation = stockSum - call.getQuantity();
+            deviation = DoubleMathUtil.doubleMathCalculation(stockSum, call.getUnIssuedQuantity(), "-");
         }
 
         List<MaterialKanban> kanbanList = new ArrayList<>();
@@ -236,14 +248,14 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             kanban.setCell(call.getCell());
             kanban.setType(RequirementActionTypeEnum.FULL_BIN_DOWN.value());
             kanban.setQuantity(stock.getAvailableStock());
-            kanban.setStatus(RequirementPerformTypeEnum.WAIT_ISSUE.value());
+            kanban.setStatus(KanbanPerformTypeEnum.WAIT_ISSUE.value());
             kanban.setCreateBy(SecurityUtils.getUsername());
             kanban.setCreateTime(new Date());
             kanban.setMoveType(MoveTypeEnums.CALL.getCode());
 
 
             if (i == useMaterialStockList.size() - 1 && splitFlag) {
-                kanban.setQuantity(stock.getAvailableStock() - deviation);
+                kanban.setQuantity(DoubleMathUtil.doubleMathCalculation(stock.getAvailableStock(), deviation, "-"));
                 kanban.setType(splitFlag ? RequirementActionTypeEnum.PART_BIN_DOWN.value() : RequirementActionTypeEnum.FULL_BIN_DOWN.value());
                 stock.setFreezeStock(stock.getFreezeStock() + kanban.getQuantity());
                 stock.setAvailableStock(stock.getAvailableStock() - kanban.getQuantity());
@@ -296,27 +308,30 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         }
         double count = 0;
         for (Stock stock : sortedStockList) {
-            count += stock.getAvailableStock();
+            count = DoubleMathUtil.doubleMathCalculation(count, stock.getAvailableStock(), "+");
             useMaterialStockList.add(stock);
-            if (count >= call.getQuantity()) {
+            if (count >= call.getUnIssuedQuantity()) {
                 break;
             }
         }
         if (count == 0) {
-            call.setIssuedQuantity((double) 0);
+            call.setIssuedQuantity(call.getIssuedQuantity());
             requirementResultVO.getNoStockMaterialNbs().add(RequirementResultVO.MaterialOrder.builder().materialNb(call.getMaterialNb()).orderNb(call.getOrderNb()).build());
 
         }
         //计算部分满足还是全部满足
         //完全满足
-        if (count >= call.getQuantity()) {
-            call.setIssuedQuantity(call.getQuantity());
+        if (count >= call.getUnIssuedQuantity()) {
+            call.setIssuedQuantity(DoubleMathUtil.doubleMathCalculation(call.getUnIssuedQuantity(), call.getIssuedQuantity(), "+"));
             requirementResultVO.getFullStatisfiedMaterialNbs().add(RequirementResultVO.MaterialOrder.builder().materialNb(call.getMaterialNb()).orderNb(call.getOrderNb()).build());
+            call.setStatus(MaterialCallStatusEnum.FULL_ISSUED.code());
         }
         //部分满足
-        if (count != 0 && count < call.getQuantity()) {
-            call.setIssuedQuantity(count);
+        if (count != 0 && count < call.getUnIssuedQuantity()) {
+            call.setIssuedQuantity(DoubleMathUtil.doubleMathCalculation(call.getIssuedQuantity(), count, "+"));
             requirementResultVO.getUnStatisfiedMaterialNbs().add(RequirementResultVO.MaterialOrder.builder().materialNb(call.getMaterialNb()).orderNb(call.getOrderNb()).build());
+            call.setStatus(MaterialCallStatusEnum.PART_ISSUED.code());
+
         }
     }
 

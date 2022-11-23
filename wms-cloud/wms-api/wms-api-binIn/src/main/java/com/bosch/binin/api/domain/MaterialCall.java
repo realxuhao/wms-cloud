@@ -1,11 +1,13 @@
 package com.bosch.binin.api.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.Map;
 
 /**
  * @program: wms-cloud
@@ -75,9 +77,15 @@ public class MaterialCall extends BaseEntity {
     private Integer deleteFlag;
 
     /**
-     * 状态：0:未执行，1:已执行
+     * 状态：0:未下发，1：部分下发，2：已全部下发
      */
     private Integer status;
+
+    /**
+     * 未下发量
+     */
+    @TableField(exist = false)
+    private Double unIssuedQuantity;
 
 
 }

@@ -8,10 +8,12 @@ package com.bosch.binin.api.enumeration;
  **/
 public enum MaterialCallStatusEnum {
     //待下发
-    WAITING_ISSUE(0, "待下发"),
+    WAITING_ISSUE(0, "未下发"),
 
     //已下发
-    HAS_ISSUED(1, "已下发");
+    PART_ISSUED(1, "部分下发"),
+
+    FULL_ISSUED(2, "全部下发");
 
     private Integer code;
 

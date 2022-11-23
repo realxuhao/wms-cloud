@@ -32,8 +32,6 @@ public class RequirementResultVO {
     @ApiModelProperty(value = "没有满足的物料号")
     private List<MaterialOrder> noStockMaterialNbs;
 
-    @ApiModelProperty(value = "库存不足的物料")
-    private List<NotEnoughStock> notEnoughStocks;
 
 
     @Data
@@ -45,12 +43,6 @@ public class RequirementResultVO {
         private String materialNb;
     }
 
-    @Data
-    public static class NotEnoughStock {
-        @ApiModelProperty(value = "物料号")
-        private String materialNb;
-        @ApiModelProperty(value = "可用库存")
-        private Double avaliableQuantity;
-    }
+
 
 }

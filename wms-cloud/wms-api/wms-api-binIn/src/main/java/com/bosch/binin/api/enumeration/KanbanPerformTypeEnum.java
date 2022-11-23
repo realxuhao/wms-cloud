@@ -6,7 +6,7 @@ package com.bosch.binin.api.enumeration;
  * @author: xuhao
  * @create: 2022-11-16 14:17
  **/
-public enum RequirementPerformTypeEnum {
+public enum KanbanPerformTypeEnum {
     //待下发
     WAIT_ISSUE(0, "待下发"),
     //已下发
@@ -17,7 +17,7 @@ public enum RequirementPerformTypeEnum {
 
     private final String desc;
 
-    RequirementPerformTypeEnum(int value, String desc) {
+    KanbanPerformTypeEnum(int value, String desc) {
         this.value = value;
         this.desc = desc;
     }
