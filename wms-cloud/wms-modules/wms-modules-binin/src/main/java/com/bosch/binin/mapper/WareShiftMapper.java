@@ -12,6 +12,6 @@ import org.springframework.stereotype.Repository;
  * @create: 2022-11-16 20:46
  **/
 @Mapper
-@Repository("materialShiftMapper")
-public interface MaterialShiftMapper  extends BaseMapper<WareShift> {
+@Repository("wareShiftMapper")
+public interface WareShiftMapper extends BaseMapper<WareShift> {
 }

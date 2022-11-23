@@ -1,7 +1,7 @@
 package com.bosch.binin.controller;
 
 import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
-import com.bosch.binin.service.IMaterialShiftService;
+import com.bosch.binin.service.IWareShiftService;
 import com.ruoyi.common.core.domain.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -23,13 +23,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class WareShiftController {
 
     @Autowired
-    private IMaterialShiftService shiftService;
+    private IWareShiftService shiftService;
 
     @PostMapping(value = "/addShiftTask")
     @ApiOperation("外库新增需求接口")
-    public R<String> list(@RequestBody AddShiftTaskDTO dto) {
-        shiftService.addShiftRequirement(dto);
-        return null;
+    public R<Boolean> list(@RequestBody AddShiftTaskDTO dto) {
+        return R.ok(shiftService.addShiftRequirement(dto));
     }
 
 

@@ -39,6 +39,7 @@ public class RequirementResultVO {
         private String orderNb;
         @ApiModelProperty(value = "物料号")
         private String materialNb;
+
     }
 
 
