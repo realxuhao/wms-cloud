@@ -71,4 +71,7 @@ public interface IPalletService extends IService<Pallet>
 
     //验证是否有相同数据
     boolean validList(List<PalletDTO> dtos);
+
+    //验证是否有相同数据
+    boolean validList(PalletDTO dto);
 }

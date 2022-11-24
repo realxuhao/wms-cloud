@@ -39,7 +39,6 @@ import javax.validation.Valid;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @program: wms-cloud
@@ -229,9 +228,9 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
     @Override
     public int updateCallStatus(MaterialCall materialCallNew) {
         //获取叫料表中的数据
-        LambdaQueryWrapper<MaterialCall> qw = new LambdaQueryWrapper<>();
-        qw.eq(MaterialCall::getOrderNb, materialCallNew.getOrderNb());
-        qw.eq(MaterialCall::getMaterialNb, materialCallNew.getMaterialNb());
+        LambdaQueryWrapper<MaterialCall> qw=new LambdaQueryWrapper<>();
+        qw.eq(MaterialCall::getOrderNb,materialCallNew.getOrderNb());
+        qw.eq(MaterialCall::getMaterialNb,materialCallNew.getMaterialNb());
         MaterialCall materialCallDB = materialCallMapper.selectOne(qw);
 
         if (materialCallDB == null) {
@@ -264,7 +263,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         if (CollectionUtils.isEmpty(list) || CollectionUtils.isEmpty(list) || list.size() != materialCalls.size()) {
             throw new ServiceException("只允许修改未下发状态的需求！");
         }
-        
+
         materialCalls.stream().forEach(item->item.setDeleteFlag(DeleteFlagStatus.TRUE.getCode()));
 
         updateBatchById(materialCalls);

@@ -31,4 +31,20 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
      * @return
      */
     List<MaterialKanban> setValue(List<Stock> stocks,List<MaterialKanbanDTO> dtos);
+
+
+    /**
+     * 更新stock
+     * @param sscc
+     * @param quantity
+     * @return
+     */
+    int updateStockBySSCC(String sscc,Double quantity);
+
+    /**
+     * 更新Kanban取消
+     * @param id
+     * @return
+     */
+    int updateKanban(Long id);
 }

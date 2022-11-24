@@ -5,6 +5,7 @@ import java.util.Date;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.MaterialCall;
 import com.bosch.binin.service.IMaterialCallService;
+import com.bosch.masterdata.api.domain.dto.PalletDTO;
 import com.google.common.collect.Maps;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -31,6 +32,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,4 +123,76 @@ public class MaterialKanbanController {
         }
         return R.ok(i);
     }
+
+    /**
+     * 修改kanban
+     */
+    @Log(title = "kanban", businessType = BusinessType.UPDATE)
+    @ApiOperation("修改kanban")
+    @PutMapping("/{ids}")
+    @Transactional(rollbackFor = Exception.class)
+    public R update(@PathVariable("id") Long id,@RequestBody @NotNull @Valid MaterialKanbanDTO kanbanDTO) {
+
+        List<MaterialKanbanDTO> materialKanbanDTOS=new ArrayList<>();
+
+        try {
+            materialKanbanDTOS.add(kanbanDTO);
+            //检查库存
+            boolean b = materialKanbanService.checkStock(materialKanbanDTOS);
+            if (!b) {
+                return R.fail("库存已过期，请刷新页面");
+            }
+            //获取库存数据
+            List<Stock> stocks = materialKanbanService.selectStockList(materialKanbanDTOS);
+            //kanban数据赋值
+            List<MaterialKanban> materialKanbans = materialKanbanService.setValue(stocks, materialKanbanDTOS);
+
+            //料需求下发量 状态赋值
+            MaterialCall materialCall = new MaterialCall();
+            materialCall.setOrderNb(materialKanbanDTOS.get(0).getOrderNumber());
+            materialCall.setMaterialNb(materialKanbanDTOS.get(0).getMaterialCode());
+            Double newQuantity = new Double(0);
+            for (MaterialKanbanDTO item : materialKanbanDTOS) {
+                newQuantity = DoubleMathUtil.doubleMathCalculation(newQuantity, item.getQuantity(), "+");
+            }
+            materialCall.setIssuedQuantity(newQuantity);
+            //更新kanban
+            boolean updateKanban = materialKanbanService.updateBatchById(materialKanbans);
+            //更新叫料需求
+            int i = materialCallService.updateCallStatus(materialCall);
+
+
+        } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            return R.fail(ex.getMessage());
+        }
+        return R.ok();
+    }
+
+    /**
+     * 修改kanban
+     */
+    @Log(title = "kanban", businessType = BusinessType.CLEAN)
+    @ApiOperation("取消kanban")
+    @GetMapping(value = "/cancelKanban")
+    @Transactional(rollbackFor = Exception.class)
+    public R cancelKanban(@RequestParam("id") Long id) {
+
+        MaterialKanban materialKanban = materialKanbanService.getById(id);
+        try {
+           
+            //kanban 修改取消状态
+
+            //叫料需求的下发量修改
+
+            //sscc库存可用 冻结修改
+            materialKanbanService.updateStockBySSCC(materialKanban.getSsccNumber(),
+                    materialKanban.getQuantity());
+        } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            return R.fail(ex.getMessage());
+        }
+        return R.ok();
+    }
+
 }
