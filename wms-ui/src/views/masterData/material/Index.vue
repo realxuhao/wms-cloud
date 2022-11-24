@@ -145,7 +145,7 @@ const columns = [
     title: '物料名称',
     dataIndex: 'name',
     key: 'name',
-    width: 200,
+    width: 100,
     fixed: 'left'
 
   },
@@ -153,53 +153,59 @@ const columns = [
     title: '物料编码',
     dataIndex: 'code',
     key: 'code',
-    width: 200
+    width: 100
   },
   {
     title: '物料类型',
     dataIndex: 'materialType',
     key: 'materialType',
-    width: 200
+    width: 100
+  },
+  {
+    title: '托盘类型',
+    dataIndex: 'palletType',
+    key: 'palletType',
+    width: 80
   },
   {
     title: '包装重量',
     dataIndex: 'packageWeight',
     key: 'packageWeight',
-    width: 200
+    width: 100
   },
   {
     title: '托盘重量',
     dataIndex: 'palletWeight',
     key: 'palletWeight',
-    width: 200
+    width: 100
 
   },
-  {
-    title: '是否绑定托盘',
-    key: 'bindPallet',
-    dataIndex: 'bindPallet',
-    width: 200,
-    scopedSlots: { customRender: 'bindPallet' }
-  },
-  {
-    title: '是否带托盘',
-    key: 'hasPallet',
-    dataIndex: 'hasPallet',
-    width: 200,
-    scopedSlots: { customRender: 'hasPallet' }
+  // {
+  //   title: '是否绑定托盘',
+  //   key: 'bindPallet',
+  //   dataIndex: 'bindPallet',
+  //   width: 200,
+  //   scopedSlots: { customRender: 'bindPallet' }
+  // },
+  // {
+  //   title: '是否带托盘',
+  //   key: 'hasPallet',
+  //   dataIndex: 'hasPallet',
+  //   width: 200,
+  //   scopedSlots: { customRender: 'hasPallet' }
 
-  },
+  // },
   {
     title: '来料总重量',
     key: 'totalWeight',
     dataIndex: 'totalWeight',
-    width: 200
+    width: 100
   },
   {
     title: '物料防错方式',
     key: 'errorProofingMethod',
     dataIndex: 'errorProofingMethod',
-    width: 200
+    width: 100
 
   },
   {
@@ -220,7 +226,7 @@ const columns = [
     title: '最小包装数量',
     key: 'minPackageNumber',
     dataIndex: 'minPackageNumber',
-    width: 200
+    width: 140
   },
   {
     title: '单位',
@@ -232,7 +238,7 @@ const columns = [
     title: '备注',
     key: 'remark',
     dataIndex: 'remark',
-    width: 200
+    width: 100
   },
   {
     title: '创建时间',
@@ -361,7 +367,7 @@ export default {
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
-        this.$message.error(error)
+        this.$message.error(error.message)
       } finally {
         this.tableLoading = false
       }

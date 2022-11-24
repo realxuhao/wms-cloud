@@ -39,10 +39,27 @@
         <a-input
           placeholder="托盘类型"
           v-decorator="[
-            'height',
-            { type: [{ required: true, message: '请选择托盘类型!' },] }
+            'type',
+            { rules: [{ required: true, message: '请输入托盘类型!' },] }
           ]">
         </a-input>
+      </a-form-item>
+      <a-form-item label="是否有托盘码">
+        <a-radio-group
+          v-decorator="[
+            'isVirtual',
+            { rules: [{ required: true, message: '不能为空!' }],
+              initialValue: 1
+            }
+          ]"
+        >
+          <a-radio :value="1">
+            虚拟
+          </a-radio>
+          <a-radio :value="0">
+            实物
+          </a-radio>
+        </a-radio-group>
       </a-form-item>
       <a-form-item label="托盘前缀编码">
         <a-input
@@ -126,7 +143,7 @@ export default {
     },
     async getAndUpdateForm () {
       const { data } = await this.$store.dispatch('pallet/getOne', this.id)
-      const columns = ['length', 'width', 'height', 'type', 'virtualPrefixCode']
+      const columns = ['length', 'width', 'height', 'type', 'virtualPrefixCode', 'isVirtual']
       this.form.setFieldsValue(_.pick(data, columns))
     },
     async loadData () {
@@ -152,7 +169,7 @@ export default {
           this.$emit('on-ok')
           this.onClose()
         } catch (error) {
-          this.$message.error(error)
+          this.$message.error(error.message)
         } finally {
           this.submitLoading = false
         }

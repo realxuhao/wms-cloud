@@ -307,7 +307,7 @@ export default {
         const { data: { rows } } = await this.$store.dispatch('material/getDispatchFrameTypeList', this.queryForm)
         this.list = rows
       } catch (error) {
-        this.$message.error(error)
+        this.$message.error(error.message)
       } finally {
         this.tableLoading = false
       }
@@ -317,7 +317,7 @@ export default {
         const data = await this.$store.dispatch('frame/getFrameTypeList')
         this.frameTypeList = data
       } catch (error) {
-        this.$message.error(error)
+        this.$message.error(error.message)
       }
     },
     async getMaterialList () {

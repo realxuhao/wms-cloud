@@ -22,8 +22,29 @@ const getDepartmentList = async () => {
   return data
 }
 
+const getRuleList = async (parameter) => {
+  const url = `/binin/stock/listByRule?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(config.apiHost).get(url)
+  return data
+}
+
+const checkStock = async (options) => {
+  const url = `binin/material-feeding/call/checkStock`
+  const { data } = await createAuthInstance(config.apiHost).post(url, options)
+  return data
+}
+
+const callSystemStock = async (options) => {
+  const url = `binin/material-feeding/call/system`
+  const { data } = await createAuthInstance(config.apiHost).post(url, options)
+  return data
+}
+
 export const materialFeedingService = {
   getList,
   upload,
-  getDepartmentList
+  getDepartmentList,
+  getRuleList,
+  checkStock,
+  callSystemStock
 }

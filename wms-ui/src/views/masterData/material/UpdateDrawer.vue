@@ -41,6 +41,21 @@
           </a-select-option>
         </a-select>
       </a-form-item>
+      <a-form-item label="托盘类型">
+        <a-select
+          allowClear
+          show-search
+          :filter-option="filterOption"
+          v-decorator="[
+            'palletId',
+            { rules: [{ required: true, message: '请选择托盘类型！' }] }
+          ]"
+          placeholder="托盘类型">
+          <a-select-option :value="item.id" v-for="item in palletTypeList" :key="item.id">
+            {{ item.type }}
+          </a-select-option>
+        </a-select>
+      </a-form-item>
       <a-form-item label="包装重量">
         <a-input-number
           placeholder="包装重量"
@@ -57,14 +72,7 @@
             { rules: [{ required: true, message: '请输入托盘重量!' }] }
           ]" />
       </a-form-item>
-      <a-form-item label="是否绑定托盘">
-        <!-- bindPallet -->
-        <!-- <a-input-number
-          placeholder="托盘重量"
-          v-decorator="[
-            'packageWeight',
-            { rules: [{ required: true, message: '请输入托盘重量!' }] }
-          ]" /> -->
+      <!-- <a-form-item label="是否绑定托盘">
         <a-radio-group
           v-decorator="[
             'bindPallet',
@@ -97,7 +105,7 @@
             否
           </a-radio>
         </a-radio-group>
-      </a-form-item>
+      </a-form-item> -->
       <a-form-item label="来料总重量">
         <a-input-number
           placeholder="来料总重量"
@@ -232,7 +240,8 @@ export default {
       submitLoading: false,
 
       materialTypeListLoading: false,
-      materialTypeList: []
+      materialTypeList: [],
+      palletTypeList: []
     }
   },
   model: {
@@ -265,7 +274,7 @@ export default {
       const { data } = await this.$store.dispatch('material/getOne', this.id)
       const columns = ['name', 'code', 'materialTypeId', 'packageWeight', 'palletWeight',
         'bindPallet', 'hasPallet', 'totalWeight', 'errorProofingMethod', 'lessDeviationRatio',
-        'minPackageNetWeight', 'minPackageNumber', 'unit', 'remark' ]
+        'minPackageNetWeight', 'minPackageNumber', 'unit', 'remark', 'palletId' ]
       this.form.setFieldsValue(_.pick(data, columns))
     },
     async loadMaterialTypeList () {
@@ -280,8 +289,17 @@ export default {
         this.materialTypeListLoading = false
       }
     },
+    async loadPalletTypeList () {
+      try {
+        const rows = await this.$store.dispatch('pallet/getList')
+        this.palletTypeList = rows
+      } catch (error) {
+        this.$message.error('获取托盘失败，请联系管理员！')
+      }
+    },
     async loadData () {
       await this.loadMaterialTypeList()
+      await this.loadPalletTypeList()
     },
     handleSubmit (e) {
       e.preventDefault()
@@ -303,7 +321,7 @@ export default {
           this.$emit('on-ok')
           this.onClose()
         } catch (error) {
-          this.$message.error(error)
+          this.$message.error(error.message)
         } finally {
           this.submitLoading = false
         }

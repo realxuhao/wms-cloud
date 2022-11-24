@@ -11,6 +11,10 @@ const pallet = {
 
   actions: {
     async getList ({ commit }, options) {
+      const { data: { rows } } = await palletService.getList({ pageSize: 0 })
+      return rows
+    },
+    async getPaginationList ({ commit }, options) {
       const data = await palletService.getList(options)
       return data
     },

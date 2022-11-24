@@ -53,6 +53,9 @@
             </a-popconfirm>
           </div>
         </template>
+        <template slot="isVirtual" slot-scope="text">
+          <span>{{ !text?'实物':'虚拟' }}</span>
+        </template>
       </a-table>
 
       <div class="pagination-con">
@@ -105,6 +108,14 @@ const columns = [
     key: 'type',
     dataIndex: 'type',
     width: 200
+  },
+  {
+    title: '是否有托盘码',
+    key: 'isVirtual',
+    dataIndex: 'isVirtual',
+    width: 140,
+    scopedSlots: { customRender: 'isVirtual'
+    }
   },
   {
     title: '托盘前缀编码',
@@ -173,11 +184,11 @@ export default {
       try {
         this.tableLoading = true
 
-        const { data: { rows, total } } = await this.$store.dispatch('pallet/getList', this.queryForm)
+        const { data: { rows, total } } = await this.$store.dispatch('pallet/getPaginationList', this.queryForm)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
-        this.$message.error(error)
+        this.$message.error(error.message)
       } finally {
         this.tableLoading = false
       }

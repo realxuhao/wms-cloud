@@ -171,7 +171,7 @@ export default {
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
-        this.$message.error(error)
+        this.$message.error(error.message)
       } finally {
         this.tableLoading = false
       }

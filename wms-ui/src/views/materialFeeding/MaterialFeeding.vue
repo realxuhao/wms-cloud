@@ -58,28 +58,42 @@
         </a-row>
       </a-form>
       <div class="action-content">
-
-        <a-button type="primary" icon="add" @click="handleOpenUpload">
+        <a-button
+          style="margin-right:8px"
+          type="primary"
+          :loading="submitLoading"
+          :disabled="!hasSelected"
+          @click="handleCheckCreateReductionTask">系统创建拣配任务</a-button>
+        <a-button
+          type="primary"
+          icon="upload"
+          @click="handleOpenUpload">
           创建物料需求
         </a-button>
       </div>
       <a-table
+        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
         rowKey="id"
         :pagination="false"
-        size="middle"
         :scroll="{ x: 1300 }"
+        size="middle"
       >
         <template slot="status" slot-scope="text">
           <div >
-            <a-tag color="orange" v-if="text===0">
-              未执行
-            </a-tag>
-            <a-tag color="#87d068" v-else>
-              已执行
-            </a-tag>
+            {{ statusMap[text] }}
+          </div>
+        </template>
+        <template slot="quantity" slot-scope="text,record">
+
+          <EditTableCell v-if="record.status === 0" :text="text" @change="(val)=>handleQuantityChange(record,val)" />
+          <span v-else>{{ text }}</span>
+        </template>
+        <template slot="action" slot-scope="text, record">
+          <div class="action-con">
+            <a class="primary-color" @click="handleCreateReductionTask(record)"><a-icon class="m-r-4" type="add" />人工创建拣配任务</a>
           </div>
         </template>
       </a-table>
@@ -100,14 +114,23 @@
         v-model="visible"
         @on-ok="loadTableList"
       ></MaterialFeedingUpload>
+
+      <CreateReductionTask
+        v-model="createReductionTaskVisible"
+        :materialNb="currentMaterialNb"
+        :notQuantity="notQuantity"
+      ></CreateReductionTask>
     </div>
 
   </div>
 </template>
 
 <script>
+import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
 import MaterialFeedingUpload from './MaterialFeedingUpload'
+import CreateReductionTask from './CreateReductionTask'
+import EditTableCell from '@/components/EditTableCell'
 
 const columns = [
   {
@@ -126,7 +149,7 @@ const columns = [
     title: '物料编码',
     key: 'materialNb',
     dataIndex: 'materialNb',
-    width: 120
+    width: 160
   },
   {
     title: '物料名称',
@@ -138,19 +161,14 @@ const columns = [
     title: '需求量',
     key: 'quantity',
     dataIndex: 'quantity',
+    scopedSlots: { customRender: 'quantity' },
     width: 120
   },
   {
-    title: '配送量',
-    key: 'deliveryQuantity',
-    dataIndex: 'deliveryQuantity',
-    width: 140
-  },
-  {
-    title: '差值',
-    key: 'diffQuantity',
-    dataIndex: 'diffQuantity',
-    width: 140
+    title: '已下发量',
+    key: 'issuedQuantity',
+    dataIndex: 'issuedQuantity',
+    width: 120
   },
   {
     title: '单位',
@@ -160,7 +178,7 @@ const columns = [
   },
 
   {
-    title: '状态',
+    title: '需求状态',
     key: 'status',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
@@ -183,19 +201,48 @@ const columns = [
     key: 'createTime',
     dataIndex: 'createTime',
     width: 200
+  },
+  {
+    title: '修改人',
+    key: 'updateBy',
+    dataIndex: 'updateBy',
+    width: 120
+  },
+  {
+    title: '修改时间',
+    key: 'updateTime',
+    dataIndex: 'updateTime',
+    width: 200
+  },
+  {
+    title: '操作',
+    key: 'action',
+    fixed: 'right',
+    width: 140,
+    scopedSlots: { customRender: 'action' }
   }
 ]
 
 const status = [
   {
-    text: '未执行',
+    text: '未下发',
     value: 0
   },
   {
-    text: '已执行',
+    text: '部分下发',
     value: 1
+  },
+  {
+    text: '已全部下发',
+    value: 2
   }
 ]
+
+const statusMap = {
+  0: '未下发',
+  1: '部分下发',
+  2: '已全部下发'
+}
 
 const queryFormAttr = () => {
   return {
@@ -211,7 +258,9 @@ export default {
   name: 'Area',
   mixins: [mixinTableList],
   components: {
-    MaterialFeedingUpload
+    MaterialFeedingUpload,
+    CreateReductionTask,
+    EditTableCell
   },
   data () {
     return {
@@ -221,17 +270,65 @@ export default {
         pageNum: 1,
         ...queryFormAttr()
       },
+
+      submitLoading: false,
+      selectedRowKeys: [],
       columns,
       list: [],
-      departmentList: []
+      departmentList: [],
+
+      currentMaterialNb: '',
+      createReductionTaskVisible: false,
+      notQuantity: 0
     }
   },
   computed: {
-    status: () => status
+    status: () => status,
+    statusMap: () => statusMap,
+    hasSelected () {
+      return this.selectedRowKeys.length > 0
+    }
   },
   methods: {
+    onSelectChange (selectedRowKeys) {
+      this.selectedRowKeys = selectedRowKeys
+    },
     handleOpenUpload () {
       this.visible = true
+    },
+    async submitCreateReductionTask (options) {
+      await this.$store.dispatch('materialFeeding/callSystemStock', options)
+    },
+    async handleCheckCreateReductionTask () {
+      try {
+        this.submitLoading = true
+        const options = { callIds: this.selectedRowKeys }
+        const { data: checkResult } = await this.$store.dispatch('materialFeeding/checkStock', options)
+        if (!checkResult.checkFlag) {
+          this.$confirm({
+            title: '以下物料可用库存不足，是否进行部分拣配？',
+            content: h => {
+              return (
+                _.map(checkResult.notEnoughStockList, item => {
+                  return <p>物料号：{item.materialNb}, 可用库存量：{item.avaliableQuantity}</p>
+                })
+              )
+            },
+            onOk: () => this.submitCreateReductionTask(options),
+            onCancel: () => {
+              this.selectedRowKeys = []
+            }
+          })
+          return
+        }
+        await this.submitCreateReductionTask()
+
+        this.$message.success('提交成功')
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.submitLoading = false
+      }
     },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
@@ -259,6 +356,13 @@ export default {
     async loadData () {
       this.loadDepartmentList()
       this.loadTableList()
+    },
+    handleCreateReductionTask (record) {
+      this.currentMaterialNb = record.materialNb
+      const notQuantity = Number(record.quantity) - Number(record.issuedQuantity)
+      this.notQuantity = notQuantity
+
+      this.createReductionTaskVisible = true
     }
   },
   mounted () {

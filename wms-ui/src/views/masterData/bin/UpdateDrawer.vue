@@ -190,7 +190,7 @@ export default {
           this.$emit('on-ok')
           this.onClose()
         } catch (error) {
-          this.$message.error(error)
+          this.$message.error(error.message)
         } finally {
           this.submitLoading = false
         }

@@ -22,6 +22,18 @@ const materialFeeding = {
     async getDepartmentList ({ commit }, options) {
       const { rows } = await materialFeedingService.getDepartmentList({ ...options, pageSize: 0 })
       return rows
+    },
+    async getRuleList ({ commit }, options) {
+      const data = await materialFeedingService.getRuleList({ ...options })
+      return data
+    },
+    async checkStock ({ commit }, options) {
+      const data = await materialFeedingService.checkStock({ ...options })
+      return data
+    },
+    async callSystemStock ({ commit }, options) {
+      const data = await materialFeedingService.callSystemStock({ ...options })
+      return data
     }
   }
 }
