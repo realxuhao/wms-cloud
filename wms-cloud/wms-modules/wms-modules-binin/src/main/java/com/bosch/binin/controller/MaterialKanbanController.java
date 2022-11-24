@@ -2,8 +2,10 @@ package com.bosch.binin.controller;
 
 import java.util.Date;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.MaterialCall;
+import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.service.IMaterialCallService;
 import com.bosch.masterdata.api.domain.dto.PalletDTO;
 import com.google.common.collect.Maps;
@@ -19,6 +21,7 @@ import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.web.domain.AjaxResult;
@@ -91,7 +94,7 @@ public class MaterialKanbanController {
             Double newQuantity = new Double(0);
             for (MaterialKanbanDTO item : materialKanbanDTOS) {
                 if (item.getQuantity() <= 0) {
-                    throw new ServiceException(item.getSsccNumber()+"选择的数据不能小于0");
+                    throw new ServiceException(item.getSsccNumber() + "选择的数据不能小于0");
                 }
                 newQuantity = DoubleMathUtil.doubleMathCalculation(newQuantity, item.getQuantity(), "+");
             }
@@ -131,9 +134,9 @@ public class MaterialKanbanController {
     @ApiOperation("修改kanban")
     @PutMapping("/{ids}")
     @Transactional(rollbackFor = Exception.class)
-    public R update(@PathVariable("id") Long id,@RequestBody @NotNull @Valid MaterialKanbanDTO kanbanDTO) {
+    public R update(@PathVariable("id") Long id, @RequestBody @NotNull @Valid MaterialKanbanDTO kanbanDTO) {
 
-        List<MaterialKanbanDTO> materialKanbanDTOS=new ArrayList<>();
+        List<MaterialKanbanDTO> materialKanbanDTOS = new ArrayList<>();
 
         try {
             materialKanbanDTOS.add(kanbanDTO);
@@ -174,17 +177,21 @@ public class MaterialKanbanController {
      */
     @Log(title = "kanban", businessType = BusinessType.CLEAN)
     @ApiOperation("取消kanban")
-    @GetMapping(value = "/cancelKanban")
+    @GetMapping(value = "/cancelKanban/{id}")
     @Transactional(rollbackFor = Exception.class)
-    public R cancelKanban(@RequestParam("id") Long id) {
+    public R cancelKanban( @PathVariable("id") Long id) {
 
-        MaterialKanban materialKanban = materialKanbanService.getById(id);
         try {
-           
+            //查询取消任务详情
+            LambdaQueryWrapper<MaterialKanban> qw = new LambdaQueryWrapper<>();
+            qw.eq(MaterialKanban::getId, id);
+            qw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            qw.last("for update");
+            MaterialKanban materialKanban = materialKanbanService.getOne(qw);
             //kanban 修改取消状态
-
+            materialKanbanService.updateKanban(id);
             //叫料需求的下发量修改
-
+            materialCallService.updateCallQuantity(materialKanban);
             //sscc库存可用 冻结修改
             materialKanbanService.updateStockBySSCC(materialKanban.getSsccNumber(),
                     materialKanban.getQuantity());

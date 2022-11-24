@@ -231,6 +231,8 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         LambdaQueryWrapper<MaterialCall> qw=new LambdaQueryWrapper<>();
         qw.eq(MaterialCall::getOrderNb,materialCallNew.getOrderNb());
         qw.eq(MaterialCall::getMaterialNb,materialCallNew.getMaterialNb());
+        qw.eq(MaterialCall::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        qw.last("for update");
         MaterialCall materialCallDB = materialCallMapper.selectOne(qw);
 
         if (materialCallDB == null) {
@@ -247,6 +249,35 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         }
         materialCallDB.setIssuedQuantity(newQuantity);
         return materialCallMapper.updateById(materialCallDB);
+    }
+
+    @Override
+    public int updateCallQuantity(MaterialKanban kanban) {
+
+        //查询call数据
+        LambdaQueryWrapper<MaterialCall> qw =new LambdaQueryWrapper<MaterialCall>();
+        qw.eq(MaterialCall::getOrderNb,kanban.getOrderNumber());
+        qw.eq(MaterialCall::getMaterialNb,kanban.getMaterialCode());
+        qw.eq(MaterialCall::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        qw.last("for update");
+        MaterialCall materialCall = materialCallMapper.selectOne(qw);
+        if (materialCall == null ) {
+            throw new ServiceException("未查询到kanban数据");
+        }
+        //修改下发量 状态
+        double newQuantity = DoubleMathUtil.doubleMathCalculation(materialCall.getIssuedQuantity(),
+                kanban.getQuantity(), "-");
+        //赋值
+        if (newQuantity<=0){
+            //下发量小于取消量
+            materialCall.setStatus(MaterialCallStatusEnum.WAITING_ISSUE.code());
+        }else {
+            //下发量大于取消量
+            materialCall.setStatus(MaterialCallStatusEnum.PART_ISSUED.code());
+        }
+        materialCall.setIssuedQuantity(newQuantity);
+        //更新叫料表
+        return materialCallMapper.updateById(materialCall);
     }
 
     @Override

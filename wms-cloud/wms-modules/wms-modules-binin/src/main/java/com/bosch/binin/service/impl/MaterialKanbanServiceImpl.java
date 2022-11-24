@@ -198,12 +198,14 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
     @Override
     public int updateKanban(Long id) {
+
         MaterialKanban materialKanban = new MaterialKanban();
         materialKanban.setStatus(KanbanPerformTypeEnum.CANCEL.value());
         LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
+        uw.eq(MaterialKanban::getId, id);
+        uw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 
-        //materialKanbanMapper.update()
-        return 0;
+        return materialKanbanMapper.update(materialKanban,uw);
     }
 
 
