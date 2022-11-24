@@ -39,6 +39,7 @@ import javax.validation.Valid;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @program: wms-cloud
@@ -228,25 +229,46 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
     @Override
     public int updateCallStatus(MaterialCall materialCallNew) {
         //获取叫料表中的数据
-        LambdaQueryWrapper<MaterialCall> qw=new LambdaQueryWrapper<>();
-        qw.eq(MaterialCall::getOrderNb,materialCallNew.getOrderNb());
-        qw.eq(MaterialCall::getMaterialNb,materialCallNew.getMaterialNb());
+        LambdaQueryWrapper<MaterialCall> qw = new LambdaQueryWrapper<>();
+        qw.eq(MaterialCall::getOrderNb, materialCallNew.getOrderNb());
+        qw.eq(MaterialCall::getMaterialNb, materialCallNew.getMaterialNb());
         MaterialCall materialCallDB = materialCallMapper.selectOne(qw);
 
-        if(materialCallDB==null){
+        if (materialCallDB == null) {
             throw new ServiceException("未查询到相同订单号、物料号的叫料需求");
         }
         double newQuantity = DoubleMathUtil.doubleMathCalculation(materialCallNew.getIssuedQuantity(),
                 materialCallDB.getIssuedQuantity(), "+");
 
         //更新叫料表
-        if (materialCallDB.getQuantity()<=newQuantity){
+        if (materialCallDB.getQuantity() <= newQuantity) {
             materialCallDB.setStatus(MaterialCallStatusEnum.FULL_ISSUED.code());
-        }else {
+        } else {
             materialCallDB.setStatus(MaterialCallStatusEnum.PART_ISSUED.code());
         }
         materialCallDB.setIssuedQuantity(newQuantity);
         return materialCallMapper.updateById(materialCallDB);
+    }
+
+    @Override
+    public void deleteRequirement(List<Long> ids) {
+        LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(MaterialCall::getId, ids);
+
+        List<MaterialCall> materialCalls = materialCallMapper.selectList(queryWrapper);
+
+
+        List<MaterialCall> list = materialCalls.stream().filter(item -> item.getStatus().equals(MaterialCallStatusEnum.WAITING_ISSUE.code()) && item.getDeleteFlag().equals(DeleteFlagStatus.FALSE.getCode())).collect(Collectors.toList());
+
+
+        if (CollectionUtils.isEmpty(list) || CollectionUtils.isEmpty(list) || list.size() != materialCalls.size()) {
+            throw new ServiceException("只允许修改未下发状态的需求！");
+        }
+        
+        materialCalls.stream().forEach(item->item.setDeleteFlag(DeleteFlagStatus.TRUE.getCode()));
+
+        updateBatchById(materialCalls);
+
     }
 
 

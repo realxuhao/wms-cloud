@@ -13,10 +13,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: wms-cloud
@@ -52,5 +55,16 @@ public class StockController extends BaseController {
         List<StockVO> list = stockService.selectStockVOBySortType(stockQuerySTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
+
+
+    @PostMapping(value = "/countAvailableStock")
+    @ApiOperation("批量传入id，计算总可用库存量")
+    public R<Map> countAvailableStock(@RequestBody StockQueryDTO stockQuerySTO) {
+        Double count = stockService.countAvailableStock(stockQuerySTO);
+        Map<String, Double> map = new HashMap<>();
+        map.put("count", count);
+        return R.ok(map);
+    }
+
 
 }

@@ -23,6 +23,7 @@ import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,12 +52,13 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
     public MaterialInCheckVO getMaterialCheckInfo(String mesBarCode) {
         MaterialVO materialVO = getMaterialVOByMesBarCode(mesBarCode);
         MaterialInCheckVO materialInCheckVO = buildMaterialCheckVO(materialVO, mesBarCode);
-        materialRecevieMapper.updateStatusBySscc(materialInCheckVO.getSsccNumber(), MaterialStatusEnum.WAIT_IN.getCode());
+//        materialRecevieMapper.updateStatusBySscc(materialInCheckVO.getSsccNumber(), MaterialStatusEnum.WAIT_IN.getCode());
         return materialInCheckVO;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public MaterialCheckResultVO check(MaterialInCheckDTO materialInCheckDTO) {
 
         MaterialCheckResultVO materialCheckResultVO = dealCheck(materialInCheckDTO);

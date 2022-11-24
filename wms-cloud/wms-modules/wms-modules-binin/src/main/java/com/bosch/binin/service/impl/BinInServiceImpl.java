@@ -37,6 +37,7 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,6 +103,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public BinInVO getByMesBarCode(String mesBarCode) {
         MaterialInVO materialInVO = getMaterialInVO(mesBarCode);
 
