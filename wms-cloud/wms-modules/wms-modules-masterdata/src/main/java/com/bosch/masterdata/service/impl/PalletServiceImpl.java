@@ -142,4 +142,18 @@ public class PalletServiceImpl extends ServiceImpl<PalletMapper, Pallet>  implem
         Integer integer = palletMapper.selectCount(queryWrapper);
         return  integer>0;
     }
+
+    @Override
+    public boolean validList(PalletDTO dto) {
+
+        Integer integer =0;
+        if (dto!=null){
+            LambdaQueryWrapper<Pallet> queryWrapper=new LambdaQueryWrapper<>();
+            queryWrapper.in(Pallet::getType,dto.getType());
+            queryWrapper.notIn(Pallet::getId,dto.getId());
+            integer = palletMapper.selectCount(queryWrapper);
+        }
+
+        return  integer>0;
+    }
 }

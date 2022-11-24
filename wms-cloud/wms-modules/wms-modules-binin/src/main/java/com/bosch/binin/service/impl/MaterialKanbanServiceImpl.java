@@ -1,6 +1,7 @@
 package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -22,8 +23,11 @@ import com.bosch.binin.utils.BeanConverUtil;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
+import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.page.PageDomain;
+import lombok.Synchronized;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -151,7 +155,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             conver.setQuantity(dto.getQuantity());
             conver.setMoveType(MoveTypeEnums.CALL.getCode());
             conver.setCell(dto.getCell());
-            conver.setType(dto.getQuantity()==r.getAvailableStock()? RequirementActionTypeEnum.FULL_BIN_DOWN.value():RequirementActionTypeEnum.PART_BIN_DOWN.value());
+            conver.setType(dto.getQuantity() == r.getAvailableStock() ?
+                    RequirementActionTypeEnum.FULL_BIN_DOWN.value() : RequirementActionTypeEnum.PART_BIN_DOWN.value());
             conver.setStatus(KanbanPerformTypeEnum.WAIT_ISSUE.value());
             conver.setUpdateBy(null);
             conver.setUpdateTime(null);
@@ -160,6 +165,45 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             materialKanbans.add(conver);
         });
         return materialKanbans;
+    }
+
+    @Override
+    public int updateStockBySSCC(String sscc, Double quantity) {
+        //根据sscc码修改stock  available_stock freeze_stock
+        //取值
+        LambdaQueryWrapper<Stock> qw = new LambdaQueryWrapper<>();
+        qw.eq(Stock::getSsccNumber, sscc);
+        qw.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.last(" for update");
+        Stock stock = stockMapper.selectOne(qw);
+        if (stock == null) {
+            throw new ServiceException("未查询到sscc码相关数据，请刷新页面");
+        }
+        Double availableStock = stock.getAvailableStock();
+        Double freezeStock = stock.getFreezeStock();
+        //计算
+        availableStock = DoubleMathUtil.doubleMathCalculation(availableStock, quantity, "+");
+        freezeStock = DoubleMathUtil.doubleMathCalculation(freezeStock, quantity, "-");
+        //赋值
+        stock.setAvailableStock(availableStock);
+        stock.setFreezeStock(freezeStock);
+        //更新
+        LambdaUpdateWrapper<Stock> uw = new LambdaUpdateWrapper<>();
+        uw.eq(Stock::getSsccNumber, sscc);
+
+
+        return stockMapper.updateById(stock);
+    }
+
+
+    @Override
+    public int updateKanban(Long id) {
+        MaterialKanban materialKanban = new MaterialKanban();
+        materialKanban.setStatus(KanbanPerformTypeEnum.CANCEL.value());
+        LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
+
+        //materialKanbanMapper.update()
+        return 0;
     }
 
 

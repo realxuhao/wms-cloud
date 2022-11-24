@@ -231,6 +231,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         LambdaQueryWrapper<MaterialCall> qw=new LambdaQueryWrapper<>();
         qw.eq(MaterialCall::getOrderNb,materialCallNew.getOrderNb());
         qw.eq(MaterialCall::getMaterialNb,materialCallNew.getMaterialNb());
+        qw.eq(MaterialCall::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
         MaterialCall materialCallDB = materialCallMapper.selectOne(qw);
 
         if(materialCallDB==null){
