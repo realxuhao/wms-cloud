@@ -30,7 +30,7 @@ public class BinDTO extends PageDomain {
     private String code;
 
     /** 库位名称 */
-    @ExcelProperty(value = "库位名称")
+    @ExcelProperty(value = "库位描述[选填]")
     @ApiModelProperty(value = "库位名称")
     private String name;
 
