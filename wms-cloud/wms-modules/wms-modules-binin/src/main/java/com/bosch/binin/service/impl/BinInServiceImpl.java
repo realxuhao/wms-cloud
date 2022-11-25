@@ -104,7 +104,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-//    @Synchronized
+    @Synchronized
     public BinInVO getByMesBarCode(String mesBarCode) {
         MaterialInVO materialInVO = getMaterialInVO(mesBarCode);
 
