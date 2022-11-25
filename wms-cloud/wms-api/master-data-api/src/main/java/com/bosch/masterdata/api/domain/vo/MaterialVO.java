@@ -37,11 +37,13 @@ public class MaterialVO {
     private String materialType;
 
     /** 单位 */
-    @ApiModelProperty(value = "单位")
+    @ApiModelProperty(value = "\"单位\n" +
+            "[KG,M,L,㎡]\"")
     private String unit;
 
     /** 物料防错方式 */
-    @ApiModelProperty(value = "物料防错方式")
+    @ApiModelProperty(value = "\"物料防错方式\n" +
+            "[点数,称重,免检]\"")
     private String errorProofingMethod;
 
     /** 是否带托盘 */
@@ -53,11 +55,13 @@ public class MaterialVO {
     private Integer bindPallet;
 
     /** 包装重量 */
-    @ApiModelProperty(value = "包装重量")
+    @ApiModelProperty(value = "\"最小包装毛重\n" +
+            "[只针对称重物料]\"")
     private BigDecimal packageWeight;
 
     /** 托盘重量 */
-    @ApiModelProperty(value = "托盘重量")
+    @ApiModelProperty(value = "\"托盘重量\n" +
+            "[只针对称重物料]\"")
     private BigDecimal palletWeight;
 
     /** 来料总重量（每托） */
@@ -65,19 +69,22 @@ public class MaterialVO {
     private BigDecimal totalWeight;
 
     /** 最小包装重量(净重) */
-    @ApiModelProperty(value = "最小包装重量(净重)")
+    @ApiModelProperty(value = "\"最小包装净重\n" +
+            "[只针对称重物料]\"")
     private BigDecimal minPackageNetWeight;
 
     /** 允许负偏差比例【绝对值】 */
-    @ApiModelProperty(value = "允许的最大值")
+    @ApiModelProperty(value = "\"最小包装量\n" +
+            "允许最小值\"")
     private BigDecimal lessDeviationRatio;
 
     /** 允许正偏差比例【绝对值】 */
-    @ApiModelProperty(value = "允许的最小值")
+    @ApiModelProperty(value = "\"最小包装量\n" +
+            "允许最大值\"")
     private BigDecimal moreDeviationRatio;
 
     /**转化重量参数 */
-    @ApiModelProperty(value = "转化重量参数")
+    @ApiModelProperty(value = "标准计数单位[L,Kg,m,㎡]对应的重量值[只针对称重物料]")
     private BigDecimal transferWeightRatio;
 
     /** 状态（1：启用，0：停用） */

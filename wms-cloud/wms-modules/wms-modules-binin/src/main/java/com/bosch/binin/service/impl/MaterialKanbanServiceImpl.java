@@ -205,7 +205,12 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         uw.eq(MaterialKanban::getId, id);
         uw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 
-        return materialKanbanMapper.update(materialKanban,uw);
+        return materialKanbanMapper.update(materialKanban, uw);
+    }
+
+    @Override
+    public void issueJob(Long[] ids) {
+
     }
 
 

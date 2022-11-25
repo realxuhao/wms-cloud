@@ -70,6 +70,14 @@ public class MaterialKanbanController {
     }
 
 
+    @PutMapping(value = "/issueJob/{ids}")
+    @ApiOperation("批量下发任务接口")
+    public R issueJob(@PathVariable Long[] ids) {
+        materialKanbanService.issueJob(ids);
+        return R.ok("下发成功");
+    }
+
+
     @PostMapping(value = "/picking")
     @ApiOperation("人工拣配")
     @Transactional(rollbackFor = Exception.class)
@@ -179,7 +187,7 @@ public class MaterialKanbanController {
     @ApiOperation("取消kanban")
     @GetMapping(value = "/cancelKanban/{id}")
     @Transactional(rollbackFor = Exception.class)
-    public R cancelKanban( @PathVariable("id") Long id) {
+    public R cancelKanban(@PathVariable("id") Long id) {
 
         try {
             //查询取消任务详情

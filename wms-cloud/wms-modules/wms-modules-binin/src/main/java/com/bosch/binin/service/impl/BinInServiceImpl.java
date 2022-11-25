@@ -104,7 +104,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    @Synchronized
+//    @Synchronized
     public BinInVO getByMesBarCode(String mesBarCode) {
         MaterialInVO materialInVO = getMaterialInVO(mesBarCode);
 
@@ -117,7 +117,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         if (binInVO == null) {
             R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
             if (StringUtils.isNull(materialBinVOResullt) || CollectionUtils.isEmpty(materialBinVOResullt.getData())) {
-                throw new ServiceException("该物料：" + materialNb + " 暂无分配规则");
+                throw new ServiceException("该物料：" + materialNb + " 分配规则有误");
             }
 
             if (R.FAIL == materialBinVOResullt.getCode()) {

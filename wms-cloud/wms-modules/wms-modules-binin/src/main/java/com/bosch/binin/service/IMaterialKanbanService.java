@@ -47,4 +47,6 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
      * @return
      */
     int updateKanban(Long id);
+
+    void issueJob(Long[] ids);
 }
