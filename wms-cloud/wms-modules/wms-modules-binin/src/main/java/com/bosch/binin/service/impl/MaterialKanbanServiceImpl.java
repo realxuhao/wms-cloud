@@ -228,13 +228,21 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         LambdaQueryWrapper<MaterialKanban> kanbanLambdaQueryWrapper = new LambdaQueryWrapper<>();
         kanbanLambdaQueryWrapper.in(MaterialKanban::getId, idList);
         kanbanLambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        kanbanLambdaQueryWrapper.eq(MaterialKanban::getStatus, KanbanPerformTypeEnum.WAIT_ISSUE.value());
+//        kanbanLambdaQueryWrapper.eq(MaterialKanban::getStatus, KanbanPerformTypeEnum.WAIT_ISSUE.value());
 
         List<MaterialKanban> kanbanList = materialKanbanMapper.selectList(kanbanLambdaQueryWrapper);
 
         if (CollectionUtils.isEmpty(kanbanList) || kanbanList.size() != idList.size()) {
-            throw new ServiceException("包含已下发数据，请重新选择");
+            throw new ServiceException("数据已过期，请重新选择");
         }
+        kanbanList.stream().forEach(item->{
+            if (KanbanPerformTypeEnum.CANCEL.value().equals(item.getStatus())){
+                throw new ServiceException("包含已取消任务，请重新选择");
+            }
+            if (!KanbanPerformTypeEnum.WAIT_ISSUE.value().equals(item.getStatus())){
+                throw new ServiceException("包含已下发数据，请重新选择");
+            }
+        });
 
         List<WareShift> wareShiftList = new ArrayList<>();
 
