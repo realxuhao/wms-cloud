@@ -2,11 +2,10 @@
   <div class="editable-cell">
     <div v-if="editable" class="editable-cell-input-wrapper">
       <a-input :value="value" @change="handleChange" @pressEnter="check" />
-      <a-icon
-        type="check"
-        class="icon"
-        @click="check"
-      />
+      <div class="action-box">
+        <a class="action warning-color" @click="check">确认</a>
+        <a class="action" @click="editable=false">取消</a>
+      </div>
 
     </div>
     <div v-else class="editable-cell-text-wrapper">
@@ -51,7 +50,7 @@ export default {
 }
 .editable-cell-text-wrapper{
   display: flex;
-  justify-content: space-between;
+  // justify-content: space-between;
   align-items: center;
 
 }
@@ -65,9 +64,19 @@ export default {
   cursor: pointer;
   padding: 2px;
   box-sizing: border-box;
-  margin-left: 4px;
+  margin-left: 24px;
   &:hover{
     color: #108ee9;
+  }
+}
+
+.action-box{
+  display: flex;
+  align-items: center;
+  width: 40px;
+  flex-direction: column;
+  a{
+    font-size: 12px;
   }
 }
 

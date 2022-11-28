@@ -8,16 +8,29 @@ package com.bosch.binin.api.enumeration;
  **/
 public enum RequirementActionTypeEnum {
     //整托下架
-    FULL_BIN_DOWN(0),
+    FULL_BIN_DOWN(0,"整托下架"),
     //拆托下架
-    PART_BIN_DOWN(1);
+    PART_BIN_DOWN(1,"拆托下架");
     private final Integer value;
-
-    RequirementActionTypeEnum(int value) {
+    private final String desc;
+    RequirementActionTypeEnum(int value, String desc) {
         this.value = value;
+        this.desc = desc;
     }
 
     public Integer value() {
         return this.value;
     }
+    public String getDesc() {
+        return this.desc;
+    }
+    public static String getDesc(Integer key) {
+        for (RequirementActionTypeEnum ele : values()) {
+            if (ele.value==key) {
+                return ele.getDesc();
+            }
+        }
+        return null;
+    }
+
 }

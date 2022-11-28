@@ -171,6 +171,12 @@ const columns = [
     width: 200
   },
   {
+    title: '物料编码',
+    key: 'materialCode',
+    dataIndex: 'materialCode',
+    width: 200
+  },
+  {
     title: '跨类型',
     key: 'frameTypeCode',
     dataIndex: 'frameTypeCode',
@@ -185,7 +191,7 @@ const columns = [
   {
     title: '操作',
     key: 'action',
-    width: 60,
+    width: 120,
     scopedSlots: { customRender: 'action' }
   }
 ]

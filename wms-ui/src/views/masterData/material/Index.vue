@@ -167,12 +167,12 @@ const columns = [
     key: 'palletType',
     width: 80
   },
-  {
-    title: '包装重量',
-    dataIndex: 'packageWeight',
-    key: 'packageWeight',
-    width: 100
-  },
+  // {
+  //   title: '包装重量',
+  //   dataIndex: 'packageWeight',
+  //   key: 'packageWeight',
+  //   width: 100
+  // },
   {
     title: '托盘重量',
     dataIndex: 'palletWeight',
@@ -208,19 +208,23 @@ const columns = [
     width: 100
 
   },
+  // {
+  //   title: '允许负偏差比例（绝对值）',
+  //   key: 'lessDeviationRatio',
+  //   dataIndex: 'lessDeviationRatio',
+  //   width: 200
+  // },
   {
-    title: '允许负偏差比例（绝对值）',
-    key: 'lessDeviationRatio',
-    dataIndex: 'lessDeviationRatio',
+    title: '最小包装毛重',
+    key: 'packageWeight',
+    dataIndex: 'packageWeight',
     width: 200
-
   },
   {
     title: '最小包装重量（净重）',
     key: 'minPackageNetWeight',
     dataIndex: 'minPackageNetWeight',
     width: 200
-
   },
   {
     title: '最小包装数量',
@@ -233,6 +237,24 @@ const columns = [
     key: 'unit',
     dataIndex: 'unit',
     width: 100
+  },
+  {
+    title: '最小包装量允许最小值',
+    key: 'lessDeviationRatio',
+    dataIndex: 'lessDeviationRatio',
+    width: 200
+  },
+  {
+    title: '最小包装量允许最大值',
+    key: 'moreDeviationRatio',
+    dataIndex: 'moreDeviationRatio',
+    width: 200
+  },
+  {
+    title: '标准计数单位[L,Kg,m,㎡]对应的重量值KG[只针对称重物料]',
+    key: 'transferWeightRatio',
+    dataIndex: 'transferWeightRatio',
+    width: 240
   },
   {
     title: '备注',
