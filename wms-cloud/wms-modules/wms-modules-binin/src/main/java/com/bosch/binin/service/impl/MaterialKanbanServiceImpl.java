@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
@@ -17,9 +18,11 @@ import com.bosch.binin.api.enumeration.RequirementActionTypeEnum;
 import com.bosch.binin.mapper.BinInMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.StockMapper;
+import com.bosch.binin.mapper.WareShiftMapper;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IMaterialKanbanService;
 import com.bosch.binin.service.IStockService;
+import com.bosch.binin.service.IWareShiftService;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
@@ -36,9 +39,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,6 +51,12 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
     @Autowired
     private StockMapper stockMapper;
+
+    @Autowired
+    private WareShiftMapper wareShiftMapper;
+
+    @Autowired
+    private IWareShiftService wareShiftService;
 
     @Override
     public IPage<MaterialKanbanVO> pageList(MaterialKanbanDTO dto) {
@@ -226,17 +233,46 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         List<MaterialKanban> kanbanList = materialKanbanMapper.selectList(kanbanLambdaQueryWrapper);
 
         if (CollectionUtils.isEmpty(kanbanList) || kanbanList.size() != idList.size()) {
-            throw new ServiceException("任务数据过期，请刷新页面");
+            throw new ServiceException("包含已下发数据，请重新选择");
         }
 
+        List<WareShift> wareShiftList = new ArrayList<>();
+
+        List<String> outWareSsccList = kanbanList.stream().filter(item -> "7752".equals(item.getFactoryCode())).map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
+
+        //查询外库的库存
+        Map<String, List<Stock>> stockMap=new HashMap<>();
+        if (!CollectionUtils.isEmpty(outWareSsccList)) {
+            LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
+            stockQueryWrapper.in(Stock::getSsccNumber, outWareSsccList);
+            stockQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            List<Stock> stockList = stockMapper.selectList(stockQueryWrapper);
+            stockMap = stockList.stream().collect(Collectors.groupingBy(Stock::getSsccNumber));
+        }
+
+
         //状态变为下发状态
+        Map<String, List<Stock>> finalStockMap = stockMap;
         kanbanList.stream().forEach(item -> {
+            //修改任务状态
             item.setStatus(KanbanPerformTypeEnum.HAS_ISSUED.value());
             //如果是7752的，需要生成一个移库任务
             if ("7752".equals(item.getFactoryCode())) {
+                String ssccNumber = item.getSsccNumber();
+                Stock stock = finalStockMap.get(ssccNumber).get(0);
+                WareShift wareShift = WareShift.builder().sourcePlantNb(item.getFactoryCode()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
+                        .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialCode()).expireDate(stock.getExpireDate()).batchNb(stock.getBatchNb())
+                        .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+                        .build();
 
+                wareShiftList.add(wareShift);
             }
         });
+
+        //更新任务状态
+        updateBatchById(kanbanList);
+        //新增移库任务
+        wareShiftService.saveBatch(wareShiftList);
 
 
     }

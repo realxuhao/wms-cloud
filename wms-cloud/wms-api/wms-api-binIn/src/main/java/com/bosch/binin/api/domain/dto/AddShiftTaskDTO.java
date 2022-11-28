@@ -17,10 +17,4 @@ public class AddShiftTaskDTO {
     @ApiModelProperty(value = "sscc码")
     private List<String> ssccNbList;
 
-    @ApiModelProperty(value = "目标仓库")
-    private String targetWareCode;
-
-    @ApiModelProperty(value = "目标工厂")
-    private String targetPlantNb;
-
 }

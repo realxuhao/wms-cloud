@@ -58,7 +58,6 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             WareShift wareShift = WareShift.builder().sourcePlantNb(item.getPlantNb()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
                     .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialNb()).batchNb(item.getBatchNb()).expireDate(item.getExpireDate())
                     .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
-                    .targetPlant(dto.getTargetPlantNb()).targetWareCode(dto.getTargetWareCode())
                     .build();
             wareShiftList.add(wareShift);
 

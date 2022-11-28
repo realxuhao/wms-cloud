@@ -90,7 +90,7 @@ public class StockVO {
      * 过期时间
      */
     @ApiModelProperty(value = "过期时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date expireDate;
 
     /**
