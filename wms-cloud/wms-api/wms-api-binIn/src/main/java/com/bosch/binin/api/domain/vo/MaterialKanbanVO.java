@@ -119,7 +119,12 @@ public class MaterialKanbanVO extends BaseEntity {
     @ExcelProperty(value = "状态")
     @ApiModelProperty(value = "状态")
     private Integer status;
-
+    /**
+     * 状态描述
+     */
+    @ExcelProperty(value = "状态描述")
+    @ApiModelProperty(value = "状态描述")
+    private String typeDesc;
     /**
      * deleteFlag
      */
