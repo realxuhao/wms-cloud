@@ -1,5 +1,7 @@
 package com.bosch.binin.api.enumeration;
 
+import java.util.List;
+
 /**
  * @program: wms-cloud
  * @description:
@@ -26,5 +28,16 @@ public enum KanbanPerformTypeEnum {
 
     public Integer value() {
         return this.value;
+    }
+    public String getDesc() {
+        return this.desc;
+    }
+    public static String getDesc(String key) {
+        for (KanbanPerformTypeEnum ele : values()) {
+            if (ele.value.toString().equals(key)) {
+                return ele.getDesc();
+            }
+        }
+        return null;
     }
 }
