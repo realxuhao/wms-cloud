@@ -34,6 +34,26 @@ const materialFeeding = {
     async callSystemStock ({ commit }, options) {
       const data = await materialFeedingService.callSystemStock({ ...options })
       return data
+    },
+    async updateQuantity ({ commit }, options) {
+      const data = await materialFeedingService.updateQuantity(options)
+      return data
+    },
+    async callPersonStock ({ commit }, options) {
+      const data = await materialFeedingService.callPersonStock(options)
+      return data
+    },
+    async getPickingOrderList ({ commit }, options) {
+      const data = await materialFeedingService.getPickingOrderList(options)
+      return data
+    },
+    async batchAddJob ({ commit }, options) {
+      const data = await materialFeedingService.batchAddJob(options)
+      return data
+    },
+    async cancelPickingOrder ({ commit }, options) {
+      const data = await materialFeedingService.cancelPickingOrder(options)
+      return data
     }
   }
 }

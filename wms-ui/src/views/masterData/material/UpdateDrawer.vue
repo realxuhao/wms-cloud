@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    width="640px"
+    width="1200px"
     :title="title"
     placement="right"
     :closable="false"
@@ -56,14 +56,14 @@
           </a-select-option>
         </a-select>
       </a-form-item>
-      <a-form-item label="包装重量">
+      <!-- <a-form-item label="包装重量">
         <a-input-number
           placeholder="包装重量"
           v-decorator="[
             'packageWeight',
             { rules: [{ required: true, message: '请输入包装重量!' }] }
           ]" />
-      </a-form-item>
+      </a-form-item> -->
       <a-form-item label="托盘重量">
         <a-input-number
           placeholder="托盘重量"
@@ -151,6 +151,15 @@
             { rules: [{ required: true, message: '请输入最小包装重量!' }] }
           ]" />
       </a-form-item>
+      <a-form-item label="最小包装毛重">
+        <a-input-number
+          placeholder="最小包装毛重"
+          v-decorator="[
+            'packageWeight',
+            { rules: [{ required: true, message: '不能为空!' }] }
+          ]" />
+      </a-form-item>
+
       <a-form-item label="最小包装数量">
         <a-input-number
           placeholder="最小包装数量"
@@ -179,6 +188,31 @@
             ㎡
           </a-select-option>
         </a-select>
+      </a-form-item>
+
+      <a-form-item label="最小包装量允许最小值">
+        <a-input-number
+          placeholder="最小包装量允许最小值"
+          v-decorator="[
+            'lessDeviationRatio',
+            { rules: [{ required: true, message: '不能为空!' }] }
+          ]" />
+      </a-form-item>
+      <a-form-item label="最小包装量允许最大值">
+        <a-input-number
+          placeholder="最小包装量允许最大值"
+          v-decorator="[
+            'moreDeviationRatio',
+            { rules: [{ required: true, message: '不能为空!' }] }
+          ]" />
+      </a-form-item>
+      <a-form-item label="标准计数单位[L,Kg,m,㎡]对应的重量值KG[只针对称重物料]">
+        <a-input-number
+          placeholder="标准计数单位[L,Kg,m,㎡]对应的重量值KG[只针对称重物料]"
+          v-decorator="[
+            'transferWeightRatio',
+            { rules: [{ required: true, message: '不能为空!' }] }
+          ]" />
       </a-form-item>
 
       <a-form-item label="备注">
@@ -274,7 +308,8 @@ export default {
       const { data } = await this.$store.dispatch('material/getOne', this.id)
       const columns = ['name', 'code', 'materialTypeId', 'packageWeight', 'palletWeight',
         'bindPallet', 'hasPallet', 'totalWeight', 'errorProofingMethod', 'lessDeviationRatio',
-        'minPackageNetWeight', 'minPackageNumber', 'unit', 'remark', 'palletId' ]
+        'minPackageNetWeight', 'minPackageNumber', 'unit', 'remark', 'palletId', 'lessDeviationRatio',
+        'moreDeviationRatio', 'transferWeightRatio', 'minPackageNetWeight']
       this.form.setFieldsValue(_.pick(data, columns))
     },
     async loadMaterialTypeList () {

@@ -168,6 +168,13 @@ export const asyncRouterMap = [
             component: () => import('@/views/materialFeeding/MaterialFeeding'),
             meta: { title: '叫料记录', permission: [] },
             hideChildrenInMenu: true
+          },
+          {
+            path: '/picking-order/list',
+            name: 'pickingOrderList',
+            component: () => import('@/views/materialFeeding/PickingOrder'),
+            meta: { title: '拣配任务', permission: [] },
+            hideChildrenInMenu: true
           }
         ]
       }

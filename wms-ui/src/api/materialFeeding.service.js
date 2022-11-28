@@ -34,9 +34,41 @@ const checkStock = async (options) => {
   return data
 }
 
+// 人工拣配
+const callPersonStock = async (options) => {
+  const url = `binin/materialKanban/picking`
+  const { data } = await createAuthInstance(config.apiHost).post(url, options)
+  return data
+}
+
+// 系统拣配
 const callSystemStock = async (options) => {
   const url = `binin/material-feeding/call/system`
   const { data } = await createAuthInstance(config.apiHost).post(url, options)
+  return data
+}
+
+const updateQuantity = async (options) => {
+  const url = `binin/material-feeding/call/${options.id}`
+  const { data } = await createAuthInstance(config.apiHost).put(url, options)
+  return data
+}
+
+const getPickingOrderList = async (options) => {
+  const url = `binin/materialKanban/list`
+  const { data } = await createAuthInstance(config.apiHost).post(url, options)
+  return data
+}
+
+const batchAddJob = async (options) => {
+  const url = `binin/materialKanban/issueJob/${options.ids.join(',')}`
+  const { data } = await createAuthInstance(config.apiHost).put(url, options)
+  return data
+}
+
+const cancelPickingOrder = async (options) => {
+  const url = `binin/materialKanban/cancelKanban/${options.id}`
+  const { data } = await createAuthInstance(config.apiHost).get(url)
   return data
 }
 
@@ -46,5 +78,10 @@ export const materialFeedingService = {
   getDepartmentList,
   getRuleList,
   checkStock,
-  callSystemStock
+  callSystemStock,
+  callPersonStock,
+  updateQuantity,
+  getPickingOrderList,
+  batchAddJob,
+  cancelPickingOrder
 }
