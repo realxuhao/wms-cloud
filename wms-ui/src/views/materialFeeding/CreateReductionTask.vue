@@ -24,45 +24,73 @@
         </a-row>
       </a-form>
 
-      <div class="action-content">
-        <a-button
-          type="primary"
-          :disabled="!hasSelected"
-          @click="handleSubmit"
-          :loading="submitLoading">提交并生成拣配任务 </a-button>
-        <div class="number-content">
-          <span class="m-r-8"><span class="primary-color">未下发量：</span>{{ notQuantity }}</span>
-          <span> <span class="primary-color">已选择量：</span>{{ stockNumber }}</span>
-        </div>
-      </div>
-      <a-table
-        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
-        :columns="columns"
-        :data-source="list"
-        :loading="tableLoading"
-        rowKey="id"
-        :pagination="false"
-        size="middle"
-        @change="handleChangeTab"
-      >
-      </a-table>
+      <a-steps :current="currentStep" @change="handleStepChange" class="m-b-24">
+        <a-step title="选择下发需求" >
+        </a-step>
+        <a-step title="确认下发需求" />
+      </a-steps>
+      <a-row>
+        <a-col :span="24" v-show="currentStep===0">
+          <div class="m-b-8">
+            <a-button class="m-r-8" type="primary" @click="currentStep = 1">下一步</a-button>
+            <span class="m-r-8"><span class="primary-color">未下发量：</span>{{ notQuantity }}</span>
+            <span> <span class="primary-color">已选择量：</span>{{ stockNumber }}</span>
+          </div>
+          <a-table
+            :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+            :columns="columns"
+            :data-source="list"
+            :loading="tableLoading"
+            rowKey="id"
+            :pagination="false"
+            size="middle"
+            @change="handleChangeTab"
+          >
+          </a-table>
+          <div class="pagination-con">
+            <a-pagination
+              show-size-changer
+              show-less-items
+              :current="queryForm.pageNum"
+              :page-size.sync="queryForm.pageSize"
+              :total="paginationTotal"
+              @showSizeChange="onShowSizeChange"
+              @change="changePagination" />
+          </div>
+        </a-col>
 
-      <div class="pagination-con">
-        <a-pagination
-          show-size-changer
-          show-less-items
-          :current="queryForm.pageNum"
-          :page-size.sync="queryForm.pageSize"
-          :total="paginationTotal"
-          @showSizeChange="onShowSizeChange"
-          @change="changePagination" />
-      </div>
+        <a-col :span="24" v-show="currentStep === 1">
+          <div class="action-content">
+            <a-button class="m-r-8" type="primary" @click="currentStep = 0">上一步</a-button>
+            <a-button
+              type="primary"
+              :disabled="!hasSelected"
+              @click="handleSubmit"
+              :loading="submitLoading">提交并生成拣配任务 </a-button>
+          </div>
+          <a-table
+            :columns="selectColumns"
+            :data-source="hasSelectedList"
+            rowKey="id"
+            :pagination="false"
+            size="middle"
+          >
+            <template slot="quantity" slot-scope="text,record">
+              <a-input-number
+                :min="0"
+                :max="record.availableStock"
+                v-model="record.quantity" ></a-input-number>
+            </template>
+          </a-table>
+        </a-col>
+      </a-row>
+
     </div>
   </a-drawer>
 </template>
 
 <script>
-// import _ from 'lodash'
+import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
 
 const queryFormAttr = () => {
@@ -71,9 +99,76 @@ const queryFormAttr = () => {
   }
 }
 
+const selectColumns = [
+  {
+    title: 'SSCC码',
+    key: 'ssccNumber',
+    dataIndex: 'ssccNumber',
+    width: 120
+  },
+  {
+    title: '物料编码',
+    key: 'materialNb',
+    dataIndex: 'materialNb',
+    width: 120
+  },
+  {
+    title: '物料名称',
+    key: 'materialName',
+    dataIndex: 'materialName',
+    width: 90
+  },
+  {
+    title: '批次号',
+    key: 'batchNb',
+    dataIndex: 'batchNb',
+    width: 120
+  },
+  {
+    title: '可用库存',
+    key: 'availableStock',
+    dataIndex: 'availableStock',
+    width: 120
+  },
+  {
+    title: '下发量',
+    key: 'quantity',
+    dataIndex: 'quantity',
+    scopedSlots: { customRender: 'quantity' },
+    width: 120
+  },
+  {
+    title: '库存量',
+    key: 'totalStock',
+    dataIndex: 'totalStock',
+    width: 80
+  },
+  {
+    title: '冻结库存',
+    key: 'freezeStock',
+    dataIndex: 'freezeStock',
+    width: 120
+  },
+  {
+    title: '有效期',
+    key: 'expireDate',
+    dataIndex: 'expireDate',
+    width: 140
+  }
+]
+
 export default {
+  name: 'CreateReductionTask',
   mixins: [mixinTableList],
   props: {
+    orderNb: {
+      type: String,
+      required: true
+    },
+    cell: {
+      type: String,
+      required: true
+    },
     materialNb: {
       type: String,
       default () {
@@ -93,9 +188,10 @@ export default {
   },
   data () {
     return {
+      currentStep: 0,
       submitLoading: false,
       queryForm: {
-        pageSize: 20,
+        pageSize: 40,
         pageNum: 1,
         sortMap: {
           availableStock: 'ascend',
@@ -106,8 +202,7 @@ export default {
 
       selectedRowKeys: [],
       list: [],
-
-      stockNumber: 0
+      hasSelectedList: []
     }
   },
   model: {
@@ -118,6 +213,9 @@ export default {
     hasSelected () {
       return this.selectedRowKeys.length > 0
     },
+    selectColumns () {
+      return selectColumns
+    },
     columns () {
       const { sortMap } = this.queryForm
       const columns = [
@@ -125,19 +223,19 @@ export default {
           title: 'SSCC码',
           key: 'ssccNumber',
           dataIndex: 'ssccNumber',
-          width: 160
+          width: 120
         },
         {
           title: '物料编码',
           key: 'materialNb',
           dataIndex: 'materialNb',
-          width: 160
+          width: 120
         },
         {
           title: '物料名称',
           key: 'materialName',
           dataIndex: 'materialName',
-          width: 120
+          width: 90
         },
         {
           title: '批次号',
@@ -167,31 +265,69 @@ export default {
           title: '库存量',
           key: 'totalStock',
           dataIndex: 'totalStock',
-          width: 120
+          width: 80
+        },
+        {
+          title: '有效期',
+          key: 'expireDate',
+          dataIndex: 'expireDate',
+          width: 140
         }
       ]
       return columns
+    },
+    stockNumber () {
+      const result = _.sumBy(this.hasSelectedList, 'totalStock')
+      return result
     }
   },
   methods: {
+    handleStepChange (current) {
+      this.currentStep = current
+    },
     onClose () {
       this.$emit('change', false)
+      this.hasSelectedList = []
       this.selectedRowKeys = []
+      this.currentStep = 0
     },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
     },
     onSelectChange (selectedRowKeys) {
-      console.log(selectedRowKeys)
+      // 删除
+      if (selectedRowKeys.length < this.selectedRowKeys.length) {
+        const [id] = _.difference(this.selectedRowKeys, selectedRowKeys)
+
+        this.hasSelectedList = _.remove(this.hasSelectedList, x => x.id === id)
+      } else {
+      // 新增
+        const lastKey = _.last(selectedRowKeys)
+        const row = _.find(this.list, ['id', lastKey])
+
+        this.hasSelectedList.push({ ...row, quantity: row.totalStock })
+      }
+
       this.selectedRowKeys = selectedRowKeys
     },
     async handleSubmit () {
       try {
+        const postDataMap = _.map(this.hasSelectedList, item => {
+          return {
+            ...item,
+            cell: this.cell,
+            orderNumber: this.orderNb,
+            materialCode: item.materialNb
+          }
+        })
+
         this.submitLoading = true
-        const options = { callIds: this.selectedRowKeys }
-        const data = await this.$store.dispatch('materialFeeding/checkStock', options)
-        console.lg(data)
+        const options = postDataMap
+        await this.$store.dispatch('materialFeeding/callPersonStock', options)
+        this.$message.success('提交成功')
+
+        this.onClose()
       } catch (error) {
         this.$message.error(error.message)
       } finally {
@@ -205,6 +341,7 @@ export default {
         const {
           data: { rows, total }
         } = await this.$store.dispatch('materialFeeding/getRuleList', this.queryForm)
+
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -221,9 +358,9 @@ export default {
     }
   },
   watch: {
-    materialNb: function (val) {
+    createReductionTaskVisible: function (val) {
       if (val) {
-        this.queryForm.materialNb = val
+        this.queryForm.materialNb = this.materialNb
         this.loadData()
       }
     }
@@ -252,8 +389,4 @@ export default {
   width: 100%;
 }
 
-.number-content{
-  display: inline-block;
-  margin-left: 20px;
-}
 </style>

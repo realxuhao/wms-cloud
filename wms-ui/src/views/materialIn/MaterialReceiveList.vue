@@ -85,6 +85,7 @@
         rowKey="id"
         :pagination="false"
         size="middle"
+        :scroll="{ x: 1300 }"
       >
         <template slot="status" slot-scope="text">
           <div >
@@ -220,6 +221,7 @@ const columns = [
     title: '操作',
     key: 'action',
     width: 120,
+    fiexd: 'right',
     scopedSlots: { customRender: 'action' }
   }
 ]

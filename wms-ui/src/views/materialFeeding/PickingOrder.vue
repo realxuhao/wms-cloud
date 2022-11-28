@@ -17,11 +17,6 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="生产订单号">
-              <a-input v-model="queryForm.orderNb" placeholder="生产订单号" allow-clear/>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="4">
             <a-form-model-item label="物料编码">
               <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
             </a-form-model-item>
@@ -63,16 +58,17 @@
           type="primary"
           :loading="submitLoading"
           :disabled="!hasSelected"
-          @click="handleCheckCreateReductionTask">系统创建拣配任务</a-button>
-        <a-button
-          type="primary"
-          icon="upload"
-          @click="handleOpenUpload">
-          创建物料需求
-        </a-button>
+          @click="handleBatchAddJob">批量下发</a-button>
       </div>
       <a-table
-        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+        :row-selection="{
+          selectedRowKeys: selectedRowKeys, onChange: onSelectChange ,
+          getCheckboxProps:record => ({
+            props: {
+              disabled: record.status === 1, // Column configuration not to be checked
+              name: record.name,
+            },
+          }),}"
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
@@ -86,14 +82,17 @@
             {{ statusMap[text] }}
           </div>
         </template>
-        <template slot="quantity" slot-scope="text,record">
-
-          <EditTableCell v-if="record.status === 0" :text="text" @change="(val)=>handleQuantityChange(record,val)" />
-          <span v-else>{{ text }}</span>
-        </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a class="primary-color" @click="handleCreateReductionTask(record)"><a-icon class="m-r-4" type="add" />人工创建拣配任务</a>
+            <a-popconfirm
+              title="确认要取消该条任务吗?"
+              ok-text="确认"
+              cancel-text="取消"
+              @confirm="handleCancel(record)"
+            >
+              <a class="danger-color m-r-4" :disabled="record.status===-1">取消</a>
+            </a-popconfirm>
+
           </div>
         </template>
       </a-table>
@@ -110,28 +109,14 @@
         />
       </div>
 
-      <MaterialFeedingUpload
-        v-model="visible"
-        @on-ok="loadTableList"
-      ></MaterialFeedingUpload>
-
-      <CreateReductionTask
-        v-model="createReductionTaskVisible"
-        :orderNb="currentOrderNb"
-        :cell="currentCell"
-        :materialNb="currentMaterialNb"
-        :notQuantity="notQuantity"
-      ></CreateReductionTask>
     </div>
 
   </div>
 </template>
 
 <script>
-import _ from 'lodash'
+// import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
-import MaterialFeedingUpload from './MaterialFeedingUpload'
-import CreateReductionTask from './CreateReductionTask'
 import EditTableCell from '@/components/EditTableCell'
 
 const columns = [
@@ -142,15 +127,51 @@ const columns = [
     width: 120
   },
   {
-    title: '生产订单号',
-    key: 'orderNb',
-    dataIndex: 'orderNb',
+    title: 'SSCC码',
+    key: 'ssccNumber',
+    dataIndex: 'ssccNumber',
     width: 120
   },
   {
+    title: '需求量',
+    key: 'quantity',
+    dataIndex: 'quantity',
+    width: 120
+  },
+  {
+    title: '源工厂编码',
+    key: 'factoryCode',
+    dataIndex: 'factoryCode',
+    width: 120
+  },
+  {
+    title: '源仓库',
+    key: 'wareCode',
+    dataIndex: 'wareCode',
+    width: 120
+  },
+  {
+    title: '源存储区',
+    key: 'areaCode',
+    dataIndex: 'areaCode',
+    width: 120
+  },
+  {
+    title: '源存储区',
+    key: 'areaId',
+    dataIndex: 'areaId',
+    width: 120
+  },
+  {
+    title: '动作类型',
+    key: 'type',
+    dataIndex: 'type',
+    width: 140
+  },
+  {
     title: '物料编码',
-    key: 'materialNb',
-    dataIndex: 'materialNb',
+    key: 'materialCode',
+    dataIndex: 'materialCode',
     width: 160
   },
   {
@@ -160,37 +181,11 @@ const columns = [
     width: 120
   },
   {
-    title: '需求量',
-    key: 'quantity',
-    dataIndex: 'quantity',
-    scopedSlots: { customRender: 'quantity' },
-    width: 120
-  },
-  {
-    title: '已下发量',
-    key: 'issuedQuantity',
-    dataIndex: 'issuedQuantity',
-    width: 120
-  },
-  {
-    title: '单位',
-    key: 'unit',
-    dataIndex: 'unit',
-    width: 140
-  },
-
-  {
-    title: '需求状态',
+    title: '状态',
     key: 'status',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
     width: 120
-  },
-  {
-    title: '备注',
-    key: 'remark',
-    dataIndex: 'remark',
-    width: 80
   },
   {
     title: '创建人',
@@ -227,30 +222,29 @@ const columns = [
 
 const status = [
   {
+    text: '已取消',
+    value: '-1'
+  },
+  {
     text: '未下发',
     value: 0
   },
   {
-    text: '部分下发',
+    text: '已下发',
     value: 1
-  },
-  {
-    text: '已全部下发',
-    value: 2
   }
 ]
 
 const statusMap = {
-  0: '未下发',
-  1: '部分下发',
-  2: '已全部下发'
+  '-1': '已取消',
+  1: '已下发',
+  0: '未下发'
 }
 
 const queryFormAttr = () => {
   return {
     cell: '',
     materialNb: '',
-    orderNb: '',
     status: '',
     createBy: ''
   }
@@ -260,8 +254,6 @@ export default {
   name: 'Area',
   mixins: [mixinTableList],
   components: {
-    MaterialFeedingUpload,
-    CreateReductionTask,
     EditTableCell
   },
   data () {
@@ -294,11 +286,21 @@ export default {
     }
   },
   methods: {
+    async handleBatchAddJob () {
+      try {
+        this.submitLoading = true
+        const options = { ids: this.selectedRowKeys }
+        await this.$store.dispatch('materialFeeding/batchAddJob', options)
+
+        this.$message.success('提交成功')
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.submitLoading = false
+      }
+    },
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
-    },
-    handleOpenUpload () {
-      this.visible = true
     },
     async handleQuantityChange (record, value) {
       try {
@@ -308,40 +310,6 @@ export default {
         this.loadTableList()
       } catch (error) {
         this.$message.error(error.message)
-      }
-    },
-    async submitCreateReductionTask (options) {
-      await this.$store.dispatch('materialFeeding/callSystemStock', options)
-    },
-    async handleCheckCreateReductionTask () {
-      try {
-        this.submitLoading = true
-        const options = { callIds: this.selectedRowKeys }
-        const { data: checkResult } = await this.$store.dispatch('materialFeeding/checkStock', options)
-        if (!checkResult.checkFlag) {
-          this.$confirm({
-            title: '以下物料可用库存不足，是否进行部分拣配？',
-            content: h => {
-              return (
-                _.map(checkResult.notEnoughStockList, item => {
-                  return <p>物料号：{item.materialNb}, 可用库存量：{item.avaliableQuantity}</p>
-                })
-              )
-            },
-            onOk: () => this.submitCreateReductionTask(options),
-            onCancel: () => {
-              this.selectedRowKeys = []
-            }
-          })
-          return
-        }
-        await this.submitCreateReductionTask()
-
-        this.$message.success('提交成功')
-      } catch (error) {
-        this.$message.error(error.message)
-      } finally {
-        this.submitLoading = false
       }
     },
     handleResetQuery () {
@@ -354,7 +322,7 @@ export default {
 
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('materialFeeding/getPaginationList', this.queryForm)
+        } = await this.$store.dispatch('materialFeeding/getPickingOrderList', this.queryForm)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -371,15 +339,14 @@ export default {
       this.loadDepartmentList()
       this.loadTableList()
     },
-    handleCreateReductionTask (record) {
-      console.log(record)
-      this.currentMaterialNb = record.materialNb
-      this.currentOrderNb = record.orderNb
-      this.currentCell = record.cell
-      const notQuantity = Number(record.quantity) - Number(record.issuedQuantity)
-      this.notQuantity = notQuantity
-
-      this.createReductionTaskVisible = true
+    async handleCancel (record) {
+      try {
+        await this.$store.dispatch('materialFeeding/cancelPickingOrder', record)
+        this.$message.success('取消成功')
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      }
     }
   },
   mounted () {
