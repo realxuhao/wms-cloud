@@ -2,6 +2,7 @@ package com.bosch.binin.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -100,6 +101,9 @@ public class Stock extends BaseEntity {
      * 质检状态
      */
     private Integer deleteFlag;
+
+
+    private String palletCode;
 
 
 

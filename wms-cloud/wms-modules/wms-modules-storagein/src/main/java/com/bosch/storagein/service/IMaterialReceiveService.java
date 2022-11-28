@@ -51,6 +51,6 @@ public interface IMaterialReceiveService extends IService<MaterialReceive> {
      */
     public boolean validReceive(List<String> codes);
 
-    public MaterialReceiveVO selectByMesBarCode(String mesbarCode);
+    public List<MaterialReceive> selectByMesBarCode(String mesbarCode);
 
 }

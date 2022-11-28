@@ -5,6 +5,7 @@ import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.storagein.api.constants.*;
+import com.bosch.storagein.api.domain.MaterialReceive;
 import com.bosch.storagein.api.domain.dto.MaterialInCheckDTO;
 import com.bosch.storagein.api.domain.dto.*;
 import com.bosch.storagein.api.domain.vo.MaterialInCheckVO;
@@ -24,6 +25,7 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -60,8 +62,8 @@ public class MaterialInController extends BaseController {
 
         List<MaterialReceiveVO> materialReceiveVOs = materialReceiveService.selectSameBatchMaterial(mesBarCode);
 
-        MaterialReceiveVO materialReceiveVO = materialReceiveService.selectByMesBarCode(mesBarCode);
-        if (Objects.isNull(materialReceiveVO)) {
+        List<MaterialReceive> materialReceives = materialReceiveService.selectByMesBarCode(mesBarCode);
+        if (CollectionUtils.isEmpty(materialReceives)) {
             return R.fail(null, "收货清单不存在此物料：" + MesBarCodeUtil.getMaterialNb(mesBarCode));
         }
 

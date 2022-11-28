@@ -7,14 +7,23 @@ import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Data
 public class MaterialKanbanDTO extends PageDomain {
 
     /**
+     * id
+     */
+    @ApiModelProperty(value = "id")
+    private Long id;
+    /**
      * 订单号
      */
+    @NotEmpty(message = "订单号不能为空")
     @ApiModelProperty(value = "订单号")
     private String orderNumber;
 
@@ -45,12 +54,14 @@ public class MaterialKanbanDTO extends PageDomain {
     /**
      * 料号
      */
+    @NotEmpty(message = "料号不能为空")
     @ApiModelProperty(value = "料号")
     private String materialCode;
 
     /**
      * SSCC码
      */
+    @NotEmpty(message = "SSCC码不能为空")
     @ApiModelProperty(value = "SSCC码")
     private String ssccNumber;
     /**
@@ -98,6 +109,8 @@ public class MaterialKanbanDTO extends PageDomain {
     /**
      * 数量
      */
+    @NotNull(message = "数量不能为空")
+    @Min(value = 0,message = "数量不能小于0")
     @ApiModelProperty(value = "数量")
     private Double quantity;
 }

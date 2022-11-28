@@ -7,6 +7,8 @@ package com.bosch.binin.api.enumeration;
  * @create: 2022-11-16 14:17
  **/
 public enum KanbanPerformTypeEnum {
+    //取消任务
+    CANCEL(-1,"取消任务"),
     //待下发
     WAIT_ISSUE(0, "待下发"),
     //已下发

@@ -33,15 +33,17 @@
         bi.create_by,bi.create_time,bi.plant_nb,bi.move_type
         from bi_in bi left join md_material mm on bi.material_nb = mm.code
         where bi.delete_flag=0
-        <if test="materialNb != null and materialNb != ''">and bi.material_nb = #{materialNb}</if>
-        <if test="ssccNumber != null and ssccNumber != ''">and bi.sscc_number = #{ssccNumber}</if>
-        <if test="moveType != null and moveType != ''">and bi.move_type = #{moveType}</if>
-        <if test="materialName != null  and materialName != ''">and mm.name like concat('%', #{name}, '%')</if>
-        <if test="batchNb != null  and batchNb != ''">and bi.batch_nb = #{batchNb}</if>
-        <if test="plantNb != null and plantNb != ''">and bi.plant_nb = #{plantNb}</if>
-        <if test="wareCode != null and wareCode != ''">and bi.ware_code = #{wareCode}</if>
-        <if test="actualBinCode != null and actualBinCode != ''">and bi.actual_bin_code = #{actualBinCode}</if>
-        <if test="createBy != null and createBy != ''">and bi.create_by = #{createBy}</if>
+        <if test="materialNb != null and materialNb != ''">and bi.material_nb like concat('%', #{materialNb}, '%')</if>
+        <if test="ssccNumber != null and ssccNumber != ''">and bi.sscc_number like concat('%', #{ssccNumber}, '%')</if>
+        <if test="moveType != null and moveType != ''">and bi.move_type like concat('%', #{moveType}, '%')</if>
+        <if test="materialName != null  and materialName != ''">and mm.name like concat('%', #{materialName}, '%')</if>
+        <if test="palletCode != null and palletCode != ''">and bi.pallet_code like concat('%', #{palletCode}, '%')</if>
+
+        <if test="batchNb != null  and batchNb != ''">and bi.batch_nb like concat('%', #{batchNb}, '%')</if>
+        <if test="plantNb != null and plantNb != ''">and bi.plant_nb like concat('%', #{plantNb}, '%') </if>
+        <if test="wareCode != null and wareCode != ''">and bi.ware_code like concat('%', #{wareCode}, '%')</if>
+        <if test="actualBinCode != null and actualBinCode != ''">and bi.actual_bin_code like concat('%', #{actualBinCode}, '%')</if>
+        <if test="createBy != null and createBy != ''">and bi.create_by like concat('%', #{createBy}, '%')</if>
         <if test="status != null ">and bi.status = #{status}</if>
     </select>
     <select id="selectBySsccNumber" resultType="com.bosch.binin.api.domain.vo.BinInVO">

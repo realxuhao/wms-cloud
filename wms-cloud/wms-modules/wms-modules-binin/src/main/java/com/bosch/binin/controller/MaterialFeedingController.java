@@ -1,7 +1,6 @@
 package com.bosch.binin.controller;
 
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.bosch.binin.api.domain.MaterialCall;
 import com.bosch.binin.api.domain.dto.MaterialCalJobRequestDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
@@ -13,13 +12,10 @@ import com.bosch.binin.api.domain.vo.RequirementResultVO;
 import com.bosch.binin.service.IMaterialCallService;
 import com.bosch.file.api.FileFeignService;
 import com.bosch.file.api.FileService;
-import com.bosch.masterdata.api.domain.dto.BinDTO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.exception.ServiceException;
-import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
@@ -33,6 +29,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Objects;
@@ -76,22 +74,22 @@ public class MaterialFeedingController extends BaseController {
     })
     @Transactional(rollbackFor = Exception.class)
     public R call(@RequestParam(value = "file") MultipartFile file,
-                                       @RequestParam("sortType") Integer sortType,
-                                       @RequestParam("cell") String cell) {
+                  @RequestParam("sortType") Integer sortType,
+                  @RequestParam("cell") String cell) {
         try {
             //解析文件服务
             R result = fileService.materialCallImport(file, ClassType.MATERIALCALL.getDesc());
             if (result.isSuccess()) {
                 Object data = result.getData();
                 List<MaterialCallDTO> dtos = JSON.parseArray(JSON.toJSONString(data), MaterialCallDTO.class);
-                if (CollectionUtils.isNotEmpty(dtos)) {
+                if (!CollectionUtils.isEmpty(dtos)) {
                     boolean valid = materialCallService.validList(dtos);
                     if (valid) {
                         return R.fail(400, "已录入相同订单号的记录");
                     } else {
                         dtos.forEach(r -> {
-                            if (r.getQuantity()==null||r.getQuantity()<0){
-                                throw  new ServiceException("数量输入有误",400);
+                            if (r.getQuantity() == null || r.getQuantity() < 0) {
+                                throw new ServiceException("数量输入有误", 400);
                             }
                             r.setSortType(sortType);
                             r.setCell(cell);
@@ -102,14 +100,14 @@ public class MaterialFeedingController extends BaseController {
 //                            transfer.stream().reduce((a, b) -> new Student(a.getUid(), a.getUname(), a.getScore() + b.getScore())).ifPresent(studentList::add);
 //                        });
 
-                        List<MaterialCallDTO> dtoList=new ArrayList<>();
-                        dtos.parallelStream().collect(Collectors.groupingBy(o ->(o.getOrderNb()+o.getMaterialNb()),Collectors.toList())).forEach((num,dto) ->{
-                            dto.stream().reduce((a,b)->{
-                                a.setQuantity(a.getQuantity()+b.getQuantity());
+                        List<MaterialCallDTO> dtoList = new ArrayList<>();
+                        dtos.parallelStream().collect(Collectors.groupingBy(o -> (o.getOrderNb() + o.getMaterialNb()), Collectors.toList())).forEach((num, dto) -> {
+                            dto.stream().reduce((a, b) -> {
+                                a.setQuantity(a.getQuantity() + b.getQuantity());
 
-                                return  a;
+                                return a;
                             }).ifPresent(dtoList::add);
-                                });
+                        });
                         //添加
                         List<MaterialCall> dos = BeanConverUtil.converList(dtoList, MaterialCall.class);
 
@@ -150,6 +148,17 @@ public class MaterialFeedingController extends BaseController {
         return R.ok(materialCallService.updateCallQuantity(callDTO));
     }
 
+    @ApiOperation("删除区域")
+    @DeleteMapping("/call/{ids}")
+    public R cancelRequirement(@PathVariable Long[] ids) {
+        if (ids == null || ids.length == 0) {
+            throw new ServiceException("ids不能为空");
+        }
+        materialCallService.deleteRequirement(Arrays.asList(ids));
+        return R.ok("删除成功");
+
+    }
+
     @GetMapping(value = "/call/list")
     @ApiOperation("叫料需求列表查询")
     public R<PageVO<MaterialCallVO>> list(MaterialCallQueryDTO queryDTO) {
@@ -176,8 +185,6 @@ public class MaterialFeedingController extends BaseController {
         ExcelUtil<MaterialCallVO> util = new ExcelUtil<MaterialCallVO>(MaterialCallVO.class);
         util.exportExcel(response, materialCallVOS, "叫料需求");
     }
-
-
 
 
 }

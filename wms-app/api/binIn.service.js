@@ -3,7 +3,7 @@
 import request from './general'
 
 const getPendingBinInList = async (data) => {
-  const url = `/binin/bin-in/list`
+  const url = `/binin/bin-in/processingList`
   const method = 'GET'
 
   return request({

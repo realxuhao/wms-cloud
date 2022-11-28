@@ -133,4 +133,7 @@ public class StockVO {
     @ApiModelProperty(value = "质检状态")
     private String qualityStatus;
 
+    @ApiModelProperty(value = "托盘编码")
+    private String palletCode;
+
 }

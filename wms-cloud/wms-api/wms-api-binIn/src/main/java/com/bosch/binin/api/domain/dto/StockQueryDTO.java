@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -64,6 +65,12 @@ public class StockQueryDTO extends PageDomain {
     private String materialNb;
 
     /**
+     * 托盘编码
+     */
+    @ApiModelProperty(value = "托盘编码")
+    private String palletCode;
+
+    /**
      * 批次号
      */
     @ApiModelProperty(value = "批次号")
@@ -89,4 +96,13 @@ public class StockQueryDTO extends PageDomain {
 
     @ApiModelProperty(value = "排序类型,0基于有效期，1、基于先主库后外库")
     private Integer sortType;
+
+    @ApiModelProperty(value = "ids列表")
+    private List<Long> ids;
+    /**
+     * 操作人
+     */
+    @ApiModelProperty(value = "操作人")
+    private String operateUser;
+
 }

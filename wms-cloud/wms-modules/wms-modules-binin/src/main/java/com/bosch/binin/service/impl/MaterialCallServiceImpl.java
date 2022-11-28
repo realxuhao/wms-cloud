@@ -69,7 +69,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
 
         LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper();
         if (queryDTO != null) {
-            queryWrapper.eq(StringUtils.isNotEmpty(queryDTO.getMaterialNb()), MaterialCall::getMaterialNb, queryDTO.getMaterialNb())
+            queryWrapper.like(StringUtils.isNotEmpty(queryDTO.getMaterialNb()), MaterialCall::getMaterialNb, queryDTO.getMaterialNb())
                     .like(StringUtils.isNotEmpty(queryDTO.getCell()), MaterialCall::getCell, queryDTO.getCell())
                     .like(StringUtils.isNotEmpty(queryDTO.getOrderNb()), MaterialCall::getOrderNb, queryDTO.getOrderNb())
                     .like(StringUtils.isNotEmpty(queryDTO.getCreateBy()), MaterialCall::getCreateBy, queryDTO.getCreateBy())
@@ -231,22 +231,74 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         LambdaQueryWrapper<MaterialCall> qw=new LambdaQueryWrapper<>();
         qw.eq(MaterialCall::getOrderNb,materialCallNew.getOrderNb());
         qw.eq(MaterialCall::getMaterialNb,materialCallNew.getMaterialNb());
+        qw.eq(MaterialCall::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        qw.last("for update");
         MaterialCall materialCallDB = materialCallMapper.selectOne(qw);
 
-        if(materialCallDB==null){
+        if (materialCallDB == null) {
             throw new ServiceException("未查询到相同订单号、物料号的叫料需求");
         }
         double newQuantity = DoubleMathUtil.doubleMathCalculation(materialCallNew.getIssuedQuantity(),
                 materialCallDB.getIssuedQuantity(), "+");
 
         //更新叫料表
-        if (materialCallDB.getQuantity()<=newQuantity){
+        if (materialCallDB.getQuantity() <= newQuantity) {
             materialCallDB.setStatus(MaterialCallStatusEnum.FULL_ISSUED.code());
-        }else {
+        } else {
             materialCallDB.setStatus(MaterialCallStatusEnum.PART_ISSUED.code());
         }
         materialCallDB.setIssuedQuantity(newQuantity);
         return materialCallMapper.updateById(materialCallDB);
+    }
+
+    @Override
+    public int updateCallQuantity(MaterialKanban kanban) {
+
+        //查询call数据
+        LambdaQueryWrapper<MaterialCall> qw =new LambdaQueryWrapper<MaterialCall>();
+        qw.eq(MaterialCall::getOrderNb,kanban.getOrderNumber());
+        qw.eq(MaterialCall::getMaterialNb,kanban.getMaterialCode());
+        qw.eq(MaterialCall::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        qw.last("for update");
+        MaterialCall materialCall = materialCallMapper.selectOne(qw);
+        if (materialCall == null ) {
+            throw new ServiceException("未查询到kanban数据");
+        }
+        //修改下发量 状态
+        double newQuantity = DoubleMathUtil.doubleMathCalculation(materialCall.getIssuedQuantity(),
+                kanban.getQuantity(), "-");
+        //赋值
+        if (newQuantity<=0){
+            //下发量小于取消量
+            materialCall.setStatus(MaterialCallStatusEnum.WAITING_ISSUE.code());
+        }else {
+            //下发量大于取消量
+            materialCall.setStatus(MaterialCallStatusEnum.PART_ISSUED.code());
+        }
+        materialCall.setIssuedQuantity(newQuantity);
+        //更新叫料表
+        return materialCallMapper.updateById(materialCall);
+    }
+
+    @Override
+    public void deleteRequirement(List<Long> ids) {
+        LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(MaterialCall::getId, ids);
+
+        List<MaterialCall> materialCalls = materialCallMapper.selectList(queryWrapper);
+
+
+        List<MaterialCall> list = materialCalls.stream().filter(item -> item.getStatus().equals(MaterialCallStatusEnum.WAITING_ISSUE.code()) && item.getDeleteFlag().equals(DeleteFlagStatus.FALSE.getCode())).collect(Collectors.toList());
+
+
+        if (CollectionUtils.isEmpty(list) || CollectionUtils.isEmpty(list) || list.size() != materialCalls.size()) {
+            throw new ServiceException("只允许修改未下发状态的需求！");
+        }
+
+        materialCalls.stream().forEach(item->item.setDeleteFlag(DeleteFlagStatus.TRUE.getCode()));
+
+        updateBatchById(materialCalls);
+
     }
 
 

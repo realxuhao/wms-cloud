@@ -56,8 +56,8 @@ export default {
   },
   methods: {
 	  async getPendingBinInList(){
-		const options = {pageSize:this.pageSize,pageNum:this.pageNum}
-		const {rows,total} = await this.$store.dispatch('materialIn/getMaterialInHistoryList',options)
+		const options = {pageSize:this.pageSize,pageNum:this.pageNum,state:0}
+		const {rows,total} = await this.$store.dispatch('binIn/getPendingBinInList',options)
 		return {rows,total}
 	  },
 	  async handleRefresh(){

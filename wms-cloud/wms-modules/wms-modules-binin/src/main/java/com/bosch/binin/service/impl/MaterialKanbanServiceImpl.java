@@ -1,6 +1,7 @@
 package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,6 +12,7 @@ import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.KanbanPerformTypeEnum;
+import com.bosch.binin.api.enumeration.MaterialCallStatusEnum;
 import com.bosch.binin.api.enumeration.RequirementActionTypeEnum;
 import com.bosch.binin.mapper.BinInMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
@@ -22,14 +24,20 @@ import com.bosch.binin.utils.BeanConverUtil;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
+import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.page.PageDomain;
+import lombok.Synchronized;
+import org.apache.poi.ss.formula.functions.Odd;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -151,7 +159,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             conver.setQuantity(dto.getQuantity());
             conver.setMoveType(MoveTypeEnums.CALL.getCode());
             conver.setCell(dto.getCell());
-            conver.setType(dto.getQuantity()==r.getAvailableStock()? RequirementActionTypeEnum.FULL_BIN_DOWN.value():RequirementActionTypeEnum.PART_BIN_DOWN.value());
+            conver.setType(dto.getQuantity() == r.getAvailableStock() ?
+                    RequirementActionTypeEnum.FULL_BIN_DOWN.value() : RequirementActionTypeEnum.PART_BIN_DOWN.value());
             conver.setStatus(KanbanPerformTypeEnum.WAIT_ISSUE.value());
             conver.setUpdateBy(null);
             conver.setUpdateTime(null);
@@ -160,6 +169,76 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             materialKanbans.add(conver);
         });
         return materialKanbans;
+    }
+
+    @Override
+    public int updateStockBySSCC(String sscc, Double quantity) {
+        //根据sscc码修改stock  available_stock freeze_stock
+        //取值
+        LambdaQueryWrapper<Stock> qw = new LambdaQueryWrapper<>();
+        qw.eq(Stock::getSsccNumber, sscc);
+        qw.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.last(" for update");
+        Stock stock = stockMapper.selectOne(qw);
+        if (stock == null) {
+            throw new ServiceException("未查询到sscc码相关数据，请刷新页面");
+        }
+        Double availableStock = stock.getAvailableStock();
+        Double freezeStock = stock.getFreezeStock();
+        //计算
+        availableStock = DoubleMathUtil.doubleMathCalculation(availableStock, quantity, "+");
+        freezeStock = DoubleMathUtil.doubleMathCalculation(freezeStock, quantity, "-");
+        //赋值
+        stock.setAvailableStock(availableStock);
+        stock.setFreezeStock(freezeStock);
+        //更新
+        LambdaUpdateWrapper<Stock> uw = new LambdaUpdateWrapper<>();
+        uw.eq(Stock::getSsccNumber, sscc);
+
+
+        return stockMapper.updateById(stock);
+    }
+
+
+    @Override
+    public int updateKanban(Long id) {
+
+        MaterialKanban materialKanban = new MaterialKanban();
+        materialKanban.setStatus(KanbanPerformTypeEnum.CANCEL.value());
+        LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
+        uw.eq(MaterialKanban::getId, id);
+        uw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+
+        return materialKanbanMapper.update(materialKanban, uw);
+    }
+
+    @Override
+    public void issueJob(Long[] ids) {
+        List<Long> idList = Arrays.asList(ids);
+        if (CollectionUtils.isEmpty(idList)) {
+            throw new ServiceException("任务为空，请选择任务后重试");
+        }
+        LambdaQueryWrapper<MaterialKanban> kanbanLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        kanbanLambdaQueryWrapper.in(MaterialKanban::getId, idList);
+        kanbanLambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        kanbanLambdaQueryWrapper.eq(MaterialKanban::getStatus, KanbanPerformTypeEnum.WAIT_ISSUE.value());
+
+        List<MaterialKanban> kanbanList = materialKanbanMapper.selectList(kanbanLambdaQueryWrapper);
+
+        if (CollectionUtils.isEmpty(kanbanList) || kanbanList.size() != idList.size()) {
+            throw new ServiceException("任务数据过期，请刷新页面");
+        }
+
+        //状态变为下发状态
+        kanbanList.stream().forEach(item -> {
+            item.setStatus(KanbanPerformTypeEnum.HAS_ISSUED.value());
+            //如果是7752的，需要生成一个移库任务
+            if ("7752".equals(item.getFactoryCode())) {
+
+            }
+        });
+
+
     }
 
 

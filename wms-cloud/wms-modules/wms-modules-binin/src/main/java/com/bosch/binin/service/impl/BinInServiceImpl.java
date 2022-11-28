@@ -37,6 +37,7 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -102,6 +103,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public BinInVO getByMesBarCode(String mesBarCode) {
         MaterialInVO materialInVO = getMaterialInVO(mesBarCode);
 
@@ -114,7 +117,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         if (binInVO == null) {
             R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
             if (StringUtils.isNull(materialBinVOResullt) || CollectionUtils.isEmpty(materialBinVOResullt.getData())) {
-                throw new ServiceException("该物料：" + materialNb + " 暂无分配规则");
+                throw new ServiceException("该物料：" + materialNb + " 分配规则有误");
             }
 
             if (R.FAIL == materialBinVOResullt.getCode()) {
@@ -261,6 +264,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
         stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
         stock.setAreaCode(binIn.getAreaCode());
+        stock.setPalletCode(binIn.getPalletCode());
         stockMapper.insert(stock);
 
         //处理库存日志表

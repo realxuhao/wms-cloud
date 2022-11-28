@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @program: wms-cloud
@@ -32,7 +33,9 @@ public class MaterialCallQueryDTO extends PageDomain {
     @ApiModelProperty(value = "部门")
     private String cell;
 
-    /** 创建者 */
+    /**
+     * 创建者
+     */
     @ApiModelProperty(value = "创建者")
     private String createBy;
 
@@ -50,6 +53,9 @@ public class MaterialCallQueryDTO extends PageDomain {
 
     @ApiModelProperty(value = "0=未下发,1=部分下发,2=已全部下发")
     private Integer status;
+
+    @ApiModelProperty(value = "ids,取消需求的时候需要传")
+    private List<Long> ids;
 
 
 }

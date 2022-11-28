@@ -82,4 +82,6 @@ public class MaterialCallDTO {
     @ExcelProperty( "删除标记")
     @ApiModelProperty(value = "删除标记")
     private Integer deleteFlag;
+
+
 }

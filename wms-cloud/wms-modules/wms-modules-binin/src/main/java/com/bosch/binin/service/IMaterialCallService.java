@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialCall;
+import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.dto.MaterialCalJobRequestDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
@@ -29,9 +30,9 @@ public interface IMaterialCallService extends IService<MaterialCall> {
 
     List<MaterialCall> getMaterialCallList(MaterialCallQueryDTO queryDTO);
 
-    public boolean validList(List<MaterialCallDTO> dtos) ;
+    public boolean validList(List<MaterialCallDTO> dtos);
 
-    RequirementResultVO converToRequirement(List<MaterialCall> dos,boolean continueFlag);
+    RequirementResultVO converToRequirement(List<MaterialCall> dos, boolean continueFlag);
 
     RequirementResultVO systemGenerateJob(MaterialCalJobRequestDTO.SystemGenerateJob systemGenerateJob);
 
@@ -41,4 +42,13 @@ public interface IMaterialCallService extends IService<MaterialCall> {
 
     //<需求状态>变为：已下发或部分下发
     int updateCallStatus(MaterialCall materialCall);
+
+    void deleteRequirement(List<Long> ids);
+
+    /**
+     * 回滚取消的数据
+     * @param materialKanban
+     * @return
+     */
+    int updateCallQuantity(MaterialKanban materialKanban);
 }
