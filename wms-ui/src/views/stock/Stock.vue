@@ -126,7 +126,7 @@ const columns = [
   {
     title: '存储区编码',
     key: 'areaCode',
-    dataIndex: 'areaCode  ',
+    dataIndex: 'areaCode',
     width: 120
   },
   {
@@ -185,8 +185,8 @@ const columns = [
   },
   {
     title: '操作时间',
-    key: 'operateTime',
-    dataIndex: 'operateTime',
+    key: 'createTime',
+    dataIndex: 'createTime',
     width: 200
   }
 ]
