@@ -12,6 +12,7 @@ import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.KanbanPerformTypeEnum;
+import com.bosch.binin.api.enumeration.MaterialCallStatusEnum;
 import com.bosch.binin.api.enumeration.RequirementActionTypeEnum;
 import com.bosch.binin.mapper.BinInMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
@@ -28,12 +29,15 @@ import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.page.PageDomain;
 import lombok.Synchronized;
+import org.apache.poi.ss.formula.functions.Odd;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -210,6 +214,30 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
     @Override
     public void issueJob(Long[] ids) {
+        List<Long> idList = Arrays.asList(ids);
+        if (CollectionUtils.isEmpty(idList)) {
+            throw new ServiceException("任务为空，请选择任务后重试");
+        }
+        LambdaQueryWrapper<MaterialKanban> kanbanLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        kanbanLambdaQueryWrapper.in(MaterialKanban::getId, idList);
+        kanbanLambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        kanbanLambdaQueryWrapper.eq(MaterialKanban::getStatus, KanbanPerformTypeEnum.WAIT_ISSUE.value());
+
+        List<MaterialKanban> kanbanList = materialKanbanMapper.selectList(kanbanLambdaQueryWrapper);
+
+        if (CollectionUtils.isEmpty(kanbanList) || kanbanList.size() != idList.size()) {
+            throw new ServiceException("任务数据过期，请刷新页面");
+        }
+
+        //状态变为下发状态
+        kanbanList.stream().forEach(item -> {
+            item.setStatus(KanbanPerformTypeEnum.HAS_ISSUED.value());
+            //如果是7752的，需要生成一个移库任务
+            if ("7752".equals(item.getFactoryCode())) {
+
+            }
+        });
+
 
     }
 

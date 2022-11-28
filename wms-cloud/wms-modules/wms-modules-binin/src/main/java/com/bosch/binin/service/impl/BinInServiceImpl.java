@@ -264,6 +264,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
         stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
         stock.setAreaCode(binIn.getAreaCode());
+        stock.setPalletCode(binIn.getPalletCode());
         stockMapper.insert(stock);
 
         //处理库存日志表

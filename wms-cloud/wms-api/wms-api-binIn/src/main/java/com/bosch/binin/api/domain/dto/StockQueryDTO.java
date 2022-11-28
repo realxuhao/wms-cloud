@@ -65,6 +65,12 @@ public class StockQueryDTO extends PageDomain {
     private String materialNb;
 
     /**
+     * 托盘编码
+     */
+    @ApiModelProperty(value = "托盘编码")
+    private String palletCode;
+
+    /**
      * 批次号
      */
     @ApiModelProperty(value = "批次号")
@@ -93,4 +99,10 @@ public class StockQueryDTO extends PageDomain {
 
     @ApiModelProperty(value = "ids列表")
     private List<Long> ids;
+    /**
+     * 操作人
+     */
+    @ApiModelProperty(value = "操作人")
+    private String operateUser;
+
 }
