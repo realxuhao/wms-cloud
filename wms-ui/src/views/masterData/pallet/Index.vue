@@ -86,19 +86,19 @@ import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
   {
-    title: '托盘长度',
+    title: '托盘长度[cm]',
     key: 'length',
     dataIndex: 'length',
     width: 200
   },
   {
-    title: '托盘宽度',
+    title: '托盘宽度[cm]',
     key: 'width',
     dataIndex: 'width',
     width: 200
   },
   {
-    title: '托盘高度',
+    title: '托盘高度[cm]',
     key: 'height',
     dataIndex: 'height',
     width: 200

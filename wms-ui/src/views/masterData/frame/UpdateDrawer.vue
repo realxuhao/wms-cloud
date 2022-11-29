@@ -40,17 +40,17 @@
             { rules: [{ required: true, message: '请输入承重!' }] }
           ]" />
       </a-form-item>
-      <a-form-item label="宽度[m]">
+      <a-form-item label="宽度[cm]">
         <a-input-number
-          placeholder="宽度[m]"
+          placeholder="宽度[cm]"
           v-decorator="[
             'width',
             { rules: [{ required: true, message: '请输入宽度!' }] }
           ]" />
       </a-form-item>
-      <a-form-item label="高度[m]">
+      <a-form-item label="高度[cm]">
         <a-input-number
-          placeholder="高度[m]"
+          placeholder="高度[cm]"
           v-decorator="[
             'height',
             { rules: [{ required: true, message: '请输入高度!' }] }
