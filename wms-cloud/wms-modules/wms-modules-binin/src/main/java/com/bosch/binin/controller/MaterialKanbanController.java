@@ -3,8 +3,7 @@ package com.bosch.binin.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.MaterialCall;
-import com.bosch.binin.api.enumeration.KanbanStatusEnum;
-import com.bosch.binin.api.enumeration.KanbanActionTypeEnum;
+
 import com.bosch.binin.service.IMaterialCallService;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -50,12 +49,12 @@ public class MaterialKanbanController {
 
         IPage<MaterialKanbanVO> materialKanbanIPage = materialKanbanService.pageList(materialKanbanDTO);
         List<MaterialKanbanVO> records = materialKanbanIPage.getRecords();
-        if(CollectionUtils.isNotEmpty(records)){
-            records.forEach(r->{
-                r.setTypeDesc(KanbanActionTypeEnum.getDesc(r.getType()));
-                r.setMoveType(KanbanStatusEnum.getDesc(r.getMoveType()));
-            });
-        }
+//        if(CollectionUtils.isNotEmpty(records)){
+//            records.forEach(r->{
+//                r.setTypeDesc(RequirementActionTypeEnum.getDesc(r.getType()));
+//                r.setMoveType(KanbanPerformTypeEnum.getDesc(r.getMoveType()));
+//            });
+//        }
         return R.ok(new PageVO<>(records, materialKanbanIPage.getTotal()));
     }
 

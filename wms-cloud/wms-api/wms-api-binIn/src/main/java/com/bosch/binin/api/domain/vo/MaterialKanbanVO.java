@@ -92,7 +92,7 @@ public class MaterialKanbanVO extends BaseEntity {
      * 移动类型
      */
     @ExcelProperty(value = "移动类型")
-    @ApiModelProperty(value = "移动类型")
+    @ApiModelProperty(value = "移动类型 （0： 收货，1：入库，2：上架，3：生产叫料）")
     private String moveType;
 
     /**
@@ -111,13 +111,13 @@ public class MaterialKanbanVO extends BaseEntity {
      * 动作类型（整托下架、拆托下架）
      */
     @ExcelProperty(value = "动作类型（整托下架、拆托下架）")
-    @ApiModelProperty(value = "动作类型（整托下架、拆托下架）")
+    @ApiModelProperty(value = "动作类型（0：整托下架 1：拆托下架）")
     private Integer type;
     /**
      * 状态
      */
     @ExcelProperty(value = "状态")
-    @ApiModelProperty(value = "状态")
+    @ApiModelProperty(value = "状态：0：待下发（源工厂为7751的没有） 1：已下发 2：已下架（下架时PDA扫描SSCC）、配送完成（产线PDA扫描接收）")
     private Integer status;
     /**
      * 状态描述
