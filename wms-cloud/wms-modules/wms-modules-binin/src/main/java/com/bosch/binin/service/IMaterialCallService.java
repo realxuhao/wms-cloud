@@ -43,6 +43,8 @@ public interface IMaterialCallService extends IService<MaterialCall> {
     //<需求状态>变为：已下发或部分下发
     int updateCallStatus(MaterialCall materialCall);
 
+    int updateCallStatus(MaterialCall materialCall,MaterialKanban materialKanban);
+
     void deleteRequirement(List<Long> ids);
 
     /**

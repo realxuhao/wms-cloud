@@ -17,6 +17,7 @@ import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
 import com.bosch.binin.service.IMaterialKanbanService;
+import com.bosch.binin.service.IStockService;
 import com.bosch.binin.service.IWareShiftService;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
@@ -36,7 +37,8 @@ import java.util.stream.Collectors;
 @Service
 public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper, MaterialKanban> implements IMaterialKanbanService {
 
-
+    @Autowired
+    private IStockService stockService;
     @Resource
     MaterialKanbanMapper materialKanbanMapper;
 
@@ -159,7 +161,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             conver.setCell(dto.getCell());
             conver.setType(dto.getQuantity() == r.getAvailableStock() ?
                     KanbanActionTypeEnum.FULL_BIN_DOWN.value() : KanbanActionTypeEnum.PART_BIN_DOWN.value());
-            conver.setStatus(KanbanStatusEnum.WAIT_ISSUE.value());
+            conver.setStatus(KanbanStatusEnum.WAITING_ISSUE.value());
             conver.setUpdateBy(null);
             conver.setUpdateTime(null);
             conver.setCreateBy(null);
@@ -230,7 +232,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             if (KanbanStatusEnum.CANCEL.value().equals(item.getStatus())){
                 throw new ServiceException("包含已取消任务，请重新选择");
             }
-            if (!KanbanStatusEnum.WAIT_ISSUE.value().equals(item.getStatus())){
+            if (!KanbanStatusEnum.WAITING_ISSUE.value().equals(item.getStatus())){
                 throw new ServiceException("包含已下发数据，请重新选择");
             }
         });
@@ -254,7 +256,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         Map<String, List<Stock>> finalStockMap = stockMap;
         kanbanList.stream().forEach(item -> {
             //修改任务状态
-            item.setStatus(KanbanStatusEnum.HAS_ISSUED.value());
+            item.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
             //如果是7752的，需要生成一个移库任务
             if ("7752".equals(item.getFactoryCode())) {
                 String ssccNumber = item.getSsccNumber();
@@ -274,6 +276,36 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         wareShiftService.saveBatch(wareShiftList);
 
 
+    }
+
+    @Override
+    public boolean updateStocks(List<MaterialKanban> list) {
+        if (CollectionUtils.isEmpty(list)){
+            throw new  ServiceException("kanban导入数据为空");
+        }
+        List<Stock> stocks=new ArrayList<>();
+        list.forEach(r->{
+            LambdaQueryWrapper<Stock> qw=new LambdaQueryWrapper<>();
+            qw.eq(Stock::getSsccNumber,r.getSsccNumber());
+            qw.eq(Stock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+            qw.last(" for update");
+            Stock stock = stockMapper.selectOne(qw);
+            if (stock==null){
+                throw new  ServiceException("sscc码:"+r.getSsccNumber()+"未查询到库存");
+            }
+            Double availableStock = stock.getAvailableStock();
+            Double freezeStock = stock.getFreezeStock();
+            //计算
+            availableStock = DoubleMathUtil.doubleMathCalculation(availableStock, r.getQuantity(), "-");
+            freezeStock = DoubleMathUtil.doubleMathCalculation(freezeStock, r.getQuantity(), "+");
+            //赋值
+            stock.setAvailableStock(availableStock);
+            stock.setFreezeStock(freezeStock);
+            stocks.add(stock);
+        });
+
+
+        return  stockService.updateBatchById(stocks);
     }
 
 

@@ -20,6 +20,7 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,6 @@ public class MaterialKanbanController {
     @PostMapping(value = "/list")
     @ApiOperation("查询kanban列表")
     public R<PageVO<MaterialKanbanVO>> list(@RequestBody MaterialKanbanDTO materialKanbanDTO) {
-
         IPage<MaterialKanbanVO> materialKanbanIPage = materialKanbanService.pageList(materialKanbanDTO);
         List<MaterialKanbanVO> records = materialKanbanIPage.getRecords();
 //        if(CollectionUtils.isNotEmpty(records)){
@@ -109,6 +109,12 @@ public class MaterialKanbanController {
             boolean b1 = materialKanbanService.saveBatch(materialKanbans);
             //叫料需求更新
             int i = materialCallService.updateCallStatus(materialCall);
+
+            //sscc库存可用 冻结修改
+            boolean updateStock = materialKanbanService.updateStocks(materialKanbans);
+            if (!updateStock){
+                throw new ServiceException("库存冻结失败，请重试");
+            }
             return R.ok();
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
@@ -165,11 +171,16 @@ public class MaterialKanbanController {
                 newQuantity = DoubleMathUtil.doubleMathCalculation(newQuantity, item.getQuantity(), "+");
             }
             materialCall.setIssuedQuantity(newQuantity);
+            //更新叫料需求
+            int i = materialCallService.updateCallStatus(materialCall,materialKanbans.get(0));
             //更新kanban
             boolean updateKanban = materialKanbanService.updateBatchById(materialKanbans);
-            //更新叫料需求
-            int i = materialCallService.updateCallStatus(materialCall);
 
+            //sscc库存可用 冻结修改
+            boolean updateStock = materialKanbanService.updateStocks(materialKanbans);
+            if (!updateStock){
+                throw new ServiceException("库存冻结失败，请重试");
+            }
 
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
@@ -179,7 +190,7 @@ public class MaterialKanbanController {
     }
 
     /**
-     * 修改kanban
+     * 取消kanban
      */
     @Log(title = "kanban", businessType = BusinessType.CLEAN)
     @ApiOperation("取消kanban")
@@ -208,4 +219,18 @@ public class MaterialKanbanController {
         return R.ok();
     }
 
+
+    @PostMapping(value = "/receivingMaterial")
+    @ApiOperation("待收料列表")
+    public R<PageVO<MaterialKanbanVO>> receivingMaterial(@RequestBody MaterialKanbanDTO materialKanbanDTO) {
+        IPage<MaterialKanbanVO> materialKanbanIPage = materialKanbanService.pageList(materialKanbanDTO);
+        List<MaterialKanbanVO> records = materialKanbanIPage.getRecords();
+//        if(CollectionUtils.isNotEmpty(records)){
+//            records.forEach(r->{
+//                r.setTypeDesc(RequirementActionTypeEnum.getDesc(r.getType()));
+//                r.setMoveType(KanbanPerformTypeEnum.getDesc(r.getMoveType()));
+//            });
+//        }
+        return R.ok(new PageVO<>(records, materialKanbanIPage.getTotal()));
+    }
 }

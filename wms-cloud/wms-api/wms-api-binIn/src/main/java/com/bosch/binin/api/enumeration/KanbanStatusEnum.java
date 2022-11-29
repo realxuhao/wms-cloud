@@ -10,11 +10,21 @@ public enum KanbanStatusEnum {
     //取消任务
     CANCEL(-1,"取消任务"),
     //待下发
-    WAIT_ISSUE(0, "待下发"),
-    //已下发
-    HAS_ISSUED(1, "已下发"),
-    //已下架
-    HAS_BIN_DOWN(2, "已下架");
+    WAITING_ISSUE(0, "待下发"),
+    //待下架
+    WAITING_BIN_DOWN(1, "待下架"),
+    //外库已下架
+    OUT_DOWN(2, "外库已下架"),
+    //主库已下架
+    INNER_DOWN(3, "主库已下架"),
+    //主库待收货
+    INNER_RECEIVING(4, "主库待收货"),
+    //主库入库
+    INNER_STORAGE_IN(5, "主库入库"),
+    //主库上架
+    INNER_BIN_IN(6, "主库上架"),
+    //产线收货
+    LINE_RECEIVING(7, "产线收货");
     private final Integer value;
 
     private final String desc;

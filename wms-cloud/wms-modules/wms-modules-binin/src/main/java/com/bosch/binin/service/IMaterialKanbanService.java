@@ -49,4 +49,6 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     int updateKanban(Long id);
 
     void issueJob(Long[] ids);
+
+    boolean updateStocks (List<MaterialKanban> list);
 }
