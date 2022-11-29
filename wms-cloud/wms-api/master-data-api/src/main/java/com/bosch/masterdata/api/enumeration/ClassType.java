@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum ClassType {
-    MATERIALDTO("MaterialDTO", new ArrayList<String>(Arrays.asList("物料代码","物料名称","物料类型","来料总重量（每托）","托盘重量\n[只针对称重物料]"
+    MATERIALDTO("MaterialDTO", new ArrayList<String>(Arrays.asList("物料代码","物料名称","物料类型","托盘类型","来料总重量（每托）","托盘重量\n[只针对称重物料]"
             ,"IQC Plan\n[Y/N]",
             "物料防错方式\n[点数,称重,免检]","最小包装毛重\n[只针对称重物料]","最小包装数量","单位\n[KG,M,L,㎡]","最小包装净重\n[只针对称重物料]","最小包装量\n允许最小值",
             "最小包装量\n允许最大值","标准计数单位[L,Kg,m,㎡]对应的重量值[只针对称重物料]"))),
