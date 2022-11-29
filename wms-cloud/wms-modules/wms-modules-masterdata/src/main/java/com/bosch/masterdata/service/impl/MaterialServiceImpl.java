@@ -197,7 +197,7 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
             if (palletMap.get(x.getPalletType())==null){
                 throw new ServiceException("输入数据中包含主数据中不存在的托盘类型："+x.getPalletType());
             }
-            x.setPalletId(typeMap.get(x.getPalletType()));
+            x.setPalletId(palletMap.get(x.getPalletType()));
         });
         return materialDTOList;
     }
