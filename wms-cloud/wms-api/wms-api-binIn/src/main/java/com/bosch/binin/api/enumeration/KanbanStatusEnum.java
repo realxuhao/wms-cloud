@@ -6,14 +6,20 @@ package com.bosch.binin.api.enumeration;
  * @author: xuhao
  * @create: 2022-11-16 14:17
  **/
-public enum RequirementActionTypeEnum {
-    //整托下架
-    FULL_BIN_DOWN(0,"整托下架"),
-    //拆托下架
-    PART_BIN_DOWN(1,"拆托下架");
+public enum KanbanStatusEnum {
+    //取消任务
+    CANCEL(-1,"取消任务"),
+    //待下发
+    WAIT_ISSUE(0, "待下发"),
+    //已下发
+    HAS_ISSUED(1, "已下发"),
+    //已下架
+    HAS_BIN_DOWN(2, "已下架");
     private final Integer value;
+
     private final String desc;
-    RequirementActionTypeEnum(int value, String desc) {
+
+    KanbanStatusEnum(int value, String desc) {
         this.value = value;
         this.desc = desc;
     }
@@ -24,13 +30,12 @@ public enum RequirementActionTypeEnum {
     public String getDesc() {
         return this.desc;
     }
-    public static String getDesc(Integer key) {
-        for (RequirementActionTypeEnum ele : values()) {
-            if (ele.value==key) {
+    public static String getDesc(String key) {
+        for (KanbanStatusEnum ele : values()) {
+            if (ele.value.toString().equals(key)) {
                 return ele.getDesc();
             }
         }
         return null;
     }
-
 }

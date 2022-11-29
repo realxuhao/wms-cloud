@@ -1,16 +1,11 @@
 package com.bosch.binin.controller;
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.MaterialCall;
-import com.bosch.binin.api.domain.dto.MaterialCallDTO;
-import com.bosch.binin.api.enumeration.KanbanPerformTypeEnum;
-import com.bosch.binin.api.enumeration.RequirementActionTypeEnum;
+import com.bosch.binin.api.enumeration.KanbanStatusEnum;
+import com.bosch.binin.api.enumeration.KanbanActionTypeEnum;
 import com.bosch.binin.service.IMaterialCallService;
-import com.bosch.masterdata.api.domain.dto.PalletDTO;
-import com.google.common.collect.Maps;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.bosch.binin.api.domain.MaterialKanban;
@@ -19,17 +14,13 @@ import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.service.IMaterialKanbanService;
-import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.domain.vo.PageVO;
-import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
-import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
-import com.ruoyi.common.security.annotation.RequiresPermissions;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,8 +52,8 @@ public class MaterialKanbanController {
         List<MaterialKanbanVO> records = materialKanbanIPage.getRecords();
         if(CollectionUtils.isNotEmpty(records)){
             records.forEach(r->{
-                r.setTypeDesc(RequirementActionTypeEnum.getDesc(r.getType()));
-                r.setMoveType(KanbanPerformTypeEnum.getDesc(r.getMoveType()));
+                r.setTypeDesc(KanbanActionTypeEnum.getDesc(r.getType()));
+                r.setMoveType(KanbanStatusEnum.getDesc(r.getMoveType()));
             });
         }
         return R.ok(new PageVO<>(records, materialKanbanIPage.getTotal()));

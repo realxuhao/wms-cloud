@@ -5,34 +5,25 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
-import com.bosch.binin.api.enumeration.KanbanPerformTypeEnum;
-import com.bosch.binin.api.enumeration.MaterialCallStatusEnum;
-import com.bosch.binin.api.enumeration.RequirementActionTypeEnum;
-import com.bosch.binin.mapper.BinInMapper;
+import com.bosch.binin.api.enumeration.KanbanStatusEnum;
+import com.bosch.binin.api.enumeration.KanbanActionTypeEnum;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
-import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IMaterialKanbanService;
-import com.bosch.binin.service.IStockService;
 import com.bosch.binin.service.IWareShiftService;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
-import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.core.web.page.PageDomain;
-import lombok.Synchronized;
-import org.apache.poi.ss.formula.functions.Odd;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -167,8 +158,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             conver.setMoveType(MoveTypeEnums.CALL.getCode());
             conver.setCell(dto.getCell());
             conver.setType(dto.getQuantity() == r.getAvailableStock() ?
-                    RequirementActionTypeEnum.FULL_BIN_DOWN.value() : RequirementActionTypeEnum.PART_BIN_DOWN.value());
-            conver.setStatus(KanbanPerformTypeEnum.WAIT_ISSUE.value());
+                    KanbanActionTypeEnum.FULL_BIN_DOWN.value() : KanbanActionTypeEnum.PART_BIN_DOWN.value());
+            conver.setStatus(KanbanStatusEnum.WAIT_ISSUE.value());
             conver.setUpdateBy(null);
             conver.setUpdateTime(null);
             conver.setCreateBy(null);
@@ -211,7 +202,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     public int updateKanban(Long id) {
 
         MaterialKanban materialKanban = new MaterialKanban();
-        materialKanban.setStatus(KanbanPerformTypeEnum.CANCEL.value());
+        materialKanban.setStatus(KanbanStatusEnum.CANCEL.value());
         LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
         uw.eq(MaterialKanban::getId, id);
         uw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
@@ -236,10 +227,10 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             throw new ServiceException("数据已过期，请重新选择");
         }
         kanbanList.stream().forEach(item->{
-            if (KanbanPerformTypeEnum.CANCEL.value().equals(item.getStatus())){
+            if (KanbanStatusEnum.CANCEL.value().equals(item.getStatus())){
                 throw new ServiceException("包含已取消任务，请重新选择");
             }
-            if (!KanbanPerformTypeEnum.WAIT_ISSUE.value().equals(item.getStatus())){
+            if (!KanbanStatusEnum.WAIT_ISSUE.value().equals(item.getStatus())){
                 throw new ServiceException("包含已下发数据，请重新选择");
             }
         });
@@ -263,7 +254,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         Map<String, List<Stock>> finalStockMap = stockMap;
         kanbanList.stream().forEach(item -> {
             //修改任务状态
-            item.setStatus(KanbanPerformTypeEnum.HAS_ISSUED.value());
+            item.setStatus(KanbanStatusEnum.HAS_ISSUED.value());
             //如果是7752的，需要生成一个移库任务
             if ("7752".equals(item.getFactoryCode())) {
                 String ssccNumber = item.getSsccNumber();

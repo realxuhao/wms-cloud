@@ -1,7 +1,6 @@
 package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.StockLog;
 import com.bosch.binin.api.domain.MaterialCall;
@@ -13,9 +12,9 @@ import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
 import com.bosch.binin.api.domain.vo.MaterialCallCheckResultVO;
 import com.bosch.binin.api.domain.vo.RequirementResultVO;
 import com.bosch.binin.api.enumeration.MaterialCallStatusEnum;
-import com.bosch.binin.api.enumeration.RequirementActionTypeEnum;
+import com.bosch.binin.api.enumeration.KanbanActionTypeEnum;
 import com.bosch.binin.api.enumeration.MaterialCallSortTypeEnum;
-import com.bosch.binin.api.enumeration.KanbanPerformTypeEnum;
+import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.mapper.MaterialCallMapper;
 import com.bosch.binin.service.IMaterialCallService;
 import com.bosch.binin.service.IMaterialKanbanService;
@@ -35,9 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.Valid;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 /**
@@ -327,9 +324,9 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             kanban.setMaterialCode(stock.getMaterialNb());
             kanban.setSsccNumber(stock.getSsccNumber());
             kanban.setCell(call.getCell());
-            kanban.setType(RequirementActionTypeEnum.FULL_BIN_DOWN.value());
+            kanban.setType(KanbanActionTypeEnum.FULL_BIN_DOWN.value());
             kanban.setQuantity(stock.getAvailableStock());
-            kanban.setStatus(KanbanPerformTypeEnum.WAIT_ISSUE.value());
+            kanban.setStatus(KanbanStatusEnum.WAIT_ISSUE.value());
             kanban.setCreateBy(SecurityUtils.getUsername());
             kanban.setCreateTime(new Date());
             kanban.setMoveType(MoveTypeEnums.CALL.getCode());
@@ -337,7 +334,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
 
             if (i == useMaterialStockList.size() - 1 && splitFlag) {
                 kanban.setQuantity(DoubleMathUtil.doubleMathCalculation(stock.getAvailableStock(), deviation, "-"));
-                kanban.setType(splitFlag ? RequirementActionTypeEnum.PART_BIN_DOWN.value() : RequirementActionTypeEnum.FULL_BIN_DOWN.value());
+                kanban.setType(splitFlag ? KanbanActionTypeEnum.PART_BIN_DOWN.value() : KanbanActionTypeEnum.FULL_BIN_DOWN.value());
                 stock.setFreezeStock(stock.getFreezeStock() + kanban.getQuantity());
                 stock.setAvailableStock(stock.getAvailableStock() - kanban.getQuantity());
             } else {
