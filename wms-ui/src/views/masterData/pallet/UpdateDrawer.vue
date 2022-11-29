@@ -8,27 +8,27 @@
     @close="onClose"
   >
     <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-form-item label="托盘长度">
+      <a-form-item label="托盘长度[cm]">
         <a-input-number
-          placeholder="托盘长度"
+          placeholder="托盘长度[cm]"
           v-decorator="[
             'length',
             { rules: [{ required: true, message: '请输入托盘长度!' },] }
           ]">
         </a-input-number>
       </a-form-item>
-      <a-form-item label="托盘宽度">
+      <a-form-item label="托盘宽度[cm]">
         <a-input-number
-          placeholder="托盘宽度"
+          placeholder="托盘宽度[cm]"
           v-decorator="[
             'width',
             { rules: [{ required: true, message: '请选择托盘宽度!' }] }
           ]">
         </a-input-number>
       </a-form-item>
-      <a-form-item label="托盘高度">
+      <a-form-item label="托盘高度[cm]">
         <a-input
-          placeholder="托盘高度"
+          placeholder="托盘高度[cm]"
           v-decorator="[
             'height',
             { rules: [{ required: true, message: '请输入托盘高度!' },] }

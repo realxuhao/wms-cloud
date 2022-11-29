@@ -123,13 +123,13 @@ const columns = [
     width: 120
   },
   {
-    title: '宽度[m]',
+    title: '宽度[cm]',
     key: 'width',
     dataIndex: 'width',
     width: 120
   },
   {
-    title: '高度[m]',
+    title: '高度[cm]',
     key: 'height',
     dataIndex: 'height',
     width: 120
