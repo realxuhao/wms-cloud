@@ -24,6 +24,7 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -228,8 +229,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         if (CollectionUtils.isEmpty(kanbanList) || kanbanList.size() != idList.size()) {
             throw new ServiceException("数据已过期，请重新选择");
         }
-        kanbanList.stream().forEach(item->{
-            if (KanbanStatusEnum.CANCEL.value().equals(item.getStatus())){
+        kanbanList.stream().forEach(item -> {
+            if (KanbanStatusEnum.CANCEL.value().equals(item.getStatus())) {
                 throw new ServiceException("包含已取消任务，请重新选择");
             }
             if (!KanbanStatusEnum.WAITING_ISSUE.value().equals(item.getStatus())){
@@ -242,7 +243,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         List<String> outWareSsccList = kanbanList.stream().filter(item -> "7752".equals(item.getFactoryCode())).map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
 
         //查询外库的库存
-        Map<String, List<Stock>> stockMap=new HashMap<>();
+        Map<String, List<Stock>> stockMap = new HashMap<>();
         if (!CollectionUtils.isEmpty(outWareSsccList)) {
             LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
             stockQueryWrapper.in(Stock::getSsccNumber, outWareSsccList);
@@ -307,6 +308,26 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
         return  stockService.updateBatchById(stocks);
     }
+
+    @Override
+    public List<MaterialKanbanVO> getWaitingJob(String mesbarCode) {
+        String sscc = MesBarCodeUtil.getSSCC(mesbarCode);
+        String materialNb = MesBarCodeUtil.getMaterialNb(mesbarCode);
+
+        LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
+        queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<MaterialKanban> kanbanList = materialKanbanMapper.selectList(queryWrapper);
+        List<MaterialKanban> kanbans = kanbanList.stream().filter(item -> "0".equals(item.getStatus())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(kanbans)) {
+            throw new ServiceException("该托 " + "sscc" + " 不存在下架任务");
+        }
+
+        List<MaterialKanbanVO> materialKanbanVOS = BeanConverUtil.converList(kanbans, MaterialKanbanVO.class);
+        return materialKanbanVOS;
+    }
+
+
 
 
 }

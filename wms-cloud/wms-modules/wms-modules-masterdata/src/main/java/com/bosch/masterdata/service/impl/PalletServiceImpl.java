@@ -28,7 +28,7 @@ import com.bosch.masterdata.service.IPalletService;
  * @date 2022-09-22
  */
 @Service
-public class PalletServiceImpl extends ServiceImpl<PalletMapper, Pallet>  implements IPalletService {
+public class PalletServiceImpl extends ServiceImpl<PalletMapper, Pallet> implements IPalletService {
     @Autowired
     private PalletMapper palletMapper;
 
@@ -130,30 +130,31 @@ public class PalletServiceImpl extends ServiceImpl<PalletMapper, Pallet>  implem
 
 
     @Override
-    public boolean validList(List<PalletDTO> dtos) {
+    public boolean validDTO(List<PalletDTO> dtos) {
 
-        List<String> types=new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(dtos)){
+        List<String> types = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(dtos)) {
             List<String> collect = dtos.stream().map(PalletDTO::getType).collect(Collectors.toList());
             types.addAll(collect);
         }
-        LambdaQueryWrapper<Pallet> queryWrapper=new LambdaQueryWrapper<>();
-        queryWrapper.in(Pallet::getType,types);
+        LambdaQueryWrapper<Pallet> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(Pallet::getType, types);
         Integer integer = palletMapper.selectCount(queryWrapper);
-        return  integer>0;
+        return integer > 0;
     }
 
     @Override
-    public boolean validList(PalletDTO dto) {
+    public boolean validDTO(PalletDTO dto) {
 
-        Integer integer =0;
-        if (dto!=null){
-            LambdaQueryWrapper<Pallet> queryWrapper=new LambdaQueryWrapper<>();
-            queryWrapper.in(Pallet::getType,dto.getType());
-            queryWrapper.notIn(Pallet::getId,dto.getId());
+        Integer integer = 0;
+        if (dto != null) {
+            LambdaQueryWrapper<Pallet> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.in(Pallet::getType, dto.getType());
+            queryWrapper.notIn(Pallet::getId, dto.getId());
             integer = palletMapper.selectCount(queryWrapper);
         }
 
-        return  integer>0;
+        return integer > 0;
     }
+
 }

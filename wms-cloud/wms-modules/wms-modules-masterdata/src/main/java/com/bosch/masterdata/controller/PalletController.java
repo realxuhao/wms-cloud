@@ -3,7 +3,6 @@ package com.bosch.masterdata.controller;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 import com.bosch.masterdata.api.domain.dto.PalletDTO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
@@ -99,7 +98,7 @@ public class PalletController extends BaseController
         try {
             List<PalletDTO> dtos=new ArrayList<>();
             dtos.add(palletDTO);
-            boolean b = palletService.validList(dtos);
+            boolean b = palletService.validDTO(dtos);
             if (b){
                 return R.fail(400,"存在重复类型");
             }
@@ -121,9 +120,8 @@ public class PalletController extends BaseController
     public R edit(@PathVariable("id") Long id,@RequestBody PalletDTO palletDTO)
     {
         try {
-            List<PalletDTO> dtos=new ArrayList<>();
-            dtos.add(palletDTO);
-            boolean b = palletService.validList(dtos);
+            palletDTO.setId(id);
+            boolean b = palletService.validDTO(palletDTO);
             if (b){
                 return R.fail(400,"存在重复类型");
             }

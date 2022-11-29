@@ -18,6 +18,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -32,6 +33,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @RestController
@@ -47,14 +49,14 @@ public class MaterialKanbanController {
     @PostMapping(value = "/list")
     @ApiOperation("查询kanban列表")
     public R<PageVO<MaterialKanbanVO>> list(@RequestBody MaterialKanbanDTO materialKanbanDTO) {
+        if (Objects.isNull(materialKanbanDTO)) {
+            materialKanbanDTO = new MaterialKanbanDTO();
+        }
+        if (StringUtils.isNotEmpty(SecurityUtils.getWareCode())) {
+            materialKanbanDTO.setWareCode(SecurityUtils.getWareCode());
+        }
         IPage<MaterialKanbanVO> materialKanbanIPage = materialKanbanService.pageList(materialKanbanDTO);
         List<MaterialKanbanVO> records = materialKanbanIPage.getRecords();
-//        if(CollectionUtils.isNotEmpty(records)){
-//            records.forEach(r->{
-//                r.setTypeDesc(RequirementActionTypeEnum.getDesc(r.getType()));
-//                r.setMoveType(KanbanPerformTypeEnum.getDesc(r.getMoveType()));
-//            });
-//        }
         return R.ok(new PageVO<>(records, materialKanbanIPage.getTotal()));
     }
 
@@ -73,6 +75,13 @@ public class MaterialKanbanController {
     public R issueJob(@PathVariable Long[] ids) {
         materialKanbanService.issueJob(ids);
         return R.ok("下发成功");
+    }
+
+    @GetMapping(value = "/getWaitingJob/{mesBarCode}")
+    @ApiOperation("扫码查询待下架任务信息")
+    public R<List<MaterialKanbanVO>> getWaitingJob(@PathVariable String mesbarCode) {
+        List<MaterialKanbanVO> materialKanbanVO = materialKanbanService.getWaitingJob(mesbarCode);
+        return R.ok(materialKanbanVO);
     }
 
 

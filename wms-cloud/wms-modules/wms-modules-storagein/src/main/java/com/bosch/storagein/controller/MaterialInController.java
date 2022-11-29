@@ -64,7 +64,7 @@ public class MaterialInController extends BaseController {
 
         List<MaterialReceive> materialReceives = materialReceiveService.selectByMesBarCode(mesBarCode);
         if (CollectionUtils.isEmpty(materialReceives)) {
-            return R.fail(null, "收货清单不存在此物料：" + MesBarCodeUtil.getMaterialNb(mesBarCode));
+            return R.fail(null, "收货清单不存在此条数据：" + MesBarCodeUtil.getSSCC(mesBarCode));
         }
 
 

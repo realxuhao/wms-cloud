@@ -102,7 +102,9 @@ public class MaterialReceiveServiceImpl extends ServiceImpl<MaterialRecevieMappe
     @Override
     public List<MaterialReceive> selectByMesBarCode(String mesbarCode) {
         LambdaQueryWrapper<MaterialReceive> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(MaterialReceive::getSsccNumber, MesBarCodeUtil.getSSCC(mesbarCode));
         lambdaQueryWrapper.eq(MaterialReceive::getMaterialNb, MesBarCodeUtil.getMaterialNb(mesbarCode));
+        lambdaQueryWrapper.eq(MaterialReceive::getBatchNb, MesBarCodeUtil.getBatchNb(mesbarCode));
         lambdaQueryWrapper.eq(MaterialReceive::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         return materialRecevieMapper.selectList(lambdaQueryWrapper);
     }

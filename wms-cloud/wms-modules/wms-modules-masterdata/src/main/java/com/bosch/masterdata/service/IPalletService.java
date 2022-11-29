@@ -70,8 +70,9 @@ public interface IPalletService extends IService<Pallet>
     Pallet selectPalletByType(String palletType);
 
     //验证是否有相同数据
-    boolean validList(List<PalletDTO> dtos);
+    boolean validDTO(List<PalletDTO> dtos);
 
     //验证是否有相同数据
-    boolean validList(PalletDTO dto);
+    boolean validDTO(PalletDTO dto);
+
 }

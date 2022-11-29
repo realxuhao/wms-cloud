@@ -50,5 +50,8 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
 
     void issueJob(Long[] ids);
 
+    List<MaterialKanbanVO> getWaitingJob(String mesbarCode);
+
     boolean updateStocks (List<MaterialKanban> list);
+
 }

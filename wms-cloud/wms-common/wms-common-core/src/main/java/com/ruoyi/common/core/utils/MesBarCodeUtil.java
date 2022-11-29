@@ -64,7 +64,8 @@ public class MesBarCodeUtil {
         } catch (Exception e) {
             throw new ServiceException("mesBarCode格式错误");
         }
-        return quantity;
+        ;
+        return Double.valueOf(quantity).toString();
     }
 
     public static void main(String[] args) {
