@@ -35,7 +35,9 @@
         <if test="wareCode != null and wareCode != ''">
             AND  bs.ware_code=#{wareCode}
         </if>
-
+        <if test="cell != null and cell != ''">
+            AND  mk.cell=#{cell}
+        </if>
     </select>
 
     <select id="receivedMaterialList" parameterType="MaterialKanbanDTO" resultType="com.bosch.binin.api.domain.MaterialKanban">
@@ -62,6 +64,9 @@
         WHERE 1=1 AND mk.delete_flag='0' AND bs.delete_flag='0'
         <if test="wareCode != null and wareCode != ''">
             AND  bs.ware_code=#{wareCode}
+        </if>
+        <if test="cell != null and cell != ''">
+            AND  mk.cell=#{cell}
         </if>
         <if test="status != null ">
             AND (mk.status = #{status})
