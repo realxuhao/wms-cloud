@@ -40,8 +40,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
     @Autowired
     private IStockService stockService;
-    @Resource
-    MaterialKanbanMapper materialKanbanMapper;
+    @Autowired
+    private MaterialKanbanMapper materialKanbanMapper;
 
     @Autowired
     private StockMapper stockMapper;
@@ -84,8 +84,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         lambdaQueryWrapper.ge(dto.getUpdateTimeStart() != null, MaterialKanban::getUpdateTime,
                 dto.getUpdateTimeStart());
         lambdaQueryWrapper.le(dto.getUpdateTimeEnd() != null, MaterialKanban::getUpdateTime, dto.getUpdateTimeEnd());
-        lambdaQueryWrapper.like(dto.getType() != null, MaterialKanban::getType, dto.getType());
-        lambdaQueryWrapper.like(dto.getStatus() != null, MaterialKanban::getStatus, dto.getStatus());
+        lambdaQueryWrapper.eq(dto.getType() != null, MaterialKanban::getType, dto.getType());
+        lambdaQueryWrapper.eq(dto.getStatus() != null, MaterialKanban::getStatus, dto.getStatus());
 
         IPage<MaterialKanban> materialKanbanIPage = materialKanbanMapper.selectPage(page, lambdaQueryWrapper);
         //mp提供了convert方法,将数据重新封装
@@ -233,14 +233,15 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             if (KanbanStatusEnum.CANCEL.value().equals(item.getStatus())) {
                 throw new ServiceException("包含已取消任务，请重新选择");
             }
-            if (!KanbanStatusEnum.WAITING_ISSUE.value().equals(item.getStatus())){
+            if (!KanbanStatusEnum.WAITING_ISSUE.value().equals(item.getStatus())) {
                 throw new ServiceException("包含已下发数据，请重新选择");
             }
         });
 
         List<WareShift> wareShiftList = new ArrayList<>();
 
-        List<String> outWareSsccList = kanbanList.stream().filter(item -> "7752".equals(item.getFactoryCode())).map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
+        List<String> outWareSsccList =
+                kanbanList.stream().filter(item -> "7752".equals(item.getFactoryCode())).map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
 
         //查询外库的库存
         Map<String, List<Stock>> stockMap = new HashMap<>();
@@ -262,7 +263,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             if ("7752".equals(item.getFactoryCode())) {
                 String ssccNumber = item.getSsccNumber();
                 Stock stock = finalStockMap.get(ssccNumber).get(0);
-                WareShift wareShift = WareShift.builder().sourcePlantNb(item.getFactoryCode()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
+                WareShift wareShift =
+                        WareShift.builder().sourcePlantNb(item.getFactoryCode()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
                         .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialCode()).expireDate(stock.getExpireDate()).batchNb(stock.getBatchNb())
                         .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
                         .build();
@@ -281,18 +283,18 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
     @Override
     public boolean updateStocks(List<MaterialKanban> list) {
-        if (CollectionUtils.isEmpty(list)){
-            throw new  ServiceException("kanban导入数据为空");
+        if (CollectionUtils.isEmpty(list)) {
+            throw new ServiceException("kanban导入数据为空");
         }
-        List<Stock> stocks=new ArrayList<>();
-        list.forEach(r->{
-            LambdaQueryWrapper<Stock> qw=new LambdaQueryWrapper<>();
-            qw.eq(Stock::getSsccNumber,r.getSsccNumber());
-            qw.eq(Stock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        List<Stock> stocks = new ArrayList<>();
+        list.forEach(r -> {
+            LambdaQueryWrapper<Stock> qw = new LambdaQueryWrapper<>();
+            qw.eq(Stock::getSsccNumber, r.getSsccNumber());
+            qw.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
             qw.last(" for update");
             Stock stock = stockMapper.selectOne(qw);
-            if (stock==null){
-                throw new  ServiceException("sscc码:"+r.getSsccNumber()+"未查询到库存");
+            if (stock == null) {
+                throw new ServiceException("sscc码:" + r.getSsccNumber() + "未查询到库存");
             }
             Double availableStock = stock.getAvailableStock();
             Double freezeStock = stock.getFreezeStock();
@@ -306,7 +308,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         });
 
 
-        return  stockService.updateBatchById(stocks);
+        return stockService.updateBatchById(stocks);
     }
 
     @Override
@@ -327,8 +329,26 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         return materialKanbanVOS;
     }
 
+    @Override
+    public List<MaterialKanbanVO> receivingMaterialList(MaterialKanbanDTO dto) {
+
+
+        List<MaterialKanban> materialKanbans = materialKanbanMapper.receivingMaterialList(dto);
+        List<MaterialKanbanVO> materialKanbanVOS = BeanConverUtil.converList(materialKanbans, MaterialKanbanVO.class);
+        return materialKanbanVOS;
+
+    }
+
+    @Override
+    public List<MaterialKanbanVO> receivedMaterialList(MaterialKanbanDTO dto) {
 
 
 
+
+        List<MaterialKanban> materialKanbans = materialKanbanMapper.receivedMaterialList(dto);
+        List<MaterialKanbanVO> materialKanbanVOS = BeanConverUtil.converList(materialKanbans, MaterialKanbanVO.class);
+        return materialKanbanVOS;
+
+    }
 }
 

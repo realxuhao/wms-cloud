@@ -54,4 +54,9 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
 
     boolean updateStocks (List<MaterialKanban> list);
 
+
+    public List<MaterialKanbanVO> receivingMaterialList(MaterialKanbanDTO dto);
+
+    public List<MaterialKanbanVO> receivedMaterialList(MaterialKanbanDTO dto);
+
 }

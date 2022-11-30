@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.MaterialCall;
 
+import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.service.IMaterialCallService;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -13,7 +14,10 @@ import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.service.IMaterialKanbanService;
+import com.bosch.masterdata.api.domain.Bin;
+import com.bosch.masterdata.api.domain.vo.MaterialTypeVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
@@ -34,6 +38,8 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static com.ruoyi.common.core.utils.PageUtils.startPage;
 
 
 @RestController
@@ -231,15 +237,23 @@ public class MaterialKanbanController {
 
     @PostMapping(value = "/receivingMaterial")
     @ApiOperation("待收料列表")
-    public R<PageVO<MaterialKanbanVO>> receivingMaterial(@RequestBody MaterialKanbanDTO materialKanbanDTO) {
-        IPage<MaterialKanbanVO> materialKanbanIPage = materialKanbanService.pageList(materialKanbanDTO);
-        List<MaterialKanbanVO> records = materialKanbanIPage.getRecords();
-//        if(CollectionUtils.isNotEmpty(records)){
-//            records.forEach(r->{
-//                r.setTypeDesc(RequirementActionTypeEnum.getDesc(r.getType()));
-//                r.setMoveType(KanbanPerformTypeEnum.getDesc(r.getMoveType()));
-//            });
-//        }
-        return R.ok(new PageVO<>(records, materialKanbanIPage.getTotal()));
+    public R<PageVO<MaterialKanbanVO>> receivingMaterial(@RequestBody MaterialKanbanDTO dto) {
+        String wareCode = SecurityUtils.getWareCode();
+        //dto.setStatus(KanbanStatusEnum.LINE_RECEIVING.value());
+        dto.setWareCode(wareCode);
+        startPage();
+        List<MaterialKanbanVO> list = materialKanbanService.receivingMaterialList(dto);
+        return R.ok(new PageVO<>(list,new PageInfo<>(list).getTotal()));
+    }
+
+    @PostMapping(value = "/receivedMaterial")
+    @ApiOperation("已收料列表")
+    public R<PageVO<MaterialKanbanVO>> receivedMaterial(@RequestBody MaterialKanbanDTO dto) {
+        String wareCode = SecurityUtils.getWareCode();
+        //dto.setStatus(KanbanStatusEnum.LINE_RECEIVING.value());
+        dto.setWareCode(wareCode);
+        startPage();
+        List<MaterialKanbanVO> list = materialKanbanService.receivedMaterialList(dto);
+        return R.ok(new PageVO<>(list,new PageInfo<>(list).getTotal()));
     }
 }
