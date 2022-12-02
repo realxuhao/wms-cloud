@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.MaterialCall;
 
-import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.service.IMaterialCallService;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -14,8 +13,6 @@ import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.service.IMaterialKanbanService;
-import com.bosch.masterdata.api.domain.Bin;
-import com.bosch.masterdata.api.domain.vo.MaterialTypeVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
@@ -76,10 +73,10 @@ public class MaterialKanbanController {
     }
 
 
-    @PutMapping(value = "/issueJob/{ids}")
+    @PutMapping(value = "/issueJob/{ssccNumber}")
     @ApiOperation("批量下发任务接口")
-    public R issueJob(@PathVariable Long[] ids) {
-        materialKanbanService.issueJob(ids);
+    public R issueJob(@PathVariable String[] ssccNumbers) {
+        materialKanbanService.issueJob(ssccNumbers);
         return R.ok("下发成功");
     }
 

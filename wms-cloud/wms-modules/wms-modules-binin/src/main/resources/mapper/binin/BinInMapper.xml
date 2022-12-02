@@ -40,9 +40,11 @@
         <if test="palletCode != null and palletCode != ''">and bi.pallet_code like concat('%', #{palletCode}, '%')</if>
 
         <if test="batchNb != null  and batchNb != ''">and bi.batch_nb like concat('%', #{batchNb}, '%')</if>
-        <if test="plantNb != null and plantNb != ''">and bi.plant_nb like concat('%', #{plantNb}, '%') </if>
+        <if test="plantNb != null and plantNb != ''">and bi.plant_nb like concat('%', #{plantNb}, '%')</if>
         <if test="wareCode != null and wareCode != ''">and bi.ware_code like concat('%', #{wareCode}, '%')</if>
-        <if test="actualBinCode != null and actualBinCode != ''">and bi.actual_bin_code like concat('%', #{actualBinCode}, '%')</if>
+        <if test="actualBinCode != null and actualBinCode != ''">and bi.actual_bin_code like concat('%',
+            #{actualBinCode}, '%')
+        </if>
         <if test="createBy != null and createBy != ''">and bi.create_by like concat('%', #{createBy}, '%')</if>
         <if test="status != null ">and bi.status = #{status}</if>
     </select>
@@ -110,7 +112,7 @@
         where si.delete_flag = 0
           and mm.delete_flag = 0
           and si.ware_code = #{wareCode}
-          and si.sscc_number not in (select bi.sscc_number from bi_in bi where bi.delete_flag = 0)
+          and si.sscc_number not in (select bi.sscc_number from bi_in bi where bi.delete_flag = 1 and bi.status = 0)
         order by operate_time desc
 
     </select>

@@ -13,12 +13,14 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -38,11 +40,15 @@ public class MaterialReceiveServiceImpl extends ServiceImpl<MaterialRecevieMappe
 
     @Override
     public Integer deleteMaterialReceiveById(Long id) {
-        MaterialReceiveVO materialReceiveVO = materialRecevieMapper.selectMaterialReceiveVOById(id);
-        if (materialReceiveVO.getStatus().equals(MaterialStatusEnum.IN.getCode())) {
+        MaterialReceive materialReceive = materialRecevieMapper.selectById(id);
+        if (materialReceive.getStatus().equals(MaterialStatusEnum.IN.getCode())) {
             throw new ServiceException("已入库状态的收货信息不可删除！");
         }
-        return materialRecevieMapper.deleteMaterialReceiveVOById(id);
+        materialReceive.setUpdateUser(SecurityUtils.getUsername());
+        materialReceive.setUpdateTime(new Date());
+        materialReceive.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
+
+        return materialRecevieMapper.updateById(materialReceive);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.bosch.binin.api.domain.dto.BinInQueryDTO;
 import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.BinInVO;
+import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.service.IBinAssignmentService;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.masterdata.api.RemoteMasterDataService;
@@ -122,6 +123,7 @@ public class BinInController extends BaseController {
         if (StringUtils.isEmpty(binInQueryDTO.getWareCode())) {
             binInQueryDTO.setWareCode(SecurityUtils.getWareCode());
         }
+        binInQueryDTO.setStatus(BinInStatusEnum.FINISH.value());
         startPage();
         List<BinInVO> list = binInService.selectBinVOList(binInQueryDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));

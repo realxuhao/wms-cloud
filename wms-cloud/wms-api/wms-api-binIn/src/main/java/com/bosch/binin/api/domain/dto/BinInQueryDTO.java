@@ -68,7 +68,7 @@ public class BinInQueryDTO extends PageDomain {
 
 
     /**
-     * 状态(0：待入库,1:已入库)
+     * 状态(0：待上架,1:已上架)
      */
     @ApiModelProperty(value = "状态(0：待入库,1:已入库)")
     private Integer status;

@@ -148,7 +148,7 @@ export default {
           this.submitLoading = true
           const formData = new FormData()
           formData.append('file', values.file.file)
-          formData.append('cell', values.code)
+          formData.append('cell', values.cell)
           formData.append('sortType', values.sortType)
 
           await this.$store.dispatch('materialFeeding/upload', formData)

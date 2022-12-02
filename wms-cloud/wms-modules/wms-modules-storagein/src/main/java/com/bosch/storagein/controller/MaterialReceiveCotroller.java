@@ -63,11 +63,11 @@ public class MaterialReceiveCotroller extends BaseController {
     }
 
 
-    @ApiOperation("批量逻辑删除原材料收货")
-    @DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids) {
-        return toAjax(materialReceiveService.deleteMaterialReceiveByIds(ids));
-    }
+//    @ApiOperation("批量逻辑删除原材料收货")
+//    @DeleteMapping("/{ids}")
+//    public AjaxResult remove(@PathVariable Long[] ids) {
+//        return toAjax(materialReceiveService.deleteMaterialReceiveByIds(ids));
+//    }
 
     @GetMapping(value = "/{id}")
     @ApiOperation("获取收货信息详细信息")

@@ -304,7 +304,7 @@ export default {
     },
     async handleDelete (row) {
       try {
-        await this.$store.dispatch('materialIn/deleteMaterialReveive', row.id)
+        await this.$store.dispatch('materialInList/deleteMaterialReveive', row.id)
         this.$message.success('删除成功！')
         this.loadTableList()
       } catch (error) {

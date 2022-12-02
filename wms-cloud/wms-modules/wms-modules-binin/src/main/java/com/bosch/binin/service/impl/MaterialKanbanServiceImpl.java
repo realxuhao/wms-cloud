@@ -214,19 +214,19 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
-    public void issueJob(Long[] ids) {
-        List<Long> idList = Arrays.asList(ids);
-        if (CollectionUtils.isEmpty(idList)) {
+    public void issueJob(String[] ssccNumbers) {
+        List<String> ssccNumberList = Arrays.asList(ssccNumbers);
+        if (CollectionUtils.isEmpty(ssccNumberList)) {
             throw new ServiceException("任务为空，请选择任务后重试");
         }
         LambdaQueryWrapper<MaterialKanban> kanbanLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        kanbanLambdaQueryWrapper.in(MaterialKanban::getId, idList);
+        kanbanLambdaQueryWrapper.in(MaterialKanban::getSsccNumber, ssccNumberList);
         kanbanLambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 //        kanbanLambdaQueryWrapper.eq(MaterialKanban::getStatus, KanbanPerformTypeEnum.WAIT_ISSUE.value());
 
         List<MaterialKanban> kanbanList = materialKanbanMapper.selectList(kanbanLambdaQueryWrapper);
 
-        if (CollectionUtils.isEmpty(kanbanList) || kanbanList.size() != idList.size()) {
+        if (CollectionUtils.isEmpty(kanbanList) || kanbanList.size() != ssccNumberList.size()) {
             throw new ServiceException("数据已过期，请重新选择");
         }
         kanbanList.stream().forEach(item -> {
@@ -240,8 +240,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
         List<WareShift> wareShiftList = new ArrayList<>();
 
-        List<String> outWareSsccList =
-                kanbanList.stream().filter(item -> "7752".equals(item.getFactoryCode())).map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
+        List<String> outWareSsccList = kanbanList.stream().filter(item -> "7752".equals(item.getFactoryCode())).map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
 
         //查询外库的库存
         Map<String, List<Stock>> stockMap = new HashMap<>();
@@ -259,24 +258,23 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         kanbanList.stream().forEach(item -> {
             //修改任务状态
             item.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
-            //如果是7752的，需要生成一个移库任务
-            if ("7752".equals(item.getFactoryCode())) {
-                String ssccNumber = item.getSsccNumber();
-                Stock stock = finalStockMap.get(ssccNumber).get(0);
-                WareShift wareShift =
-                        WareShift.builder().sourcePlantNb(item.getFactoryCode()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
-                        .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialCode()).expireDate(stock.getExpireDate()).batchNb(stock.getBatchNb())
-                        .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
-                        .build();
-
-                wareShiftList.add(wareShift);
-            }
+//            //如果是7752的，需要生成一个移库任务，移库任务是  生成
+//            if ("7752".equals(item.getFactoryCode())) {
+//                String ssccNumber = item.getSsccNumber();
+//                Stock stock = finalStockMap.get(ssccNumber).get(0);
+//                WareShift wareShift = WareShift.builder().sourcePlantNb(item.getFactoryCode()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
+//                        .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialCode()).expireDate(stock.getExpireDate()).batchNb(stock.getBatchNb())
+//                        .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+//                        .build();
+//
+//                wareShiftList.add(wareShift);
+//            }
         });
 
         //更新任务状态
         updateBatchById(kanbanList);
         //新增移库任务
-        wareShiftService.saveBatch(wareShiftList);
+//        wareShiftService.saveBatch(wareShiftList);
 
 
     }
@@ -341,8 +339,6 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
     @Override
     public List<MaterialKanbanVO> receivedMaterialList(MaterialKanbanDTO dto) {
-
-
 
 
         List<MaterialKanban> materialKanbans = materialKanbanMapper.receivedMaterialList(dto);

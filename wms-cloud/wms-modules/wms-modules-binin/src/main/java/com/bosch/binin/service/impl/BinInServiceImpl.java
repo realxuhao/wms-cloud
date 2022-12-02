@@ -231,6 +231,22 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             if (StringUtils.isEmpty(frameCodeList) || !frameCodeList.contains(actualBinVO.getFrameTypeCode())) {
                 throw new ServiceException("该物料" + materialNb + " 不能分配到" + binInDTO.getActualBinCode());
             }
+
+            LambdaQueryWrapper<BinIn> finishQueryWrapper = new LambdaQueryWrapper<>();
+            finishQueryWrapper.eq(BinIn::getActualBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.FINISH.value()).eq(BinIn::getDeleteFlag, 0);
+            List<BinIn> binInFinish = binInMapper.selectList(finishQueryWrapper);
+            if (!CollectionUtils.isEmpty(binInFinish)) {
+                throw new ServiceException("该库位" + binInDTO.getActualBinCode() + " 已经被占用");
+            }
+
+            LambdaQueryWrapper<BinIn> processingQueryWrapper = new LambdaQueryWrapper<>();
+            processingQueryWrapper.eq(BinIn::getRecommendBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value()).eq(BinIn::getDeleteFlag, 0);
+            List<BinIn> binInProcessing = binInMapper.selectList(processingQueryWrapper);
+            if (!CollectionUtils.isEmpty(binInProcessing)) {
+                throw new ServiceException("该库位" + binInDTO.getActualBinCode() + " 已经被分配其他托");
+            }
+
+
         }
         binIn.setActualBinCode(binInDTO.getActualBinCode());
         binIn.setActualFrameCode(actualBinVO.getFrameCode());

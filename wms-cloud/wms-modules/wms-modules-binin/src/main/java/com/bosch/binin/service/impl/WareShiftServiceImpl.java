@@ -34,7 +34,6 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     private IStockService stockService;
 
 
-
     @Override
     public Boolean addShiftRequirement(AddShiftTaskDTO dto) {
         List<String> ssccNbList = dto.getSsccNbList();
@@ -60,10 +59,13 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                     .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
                     .build();
             wareShiftList.add(wareShift);
+            //更新冻结库存
+            item.setFreezeStock(item.getTotalStock() - item.getAvailableStock());
 
         });
+        //冻结库存，更新状态
+        stockService.updateBatchById(stockList);
         return saveBatch(wareShiftList);
-
 
 
     }

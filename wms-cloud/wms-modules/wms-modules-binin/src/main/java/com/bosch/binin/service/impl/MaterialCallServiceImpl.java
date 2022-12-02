@@ -120,6 +120,9 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
                     item.getIssuedQuantity(), "-"));
             Double requireQuantity = item.getUnIssuedQuantity();
             Double stockQuantity = materialAvailableStockMap.get(item.getMaterialNb());
+            if (Objects.isNull(stockQuantity)){
+                throw new ServiceException("下发失败，该物料暂时没有库存或库存状态不可用");
+            }
             if (requireQuantity > stockQuantity) {
                 MaterialCallCheckResultVO.NotEnoughStock notEnoughStock =
                         new MaterialCallCheckResultVO.NotEnoughStock();
@@ -417,6 +420,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         lambdaQueryWrapper.eq(Stock::getMaterialNb, materialNb);
         lambdaQueryWrapper.eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode());
         lambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        lambdaQueryWrapper.eq(Stock::getFreezeStock,0);
         List<Stock> stockList = stockService.list(lambdaQueryWrapper);
         if (CollectionUtils.isEmpty(stockList)) {
             stockList = new ArrayList<>();
@@ -431,7 +435,9 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         List<Stock> sortedStockList = new ArrayList<>();
         if (MaterialCallSortTypeEnum.BBD_FIRST.value().equals(call.getSortType())) {
             sortedStockList =
-                    stockList.stream().filter(item -> item.getAvailableStock() != 0).sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getPlantNb)).collect(Collectors.toList());
+                    stockList.stream().filter(item -> item.getAvailableStock() != 0).
+                            sorted(Comparator.comparing(Stock::getExpireDate).
+                                    thenComparing(Stock::getPlantNb)).collect(Collectors.toList());
         } else if (MaterialCallSortTypeEnum.MAIN_WARE_FIRST.value().equals(call.getSortType())) {
             sortedStockList =
                     stockList.stream().filter(item -> item.getAvailableStock() != 0).sorted(Comparator.comparing(Stock::getPlantNb).thenComparing(Stock::getExpireDate)).collect(Collectors.toList());

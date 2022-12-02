@@ -1,8 +1,6 @@
 package com.bosch.binin.controller;
 
-import com.bosch.binin.api.domain.dto.BinInQueryDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
-import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.service.IStockService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
@@ -13,7 +11,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
