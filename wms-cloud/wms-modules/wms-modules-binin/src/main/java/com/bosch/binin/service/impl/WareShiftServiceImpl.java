@@ -60,7 +60,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                     .build();
             wareShiftList.add(wareShift);
             //更新冻结库存
-            item.setFreezeStock(item.getTotalStock() - item.getAvailableStock());
+            item.setFreezeStock(item.getFreezeStock() + item.getAvailableStock());
 
         });
         //冻结库存，更新状态

@@ -51,6 +51,18 @@
             <groupId>com.bosch</groupId>
             <artifactId>wms-common-security</artifactId>
         </dependency>
+        <!-- swagger2 - knife4j -->
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-spring-boot-starter</artifactId>
+            <version>2.0.8</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-micro-spring-boot-starter</artifactId>
+            <version>2.0.8</version>
+        </dependency>
         
     </dependencies>
 	
