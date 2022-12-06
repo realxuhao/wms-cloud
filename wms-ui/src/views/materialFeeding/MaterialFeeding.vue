@@ -67,8 +67,16 @@
         <a-button
           type="primary"
           icon="upload"
+          style="margin-right:8px"
           @click="handleOpenUpload">
           创建物料需求
+        </a-button>
+        <a-button
+          type="primary"
+          :loading="exportLoading"
+          icon="download"
+          @click="handleDownload">
+          导出
         </a-button>
       </div>
       <a-table
@@ -133,6 +141,7 @@ import { mixinTableList } from '@/utils/mixin/index'
 import MaterialFeedingUpload from './MaterialFeedingUpload'
 import CreateReductionTask from './CreateReductionTask'
 import EditTableCell from '@/components/EditTableCell'
+import { download } from '@/utils/file'
 
 const columns = [
   {
@@ -267,6 +276,7 @@ export default {
   data () {
     return {
       tableLoading: false,
+      exportLoading: false,
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -296,6 +306,19 @@ export default {
   methods: {
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
+    },
+    async handleDownload () {
+      try {
+        this.exportLoading = true
+        const blobData = await this.$store.dispatch('materialFeeding/exportExcel', this.queryForm)
+        console.log(blobData)
+        download(blobData, '叫料记录')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
+      }
     },
     handleOpenUpload () {
       this.visible = true

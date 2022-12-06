@@ -65,7 +65,7 @@
           selectedRowKeys: selectedRowKeys, onChange: onSelectChange ,
           getCheckboxProps:record => ({
             props: {
-              disabled: record.status === 1, // Column configuration not to be checked
+              disabled: record.status === 0, // Column configuration not to be checked
               name: record.name,
             },
           }),}"
@@ -82,6 +82,16 @@
             {{ statusMap[text] }}
           </div>
         </template>
+        <template slot="type" slot-scope="text">
+          <div >
+            {{ typeMap[text] }}
+          </div>
+        </template>
+        <template slot="moveType" slot-scope="text">
+          <div >
+            {{ moveTypeMap[text] }}
+          </div>
+        </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a-popconfirm
@@ -92,7 +102,11 @@
             >
               <a class="danger-color m-r-4" :disabled="record.status===-1">取消</a>
             </a-popconfirm>
-
+            <a-divider type="vertical" />
+            <a
+              class="m-r-4"
+              :disabled="record.factoryCode!=='7752'"
+              @click="$refs.pikingOrderAddShiftTask.handleOpen(record)">新增移库任务</a>
           </div>
         </template>
       </a-table>
@@ -111,6 +125,7 @@
 
     </div>
 
+    <PikingOrderAddShiftTask ref="pikingOrderAddShiftTask"></PikingOrderAddShiftTask>
   </div>
 </template>
 
@@ -118,6 +133,7 @@
 // import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
 import EditTableCell from '@/components/EditTableCell'
+import PikingOrderAddShiftTask from './PikingOrderAddShiftTask'
 
 const columns = [
   {
@@ -157,15 +173,23 @@ const columns = [
     width: 120
   },
   {
-    title: '源存储区',
-    key: 'areaId',
-    dataIndex: 'areaId',
+    title: '源库位',
+    key: 'binCode',
+    dataIndex: 'binCode',
     width: 120
   },
   {
     title: '动作类型',
     key: 'type',
     dataIndex: 'type',
+    scopedSlots: { customRender: 'type' },
+    width: 140
+  },
+  {
+    title: '移动类型',
+    key: 'moveType',
+    dataIndex: 'moveType',
+    scopedSlots: { customRender: 'moveType' },
     width: 140
   },
   {
@@ -215,7 +239,7 @@ const columns = [
     title: '操作',
     key: 'action',
     fixed: 'right',
-    width: 140,
+    width: 200,
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -241,6 +265,18 @@ const statusMap = {
   0: '未下发'
 }
 
+const moveTypeMap = {
+  0: '收货',
+  1: '入库',
+  2: '上架',
+  3: '生产叫料'
+}
+
+const typeMap = {
+  0: '整托下架',
+  1: '拆托下架'
+}
+
 const queryFormAttr = () => {
   return {
     cell: '',
@@ -254,7 +290,8 @@ export default {
   name: 'Area',
   mixins: [mixinTableList],
   components: {
-    EditTableCell
+    EditTableCell,
+    PikingOrderAddShiftTask
   },
   data () {
     return {
@@ -281,6 +318,8 @@ export default {
   computed: {
     status: () => status,
     statusMap: () => statusMap,
+    moveTypeMap: () => moveTypeMap,
+    typeMap: () => typeMap,
     hasSelected () {
       return this.selectedRowKeys.length > 0
     }

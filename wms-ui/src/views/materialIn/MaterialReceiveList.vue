@@ -136,13 +136,13 @@ const columns = [
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
-    width: 200
+    width: 160
   },
   {
     title: '物料名称',
     key: 'materialName',
     dataIndex: 'materialName',
-    width: 100
+    width: 200
   },
   {
     title: '物料编码',
@@ -221,7 +221,7 @@ const columns = [
     title: '操作',
     key: 'action',
     width: 120,
-    fiexd: 'right',
+    fixed: 'right',
     scopedSlots: { customRender: 'action' }
   }
 ]

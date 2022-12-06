@@ -54,6 +54,14 @@ const materialFeeding = {
     async cancelPickingOrder ({ commit }, options) {
       const data = await materialFeedingService.cancelPickingOrder(options)
       return data
+    },
+    async exportExcel ({ commit }, options) {
+      const data = await materialFeedingService.exportExcel(options)
+      return data
+    },
+    async getStockInfo ({ commit }, options) {
+      const data = await materialFeedingService.getStockInfo(options)
+      return data
     }
   }
 }

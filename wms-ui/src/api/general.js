@@ -15,6 +15,7 @@ const okayHttpStatuses = [
 
 const errorParser = async (response) => {
   const { status, data } = response
+
   if (_.some(okayHttpStatuses, s => s === status)) {
     if (data.code === 401) {
       const token = getToken()
@@ -32,7 +33,17 @@ const errorParser = async (response) => {
       return Promise.reject(new ApiError('Unauthorized', { isHandled: true, status }))
     }
 
-    if (data.code !== 200) {
+    // if (data instanceof Blob) {
+    //   const { errorMessage } = await new Response(data).json()
+    //   return Promise.reject(new ApiError(errorMessage, { isHandled: false, status }))
+    // }
+
+    // if (data instanceof ArrayBuffer) {
+    //   const { errorMessage } = await new Response(data).json()
+    //   return Promise.reject(new ApiError(errorMessage, { isHandled: false, status }))
+    // }
+
+    if (data.code && data.code !== 200) {
       return Promise.reject(new ApiError(data.msg, {
         isHandled: true,
         status,
@@ -40,6 +51,7 @@ const errorParser = async (response) => {
         message: data.msg || '未知的错误，请联系要管理员！'
       }))
     }
+
     return response
   }
   if (status === 403) {

@@ -59,6 +59,7 @@
         rowKey="id"
         :pagination="false"
         size="middle"
+        :scroll="{ x: 1300 }"
       >
         <template slot="status" slot-scope="text">
           <div >
@@ -72,8 +73,8 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a-popconfirm v-show="record.status===0" title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
-              <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
+            <a-popconfirm title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
+              <a class="danger-color" disabled="record.status===0"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
           </div>
         </template>
@@ -115,7 +116,7 @@ const columns = [
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
-    width: 200
+    width: 160
   },
   {
     title: '物料编码',
@@ -139,13 +140,13 @@ const columns = [
     title: '托盘编码',
     key: 'palletCode',
     dataIndex: 'palletCode',
-    width: 120
+    width: 90
   },
   {
     title: '托盘类型',
     key: 'palletType',
     dataIndex: 'palletType',
-    width: 120
+    width: 90
   },
   {
     title: '数量',
@@ -182,6 +183,7 @@ const columns = [
     title: '操作',
     key: 'action',
     width: 120,
+    fixed: 'right',
     scopedSlots: { customRender: 'action' }
   }
 ]

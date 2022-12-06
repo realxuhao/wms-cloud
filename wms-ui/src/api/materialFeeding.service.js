@@ -72,6 +72,21 @@ const cancelPickingOrder = async (options) => {
   return data
 }
 
+const exportExcel = async (options) => {
+  const url = `binin/material-feeding/export`
+  const { data } = await createAuthInstance(config.apiHost).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  })
+  return data
+}
+
+const getStockInfo = async (parameter) => {
+  const url = `binin/materialKanban/getStockInfo?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(config.apiHost).get(url)
+  return data
+}
+
 export const materialFeedingService = {
   getList,
   upload,
@@ -83,5 +98,7 @@ export const materialFeedingService = {
   updateQuantity,
   getPickingOrderList,
   batchAddJob,
-  cancelPickingOrder
+  cancelPickingOrder,
+  exportExcel,
+  getStockInfo
 }
