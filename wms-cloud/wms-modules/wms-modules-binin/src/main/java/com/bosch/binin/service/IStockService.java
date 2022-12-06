@@ -20,4 +20,6 @@ public interface IStockService extends IService<Stock> {
     List<StockVO> selectStockVOBySortType(StockQueryDTO stockQuerySTO);
 
     Double countAvailableStock(StockQueryDTO stockQueryDTO);
+
+    StockVO getOneBySSCC(String ssccs);
 }

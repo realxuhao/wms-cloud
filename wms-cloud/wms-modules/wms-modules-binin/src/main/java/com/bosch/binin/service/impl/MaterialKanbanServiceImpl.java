@@ -427,6 +427,17 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
         return materialKanbanMapper.update(materialKanban, uw);
     }
+    @Override
+    public int updateKanbanByStatus(List<String> ssccs,Integer queryStatus,Integer status){
+        MaterialKanban materialKanban = new MaterialKanban();
+        materialKanban.setStatus(status);
+        LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
+        uw.in(MaterialKanban::getSsccNumber, ssccs);
+        uw.eq(MaterialKanban::getStatus,queryStatus);
+        uw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+
+        return materialKanbanMapper.update(materialKanban, uw);
+    }
 
     @Override
     public int updateKanbanBySSCC(List<String> ssccs, Integer status) {
@@ -439,10 +450,19 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
         return materialKanbanMapper.update(materialKanban, uw);
     }
-
     @Override
     public List<MaterialInfoVO> materialInfoBySSCC(List<String> sscc) {
         return materialKanbanMapper.materialInfoBySSCC(sscc);
+    }
+
+    @Override
+    public List<MaterialKanban> getListBySCAndStatus(List<String> sscc, Integer status) {
+        LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(MaterialKanban::getSsccNumber, sscc);
+        queryWrapper.eq(MaterialKanban::getStatus,status);
+        queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<MaterialKanban> materialKanbans = materialKanbanMapper.selectList(queryWrapper);
+        return materialKanbans;
     }
 }
 

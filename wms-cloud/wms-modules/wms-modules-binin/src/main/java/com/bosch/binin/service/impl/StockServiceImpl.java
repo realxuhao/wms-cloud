@@ -7,9 +7,11 @@ import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.service.IStockService;
+import com.bosch.binin.utils.BeanConverUtil;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.web.domain.BaseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -58,5 +60,18 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
         return stockList.stream().mapToDouble(Stock::getAvailableStock).sum();
 
+    }
+
+    @Override
+    public StockVO getOneBySSCC(String ssccs) {
+
+        LambdaQueryWrapper<Stock> stockLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        stockLambdaQueryWrapper.eq(Stock::getSsccNumber, ssccs);
+        stockLambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.TRUE.getCode());
+        stockLambdaQueryWrapper.orderByDesc(BaseEntity::getUpdateTime);
+        stockLambdaQueryWrapper.last("limit 1");
+        Stock stock = stockMapper.selectOne(stockLambdaQueryWrapper);
+        StockVO conver = BeanConverUtil.conver(stock, StockVO.class);
+        return conver;
     }
 }

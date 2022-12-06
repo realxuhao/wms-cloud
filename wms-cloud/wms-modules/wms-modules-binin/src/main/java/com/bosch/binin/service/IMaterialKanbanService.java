@@ -88,6 +88,14 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     int updateKanbanBySSCC(List<String> ssccs,Integer status);
 
     /**
+     *
+     * @param ssccs  sscc集合
+     * @param queryStatus 查询状态
+     * @param status 更新状态
+     * @return
+     */
+    int updateKanbanByStatus(List<String> ssccs,Integer queryStatus,Integer status);
+    /**
      * 根据sscclist获取看板list
      * @param sscc
      * @return
@@ -97,4 +105,6 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     void binDown(String sscc);
 
     IPage<MaterialKanbanVO> pagebinDownList(PageDomain pageDomain,String wareCode);
+
+    List<MaterialKanban> getListBySCAndStatus(List<String> sscc, Integer status);
 }

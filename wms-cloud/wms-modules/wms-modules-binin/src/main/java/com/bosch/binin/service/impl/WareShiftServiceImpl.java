@@ -1,7 +1,9 @@
 package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
@@ -34,6 +36,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     private IStockService stockService;
 
 
+    @Autowired
+    private WareShiftMapper wareShiftMapper;
     @Override
     public Boolean addShiftRequirement(AddShiftTaskDTO dto) {
         List<String> ssccNbList = dto.getSsccNbList();
@@ -73,5 +77,17 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     @Override
     public void binDown(String ssccNb) {
 
+    }
+
+    @Override
+    public int updateStatusByStatus(List<String> ssccs, Integer queryStatus, Integer status) {
+        WareShift wareShift = new WareShift();
+        wareShift.setStatus(status);
+        LambdaUpdateWrapper<WareShift> uw = new LambdaUpdateWrapper<>();
+        uw.in(WareShift::getSsccNb, ssccs);
+        uw.eq(WareShift::getStatus,queryStatus);
+        uw.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+
+        return wareShiftMapper.update(wareShift, uw);
     }
 }
