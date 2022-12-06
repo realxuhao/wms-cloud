@@ -6,6 +6,7 @@ import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
+import com.bosch.binin.api.domain.vo.MaterialInfoVO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.ruoyi.common.core.web.page.PageDomain;
@@ -54,9 +55,42 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
 
     boolean updateStocks (List<MaterialKanban> list);
 
-
+    /**
+     *
+     * @param dto
+     * @return
+     */
     public List<MaterialKanbanVO> receivingMaterialList(MaterialKanbanDTO dto);
 
+    /**
+     *
+     * @param dto
+     * @return
+     */
     public List<MaterialKanbanVO> receivedMaterialList(MaterialKanbanDTO dto);
 
+    /**
+     *
+     * @param sscc
+     * @param wareCode
+     * @return
+     */
+    public List<MaterialInfoVO> materialInfoList(String sscc,String wareCode);
+
+    /**
+     *
+     * @param ids
+     * @param status
+     * @return
+     */
+    int updateKanbanByIds(List<Long> ids,Integer status);
+
+    int updateKanbanBySSCC(List<String> ssccs,Integer status);
+
+    /**
+     * 根据sscclist获取看板list
+     * @param sscc
+     * @return
+     */
+    List<MaterialInfoVO> materialInfoBySSCC(List<String> sscc);
 }

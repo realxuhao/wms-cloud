@@ -9,6 +9,7 @@ import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
+import com.bosch.binin.api.domain.vo.MaterialInfoVO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
@@ -179,6 +180,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         LambdaQueryWrapper<Stock> qw = new LambdaQueryWrapper<>();
         qw.eq(Stock::getSsccNumber, sscc);
         qw.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        //qw.orderByDesc(Stock::getUpdateTime);
         qw.last(" for update");
         Stock stock = stockMapper.selectOne(qw);
         if (stock == null) {
@@ -344,7 +346,40 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         List<MaterialKanban> materialKanbans = materialKanbanMapper.receivedMaterialList(dto);
         List<MaterialKanbanVO> materialKanbanVOS = BeanConverUtil.converList(materialKanbans, MaterialKanbanVO.class);
         return materialKanbanVOS;
+    }
 
+    @Override
+    public List<MaterialInfoVO> materialInfoList(String sscc,String wareCode) {
+        List<MaterialInfoVO> materialInfoVOS = materialKanbanMapper.materialInfoList(sscc,wareCode);
+        return materialInfoVOS;
+    }
+
+    @Override
+    public int updateKanbanByIds(List<Long> ids, Integer status) {
+        MaterialKanban materialKanban = new MaterialKanban();
+        materialKanban.setStatus(status);
+        LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
+        uw.in(MaterialKanban::getId, ids);
+        uw.ne(MaterialKanban::getStatus,KanbanStatusEnum.CANCEL);
+        uw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+
+        return materialKanbanMapper.update(materialKanban, uw);
+    }
+    @Override
+    public int updateKanbanBySSCC(List<String> ssccs, Integer status) {
+        MaterialKanban materialKanban = new MaterialKanban();
+        materialKanban.setStatus(status);
+        LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
+        uw.in(MaterialKanban::getSsccNumber, ssccs);
+        uw.ne(MaterialKanban::getStatus,KanbanStatusEnum.CANCEL);
+        uw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+
+        return materialKanbanMapper.update(materialKanban, uw);
+    }
+
+    @Override
+    public List<MaterialInfoVO> materialInfoBySSCC(List<String> sscc) {
+        return materialKanbanMapper.materialInfoBySSCC(sscc);
     }
 }
 

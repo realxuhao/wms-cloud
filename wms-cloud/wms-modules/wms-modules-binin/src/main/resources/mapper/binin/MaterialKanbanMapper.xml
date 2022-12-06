@@ -73,5 +73,69 @@
         </if>
     </select>
 
+    <select id="materialInfoList" parameterType="string" resultType="com.bosch.binin.api.domain.vo.MaterialInfoVO">
+        SELECT
+        bs.batch_nb,
+        mm.name AS material_name,
+        mk.id,
+        mk.order_number,
+        bs.plant_nb as factory_code,
+        bs.ware_code,
+        bs.area_code,
+        bs.bin_code,
+        mk.material_code,
+        mk.quantity,
+        mk.move_type,
+        mk.sscc_number,
+        mk.cell,
+        mk.type,
+        mk.status,
+        mk.create_by,
+        mk.update_by,
+        mk.create_time,
+        mk.update_time
+        FROM material_kanban mk
+        LEFT JOIN (SELECT * FROM bi_stock where delete_flag='0')bs ON mk.sscc_number = bs.sscc_number
+        LEFT JOIN (SELECT * from md_material where delete_flag='0' )mm ON mk.material_code=mm.code
+        WHERE 1=1 AND mk.delete_flag='0'
+        <if test="wareCode != null and wareCode != ''">
+            AND  bs.ware_code=#{wareCode}
+        </if>
+        <if test="sscc != null and sscc != ''">
+            AND  mk.sscc_number=#{sscc}
+        </if>
 
+
+    </select>
+
+    <select id="materialInfoBySSCC" parameterType="string" resultType="com.bosch.binin.api.domain.vo.MaterialInfoVO">
+        SELECT
+        bs.batch_nb,
+        mm.name AS material_name,
+        mk.id,
+        mk.order_number,
+        bs.plant_nb as factory_code,
+        bs.ware_code,
+        bs.area_code,
+        bs.bin_code,
+        mk.material_code,
+        mk.quantity,
+        mk.move_type,
+        mk.sscc_number,
+        mk.cell,
+        mk.type,
+        mk.status,
+        mk.create_by,
+        mk.update_by,
+        mk.create_time,
+        mk.update_time
+        FROM material_kanban mk
+        LEFT JOIN (SELECT * FROM bi_stock where delete_flag='0')bs ON mk.sscc_number = bs.sscc_number
+        LEFT JOIN (SELECT * from md_material where delete_flag='0' )mm ON mk.material_code=mm.code
+        WHERE 1=1 AND mk.delete_flag='0' AND  mk.sscc_number in
+
+        <foreach collection="ssccList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
 </mapper>

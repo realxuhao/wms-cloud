@@ -4,6 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.MaterialCall;
 
+import com.bosch.binin.api.domain.TranshipmentOrder;
+import com.bosch.binin.api.domain.dto.TranshipmentOrderDTO;
+import com.bosch.binin.api.domain.vo.MaterialInfoVO;
+import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.service.IMaterialCallService;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -13,12 +17,17 @@ import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.service.IMaterialKanbanService;
+import com.bosch.binin.service.ITranshipmentOrderService;
+import com.bosch.binin.utils.BeanConverUtil;
+import com.bosch.masterdata.api.domain.Bin;
+import com.bosch.masterdata.api.domain.vo.MaterialTypeVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
@@ -35,6 +44,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.ruoyi.common.core.utils.PageUtils.startPage;
 
@@ -44,6 +54,8 @@ import static com.ruoyi.common.core.utils.PageUtils.startPage;
 @RequestMapping("/materialKanban")
 public class MaterialKanbanController {
 
+    @Autowired
+    private ITranshipmentOrderService transhipmentOrderService;
     @Autowired
     private IMaterialKanbanService materialKanbanService;
     @Autowired
@@ -215,7 +227,7 @@ public class MaterialKanbanController {
             LambdaQueryWrapper<MaterialKanban> qw = new LambdaQueryWrapper<>();
             qw.eq(MaterialKanban::getId, id);
             qw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-            qw.last("for update");
+            qw.last("for update ");
             MaterialKanban materialKanban = materialKanbanService.getOne(qw);
             //kanban 修改取消状态
             materialKanbanService.updateKanban(id);
@@ -236,7 +248,7 @@ public class MaterialKanbanController {
     @ApiOperation("待收料列表")
     public R<PageVO<MaterialKanbanVO>> receivingMaterial(@RequestBody MaterialKanbanDTO dto) {
         String wareCode = SecurityUtils.getWareCode();
-        //dto.setStatus(KanbanStatusEnum.LINE_RECEIVING.value());
+
         dto.setWareCode(wareCode);
         startPage();
         List<MaterialKanbanVO> list = materialKanbanService.receivingMaterialList(dto);
@@ -247,10 +259,120 @@ public class MaterialKanbanController {
     @ApiOperation("已收料列表")
     public R<PageVO<MaterialKanbanVO>> receivedMaterial(@RequestBody MaterialKanbanDTO dto) {
         String wareCode = SecurityUtils.getWareCode();
-        //dto.setStatus(KanbanStatusEnum.LINE_RECEIVING.value());
+
         dto.setWareCode(wareCode);
         startPage();
         List<MaterialKanbanVO> list = materialKanbanService.receivedMaterialList(dto);
         return R.ok(new PageVO<>(list,new PageInfo<>(list).getTotal()));
     }
+
+    @PostMapping(value = "/materialInfo")
+    @ApiOperation("根据SSCC码查询收料信息接口")
+    public R<PageVO<MaterialInfoVO>> materialInfo(@RequestParam(value ="mesBarCode") String mesBarCode) {
+        String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+        String wareCode = SecurityUtils.getWareCode();
+
+        startPage();
+        List<MaterialInfoVO> materialInfoVOS = materialKanbanService.materialInfoList(sscc, wareCode);
+
+        return R.ok(new PageVO<>(materialInfoVOS,new PageInfo<>(materialInfoVOS).getTotal()));
+    }
+
+    @PostMapping(value = "/genOrderAndSetStatus")
+    @ApiOperation("生成转运单号,修改对应任务状态为主库待收货")
+    @Transactional(rollbackFor = Exception.class)
+    public R genTranshipmentOrder(@RequestBody List<TranshipmentOrderDTO> list) {
+        try{
+            long l = System.currentTimeMillis();
+            List<String> ssccs=new ArrayList<>();
+            list.forEach(r->{
+                r.setOrderNumber(Long.toString(l));
+                ssccs.add(r.getSsccNumber());
+            });
+            List<TranshipmentOrder> transhipmentOrders = BeanConverUtil.converList(list, TranshipmentOrder.class);
+            //生成转运单
+            boolean b = transhipmentOrderService.saveBatch(transhipmentOrders);
+            //更新任务状态为主库待收货
+            int i = materialKanbanService.updateKanbanBySSCC(ssccs, KanbanStatusEnum.INNER_RECEIVING.value());
+            return R.ok();
+        }catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            return R.fail(ex.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/getTranshipmentOrder")
+    @ApiOperation("转运单查询")
+    public R<List<MaterialInfoVO>> getTranshipmentOrder(@RequestParam(value ="sscc") String sscc) {
+
+        try {
+            String order= transhipmentOrderService.getOrderBySSCC(sscc);
+            //根据运单号获取相关sscc
+            List<TranshipmentOrder> ssccByOrder = transhipmentOrderService.getSSCCByOrder(order);
+            if(CollectionUtils.isEmpty(ssccByOrder)){
+                throw new ServiceException("根据运单号未获取相关sscc");
+            }
+            List<String> collect =
+                    ssccByOrder.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
+            //根据sscc获取kanban信息
+            List<MaterialInfoVO> materialInfoVOS = materialKanbanService.materialInfoBySSCC(collect);
+            return R.ok(materialInfoVOS);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return R.fail(ex.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/validNumberInOrder")
+    @ApiOperation("校验选择的sscc在不在转运单中")
+    public R validNumberInOrder(@RequestParam(value ="sscc") List<String> sscc) {
+
+        try {
+            if (CollectionUtils.isEmpty(sscc)){
+                throw new ServiceException("请选择数据");
+            }
+            //获取运单信息
+            List<TranshipmentOrder> infoBySSCC = transhipmentOrderService.getInfoBySSCC(sscc);
+            if (CollectionUtils.isEmpty(infoBySSCC)){
+                throw new ServiceException("未获取到运单信息");
+            }
+            if(infoBySSCC.size()!=sscc.size()){
+                for (String s : sscc) {
+                    TranshipmentOrder oneBySSCC = transhipmentOrderService.getOneBySSCC(s);
+                    if (oneBySSCC==null){
+                        throw new ServiceException("ssccnumber:"+s+"不在入库清单中或已入库完成");
+                    }
+
+                }
+            }
+            return R.ok();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return R.fail(ex.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/updateKanbanStatus")
+    @ApiOperation("修改kanban状态")
+    @Transactional(rollbackFor = Exception.class)
+    public R updateKanbanStatus(@RequestBody List<String> ssccs,@RequestParam("status") Integer status) {
+        try{
+
+            if (CollectionUtils.isEmpty(ssccs)){
+                throw  new ServiceException("列表为空");
+            }
+            if ( KanbanStatusEnum.getDesc(status.toString())==null){
+                throw  new ServiceException("请传入正确状态");
+            }
+            //更新任务状态
+            int i = materialKanbanService.updateKanbanBySSCC(ssccs, status);
+            return R.ok();
+        }catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            return R.fail(ex.getMessage());
+        }
+    }
+
+
+
 }

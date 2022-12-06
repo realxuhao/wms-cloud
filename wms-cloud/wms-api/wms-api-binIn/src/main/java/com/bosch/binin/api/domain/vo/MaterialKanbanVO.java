@@ -117,7 +117,15 @@ public class MaterialKanbanVO extends BaseEntity {
      * 状态
      */
     @ExcelProperty(value = "状态")
-    @ApiModelProperty(value = "状态：0：待下发（源工厂为7751的没有） 1：已下发 2：已下架（下架时PDA扫描SSCC）、配送完成（产线PDA扫描接收）")
+    @ApiModelProperty(value = "(-1,\"取消任务\"),\n" +
+            "(0, \"待下发\"),\n" +
+            "(1, \"待下架\"),\n" +
+            "(2, \"外库已下架\"),\n" +
+            "(3, \"主库已下架\"),\n" +
+            "(4, \"主库待收货\"),\n" +
+            "(5, \"主库入库\"),\n" +
+            "(6, \"主库上架\"),\n" +
+            " (7, \"产线收货\");")
     private Integer status;
     /**
      * 状态描述

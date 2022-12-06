@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.binin.api.domain.MaterialCall;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
+import com.bosch.binin.api.domain.vo.MaterialInfoVO;
+import com.bosch.binin.api.domain.vo.StockVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -25,4 +28,7 @@ public interface MaterialKanbanMapper extends BaseMapper<MaterialKanban> {
 
     public List<MaterialKanban> receivedMaterialList(MaterialKanbanDTO dto);
 
+    List<MaterialInfoVO> materialInfoList (String sscc,String wareCode);
+
+    List<MaterialInfoVO> materialInfoBySSCC(@Param("ssccList") List<String> ssccList);
 }
