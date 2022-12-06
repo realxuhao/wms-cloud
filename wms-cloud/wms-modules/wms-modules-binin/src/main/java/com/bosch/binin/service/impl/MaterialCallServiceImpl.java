@@ -84,6 +84,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
                     .orderByDesc(MaterialCall::getCreateTime);
         }
         List<MaterialCall> materialCalls = materialCallMapper.selectList(queryWrapper);
+
         return materialCalls;
     }
 

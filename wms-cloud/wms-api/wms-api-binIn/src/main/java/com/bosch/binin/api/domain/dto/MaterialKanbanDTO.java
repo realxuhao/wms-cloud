@@ -77,15 +77,18 @@ public class MaterialKanbanDTO extends PageDomain {
     /**
      * 状态
      */
-    @ApiModelProperty(value = "(-1,\"取消任务\"),\n" +
-            "(0, \"待下发\"),\n" +
-            "(1, \"待下架\"),\n" +
-            "(2, \"外库已下架\"),\n" +
-            "(3, \"主库已下架\"),\n" +
-            "(4, \"主库待收货\"),\n" +
-            "(5, \"主库入库\"),\n" +
-            "(6, \"主库上架\"),\n" +
-            " (7, \"产线收货\");")
+    @ApiModelProperty(value = "CANCEL(-1,\"取消任务\"),\n" +
+            "WAITING_ISSUE(0, \"待下发\"),\n" +
+            "WAITING_BIN_DOWN(1, \"待下架\"),\n" +
+            "OUT_DOWN(2, \"外库待发运\"),\n" +
+            "INNER_DOWN(3, \"产线待收货（下架扫描之后）\"),\n" +
+            "INNER_RECEIVING(4, \"主库待收货\"),\n" +
+            "\n" +
+            "INNER_BIN_IN(5, \"待上架\"),\n" +
+            "\n" +
+            "LINE_RECEIVED(6, \"产线已收货\"),\n" +
+            "\n" +
+            "FINISH(7, \"完成\");")
     private Integer status;
 
     /** 创建者 */

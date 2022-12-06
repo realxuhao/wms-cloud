@@ -87,7 +87,7 @@ public class WareShift extends BaseEntity {
     /**
      * 状态：待下架（来自于②）、待发运（外库pda下架）、待收货（外库发运扫描）、已收货（目的仓库收货扫描）、已上架（pda扫描上架
      */
-    private Integer state;
+    private Integer status;
 
     /**
      * 删除标记1：删除，0:可用

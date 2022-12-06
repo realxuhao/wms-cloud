@@ -69,4 +69,9 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
 
     }
+
+    @Override
+    public void binDown(String ssccNb) {
+
+    }
 }

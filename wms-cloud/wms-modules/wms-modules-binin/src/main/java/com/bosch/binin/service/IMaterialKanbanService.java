@@ -93,4 +93,8 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
      * @return
      */
     List<MaterialInfoVO> materialInfoBySSCC(List<String> sscc);
+
+    void binDown(String sscc);
+
+    IPage<MaterialKanbanVO> pagebinDownList(PageDomain pageDomain,String wareCode);
 }

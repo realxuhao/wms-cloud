@@ -33,4 +33,6 @@ public interface IBinInService extends IService<BinIn> {
     int deleteBinInById(Long id);
 
     List<BinInVO> selectProcessingBinVOList(BinInQueryDTO binInQueryDTO);
+
+    void binDown(String ssccNumber);
 }

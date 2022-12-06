@@ -168,6 +168,10 @@ public class MaterialFeedingController extends BaseController {
 
         List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
         pageInfo.setList(materialCallVOS);
+        List<String> materialNbs = materialCallVOS.stream().map(MaterialCallVO::getMaterialNb).collect(Collectors.toList());
+        //获取物料名称
+
+
         return R.ok(new PageVO<>(materialCallVOS, pageInfo.getTotal()));
 
     }

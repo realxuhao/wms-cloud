@@ -17,6 +17,7 @@ import com.bosch.binin.api.enumeration.KanbanActionTypeEnum;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
+import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IMaterialKanbanService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.service.IWareShiftService;
@@ -27,6 +28,7 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.web.page.PageDomain;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +54,9 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
     @Autowired
     private IWareShiftService wareShiftService;
+
+    @Autowired
+    private IBinInService binInService;
 
     @Override
     public IPage<MaterialKanbanVO> pageList(MaterialKanbanDTO dto) {
@@ -340,6 +345,63 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
+    public void binDown(String ssccNb) {
+        LambdaQueryWrapper<MaterialKanban> kanbanLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        kanbanLambdaQueryWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
+        kanbanLambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        kanbanLambdaQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+        kanbanLambdaQueryWrapper.last("for update");
+        MaterialKanban kanban = materialKanbanMapper.selectOne(kanbanLambdaQueryWrapper);
+        if (Objects.isNull(kanban) || !KanbanStatusEnum.WAITING_BIN_DOWN.value().equals(kanban.getStatus())) {
+            throw new ServiceException("任务状态过期，请刷新后重试");
+        }
+
+        //在移库任务中查询
+        LambdaQueryWrapper<WareShift> wareShiftLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        wareShiftLambdaQueryWrapper.eq(WareShift::getSsccNb, ssccNb);
+        wareShiftLambdaQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE);
+        wareShiftLambdaQueryWrapper.eq(WareShift::getStatus, KanbanStatusEnum.WAITING_BIN_DOWN);
+        WareShift wareShift = wareShiftMapper.selectOne(wareShiftLambdaQueryWrapper);
+        //移库任务修改状态
+        if (wareShift != null) {
+            wareShift.setStatus(KanbanStatusEnum.INNER_RECEIVING.value());
+            wareShiftMapper.updateById(wareShift);
+        }
+
+        //状态修改为外库已下架
+        kanban.setStatus(KanbanStatusEnum.OUT_DOWN.value());
+        materialKanbanMapper.updateById(kanban);
+
+        //执行下架
+        binInService.binDown(ssccNb);
+
+
+    }
+
+    @Override
+    public IPage<MaterialKanbanVO> pagebinDownList(PageDomain pageDomain,String wareCode) {
+        IPage<MaterialKanban> page = new Page<>();
+        if (pageDomain.getPageNum() != null && pageDomain.getPageSize() != null) {
+            page = new Page<>(pageDomain.getPageNum(), pageDomain.getPageSize());
+        }
+        //查询条件
+        LambdaQueryWrapper<MaterialKanban> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+
+        lambdaQueryWrapper.like(MaterialKanban::getWareCode, wareCode);
+
+        lambdaQueryWrapper.ge(MaterialKanban::getStatus, KanbanStatusEnum.OUT_DOWN.value());
+        lambdaQueryWrapper.le(MaterialKanban::getStatus, KanbanStatusEnum.INNER_DOWN.value());
+        lambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        IPage<MaterialKanban> materialKanbanIPage = materialKanbanMapper.selectPage(page, lambdaQueryWrapper);
+        //mp提供了convert方法,将数据重新封装
+        return materialKanbanIPage.convert(u -> {
+            MaterialKanbanVO v = new MaterialKanbanVO();
+            BeanUtils.copyProperties(u, v);//拷贝
+            return v;
+        });
+    }
+
+    @Override
     public List<MaterialKanbanVO> receivedMaterialList(MaterialKanbanDTO dto) {
 
 
@@ -349,8 +411,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
-    public List<MaterialInfoVO> materialInfoList(String sscc,String wareCode) {
-        List<MaterialInfoVO> materialInfoVOS = materialKanbanMapper.materialInfoList(sscc,wareCode);
+    public List<MaterialInfoVO> materialInfoList(String sscc, String wareCode) {
+        List<MaterialInfoVO> materialInfoVOS = materialKanbanMapper.materialInfoList(sscc, wareCode);
         return materialInfoVOS;
     }
 
@@ -360,18 +422,19 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         materialKanban.setStatus(status);
         LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
         uw.in(MaterialKanban::getId, ids);
-        uw.ne(MaterialKanban::getStatus,KanbanStatusEnum.CANCEL);
+        uw.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL);
         uw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 
         return materialKanbanMapper.update(materialKanban, uw);
     }
+
     @Override
     public int updateKanbanBySSCC(List<String> ssccs, Integer status) {
         MaterialKanban materialKanban = new MaterialKanban();
         materialKanban.setStatus(status);
         LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
         uw.in(MaterialKanban::getSsccNumber, ssccs);
-        uw.ne(MaterialKanban::getStatus,KanbanStatusEnum.CANCEL);
+        uw.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL);
         uw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 
         return materialKanbanMapper.update(materialKanban, uw);

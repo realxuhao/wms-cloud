@@ -306,6 +306,33 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         return binInMapper.selectProcessingBinVOList(binInQueryDTO);
     }
 
+    @Override
+    public void binDown(String ssccNumber) {
+        LambdaQueryWrapper<BinIn> bininQueryMapper = new LambdaQueryWrapper<>();
+        bininQueryMapper.eq(BinIn::getSsccNumber, ssccNumber);
+        bininQueryMapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        BinIn binIn = binInMapper.selectOne(bininQueryMapper);
+        if (binIn == null || binIn.getStatus().equals(BinInStatusEnum.PROCESSING.value())) {
+            throw new ServiceException("上架信息不存在或者正在上架中，不可下架");
+        }
+        binIn.setUpdateBy(SecurityUtils.getUsername());
+        binIn.setUpdateTime(new Date());
+        binIn.setDeleteFlag(DeleteFlagStatus.FALSE.getCode());
+        //更新库存
+        LambdaQueryWrapper<Stock> stockQuertMapper = new LambdaQueryWrapper<>();
+        stockQuertMapper.eq(Stock::getSsccNumber, ssccNumber);
+        stockQuertMapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        Stock stock = stockMapper.selectOne(stockQuertMapper);
+        if (stock == null) {
+            throw new ServiceException("对应库存不存在");
+        }
+        stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
+        stock.setUpdateBy(SecurityUtils.getUsername());
+        stock.setUpdateTime(new Date());
+        binInMapper.updateById(binIn);
+        stockMapper.updateById(stock);
+    }
+
     private BinVO getBinVOByBinCode(String binCode) {
         R<BinVO> binInfoByCodeResult = remoteMasterDataService.getBinInfoByCode(binCode);
         if (StringUtils.isNull(binInfoByCodeResult) || StringUtils.isNull(binInfoByCodeResult.getData())) {

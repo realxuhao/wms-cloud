@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.binin.mapper.MaterialCallMapper">
+
+
+    <select id="getMaterialCallVOs" resultType="com.bosch.binin.api.domain.vo.MaterialCallVO">
+        select mc.id          as id,
+               mc.material_nb as material_nb,
+               mc.quantity as quantity,
+               mc.unit as unit,
+               mc.remark as remark,
+               mc.cell as cell,
+               mc.sort_type as sort_type,
+               mc.status,
+               mc.create_by,
+               mc.update_by,
+               mc.create_time,
+               mc.update_time,
+               mc.issued_quantity
+                mm.name as materialName
+        from material_call mc,
+             md_material mm where mc.material_nb=mm.code and mc.delete_flag!=0 and mm.delete_flag!=0 and
+    </select>
+</mapper>

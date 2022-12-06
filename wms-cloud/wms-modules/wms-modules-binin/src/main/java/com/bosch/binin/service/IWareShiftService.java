@@ -12,4 +12,6 @@ import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
  **/
 public interface IWareShiftService extends IService<WareShift> {
     Boolean addShiftRequirement(AddShiftTaskDTO dto);
+
+    void binDown(String ssccNb);
 }
