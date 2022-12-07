@@ -7,7 +7,14 @@ import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
+import com.bosch.binin.api.domain.dto.BinInDTO;
+import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
+import com.bosch.binin.api.domain.vo.BinInVO;
+import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.binin.api.enumeration.KanbanStatusEnum;
+import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
+import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IMaterialKanbanService;
 import com.bosch.binin.service.IWareShiftService;
 import com.bosch.binin.service.IStockService;
@@ -15,12 +22,15 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import sun.plugin2.main.client.PrintBandDescriptor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @program: wms-cloud
@@ -35,9 +45,15 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     @Autowired
     private IStockService stockService;
 
-
     @Autowired
     private WareShiftMapper wareShiftMapper;
+
+    @Autowired
+    private IBinInService binInService;
+
+    @Autowired
+    private MaterialKanbanMapper kanbanMapper;
+
     @Override
     public Boolean addShiftRequirement(AddShiftTaskDTO dto) {
         List<String> ssccNbList = dto.getSsccNbList();
@@ -77,7 +93,54 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     @Override
     public void binDown(String ssccNb) {
 
+        LambdaQueryWrapper<WareShift> wareShiftLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        wareShiftLambdaQueryWrapper.eq(WareShift::getSsccNb, ssccNb);
+        wareShiftLambdaQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        wareShiftLambdaQueryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
+        wareShiftLambdaQueryWrapper.last("for update");
+        WareShift wareShift = wareShiftMapper.selectOne(wareShiftLambdaQueryWrapper);
+        if (Objects.isNull(wareShift) || !KanbanStatusEnum.WAITING_BIN_DOWN.value().equals(wareShift.getStatus())) {
+            throw new ServiceException("任务状态过期，请刷新后重试");
+        }
+
+        //在kanban任务中查询
+        LambdaQueryWrapper<MaterialKanban> kanbanQueryWrapper = new LambdaQueryWrapper<>();
+        kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
+        kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE);
+        kanbanQueryWrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.WAITING_BIN_DOWN);
+        MaterialKanban materialKanban = kanbanMapper.selectOne(kanbanQueryWrapper);
+        //kanban任务修改状态
+        if (materialKanban != null) {
+            materialKanban.setStatus(KanbanStatusEnum.INNER_RECEIVING.value());
+            kanbanMapper.updateById(materialKanban);
+        }
+
+        //状态修改为外库已下架
+        wareShift.setStatus(KanbanStatusEnum.OUT_DOWN.value());
+        wareShiftMapper.updateById(wareShift);
+
+        //执行下架
+        binInService.binDown(ssccNb);
     }
+
+    @Override
+    public BinInVO allocateBin(String mesBarCode) {
+        //分配库位信息
+        BinInVO binInVO = binInService.getByMesBarCode(mesBarCode);
+
+
+        return binInVO;
+    }
+
+    @Override
+    public List<WareShift> getMaterialCallList(WareShiftQueryDTO queryDTO) {
+        LambdaQueryWrapper<WareShift> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WareShift::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.eq(WareShift::getStatus,KanbanStatusEnum.INNER_RECEIVING.value());
+        List<WareShift> wareShiftList = wareShiftMapper.selectList(queryWrapper);
+        return wareShiftList;
+    }
+
 
     @Override
     public int updateStatusByStatus(List<String> ssccs, Integer queryStatus, Integer status) {
@@ -85,7 +148,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         wareShift.setStatus(status);
         LambdaUpdateWrapper<WareShift> uw = new LambdaUpdateWrapper<>();
         uw.in(WareShift::getSsccNb, ssccs);
-        uw.eq(WareShift::getStatus,queryStatus);
+        uw.eq(WareShift::getStatus, queryStatus);
         uw.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 
         return wareShiftMapper.update(wareShift, uw);

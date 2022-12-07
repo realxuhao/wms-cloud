@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.MaterialCall;
 
 import com.bosch.binin.api.domain.TranshipmentOrder;
+import com.bosch.binin.api.domain.dto.SplitPalletDTO;
 import com.bosch.binin.api.domain.dto.TranshipmentOrderDTO;
 import com.bosch.binin.api.domain.vo.MaterialInfoVO;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
@@ -66,6 +67,7 @@ public class MaterialKanbanController {
 
     @Autowired
     private IStockService stockService;
+
     @PostMapping(value = "/list")
     @ApiOperation("查询kanban列表")
     public R<PageVO<MaterialKanbanVO>> list(@RequestBody MaterialKanbanDTO materialKanbanDTO) {
@@ -98,7 +100,7 @@ public class MaterialKanbanController {
     }
 
 
-    @PutMapping(value = "/issueJob/{ssccNumber}")
+    @PutMapping(value = "/issueJob/{ssccNumbers}")
     @ApiOperation("批量下发任务接口")
     public R issueJob(@PathVariable String[] ssccNumbers) {
         materialKanbanService.issueJob(ssccNumbers);
@@ -111,6 +113,14 @@ public class MaterialKanbanController {
         materialKanbanService.binDown(ssccNb);
         return R.ok(ssccNb + "下架成功");
     }
+
+    @PostMapping(value = "splitPallet")
+    @ApiOperation("拆托")
+    public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
+        materialKanbanService.splitPallet(splitPallet);
+        return null;
+    }
+
 
     @GetMapping(value = "/getWaitingJob/{mesBarCode}")
     @ApiOperation("扫码查询待下架任务信息")
@@ -256,6 +266,9 @@ public class MaterialKanbanController {
             //sscc库存可用 冻结修改
             materialKanbanService.updateStockBySSCC(materialKanban.getSsccNumber(),
                     materialKanban.getQuantity());
+            //TODO
+            //根据不同状态去看是否进行上架操作
+
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             return R.fail(ex.getMessage());
@@ -329,7 +342,7 @@ public class MaterialKanbanController {
             //生成转运单
             boolean b = transhipmentOrderService.saveBatch(transhipmentOrders);
             //更新kanban状态为主库待收货
-            int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs,KanbanStatusEnum.OUT_DOWN.value(), KanbanStatusEnum.INNER_RECEIVING.value());
+            int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs, KanbanStatusEnum.OUT_DOWN.value(), KanbanStatusEnum.INNER_RECEIVING.value());
             //更新移库表为主库待收货
             int updateWare = wareShiftService.updateStatusByStatus(ssccs, KanbanStatusEnum.OUT_DOWN.value(),
                     KanbanStatusEnum.INNER_RECEIVING.value());
@@ -352,15 +365,15 @@ public class MaterialKanbanController {
             if (CollectionUtils.isEmpty(ssccByOrder)) {
                 throw new ServiceException("根据运单号未获取相关sscc");
             }
-            List<StockVO> vos=new ArrayList<>();
+            List<StockVO> vos = new ArrayList<>();
             List<String> collect =
                     ssccByOrder.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
             //*根据sscc获取kanban信息
             //根据sscc获取stock信息
-            collect.stream().forEach(r->{
+            collect.stream().forEach(r -> {
                 StockVO oneBySSCC = stockService.getOneBySSCC(r);
-                if(oneBySSCC==null){
-                    throw new ServiceException("根据sscc"+r+"未获取到库存信息");
+                if (oneBySSCC == null) {
+                    throw new ServiceException("根据sscc" + r + "未获取到库存信息");
                 }
                 vos.add(oneBySSCC);
             });
@@ -418,7 +431,7 @@ public class MaterialKanbanController {
                 throw new ServiceException("请选择数据");
             }
             //更新kanban状态为待上架
-            int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs,KanbanStatusEnum.INNER_RECEIVING.value(), KanbanStatusEnum.INNER_BIN_IN.value());
+            int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs, KanbanStatusEnum.INNER_RECEIVING.value(), KanbanStatusEnum.INNER_BIN_IN.value());
             //更新移库表为待上架
             int updateWare = wareShiftService.updateStatusByStatus(ssccs, KanbanStatusEnum.INNER_RECEIVING.value(),
                     KanbanStatusEnum.INNER_BIN_IN.value());
@@ -429,9 +442,10 @@ public class MaterialKanbanController {
             return R.fail(ex.getMessage());
         }
     }
-    @GetMapping(value = "/getKanbanBySSCC")
+
+    @PostMapping(value = "/getKanbanBySSCC")
     @ApiOperation("根据barcode的sscc获取kanban数据 注：若返回600为移库任务")
-    public R getKanbanBySSCC(@RequestParam(value = "mesBarCode")String mesBarCode) {
+    public R getKanbanBySSCC(@RequestParam(value = "mesBarCode") String mesBarCode) {
         try {
             String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
             if (StringUtils.isEmpty(sscc)) {
@@ -439,8 +453,8 @@ public class MaterialKanbanController {
             }
             //根据sscc获取kanban
             MaterialKanbanVO kanbanBySSCC = materialKanbanService.getKanbanBySSCC(sscc);
-            if (kanbanBySSCC==null){
-                return R.ok(600,"移库任务");
+            if (kanbanBySSCC == null) {
+                return R.ok(600, "移库任务");
             }
             return R.ok(kanbanBySSCC);
         } catch (Exception ex) {
@@ -452,20 +466,20 @@ public class MaterialKanbanController {
     @GetMapping(value = "/deliver")
     @ApiOperation("整托下架配送接口")
     @Transactional(rollbackFor = Exception.class)
-    public R deliver(@RequestParam(value = "sscc")String sscc) {
+    public R deliver(@RequestParam(value = "sscc") String sscc) {
         try {
             //String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
             if (StringUtils.isEmpty(sscc)) {
                 throw new ServiceException("请选择数据");
             }
-            List<String> ssccs=new ArrayList<>();
+            List<String> ssccs = new ArrayList<>();
             ssccs.add(sscc);
             //更新kanban状态从 待上架  到 产线待收货
-            int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs,KanbanStatusEnum.INNER_BIN_IN.value(), KanbanStatusEnum.INNER_DOWN.value());
+            int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs, KanbanStatusEnum.INNER_BIN_IN.value(), KanbanStatusEnum.INNER_DOWN.value());
             //更新移库表从 待上架 到 完成
             int updateWare = wareShiftService.updateStatusByStatus(ssccs, KanbanStatusEnum.INNER_BIN_IN.value(),
                     KanbanStatusEnum.FINISH.value());
-            if(updateKanban<=0){
+            if (updateKanban <= 0) {
                 return R.fail("配送失败，请刷新重试");
             }
             return R.ok();

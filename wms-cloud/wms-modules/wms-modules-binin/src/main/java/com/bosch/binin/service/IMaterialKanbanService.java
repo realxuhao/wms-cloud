@@ -6,6 +6,7 @@ import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
+import com.bosch.binin.api.domain.dto.SplitPalletDTO;
 import com.bosch.binin.api.domain.vo.MaterialInfoVO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
@@ -109,4 +110,6 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     List<MaterialKanban> getListBySCAndStatus(List<String> sscc, Integer status);
 
     MaterialKanbanVO getKanbanBySSCC(String sscc);
+
+    void splitPallet(SplitPalletDTO splitPallet);
 }

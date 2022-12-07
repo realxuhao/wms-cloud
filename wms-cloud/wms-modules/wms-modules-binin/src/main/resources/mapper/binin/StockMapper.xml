@@ -91,12 +91,12 @@
         bs.bin_in_id as bin_in_id,
         bs.create_by as create_by,
         bs.create_time as create_time,
-        bs.quality_status as quality_status
-        -- ma.code as area_code
+        bs.quality_status as quality_status,
+        bs.area_code as area_code,
+        bs.pallet_code as pallet_code
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code
-        -- left join md_area ma on ma.ware_id = mw.id
         left join md_material mm on bs.material_nb = mm.code
         where bs.delete_flag=0 and bs.sscc_number in
         <foreach collection="ssccList" index="index" item="item" open="(" separator="," close=")">

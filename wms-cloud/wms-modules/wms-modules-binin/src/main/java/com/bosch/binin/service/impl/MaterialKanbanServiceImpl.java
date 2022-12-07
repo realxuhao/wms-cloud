@@ -5,13 +5,16 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
+import com.bosch.binin.api.domain.dto.SplitPalletDTO;
 import com.bosch.binin.api.domain.vo.MaterialInfoVO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanActionTypeEnum;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
@@ -22,6 +25,7 @@ import com.bosch.binin.service.IMaterialKanbanService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.service.IWareShiftService;
 import com.bosch.binin.utils.BeanConverUtil;
+import com.bosch.storagein.api.enumeration.MaterialStatusEnum;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.StatusEnums;
@@ -30,6 +34,8 @@ import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.page.PageDomain;
+import com.ruoyi.common.security.utils.SecurityUtils;
+import net.bytebuddy.implementation.bytecode.ShiftLeft;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,6 +64,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
     @Autowired
     private IBinInService binInService;
+
 
     @Override
     public IPage<MaterialKanbanVO> pageList(MaterialKanbanDTO dto) {
@@ -108,9 +115,14 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         LambdaQueryWrapper<MaterialKanban> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(MaterialKanban::getMaterialCode, materialNb);
         lambdaQueryWrapper.eq(MaterialKanban::getWareCode, wareCode);
+        lambdaQueryWrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.WAITING_ISSUE.value());
+        lambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<MaterialKanban> kanbanList = materialKanbanMapper.selectList(lambdaQueryWrapper);
         List<String> ssccList = kanbanList.stream().map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
 
+        if (CollectionUtils.isEmpty(ssccList)) {
+            return Collections.emptyList();
+        }
         List<StockVO> stockVOS = stockMapper.selectStockVOListBySSCCList(ssccList);
         return stockVOS;
     }
@@ -230,7 +242,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         LambdaQueryWrapper<MaterialKanban> kanbanLambdaQueryWrapper = new LambdaQueryWrapper<>();
         kanbanLambdaQueryWrapper.in(MaterialKanban::getSsccNumber, ssccNumberList);
         kanbanLambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-//        kanbanLambdaQueryWrapper.eq(MaterialKanban::getStatus, KanbanPerformTypeEnum.WAIT_ISSUE.value());
+        kanbanLambdaQueryWrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.WAITING_ISSUE.value());
 
         List<MaterialKanban> kanbanList = materialKanbanMapper.selectList(kanbanLambdaQueryWrapper);
 
@@ -263,6 +275,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
         //状态变为下发状态
         Map<String, List<Stock>> finalStockMap = stockMap;
+        List<Stock> stockList = new ArrayList<>();
         kanbanList.stream().forEach(item -> {
             //修改任务状态
             item.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
@@ -276,9 +289,13 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
                         .build();
 
                 wareShiftList.add(wareShift);
+                stock.setFreezeStock(stock.getFreezeStock() + stock.getAvailableStock());
+                stockList.add(stock);
             }
         });
 
+        //更新库存状态
+        stockService.updateBatchById(stockList);
         //更新任务状态
         updateBatchById(kanbanList);
         //新增移库任务
@@ -380,7 +397,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
-    public IPage<MaterialKanbanVO> pagebinDownList(PageDomain pageDomain,String wareCode) {
+    public IPage<MaterialKanbanVO> pagebinDownList(PageDomain pageDomain, String wareCode) {
         IPage<MaterialKanban> page = new Page<>();
         if (pageDomain.getPageNum() != null && pageDomain.getPageSize() != null) {
             page = new Page<>(pageDomain.getPageNum(), pageDomain.getPageSize());
@@ -428,13 +445,14 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
         return materialKanbanMapper.update(materialKanban, uw);
     }
+
     @Override
-    public int updateKanbanByStatus(List<String> ssccs,Integer queryStatus,Integer status){
+    public int updateKanbanByStatus(List<String> ssccs, Integer queryStatus, Integer status) {
         MaterialKanban materialKanban = new MaterialKanban();
         materialKanban.setStatus(status);
         LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
         uw.in(MaterialKanban::getSsccNumber, ssccs);
-        uw.eq(MaterialKanban::getStatus,queryStatus);
+        uw.eq(MaterialKanban::getStatus, queryStatus);
         uw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 
         return materialKanbanMapper.update(materialKanban, uw);
@@ -451,6 +469,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
         return materialKanbanMapper.update(materialKanban, uw);
     }
+
     @Override
     public List<MaterialInfoVO> materialInfoBySSCC(List<String> sscc) {
         return materialKanbanMapper.materialInfoBySSCC(sscc);
@@ -460,7 +479,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     public List<MaterialKanban> getListBySCAndStatus(List<String> sscc, Integer status) {
         LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(MaterialKanban::getSsccNumber, sscc);
-        queryWrapper.eq(MaterialKanban::getStatus,status);
+        queryWrapper.eq(MaterialKanban::getStatus, status);
         queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<MaterialKanban> materialKanbans = materialKanbanMapper.selectList(queryWrapper);
         return materialKanbans;
@@ -475,6 +494,64 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryWrapper);
         MaterialKanbanVO conver = BeanConverUtil.conver(materialKanban, MaterialKanbanVO.class);
         return conver;
+    }
+
+    @Override
+    public void splitPallet(SplitPalletDTO splitPallet) {
+
+        //校验quantity
+
+
+        //老任务变为结束
+        LambdaQueryWrapper<MaterialKanban> kanbanQueryWrapper = new LambdaQueryWrapper<>();
+        kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, splitPallet.getSourceSsccNb());
+        kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+        kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+        kanbanQueryWrapper.last("limit 1");
+        kanbanQueryWrapper.last("for update");
+        MaterialKanban materialKanban = materialKanbanMapper.selectOne(kanbanQueryWrapper);
+        if (materialKanban == null) {
+            throw new ServiceException("任务不存在");
+        }
+        if (!materialKanban.getStatus().equals(KanbanStatusEnum.INNER_BIN_IN) || !materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN)) {
+            throw new ServiceException("当前任务状态不正确");
+        }
+
+        materialKanban.setStatus(KanbanStatusEnum.FINISH.value());
+        materialKanban.setUpdateBy(SecurityUtils.getUsername());
+        materialKanban.setUpdateTime(new Date());
+        materialKanbanMapper.updateById(materialKanban);
+
+        //生成一个新任务
+        MaterialKanban newKanban = new MaterialKanban();
+        newKanban.setOrderNumber(materialKanban.getOrderNumber());
+        newKanban.setFactoryCode(materialKanban.getFactoryCode());
+        newKanban.setWareCode(materialKanban.getWareCode());
+        newKanban.setAreaCode(materialKanban.getAreaCode());
+        newKanban.setBinCode(materialKanban.getBinCode());
+        newKanban.setMaterialCode(materialKanban.getMaterialCode());
+        newKanban.setSsccNumber(materialKanban.getSsccNumber());
+        newKanban.setCell(materialKanban.getCell());
+        newKanban.setType(KanbanActionTypeEnum.FULL_BIN_DOWN.value());
+        newKanban.setQuantity(splitPallet.getSplitQuantity());
+        newKanban.setStatus(KanbanStatusEnum.INNER_DOWN.value());
+        newKanban.setCreateBy(SecurityUtils.getUsername());
+        newKanban.setCreateTime(new Date());
+        newKanban.setMoveType(MoveTypeEnums.CALL.getCode());
+        materialKanbanMapper.insert(newKanban);
+        //如果老sscc没有上架，需要生成一个新的上架任务
+
+        LambdaQueryWrapper<BinIn> bininQueryWrapper = new LambdaQueryWrapper<>();
+        bininQueryWrapper.eq(BinIn::getSsccNumber, splitPallet.getSourceSsccNb());
+        bininQueryWrapper.eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
+        bininQueryWrapper.last("limmit 1");
+        BinIn binIn = binInService.getOne(bininQueryWrapper);
+        if (binIn == null) {
+            //生成上架任务
+        }
+
+
     }
 }
 

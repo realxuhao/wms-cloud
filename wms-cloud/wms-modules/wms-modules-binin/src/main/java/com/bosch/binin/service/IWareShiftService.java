@@ -3,6 +3,9 @@ package com.bosch.binin.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
+import com.bosch.binin.api.domain.dto.BinInDTO;
+import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
+import com.bosch.binin.api.domain.vo.BinInVO;
 
 import java.util.List;
 
@@ -25,4 +28,8 @@ public interface IWareShiftService extends IService<WareShift> {
      * @return
      */
     int updateStatusByStatus(List<String> ssccs, Integer queryStatus, Integer status);
+
+    BinInVO allocateBin(String mesBarCode);
+
+    List<WareShift> getMaterialCallList(WareShiftQueryDTO queryDTO);
 }

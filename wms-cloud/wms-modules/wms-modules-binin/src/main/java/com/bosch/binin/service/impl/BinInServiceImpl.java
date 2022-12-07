@@ -4,14 +4,17 @@ import com.alibaba.druid.sql.ast.expr.SQLCaseExpr;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.StockLog;
+import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.BinAllocationDTO;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.FrameRemainVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
-import com.bosch.binin.mapper.StockLogMapper;
+import com.bosch.binin.api.enumeration.KanbanStatusEnum;
+import com.bosch.binin.mapper.*;
 import com.bosch.binin.service.IBinAssignmentService;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.RemoteMaterialService;
@@ -22,8 +25,6 @@ import com.bosch.storagein.api.RemoteMaterialInService;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.dto.BinInQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
-import com.bosch.binin.mapper.BinInMapper;
-import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.RemotePalletService;
@@ -78,6 +79,12 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Autowired
     private IBinAssignmentService binAssignmentService;
+
+    @Autowired
+    private MaterialKanbanMapper kanbanMapper;
+
+    @Autowired
+    private WareShiftMapper wareShiftMapper;
 
     @Override
     public List<BinInVO> selectBinVOList(BinInQueryDTO queryDTO) {
@@ -288,7 +295,39 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         stockLog.setMoveType(MoveTypeEnums.BININ.getCode());
         stockLogMapper.insert(stockLog);
 
+        // 更新kanban和移库状态
+        updateKanbanWareShiftStatus(sscc);
+
+
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
+    }
+
+    private void updateKanbanWareShiftStatus(String ssccNb){
+        //如果是kanban任务
+        LambdaQueryWrapper<MaterialKanban> kanbanQueryWrapper = new LambdaQueryWrapper<>();
+        //待下架任务,该kanban状态，待下架
+        kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
+        kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+        kanbanQueryWrapper.last("limit 1");
+        kanbanQueryWrapper.last("for update");
+        MaterialKanban materialKanban = kanbanMapper.selectOne(kanbanQueryWrapper);
+        if (!Objects.isNull(materialKanban)) {
+            materialKanban.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
+            kanbanMapper.updateById(materialKanban);
+        }
+        //如果是移库任务，需要把状态修改为完成
+        LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
+        wareShiftQueryWrapper.eq(WareShift::getSsccNb, ssccNb);
+        wareShiftQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        wareShiftQueryWrapper.eq(WareShift::getStatus, KanbanStatusEnum.INNER_BIN_IN.value());
+        wareShiftQueryWrapper.last("limit 1");
+        wareShiftQueryWrapper.last("for update");
+        WareShift wareShift = wareShiftMapper.selectOne(wareShiftQueryWrapper);
+        if (!Objects.isNull(wareShift)) {
+            wareShift.setStatus(KanbanStatusEnum.FINISH.value());
+            wareShiftMapper.updateById(wareShift);
+        }
     }
 
     @Override

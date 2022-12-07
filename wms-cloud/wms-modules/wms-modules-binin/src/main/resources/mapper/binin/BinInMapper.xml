@@ -89,31 +89,31 @@
         <if test="status != null ">and bi.status = #{status}</if>
     </select>
     <select id="selectProcessingBinVOList" resultMap="BinInVOResult">
-        select si.id,
-               si.plant_nb,
-               si.ware_code,
-               si.sscc_number,
-               si.batch_nb,
-               si.material_nb,
-               si.check_type,
-               mm.name as material_name,
-               si.check_quantity,
-               si.min_standard,
-               si.max_standard,
-               si.actual_quantity,
-               si.actual_result,
-               si.average_result,
-               si.operate_user,
-               si.operate_time,
-               si.original_pallet_quantity,
-               si.from_purchase_order
-        from si_material_in si
-                 left join md_material mm on si.material_nb = mm.code
-        where si.delete_flag = 0
-          and mm.delete_flag = 0
-          and si.ware_code = #{wareCode}
-          and si.sscc_number not in (select bi.sscc_number from bi_in bi where bi.delete_flag = 1 and bi.status = 0)
-        order by operate_time desc
+        SELECT t.sscc_number,
+               t.material_nb,
+               t.recommend_bin_code,
+               t.create_time,
+               mm.name as materialName
+        FROM (
+                 SELECT bi.sscc_number,
+                        bi.material_nb,
+                        bi.recommend_bin_code,bi.create_time
+                 FROM bi_in bi
+                 where bi.ware_code = #{wareCode}
+                   and bi.status = 0
+                   and bi.delete_flag = 0
+                 UNION
+                 SELECT si.sscc_number,
+                        si.material_nb,
+                        NULL AS recommend_bin_code,
+                        si.operate_time as create_time
+                 FROM si_material_in si
+                 WHERE si.delete_flag = 0 and si.ware_code = #{wareCode}
+                   and si.sscc_number NOT IN (SELECT sscc_number FROM bi_in WHERE  ware_code = #{wareCode} and  delete_flag = 0 AND `status` = 0)) t,
+             md_material mm
+        where mm.delete_flag = 0
+          and mm.`code` = t.material_nb
+        order by t.create_time desc
 
     </select>
 </mapper>
