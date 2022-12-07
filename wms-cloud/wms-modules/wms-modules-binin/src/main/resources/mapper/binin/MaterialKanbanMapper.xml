@@ -14,10 +14,10 @@
         SELECT
         mk.id,
         mk.order_number,
-        bs.plant_nb as factory_code,
-        bs.ware_code,
-        bs.area_code,
-        bs.bin_code,
+        mk.factory_code ,
+        mk.ware_code,
+        mk.area_code,
+        mk.bin_code,
         mk.material_code,
         mk.quantity,
         mk.move_type,
@@ -30,10 +30,9 @@
         mk.create_time,
         mk.update_time
         FROM material_kanban mk
-        LEFT JOIN bi_stock bs ON mk.sscc_number = bs.sscc_number
-        WHERE 1=1 AND mk.delete_flag='0' AND bs.delete_flag='0' AND (mk.status <![CDATA[ <> ]]>  7)
+        WHERE 1=1 AND mk.delete_flag='0'  AND (mk.status <![CDATA[ <> ]]>  7)
         <if test="wareCode != null and wareCode != ''">
-            AND  bs.ware_code=#{wareCode}
+            AND  mk.ware_code=#{wareCode}
         </if>
         <if test="cell != null and cell != ''">
             AND  mk.cell=#{cell}
@@ -44,10 +43,10 @@
         SELECT
         mk.id,
         mk.order_number,
-        bs.plant_nb as factory_code,
-        bs.ware_code,
-        bs.area_code,
-        bs.bin_code,
+        mk.factory_code,
+        mk.ware_code,
+        mk.area_code,
+        mk.bin_code,
         mk.material_code,
         mk.quantity,
         mk.move_type,
@@ -60,10 +59,10 @@
         mk.create_time,
         mk.update_time
         FROM material_kanban mk
-        LEFT JOIN bi_stock bs ON mk.sscc_number = bs.sscc_number
-        WHERE 1=1 AND mk.delete_flag='0' AND bs.delete_flag='0'
+
+        WHERE 1=1 AND mk.delete_flag='0'
         <if test="wareCode != null and wareCode != ''">
-            AND  bs.ware_code=#{wareCode}
+            AND  mk.ware_code=#{wareCode}
         </if>
         <if test="cell != null and cell != ''">
             AND  mk.cell=#{cell}
@@ -95,7 +94,7 @@
         mk.create_time,
         mk.update_time
         FROM material_kanban mk
-        LEFT JOIN (SELECT * FROM bi_stock where delete_flag='0')bs ON mk.sscc_number = bs.sscc_number
+        LEFT JOIN (SELECT * FROM bi_stock )bs ON mk.sscc_number = bs.sscc_number
         LEFT JOIN (SELECT * from md_material where delete_flag='0' )mm ON mk.material_code=mm.code
         WHERE 1=1 AND mk.delete_flag='0'
         <if test="wareCode != null and wareCode != ''">
@@ -104,7 +103,7 @@
         <if test="sscc != null and sscc != ''">
             AND  mk.sscc_number=#{sscc}
         </if>
-
+        limit 1
 
     </select>
 
