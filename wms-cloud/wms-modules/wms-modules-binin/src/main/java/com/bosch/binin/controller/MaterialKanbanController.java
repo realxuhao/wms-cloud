@@ -340,7 +340,7 @@ public class MaterialKanbanController {
         }
     }
 
-    @PostMapping(value = "/getTranshipmentOrder")
+    @GetMapping(value = "/getTranshipmentOrder")
     @ApiOperation("转运单查询")
     public R<List<StockVO>> getTranshipmentOrder(@RequestParam(value = "mesbarCode") String mesbarCode) {
 
@@ -429,7 +429,7 @@ public class MaterialKanbanController {
             return R.fail(ex.getMessage());
         }
     }
-    @PostMapping(value = "/getKanbanBySSCC")
+    @GetMapping(value = "/getKanbanBySSCC")
     @ApiOperation("根据barcode的sscc获取kanban数据 注：若返回600为移库任务")
     public R getKanbanBySSCC(@RequestParam(value = "mesBarCode")String mesBarCode) {
         try {
@@ -449,7 +449,7 @@ public class MaterialKanbanController {
         }
     }
 
-    @PostMapping(value = "/deliver")
+    @GetMapping(value = "/deliver")
     @ApiOperation("整托下架配送接口")
     @Transactional(rollbackFor = Exception.class)
     public R deliver(@RequestParam(value = "sscc")String sscc) {
