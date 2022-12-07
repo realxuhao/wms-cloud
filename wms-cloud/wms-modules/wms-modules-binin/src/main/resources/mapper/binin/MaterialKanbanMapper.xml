@@ -10,9 +10,10 @@
         </foreach>
     </update>
 
-    <select id="receivingMaterialList" parameterType="MaterialKanbanDTO" resultType="com.bosch.binin.api.domain.MaterialKanban">
+    <select id="receivingMaterialList" parameterType="MaterialKanbanDTO" resultType="com.bosch.binin.api.domain.vo.MaterialKanbanVO">
         SELECT
         mk.id,
+        mm.name AS material_name,
         mk.order_number,
         mk.factory_code ,
         mk.ware_code,
@@ -30,6 +31,7 @@
         mk.create_time,
         mk.update_time
         FROM material_kanban mk
+        LEFT JOIN (SELECT * from md_material where delete_flag='0' )mm ON mk.material_code=mm.code
         WHERE 1=1 AND mk.delete_flag='0'  AND (mk.status <![CDATA[ <> ]]>  7)
         <if test="wareCode != null and wareCode != ''">
             AND  mk.ware_code=#{wareCode}
@@ -39,9 +41,10 @@
         </if>
     </select>
 
-    <select id="receivedMaterialList" parameterType="MaterialKanbanDTO" resultType="com.bosch.binin.api.domain.MaterialKanban">
+    <select id="receivedMaterialList" parameterType="MaterialKanbanDTO" resultType="com.bosch.binin.api.domain.vo.MaterialKanbanVO">
         SELECT
         mk.id,
+        mm.name AS material_name,
         mk.order_number,
         mk.factory_code,
         mk.ware_code,
@@ -59,7 +62,7 @@
         mk.create_time,
         mk.update_time
         FROM material_kanban mk
-
+        LEFT JOIN (SELECT * from md_material where delete_flag='0' )mm ON mk.material_code=mm.code
         WHERE 1=1 AND mk.delete_flag='0'
         <if test="wareCode != null and wareCode != ''">
             AND  mk.ware_code=#{wareCode}

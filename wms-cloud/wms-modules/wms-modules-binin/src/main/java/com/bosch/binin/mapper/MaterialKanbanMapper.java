@@ -5,6 +5,7 @@ import com.bosch.binin.api.domain.MaterialCall;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialInfoVO;
+import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -24,9 +25,9 @@ public interface MaterialKanbanMapper extends BaseMapper<MaterialKanban> {
      */
     public int deleteByIds(Long[] ids);
 
-    public List<MaterialKanban> receivingMaterialList(MaterialKanbanDTO dto);
+    public List<MaterialKanbanVO> receivingMaterialList(MaterialKanbanDTO dto);
 
-    public List<MaterialKanban> receivedMaterialList(MaterialKanbanDTO dto);
+    public List<MaterialKanbanVO> receivedMaterialList(MaterialKanbanDTO dto);
 
     List<MaterialInfoVO> materialInfoList (String sscc,String wareCode);
 

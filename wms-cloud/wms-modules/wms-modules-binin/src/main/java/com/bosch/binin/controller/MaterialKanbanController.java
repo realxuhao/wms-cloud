@@ -425,7 +425,7 @@ public class MaterialKanbanController {
     @PostMapping(value = "/confirmOrder")
     @ApiOperation("确认并入库")
     @Transactional(rollbackFor = Exception.class)
-    public R confirmOrder(@RequestParam(value = "sscc") List<String> ssccs) {
+    public R confirmOrder(@RequestBody List<String> ssccs) {
         try {
             if (CollectionUtils.isEmpty(ssccs)) {
                 throw new ServiceException("请选择数据");

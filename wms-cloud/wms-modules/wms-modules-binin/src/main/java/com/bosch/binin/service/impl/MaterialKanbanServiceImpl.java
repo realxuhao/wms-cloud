@@ -356,8 +356,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     public List<MaterialKanbanVO> receivingMaterialList(MaterialKanbanDTO dto) {
 
 
-        List<MaterialKanban> materialKanbans = materialKanbanMapper.receivingMaterialList(dto);
-        List<MaterialKanbanVO> materialKanbanVOS = BeanConverUtil.converList(materialKanbans, MaterialKanbanVO.class);
+
+        List<MaterialKanbanVO> materialKanbanVOS = materialKanbanMapper.receivingMaterialList(dto);
         return materialKanbanVOS;
 
     }
@@ -422,9 +422,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     @Override
     public List<MaterialKanbanVO> receivedMaterialList(MaterialKanbanDTO dto) {
 
-
-        List<MaterialKanban> materialKanbans = materialKanbanMapper.receivedMaterialList(dto);
-        List<MaterialKanbanVO> materialKanbanVOS = BeanConverUtil.converList(materialKanbans, MaterialKanbanVO.class);
+        List<MaterialKanbanVO> materialKanbanVOS = materialKanbanMapper.receivedMaterialList(dto);
         return materialKanbanVOS;
     }
 

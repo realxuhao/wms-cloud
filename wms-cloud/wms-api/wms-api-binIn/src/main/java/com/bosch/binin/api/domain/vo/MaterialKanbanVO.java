@@ -82,6 +82,13 @@ public class MaterialKanbanVO extends BaseEntity {
     @ExcelProperty(value = "料号")
     @ApiModelProperty(value = "料号")
     private String materialCode;
+
+    /**
+     * 料号
+     */
+    @ExcelProperty(value = "物料名称")
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
     /**
      * 数量
      */
