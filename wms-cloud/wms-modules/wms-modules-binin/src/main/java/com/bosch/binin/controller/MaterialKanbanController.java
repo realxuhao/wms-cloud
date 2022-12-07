@@ -300,15 +300,26 @@ public class MaterialKanbanController {
     @PostMapping(value = "/genOrderAndSetStatus")
     @ApiOperation("生成转运单号,修改对应任务状态为主库待收货")
     @Transactional(rollbackFor = Exception.class)
-    public R genTranshipmentOrder(@RequestBody List<TranshipmentOrderDTO> list) {
+    public R genTranshipmentOrder(@RequestBody List<String> mesbarCodes ) {
         try {
-            long l = System.currentTimeMillis();
+            List<TranshipmentOrder> transhipmentOrders =new ArrayList<>();
             List<String> ssccs = new ArrayList<>();
-            list.forEach(r -> {
-                r.setOrderNumber(Long.toString(l));
-                ssccs.add(r.getSsccNumber());
+            long l = System.currentTimeMillis();
+            if(CollectionUtils.isEmpty(mesbarCodes)){
+                throw new ServiceException("请选择数据");
+            }
+            mesbarCodes.forEach(r->{
+                String sscc = MesBarCodeUtil.getSSCC(r);
+                String materialNb = MesBarCodeUtil.getMaterialNb(r);
+                TranshipmentOrder transhipmentOrder = new TranshipmentOrder();
+                transhipmentOrder.setOrderNumber(Long.toString(l));
+                transhipmentOrder.setSsccNumber(sscc);
+                transhipmentOrder.setMaterialCode(materialNb);
+                transhipmentOrders.add(transhipmentOrder);
+                ssccs.add(sscc);
             });
-            List<TranshipmentOrder> transhipmentOrders = BeanConverUtil.converList(list, TranshipmentOrder.class);
+
+            //List<TranshipmentOrder> transhipmentOrders = BeanConverUtil.converList(list, TranshipmentOrder.class);
             //生成转运单
             boolean b = transhipmentOrderService.saveBatch(transhipmentOrders);
             //更新kanban状态为主库待收货
