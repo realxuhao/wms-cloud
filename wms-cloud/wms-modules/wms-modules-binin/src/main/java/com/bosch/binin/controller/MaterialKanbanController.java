@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.ruoyi.common.core.utils.PageUtils.startPage;
 
@@ -308,7 +309,12 @@ public class MaterialKanbanController {
             if(CollectionUtils.isEmpty(mesbarCodes)){
                 throw new ServiceException("请选择数据");
             }
-            mesbarCodes.forEach(r->{
+            List<String> collect = mesbarCodes.stream().distinct().collect(Collectors.toList());
+            List<TranshipmentOrder> infoBySSCC = transhipmentOrderService.getInfoBySSCC(collect);
+            if (CollectionUtils.isNotEmpty(infoBySSCC)){
+                throw new ServiceException("选择的sscc码在装运单中已存在");
+            }
+            collect.forEach(r->{
                 String sscc = MesBarCodeUtil.getSSCC(r);
                 String materialNb = MesBarCodeUtil.getMaterialNb(r);
                 TranshipmentOrder transhipmentOrder = new TranshipmentOrder();
