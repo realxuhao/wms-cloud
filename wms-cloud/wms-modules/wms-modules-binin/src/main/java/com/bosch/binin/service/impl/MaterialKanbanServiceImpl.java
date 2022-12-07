@@ -24,6 +24,7 @@ import com.bosch.binin.service.IWareShiftService;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
+import com.ruoyi.common.core.enums.StatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
@@ -463,6 +464,17 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<MaterialKanban> materialKanbans = materialKanbanMapper.selectList(queryWrapper);
         return materialKanbans;
+    }
+
+    @Override
+    public MaterialKanbanVO getKanbanBySSCC(String sscc) {
+        LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
+        queryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+        queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryWrapper);
+        MaterialKanbanVO conver = BeanConverUtil.conver(materialKanban, MaterialKanbanVO.class);
+        return conver;
     }
 }
 

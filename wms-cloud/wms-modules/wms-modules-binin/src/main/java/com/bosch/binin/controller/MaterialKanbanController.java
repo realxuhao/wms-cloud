@@ -342,6 +342,9 @@ public class MaterialKanbanController {
             //根据sscc获取stock信息
             collect.stream().forEach(r->{
                 StockVO oneBySSCC = stockService.getOneBySSCC(r);
+                if(oneBySSCC==null){
+                    throw new ServiceException("根据sscc"+r+"未获取到库存信息");
+                }
                 vos.add(oneBySSCC);
             });
 
@@ -389,6 +392,70 @@ public class MaterialKanbanController {
         }
     }
 
+    @PostMapping(value = "/confirmOrder")
+    @ApiOperation("确认并入库")
+    @Transactional(rollbackFor = Exception.class)
+    public R confirmOrder(@RequestParam(value = "sscc") List<String> ssccs) {
+        try {
+            if (CollectionUtils.isEmpty(ssccs)) {
+                throw new ServiceException("请选择数据");
+            }
+            //更新kanban状态为待上架
+            int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs,KanbanStatusEnum.INNER_RECEIVING.value(), KanbanStatusEnum.INNER_BIN_IN.value());
+            //更新移库表为待上架
+            int updateWare = wareShiftService.updateStatusByStatus(ssccs, KanbanStatusEnum.INNER_RECEIVING.value(),
+                    KanbanStatusEnum.INNER_BIN_IN.value());
+            return R.ok();
+        } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            ex.printStackTrace();
+            return R.fail(ex.getMessage());
+        }
+    }
+    @PostMapping(value = "/getKanbanBySSCC")
+    @ApiOperation("根据barcode的sscc获取kanban数据 注：若返回600为移库任务")
+    public R getKanbanBySSCC(@RequestParam(value = "mesBarCode")String mesBarCode) {
+        try {
+            String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+            if (StringUtils.isEmpty(sscc)) {
+                throw new ServiceException("请选择数据");
+            }
+            //根据sscc获取kanban
+            MaterialKanbanVO kanbanBySSCC = materialKanbanService.getKanbanBySSCC(sscc);
+            if (kanbanBySSCC==null){
+                return R.ok(600,"移库任务");
+            }
+            return R.ok(kanbanBySSCC);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return R.fail(ex.getMessage());
+        }
+    }
 
-
+    @PostMapping(value = "/deliver")
+    @ApiOperation("整托下架配送接口")
+    @Transactional(rollbackFor = Exception.class)
+    public R deliver(@RequestParam(value = "sscc")String sscc) {
+        try {
+            //String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+            if (StringUtils.isEmpty(sscc)) {
+                throw new ServiceException("请选择数据");
+            }
+            List<String> ssccs=new ArrayList<>();
+            ssccs.add(sscc);
+            //更新kanban状态从 待上架  到 产线待收货
+            int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs,KanbanStatusEnum.INNER_BIN_IN.value(), KanbanStatusEnum.INNER_DOWN.value());
+            //更新移库表从 待上架 到 完成
+            int updateWare = wareShiftService.updateStatusByStatus(ssccs, KanbanStatusEnum.INNER_BIN_IN.value(),
+                    KanbanStatusEnum.FINISH.value());
+            if(updateKanban<=0){
+                return R.fail("配送失败，请刷新重试");
+            }
+            return R.ok();
+        } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            ex.printStackTrace();
+            return R.fail(ex.getMessage());
+        }
+    }
 }

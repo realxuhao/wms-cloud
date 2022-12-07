@@ -107,4 +107,6 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     IPage<MaterialKanbanVO> pagebinDownList(PageDomain pageDomain,String wareCode);
 
     List<MaterialKanban> getListBySCAndStatus(List<String> sscc, Integer status);
+
+    MaterialKanbanVO getKanbanBySSCC(String sscc);
 }
