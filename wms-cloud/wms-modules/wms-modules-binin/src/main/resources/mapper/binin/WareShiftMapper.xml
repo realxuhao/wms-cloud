@@ -8,7 +8,7 @@
     <select id="getWaitingBinIn" resultType="com.bosch.binin.api.domain.vo.WareShiftVO">
         SELECT ws.*,
                bi.recommend_bin_code,
-               mm.`name` ad material_name
+               mm.`name` as material_name
         FROM ware_shift ws
                  LEFT JOIN bi_in bi ON ws.sscc_nb = bi.sscc_number
                  LEFT JOIN md_material mm on ws.material_nb = mm.`code`
