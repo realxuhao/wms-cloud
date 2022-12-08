@@ -93,4 +93,17 @@ public class WareShift extends BaseEntity {
      * 删除标记1：删除，0:可用
      */
     private Integer deleteFlag;
+
+
+    /**
+     * 目的存储区code
+     */
+    private String targetAreaCode;
+
+
+    /**
+     * 目的库位code
+     */
+    private String targetBinCode;
+
 }

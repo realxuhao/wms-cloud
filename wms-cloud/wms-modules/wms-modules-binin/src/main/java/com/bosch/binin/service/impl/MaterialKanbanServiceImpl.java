@@ -11,6 +11,7 @@ import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.dto.SplitPalletDTO;
+import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.MaterialInfoVO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
@@ -356,7 +357,6 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     public List<MaterialKanbanVO> receivingMaterialList(MaterialKanbanDTO dto) {
 
 
-
         List<MaterialKanbanVO> materialKanbanVOS = materialKanbanMapper.receivingMaterialList(dto);
         return materialKanbanVOS;
 
@@ -498,6 +498,16 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     public void splitPallet(SplitPalletDTO splitPallet) {
 
         //校验quantity
+        LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.eq(Stock::getSsccNumber, splitPallet.getSourceSsccNb()).eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode()).last("limit 1").last("for update");
+        Stock stock = stockMapper.selectOne(stockQueryWrapper);
+        StockVO stockVO = BeanConverUtil.conver(stock, StockVO.class);
+        if (Objects.isNull(stock)) {
+            stockVO = stockService.getOneBySSCC(splitPallet.getSourceSsccNb());
+        }
+        if (stock.getTotalStock() < Double.valueOf(MesBarCodeUtil.getQuantity(splitPallet.getNewMesBarCode()))) {
+            throw new ServiceException("拆托数量不能超过源库存量");
+        }
 
 
         //老任务变为结束
@@ -529,17 +539,17 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         newKanban.setAreaCode(materialKanban.getAreaCode());
         newKanban.setBinCode(materialKanban.getBinCode());
         newKanban.setMaterialCode(materialKanban.getMaterialCode());
-        newKanban.setSsccNumber(materialKanban.getSsccNumber());
+        newKanban.setSsccNumber(MesBarCodeUtil.getSSCC(splitPallet.getNewMesBarCode()));
         newKanban.setCell(materialKanban.getCell());
         newKanban.setType(KanbanActionTypeEnum.FULL_BIN_DOWN.value());
-        newKanban.setQuantity(splitPallet.getSplitQuantity());
+        newKanban.setQuantity(Double.valueOf(MesBarCodeUtil.getQuantity(splitPallet.getNewMesBarCode())));
         newKanban.setStatus(KanbanStatusEnum.INNER_DOWN.value());
         newKanban.setCreateBy(SecurityUtils.getUsername());
         newKanban.setCreateTime(new Date());
         newKanban.setMoveType(MoveTypeEnums.CALL.getCode());
         materialKanbanMapper.insert(newKanban);
-        //如果老sscc没有上架，需要生成一个新的上架任务
 
+        //如果老sscc没有上架，需要生成一个新的上架任务
         LambdaQueryWrapper<BinIn> bininQueryWrapper = new LambdaQueryWrapper<>();
         bininQueryWrapper.eq(BinIn::getSsccNumber, splitPallet.getSourceSsccNb());
         bininQueryWrapper.eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
@@ -547,6 +557,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         BinIn binIn = binInService.getOne(bininQueryWrapper);
         if (binIn == null) {
             //生成上架任务
+            BinInVO binInVO = binInService.generateInTask(splitPallet.getSourceSsccNb(), Double.valueOf(MesBarCodeUtil.getQuantity(splitPallet.getNewMesBarCode())));
         }
 
 

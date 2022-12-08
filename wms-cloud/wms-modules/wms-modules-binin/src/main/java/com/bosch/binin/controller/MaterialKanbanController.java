@@ -118,7 +118,7 @@ public class MaterialKanbanController {
     @ApiOperation("拆托")
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         materialKanbanService.splitPallet(splitPallet);
-        return null;
+        return R.ok();
     }
 
 
@@ -314,20 +314,20 @@ public class MaterialKanbanController {
     @PostMapping(value = "/genOrderAndSetStatus")
     @ApiOperation("生成转运单号,修改对应任务状态为主库待收货")
     @Transactional(rollbackFor = Exception.class)
-    public R genTranshipmentOrder(@RequestBody List<String> mesbarCodes ) {
+    public R genTranshipmentOrder(@RequestBody List<String> mesbarCodes) {
         try {
-            List<TranshipmentOrder> transhipmentOrders =new ArrayList<>();
+            List<TranshipmentOrder> transhipmentOrders = new ArrayList<>();
             List<String> ssccs = new ArrayList<>();
             long l = System.currentTimeMillis();
-            if(CollectionUtils.isEmpty(mesbarCodes)){
+            if (CollectionUtils.isEmpty(mesbarCodes)) {
                 throw new ServiceException("请选择数据");
             }
             List<String> collect = mesbarCodes.stream().distinct().collect(Collectors.toList());
             List<TranshipmentOrder> infoBySSCC = transhipmentOrderService.getInfoBySSCC(collect);
-            if (CollectionUtils.isNotEmpty(infoBySSCC)){
+            if (CollectionUtils.isNotEmpty(infoBySSCC)) {
                 throw new ServiceException("选择的sscc码在装运单中已存在");
             }
-            collect.forEach(r->{
+            collect.forEach(r -> {
                 String sscc = MesBarCodeUtil.getSSCC(r);
                 String materialNb = MesBarCodeUtil.getMaterialNb(r);
                 TranshipmentOrder transhipmentOrder = new TranshipmentOrder();

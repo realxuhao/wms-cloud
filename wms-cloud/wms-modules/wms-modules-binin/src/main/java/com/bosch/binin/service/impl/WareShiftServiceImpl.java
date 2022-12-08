@@ -126,17 +126,16 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     @Override
     public BinInVO allocateBin(String mesBarCode) {
         //分配库位信息
-        BinInVO binInVO = binInService.getByMesBarCode(mesBarCode);
-
+        BinInVO binInVO = binInService.generateInTask(MesBarCodeUtil.getSSCC(mesBarCode), Double.valueOf(0));
 
         return binInVO;
     }
 
     @Override
-    public List<WareShift> getMaterialCallList(WareShiftQueryDTO queryDTO) {
+    public List<WareShift> getWareShiftList(WareShiftQueryDTO queryDTO) {
         LambdaQueryWrapper<WareShift> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(WareShift::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
-        queryWrapper.eq(WareShift::getStatus,KanbanStatusEnum.INNER_RECEIVING.value());
+        queryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.eq(WareShift::getStatus, KanbanStatusEnum.INNER_RECEIVING.value());
         List<WareShift> wareShiftList = wareShiftMapper.selectList(queryWrapper);
         return wareShiftList;
     }

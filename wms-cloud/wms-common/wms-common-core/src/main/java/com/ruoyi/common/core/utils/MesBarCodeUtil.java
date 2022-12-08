@@ -8,6 +8,21 @@ import java.util.Date;
 
 public class MesBarCodeUtil {
 
+
+    public static String generateMesBarCode(Date date, String sscc, String materialNb, String batchNb, Double quantity) {
+        String dateToStr = DateUtils.parseDateToStr("yyyyMMdd", date);
+        String quantityStr = String.valueOf(quantity.intValue());
+        String reverse = StringUtils.reverse(quantityStr);
+        int len = 6 - reverse.length();
+        for (int i = 0; i < len; i++) {
+            reverse = reverse + "0";
+        }
+        String temp = StringUtils.reverse(reverse);
+        return dateToStr + sscc + materialNb + batchNb + temp;
+
+
+    }
+
     public static Date getExpireDate(String mesBarCode) {
         String date = "";
         try {
@@ -69,7 +84,7 @@ public class MesBarCodeUtil {
     }
 
     public static void main(String[] args) {
-        String mesBarCode = "20250213669006391110024585103025072202141190001000";
+        String mesBarCode = "20240322669006391110024752103110422203291126000050";
         System.out.println(getExpireDate(mesBarCode));
         System.out.println(getSSCC(mesBarCode));
         System.out.println(getMaterialNb(mesBarCode));
@@ -80,11 +95,15 @@ public class MesBarCodeUtil {
         double ceil1 = Math.ceil(50 / 1000);
         System.out.println(ceil1);
 
+        String date = DateUtils.parseDateToStr("yyyyMMdd",new Date());
+        String barCode = generateMesBarCode(new Date(), "669006391110024585", "10302507", "2202141190", Double.valueOf(1000));
+        System.out.println(barCode);
 
     }
 
 //    20240322669006391110024752103110422203291126000050
     //20250213669006391110024585103025072202141190001000
+    //20221208669006391110024585103025072202141190001000
 
 //20240322669006391110024753103110432203291127000050
 

@@ -13,8 +13,8 @@ import lombok.Data;
 public class SplitPalletDTO {
     @ApiModelProperty(value = "源sscc")
     private String sourceSsccNb;
-    @ApiModelProperty(value = "拆托数量")
-    private Double splitQuantity;
+//    @ApiModelProperty(value = "拆托数量")
+//    private Double splitQuantity;
     @ApiModelProperty(value = "新mesBarCode")
     private String newMesBarCode;
 }

@@ -31,5 +31,5 @@ public interface IWareShiftService extends IService<WareShift> {
 
     BinInVO allocateBin(String mesBarCode);
 
-    List<WareShift> getMaterialCallList(WareShiftQueryDTO queryDTO);
+    List<WareShift> getWareShiftList(WareShiftQueryDTO queryDTO);
 }

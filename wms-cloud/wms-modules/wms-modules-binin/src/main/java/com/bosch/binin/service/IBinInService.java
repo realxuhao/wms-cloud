@@ -28,6 +28,14 @@ public interface IBinInService extends IService<BinIn> {
 
     List<BinInVO> currentUserData(BinInQueryDTO queryDTO);
 
+    /**
+     * 根据历史库存信息，生成新的上架任务（数量变化）
+     * @param ssccNumber
+     * @param quantity
+     * @return
+     */
+    BinInVO generateInTask(String ssccNumber,Double quantity);
+
     BinInVO performBinIn(BinInDTO binInDTO);
 
     int deleteBinInById(Long id);
