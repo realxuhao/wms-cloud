@@ -454,7 +454,7 @@ public class MaterialKanbanController {
             //根据sscc获取kanban
             MaterialKanbanVO kanbanBySSCC = materialKanbanService.getKanbanBySSCC(sscc);
             if (kanbanBySSCC == null) {
-                return R.ok(600, "移库任务");
+                return R.fail(600, "移库任务");
             }
             return R.ok(kanbanBySSCC);
         } catch (Exception ex) {
