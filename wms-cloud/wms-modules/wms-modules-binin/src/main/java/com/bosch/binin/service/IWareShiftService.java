@@ -6,6 +6,7 @@ import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
+import com.bosch.binin.api.domain.vo.WareShiftVO;
 
 import java.util.List;
 
@@ -32,4 +33,7 @@ public interface IWareShiftService extends IService<WareShift> {
     BinInVO allocateBin(String mesBarCode);
 
     List<WareShift> getWareShiftList(WareShiftQueryDTO queryDTO);
+
+    List<WareShiftVO> getWaitingBinIn();
+
 }

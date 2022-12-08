@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.binin.mapper.WareShiftMapper">
+
+
+    <select id="getWaitingBinIn" resultType="com.bosch.binin.api.domain.vo.WareShiftVO">
+        SELECT ws.*,
+               bi.recommend_bin_code,
+               mm.`name` ad material_name
+        FROM ware_shift ws
+                 LEFT JOIN bi_in bi ON ws.sscc_nb = bi.sscc_number
+                 LEFT JOIN md_material mm on ws.material_nb = mm.`code`
+        WHERE ws.status = 5
+          and ws.target_ware_code = #{wareCode}
+    </select>
+</mapper>

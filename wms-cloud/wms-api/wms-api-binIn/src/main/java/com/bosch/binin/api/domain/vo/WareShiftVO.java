@@ -11,4 +11,9 @@ import lombok.Data;
  **/
 @Data
 public class WareShiftVO extends WareShift {
+
+    private String recommendBinCode;
+    private String materialName;
+
+
 }

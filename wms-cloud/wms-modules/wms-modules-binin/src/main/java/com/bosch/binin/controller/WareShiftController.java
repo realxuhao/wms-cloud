@@ -4,6 +4,7 @@ import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
+import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.service.IWareShiftService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
@@ -59,6 +60,14 @@ public class WareShiftController extends BaseController {
     public R<BinInVO> allocateBin(@PathVariable("mesBarCode") String mesBarCode) {
 
         return R.ok(shiftService.allocateBin(mesBarCode));
+    }
+
+    @GetMapping(value = "/getWaitingBinIn")
+    @ApiOperation("查询移库任务待上架列表")
+    public R<PageVO<WareShiftVO>> getWaitingBinIn() {
+        startPage();
+        List<WareShiftVO> list = shiftService.getWaitingBinIn();
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
 

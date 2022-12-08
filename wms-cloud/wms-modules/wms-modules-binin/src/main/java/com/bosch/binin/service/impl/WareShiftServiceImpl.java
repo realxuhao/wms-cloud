@@ -11,6 +11,7 @@ import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
@@ -23,6 +24,7 @@ import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -140,6 +142,12 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         return wareShiftList;
     }
 
+    @Override
+    public List<WareShiftVO> getWaitingBinIn() {
+        List<WareShiftVO> wareShiftVOS = wareShiftMapper.getWaitingBinIn(SecurityUtils.getWareCode());
+        return wareShiftVOS;
+    }
+
 
     @Override
     public int updateStatusByStatus(List<String> ssccs, Integer queryStatus, Integer status) {
@@ -149,6 +157,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         uw.in(WareShift::getSsccNb, ssccs);
         uw.eq(WareShift::getStatus, queryStatus);
         uw.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        uw.eq(WareShift::getTargetWareCode, SecurityUtils.getWareCode());
 
         return wareShiftMapper.update(wareShift, uw);
     }
