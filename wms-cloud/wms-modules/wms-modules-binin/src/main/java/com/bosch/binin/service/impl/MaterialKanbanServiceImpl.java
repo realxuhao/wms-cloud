@@ -482,7 +482,15 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         List<MaterialKanban> materialKanbans = materialKanbanMapper.selectList(queryWrapper);
         return materialKanbans;
     }
-
+    @Override
+    public MaterialKanban getOneBySCAndStatus(String sscc, Integer status) {
+        LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
+        queryWrapper.eq(MaterialKanban::getStatus, status);
+        queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryWrapper);
+        return materialKanban;
+    }
     @Override
     public MaterialKanbanVO getKanbanBySSCC(String sscc) {
         LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();

@@ -474,6 +474,13 @@ public class MaterialKanbanController {
             }
             List<String> ssccs = new ArrayList<>();
             ssccs.add(sscc);
+            //判断sscc在不在kanban中
+            List<MaterialKanban> listBySCAndStatus = materialKanbanService.getListBySCAndStatus(ssccs,
+                    KanbanStatusEnum.INNER_BIN_IN.value());
+            if (CollectionUtils.isEmpty(listBySCAndStatus)){
+                throw new ServiceException("sscc在不在kanban任务中");
+            }
+
             //更新kanban状态从 待上架  到 产线待收货
             int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs, KanbanStatusEnum.INNER_BIN_IN.value(), KanbanStatusEnum.INNER_DOWN.value());
             //更新移库表从 待上架 到 完成
@@ -481,6 +488,37 @@ public class MaterialKanbanController {
                     KanbanStatusEnum.FINISH.value());
             if (updateKanban <= 0) {
                 return R.fail("配送失败，请刷新重试");
+            }
+            return R.ok();
+        } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            ex.printStackTrace();
+            return R.fail(ex.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/confirmMaterial")
+    @ApiOperation("收货确认")
+    @Transactional(rollbackFor = Exception.class)
+    public R confirmMaterial(@RequestParam(value = "sscc") String sscc) {
+        try {
+            //String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+            if (StringUtils.isEmpty(sscc)) {
+                throw new ServiceException("请选择数据");
+            }
+            List<String> ssccs = new ArrayList<>();
+            ssccs.add(sscc);
+            //判断sscc在不在kanban中
+            List<MaterialKanban> listBySCAndStatus = materialKanbanService.getListBySCAndStatus(ssccs,
+                    KanbanStatusEnum.INNER_DOWN.value());
+            if (CollectionUtils.isEmpty(listBySCAndStatus)){
+                throw new ServiceException("sscc在不在kanban任务中");
+            }
+            //更新kanban状态从 产线待收货  到 产线已收货
+            int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs, KanbanStatusEnum.INNER_DOWN.value(), KanbanStatusEnum.LINE_RECEIVED.value());
+
+            if (updateKanban <= 0) {
+                return R.fail("确认收货失败，请刷新重试");
             }
             return R.ok();
         } catch (Exception ex) {

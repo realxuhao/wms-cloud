@@ -109,6 +109,8 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
 
     List<MaterialKanban> getListBySCAndStatus(List<String> sscc, Integer status);
 
+    MaterialKanban getOneBySCAndStatus(String sscc, Integer status);
+
     MaterialKanbanVO getKanbanBySSCC(String sscc);
 
     void splitPallet(SplitPalletDTO splitPallet);
