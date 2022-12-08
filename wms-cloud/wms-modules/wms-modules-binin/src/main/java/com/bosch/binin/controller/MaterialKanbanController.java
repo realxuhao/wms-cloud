@@ -443,7 +443,7 @@ public class MaterialKanbanController {
         }
     }
 
-    @PostMapping(value = "/getKanbanBySSCC")
+    @GetMapping(value = "/getKanbanBySSCC")
     @ApiOperation("根据barcode的sscc获取kanban数据 注：若返回600为移库任务")
     public R getKanbanBySSCC(@RequestParam(value = "mesBarCode") String mesBarCode) {
         try {
