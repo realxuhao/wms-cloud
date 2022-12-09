@@ -266,8 +266,8 @@ public class MaterialKanbanController {
             //sscc库存可用 冻结修改
             materialKanbanService.updateStockBySSCC(materialKanban.getSsccNumber(),
                     materialKanban.getQuantity());
-            //TODO
-            //根据不同状态去看是否进行上架操作
+            //TODO 根据不同状态去看是否进行上架操作
+            //
 
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
