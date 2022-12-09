@@ -81,6 +81,23 @@ public class MaterialBinController extends BaseController {
     }
 
     /**
+     * 根据code和仓库查询物料库位分配策略列表
+     */
+
+    @GetMapping("/getListByMaterialAndWare")
+    @ApiOperation("根据code和仓库查询物料库位规则列表")
+    public R<List<MaterialBinVO>> getListByMaterialAndWare(@RequestParam("materialCode") String materialCode,@RequestParam("wareCode") String wareCode)
+    {
+        try {
+
+            List<MaterialBinVO> listByMaterial = materialBinService.getListByMaterial(materialCode,wareCode);
+            return R.ok(listByMaterial);
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
+
+    }
+    /**
      * 查询物料库位分配策略列表
      */
     @RequiresPermissions("masterdata:bin:list")

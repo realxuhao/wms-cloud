@@ -89,4 +89,11 @@ public interface IMaterialBinService extends IService<MaterialBin>
      * @return
      */
     public List<MaterialBinVO> getListByMaterial(String materialCode);
+
+    /**
+     * 根据code和仓库查询获取跨关系
+     * @param materialCode
+     * @return
+     */
+    public List<MaterialBinVO> getListByMaterial(String materialCode,String wareCode);
 }
