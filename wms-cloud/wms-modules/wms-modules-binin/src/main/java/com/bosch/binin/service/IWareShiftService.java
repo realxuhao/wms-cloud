@@ -30,7 +30,7 @@ public interface IWareShiftService extends IService<WareShift> {
      */
     int updateStatusByStatus(List<String> ssccs, Integer queryStatus, Integer status);
 
-    BinInVO allocateBin(String mesBarCode);
+    BinInVO allocateBin(String mesBarCode,String wareCode);
 
     List<WareShiftVO> getWareShiftList(WareShiftQueryDTO queryDTO);
 

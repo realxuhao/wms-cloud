@@ -7,16 +7,13 @@ import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
-import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
-import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
 import com.bosch.binin.service.IBinInService;
-import com.bosch.binin.service.IMaterialKanbanService;
 import com.bosch.binin.service.IWareShiftService;
 import com.bosch.binin.service.IStockService;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
@@ -128,9 +125,9 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     }
 
     @Override
-    public BinInVO allocateBin(String mesBarCode) {
+    public BinInVO allocateBin(String mesBarCode,String wareCode) {
         //分配库位信息
-        BinInVO binInVO = binInService.generateInTask(MesBarCodeUtil.getSSCC(mesBarCode), Double.valueOf(0));
+        BinInVO binInVO = binInService.generateInTaskByOldStock(MesBarCodeUtil.getSSCC(mesBarCode), Double.valueOf(0), wareCode);
 
         return binInVO;
     }

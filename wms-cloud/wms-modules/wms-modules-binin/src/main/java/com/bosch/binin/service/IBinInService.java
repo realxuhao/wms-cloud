@@ -24,7 +24,7 @@ public interface IBinInService extends IService<BinIn> {
 
     BinInVO getByMesBarCode(String mesBarCode);
 
-    BinInVO generateInTask(BinInTaskDTO binInTaskDTO);
+    BinInVO generateInTaskByOldStock(BinInTaskDTO binInTaskDTO);
 
     List<BinInVO> currentUserData(BinInQueryDTO queryDTO);
 
@@ -34,7 +34,7 @@ public interface IBinInService extends IService<BinIn> {
      * @param quantity
      * @return
      */
-    BinInVO generateInTask(String ssccNumber,Double quantity);
+    BinInVO generateInTaskByOldStock(String ssccNumber, Double quantity, String wareCode);
 
     BinInVO performBinIn(BinInDTO binInDTO);
 

@@ -20,5 +20,8 @@ public class BinAllocationDTO {
     @ApiModelProperty(value = "托盘编码")
     private String palletCode;
 
+    @ApiModelProperty(value = "仓库编码")
+    private String wareCode;
+
 
 }

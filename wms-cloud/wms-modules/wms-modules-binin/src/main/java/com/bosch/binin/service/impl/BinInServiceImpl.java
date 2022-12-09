@@ -437,7 +437,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     }
 
     @Override
-    public BinInVO generateInTask(BinInTaskDTO binInTaskDTO) {
+    public BinInVO generateInTaskByOldStock(BinInTaskDTO binInTaskDTO) {
         String mesBarCode = binInTaskDTO.getMesBarCode();
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
@@ -510,7 +510,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BinInVO generateInTask(String ssccNumber, Double quantity) {
+    public BinInVO generateInTaskByOldStock(String ssccNumber, Double quantity, String wareCode) {
         BinInVO binInVO = binInMapper.selectBySsccNumber(ssccNumber);
         if (binInVO != null) {
             return binInVO;
@@ -539,6 +539,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         allocationDTO.setMesBarCode(mesBarCode);
         //获取托盘
         allocationDTO.setPalletType(materialVO.getPalletType());
+        allocationDTO.setWareCode(wareCode);
 
         //获取托盘详情
         R<Pallet> palletR = remotePalletService.getByType(materialVO.getPalletType());

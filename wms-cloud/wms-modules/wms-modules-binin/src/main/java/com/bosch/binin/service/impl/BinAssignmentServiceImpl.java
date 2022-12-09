@@ -107,7 +107,7 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
 
         List<String> frameTypeCodes = new ArrayList<>();
         //根据物料号 登陆人仓库 获取物料跨关系
-        R<List<MaterialBinVO>> listByMaterial = remoteMasterDataService.getListByMaterial(materialNb);
+        R<List<MaterialBinVO>> listByMaterial = remoteMasterDataService.getListByMaterialAndWare(materialNb, binAllocationDTO.getWareCode());
         if (!listByMaterial.isSuccess()) {
             throw new ServiceException("获取物料相关跨失败");
         }

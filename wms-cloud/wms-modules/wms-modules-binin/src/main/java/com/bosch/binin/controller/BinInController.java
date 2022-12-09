@@ -18,12 +18,9 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
-import com.ruoyi.common.log.annotation.Log;
-import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.apache.poi.hpsf.Decimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -73,7 +70,7 @@ public class BinInController extends BaseController {
         if (binInVOByMesBarCode != null && StringUtils.isNotEmpty(binInVOByMesBarCode.getRecommendBinCode())) {
             throw new ServiceException("该物料已有上架任务或者已上架");
         }
-        return R.ok(binInService.generateInTask(binInTaskDTO));
+        return R.ok(binInService.generateInTaskByOldStock(binInTaskDTO));
     }
 
     @PostMapping(value = "/in")

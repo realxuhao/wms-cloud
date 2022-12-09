@@ -264,6 +264,7 @@ public class MaterialKanbanController {
             //TODO 根据不同状态去看是否进行上架操作
 
 
+
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             return R.fail(ex.getMessage());

@@ -26,23 +26,19 @@ import com.bosch.binin.service.IMaterialKanbanService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.service.IWareShiftService;
 import com.bosch.binin.utils.BeanConverUtil;
-import com.bosch.storagein.api.enumeration.MaterialStatusEnum;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
-import com.ruoyi.common.core.enums.StatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import net.bytebuddy.implementation.bytecode.ShiftLeft;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -546,7 +542,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         BinIn binIn = binInService.getOne(bininQueryWrapper);
         if (binIn == null) {
             //生成上架任务
-            BinInVO binInVO = binInService.generateInTask(splitPallet.getSourceSsccNb(), Double.valueOf(MesBarCodeUtil.getQuantity(splitPallet.getNewMesBarCode())));
+            BinInVO binInVO = binInService.generateInTaskByOldStock(splitPallet.getSourceSsccNb(), Double.valueOf(MesBarCodeUtil.getQuantity(splitPallet.getNewMesBarCode())),SecurityUtils.getWareCode());
         }
 
 
