@@ -15,6 +15,7 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,6 +36,7 @@ public class WareShiftController extends BaseController {
 
     @PostMapping(value = "/addShiftTask")
     @ApiOperation("外库新增需求接口")
+    @Transactional(rollbackFor = Exception.class)
     public R<Boolean> list(@RequestBody AddShiftTaskDTO dto) {
         return R.ok(shiftService.addShiftRequirement(dto));
     }
@@ -42,6 +44,7 @@ public class WareShiftController extends BaseController {
 
     @PutMapping(value = "/binDown/{ssccNb}")
     @ApiOperation("移库任务下架")
+    @Transactional(rollbackFor = Exception.class)
     public R binDown(@PathVariable String ssccNb) {
         shiftService.binDown(ssccNb);
         return R.ok(ssccNb + "下架成功");
@@ -74,6 +77,7 @@ public class WareShiftController extends BaseController {
 
     @GetMapping(value = "/allocateBin/{mesBarCode}")
     @ApiOperation("移库任务上架分配库位")
+    @Transactional(rollbackFor = Exception.class)
     public R<BinInVO> allocateBin(@PathVariable("mesBarCode") String mesBarCode) {
 
         return R.ok(shiftService.allocateBin(mesBarCode, SecurityUtils.getWareCode()));

@@ -91,7 +91,6 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public void binDown(String ssccNb) {
 
         LambdaQueryWrapper<WareShift> wareShiftLambdaQueryWrapper = new LambdaQueryWrapper<>();

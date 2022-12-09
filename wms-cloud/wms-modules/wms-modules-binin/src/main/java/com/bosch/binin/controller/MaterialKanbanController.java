@@ -97,6 +97,7 @@ public class MaterialKanbanController {
 
     @PutMapping(value = "/issueJob/{ssccNumbers}")
     @ApiOperation("批量下发任务接口")
+    @Transactional(rollbackFor = Exception.class)
     public R issueJob(@PathVariable String[] ssccNumbers) {
         materialKanbanService.issueJob(ssccNumbers);
         return R.ok("下发成功");
@@ -104,6 +105,7 @@ public class MaterialKanbanController {
 
     @PutMapping(value = "/binDown/{ssccNb}")
     @ApiOperation("看板任务下架")
+    @Transactional(rollbackFor = Exception.class)
     public R binDown(@PathVariable String ssccNb) {
         materialKanbanService.binDown(ssccNb);
         return R.ok(ssccNb + "下架成功");
@@ -111,6 +113,7 @@ public class MaterialKanbanController {
 
     @PostMapping(value = "splitPallet")
     @ApiOperation("拆托")
+    @Transactional(rollbackFor = Exception.class)
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         materialKanbanService.splitPallet(splitPallet);
         return R.ok();
