@@ -5,6 +5,7 @@ import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
+import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.service.IWareShiftService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
@@ -48,9 +49,24 @@ public class WareShiftController extends BaseController {
 
     @GetMapping(value = "/innerReceivingList")
     @ApiOperation("查询主库待收货任务")
-    public R<PageVO<WareShift>> inneReceiveingList(WareShiftQueryDTO queryDTO) {
+    public R<PageVO<WareShiftVO>> inneReceiveingList(WareShiftQueryDTO queryDTO) {
         startPage();
-        List<WareShift> list = shiftService.getWareShiftList(queryDTO);
+        if (queryDTO == null) {
+            queryDTO = new WareShiftQueryDTO();
+        }
+        queryDTO.setStatus(KanbanStatusEnum.INNER_RECEIVING.value());
+
+
+        List<WareShiftVO> list = shiftService.getWareShiftList(queryDTO);
+
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
+    @GetMapping(value = "/list")
+    @ApiOperation("移库任务列表")
+    public R<PageVO<WareShiftVO>> list(WareShiftQueryDTO queryDTO) {
+        startPage();
+        List<WareShiftVO> list = shiftService.getWareShiftList(queryDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 

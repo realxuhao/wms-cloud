@@ -27,6 +27,7 @@ import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 
@@ -93,6 +94,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void binDown(String ssccNb) {
 
         LambdaQueryWrapper<WareShift> wareShiftLambdaQueryWrapper = new LambdaQueryWrapper<>();
@@ -134,12 +136,10 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     }
 
     @Override
-    public List<WareShift> getWareShiftList(WareShiftQueryDTO queryDTO) {
-        LambdaQueryWrapper<WareShift> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        queryWrapper.eq(WareShift::getStatus, KanbanStatusEnum.INNER_RECEIVING.value());
-        List<WareShift> wareShiftList = wareShiftMapper.selectList(queryWrapper);
-        return wareShiftList;
+    public List<WareShiftVO> getWareShiftList(WareShiftQueryDTO queryDTO) {
+
+        List<WareShiftVO> list = wareShiftMapper.list(queryDTO);
+        return list;
     }
 
     @Override
@@ -147,7 +147,6 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         List<WareShiftVO> wareShiftVOS = wareShiftMapper.getWaitingBinIn(SecurityUtils.getWareCode());
         return wareShiftVOS;
     }
-
 
     @Override
     public int updateStatusByStatus(List<String> ssccs, Integer queryStatus, Integer status) {

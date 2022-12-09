@@ -28,7 +28,7 @@ import java.util.Map;
 public interface IMaterialCallService extends IService<MaterialCall> {
 
 
-    List<MaterialCall> getMaterialCallList(MaterialCallQueryDTO queryDTO);
+    List<MaterialCallVO> getMaterialCallList(MaterialCallQueryDTO queryDTO);
 
     public boolean validList(List<MaterialCallDTO> dtos);
 

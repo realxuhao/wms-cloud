@@ -376,7 +376,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         }
         binIn.setUpdateBy(SecurityUtils.getUsername());
         binIn.setUpdateTime(new Date());
-        binIn.setDeleteFlag(DeleteFlagStatus.FALSE.getCode());
+        binIn.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
         //更新库存
         LambdaQueryWrapper<Stock> stockQuertMapper = new LambdaQueryWrapper<>();
         stockQuertMapper.eq(Stock::getSsccNumber, ssccNumber);

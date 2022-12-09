@@ -148,7 +148,7 @@ public class MaterialFeedingController extends BaseController {
         return R.ok(materialCallService.updateCallQuantity(callDTO));
     }
 
-    @ApiOperation("删除区域")
+    @ApiOperation("删除需求")
     @DeleteMapping("/call/{ids}")
     public R cancelRequirement(@PathVariable Long[] ids) {
         if (ids == null || ids.length == 0) {
@@ -163,16 +163,16 @@ public class MaterialFeedingController extends BaseController {
     @ApiOperation("叫料需求列表查询")
     public R<PageVO<MaterialCallVO>> list(MaterialCallQueryDTO queryDTO) {
         startPage();
-        List<MaterialCall> list = materialCallService.getMaterialCallList(queryDTO);
-        PageInfo pageInfo = new PageInfo<>(list);
+        List<MaterialCallVO> list = materialCallService.getMaterialCallList(queryDTO);
+//        PageInfo pageInfo = new PageInfo<>(list);
+//
+//        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
+//        pageInfo.setList(materialCallVOS);
+//        List<String> materialNbs = materialCallVOS.stream().map(MaterialCallVO::getMaterialNb).collect(Collectors.toList());
+//        //获取物料名称
 
-        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
-        pageInfo.setList(materialCallVOS);
-        List<String> materialNbs = materialCallVOS.stream().map(MaterialCallVO::getMaterialNb).collect(Collectors.toList());
-        //获取物料名称
 
-
-        return R.ok(new PageVO<>(materialCallVOS, pageInfo.getTotal()));
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
 
     }
 
@@ -184,8 +184,8 @@ public class MaterialFeedingController extends BaseController {
     @ApiOperation("叫料需求列表导出")
     public void export(HttpServletResponse response, MaterialCallQueryDTO queryDTO) {
         startPage();
-        List<MaterialCall> list = materialCallService.getMaterialCallList(queryDTO);
-        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
+        List<MaterialCallVO> materialCallVOS = materialCallService.getMaterialCallList(queryDTO);
+//        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
 
         ExcelUtil<MaterialCallVO> util = new ExcelUtil<MaterialCallVO>(MaterialCallVO.class);
         util.exportExcel(response, materialCallVOS, "叫料需求");

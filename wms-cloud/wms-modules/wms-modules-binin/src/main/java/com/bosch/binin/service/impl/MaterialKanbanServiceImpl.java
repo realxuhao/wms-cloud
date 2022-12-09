@@ -336,21 +336,18 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
-    public List<MaterialKanbanVO> getWaitingJob(String mesbarCode) {
+    public MaterialKanbanVO getWaitingJob(String mesbarCode) {
         String sscc = MesBarCodeUtil.getSSCC(mesbarCode);
-        String materialNb = MesBarCodeUtil.getMaterialNb(mesbarCode);
 
-        LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
-        queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        List<MaterialKanban> kanbanList = materialKanbanMapper.selectList(queryWrapper);
-        List<MaterialKanban> kanbans = kanbanList.stream().filter(item -> "0".equals(item.getStatus())).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(kanbans)) {
+        MaterialKanbanVO kanbanVO = materialKanbanMapper.getKanbanInfoBySsccNb(sscc);
+
+        if (Objects.isNull(kanbanVO)) {
+            throw new ServiceException("该托 " + "sscc" + " 任务不存在");
+        }
+        if (!KanbanStatusEnum.WAITING_BIN_DOWN.value().equals(kanbanVO.getStatus())) {
             throw new ServiceException("该托 " + "sscc" + " 不存在下架任务");
         }
-
-        List<MaterialKanbanVO> materialKanbanVOS = BeanConverUtil.converList(kanbans, MaterialKanbanVO.class);
-        return materialKanbanVOS;
+        return kanbanVO;
     }
 
     @Override
@@ -397,26 +394,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
-    public IPage<MaterialKanbanVO> pagebinDownList(PageDomain pageDomain, String wareCode) {
-        IPage<MaterialKanban> page = new Page<>();
-        if (pageDomain.getPageNum() != null && pageDomain.getPageSize() != null) {
-            page = new Page<>(pageDomain.getPageNum(), pageDomain.getPageSize());
-        }
-        //查询条件
-        LambdaQueryWrapper<MaterialKanban> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-
-        lambdaQueryWrapper.like(MaterialKanban::getWareCode, wareCode);
-
-        lambdaQueryWrapper.ge(MaterialKanban::getStatus, KanbanStatusEnum.OUT_DOWN.value());
-        lambdaQueryWrapper.le(MaterialKanban::getStatus, KanbanStatusEnum.INNER_DOWN.value());
-        lambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        IPage<MaterialKanban> materialKanbanIPage = materialKanbanMapper.selectPage(page, lambdaQueryWrapper);
-        //mp提供了convert方法,将数据重新封装
-        return materialKanbanIPage.convert(u -> {
-            MaterialKanbanVO v = new MaterialKanbanVO();
-            BeanUtils.copyProperties(u, v);//拷贝
-            return v;
-        });
+    public List<MaterialKanbanVO> binDownList(PageDomain pageDomain, String wareCode) {
+        return materialKanbanMapper.getBinDownList(wareCode);
     }
 
     @Override
@@ -482,6 +461,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         List<MaterialKanban> materialKanbans = materialKanbanMapper.selectList(queryWrapper);
         return materialKanbans;
     }
+
     @Override
     public MaterialKanban getOneBySCAndStatus(String sscc, Integer status) {
         LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
@@ -491,6 +471,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryWrapper);
         return materialKanban;
     }
+
     @Override
     public MaterialKanbanVO getKanbanBySSCC(String sscc) {
         LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();

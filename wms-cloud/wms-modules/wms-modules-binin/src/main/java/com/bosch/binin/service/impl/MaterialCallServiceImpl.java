@@ -10,6 +10,7 @@ import com.bosch.binin.api.domain.dto.MaterialCalJobRequestDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
 import com.bosch.binin.api.domain.vo.MaterialCallCheckResultVO;
+import com.bosch.binin.api.domain.vo.MaterialCallVO;
 import com.bosch.binin.api.domain.vo.RequirementResultVO;
 import com.bosch.binin.api.enumeration.MaterialCallStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanActionTypeEnum;
@@ -64,28 +65,30 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
     private IMaterialKanbanService kanbanService;
 
     @Override
-    public List<MaterialCall> getMaterialCallList(MaterialCallQueryDTO queryDTO) {
+    public List<MaterialCallVO> getMaterialCallList(MaterialCallQueryDTO queryDTO) {
 
-        LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper();
-        if (queryDTO != null) {
-            queryWrapper.like(StringUtils.isNotEmpty(queryDTO.getMaterialNb()), MaterialCall::getMaterialNb,
-                    queryDTO.getMaterialNb())
-                    .like(StringUtils.isNotEmpty(queryDTO.getCell()), MaterialCall::getCell, queryDTO.getCell())
-                    .like(StringUtils.isNotEmpty(queryDTO.getOrderNb()), MaterialCall::getOrderNb,
-                            queryDTO.getOrderNb())
-                    .like(StringUtils.isNotEmpty(queryDTO.getCreateBy()), MaterialCall::getCreateBy,
-                            queryDTO.getCreateBy())
-                    .like(ObjectUtils.isNotEmpty(queryDTO.getStatus()), MaterialCall::getStatus, queryDTO.getStatus())
-                    .apply(ObjectUtils.allNotNull(queryDTO.getStartCreateTime()), "date_format (create_time," +
-                            "'%Y-%m-%d') >= date_format ({0},'%Y-%m-%d')", queryDTO.getStartCreateTime())
-                    .apply(ObjectUtils.allNotNull(queryDTO.getEndCreateTime()), "date_format (create_time,'%Y-%m-%d')" +
-                            " <= date_format ({0},'%Y-%m-%d')", queryDTO.getEndCreateTime())
-                    .orderByAsc(MaterialCall::getStatus)
-                    .orderByDesc(MaterialCall::getCreateTime);
-        }
-        List<MaterialCall> materialCalls = materialCallMapper.selectList(queryWrapper);
+        return materialCallMapper.getMaterialCallVOs(queryDTO);
 
-        return materialCalls;
+//        LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper();
+//        if (queryDTO != null) {
+//            queryWrapper.like(StringUtils.isNotEmpty(queryDTO.getMaterialNb()), MaterialCall::getMaterialNb,
+//                    queryDTO.getMaterialNb())
+//                    .like(StringUtils.isNotEmpty(queryDTO.getCell()), MaterialCall::getCell, queryDTO.getCell())
+//                    .like(StringUtils.isNotEmpty(queryDTO.getOrderNb()), MaterialCall::getOrderNb,
+//                            queryDTO.getOrderNb())
+//                    .like(StringUtils.isNotEmpty(queryDTO.getCreateBy()), MaterialCall::getCreateBy,
+//                            queryDTO.getCreateBy())
+//                    .like(ObjectUtils.isNotEmpty(queryDTO.getStatus()), MaterialCall::getStatus, queryDTO.getStatus())
+//                    .apply(ObjectUtils.allNotNull(queryDTO.getStartCreateTime()), "date_format (create_time," +
+//                            "'%Y-%m-%d') >= date_format ({0},'%Y-%m-%d')", queryDTO.getStartCreateTime())
+//                    .apply(ObjectUtils.allNotNull(queryDTO.getEndCreateTime()), "date_format (create_time,'%Y-%m-%d')" +
+//                            " <= date_format ({0},'%Y-%m-%d')", queryDTO.getEndCreateTime())
+//                    .orderByAsc(MaterialCall::getStatus)
+//                    .orderByDesc(MaterialCall::getCreateTime);
+//        }
+//        List<MaterialCall> materialCalls = materialCallMapper.selectList(queryWrapper);
+//
+//        return materialCalls;
     }
 
 

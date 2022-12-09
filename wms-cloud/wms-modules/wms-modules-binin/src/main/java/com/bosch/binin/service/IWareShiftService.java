@@ -32,7 +32,7 @@ public interface IWareShiftService extends IService<WareShift> {
 
     BinInVO allocateBin(String mesBarCode);
 
-    List<WareShift> getWareShiftList(WareShiftQueryDTO queryDTO);
+    List<WareShiftVO> getWareShiftList(WareShiftQueryDTO queryDTO);
 
     List<WareShiftVO> getWaitingBinIn();
 

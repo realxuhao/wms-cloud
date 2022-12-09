@@ -6,7 +6,6 @@ import com.bosch.binin.api.domain.MaterialCall;
 
 import com.bosch.binin.api.domain.TranshipmentOrder;
 import com.bosch.binin.api.domain.dto.SplitPalletDTO;
-import com.bosch.binin.api.domain.dto.TranshipmentOrderDTO;
 import com.bosch.binin.api.domain.vo.MaterialInfoVO;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.service.*;
@@ -17,9 +16,6 @@ import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
-import com.bosch.binin.utils.BeanConverUtil;
-import com.bosch.masterdata.api.domain.Bin;
-import com.bosch.masterdata.api.domain.vo.MaterialTypeVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
@@ -45,7 +41,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static com.ruoyi.common.core.utils.PageUtils.startPage;
 
@@ -85,9 +80,9 @@ public class MaterialKanbanController {
     @PostMapping(value = "/binDownList")
     @ApiOperation("查询kanban已下架列表")
     public R<PageVO<MaterialKanbanVO>> binDownList(@RequestBody PageDomain pageDomain) {
-        IPage<MaterialKanbanVO> materialKanbanIPage = materialKanbanService.pagebinDownList(pageDomain, SecurityUtils.getWareCode());
-        List<MaterialKanbanVO> records = materialKanbanIPage.getRecords();
-        return R.ok(new PageVO<>(records, materialKanbanIPage.getTotal()));
+        startPage();
+        List<MaterialKanbanVO> list = materialKanbanService.binDownList(pageDomain, SecurityUtils.getWareCode());
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
 
@@ -124,8 +119,8 @@ public class MaterialKanbanController {
 
     @GetMapping(value = "/getWaitingJob/{mesBarCode}")
     @ApiOperation("扫码查询待下架任务信息")
-    public R<List<MaterialKanbanVO>> getWaitingJob(@PathVariable String mesbarCode) {
-        List<MaterialKanbanVO> materialKanbanVO = materialKanbanService.getWaitingJob(mesbarCode);
+    public R<MaterialKanbanVO> getWaitingJob(@PathVariable String mesBarCode) {
+        MaterialKanbanVO materialKanbanVO = materialKanbanService.getWaitingJob(mesBarCode);
         return R.ok(materialKanbanVO);
     }
 
@@ -267,7 +262,7 @@ public class MaterialKanbanController {
             materialKanbanService.updateStockBySSCC(materialKanban.getSsccNumber(),
                     materialKanban.getQuantity());
             //TODO 根据不同状态去看是否进行上架操作
-            //
+
 
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
@@ -477,7 +472,7 @@ public class MaterialKanbanController {
             //判断sscc在不在kanban中
             List<MaterialKanban> listBySCAndStatus = materialKanbanService.getListBySCAndStatus(ssccs,
                     KanbanStatusEnum.INNER_BIN_IN.value());
-            if (CollectionUtils.isEmpty(listBySCAndStatus)){
+            if (CollectionUtils.isEmpty(listBySCAndStatus)) {
                 throw new ServiceException("sscc在不在kanban任务中");
             }
 
@@ -511,7 +506,7 @@ public class MaterialKanbanController {
             //判断sscc在不在kanban中
             List<MaterialKanban> listBySCAndStatus = materialKanbanService.getListBySCAndStatus(ssccs,
                     KanbanStatusEnum.INNER_DOWN.value());
-            if (CollectionUtils.isEmpty(listBySCAndStatus)){
+            if (CollectionUtils.isEmpty(listBySCAndStatus)) {
                 throw new ServiceException("sscc在不在kanban任务中");
             }
             //更新kanban状态从 产线待收货  到 产线已收货
