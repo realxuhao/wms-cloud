@@ -32,6 +32,11 @@ public class MaterialReturn extends BaseEntity {
     private String ssccNumber;
 
     /**
+     * 批次号
+     */
+    private String batchNb;
+
+    /**
      * 退库类型 (0：正常退库,1：异常退库)
      */
     private Integer type;
@@ -52,6 +57,15 @@ public class MaterialReturn extends BaseEntity {
      */
     private Integer status;
 
+    /**
+     * 存储区id
+     */
+    private Long areaId;
+
+    /**
+     * 存储区code
+     */
+    private String areaCode;
 
     /**
      * 删除标记1：删除，0:可用
