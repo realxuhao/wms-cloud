@@ -19,24 +19,24 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
-* @author GUZ1CGD4
-* @description 针对表【material_return(退库表)】的数据库操作Service实现
-* @createDate 2022-12-12 11:09:13
-*/
+ * @author GUZ1CGD4
+ * @description 针对表【material_return(退库表)】的数据库操作Service实现
+ * @createDate 2022-12-12 11:09:13
+ */
 @Service
 public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper, MaterialReturn>
-    implements IMaterialReturnService{
+        implements IMaterialReturnService {
 
     @Autowired
     private MaterialReturnMapper materialReturnMapper;
 
     @Override
-    public IPage<<MaterialReturnVO> getList(MaterialReturnDTO dto) {
+    public IPage<MaterialReturnVO> getList(MaterialReturnDTO dto) {
         IPage<MaterialReturn> page = new Page<>();
         if (dto.getPageNum() != null && dto.getPageSize() != null) {
             page = new Page<>(dto.getPageNum(), dto.getPageSize());
         }
-        LambdaQueryWrapper<MaterialReturn> qw=new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<MaterialReturn> qw = new LambdaQueryWrapper<>();
         qw.eq(MaterialReturn::getDeleteFlag, DeleteFlagStatus.FALSE);
 
         IPage<MaterialReturn> materialReturnIPage = materialReturnMapper.selectPage(page, qw);
