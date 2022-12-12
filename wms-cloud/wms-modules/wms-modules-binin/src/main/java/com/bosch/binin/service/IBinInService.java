@@ -24,7 +24,7 @@ public interface IBinInService extends IService<BinIn> {
 
     BinInVO getByMesBarCode(String mesBarCode);
 
-    BinInVO generateInTaskByOldStock(BinInTaskDTO binInTaskDTO);
+    BinInVO generateInTaskByMesBarCode(String mesBarCode);
 
     List<BinInVO> currentUserData(BinInQueryDTO queryDTO);
 

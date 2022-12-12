@@ -89,4 +89,9 @@ public class MaterialKanban extends BaseEntity {
      * deleteFlag
      */
     private Integer deleteFlag;
+
+    /**
+     * 父id
+     */
+    private Long parentId;
 }

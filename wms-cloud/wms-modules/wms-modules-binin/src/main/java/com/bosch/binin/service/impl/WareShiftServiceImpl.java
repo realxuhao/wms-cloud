@@ -14,6 +14,7 @@ import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
 import com.bosch.binin.service.IBinInService;
+import com.bosch.binin.service.IMaterialKanbanService;
 import com.bosch.binin.service.IWareShiftService;
 import com.bosch.binin.service.IStockService;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
@@ -21,11 +22,13 @@ import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import sun.plugin2.main.client.PrintBandDescriptor;
 
 
 import java.util.ArrayList;
@@ -54,6 +57,9 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     @Autowired
     private MaterialKanbanMapper kanbanMapper;
 
+    @Autowired
+    private IMaterialKanbanService kanbanService;
+
     @Override
     public Boolean addShiftRequirement(AddShiftTaskDTO dto) {
         List<String> ssccNbList = dto.getSsccNbList();
@@ -77,6 +83,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             WareShift wareShift = WareShift.builder().sourcePlantNb(item.getPlantNb()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
                     .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialNb()).batchNb(item.getBatchNb()).expireDate(item.getExpireDate())
                     .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+                    .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
                     .build();
             wareShiftList.add(wareShift);
             //更新冻结库存
@@ -124,7 +131,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     }
 
     @Override
-    public BinInVO allocateBin(String mesBarCode,String wareCode) {
+    public BinInVO allocateBin(String mesBarCode, String wareCode) {
         //分配库位信息
         BinInVO binInVO = binInService.generateInTaskByOldStock(MesBarCodeUtil.getSSCC(mesBarCode), Double.valueOf(0), wareCode);
 
@@ -142,6 +149,66 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     public List<WareShiftVO> getWaitingBinIn() {
         List<WareShiftVO> wareShiftVOS = wareShiftMapper.getWaitingBinIn(SecurityUtils.getWareCode());
         return wareShiftVOS;
+    }
+
+    @Override
+    public void cancelWareShift(Long id) {
+        LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
+        WareShift wareShift = wareShiftMapper.selectById(id);
+        if (wareShift == null || wareShift.getDeleteFlag().equals(DeleteFlagStatus.TRUE.getCode())) {
+            throw new ServiceException("移库任务不存在或者已删除");
+        }
+        if (wareShift.getStatus().equals(KanbanStatusEnum.CANCEL.value()) || wareShift.getStatus().equals(KanbanStatusEnum.FINISH.value()) || wareShift.getStatus().equals(KanbanStatusEnum.INNER_RECEIVING.value())) {
+            throw new ServiceException("当前状态为： " + KanbanStatusEnum.getDesc(wareShift.getStatus().toString()) + " 不可以取消");
+        }
+        //待下架状态，需要判断是主库待下架还是外库待下架
+        if (KanbanStatusEnum.WAITING_BIN_DOWN.value().equals(wareShift.getStatus())) {
+            //如果不是空，走主库上架
+            if (StringUtils.isNotEmpty(wareShift.getTargetWareCode())) {
+                binInService.generateInTaskByOldStock(wareShift.getSsccNb(), Double.valueOf(0), wareShift.getTargetWareCode());
+
+            } else {
+                Stock stock = stockService.getAvailablesStockBySscc(wareShift.getSsccNb());
+                if (stock != null) {
+                    stock.setAvailableStock(stock.getTotalStock());
+                    stock.setFreezeStock(Double.valueOf(0));
+                    stockService.updateById(stock);
+                }
+            }
+        }
+        //外库待发运，取消后直接在外库上架
+        if (KanbanStatusEnum.OUT_DOWN.value().equals(wareShift.getStatus())) {
+            binInService.generateInTaskByOldStock(wareShift.getSsccNb(), Double.valueOf(0), wareShift.getSourceWareCode());
+
+        }
+        //待上架状态，直接在收货仓库上架
+        if (KanbanStatusEnum.INNER_BIN_IN.value().equals(wareShift.getStatus())) {
+            binInService.generateInTaskByOldStock(wareShift.getSsccNb(), Double.valueOf(0), wareShift.getTargetWareCode());
+        }
+
+        //如果kanban有，需要对应更新为取消
+        MaterialKanban kanban = kanbanService.getOneBySCAndStatus(wareShift.getSsccNb(), KanbanStatusEnum.WAITING_ISSUE.value());
+        if (kanban != null) {
+            kanban.setStatus(KanbanStatusEnum.CANCEL.value());
+        }
+        kanbanService.updateById(kanban);
+
+        wareShift.setStatus(KanbanStatusEnum.CANCEL.value());
+        wareShiftMapper.updateById(wareShift);
+
+
+    }
+
+    @Override
+    public WareShift getWareShiftBySsccAndStatus(String sscc) {
+        LambdaQueryWrapper<WareShift> uw = new LambdaQueryWrapper<>();
+        uw.in(WareShift::getSsccNb, sscc);
+        uw.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
+        uw.ne(WareShift::getStatus, KanbanStatusEnum.FINISH.value());
+
+        uw.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        uw.last("limit 1");
+        return wareShiftMapper.selectOne(uw);
     }
 
     @Override

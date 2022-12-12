@@ -27,7 +27,7 @@ public class WareShift extends BaseEntity {
     /**
      * 主键id
      */
-    private Integer id;
+    private Long id;
 
     /**
      * 源工厂

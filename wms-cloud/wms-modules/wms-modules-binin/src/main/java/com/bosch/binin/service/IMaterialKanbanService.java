@@ -114,4 +114,6 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     MaterialKanbanVO getKanbanBySSCC(String sscc);
 
     void splitPallet(SplitPalletDTO splitPallet);
+
+    void cancelKanban(Long id);
 }

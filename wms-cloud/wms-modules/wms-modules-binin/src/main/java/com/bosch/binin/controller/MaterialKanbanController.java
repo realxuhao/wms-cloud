@@ -268,6 +268,7 @@ public class MaterialKanbanController {
 
 
 
+
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             return R.fail(ex.getMessage());

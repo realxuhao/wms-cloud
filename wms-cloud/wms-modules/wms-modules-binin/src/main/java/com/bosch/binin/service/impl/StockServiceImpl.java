@@ -74,4 +74,23 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         StockVO conver = BeanConverUtil.conver(stock, StockVO.class);
         return conver;
     }
+
+    @Override
+    public Stock getAvailablesStockBySscc(String sscc) {
+        LambdaQueryWrapper<Stock> stockLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        stockLambdaQueryWrapper.eq(Stock::getSsccNumber, sscc);
+        stockLambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        stockLambdaQueryWrapper.last("limit 1");
+        Stock stock = stockMapper.selectOne(stockLambdaQueryWrapper);
+        return stock;
+    }
+
+    @Override
+    public Stock getOneStock(String sscc) {
+        LambdaQueryWrapper<Stock> stockLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        stockLambdaQueryWrapper.eq(Stock::getSsccNumber, sscc);
+        stockLambdaQueryWrapper.last("limit 1");
+        Stock stock = stockMapper.selectOne(stockLambdaQueryWrapper);
+        return stock;
+    }
 }

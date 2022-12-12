@@ -437,68 +437,63 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     }
 
     @Override
-    public BinInVO generateInTaskByOldStock(BinInTaskDTO binInTaskDTO) {
-        String mesBarCode = binInTaskDTO.getMesBarCode();
-        String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+    public BinInVO generateInTaskByMesBarCode(String mesBarCode) {
         String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
+        String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+        Double quantity = Double.valueOf(MesBarCodeUtil.getQuantity(mesBarCode));
         String batchNb = MesBarCodeUtil.getBatchNb(mesBarCode);
-        MaterialInVO materialInVO = getMaterialInVO(mesBarCode);
-
-        //校验是否能放在这个库位
-        BinVO binVO = getBinVOByBinCode(binInTaskDTO.getRecommendBinCode());
-        validMaterialBinRule(binVO, materialNb);
-
-        //校验该库位是否被占用
-        LambdaQueryWrapper<BinIn> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value()).eq(BinIn::getRecommendBinCode, binInTaskDTO.getRecommendBinCode()).eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-
-        BinIn binInUsed = binInMapper.selectOne(lambdaQueryWrapper);
-        if (binInUsed != null) {
-            throw new ServiceException("该库位已被占用");
+        R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
+        if (StringUtils.isNull(materialBinVOResullt) || CollectionUtils.isEmpty(materialBinVOResullt.getData())) {
+            throw new ServiceException("该物料：" + materialNb + " 分配规则有误");
         }
 
-
-        lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(BinIn::getStatus, BinInStatusEnum.FINISH.value()).eq(BinIn::getActualBinCode, binInTaskDTO.getRecommendBinCode()).eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        binInUsed = binInMapper.selectOne(lambdaQueryWrapper);
-        if (binInUsed != null) {
-            throw new ServiceException("该库位已被占用");
+        if (R.FAIL == materialBinVOResullt.getCode()) {
+            throw new ServiceException(materialBinVOResullt.getMsg());
         }
+        MaterialVO materialVO = getMaterialVOByCode(materialNb);
 
+        BinAllocationDTO allocationDTO = new BinAllocationDTO();
+        allocationDTO.setMesBarCode(mesBarCode);
+        //获取托盘
+        allocationDTO.setPalletType(materialVO.getPalletType());
 
         //获取托盘详情
-        R<Pallet> palletR = remotePalletService.getByType(binInTaskDTO.getPalletType());
+        R<Pallet> palletR = remotePalletService.getByType(materialVO.getPalletType());
         if (!palletR.isSuccess()) {
             throw new ServiceException("获取托盘详情失败");
         }
         Pallet pallet = palletR.getData();
-        FrameRemainVO frameRemainVO = binAssignmentService.validateBin(binVO.getFrameCode(), getMaterialVOByCode(materialNb), pallet);
-        if (frameRemainVO == null) {
-            throw new ServiceException("生成上架任务失败：当前跨不满足！");
+        if (pallet == null) {
+            throw new ServiceException("未获取到托盘数据");
         }
+
+
+        BinAllocationVO binAllocationVO = binAssignmentService.getBinAllocationVO(allocationDTO);
+
+        BinVO binVO = getBinVOByBinCode(binAllocationVO.getRecommendBinCode());
 
 
         BinIn binIn = new BinIn();
         binIn.setSsccNumber(sscc);
-        binIn.setQuantity(materialInVO.getQuantity());
+        binIn.setQuantity(quantity);
         binIn.setMaterialNb(materialNb);
         binIn.setBatchNb(batchNb);
         binIn.setExpireDate(MesBarCodeUtil.getExpireDate(mesBarCode));
-        binIn.setPalletCode(binInTaskDTO.getPalletCode());
-        binIn.setPalletType(binInTaskDTO.getPalletType());
-        binIn.setRecommendBinCode(binInTaskDTO.getRecommendBinCode());
+        binIn.setPalletType(materialVO.getPalletType());
+        //设置托盘编码,虚拟托盘直接分配编码
+        binIn.setPalletCode(pallet.getIsVirtual().equals(1) ? "V-" + pallet.getVirtualPrefixCode() + "-" + System.currentTimeMillis() : null);
+        binIn.setRecommendBinCode(binAllocationVO.getRecommendBinCode());
         binIn.setStatus(BinInStatusEnum.PROCESSING.value());
         binIn.setRecommendFrameId(binVO.getFrameId());
         binIn.setRecommendFrameCode(binVO.getFrameCode());
         binIn.setWareCode(SecurityUtils.getWareCode());
 
         binIn.setMoveType(MoveTypeEnums.BININ.getCode());
-        binIn.setFromPurchaseOrder(materialInVO.getFromPurchaseOrder());
-        binIn.setPlantNb(materialInVO.getPlantNb());
-
+//        binIn.setFromPurchaseOrder(materialInVO.getFromPurchaseOrder());
+//        binIn.setPlantNb(materialInVO.getPlantNb());
         binInMapper.insert(binIn);
+        return binInMapper.selectBySsccNumber(sscc);
 
-        return getByMesBarCode(mesBarCode);
     }
 
     /**

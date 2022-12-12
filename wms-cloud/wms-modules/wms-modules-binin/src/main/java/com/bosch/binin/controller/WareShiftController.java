@@ -1,5 +1,7 @@
 package com.bosch.binin.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
@@ -10,12 +12,16 @@ import com.bosch.binin.service.IWareShiftService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -89,6 +95,20 @@ public class WareShiftController extends BaseController {
         startPage();
         List<WareShiftVO> list = shiftService.getWaitingBinIn();
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
+    /**
+     * 取消kanban
+     */
+    @Log(title = "kanban", businessType = BusinessType.CLEAN)
+    @ApiOperation("取消移库任务")
+    @GetMapping(value = "/cancelWareShift/{id}")
+    @Transactional(rollbackFor = Exception.class)
+    public R cancelWareShift(@PathVariable("id") Long id) {
+
+        shiftService.cancelWareShift(id);
+
+        return R.ok();
     }
 
 

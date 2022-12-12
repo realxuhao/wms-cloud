@@ -36,4 +36,7 @@ public interface IWareShiftService extends IService<WareShift> {
 
     List<WareShiftVO> getWaitingBinIn();
 
+    void cancelWareShift(Long id);
+
+    WareShift getWareShiftBySsccAndStatus(String sscc);
 }

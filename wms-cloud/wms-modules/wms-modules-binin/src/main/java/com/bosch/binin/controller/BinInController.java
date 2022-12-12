@@ -63,15 +63,15 @@ public class BinInController extends BaseController {
 
     }
 
-    @PostMapping(value = "/generateInTask")
-    @ApiOperation("生成上架任务")
-    public R<BinInVO> generateInTask(@RequestBody BinInTaskDTO binInTaskDTO) {
-        BinInVO binInVOByMesBarCode = binInService.getByMesBarCode(binInTaskDTO.getMesBarCode());
-        if (binInVOByMesBarCode != null && StringUtils.isNotEmpty(binInVOByMesBarCode.getRecommendBinCode())) {
-            throw new ServiceException("该物料已有上架任务或者已上架");
-        }
-        return R.ok(binInService.generateInTaskByOldStock(binInTaskDTO));
-    }
+//    @PostMapping(value = "/generateInTask")
+//    @ApiOperation("生成上架任务")
+//    public R<BinInVO> generateInTask(@RequestBody BinInTaskDTO binInTaskDTO) {
+//        BinInVO binInVOByMesBarCode = binInService.getByMesBarCode(binInTaskDTO.getMesBarCode());
+//        if (binInVOByMesBarCode != null && StringUtils.isNotEmpty(binInVOByMesBarCode.getRecommendBinCode())) {
+//            throw new ServiceException("该物料已有上架任务或者已上架");
+//        }
+//        return R.ok(binInService.generateInTaskByOldStock(binInTaskDTO));
+//    }
 
     @PostMapping(value = "/in")
     @ApiOperation("实际上架")
