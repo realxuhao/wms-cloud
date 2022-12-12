@@ -442,7 +442,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         if (MaterialCallSortTypeEnum.BBD_FIRST.value().equals(call.getSortType())) {
             sortedStockList =
                     stockList.stream().filter(item -> item.getAvailableStock() != 0).
-                            sorted(Comparator.comparing(Stock::getExpireDate).
+                            sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getTotalStock).
                                     thenComparing(Stock::getPlantNb)).collect(Collectors.toList());
         } else if (MaterialCallSortTypeEnum.MAIN_WARE_FIRST.value().equals(call.getSortType())) {
             sortedStockList =
