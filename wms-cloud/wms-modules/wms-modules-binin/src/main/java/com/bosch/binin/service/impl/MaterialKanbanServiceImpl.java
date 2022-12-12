@@ -35,6 +35,7 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import org.apache.coyote.http11.filters.VoidInputFilter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -56,12 +57,14 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     private WareShiftMapper wareShiftMapper;
 
     @Autowired
+    @Lazy
     private IWareShiftService wareShiftService;
 
     @Autowired
     private IBinInService binInService;
 
     @Autowired
+    @Lazy
     private IMaterialCallService callService;
 
 

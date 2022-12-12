@@ -32,6 +32,7 @@ import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
@@ -62,6 +63,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
 
 
     @Autowired
+    @Lazy
     private IMaterialKanbanService kanbanService;
 
     @Override

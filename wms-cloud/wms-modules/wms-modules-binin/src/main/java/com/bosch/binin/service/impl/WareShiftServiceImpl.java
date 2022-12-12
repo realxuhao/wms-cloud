@@ -25,6 +25,7 @@ import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -58,6 +59,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     private MaterialKanbanMapper kanbanMapper;
 
     @Autowired
+    @Lazy //懒加载
     private IMaterialKanbanService kanbanService;
 
     @Override
