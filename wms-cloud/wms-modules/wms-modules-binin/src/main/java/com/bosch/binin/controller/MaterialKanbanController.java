@@ -246,25 +246,26 @@ public class MaterialKanbanController {
      */
     @Log(title = "kanban", businessType = BusinessType.CLEAN)
     @ApiOperation("取消kanban")
-    @GetMapping(value = "/cancelKanban/{id}")
+    @PutMapping(value = "/cancel/{id}")
     @Transactional(rollbackFor = Exception.class)
     public R cancelKanban(@PathVariable("id") Long id) {
 
         try {
-            //查询取消任务详情
-            LambdaQueryWrapper<MaterialKanban> qw = new LambdaQueryWrapper<>();
-            qw.eq(MaterialKanban::getId, id);
-            qw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-            qw.last("for update ");
-            MaterialKanban materialKanban = materialKanbanService.getOne(qw);
-            //kanban 修改取消状态
-            materialKanbanService.updateKanban(id);
-            //叫料需求的下发量修改
-            materialCallService.updateCallQuantity(materialKanban);
-            //sscc库存可用 冻结修改
-            materialKanbanService.updateStockBySSCC(materialKanban.getSsccNumber(),
-                    materialKanban.getQuantity());
-            //TODO 根据不同状态去看是否进行上架操作
+//            //查询取消任务详情
+//            LambdaQueryWrapper<MaterialKanban> qw = new LambdaQueryWrapper<>();
+//            qw.eq(MaterialKanban::getId, id);
+//            qw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+//            qw.last("for update ");
+//            MaterialKanban materialKanban = materialKanbanService.getOne(qw);
+//            //kanban 修改取消状态
+//            materialKanbanService.updateKanban(id);
+//            //叫料需求的下发量修改
+//            materialCallService.updateCallQuantity(materialKanban);
+//            //sscc库存可用 冻结修改
+//            materialKanbanService.updateStockBySSCC(materialKanban.getSsccNumber(),
+//                    materialKanban.getQuantity());
+
+            materialKanbanService.cancelKanban(id);
 
 
 

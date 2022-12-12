@@ -34,6 +34,7 @@ import com.bosch.storagein.api.domain.vo.MaterialInVO;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
+import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
@@ -330,6 +331,10 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             materialKanban.setAreaCode(stock.getAreaCode());
             materialKanban.setBinCode(stock.getBinCode());
             kanbanMapper.updateById(materialKanban);
+            //需要冻结库存
+            stock.setFreezeStock(materialKanban.getQuantity());
+            stock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(stock.getTotalStock(), stock.getFreezeStock(), "-"));
+            stockMapper.updateById(stock);
         }
         //如果是移库任务，需要把状态修改为完成
         LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();

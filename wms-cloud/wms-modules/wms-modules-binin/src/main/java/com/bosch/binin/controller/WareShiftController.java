@@ -98,11 +98,10 @@ public class WareShiftController extends BaseController {
     }
 
     /**
-     * 取消kanban
+     * 取消移库
      */
-    @Log(title = "kanban", businessType = BusinessType.CLEAN)
     @ApiOperation("取消移库任务")
-    @GetMapping(value = "/cancelWareShift/{id}")
+    @GetMapping(value = "/cancel/{id}")
     @Transactional(rollbackFor = Exception.class)
     public R cancelWareShift(@PathVariable("id") Long id) {
 

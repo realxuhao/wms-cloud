@@ -160,7 +160,10 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         if (wareShift == null || wareShift.getDeleteFlag().equals(DeleteFlagStatus.TRUE.getCode())) {
             throw new ServiceException("移库任务不存在或者已删除");
         }
-        if (wareShift.getStatus().equals(KanbanStatusEnum.CANCEL.value()) || wareShift.getStatus().equals(KanbanStatusEnum.FINISH.value()) || wareShift.getStatus().equals(KanbanStatusEnum.INNER_RECEIVING.value())) {
+        if (wareShift.getStatus().equals(KanbanStatusEnum.CANCEL.value()) ||
+                wareShift.getStatus().equals(KanbanStatusEnum.FINISH.value()) ||
+                wareShift.getStatus().equals(KanbanStatusEnum.INNER_RECEIVING.value())||
+        wareShift.getStatus().equals(KanbanStatusEnum.INNER_BIN_IN.value())) {
             throw new ServiceException("当前状态为： " + KanbanStatusEnum.getDesc(wareShift.getStatus().toString()) + " 不可以取消");
         }
         //待下架状态，需要判断是主库待下架还是外库待下架
@@ -184,16 +187,16 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
         }
         //待上架状态，直接在收货仓库上架
-        if (KanbanStatusEnum.INNER_BIN_IN.value().equals(wareShift.getStatus())) {
-            binInService.generateInTaskByOldStock(wareShift.getSsccNb(), Double.valueOf(0), wareShift.getTargetWareCode());
-        }
+//        if (KanbanStatusEnum.INNER_BIN_IN.value().equals(wareShift.getStatus())) {
+//            binInService.generateInTaskByOldStock(wareShift.getSsccNb(), Double.valueOf(0), wareShift.getTargetWareCode());
+//        }
 
         //如果kanban有，需要对应更新为取消
         MaterialKanban kanban = kanbanService.getOneBySCAndStatus(wareShift.getSsccNb(), KanbanStatusEnum.WAITING_ISSUE.value());
         if (kanban != null) {
             kanban.setStatus(KanbanStatusEnum.CANCEL.value());
+            kanbanService.updateById(kanban);
         }
-        kanbanService.updateById(kanban);
 
         wareShift.setStatus(KanbanStatusEnum.CANCEL.value());
         wareShiftMapper.updateById(wareShift);

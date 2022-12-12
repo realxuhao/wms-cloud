@@ -288,10 +288,12 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
                 WareShift wareShift = WareShift.builder().sourcePlantNb(item.getFactoryCode()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
                         .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialCode()).expireDate(stock.getExpireDate()).batchNb(stock.getBatchNb())
                         .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+                        .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
                         .build();
 
                 wareShiftList.add(wareShift);
                 stock.setFreezeStock(stock.getFreezeStock() + stock.getAvailableStock());
+                stock.setAvailableStock(Double.valueOf(0));
                 stockList.add(stock);
             }
         });
@@ -573,9 +575,10 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         callService.updateCallQuantity(materialKanban);
         //sscc库存可用 冻结修改
         if (materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_ISSUE.value()) || materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN.value())) {
-
-            updateStockBySSCC(materialKanban.getSsccNumber(),
-                    materialKanban.getQuantity());
+            if ("7751".equals(materialKanban.getFactoryCode())) {
+                updateStockBySSCC(materialKanban.getSsccNumber(),
+                        materialKanban.getQuantity());
+            }
         }
 
         WareShift wareShift = wareShiftService.getWareShiftBySsccAndStatus(materialKanban.getSsccNumber());
