@@ -1,6 +1,7 @@
 package com.bosch.binin.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.bosch.binin.api.domain.MaterialReturn;
 import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
 import com.bosch.binin.api.domain.dto.MaterialReturnDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
@@ -11,6 +12,7 @@ import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.service.IMaterialReturnService;
 import com.bosch.binin.service.IWareShiftService;
+import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
@@ -61,11 +63,15 @@ public class ReturnMaterialController extends BaseController {
             if (StringUtils.isEmpty(mesBarCode)) {
                 throw  new ServiceException("请扫描sscc");
             }
-
+            String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
             String batchNb = MesBarCodeUtil.getBatchNb(mesBarCode);
             String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
-
-            return R.ok();
+            materialReturnDTO.setSsccNumber(sscc);
+            materialReturnDTO.setMaterialCode(materialNb);
+            materialReturnDTO.setBatchNb(batchNb);
+            MaterialReturn conver = BeanConverUtil.conver(materialReturnDTO, MaterialReturn.class);
+            boolean save = materialReturnService.save(conver);
+            return R.ok(save);
         } catch (Exception e) {
             return R.fail(e.getMessage());
         }

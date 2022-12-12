@@ -27,6 +27,12 @@ public class MaterialReturnVO {
     @ApiModelProperty(value = "备注")
     private String ssccNumber;
 
+
+    /**
+     * 批次号
+     */
+    @ApiModelProperty(value = "批次号")
+    private String batchNb;
     /**
      * 退库类型 (0：正常退库,1：异常退库)
      */
@@ -51,7 +57,17 @@ public class MaterialReturnVO {
      */
     @ApiModelProperty(value = "备注")
     private Integer status;
+    /**
+     * 存储区id
+     */
+    @ApiModelProperty(value = "areaId")
+    private Long areaId;
 
+    /**
+     * 存储区code
+     */
+    @ApiModelProperty(value = "areaCode")
+    private String areaCode;
 
     /**
      * 删除标记1：删除，0:可用

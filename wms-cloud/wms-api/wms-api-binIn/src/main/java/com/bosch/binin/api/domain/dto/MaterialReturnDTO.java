@@ -2,9 +2,11 @@ package com.bosch.binin.api.domain.dto;
 
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.math.BigDecimal;
 
+@Data
 public class MaterialReturnDTO extends PageDomain {
 
 
@@ -25,7 +27,11 @@ public class MaterialReturnDTO extends PageDomain {
      */
     @ApiModelProperty(value = "ssccNumber")
     private String ssccNumber;
-
+    /**
+     * 批次号
+     */
+    @ApiModelProperty(value = "批次号")
+    private String batchNb;
     /**
      * 退库类型 (0：正常退库,1：异常退库)
      */
@@ -50,7 +56,17 @@ public class MaterialReturnDTO extends PageDomain {
      */
     @ApiModelProperty(value = "status")
     private Integer status;
+    /**
+     * 存储区id
+     */
+    @ApiModelProperty(value = "areaId")
+    private Long areaId;
 
+    /**
+     * 存储区code
+     */
+    @ApiModelProperty(value = "areaCode")
+    private String areaCode;
 
     /**
      * 删除标记1：删除，0:可用
