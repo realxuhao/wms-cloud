@@ -178,7 +178,7 @@
 			},
 		
 			async lodaData(){
-				this.getPalletList()
+				// this.getPalletList()
 			},
 			async getByMesBarCode(barCode){
 				try{
@@ -263,15 +263,7 @@
 	background: #fff;
 }
 
-.text-line{
-		color: #333;
-		font-size: 14px;
-		display: flex;
-		align-items: center;
-		.label{
-			width: 72px;
-		}
-	}
+
 	
 	.result-content{
 		width: 324px;

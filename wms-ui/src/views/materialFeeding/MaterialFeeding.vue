@@ -129,6 +129,7 @@
         :cell="currentCell"
         :materialNb="currentMaterialNb"
         :notQuantity="notQuantity"
+        @on-ok="loadTableList"
       ></CreateReductionTask>
     </div>
 

@@ -20,14 +20,18 @@
 					<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" type="icon-shangjia2"></uni-icons>
 					<view class="text">原材料上架</view>
 				</view>
-				<view class="list-item">
-					
-				</view>
+				
 			</view>
 		</view>
 		
 		<view class="action-content">
 			<!-- 开发中敬请期待 -->
+			<view class="text" @click="handleGoto('/pages/picking/picking')">拣配下架</view>
+			<view class="text" @click="handleGoto('/pages/receivingMaterial/receivingMaterial')">生产收料</view>
+			<view class="text" @click="handleGoto('/pages/wareTransshipment/shipment')">发运</view>
+			<view class="text" @click="handleGoto('/pages/wareTransshipment/receiving')">收货</view>
+			<view class="text" @click="handleGoto('/pages/wareTransshipment/binIn')">上架</view>
+			
 		</view>
 		<ScanCode></ScanCode>
 		<uni-data-picker

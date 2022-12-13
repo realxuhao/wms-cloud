@@ -3,26 +3,11 @@
     width="70%"
     title="创建物料需求"
     placement="right"
-    :closable="false"
+
     :visible="createReductionTaskVisible"
     @close="onClose"
   >
     <div class="table-content">
-      <a-form layout="inline" class="search-content">
-        <a-row :gutter="16">
-          <a-col :span="4">
-            <a-form-model-item label="批次号">
-              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
-            </a-form-model-item>
-          </a-col>
-          <a-col span="4">
-            <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
-              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-            </span>
-          </a-col>
-        </a-row>
-      </a-form>
 
       <a-steps :current="currentStep" @change="handleStepChange" class="m-b-24">
         <a-step title="选择下发需求" >
@@ -31,8 +16,23 @@
       </a-steps>
       <a-row>
         <a-col :span="24" v-show="currentStep===0">
+          <a-form layout="inline" class="search-content">
+            <a-row :gutter="16">
+              <a-col :span="4">
+                <a-form-model-item label="批次号">
+                  <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+                </a-form-model-item>
+              </a-col>
+              <a-col span="4">
+                <span class="table-page-search-submitButtons" >
+                  <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+                  <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+                </span>
+              </a-col>
+            </a-row>
+          </a-form>
           <div class="m-b-8">
-            <a-button class="m-r-8" type="primary" @click="currentStep = 1">下一步</a-button>
+            <a-button icon="step-forward" class="m-r-8" @click="currentStep = 1">下一步</a-button>
             <span class="m-r-8"><span class="primary-color">未下发量：</span>{{ notQuantity }}</span>
             <span> <span class="primary-color">已选择量：</span>{{ stockNumber }}</span>
           </div>
@@ -61,7 +61,7 @@
 
         <a-col :span="24" v-show="currentStep === 1">
           <div class="action-content">
-            <a-button class="m-r-8" type="primary" @click="currentStep = 0">上一步</a-button>
+            <a-button class="m-r-8" icon="step-backward" @click="currentStep = 0">上一步</a-button>
             <a-button
               type="primary"
               :disabled="!hasSelected"
@@ -290,6 +290,7 @@ export default {
       this.hasSelectedList = []
       this.selectedRowKeys = []
       this.currentStep = 0
+      this.$emit('on-ok')
     },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }

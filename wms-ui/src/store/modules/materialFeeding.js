@@ -62,6 +62,10 @@ const materialFeeding = {
     async getStockInfo ({ commit }, options) {
       const data = await materialFeedingService.getStockInfo(options)
       return data
+    },
+    async addShiftTask ({ commit }, options) {
+      const data = await materialFeedingService.addShiftTask(options)
+      return data
     }
   }
 }

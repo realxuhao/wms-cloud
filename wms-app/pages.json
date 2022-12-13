@@ -23,7 +23,31 @@
 		},
 		{
             "path" : "pages/binIn/operation"
-        }
+        },
+		{
+		    "path" : "pages/picking/picking"
+		},
+		{
+            "path" : "pages/receivingMaterial/receivingMaterial"
+        },
+		{
+		    "path" : "pages/wareTransshipment/shipment"
+		},
+		{
+		    "path" : "pages/wareTransshipment/shipmentOperation"
+		},
+		{
+            "path" : "pages/wareTransshipment/receiving"
+        },
+		{
+            "path" : "pages/wareTransshipment/binIn"
+        },
+		{
+		    "path" : "pages/wareTransshipment/binInScan"
+		},
+		{
+		    "path" : "pages/wareTransshipment/binInOperation"
+		}
     ],
 	"globalStyle": {
 		"navigationStyle": "custom"

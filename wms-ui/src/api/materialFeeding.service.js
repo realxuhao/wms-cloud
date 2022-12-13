@@ -87,6 +87,12 @@ const getStockInfo = async (parameter) => {
   return data
 }
 
+const addShiftTask = async (options) => {
+  const url = `binin/ware-shift/addShiftTask`
+  const { data } = await createAuthInstance(config.apiHost).post(url, options)
+  return data
+}
+
 export const materialFeedingService = {
   getList,
   upload,
@@ -100,5 +106,6 @@ export const materialFeedingService = {
   batchAddJob,
   cancelPickingOrder,
   exportExcel,
-  getStockInfo
+  getStockInfo,
+  addShiftTask
 }

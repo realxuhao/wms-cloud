@@ -75,8 +75,8 @@ const vueConfig = {
         modifyVars: {
           // less vars，customize ant design theme
 
-          // 'primary-color': '#F5222D'
-          // 'link-color': '#F5222D',
+          'primary-color': '#481d88',
+          'link-color': '#481d88'
           // 'border-radius-base': '4px'
         },
         // DO NOT REMOVE THIS LINE
@@ -92,7 +92,7 @@ const vueConfig = {
     proxy: {
       '/api': {
         // target: 'http://121.37.188.213:8080',
-        target: 'http://192.168.3.161:8080',
+        target: 'http://192.168.206.161:8080',
         // ws: false,
         changeOrigin: false,
         pathRewrite: {

@@ -3,7 +3,6 @@
     width="1200px"
     :title="title"
     placement="right"
-    :closable="false"
     :visible="visible"
     @close="onClose"
   >

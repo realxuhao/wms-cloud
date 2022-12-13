@@ -9,6 +9,12 @@
 .m-b-12{
 	margin-bottom: 12px;
 }
+.m-r-8{
+	margin-right: 8px;
+}
+.m-r-4{
+	margin-right: 4px;
+}
 
 // flex
 .flex-column{
@@ -64,10 +70,14 @@
 .error-color{
 	color: $uni-color-error !important;
 }
+.grey-color{
+	color: $uni-text-color-grey;
+}
 
 .text-center{
 	text-align: center;
 }
+
 
 .custom-input{
 	display: flex;
@@ -96,5 +106,20 @@
 	&.focus{
 		border-color: $primary-color;
 		border-width: 2px;
+	}
+}
+
+.ellipsis{
+	overflow: hidden; //超出的文本隐藏
+	text-overflow: ellipsis; //溢出用省略号显示
+}
+
+.text-line{
+	color: #333;
+	font-size: 14px;
+	display: flex;
+	align-items: center;
+	.label{
+		width: 72px;
 	}
 }

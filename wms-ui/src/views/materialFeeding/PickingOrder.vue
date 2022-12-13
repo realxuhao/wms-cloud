@@ -39,6 +39,15 @@
                 <a-input v-model="queryForm.createBy" placeholder="创建人" allow-clear/>
               </a-form-item>
             </a-col>
+            <a-col :span="8">
+              <a-form-item label="创建时间" >
+                <a-range-picker
+                  format="YYYY-MM-DD HH:mm"
+                  :show-time="{ format: 'HH:mm' }"
+                  v-model="queryForm.date"
+                />
+              </a-form-item>
+            </a-col>
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
@@ -54,18 +63,25 @@
       </a-form>
       <div class="action-content">
         <a-button
-          style="margin-right:8px"
+          class="m-r-8"
           type="primary"
           :loading="submitLoading"
           :disabled="!hasSelected"
-          @click="handleBatchAddJob">批量下发</a-button>
+          @click="handleBatchAddJob">批量下发任务</a-button>
+
+        <a-button
+          type="primary"
+          :loading="submitLoading"
+          :disabled="!hasSelected"
+        >产线收货确认</a-button>
       </div>
       <a-table
+        table-layout="fixed"
         :row-selection="{
           selectedRowKeys: selectedRowKeys, onChange: onSelectChange ,
           getCheckboxProps:record => ({
             props: {
-              disabled: record.status === 0, // Column configuration not to be checked
+              disabled: [-1,1,6,7].includes(record.status), // Column configuration not to be checked
               name: record.name,
             },
           }),}"
@@ -79,12 +95,12 @@
       >
         <template slot="status" slot-scope="text">
           <div >
-            {{ statusMap[text] }}
+            <a-tag :color="statusColorMap[text]">{{ statusMap[text] }}</a-tag>
           </div>
         </template>
         <template slot="type" slot-scope="text">
           <div >
-            {{ typeMap[text] }}
+            <a-tag :color="typeColorMap[text]">{{ typeMap[text] }}</a-tag>
           </div>
         </template>
         <template slot="moveType" slot-scope="text">
@@ -105,7 +121,7 @@
             <a-divider type="vertical" />
             <a
               class="m-r-4"
-              :disabled="record.factoryCode!=='7752'"
+              :disabled="(record.factoryCode!=='7752' || record.status === 1)"
               @click="$refs.pikingOrderAddShiftTask.handleOpen(record)">新增移库任务</a>
           </div>
         </template>
@@ -125,12 +141,12 @@
 
     </div>
 
-    <PikingOrderAddShiftTask ref="pikingOrderAddShiftTask"></PikingOrderAddShiftTask>
+    <PikingOrderAddShiftTask ref="pikingOrderAddShiftTask" @on-ok="loadTableList"></PikingOrderAddShiftTask>
   </div>
 </template>
 
 <script>
-// import _ from 'lodash'
+import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
 import EditTableCell from '@/components/EditTableCell'
 import PikingOrderAddShiftTask from './PikingOrderAddShiftTask'
@@ -146,6 +162,13 @@ const columns = [
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
+    width: 120
+  },
+  {
+    title: '状态',
+    key: 'status',
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' },
     width: 120
   },
   {
@@ -204,13 +227,7 @@ const columns = [
     dataIndex: 'materialName',
     width: 120
   },
-  {
-    title: '状态',
-    key: 'status',
-    dataIndex: 'status',
-    scopedSlots: { customRender: 'status' },
-    width: 120
-  },
+
   {
     title: '创建人',
     key: 'createBy',
@@ -260,9 +277,27 @@ const status = [
 ]
 
 const statusMap = {
-  '-1': '已取消',
-  1: '已下发',
-  0: '未下发'
+  '-1': '取消任务',
+  0: '待下发',
+  1: '待下架',
+  2: '外库待发运',
+  3: '产线待收货',
+  4: '主库待收货',
+  5: '待上架',
+  6: '产线已收货',
+  7: '完成'
+}
+
+const statusColorMap = {
+  '-1': '#8f939c',
+  0: '#f3a73f',
+  1: '#f3a73f',
+  2: '#f3a73f',
+  3: '#f3a73f',
+  4: '#f3a73f',
+  5: '#f3a73f',
+  6: '#87d068',
+  7: '#87d068'
 }
 
 const moveTypeMap = {
@@ -277,12 +312,18 @@ const typeMap = {
   1: '拆托下架'
 }
 
+const typeColorMap = {
+  0: '#18bc37',
+  1: '#f3a73f'
+}
+
 const queryFormAttr = () => {
   return {
     cell: '',
     materialNb: '',
     status: '',
-    createBy: ''
+    createBy: '',
+    date: undefined
   }
 }
 
@@ -320,6 +361,8 @@ export default {
     statusMap: () => statusMap,
     moveTypeMap: () => moveTypeMap,
     typeMap: () => typeMap,
+    typeColorMap: () => typeColorMap,
+    statusColorMap: () => statusColorMap,
     hasSelected () {
       return this.selectedRowKeys.length > 0
     }
@@ -359,9 +402,15 @@ export default {
       try {
         this.tableLoading = true
 
+        const { date = [] } = this.queryForm
+        const createTimeStart = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
+        const createTimeEnd = date.length > 0 ? date[1].format(this.endDateFormat) : undefined
+
+        const options = { ..._.omit(this.queryForm, ['date']), createTimeStart, createTimeEnd }
+
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('materialFeeding/getPickingOrderList', this.queryForm)
+        } = await this.$store.dispatch('materialFeeding/getPickingOrderList', options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {

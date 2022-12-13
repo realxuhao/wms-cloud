@@ -5,6 +5,9 @@ import user from './modules/user'
 import materialIn from './modules/materialIn'
 import binIn from './modules/binIn'
 import plant from './modules/plant'
+import picking from './modules/picking'
+import receiveMaterial from './modules/receiveMaterial'
+import kanban from './modules/kanban'
 
 import getters from './getters'
 
@@ -15,7 +18,10 @@ export default new Vuex.Store({
     user,
 	materialIn,
 	binIn,
-	plant
+	plant,
+	picking,
+	receiveMaterial,
+	kanban
   },
   state: {
 

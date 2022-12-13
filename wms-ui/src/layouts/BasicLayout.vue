@@ -5,7 +5,6 @@
       v-if="isMobile()"
       placement="left"
       :wrapClassName="`drawer-sider ${navTheme}`"
-      :closable="false"
       :visible="collapsed"
       @close="drawerClose"
     >

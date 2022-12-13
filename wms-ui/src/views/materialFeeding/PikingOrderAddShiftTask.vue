@@ -1,77 +1,120 @@
 <template>
   <a-drawer
-    width="70%"
-    title="新增移库任务"
+    width="80%"
+    title="下发拣配任务"
     placement="right"
-    :closable="false"
+
     :visible="visible"
     @close="onClose"
   >
-    <a-form layout="inline" class="search-content">
-      <a-row :gutter="16">
-        <a-col :span="4">
-          <a-form-model-item label="批次号">
-            <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
-          </a-form-model-item>
-        </a-col>
-        <a-col :span="4">
-          <a-form-item label="SSCC码">
-            <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
-          </a-form-item>
-        </a-col>
-        <a-col span="4">
-          <span class="table-page-search-submitButtons" >
-            <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
-            <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-          </span>
-        </a-col>
-      </a-row>
-    </a-form>
-    <div class="table-content">
-      <div class="m-b-8">
-        <a-button
-          type="primary"
-          :disabled="!hasSelected"
-          @click="handleSubmit"
-          :loading="submitLoading">提交并生成拣配任务 </a-button>
-        <span style="margin-left: 8px">
-          <template v-if="hasSelected">
-            {{ `已选择 ${selectedRowKeys.length} 条` }}
-          </template>
-        </span>
-      </div>
-      <a-table
+    <a-steps style="display:none" :current="currentStep" @change="handleStepChange" class="m-b-24">
+      <a-step title="下发任务" >
+      </a-step>
+      <a-step title="新增移库任务" />
+    </a-steps>
+    <a-row>
+      <a-col :span="24" v-show="(currentStep===1)">
+        <a-form layout="inline" class="search-content">
+          <a-row :gutter="16">
+            <a-col :span="4">
+              <a-form-model-item label="批次号">
+                <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-item label="SSCC码">
+                <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
+              </a-form-item>
+            </a-col>
+            <a-col span="4">
+              <span class="table-page-search-submitButtons" >
+                <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+                <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+              </span>
+            </a-col>
+          </a-row>
+        </a-form>
 
-        :row-selection="{
-          selectedRowKeys: selectedRowKeys,
-          onChange: onSelectChange ,
-          getCheckboxProps:record => ({
-            props: {
-              disabled: hasDisabled(record.ssccNumber),
-              name: record.name,
-            },
-          })}"
-        :columns="columns"
-        :data-source="list"
-        :loading="tableLoading"
-        rowKey="ssccNumber"
-        :pagination="false"
-        size="middle"
-      >
-      </a-table>
+        <div class="table-content">
+          <div class="m-b-8">
+            <a-button
+              class="m-r-8"
+              type="primary"
+              :disabled="!hasSelected"
+              @click="handleSubmit"
+              :loading="submitLoading">下发任务</a-button>
+            <span class="m-r-8">
+              <template v-if="hasSelected">
+                {{ `已选择 ${selectedRowKeys.length} 条` }}
+              </template>
+            </span>
+            <a-button class="m-r-8" icon="rollback" @click="(currentStep = 0)">返回</a-button>
 
-      <div class="pagination-con">
-        <a-pagination
-          show-size-changer
-          show-less-items
-          :current="queryForm.pageNum"
-          :page-size.sync="queryForm.pageSize"
-          :total="paginationTotal"
-          @showSizeChange="loadTableList"
-          @change="changePagination"
-        />
-      </div>
-    </div>
+          </div>
+          <a-table
+            :row-selection="{
+              selectedRowKeys: selectedRowKeys,
+              onChange: onSelectChange ,
+              getCheckboxProps:record => ({
+                props: {
+                  disabled:record.freezeStock>0,
+                  name: record.name,
+                },
+              })}"
+
+            :scroll="{ x: 1300 }"
+            :columns="columns"
+            :data-source="list"
+            :loading="tableLoading"
+            rowKey="ssccNumber"
+            :pagination="false"
+            size="middle"
+          >
+          </a-table>
+          <div class="pagination-con">
+            <a-pagination
+              show-size-changer
+              show-less-items
+              :current="queryForm.pageNum"
+              :page-size.sync="queryForm.pageSize"
+              :total="paginationTotal"
+              @showSizeChange="loadTableList"
+              @change="changePagination"
+            />
+          </div>
+
+        </div>
+      </a-col>
+
+      <a-col v-show="(currentStep===0)">
+        <div class="m-b-8">
+          <a-button
+            class="m-r-8"
+            type="primary"
+            :disabled="!hasStockSelected"
+            @click="handleStockSubmit"
+            :loading="submitLoading">下发拣配任务</a-button>
+          <a-button icon="plus" class="m-r-8" @click="currentStep = 1">新增移库任务</a-button>
+
+        </div>
+        <a-table
+          :row-selection="{
+            selectedRowKeys: selectedStockRowKeys,
+            onChange: onSelectStockChange ,
+
+          }"
+          :scroll="{ x: 1300 }"
+          :columns="stockInfoColumns"
+          :data-source="stockInfo"
+          :loading="tableLoading"
+          rowKey="ssccNumber"
+          :pagination="false"
+          size="middle"
+        >
+        </a-table>
+      </a-col>
+    </a-row>
+
   </a-drawer>
 </template>
 
@@ -110,12 +153,12 @@ const columns = [
     dataIndex: 'binCode',
     width: 140
   },
-  {
-    title: '托盘编码',
-    key: 'palletCode',
-    dataIndex: 'palletCode',
-    width: 140
-  },
+  // {
+  //   title: '托盘编码',
+  //   key: 'palletCode',
+  //   dataIndex: 'palletCode',
+  //   width: 140
+  // },
   {
     title: '物料编码',
     key: 'materialNb',
@@ -145,7 +188,17 @@ const columns = [
     key: 'freezeStock',
     dataIndex: 'freezeStock',
     width: 120
+  },
+  {
+    title: '有效期',
+    key: 'expireDate',
+    dataIndex: 'expireDate',
+    width: 120
   }
+]
+
+const stockInfoColumns = [
+  ...columns
 ]
 
 const queryFormAttr = () => {
@@ -162,6 +215,7 @@ export default {
   },
   data () {
     return {
+      currentStep: 0,
       visible: false,
       submitLoading: false,
       queryForm: {
@@ -171,6 +225,7 @@ export default {
       },
 
       selectedRowKeys: [],
+      selectedStockRowKeys: [],
       list: [],
       stockInfo: []
     }
@@ -183,9 +238,16 @@ export default {
     hasSelected () {
       return this.selectedRowKeys.length > 0
     },
-    columns: () => columns
+    hasStockSelected () {
+      return this.selectedStockRowKeys.length > 0
+    },
+    columns: () => columns,
+    stockInfoColumns: () => stockInfoColumns
   },
   methods: {
+    handleStepChange (current) {
+      this.currentStep = current
+    },
     async handleOpen (record) {
       this.visible = true
       this.record = record
@@ -200,6 +262,7 @@ export default {
       this.visible = false
       this.selectedRowKeys = []
       this.currentStep = 0
+      this.$emit('on-ok')
     },
     hasDisabled (record) {
       return !!_.includes(this.stockInfo, x => x.ssccNumber === record.ssccNumber)
@@ -207,30 +270,51 @@ export default {
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
     },
+    onSelectStockChange (selectedRowKeys) {
+      this.selectedStockRowKeys = selectedRowKeys
+    },
     async handleSubmit () {
       try {
         this.submitLoading = true
-        const options = {
-          ssccNbList: this.selectedRowKeys
-        }
-        await this.$store.dispatch('materialFeeding/callPersonStock', options)
+        await this.$store.dispatch('materialFeeding/addShiftTask', { ssccNbList: this.selectedRowKeys })
+        this.selectedRowKeys = []
+        this.loadTableList()
         this.$message.success('提交成功')
-
-        this.onClose()
       } catch (error) {
         this.$message.error(error.message)
       } finally {
         this.submitLoading = false
       }
     },
+    async handleStockSubmit () {
+      try {
+        this.submitLoading = true
 
-    async getStockInfo () {
-      const options = {
-        materialNb: this.record.materialCode,
-        wareCode: this.record.wareCode
+        await this.$store.dispatch('materialFeeding/batchAddJob', { ids: this.selectedStockRowKeys })
+        this.getStockInfo()
+        this.$message.success('提交成功')
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.submitLoading = false
       }
-      const { data } = await this.$store.dispatch('materialFeeding/getStockInfo', options)
-      this.stockInfo = data
+    },
+    async getStockInfo () {
+      try {
+        this.tableLoading = true
+
+        const options = {
+          materialNb: this.record.materialCode,
+          wareCode: this.record.wareCode
+        }
+        const { data } = await this.$store.dispatch('materialFeeding/getStockInfo', options)
+        this.stockInfo = data
+        this.selectedStockRowKeys = _.map(data, x => x.ssccNumber)
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.tableLoading = false
+      }
     },
     async loadTableList () {
       try {
@@ -249,11 +333,15 @@ export default {
       }
     },
     async loadData () {
-      await this.getStockInfo()
-      this.loadTableList()
+      this.getStockInfo()
     }
   },
   watch: {
+    currentStep (val) {
+      if (val === 1) {
+        this.loadTableList()
+      }
+    }
   }
 }
 </script>

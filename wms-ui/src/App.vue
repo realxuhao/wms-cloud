@@ -1,6 +1,8 @@
 <template>
   <a-config-provider :locale="antLocale">
     <div id="app">
+      <div class="top-nav">
+      </div>
       <router-view/>
     </div>
   </a-config-provider>
@@ -25,5 +27,15 @@ export default {
 <style>
   #app {
     height: 100%;
+  }
+
+  .top-nav{
+    background: url(./assets/nutricia-color.png);
+    background-repeat: no-repeat;
+    width: 100%;
+    height: 7px;
+    position: fixed;
+    z-index: 9999;
+    margin-bottom: 20px;
   }
 </style>
