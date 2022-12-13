@@ -9,6 +9,76 @@
   font-family: "iconfont" !important;
   font-size: 16px;
   font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-chaifen:before {
+  content: "\e653";
+}
+
+.icon-shebeibangding:before {
+  content: "\e6b0";
+}
+
+.icon-isometricfenggetubiaosheji-:before {
+  content: "\e6b2";
+}
+
+.icon-jiechubangding:before {
+  content: "\e60d";
+}
+
+.icon-zhihuan:before {
+  content: "\ec8d";
+}
+
+.icon-kucunpandian24:before {
+  content: "\e619";
+}
+
+.icon-zhijian:before {
+  content: "\e605";
+}
+
+.icon-lailiaopinzhijianyan:before {
+  content: "\e6a2";
+}
+
+.icon-chaxun:before {
+  content: "\ec44";
+}
+
+.icon-xinxi:before {
+  content: "\ec68";
+}
+
+.icon-bangding:before {
+  content: "\e606";
+}
+
+.icon-wuliufahuo:before {
+  content: "\e658";
+}
+
+.icon-icon-svg-08:before {
+  content: "\e601";
+}
+
+.icon-xiehuo:before {
+  content: "\e611";
+}
+
+.icon-xiajia:before {
+  content: "\e617";
+}
+
+.icon-discharge:before {
+  content: "\e69e";
+}
+
+.icon-001-cangku:before {
+  content: "\e618";
 }
 
 .icon-shangjia1:before {

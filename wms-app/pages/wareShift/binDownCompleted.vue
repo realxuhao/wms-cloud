@@ -17,14 +17,11 @@
 	           	<text class="material-name">{{item.materialName}}</text>
 	           	<text class="status">已下架</text>
 	             </view>
-	            <view class="card-text m-b-4">物料编码：{{item.materialNb}}</view>
-	            <view class="card-text sscc">
-					<text class="card-text m-b-4">Cell：{{item.cell}}</text>
-	              <text class="card-text m-b-4">源库位：{{item.binCode}}</text>
-	            </view>
+	             <view class="card-text m-b-4">物料编码：{{item.materialNb}}</view>
+				 <view class="card-text m-b-4">库位：{{item.sourceBinCode}}</view>
 	             <view class="card-text sscc">
-					<text>SSCC码：{{item.ssccNumber}}</text>
-					<text class="time">{{item.createTime}}</text>
+	           	<text>SSCC码：{{item.ssccNb}}</text>
+	           	<text class="time">{{item.operateTime}}</text>
 	             </view>
 	             </view>
 			<Empty v-if="!list.length"></Empty>
@@ -58,8 +55,8 @@ export default {
   },
   methods: {
 	async getList(){
-		const options = {pageSize:this.pageSize,pageNum:this.pageNum}
-		const {rows,total} = await this.$store.dispatch('picking/getHistoryList',options)
+		const options = {pageSize:this.pageSize,pageNum:this.pageNum,status:2}
+		const {rows,total} = await this.$store.dispatch('wareShift/getList',options)
 		return {rows,total}
 	},
 	async loadData(){
@@ -69,7 +66,6 @@ export default {
 			this.list = rows
 			this.total = total
 		}catch(e){
-			console.log(e)
 			this.$refs.message.error(e.message)
 		}
 	},
@@ -91,7 +87,7 @@ export default {
 				this.bottomTips = 'nomore'
 			}
 		}catch(e){
-			console.log(e)
+			console.log(e.message)
 			this.$refs.message.error(e.message)
 		}finally{
 			this.$refs.hrPullLoad.reSet();

@@ -25,28 +25,46 @@
             "path" : "pages/binIn/operation"
         },
 		{
-		    "path" : "pages/picking/picking"
-		},
-		{
             "path" : "pages/receivingMaterial/receivingMaterial"
         },
-		{
-		    "path" : "pages/wareTransshipment/shipment"
-		},
-		{
-		    "path" : "pages/wareTransshipment/shipmentOperation"
-		},
-		{
-            "path" : "pages/wareTransshipment/receiving"
+        {
+            "path" : "pages/wareShift/binDown"
         },
 		{
-            "path" : "pages/wareTransshipment/binIn"
+            "path" : "pages/wareShift/binDownScan"
         },
 		{
-		    "path" : "pages/wareTransshipment/binInScan"
+            "path" : "pages/wareShift/receiving"
+        },
+		{
+            "path" : "pages/wareShift/receivingScan"
+        },
+		{
+            "path" : "pages/wareShift/receivingOperation"
+        },
+		{
+            "path" : "pages/wareShift/binIn"
+        },
+		{
+			"path": "pages/wareShift/binInScan"
 		},
 		{
-		    "path" : "pages/wareTransshipment/binInOperation"
+			"path": "pages/wareShift/binInOperation"
+		},
+		{
+		    "path" : "pages/materialCall/binDown"
+		},
+		{
+		    "path" : "pages/materialCall/binDownScan"
+		},
+		{
+            "path" : "pages/splitPallet/splitPallet"
+        },
+		{
+		    "path" : "pages/materialCall/receiving"
+		},
+		{
+		    "path" : "pages/materialCall/receivingOperation"
 		}
     ],
 	"globalStyle": {

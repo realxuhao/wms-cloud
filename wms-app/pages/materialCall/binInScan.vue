@@ -33,7 +33,7 @@
 			</uni-popup>
 			
 			<uni-popup ref="submitLine" type="dialog">
-				<uni-popup-dialog before-close type="warn" cancelText="返回" confirmText="继续扫描" title="已提交"  @confirm="handleContinue"
+				<uni-popup-dialog before-close type="success" cancelText="返回" confirmText="继续扫描" title="已提交"  @confirm="handleContinue"
 				@close="handleGoBack">
 				<view>
 					请立即配送产线！
@@ -143,7 +143,6 @@
 				}finally{
 					uni.hideLoading()
 				}
-				
 			},
 			async handleToLine(){
 				const {type,ssccNumber,quantity} = this.barCodeInfo
@@ -152,7 +151,7 @@
 				}else{
 					Bus.$off("scancodedate",this.scanCodeCallback);
 					uni.navigateTo({
-						url:`/pages/wareTransshipment/binInOperation?ssccNumber=${ssccNumber}&quantity=${quantity}`
+						url:`/pages/wareTransshipment/binInOperation?ssccNumber=${ssccNumber}&quantity=${quantity}&mesBarCode=${this.code}`
 					})
 				}
 			},

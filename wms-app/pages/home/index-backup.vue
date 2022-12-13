@@ -1,78 +1,39 @@
 <template>
 	<view class="wrapper">
 		<view class="header">
-			<view class="bar"></view>
-			<uni-nav-bar>
-			 <view class="nav-title" @click="handleOpenPicker">
-				<text class="nav-title-name">{{plantName||'请选择工厂/仓库'}}</text>
-				<uni-icons class="icon" type="bottom" size="16"></uni-icons>
-			 </view>
-			 </uni-nav-bar>
-		</view>
-		
-		<view class="main">
-			<uni-section title="常用" type="line" class="m-b-12">
-				<view class="list header-box">
-					<view class="list-item" @click="handleGoto('/pages/materialIn/index')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-ruku" type="icon-ruku"></uni-icons>
-						<view class="text">原材料入库</view>
-					</view>
-					<view class="list-item" @click="handleGoto('/pages/binIn/binIn')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" type="icon-shangjia2"></uni-icons>
-						<view class="text">原材料上架</view>
-					</view>
-				</view>
-			</uni-section>
-			<uni-section title="生产叫料" type="line" class="m-b-12">
-				<view class="list header-box">
-					<view class="list-item" @click="handleGoto('/pages/materialCall/binDown')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-ruku"></uni-icons>
-						<view class="text">拣配下架</view>
-					</view>
-					<view class="list-item" @click="handleGoto('/pages/materialCall/receiving')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" type="icon-shangjia2"></uni-icons>
-						<view class="text">生产收料</view>
-					</view>
-					<view class="list-item" @click="handleGoto('/pages/wareTransshipment/binIn')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" type="icon-shangjia2"></uni-icons>
-						<view class="text">产线退料</view>
-					</view>
-				</view>
-			</uni-section>
+			<view>
+				<view class="bar"></view>
+				<uni-nav-bar>
+				 <view class="nav-title" @click="handleOpenPicker">
+					<text class="nav-title-name">{{plantName||'请选择工厂/仓库'}}</text>
+					<uni-icons class="icon" type="bottom" size="16"></uni-icons>
+				 </view>
+				 </uni-nav-bar>
+			</view>
 			
-			<uni-section title="移库业务" type="line">
-				<view class="list header-box">
-					<view class="list-item" @click="handleGoto('/pages/wareShift/binDown')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-ruku" type="icon-ruku"></uni-icons>
-						<view class="text">移库下架</view>
-					</view>
-					<view class="list-item" @click="handleGoto('/pages/wareTransshipment/shipment')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-wuliufahuo" type="icon-wuliufahuo"></uni-icons>
-						<view class="text">移库发运</view>
-					</view>
-					<view class="list-item" @click="handleGoto('/pages/wareShift/receiving')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-xiehuo"></uni-icons>
-						<view class="text">移库收货</view>
-					</view>
-					<view class="list-item" @click="handleGoto('/pages/wareShift/binIn')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-xiehuo"></uni-icons>
-						<view class="text">移库上架</view>
-					</view>
+			<view class="list header-box">
+				<view class="list-item" @click="handleGoto('/pages/materialIn/index')">
+					<uni-icons custom-prefix="iconfont" class="icon icon-ruku" type="icon-ruku"></uni-icons>
+					<view class="text">原材料入库</view>
 				</view>
-			</uni-section>
+				<view class="list-item" @click="handleGoto('/pages/binIn/binIn')">
+					<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" type="icon-shangjia2"></uni-icons>
+					<view class="text">原材料上架</view>
+				</view>
+				
+			</view>
 		</view>
 		
-		<!-- <view class="action-content">
+		<view class="action-content">
+			<!-- 开发中敬请期待 -->
 			<view class="text" @click="handleGoto('/pages/picking/picking')">拣配下架</view>
 			<view class="text" @click="handleGoto('/pages/receivingMaterial/receivingMaterial')">生产收料</view>
 			<view class="text" @click="handleGoto('/pages/wareTransshipment/shipment')">发运</view>
 			<view class="text" @click="handleGoto('/pages/wareTransshipment/receiving')">收货</view>
 			<view class="text" @click="handleGoto('/pages/wareTransshipment/binIn')">上架</view>
 			<view class="text" @click="handleGoto('/pages/wareShift/wareShift')">移库下架</view>
+			
 		</view>
-		 -->
-		
-		
 		<ScanCode></ScanCode>
 		<uni-data-picker
 			ref="picker"
@@ -164,27 +125,27 @@
 		box-sizing: border-box;
 	}
 	.header{
-		padding-top: var(--status-bar-height);
 		background: $primary-color;
+		padding:16px 8px 0px 8px;
+		height: 160px;
+		border-bottom-left-radius:60px ;
+		border-bottom-right-radius: 60px;
 		display: flex;
-		justify-content: center;
-	}
-	
-	.main{
-		padding: 8px 8px;
-		box-sizing: border-box;
-		.uni-section{
-			box-shadow: 0 2px 10px 0 #ccc;
+		flex-direction: column;
+		justify-content: space-between;
+		.header-box{
 		}
+		
 	}
 	
 	.list{
 		width: 100%;
-		padding: 12px 0;
+		padding: 20px 0;
 		display: flex;
 		justify-content: space-between;
 		border-radius: 4px;
 		background: #fff;
+		box-shadow: 0 2px 10px 0 #ccc;
 		.list-item{
 			flex: 1;
 			display: flex;
@@ -207,6 +168,12 @@
 			}
 		}
 		
+	}
+	
+	.action-content{
+		font-size: #ccc;
+		margin-top: 40px;
+		text-align: center;
 	}
 	
 	/deep/.uni-navbar--border{

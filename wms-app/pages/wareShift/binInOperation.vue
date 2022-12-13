@@ -1,5 +1,5 @@
 <template>
-		<my-page nav-title="原材料上架">
+		<my-page nav-title="移库上架">
 			
 			<view class="main" slot="page-main">
 				<view class="header m-b-8">
@@ -182,7 +182,7 @@
 			},
 			async getByMesBarCode(barCode){
 				try{
-					const data = await this.$store.dispatch('binIn/getByMesBarCode',barCode)
+					const data = await this.$store.dispatch('wareShift/getByMesBarCode',barCode)
 					if(data && data.status ===1 ){
 						throw Error('已上架，请勿重复操作')
 					}

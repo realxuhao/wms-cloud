@@ -15,7 +15,7 @@ const picking = {
       return data
     },
 	async getHistoryList ({ commit }, parameter) {
-      const {data} = await receiveMaterialService.getReceivedList({...parameter,status:7})
+      const {data} = await receiveMaterialService.getReceivedList({...parameter})
       return data
     },
   }

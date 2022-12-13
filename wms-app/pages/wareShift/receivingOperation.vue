@@ -33,7 +33,7 @@
 		  <view class="submit-btn">
 			  <o-btn class="primary-button"
 			   @click="$refs.popup.open()"
-			  :loading="submitLoading" :disabled="!hasCheckedItems" block type="primary">提交</o-btn>
+			  :loading="submitLoading" :disabled="!hasCheckedItems" block>提交</o-btn>
 		  </view>
 	  </view>
 	  <uni-popup ref="popup" type="dialog">
@@ -57,7 +57,7 @@
 		},
 	  data() {
 		return {
-			orderList:[{materialName:'葡萄糖',materialNb:'1231283213',ssccNumber:'213137183718237821'}],
+			orderList:[],
 			submitLoading:false,
 			barCode:''
 		};
@@ -74,21 +74,25 @@
 	  methods: {
 		  async getTranshipmentOrder(){
 			 const data = await this.$store.dispatch('kanban/getTranshipmentOrder',{mesbarCode:this.barCode})
-			 console.log(data)
 			 this.orderList = data
 		  },
 		  async handleSubmit(){
 			  try{
+				uni.showLoading({
+					title:'正在提交'
+				})
 				this.submitLoading = true
 				const sscc = _.map(_.filter(this.orderList,x=>x.checked),x=>x.ssccNumber)
 			  	await this.$store.dispatch('kanban/confirmOrder',{sscc})
 				this.$refs.message.success('提交成功')
 				this.$refs.popup.close()
+				this.getTranshipmentOrder()
 			  }catch(e){
 				this.$refs.message.error(e.message)
 			  	//TODO handle the exception
 			  }finally{
 				this.submitLoading = false
+				uni.hideLoading()
 			  }
 		  }
 	  },

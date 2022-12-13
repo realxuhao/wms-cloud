@@ -15,16 +15,12 @@
 	            <view class="card" v-for="item in list" :key="item.id">
 	              <view class="card-header">
 	                <text class="material-name">{{item.materialName}}</text>
-	                <text class="status"><uni-tag size="small" :text="typeMap[item.type]" :type="typeColorMap[item.type]" /></text>
+	                <text class="status">待下架</text>
 	              </view>
 	              <view class="card-text m-b-4">物料编码：{{item.materialNb}}</view>
-				  <view class="card-text sscc">
-					<text class="card-text m-b-4">Cell：{{item.cell}}</text>
-				    <text class="card-text m-b-4">源库位：{{item.binCode}}</text>
-				  </view>
-					<!-- <view class="card-text m-b-4">源跨位：{{item.frameCode}}</view> -->
+				   <view class="card-text m-b-4">库位：{{item.sourceBinCode}}</view>
 	              <view class="card-text sscc">
-	                <text>SSCC码：{{item.ssccNumber}}</text>
+	                <text>SSCC码：{{item.ssccNb}}</text>
 	                <text class="time">{{item.uploadTime}}</text>
 	              </view>
 	            </view>
@@ -40,17 +36,6 @@ import Empty from '@/components/Empty'
 import Message from '@/components/Message'
 import hrPullLoad from '@/components/hr-pull-load/hr-pull-load';
 	
-const typeMap = {
-  0: '整托下架',
-  1: '拆托下架'
-}
-
-const typeColorMap = {
-  0: 'success',
-  1: 'warning'
-}
-
-
 export default {
 	name:'MaterialInPending',
 	components:{
@@ -67,17 +52,13 @@ export default {
 	  bottomTips:''
     };
   },
-  computed:{
-	typeMap:()=>typeMap,
-	typeColorMap:()=>typeColorMap
-  },
   created(){
   	  this.loadData()
   },
   methods: {
-	  async getList(){
-		const options = {pageSize:this.pageSize,pageNum:this.pageNum}
-		const {rows,total} = await this.$store.dispatch('picking/getPendingList',options)
+	  async getPendingList(){
+		const options = {pageSize:this.pageSize,pageNum:this.pageNum,status:1}
+		const {rows,total} = await this.$store.dispatch('wareShift/getList',options)
 		return {rows,total}
 	  },
 	  async handleRefresh(){
@@ -91,7 +72,7 @@ export default {
 	  		if (length < this.total) {
 				this.bottomTips = 'loading'
 	  			this.pageNum +=1
-	  			const {rows} = await this.getList()
+	  			const {rows} = await this.getPendingList()
 	  			this.list = this.list.concat(rows);
 	  		} else {
 	  			this.bottomTips = 'nomore'
@@ -106,7 +87,7 @@ export default {
 	async loadData(){
 		try{
 			this.pageNum = 1
-			const {rows,total} = await this.getList()
+			const {rows,total} = await this.getPendingList()
 			this.list = rows
 			this.total = total
 		}catch(e){

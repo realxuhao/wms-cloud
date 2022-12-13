@@ -36,7 +36,7 @@
 			handleGoto(){
 				Bus.$off("scancodedate",this.scanCodeCallback);
 				uni.navigateTo({
-					url:`/pages/wareTransshipment/receivingOperation?barCode=${this.code}`
+					url:`/pages/wareShift/receivingOperation?barCode=${this.code}`
 				})
 			}
 		}

@@ -1,6 +1,7 @@
 <template>
   <my-page nav-title="装车扫码">
 	  <view class="main" slot="page-main">
+		<uni-notice-bar single text="请对准条形码进行扫描" />
 		  <view class="header"><text class="m-r-4">已扫描</text><text class="error-color m-r-4">{{codeList.length}}</text>&nbsp;托</view>
 		  <uni-list class="m-b-12">
 		  	<uni-list-item v-for="(item,index) in codeList" :key="index">
@@ -22,6 +23,11 @@
 		  </view>
 	  </view>
 	  <Message ref="message"></Message>
+	  <uni-popup ref="popup" type="dialog">
+	  	<uni-popup-dialog before-close type="warn" cancelText="取消" confirmText="确认" title="确定删除吗?"  @confirm="handleConfirmDelete"
+	  	@close="$refs.popup.close()">
+	  	</uni-popup-dialog>
+	  </uni-popup>
   </my-page>
 </template>
 
@@ -36,6 +42,7 @@
 	  data() {
 		return {
 			codeList:[],
+			deleteCurrentCode:'',
 			submitLoading:false
 		};
 	  },
@@ -48,19 +55,24 @@
 	  methods: {
 		  async scanCodeCallback(data){
 			if(_.findIndex(this.codeList,x=>x===data.code) < 0){
-				console.log(11)
 				this.codeList.push(data.code)
 			}
 		  },
 		  handleDelete(code){
-			const index = _.findIndex(this.codeList,x=>x === code)
-			this.codeList.splice(index,1)
+			this.deleteCurrentCode = code
+			this.$refs.popup.open()
+		  },
+		  handleConfirmDelete(){
+			  this.$refs.popup.close()
+			  const index = _.findIndex(this.codeList,x=>x === this.deleteCurrentCode)
+			  this.codeList.splice(index,1)
 		  },
 		  async handleSubmit(){
 			  try{
 				this.submitLoading = true
 			  	await this.$store.dispatch('kanban/generateOrder',this.codeList)
 				this.$refs.message.success('提交成功')
+				this.codeList = []
 			  }catch(e){
 				this.$refs.message.error(e.message)
 			  }finally{
