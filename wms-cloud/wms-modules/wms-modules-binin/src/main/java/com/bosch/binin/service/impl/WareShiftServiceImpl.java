@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import sun.plugin2.main.client.PrintBandDescriptor;
+
 
 
 import java.util.ArrayList;
@@ -214,6 +214,16 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         uw.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         uw.last("limit 1");
         return wareShiftMapper.selectOne(uw);
+    }
+
+    @Override
+    public List<WareShift> getListBySSCC(List<String> ssccs) {
+        LambdaQueryWrapper<WareShift> qw = new LambdaQueryWrapper<>();
+        qw.in(WareShift::getSsccNb, ssccs);
+        qw.eq(WareShift::getStatus, KanbanStatusEnum.OUT_DOWN.value());
+        qw.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<WareShift> wareShifts = wareShiftMapper.selectList(qw);
+        return wareShifts;
     }
 
     @Override

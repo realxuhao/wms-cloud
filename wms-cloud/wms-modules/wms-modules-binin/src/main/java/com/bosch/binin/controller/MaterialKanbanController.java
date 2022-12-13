@@ -2,17 +2,14 @@ package com.bosch.binin.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.bosch.binin.api.domain.MaterialCall;
+import com.bosch.binin.api.domain.*;
 
-import com.bosch.binin.api.domain.TranshipmentOrder;
 import com.bosch.binin.api.domain.dto.SplitPalletDTO;
 import com.bosch.binin.api.domain.vo.MaterialInfoVO;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.service.*;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.bosch.binin.api.domain.MaterialKanban;
-import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
@@ -319,12 +316,29 @@ public class MaterialKanbanController {
         try {
             List<TranshipmentOrder> transhipmentOrders = new ArrayList<>();
             List<String> ssccs = new ArrayList<>();
+            List<String> validSSSCCs = new ArrayList<>();
             long l = System.currentTimeMillis();
             if (CollectionUtils.isEmpty(mesbarCodes)) {
                 throw new ServiceException("请选择数据");
             }
+            //ssccs
             List<String> collect = mesbarCodes.stream().distinct().collect(Collectors.toList());
-            List<TranshipmentOrder> infoBySSCC = transhipmentOrderService.getInfoBySSCC(collect);
+            collect.forEach(r->{
+                String sscc = MesBarCodeUtil.getSSCC(r);
+                validSSSCCs.add(sscc);
+            });
+            //校验sscc在不在待发运单中
+            List<WareShift> listBySSCC = wareShiftService.getListBySSCC(validSSSCCs);
+
+            if (CollectionUtils.isEmpty(listBySSCC)){
+                throw new ServiceException("选择的sscc码不在待转运清单中");
+            }
+            if(collect.size()!=listBySSCC.size()){
+                List<String> wareShiftSSCCs = listBySSCC.stream().map(WareShift::getSsccNb).collect(Collectors.toList());
+                boolean b = validSSSCCs.removeAll(wareShiftSSCCs);
+                throw new ServiceException("选择的如下sscc码不在待转运清单中: "+String.join(",", validSSSCCs));
+            }
+            List<TranshipmentOrder> infoBySSCC = transhipmentOrderService.getInfoBySSCC(validSSSCCs);
             if (CollectionUtils.isNotEmpty(infoBySSCC)) {
                 throw new ServiceException("选择的sscc码在装运单中已存在");
             }

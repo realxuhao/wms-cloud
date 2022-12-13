@@ -39,4 +39,6 @@ public interface IWareShiftService extends IService<WareShift> {
     void cancelWareShift(Long id);
 
     WareShift getWareShiftBySsccAndStatus(String sscc);
+
+    List<WareShift> getListBySSCC(List<String> ssccs);
 }
