@@ -19,7 +19,7 @@ import java.util.List;
 public interface IWareShiftService extends IService<WareShift> {
     Boolean addShiftRequirement(AddShiftTaskDTO dto);
 
-    void binDown(String ssccNb);
+    void binDown(String mesBarCode);
 
     /**
      *

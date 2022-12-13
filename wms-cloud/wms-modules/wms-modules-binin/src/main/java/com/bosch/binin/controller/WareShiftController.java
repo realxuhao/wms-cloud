@@ -48,13 +48,21 @@ public class WareShiftController extends BaseController {
     }
 
 
-    @PutMapping(value = "/binDown/{ssccNb}")
+    @PutMapping(value = "/binDown/{mesBarCode}")
     @ApiOperation("移库任务下架")
     @Transactional(rollbackFor = Exception.class)
-    public R binDown(@PathVariable String ssccNb) {
-        shiftService.binDown(ssccNb);
-        return R.ok(ssccNb + "下架成功");
+    public R binDown(@PathVariable String mesBarCode) {
+        shiftService.binDown(mesBarCode);
+        return R.ok(mesBarCode + "下架成功");
     }
+
+//    @GetMapping(value = "/{mesBarCode}")
+//    @ApiOperation("获取移库任务详情")
+//    public R<WareShiftVO> info(@PathVariable String mesBarCode) {
+//        WareShiftVO wareShiftVO = shiftService.info(mesBarCode);
+//        return R.ok(mesBarCode + "下架成功");
+//    }
+
 
 
     @GetMapping(value = "/innerReceivingList")
@@ -75,6 +83,12 @@ public class WareShiftController extends BaseController {
     @GetMapping(value = "/list")
     @ApiOperation("移库任务列表")
     public R<PageVO<WareShiftVO>> list(WareShiftQueryDTO queryDTO) {
+        if (queryDTO == null) {
+            queryDTO = new WareShiftQueryDTO();
+        }
+        if (SecurityUtils.getWareCode() != null) {
+            queryDTO.setSourceWareCode(SecurityUtils.getWareCode());
+        }
         startPage();
         List<WareShiftVO> list = shiftService.getWareShiftList(queryDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));

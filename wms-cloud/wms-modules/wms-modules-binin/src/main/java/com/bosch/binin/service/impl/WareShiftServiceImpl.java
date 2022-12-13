@@ -100,8 +100,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     }
 
     @Override
-    public void binDown(String ssccNb) {
-
+    public void binDown(String mesBarCode) {
+        String ssccNb=MesBarCodeUtil.getSSCC(mesBarCode);
         LambdaQueryWrapper<WareShift> wareShiftLambdaQueryWrapper = new LambdaQueryWrapper<>();
         wareShiftLambdaQueryWrapper.eq(WareShift::getSsccNb, ssccNb);
         wareShiftLambdaQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
@@ -115,12 +115,12 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         //在kanban任务中查询
         LambdaQueryWrapper<MaterialKanban> kanbanQueryWrapper = new LambdaQueryWrapper<>();
         kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
-        kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE);
-        kanbanQueryWrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.WAITING_BIN_DOWN);
+        kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        kanbanQueryWrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.WAITING_BIN_DOWN.value());
         MaterialKanban materialKanban = kanbanMapper.selectOne(kanbanQueryWrapper);
         //kanban任务修改状态
         if (materialKanban != null) {
-            materialKanban.setStatus(KanbanStatusEnum.INNER_RECEIVING.value());
+            materialKanban.setStatus(KanbanStatusEnum.OUT_DOWN.value());
             kanbanMapper.updateById(materialKanban);
         }
 
@@ -220,11 +220,12 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     public int updateStatusByStatus(List<String> ssccs, Integer queryStatus, Integer status) {
         WareShift wareShift = new WareShift();
         wareShift.setStatus(status);
+        wareShift.setTargetWareCode(SecurityUtils.getWareCode());
         LambdaUpdateWrapper<WareShift> uw = new LambdaUpdateWrapper<>();
         uw.in(WareShift::getSsccNb, ssccs);
         uw.eq(WareShift::getStatus, queryStatus);
         uw.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        uw.eq(WareShift::getTargetWareCode, SecurityUtils.getWareCode());
+//        uw.eq(WareShift::getTargetWareCode, SecurityUtils.getWareCode());
 
         return wareShiftMapper.update(wareShift, uw);
     }
