@@ -450,6 +450,8 @@ public class MaterialKanbanController {
             //更新移库表为待上架
             int updateWare = wareShiftService.updateStatusByStatus(ssccs, KanbanStatusEnum.INNER_RECEIVING.value(),
                     KanbanStatusEnum.INNER_BIN_IN.value());
+
+            Integer updateOrder = transhipmentOrderService.updateBySSCCS(ssccs);
             return R.ok();
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
