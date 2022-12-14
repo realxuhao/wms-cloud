@@ -37,4 +37,5 @@ public interface MaterialKanbanMapper extends BaseMapper<MaterialKanban> {
 
     MaterialKanbanVO getKanbanInfoBySsccNb(String ssccNb);
 
+    List<MaterialKanbanVO> waitingBinDownList(String wareCode);
 }

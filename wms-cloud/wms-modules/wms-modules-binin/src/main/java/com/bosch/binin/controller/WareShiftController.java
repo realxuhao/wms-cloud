@@ -14,6 +14,7 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -105,7 +106,7 @@ public class WareShiftController extends BaseController {
 
     @GetMapping(value = "/getWaitingBinIn")
     @ApiOperation("查询移库任务待上架列表")
-    public R<PageVO<WareShiftVO>> getWaitingBinIn() {
+    public R<PageVO<WareShiftVO>> getWaitingBinIn(PageDomain pageDomain) {
         startPage();
         List<WareShiftVO> list = shiftService.getWaitingBinIn();
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));

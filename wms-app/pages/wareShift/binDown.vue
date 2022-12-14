@@ -34,7 +34,7 @@ export default {
     },
 	handleGotoScan() {
 	  uni.navigateTo({
-	    url: "/pages/wareShift/scan",
+	    url: "/pages/wareShift/binDownScan",
 	  });
 	},
   },

@@ -116,4 +116,6 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     void splitPallet(SplitPalletDTO splitPallet);
 
     void cancelKanban(Long id);
+
+    List<MaterialKanbanVO> waitingBinDownList(PageDomain pageDomain, String wareCode);
 }

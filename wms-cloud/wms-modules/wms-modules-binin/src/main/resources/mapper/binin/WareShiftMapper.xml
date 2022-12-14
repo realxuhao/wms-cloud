@@ -10,8 +10,8 @@
         bi.recommend_bin_code,
         mm.`name` as material_name
         FROM ware_shift ws
-        LEFT JOIN bi_in bi ON ws.sscc_nb = bi.sscc_number
-        LEFT JOIN md_material mm on ws.material_nb = mm.`code`
+        LEFT JOIN bi_in bi ON ws.sscc_nb = bi.sscc_number and bi.delete_flag=0
+        LEFT JOIN md_material mm on ws.material_nb = mm.`code` and mm.delete_flag=0
         WHERE ws.status = 5
         <if test="wareCode != null and wareCode != ''">
             and ws.target_ware_code = #{wareCode}

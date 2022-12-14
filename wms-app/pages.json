@@ -65,6 +65,12 @@
 		},
 		{
 		    "path" : "pages/materialCall/receivingOperation"
+		},
+		{
+			"path" : "pages/materialCall/shipmentOperation"
+		},
+		{
+		    "path" : "pages/materialCall/shipment"
 		}
     ],
 	"globalStyle": {

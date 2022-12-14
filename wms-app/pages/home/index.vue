@@ -26,15 +26,15 @@
 			<uni-section title="生产叫料" type="line" class="m-b-12">
 				<view class="list header-box">
 					<view class="list-item" @click="handleGoto('/pages/materialCall/binDown')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-ruku"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-xiajia" color="#ED1820"></uni-icons>
 						<view class="text">拣配下架</view>
 					</view>
 					<view class="list-item" @click="handleGoto('/pages/materialCall/receiving')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" type="icon-shangjia2"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="icon icon-shouhuo" type="icon-shouhuo1" color="#00ADD4"></uni-icons>
 						<view class="text">生产收料</view>
 					</view>
 					<view class="list-item" @click="handleGoto('/pages/wareTransshipment/binIn')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" type="icon-shangjia2"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="icon icon-chejiantuiliao" type="icon-chejiantuiliao" color="#ED1820"></uni-icons>
 						<view class="text">产线退料</view>
 					</view>
 				</view>
@@ -46,7 +46,7 @@
 						<uni-icons custom-prefix="iconfont" class="icon icon-ruku" type="icon-ruku"></uni-icons>
 						<view class="text">移库下架</view>
 					</view>
-					<view class="list-item" @click="handleGoto('/pages/wareTransshipment/shipment')">
+					<view class="list-item" @click="handleGoto('/pages/materialCall/shipment')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-wuliufahuo" type="icon-wuliufahuo"></uni-icons>
 						<view class="text">移库发运</view>
 					</view>

@@ -71,7 +71,7 @@
 						this.handleGotoSplitPallet()
 						return
 					}else if(data.status !== 1){
-						throw Error('此托不在待下架清单中，请检查')
+						throw Error('此托不在捡配待下架清单中，请检查')
 					}
 					await this.$store.dispatch('materialCall/binDown',this.barCodeInfo.ssccNumber)
 					this.$refs.submitLine.open()

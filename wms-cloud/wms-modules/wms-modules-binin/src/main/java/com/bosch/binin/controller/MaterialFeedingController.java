@@ -133,6 +133,7 @@ public class MaterialFeedingController extends BaseController {
 
     @PostMapping(value = "/call/system")
     @ApiOperation("系统生成叫料任务接口")
+    @Transactional(rollbackFor = Exception.class)
     public R<RequirementResultVO> systemGenerateJob(@RequestBody MaterialCalJobRequestDTO.SystemGenerateJob systemGenerateJob) {
         RequirementResultVO requirementResultVO = materialCallService.systemGenerateJob(systemGenerateJob);
         return R.ok(requirementResultVO);
@@ -150,6 +151,7 @@ public class MaterialFeedingController extends BaseController {
 
     @ApiOperation("删除需求")
     @DeleteMapping("/call/{ids}")
+    @Transactional(rollbackFor = Exception.class)
     public R cancelRequirement(@PathVariable Long[] ids) {
         if (ids == null || ids.length == 0) {
             throw new ServiceException("ids不能为空");

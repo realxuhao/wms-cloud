@@ -17,7 +17,7 @@
 	                <text class="material-name">{{item.materialName}}</text>
 	                <text class="status"><uni-tag size="small" :text="typeMap[item.type]" :type="typeColorMap[item.type]" /></text>
 	              </view>
-	              <view class="card-text m-b-4">物料编码：{{item.materialNb}}</view>
+	              <view class="card-text m-b-4">物料编码：{{item.materialCode}}</view>
 				  <view class="card-text sscc">
 					<text class="card-text m-b-4">Cell：{{item.cell}}</text>
 				    <text class="card-text m-b-4">源库位：{{item.binCode}}</text>

@@ -34,7 +34,7 @@ export default {
     },
 	handleGotoScan() {
 	  uni.navigateTo({
-	    url: "/pages/wareTransshipment/shipmentOperation",
+	    url: "/pages/materialCall/shipmentOperation",
 	  });
 	},
   },

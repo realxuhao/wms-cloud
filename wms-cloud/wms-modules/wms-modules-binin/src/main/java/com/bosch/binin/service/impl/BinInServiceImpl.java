@@ -572,7 +572,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setRecommendFrameCode(binVO.getFrameCode());
         binIn.setWareCode(SecurityUtils.getWareCode());
 
-        binIn.setMoveType(MoveTypeEnums.BININ.getCode());
+        binIn.setMoveType(MoveTypeEnums.SPLIT_IN.getCode());
         binIn.setFromPurchaseOrder(oldStock.getFromPurchaseOrder());
         binIn.setPlantNb(oldStock.getPlantNb());
         binInMapper.insert(binIn);

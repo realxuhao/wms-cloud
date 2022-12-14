@@ -88,7 +88,7 @@
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
-        rowKey="id"
+        rowKey="ssccNumber"
         :pagination="false"
         :scroll="{ x: 1300 }"
         size="middle"

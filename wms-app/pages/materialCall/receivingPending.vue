@@ -15,13 +15,14 @@
 	            <view class="card" v-for="item in list" :key="item.id">
 	              <view class="card-header">
 	                <text class="material-name">{{item.materialName}}</text>
-	                <text class="status">待上架</text>
+	                <text class="status">待收料</text>
 	              </view>
 	              <view class="card-text m-b-4">物料编码：{{item.materialCode}}</view>
 				  <view class="card-text m-b-4">Cell：{{item.cell}}</view>
 	              <view class="card-text sscc">
 	                <text>SSCC码：{{item.ssccNumber}}</text>
-	                <text class="time">{{item.uploadTime}}</text>
+	                <text class="time" v-if="item.updateTime">{{item.updateTime}}</text>
+					<text class="time" v-else-if="item.createTime">{{item.createTime}}</text>
 	              </view>
 	            </view>
 	            <Empty v-show="!list.length"></Empty>

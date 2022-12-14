@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -90,6 +89,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             wareShiftList.add(wareShift);
             //更新冻结库存
             item.setFreezeStock(item.getFreezeStock() + item.getAvailableStock());
+            item.setAvailableStock(item.getTotalStock() - item.getFreezeStock());
 
         });
         //冻结库存，更新状态
@@ -101,15 +101,19 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
     @Override
     public void binDown(String mesBarCode) {
-        String ssccNb=MesBarCodeUtil.getSSCC(mesBarCode);
+        String ssccNb = MesBarCodeUtil.getSSCC(mesBarCode);
         LambdaQueryWrapper<WareShift> wareShiftLambdaQueryWrapper = new LambdaQueryWrapper<>();
         wareShiftLambdaQueryWrapper.eq(WareShift::getSsccNb, ssccNb);
         wareShiftLambdaQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         wareShiftLambdaQueryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
         wareShiftLambdaQueryWrapper.last("for update");
         WareShift wareShift = wareShiftMapper.selectOne(wareShiftLambdaQueryWrapper);
-        if (Objects.isNull(wareShift) || !KanbanStatusEnum.WAITING_BIN_DOWN.value().equals(wareShift.getStatus())) {
-            throw new ServiceException("任务状态过期，请刷新后重试");
+        if (Objects.isNull(wareShift)) {
+            throw new ServiceException("该SSCC码 " + ssccNb + " 不存在移库任务");
+        }
+        if (!KanbanStatusEnum.WAITING_BIN_DOWN.value().equals(wareShift.getStatus())) {
+            throw new ServiceException("该SSCC码 " + ssccNb + "对应任务状态为: "+KanbanStatusEnum.getDesc(String.valueOf(wareShift.getStatus()))+" 不可下架 ");
+
         }
 
         //在kanban任务中查询
@@ -134,6 +138,22 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
     @Override
     public BinInVO allocateBin(String mesBarCode, String wareCode) {
+        String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+        LambdaQueryWrapper<WareShift> qw = new LambdaQueryWrapper<>();
+        qw.eq(WareShift::getSsccNb, sscc);
+        qw.eq(WareShift::getStatus, KanbanStatusEnum.INNER_BIN_IN.value());
+        qw.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.last("limit 1");
+        qw.last("for update");
+        WareShift wareShift = wareShiftMapper.selectOne(qw);
+
+        if (Objects.isNull(wareShift)) {
+            throw new ServiceException("该SSCC码 " + sscc + " 不存在移库任务");
+        }
+        if (!KanbanStatusEnum.INNER_BIN_IN.value().equals(wareShift.getStatus())) {
+            throw new ServiceException("该SSCC码 " + sscc + "对应任务状态为: "+KanbanStatusEnum.getDesc(String.valueOf(wareShift.getStatus()))+" 不可分配库位 ");
+
+        }
         //分配库位信息
         BinInVO binInVO = binInService.generateInTaskByOldStock(MesBarCodeUtil.getSSCC(mesBarCode), Double.valueOf(0), wareCode);
 
@@ -162,8 +182,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         }
         if (wareShift.getStatus().equals(KanbanStatusEnum.CANCEL.value()) ||
                 wareShift.getStatus().equals(KanbanStatusEnum.FINISH.value()) ||
-                wareShift.getStatus().equals(KanbanStatusEnum.INNER_RECEIVING.value())||
-        wareShift.getStatus().equals(KanbanStatusEnum.INNER_BIN_IN.value())) {
+                wareShift.getStatus().equals(KanbanStatusEnum.INNER_RECEIVING.value()) ||
+                wareShift.getStatus().equals(KanbanStatusEnum.INNER_BIN_IN.value())) {
             throw new ServiceException("当前状态为： " + KanbanStatusEnum.getDesc(wareShift.getStatus().toString()) + " 不可以取消");
         }
         //待下架状态，需要判断是主库待下架还是外库待下架
