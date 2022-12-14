@@ -15,6 +15,7 @@ const stock = {
       return rows
     },
     async getPaginationList ({ commit }, options) {
+      console.log('111')
       const data = await stockService.getList(options)
       return data
     }

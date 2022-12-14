@@ -177,6 +177,22 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           }
         ]
+      },
+      {
+        path: '/ware-shift',
+        name: 'wareShift',
+        component: RouteView,
+        redirect: '/ware-shift/list',
+        meta: { title: '移库管理', icon: 'hdd', permission: [] },
+        children: [
+          {
+            path: '/ware-shift/list',
+            name: 'shiftList',
+            component: () => import('@/views/wareShift/shiftList'),
+            meta: { title: '移库任务列表', permission: [] },
+            hideChildrenInMenu: true
+          }
+        ]
       }
       // account
       // {

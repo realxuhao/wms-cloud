@@ -22,6 +22,7 @@ import bin from './modules/bin'
 import file from './modules/file'
 import binIn from './modules/binIn'
 import stock from './modules/stock'
+import wareShift from './modules/wareShift'
 
 import materialInList from './modules/materialInList'
 import materialFeeding from './modules/materialFeeding'
@@ -53,7 +54,7 @@ export default new Vuex.Store({
     materialFeeding,
 
     file,
-
+    wareShift,
     materialInList,
     binIn
   },
