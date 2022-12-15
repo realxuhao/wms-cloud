@@ -1,6 +1,5 @@
 <template>
 		<my-page nav-title="拆托">
-			
 			<view class="main" slot="page-main">
 				<view class="header m-b-8">
 					<view class="text-line m-b-8 ">
@@ -17,7 +16,7 @@
 					<uni-forms  :label-width="110" ref="form" :rules="rules" :modelValue="form" label-position="left">
 						<uni-forms-item  label="拆托SSCC码" name="ssccNumber" required >
 							<view class="flex flex-ai">
-								<view class="custom-input" class="focus">
+								<view class="custom-input focus">
 									<text :class="!form.ssccNumber?'placeholder-text':''">{{form.ssccNumber||'请扫描拆托SSCC码'}}</text>
 								</view>
 							</view>
@@ -43,7 +42,6 @@
 			</view>
 			<Message ref="message"></Message>
 		</my-page>
-	</view>
 </template>
 
 <script>
