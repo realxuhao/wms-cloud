@@ -138,4 +138,26 @@ export default {
 /deep/.ant-tabs-tab-active{
   border-bottom:1px solid #e8e8e8 !important;
 }
+
+.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-nav-container{
+  height: 31px !important;
+}
+.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab-active{
+  background: #481d88 !important;
+  color: #fff !important;
+  height: 30px !important;
+  // border: none !important;
+  .ant-tabs-close-x{
+    color: #fff !important;
+  }
+
+}
+.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab{
+  line-height:26px !important;
+  border-radius: 4px !important;
+  height: 30px !important;
+  // display: flex;
+  // align-items: center;
+  // border: none !important;
+}
 </style>
