@@ -26,10 +26,39 @@
               </a-select>
             </a-form-model-item>
           </a-col>
+          <a-col :span="4">
+            <a-form-item label="创建人">
+              <a-input v-model="queryForm.createBy" placeholder="创建人" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <template v-if="advanced">
+            <a-col :span="8">
+              <a-form-item label="创建时间" >
+                <a-range-picker
+                  format="YYYY-MM-DD HH:mm"
+                  :show-time="{ format: 'HH:mm' }"
+                  v-model="queryForm.date"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="8">
+              <a-form-item label="更新时间" >
+                <a-range-picker
+                  format="YYYY-MM-DD HH:mm"
+                  :show-time="{ format: 'HH:mm' }"
+                  v-model="queryForm.updateDate"
+                />
+              </a-form-item>
+            </a-col>
+          </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+              <a @click="toggleAdvanced" style="margin-left: 8px">
+                {{ advanced ? '收起' : '展开' }}
+                <a-icon :type="advanced ? 'up' : 'down'"/>
+              </a>
             </span>
           </a-col>
         </a-row>
@@ -75,6 +104,7 @@
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
 import { colorMap } from '@/utils/color'
+import _ from 'lodash'
 
 const columns = [
   {
@@ -157,25 +187,25 @@ const columns = [
     dataIndex: 'targetWareCode',
     width: 120
   },
-  {
-    title: '目的存储区code',
-    key: 'targetAreaCode',
-    dataIndex: 'targetAreaCode',
-    width: 120
-  },
-  {
-    title: '目的库位code',
-    key: 'targetBinCode',
-    dataIndex: 'targetBinCode',
-    width: 120
-  },
+  // {
+  //   title: '目的存储区',
+  //   key: 'targetAreaCode',
+  //   dataIndex: 'targetAreaCode',
+  //   width: 120
+  // },
+  // {
+  //   title: '目的库位',
+  //   key: 'targetBinCode',
+  //   dataIndex: 'targetBinCode',
+  //   width: 120
+  // },
 
-  {
-    title: '推荐库位',
-    key: 'recommendBinCode',
-    dataIndex: 'recommendBinCode',
-    width: 120
-  },
+  // {
+  //   title: '推荐库位',
+  //   key: 'recommendBinCode',
+  //   dataIndex: 'recommendBinCode',
+  //   width: 120
+  // },
   {
     title: '操作人',
     key: 'createBy',
@@ -226,12 +256,15 @@ const queryFormAttr = () => {
   return {
     targetWareCode: '',
     status: '',
+    data: [],
+    createBy: '',
+    updateDate: [],
     sourceWareCode: ''
   }
 }
 
 export default {
-  name: 'Area',
+  name: 'ShiftList',
   mixins: [mixinTableList],
   data () {
     return {
@@ -259,10 +292,17 @@ export default {
     async loadTableList () {
       try {
         this.tableLoading = true
-        console.log('1ww1')
+        const { date = [], updateDate } = this.queryForm
+        const startCreateTime = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
+        const endCreateTime = date.length > 0 ? date[1].format(this.endDateFormat) : undefined
+        const startUpdateTime = updateDate.length > 0 ? updateDate[0].format(this.startDateFormat) : undefined
+        const endUpdateTime = updateDate.length > 0 ? updateDate[1].format(this.endDateFormat) : undefined
+
+        const options = { ..._.omit(this.queryForm, ['date', 'updateDate']), startCreateTime, endCreateTime, startUpdateTime, endUpdateTime }
+
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('wareShift/getPaginationList', this.queryForm)
+        } = await this.$store.dispatch('wareShift/getPaginationList', options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {

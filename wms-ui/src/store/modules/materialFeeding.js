@@ -66,6 +66,10 @@ const materialFeeding = {
     async addShiftTask ({ commit }, options) {
       const data = await materialFeedingService.addShiftTask(options)
       return data
+    },
+    async confirmMaterial ({ commit }, options) {
+      const data = await materialFeedingService.confirmMaterial(options)
+      return data
     }
   }
 }

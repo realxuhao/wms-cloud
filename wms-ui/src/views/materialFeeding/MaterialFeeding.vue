@@ -44,6 +44,24 @@
                 <a-input v-model="queryForm.createBy" placeholder="创建人" allow-clear/>
               </a-form-item>
             </a-col>
+            <a-col :span="8">
+              <a-form-item label="创建时间" >
+                <a-range-picker
+                  format="YYYY-MM-DD HH:mm"
+                  :show-time="{ format: 'HH:mm' }"
+                  v-model="queryForm.date"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="8">
+              <a-form-item label="修改时间" >
+                <a-range-picker
+                  format="YYYY-MM-DD HH:mm"
+                  :show-time="{ format: 'HH:mm' }"
+                  v-model="queryForm.updateDate"
+                />
+              </a-form-item>
+            </a-col>
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
@@ -59,18 +77,18 @@
       </a-form>
       <div class="action-content">
         <a-button
-          style="margin-right:8px"
-          type="primary"
-          :loading="submitLoading"
-          :disabled="!hasSelected"
-          @click="handleCheckCreateReductionTask">系统创建拣配任务</a-button>
-        <a-button
           type="primary"
           icon="upload"
           style="margin-right:8px"
           @click="handleOpenUpload">
           创建物料需求
         </a-button>
+        <a-button
+          style="margin-right:8px"
+          type="primary"
+          :loading="submitLoading"
+          :disabled="!hasSelected"
+          @click="handleCheckCreateReductionTask">系统创建拣配任务</a-button>
         <a-button
           type="primary"
           :loading="exportLoading"
@@ -90,12 +108,9 @@
         size="middle"
       >
         <template slot="status" slot-scope="text">
-          <div >
-            {{ statusMap[text] }}
-          </div>
+          <a-tag :color="statusColorMap[text]">{{ statusMap[text] }}</a-tag>
         </template>
         <template slot="quantity" slot-scope="text,record">
-
           <EditTableCell v-if="record.status === 0" :text="text" @change="(val)=>handleQuantityChange(record,val)" />
           <span v-else>{{ text }}</span>
         </template>
@@ -143,6 +158,7 @@ import MaterialFeedingUpload from './MaterialFeedingUpload'
 import CreateReductionTask from './CreateReductionTask'
 import EditTableCell from '@/components/EditTableCell'
 import { download } from '@/utils/file'
+import { colorMap } from '@/utils/color'
 
 const columns = [
   {
@@ -235,6 +251,13 @@ const columns = [
   }
 ]
 
+const statusColorMap = {
+  '-1': colorMap['cancel'],
+  0: colorMap['error'],
+  1: colorMap['warning'],
+  2: colorMap['success']
+}
+
 const status = [
   {
     text: '未下发',
@@ -262,6 +285,8 @@ const queryFormAttr = () => {
     materialNb: '',
     orderNb: '',
     status: '',
+    date: [],
+    updateDate: [],
     createBy: ''
   }
 }
@@ -300,6 +325,7 @@ export default {
   computed: {
     status: () => status,
     statusMap: () => statusMap,
+    statusColorMap: () => statusColorMap,
     hasSelected () {
       return this.selectedRowKeys.length > 0
     }
@@ -376,9 +402,17 @@ export default {
       try {
         this.tableLoading = true
 
+        const { date = [], updateDate = [] } = this.queryForm
+        const startCreateTime = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
+        const endCreateTimeEnd = date.length > 0 ? date[1].format(this.endDateFormat) : undefined
+        const startUpdateTime = updateDate.length > 0 ? updateDate[0].format(this.startDateFormat) : undefined
+        const endUpdateTime = updateDate.length > 0 ? updateDate[1].format(this.endDateFormat) : undefined
+
+        const options = { ..._.omit(this.queryForm, ['date', 'updateDate']), startCreateTime, endCreateTimeEnd, startUpdateTime, endUpdateTime }
+
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('materialFeeding/getPaginationList', this.queryForm)
+        } = await this.$store.dispatch('materialFeeding/getPaginationList', options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -396,7 +430,6 @@ export default {
       this.loadTableList()
     },
     handleCreateReductionTask (record) {
-      console.log(record)
       this.currentMaterialNb = record.materialNb
       this.currentOrderNb = record.orderNb
       this.currentCell = record.cell

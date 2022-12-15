@@ -48,6 +48,15 @@
                 />
               </a-form-item>
             </a-col>
+            <a-col :span="8">
+              <a-form-item label="更新时间" >
+                <a-range-picker
+                  format="YYYY-MM-DD HH:mm"
+                  :show-time="{ format: 'HH:mm' }"
+                  v-model="queryForm.updateDate"
+                />
+              </a-form-item>
+            </a-col>
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
@@ -71,8 +80,9 @@
 
         <a-button
           type="primary"
-          :loading="submitLoading"
+          :loading="confirmMaterialLoading"
           :disabled="!hasSelected"
+          @click="handleConfirmMaterial"
         >产线收货确认</a-button>
       </div>
       <a-table
@@ -116,12 +126,12 @@
               cancel-text="取消"
               @confirm="handleCancel(record)"
             >
-              <a class="danger-color m-r-4" :disabled="record.status===-1">取消</a>
+              <a class="danger-color m-r-4" :disabled="[-1,7].includes(record.status)">取消</a>
             </a-popconfirm>
             <a-divider type="vertical" />
             <a
               class="m-r-4"
-              :disabled="(record.factoryCode!=='7752' || record.status === 1)"
+              :disabled="(record.factoryCode!=='7752' || record.status>0)"
               @click="$refs.pikingOrderAddShiftTask.handleOpen(record)">新增移库任务</a>
           </div>
         </template>
@@ -323,7 +333,8 @@ const queryFormAttr = () => {
     materialNb: '',
     status: '',
     createBy: '',
-    date: undefined
+    date: [],
+    updateDate: []
   }
 }
 
@@ -344,6 +355,7 @@ export default {
       },
 
       submitLoading: false,
+      confirmMaterialLoading: false,
       selectedRowKeys: [],
       columns,
       list: [],
@@ -374,11 +386,38 @@ export default {
         const options = { ids: this.selectedRowKeys }
         await this.$store.dispatch('materialFeeding/batchAddJob', options)
 
-        this.$message.success('提交成功')
+        this.$message.success('下发成功')
+        this.selectedRowKeys = []
       } catch (error) {
         this.$message.error(error.message)
       } finally {
         this.submitLoading = false
+      }
+    },
+    async handleConfirmMaterial () {
+      // this.$confirm({
+      //   title: '以下物料可用库存不足，是否进行部分拣配？',
+      //   content: h => {
+      //     return (
+      //       _.map(this.selectedRowKeys, item => {
+      //         return <p>物料号：{item.materialNb}, 可用库存量：{item.avaliableQuantity}</p>
+      //       })
+      //     )
+      //   },
+      //   onOk: () => this.submitCreateReductionTask(options),
+      //   onCancel: () => {
+      //     this.selectedRowKeys = []
+      //   }
+      // })
+      try {
+        this.confirmMaterialLoading = true
+        await this.$store.dispatch('materialFeeding/confirmMaterial', this.selectedRowKeys)
+        this.$message.success('收货确认成功')
+        this.selectedRowKeys = []
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.confirmMaterialLoading = false
       }
     },
     onSelectChange (selectedRowKeys) {
@@ -402,11 +441,13 @@ export default {
       try {
         this.tableLoading = true
 
-        const { date = [] } = this.queryForm
+        const { date = [], updateDate } = this.queryForm
         const createTimeStart = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
         const createTimeEnd = date.length > 0 ? date[1].format(this.endDateFormat) : undefined
+        const updateTimeStart = updateDate.length > 0 ? updateDate[0].format(this.startDateFormat) : undefined
+        const updateTimeEnd = updateDate.length > 0 ? updateDate[1].format(this.endDateFormat) : undefined
 
-        const options = { ..._.omit(this.queryForm, ['date']), createTimeStart, createTimeEnd }
+        const options = { ..._.omit(this.queryForm, ['date', 'updateDate']), createTimeStart, createTimeEnd, updateTimeStart, updateTimeEnd }
 
         const {
           data: { rows, total }

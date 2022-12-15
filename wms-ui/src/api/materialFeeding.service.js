@@ -93,6 +93,12 @@ const addShiftTask = async (options) => {
   return data
 }
 
+const confirmMaterial = async (options) => {
+  const url = `binin/materialKanban/confirmMaterialBySSCCs?ssccs=${options}`
+  const { data } = await createAuthInstance(config.apiHost).get(url, options)
+  return data
+}
+
 export const materialFeedingService = {
   getList,
   upload,
@@ -107,5 +113,6 @@ export const materialFeedingService = {
   cancelPickingOrder,
   exportExcel,
   getStockInfo,
-  addShiftTask
+  addShiftTask,
+  confirmMaterial
 }
