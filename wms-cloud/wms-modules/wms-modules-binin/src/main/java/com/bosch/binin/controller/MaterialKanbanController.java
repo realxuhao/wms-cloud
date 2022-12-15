@@ -69,9 +69,12 @@ public class MaterialKanbanController {
         if (StringUtils.isNotEmpty(SecurityUtils.getWareCode())) {
             materialKanbanDTO.setWareCode(SecurityUtils.getWareCode());
         }
-        IPage<MaterialKanbanVO> materialKanbanIPage = materialKanbanService.pageList(materialKanbanDTO);
-        List<MaterialKanbanVO> records = materialKanbanIPage.getRecords();
-        return R.ok(new PageVO<>(records, materialKanbanIPage.getTotal()));
+        //IPage<MaterialKanbanVO> materialKanbanIPage = materialKanbanService.pageList(materialKanbanDTO);
+        //List<MaterialKanbanVO> records = materialKanbanIPage.getRecords();
+        startPage();
+        List<MaterialKanbanVO> list = materialKanbanService.getKanbanList(materialKanbanDTO);
+
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
     @GetMapping(value = "/waitingBinDownList")
