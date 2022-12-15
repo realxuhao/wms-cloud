@@ -16,7 +16,14 @@
           </a-col>
           <a-col :span="4">
             <a-form-model-item label="状态">
-              <a-input v-model="queryForm.status" placeholder="状态" allow-clear/>
+              <a-select
+                allow-clear
+                v-model="queryForm.status"
+              >
+                <a-select-option v-for="(item,key) in statusMap" :key="item" :value="key">
+                  {{ item }}
+                </a-select-option>
+              </a-select>
             </a-form-model-item>
           </a-col>
           <a-col span="4">
@@ -67,7 +74,7 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
-import {colorMap} from '@/utils/color'
+import { colorMap } from '@/utils/color'
 
 const columns = [
   {
@@ -162,7 +169,7 @@ const columns = [
     dataIndex: 'targetBinCode',
     width: 120
   },
-  
+
   {
     title: '推荐库位',
     key: 'recommendBinCode',
@@ -199,32 +206,27 @@ const statusMap = {
   3: '产线待收货',
   4: '主库待收货',
   5: '待上架',
-  6:'产线已收货',
-  7:'完成'
+  6: '产线已收货',
+  7: '完成'
 }
 
 const statusColorMap = {
   '-1': colorMap['cancel'],
-  0:  colorMap['warning'],
-  1:  colorMap['warning'],
-  2:  colorMap['warning'],
-  3:  colorMap['warning'],
+  0: colorMap['warning'],
+  1: colorMap['warning'],
+  2: colorMap['warning'],
+  3: colorMap['warning'],
   4: colorMap['warning'],
-  5:  colorMap['warning'],
-  6:  colorMap['success'],
+  5: colorMap['warning'],
+  6: colorMap['success'],
   7: colorMap['success']
 }
 
 const queryFormAttr = () => {
   return {
-    plantNb: '',
-    wareCode: '',
-    ssccNumber: '',
-    materialNb: '',
-    batchNb: '',
-    areaCode: '',
-    binCode: '',
-    palletCode: ''
+    targetWareCode: '',
+    status: '',
+    sourceWareCode: ''
   }
 }
 
@@ -246,8 +248,8 @@ export default {
   },
   computed: {
     moveTypeMap: () => moveTypeMap,
-    statusMap:()=>statusMap,
-    statusColorMap:()=>statusColorMap
+    statusMap: () => statusMap,
+    statusColorMap: () => statusColorMap
   },
   methods: {
     handleResetQuery () {
