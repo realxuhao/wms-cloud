@@ -126,7 +126,7 @@
               cancel-text="取消"
               @confirm="handleCancel(record)"
             >
-              <a class="danger-color m-r-4" :disabled="[-1,7].includes(record.status)">取消</a>
+              <a class="danger-color m-r-4" :disabled="[-1,6,7].includes(record.status)">取消</a>
             </a-popconfirm>
             <a-divider type="vertical" />
             <a
@@ -388,6 +388,8 @@ export default {
 
         this.$message.success('下发成功')
         this.selectedRowKeys = []
+
+        this.loadTableList()
       } catch (error) {
         this.$message.error(error.message)
       } finally {
@@ -414,6 +416,7 @@ export default {
         await this.$store.dispatch('materialFeeding/confirmMaterial', this.selectedRowKeys)
         this.$message.success('收货确认成功')
         this.selectedRowKeys = []
+        this.loadTableList()
       } catch (error) {
         this.$message.error(error.message)
       } finally {

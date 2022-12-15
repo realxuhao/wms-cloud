@@ -387,6 +387,9 @@ export default {
         }
         await this.submitCreateReductionTask()
 
+        this.selectedRowKeys = []
+        this.loadTableList()
+
         this.$message.success('提交成功')
       } catch (error) {
         this.$message.error(error.message)

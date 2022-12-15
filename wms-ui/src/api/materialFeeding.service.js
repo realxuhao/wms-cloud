@@ -67,8 +67,8 @@ const batchAddJob = async (options) => {
 }
 
 const cancelPickingOrder = async (options) => {
-  const url = `binin/materialKanban/cancelKanban/${options.id}`
-  const { data } = await createAuthInstance(config.apiHost).get(url)
+  const url = `binin/materialKanban/cancel/${options.id}`
+  const { data } = await createAuthInstance(config.apiHost).put(url)
   return data
 }
 
