@@ -1,6 +1,6 @@
 <template>
   <a-drawer
-    width="70%"
+    width="80%"
     title="创建物料需求"
     placement="right"
 
@@ -296,20 +296,29 @@ export default {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
     },
-    onSelectChange (selectedRowKeys) {
-      // 删除
-      if (selectedRowKeys.length < this.selectedRowKeys.length) {
-        const [id] = _.difference(this.selectedRowKeys, selectedRowKeys)
+    onSelectChange (selectedRowKeys, selectedRows) {
+      // console.log(selectedRows)
+      // if (!selectedRowKeys.length) {
+      //   this.hasSelectedList = []
+      //   this.selectedRowKeys = []
+      //   return
+      // }
+      // // 删除
+      // if (selectedRowKeys.length < this.selectedRowKeys.length) {
+      //   const [id] = _.difference(this.selectedRowKeys, selectedRowKeys)
 
-        this.hasSelectedList = _.remove(this.hasSelectedList, x => x.id === id)
-      } else {
-      // 新增
-        const lastKey = _.last(selectedRowKeys)
-        const row = _.find(this.list, ['id', lastKey])
+      //   const index = _.findIndex(this.hasSelectedList, ['id', id])
+      //   this.hasSelectedList.slice(index, 1)
+      // } else {
+      //   console.log(222)
+      //   // 新增
+      //   const lastKey = _.last(selectedRowKeys)
+      //   const row = _.find(this.list, ['id', lastKey])
 
-        this.hasSelectedList.push({ ...row, quantity: row.totalStock })
-      }
+      //   this.hasSelectedList.push({ ...row, quantity: row.totalStock })
+      // }
 
+      this.hasSelectedList = selectedRows
       this.selectedRowKeys = selectedRowKeys
     },
     async handleSubmit () {

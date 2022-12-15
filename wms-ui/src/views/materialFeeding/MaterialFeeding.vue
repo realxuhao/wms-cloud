@@ -116,7 +116,10 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a class="primary-color" @click="handleCreateReductionTask(record)"><a-icon class="m-r-4" type="add" />人工创建拣配任务</a>
+            <a
+              class="primary-color"
+              :disabled="[2].includes(record.status)"
+              @click="handleCreateReductionTask(record)"><a-icon class="m-r-4" type="add" />人工创建拣配任务</a>
           </div>
         </template>
       </a-table>

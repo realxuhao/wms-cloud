@@ -55,8 +55,8 @@ const updateQuantity = async (options) => {
 }
 
 const getPickingOrderList = async (options) => {
-  const url = `binin/materialKanban/list`
-  const { data } = await createAuthInstance(config.apiHost).post(url, options)
+  const url = `binin/materialKanban/list?${qs.stringify(options)}`
+  const { data } = await createAuthInstance(config.apiHost).get(url)
   return data
 }
 
