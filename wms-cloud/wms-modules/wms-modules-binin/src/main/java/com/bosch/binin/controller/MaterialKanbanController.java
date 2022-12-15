@@ -60,9 +60,9 @@ public class MaterialKanbanController {
     @Autowired
     private IStockService stockService;
 
-    @PostMapping(value = "/list")
+    @GetMapping(value = "/list")
     @ApiOperation("查询kanban列表")
-    public R<PageVO<MaterialKanbanVO>> list(@RequestBody MaterialKanbanDTO materialKanbanDTO) {
+    public R<PageVO<MaterialKanbanVO>> list( MaterialKanbanDTO materialKanbanDTO) {
         if (Objects.isNull(materialKanbanDTO)) {
             materialKanbanDTO = new MaterialKanbanDTO();
         }
