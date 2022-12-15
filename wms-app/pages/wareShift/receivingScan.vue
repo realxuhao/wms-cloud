@@ -35,7 +35,7 @@
 			},
 			handleGoto(){
 				Bus.$off("scancodedate",this.scanCodeCallback);
-				uni.navigateTo({
+				uni.redirectTo({
 					url:`/pages/wareShift/receivingOperation?barCode=${this.code}`
 				})
 			}
