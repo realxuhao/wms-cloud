@@ -39,23 +39,13 @@
         size="middle"
         :scroll="{ x: 1300 }"
       >
-        <template slot="checkType" slot-scope="text">
-          <div >
-            <a-tag color="orange" v-if="text===0">
-              称重
-            </a-tag>
-            <a-tag color="blue" v-if="text===1">
-              数数
-            </a-tag>
-            <a-tag color="#87d068" v-if="text===2">
-              免检
-            </a-tag>
-          </div>
-        </template>
         <template slot="moveType" slot-scope="text">
           <div >
             {{ moveTypeMap[text] }}
           </div>
+        </template>
+        <template slot="status" slot-scope="text">
+          <a-tag :color="statusColorMap[text]"> {{ statusMap[text] }}</a-tag>
         </template>
       </a-table>
 
@@ -77,6 +67,7 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+import {colorMap} from '@/utils/color'
 
 const columns = [
   {
@@ -101,6 +92,13 @@ const columns = [
     title: '源库位',
     key: 'sourceBinCode',
     dataIndex: 'sourceBinCode',
+    width: 120
+  },
+  {
+    title: '状态',
+    key: 'status',
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' },
     width: 120
   },
   {
@@ -135,7 +133,7 @@ const columns = [
     width: 120
   },
   {
-    title: 'bbd过期时间',
+    title: '有效期',
     key: 'expireDate',
     dataIndex: 'expireDate',
     width: 120
@@ -164,6 +162,7 @@ const columns = [
     dataIndex: 'targetBinCode',
     width: 120
   },
+  
   {
     title: '推荐库位',
     key: 'recommendBinCode',
@@ -191,6 +190,29 @@ const moveTypeMap = {
   3: '生产叫料',
   4: '移库',
   5: '拆托上架'
+}
+const statusMap = {
+  '-1': '取消任务',
+  0: '待下发',
+  1: '待下架',
+  2: '外库待转运',
+  3: '产线待收货',
+  4: '主库待收货',
+  5: '待上架',
+  6:'产线已收货',
+  7:'完成'
+}
+
+const statusColorMap = {
+  '-1': colorMap['cancel'],
+  0:  colorMap['warning'],
+  1:  colorMap['warning'],
+  2:  colorMap['warning'],
+  3:  colorMap['warning'],
+  4: colorMap['warning'],
+  5:  colorMap['warning'],
+  6:  colorMap['success'],
+  7: colorMap['success']
 }
 
 const queryFormAttr = () => {
@@ -223,7 +245,9 @@ export default {
     }
   },
   computed: {
-    moveTypeMap: () => moveTypeMap
+    moveTypeMap: () => moveTypeMap,
+    statusMap:()=>statusMap,
+    statusColorMap:()=>statusColorMap
   },
   methods: {
     handleResetQuery () {
