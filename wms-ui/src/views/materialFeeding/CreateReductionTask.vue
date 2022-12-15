@@ -318,7 +318,14 @@ export default {
       //   this.hasSelectedList.push({ ...row, quantity: row.totalStock })
       // }
 
-      this.hasSelectedList = selectedRows
+      const selectedRowsMap = _.map(selectedRows, x => {
+        return {
+          ...x,
+          quantity: x.totalStock
+        }
+      })
+      this.hasSelectedList = selectedRowsMap
+
       this.selectedRowKeys = selectedRowKeys
     },
     async handleSubmit () {
