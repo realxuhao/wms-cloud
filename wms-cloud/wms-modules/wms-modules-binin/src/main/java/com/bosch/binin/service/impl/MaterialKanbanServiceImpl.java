@@ -619,6 +619,11 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         return materialKanbanMapper.waitingBinDownList(wareCode);
     }
 
+    @Override
+    public List<MaterialKanbanVO> getKanbanList(MaterialKanbanDTO dto) {
+        return materialKanbanMapper.getKanbanList(dto);
+    }
+
     private void dealCancelSubJob(MaterialKanban subKanban) {
         MaterialKanban parentKanban = materialKanbanMapper.selectById(subKanban.getParentId());
         //获取一个库存

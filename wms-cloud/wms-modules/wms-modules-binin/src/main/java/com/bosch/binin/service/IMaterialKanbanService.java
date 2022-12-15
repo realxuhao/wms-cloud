@@ -118,4 +118,6 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     void cancelKanban(Long id);
 
     List<MaterialKanbanVO> waitingBinDownList(PageDomain pageDomain, String wareCode);
+
+    List<MaterialKanbanVO> getKanbanList(MaterialKanbanDTO dto);
 }

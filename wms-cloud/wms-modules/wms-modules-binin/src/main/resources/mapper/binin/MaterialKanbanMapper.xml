@@ -226,4 +226,78 @@
           and mk.ware_code like concat('%', #{wareCode}, '%')
             and mk.sscc_number not in (select sscc_nb from ware_shift where delete_flag = 0 and status = 1)
     </select>
+
+    <select id="getKanbanList" parameterType="MaterialKanbanDTO"
+            resultType="com.bosch.binin.api.domain.vo.MaterialKanbanVO">
+    SELECT
+    mk.id,
+    mm.name AS material_name,
+    mk.order_number,
+    mk.factory_code ,
+    mk.ware_code,
+    mk.area_code,
+    mk.bin_code,
+    mk.material_code,
+    mk.quantity,
+    mk.move_type,
+    mk.sscc_number,
+    mk.cell,
+    mk.type,
+    mk.status,
+    mk.create_by,
+    mk.update_by,
+    mk.create_time,
+    mk.update_time
+    FROM material_kanban mk
+    LEFT JOIN (SELECT * from md_material where delete_flag='0' )mm ON mk.material_code=mm.code
+    WHERE 1=1 AND mk.delete_flag='0'
+        <if test="orderNumber != null and orderNumber != ''">
+            and mk.order_number like concat('%', #{orderNumber}, '%')
+        </if>
+        <if test="factoryCode != null and factoryCode != ''">
+            and mk.factory_code like concat('%', #{factoryCode}, '%')
+        </if>
+        <if test="wareCode != null and wareCode != ''">
+            and mk.ware_code like concat('%', #{wareCode}, '%')
+        </if>
+        <if test="areaCode != null and areaCode != ''">
+            and mk.area_code like concat('%', #{areaCode}, '%')
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            and mk.material_code like concat('%', #{materialCode}, '%')
+        </if>
+        <if test="ssccNumber != null and ssccNumber != ''">
+            and mk.sscc_number like concat('%', #{ssccNumber}, '%')
+        </if>
+        <if test="binCode != null and binCode != ''">
+            and mk.bin_code like concat('%', #{binCode}, '%')
+        </if>
+        <if test="cell != null and cell != ''">
+            and mk.cell like concat('%', #{cell}, '%')
+        </if>
+        <if test="createBy != null and createBy != ''">
+            and mk.create_by like concat('%', #{createBy}, '%')
+        </if>
+        <if test="updateBy != null and updateBy != ''">
+            and mk.update_by like concat('%', #{updateBy}, '%')
+        </if>
+        <if test="type != null ">
+            AND mk.type=#{type}
+        </if>
+        <if test="status != null ">
+            AND mk.status=#{status}
+        </if>
+        <if test="createTimeStart != null ">
+            AND <![CDATA[mk.create_time >= #{createTimeStart}]]>
+        </if>
+        <if test="createTimeEnd != null ">
+            AND <![CDATA[mk.create_time <= #{createTimeEnd}]]>
+        </if>
+        <if test="updateTimeStart != null ">
+            AND <![CDATA[mk.update_time >= #{updateTimeStart}]]>
+        </if>
+        <if test="updateTimeEnd != null ">
+            AND <![CDATA[mk.update_time <= #{updateTimeEnd}]]>
+        </if>
+    </select>
 </mapper>
