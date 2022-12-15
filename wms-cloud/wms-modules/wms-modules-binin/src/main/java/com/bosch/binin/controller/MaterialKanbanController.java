@@ -554,4 +554,35 @@ public class MaterialKanbanController {
             return R.fail(ex.getMessage());
         }
     }
+    @GetMapping(value = "/confirmMaterialBySSCCs")
+    @ApiOperation("多个sscc收货确认")
+    @Transactional(rollbackFor = Exception.class)
+    public R confirmMaterialBySSCCs(@RequestParam(value = "ssccs") List<String> ssccs) {
+        try {
+            //String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+            if (CollectionUtils.isEmpty(ssccs)) {
+                throw new ServiceException("请选择数据");
+            }
+
+//            List<String> ssccs = new ArrayList<>();
+//            ssccs.add(sscc);
+            //判断sscc在不在kanban中
+            List<MaterialKanban> listBySCAndStatus = materialKanbanService.getListBySCAndStatus(ssccs,
+                    KanbanStatusEnum.INNER_DOWN.value());
+            if (CollectionUtils.isEmpty(listBySCAndStatus)) {
+                throw new ServiceException("包含暂不能收货的数据");
+            }
+            //更新kanban状态从 产线待收货  到 产线已收货
+            int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs, KanbanStatusEnum.INNER_DOWN.value(), KanbanStatusEnum.LINE_RECEIVED.value());
+
+            if (updateKanban <= 0) {
+                return R.fail("确认收货失败，请刷新重试");
+            }
+            return R.ok();
+        } catch (Exception ex) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            ex.printStackTrace();
+            return R.fail(ex.getMessage());
+        }
+    }
 }
