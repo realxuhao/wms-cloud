@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.binin.mapper.ManualTransferOrderMapper">
+
+    <select id="list" resultType="com.bosch.binin.api.domain.vo.ManualTransferOrderVO">
+
+        select mto.*,
+        mm.name as material_name
+        from  manual_transfer_order mto
+        left join (SELECT * from md_material where delete_flag = '0') mm on mto.material_nb = mm.code
+        where mto.delete_flag = 0
+        <if test="sourceWareCode != null and sourceWareCode != ''">
+            AND mto.source_ware_code like concat('%',#{sourceWareCode},'%')
+        </if>
+        <if test="sourceBinCode != null and sourceBinCode != ''">
+            AND mto.source_bin_code like concat('%',#{sourceBinCode},'%')
+        </if>
+        <if test="targetBinCode != null and targetBinCode != ''">
+            AND mto.target_bin_code like concat('%',#{targetBinCode},'%')
+        </if>
+        <if test="status != null ">
+            AND (mto.status = #{status})
+        </if>
+
+        <if test="createBy != null and createBy != ''">and mto.create_by like concat('%', #{createBy}, '%')</if>
+        <if test="startCreateTime != null">and mto.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
+        <if test="endCreateTime != null">and mto.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+        <if test="startUpdateTime != null">and mto.update_time <![CDATA[ >= ]]> #{startUpdateTime}</if>
+        <if test="startUpdateTime != null">and mto.update_time <![CDATA[ <= ]]> #{endUpdateTime}</if>
+
+        order by create_time desc
+    </select>
+</mapper>

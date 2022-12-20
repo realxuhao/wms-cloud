@@ -44,7 +44,7 @@ public class WareShiftController extends BaseController {
     @PostMapping(value = "/addShiftTask")
     @ApiOperation("外库新增需求接口")
     @Transactional(rollbackFor = Exception.class)
-    public R<Boolean> list(@RequestBody AddShiftTaskDTO dto) {
+    public R<Boolean> addShiftTask(@RequestBody AddShiftTaskDTO dto) {
         return R.ok(shiftService.addShiftRequirement(dto));
     }
 

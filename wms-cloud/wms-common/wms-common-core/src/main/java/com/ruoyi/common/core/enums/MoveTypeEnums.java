@@ -6,7 +6,8 @@ public enum  MoveTypeEnums {
     BININ("2", "上架"),
     CALL("3","生产叫料"),
     WARE_SHIFT("4", "移库"),
-    SPLIT_IN("5","拆托上架");
+    SPLIT_IN("5","拆托上架"),
+    IN_TRANSFER("6","仓库内移动");
 
     private final String code;
     private final String info;

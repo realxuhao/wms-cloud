@@ -3,7 +3,6 @@ package com.bosch.binin.api.domain.dto;
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 
@@ -11,17 +10,22 @@ import java.util.Date;
  * @program: wms-cloud
  * @description:
  * @author: xuhao
- * @create: 2022-12-07 14:34
+ * @create: 2022-12-20 13:15
  **/
 @Data
-public class WareShiftQueryDTO extends PageDomain {
+public class ManualTransQueryDTO extends PageDomain {
 
     private String sourceWareCode;
 
+    private String sourceBinCode;
 
-    private String targetWareCode;
+    private String targetBinCode;
 
     private Integer status;
+
+    @ApiModelProperty(value = "类型，0：正常，1：异常")
+    private int type;
+
 
     /**
      * 创建者
@@ -41,15 +45,4 @@ public class WareShiftQueryDTO extends PageDomain {
     @ApiModelProperty(value = "结束创建时间")
     private Date endCreateTime;
 
-    /**
-     * 开始更新时间
-     */
-    @ApiModelProperty(value = "开始更新时间")
-    private Date startUpdateTime;
-
-    /**
-     * 结束更新时间
-     */
-    @ApiModelProperty(value = "结束更新时间")
-    private Date endUpdateTime;
 }
