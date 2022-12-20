@@ -146,10 +146,12 @@ export default {
       font-size: 14px;
     }
 
-    .status {
-      font-size: 14px;
-      color: $uni-color-error;
-    }
+   .status {
+     display: inline-block;
+     font-size: 14px;
+     color: $uni-color-success;
+     width: 44px;
+   }
   }
 
   .card-text {

@@ -18,9 +18,10 @@
 		},
 		onShow(){
 			Bus.$on('scancodedate',this.scanCodeCallback)
+			Bus.$emit('startScan')
 		},
 		destroyed() {
-			Bus.$off("scancodedate");
+			Bus.$off("scancodedate",this.scanCodeCallback);
 		},
 		data() {
 			return {

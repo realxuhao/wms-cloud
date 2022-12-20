@@ -15,7 +15,7 @@
 	           <view class="card" v-for="item in list" :key="item.id">
 	             <view class="card-header">
 	           	<text class="material-name">{{item.materialName}}</text>
-	           	<text class="status">待收料</text>
+	           	<text class="status">已收料</text>
 	             </view>
 	             <view class="card-text m-b-4">物料编码：{{item.materialCode}}</view>
 				 <view class="card-text m-b-4">Cell：{{item.cell}}</view>
@@ -112,15 +112,18 @@ export default {
   .card-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 12px;
     .material-name {
       color: $primary-color;
       font-size: 14px;
+	  flex: 1;
     }
     .status {
+	  display: inline-block;
       font-size: 14px;
       color: $uni-color-success;
+	  width: 44px;
     }
   }
   .card-text {

@@ -18,7 +18,7 @@
 						<view class="text">原材料入库</view>
 					</view>
 					<view class="list-item" @click="handleGoto('/pages/binIn/binIn')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" type="icon-shangjia2"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" type="icon-jiechubangding"></uni-icons>
 						<view class="text">原材料上架</view>
 					</view>
 				</view>
@@ -26,15 +26,15 @@
 			<uni-section title="生产叫料" type="line" class="m-b-12">
 				<view class="list header-box">
 					<view class="list-item" @click="handleGoto('/pages/materialCall/binDown')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-xiajia" color="#ED1820"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-xiajia" color="BLUE"></uni-icons>
 						<view class="text">拣配下架</view>
 					</view>
 					<view class="list-item" @click="handleGoto('/pages/materialCall/receiving')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-shouhuo" type="icon-shouhuo1" color="#00ADD4"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="icon icon-purchasereceipt" type="icon-purchasereceipt" color="#069314"></uni-icons>
 						<view class="text">生产收料</view>
 					</view>
 					<view class="list-item" @click="handleGoto('/pages/wareTransshipment/binIn')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-chejiantuiliao" type="icon-chejiantuiliao" color="#ED1820"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="icon icon-chejiantuiliaojiaojie" type="icon-chejiantuiliao" color="#ED1820"></uni-icons>
 						<view class="text">产线退料</view>
 					</view>
 				</view>
@@ -43,19 +43,19 @@
 			<uni-section title="移库业务" type="line">
 				<view class="list header-box">
 					<view class="list-item" @click="handleGoto('/pages/wareShift/binDown')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-ruku" type="icon-ruku"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="icon baocaixiajiabeiliao" type="icon-baocaixiajiabeiliao" color="#00ADD4"></uni-icons>
 						<view class="text">移库下架</view>
 					</view>
 					<view class="list-item" @click="handleGoto('/pages/materialCall/shipment')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-wuliufahuo" type="icon-wuliufahuo"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="icon icon-wuliufahuo" type="icon-wuliufahuo" color="#009A9A"></uni-icons>
 						<view class="text">移库发运</view>
 					</view>
 					<view class="list-item" @click="handleGoto('/pages/wareShift/receiving')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-xiehuo"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-discharge" color="#00ADD4"></uni-icons>
 						<view class="text">移库收货</view>
 					</view>
 					<view class="list-item" @click="handleGoto('/pages/wareShift/binIn')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-xiehuo"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
 						<view class="text">移库上架</view>
 					</view>
 				</view>
@@ -201,6 +201,11 @@
 				&.icon-shangjia{
 					color:rgb(90,238,216) !important;
 				}
+			}
+			.icon-img{
+				width: 32px;
+				height: 32px;
+				margin-bottom: 8px;
 			}
 			.text{
 				font-size: 14px;

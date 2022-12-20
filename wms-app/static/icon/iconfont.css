@@ -13,6 +13,42 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-purchasereceipt:before {
+  content: "\e629";
+}
+
+.icon-shouhuo2:before {
+  content: "\e684";
+}
+
+.icon-shouhuo1:before {
+  content: "\ecaf";
+}
+
+.icon-baocaixiajiabeiliao:before {
+  content: "\e603";
+}
+
+.icon-shouhuo:before {
+  content: "\ec5c";
+}
+
+.icon-chejiantuiliaojiaojie:before {
+  content: "\e600";
+}
+
+.icon-zhongjianpinQAquyangrenwu:before {
+  content: "\e602";
+}
+
+.icon-suijichouyang:before {
+  content: "\ec90";
+}
+
+.icon-lishijilu:before {
+  content: "\e69d";
+}
+
 .icon-chaifen:before {
   content: "\e653";
 }
@@ -108,4 +144,5 @@
 .icon-rukuwancheng:before {
   content: "\e642";
 }
+
 
