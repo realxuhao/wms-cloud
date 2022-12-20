@@ -40,16 +40,28 @@ public class MaterialCallQueryDTO extends PageDomain {
     private String createBy;
 
     /**
-     * 开始上传时间
+     * 开始创建时间
      */
-    @ApiModelProperty(value = "开始上传时间")
+    @ApiModelProperty(value = "开始创建时间")
     private Date startCreateTime;
 
     /**
-     * 结束上传时间
+     * 结束创建时间
      */
-    @ApiModelProperty(value = "结束上传时间")
+    @ApiModelProperty(value = "结束创建时间")
     private Date endCreateTime;
+
+    /**
+     * 开始更新时间
+     */
+    @ApiModelProperty(value = "开始更新时间")
+    private Date startUpdateTime;
+
+    /**
+     * 结束更新时间
+     */
+    @ApiModelProperty(value = "结束更新时间")
+    private Date endUpdateTime;
 
     @ApiModelProperty(value = "0=未下发,1=部分下发,2=已全部下发")
     private Integer status;

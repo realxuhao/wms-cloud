@@ -19,6 +19,7 @@ import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanActionTypeEnum;
+import com.bosch.binin.mapper.BinInMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
@@ -480,6 +481,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
         queryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+        queryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+
         queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryWrapper);
         MaterialKanbanVO conver = BeanConverUtil.conver(materialKanban, MaterialKanbanVO.class);
@@ -542,6 +545,17 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         newKanban.setParentId(materialKanban.getId());
         materialKanbanMapper.insert(newKanban);
 
+        //如果有正在上架中的任务，需要删除掉
+        LambdaQueryWrapper<BinIn> qw = new LambdaQueryWrapper<>();
+        qw.eq(BinIn::getSsccNumber, splitPallet.getSourceSsccNb());
+        qw.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value());
+        qw.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.last("limit 1");
+        BinIn binInProcessing = binInService.getOne(qw);
+        if (binInProcessing != null) {
+            binInService.deleteBinInById(binInProcessing.getId());
+        }
+
         //如果老sscc没有上架，需要生成一个新的上架任务
         LambdaQueryWrapper<BinIn> bininQueryWrapper = new LambdaQueryWrapper<>();
         bininQueryWrapper.eq(BinIn::getSsccNumber, splitPallet.getSourceSsccNb());
@@ -555,19 +569,10 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         } else {
             Stock conver = BeanConverUtil.conver(stockVO, Stock.class);
             conver.setTotalStock(conver.getTotalStock() - newKanban.getQuantity());
-            conver.setFreezeStock(conver.getFreezeStock() - newKanban.getQuantity());
+            conver.setFreezeStock(conver.getTotalStock() - conver.getAvailableStock());
             stockMapper.updateById(conver);
         }
-        //如果有正在上架中的任务，需要删除掉
-        LambdaQueryWrapper<BinIn> qw = new LambdaQueryWrapper<>();
-        qw.eq(BinIn::getSsccNumber, splitPallet.getSourceSsccNb());
-        qw.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value());
-        qw.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        qw.last("limit 1");
-        BinIn binInProcessing = binInService.getOne(bininQueryWrapper);
-        if (binInProcessing != null) {
-            binInService.deleteBinInById(binInProcessing.getId());
-        }
+
 
 
     }

@@ -146,6 +146,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             allocationDTO.setMesBarCode(mesBarCode);
             //获取托盘
             allocationDTO.setPalletType(materialVO.getPalletType());
+            allocationDTO.setWareCode(SecurityUtils.getWareCode());
 
             //获取托盘详情
             R<Pallet> palletR = remotePalletService.getByType(materialVO.getPalletType());

@@ -7,7 +7,7 @@
 
     <select id="getMaterialCallVOs" resultType="com.bosch.binin.api.domain.vo.MaterialCallVO">
         select mc.id as id,
-               mc.order_nb as order_nb,
+        mc.order_nb as order_nb,
         mc.material_nb as material_nb,
         mc.quantity as quantity,
         mc.unit as unit,
@@ -21,7 +21,8 @@
         mc.update_time as update_time,
         mc.issued_quantity as issued_quantity,
         mm.name as material_name
-        from material_call mc left join (SELECT * from md_material where delete_flag='0' ) mm on mc.material_nb = mm.code
+        from material_call mc left join (SELECT * from md_material where delete_flag='0' ) mm on mc.material_nb =
+        mm.code
         where
         mc.delete_flag = 0
         <if test="materialNb != null and materialNb != ''">and mc.material_nb like concat('%', #{materialNb}, '%')</if>
@@ -29,6 +30,11 @@
         <if test="orderNb != null and orderNb != ''">and mc.order_nb like concat('%', #{orderNb}, '%')</if>
         <if test="createBy != null and createBy != ''">and mc.create_by like concat('%', #{createBy}, '%')</if>
         <if test="status != null ">and mc.status = #{status}</if>
+        <if test="startCreateTime != null">and mc.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
+        <if test="endCreateTime != null">and mc.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+        <if test="startUpdateTime != null">and mc.update_time <![CDATA[ >= ]]> #{startUpdateTime}</if>
+        <if test="startUpdateTime != null">and mc.update_time <![CDATA[ <= ]]> #{endUpdateTime}</if>
+
         order by mc.status desc,mc.create_time desc
 
     </select>

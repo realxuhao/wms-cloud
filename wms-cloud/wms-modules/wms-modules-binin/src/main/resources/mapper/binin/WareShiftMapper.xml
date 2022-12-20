@@ -34,6 +34,12 @@
         <if test="status != null ">
             AND (ws.status = #{status})
         </if>
+        <if test="createBy != null and createBy != ''">and ws.create_by like concat('%', #{createBy}, '%')</if>
+        <if test="startCreateTime != null">and ws.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
+        <if test="endCreateTime != null">and ws.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+        <if test="startUpdateTime != null">and ws.update_time <![CDATA[ >= ]]> #{startUpdateTime}</if>
+        <if test="startUpdateTime != null">and ws.update_time <![CDATA[ <= ]]> #{endUpdateTime}</if>
+
         order by create_time desc
     </select>
 </mapper>
