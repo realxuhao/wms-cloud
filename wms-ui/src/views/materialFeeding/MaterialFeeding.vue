@@ -388,7 +388,7 @@ export default {
           })
           return
         }
-        await this.submitCreateReductionTask()
+        await this.submitCreateReductionTask(options)
 
         this.selectedRowKeys = []
         this.loadTableList()
