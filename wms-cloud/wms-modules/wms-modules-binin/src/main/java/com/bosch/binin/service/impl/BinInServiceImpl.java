@@ -4,9 +4,7 @@ import com.alibaba.druid.sql.ast.expr.SQLCaseExpr;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.StockLog;
-import com.bosch.binin.api.domain.MaterialKanban;
-import com.bosch.binin.api.domain.Stock;
-import com.bosch.binin.api.domain.WareShift;
+import com.bosch.binin.api.domain.*;
 import com.bosch.binin.api.domain.dto.BinAllocationDTO;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.BinInTaskDTO;
@@ -15,6 +13,7 @@ import com.bosch.binin.api.domain.vo.FrameRemainVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
+import com.bosch.binin.api.enumeration.ManuTransStatusEnum;
 import com.bosch.binin.mapper.*;
 import com.bosch.binin.service.IBinAssignmentService;
 import com.bosch.binin.service.IStockService;
@@ -24,7 +23,6 @@ import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.storagein.api.RemoteMaterialInService;
-import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.dto.BinInQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.service.IBinInService;
@@ -47,6 +45,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import sun.plugin2.main.client.PrintBandDescriptor;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -92,6 +91,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Autowired
     private IStockService stockService;
+
+    @Autowired
+    private ManualTransferOrderMapper manualTransferOrderMapper;
 
     @Override
     public List<BinInVO> selectBinVOList(BinInQueryDTO queryDTO) {
@@ -308,7 +310,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         stockLog.setMoveType(MoveTypeEnums.BININ.getCode());
         stockLogMapper.insert(stockLog);
 
-        // 更新kanban和移库状态
+        // 更新kanban和移库,转储单状态
         updateKanbanWareShiftStatus(stock, sscc);
 
 
@@ -353,6 +355,20 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             wareShift.setTargetBinCode(stock.getBinCode());
             wareShiftMapper.updateById(wareShift);
         }
+
+        //如果是转储单任务，需要把状态修改为完成
+        LambdaQueryWrapper<ManualTransferOrder> qw = new LambdaQueryWrapper<>();
+        qw.eq(ManualTransferOrder::getSsccNb, ssccNb);
+        qw.eq(ManualTransferOrder::getStatus, ManuTransStatusEnum.WAITING_BIN_IN.code());
+        qw.eq(ManualTransferOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.last("limit 1");
+        qw.last("for update");
+        ManualTransferOrder manualTransferOrder = manualTransferOrderMapper.selectOne(qw);
+        if (!Objects.isNull(manualTransferOrder)){
+            manualTransferOrder.setStatus(ManuTransStatusEnum.FINISH.code());
+            manualTransferOrderMapper.updateById(manualTransferOrder);
+        }
+
 
     }
 

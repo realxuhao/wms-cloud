@@ -4,6 +4,7 @@ import com.bosch.binin.api.domain.dto.AddManualTransDTO;
 import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
 import com.bosch.binin.api.domain.dto.ManualTransQueryDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
+import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.ManualTransferOrderVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.service.IManualTransferOrderService;
@@ -54,8 +55,31 @@ public class ManualTransferOrderController extends BaseController {
     @Transactional(rollbackFor = Exception.class)
     public R<Boolean> add(@RequestBody AddManualTransDTO dto) {
         return R.ok(manualTransferOrderService.add(dto));
+    }
+
+    @GetMapping(value = "/allocateBin/{mesBarCode}")
+    @ApiOperation("移库任务上架分配库位")
+    @Transactional(rollbackFor = Exception.class)
+    public R<BinInVO> allocateBin(@PathVariable("mesBarCode") String mesBarCode) {
+
+        return R.ok(manualTransferOrderService.allocateBin(mesBarCode, SecurityUtils.getWareCode()));
+    }
 
 
+    @PutMapping(value = "/issue/{ssccNumbers}")
+    @ApiOperation("下发")
+    @Transactional(rollbackFor = Exception.class)
+    public R issueJob(@PathVariable String[] ssccNumbers) {
+        manualTransferOrderService.issueJob(ssccNumbers);
+        return R.ok("下发成功");
+    }
+
+    @PutMapping(value = "/cancel/{ssccNumbers}")
+    @ApiOperation("取消")
+    @Transactional(rollbackFor = Exception.class)
+    public R cancel(@PathVariable String[] ssccNumbers) {
+        manualTransferOrderService.cancel(ssccNumbers);
+        return R.ok("取消成功");
     }
 
 

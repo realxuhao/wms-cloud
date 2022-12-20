@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.ManualTransferOrder;
 import com.bosch.binin.api.domain.dto.AddManualTransDTO;
 import com.bosch.binin.api.domain.dto.ManualTransQueryDTO;
+import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.ManualTransferOrderVO;
 
 import java.util.List;
@@ -19,4 +20,10 @@ public interface IManualTransferOrderService extends IService<ManualTransferOrde
     List<ManualTransferOrderVO> list(ManualTransQueryDTO queryDTO);
 
     Boolean add(AddManualTransDTO dto);
+
+    BinInVO allocateBin(String mesBarCode, String wareCode);
+
+    void issueJob(String[] ssccNumbers);
+
+    void cancel(String[] ids);
 }
