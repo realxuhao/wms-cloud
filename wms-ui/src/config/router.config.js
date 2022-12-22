@@ -193,6 +193,22 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           }
         ]
+      },
+      {
+        path: '/manual-trans',
+        name: 'manualTrans',
+        component: RouteView,
+        redirect: '/manual-trans/list',
+        meta: { title: '库内管理', icon: 'hdd', permission: [] },
+        children: [
+          {
+            path: '/manual-trans/list',
+            name: 'transList',
+            component: () => import('@/views/manualTrans/transList'),
+            meta: { title: '转储任务列表', permission: [] },
+            hideChildrenInMenu: true
+          }
+        ]
       }
       // account
       // {
