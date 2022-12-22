@@ -8,7 +8,7 @@ package com.bosch.binin.api.enumeration;
  **/
 public enum ManuTransStatusEnum {
     CANCEL(-1, "已取消"),
-    WAITING_ISSUE(0, "未下发"),
+    WAITING_ISSUE(0, "待下发"),
 
     //待下架
     WAITING_BIN_DOWN(1, "待下架"),

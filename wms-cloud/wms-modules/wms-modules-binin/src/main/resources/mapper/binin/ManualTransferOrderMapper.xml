@@ -11,6 +11,9 @@
         from manual_transfer_order mto
         left join (SELECT * from md_material where delete_flag = '0') mm on mto.material_nb = mm.code
         where mto.delete_flag = 0
+        <if test="materialNb != null and materialNb != ''">
+            AND mto.material_nb like concat('%',#{materialNb},'%')
+        </if>
         <if test="sourceWareCode != null and sourceWareCode != ''">
             AND mto.source_ware_code like concat('%',#{sourceWareCode},'%')
         </if>

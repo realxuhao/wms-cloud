@@ -15,6 +15,8 @@ import java.util.Date;
 @Data
 public class ManualTransQueryDTO extends PageDomain {
 
+    private String materialNb;
+
     private String sourceWareCode;
 
     private String sourceBinCode;
