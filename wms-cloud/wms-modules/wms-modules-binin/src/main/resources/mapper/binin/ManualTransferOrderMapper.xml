@@ -8,7 +8,7 @@
 
         select mto.*,
         mm.name as material_name
-        from  manual_transfer_order mto
+        from manual_transfer_order mto
         left join (SELECT * from md_material where delete_flag = '0') mm on mto.material_nb = mm.code
         where mto.delete_flag = 0
         <if test="sourceWareCode != null and sourceWareCode != ''">
@@ -32,4 +32,6 @@
 
         order by create_time desc
     </select>
+
+
 </mapper>

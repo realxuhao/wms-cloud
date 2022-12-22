@@ -8,6 +8,7 @@ import com.bosch.binin.api.domain.dto.BinInQueryDTO;
 import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.BinInVO;
+import com.bosch.masterdata.api.domain.vo.BinVO;
 
 import java.util.List;
 
@@ -26,6 +27,9 @@ public interface IBinInService extends IService<BinIn> {
 
     BinInVO generateInTaskByMesBarCode(String mesBarCode);
 
+    BinInVO allocateToBinOrArea(String ssccNb,String materialCode,String binCode,String areaCode);
+
+
     List<BinInVO> currentUserData(BinInQueryDTO queryDTO);
 
     /**
@@ -43,4 +47,6 @@ public interface IBinInService extends IService<BinIn> {
     List<BinInVO> selectProcessingBinVOList(BinInQueryDTO binInQueryDTO);
 
     void binDown(String ssccNumber);
+
+    public BinVO getBinVOByBinCode(String binCode);
 }

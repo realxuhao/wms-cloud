@@ -24,7 +24,7 @@ public class AddManualTransDTO {
     @ApiModelProperty(value = "目标区域编码")
     private String targetAreaCode;
 
-    @ApiModelProperty(value = "目标库位编码")
-    private String targetBinCode;
+//    @ApiModelProperty(value = "目标库位编码")
+//    private String targetBinCode;
 
 }

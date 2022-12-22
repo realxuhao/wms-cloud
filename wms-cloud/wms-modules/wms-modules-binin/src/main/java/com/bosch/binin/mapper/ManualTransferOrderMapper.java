@@ -3,6 +3,7 @@ package com.bosch.binin.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.binin.api.domain.ManualTransferOrder;
 import com.bosch.binin.api.domain.dto.ManualTransQueryDTO;
+import com.bosch.binin.api.domain.vo.ManuTransBinInVO;
 import com.bosch.binin.api.domain.vo.ManualTransferOrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;

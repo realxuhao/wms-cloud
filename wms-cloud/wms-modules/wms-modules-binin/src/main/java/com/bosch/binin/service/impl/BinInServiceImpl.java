@@ -414,7 +414,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         stockMapper.updateById(stock);
     }
 
-    private BinVO getBinVOByBinCode(String binCode) {
+    @Override
+    public BinVO getBinVOByBinCode(String binCode) {
         R<BinVO> binInfoByCodeResult = remoteMasterDataService.getBinInfoByCode(binCode);
         if (StringUtils.isNull(binInfoByCodeResult) || StringUtils.isNull(binInfoByCodeResult.getData())) {
             throw new ServiceException("该库位：" + binCode + " 不存在");
@@ -516,6 +517,67 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binInMapper.insert(binIn);
         return binInMapper.selectBySsccNumber(sscc);
 
+    }
+
+    @Override
+    public BinInVO allocateToBinOrArea(String ssccNb, String materialCode, String binCode, String areaCode) {
+        BinInVO binInVO = binInMapper.selectBySsccNumber(ssccNb);
+        if (binInVO != null) {
+            return binInVO;
+        }
+        StockVO oldStock = stockService.getOneBySSCC(ssccNb);
+        String sscc = ssccNb;
+        String materialNb = oldStock.getMaterialNb();
+        MaterialVO materialVO = getMaterialVOByCode(materialNb);
+
+        String mesBarCode = MesBarCodeUtil.generateMesBarCode(oldStock.getExpireDate(), sscc, materialNb, oldStock.getBatchNb(), oldStock.getTotalStock());
+
+
+        if (Objects.isNull(oldStock)) {
+            throw new ServiceException("历史库存为空");
+        }
+
+        //获取托盘详情
+        R<Pallet> palletR = remotePalletService.getByType(materialVO.getPalletType());
+        if (!palletR.isSuccess()) {
+            throw new ServiceException("获取托盘详情失败");
+        }
+        Pallet pallet = palletR.getData();
+        if (pallet == null) {
+            throw new ServiceException("未获取到托盘数据");
+        }
+
+        BinIn binIn = new BinIn();
+        binIn.setSsccNumber(sscc);
+        binIn.setQuantity(oldStock.getTotalStock());
+        binIn.setMaterialNb(materialNb);
+        binIn.setBatchNb(oldStock.getBatchNb());
+        binIn.setExpireDate(MesBarCodeUtil.getExpireDate(mesBarCode));
+        binIn.setPalletType(materialVO.getPalletType());
+        //设置托盘编码,虚拟托盘直接分配编码
+        binIn.setPalletCode(pallet.getIsVirtual().equals(1) ? "V-" + pallet.getVirtualPrefixCode() + "-" + System.currentTimeMillis() : null);
+
+        if (StringUtils.isNotEmpty(binCode)) {
+            BinVO binVO = getBinVOByBinCode(binCode);
+
+            binIn.setRecommendBinCode(binCode);
+            binIn.setRecommendFrameId(binVO.getFrameId());
+            binIn.setRecommendFrameCode(binVO.getFrameCode());
+            binIn.setAreaCode(binVO.getAreaCode());
+        }else {
+            binIn.setAreaCode(areaCode);
+        }
+
+
+        binIn.setWareCode(SecurityUtils.getWareCode());
+
+        binIn.setStatus(BinInStatusEnum.PROCESSING.value());
+        binIn.setMoveType(MoveTypeEnums.SPLIT_IN.getCode());
+        binIn.setFromPurchaseOrder(oldStock.getFromPurchaseOrder());
+        binIn.setPlantNb(oldStock.getPlantNb());
+        binInMapper.insert(binIn);
+
+        return binInMapper.selectBySsccNumber(sscc);
     }
 
     /**

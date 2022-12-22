@@ -66,10 +66,9 @@
                bi.create_by,
                bi.create_time
         from bi_in bi
-                 left join md_material mm on bi.material_nb = mm.code
+                 left join md_material mm on bi.material_nb = mm.code and mm.delete_flag = 0
         where bi.sscc_number = #{sscc}
           and bi.delete_flag = 0
-          and mm.delete_flag = 0
         order by bi.create_time desc
         limit 1
 
@@ -97,20 +96,20 @@
                t.create_time,
                mm.name as material_name
         FROM (
-                 SELECT bi.sscc_number,
-                        bi.material_nb,
-                        bi.recommend_bin_code,
-                        bi.create_time
-                 FROM bi_in bi
-                 where bi.ware_code = #{wareCode}
-                   and bi.status = 0
-                   and bi.delete_flag = 0
-                 UNION
+#                  SELECT bi.sscc_number,
+#                         bi.material_nb,
+#                         bi.recommend_bin_code,
+#                         bi.create_time
+#                  FROM bi_in bi
+#                  where bi.ware_code = #{wareCode}
+#                    and bi.status = 0
+#                    and bi.delete_flag = 0
+#                  UNION
                  SELECT si.sscc_number,
                         si.material_nb,
                         NULL            AS recommend_bin_code,
                         si.operate_time as create_time
-                 FROM si_material_in si
+                 FROM si_material_in si left join bi_in bi on si.sscc_number=bi.sscc_number and bi.status = 0 and bi.delete_flag = 0 and bi.ware_code = #{wareCode}
                  WHERE si.delete_flag = 0
                    and si.ware_code = #{wareCode}
                    and si.sscc_number NOT IN (SELECT sscc_number

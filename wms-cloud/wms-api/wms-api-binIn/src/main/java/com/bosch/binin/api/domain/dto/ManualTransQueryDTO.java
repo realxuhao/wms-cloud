@@ -45,4 +45,16 @@ public class ManualTransQueryDTO extends PageDomain {
     @ApiModelProperty(value = "结束创建时间")
     private Date endCreateTime;
 
+    /**
+     * 开始更新时间
+     */
+    @ApiModelProperty(value = "开始更新时间")
+    private Date startUpdateTime;
+
+    /**
+     * 结束更新时间
+     */
+    @ApiModelProperty(value = "结束更新时间")
+    private Date endUpdateTime;
+
 }

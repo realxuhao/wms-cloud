@@ -1,0 +1,23 @@
+package com.bosch.binin.api.domain.dto;
+
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+/**
+ * @program: wms-cloud
+ * @description:
+ * @author: xuhao
+ * @create: 2022-12-21 16:53
+ **/
+@Data
+public class ManualTransBinInDTO {
+
+    @ApiModelProperty(value = "mesBarCode")
+    private String mesBarCode;
+
+    @ApiModelProperty(value = "实际库位编码")
+    private String actualCode;
+
+    @ApiModelProperty(value = "实物托盘编码")
+    private String palletCode;
+}
