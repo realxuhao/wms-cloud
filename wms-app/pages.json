@@ -71,6 +71,21 @@
 		},
 		{
 		    "path" : "pages/materialCall/shipment"
+		},
+		{
+		    "path" : "pages/manualTrans/binDown"
+		},
+		{
+		    "path" : "pages/manualTrans/binDownScan"
+		},
+		{
+		    "path" : "pages/manualTrans/binIn"
+		},
+		{
+			"path": "pages/manualTrans/binInScan"
+		},
+		{
+			"path": "pages/manualTrans/binInOperation"
 		}
     ],
 	"globalStyle": {

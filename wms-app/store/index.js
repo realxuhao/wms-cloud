@@ -9,6 +9,7 @@ import materialCall from './modules/materialCall'
 import receiveMaterial from './modules/receiveMaterial'
 import kanban from './modules/kanban'
 import wareShift from './modules/wareShift'
+import manualTrans from './modules/manualTrans'
 
 import getters from './getters'
 
@@ -23,7 +24,8 @@ export default new Vuex.Store({
 	materialCall,
 	receiveMaterial,
 	kanban,
-	wareShift
+	wareShift,
+	manualTrans
   },
   state: {
 

@@ -39,6 +39,18 @@
 					</view>
 				</view>
 			</uni-section>
+			<uni-section title="仓内管理" type="line"  class="m-b-12">
+				<view class="list header-box">
+					<view class="list-item" @click="handleGoto('/pages/manualTrans/binDown')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-xiajia" color="BLUE"></uni-icons>
+						<view class="text">转储下架</view>
+					</view>
+					<view class="list-item" @click="handleGoto('/pages/manualTrans/binIn')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
+						<view class="text">转储上架</view>
+					</view>	
+				</view>
+			</uni-section>
 			
 			<uni-section title="移库业务" type="line">
 				<view class="list header-box">
@@ -58,8 +70,11 @@
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
 						<view class="text">移库上架</view>
 					</view>
+					
 				</view>
 			</uni-section>
+			
+			
 		</view>
 		
 		<!-- <view class="action-content">
