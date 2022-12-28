@@ -1,6 +1,7 @@
 package com.bosch.binin.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
 import java.util.Date;
@@ -13,7 +14,7 @@ import java.util.Date;
  **/
 @Data
 @TableName("manual_transfer_order")
-public class ManualTransferOrder {
+public class ManualTransferOrder extends BaseEntity {
 
     private Long id;
     private String sourcePlantNb;
@@ -27,10 +28,6 @@ public class ManualTransferOrder {
     private String targetBinCode;
     private int type;
     private Integer status;
-    private String createBy;
-    private String updateBy;
-    private Date createTime;
-    private Date updateTime;
+
     private Integer deleteFlag;
-    private String remark;
 }

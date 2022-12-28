@@ -16,7 +16,7 @@ public class AddManualTransDTO {
 
 
     @ApiModelProperty(value = "类型，0：正常，1：异常")
-    private int type;
+    private int normalType;
 
     @ApiModelProperty(value = "库存ID列表")
     private List<Long> idList;

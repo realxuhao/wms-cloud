@@ -1,6 +1,5 @@
 package com.bosch.binin.service.impl;
 
-import com.alibaba.druid.sql.ast.expr.SQLCaseExpr;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.*;
@@ -8,11 +7,8 @@ import com.bosch.binin.api.domain.dto.AddManualTransDTO;
 import com.bosch.binin.api.domain.dto.ManualTransBinInDTO;
 import com.bosch.binin.api.domain.dto.ManualTransQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
-import com.bosch.binin.api.domain.vo.ManuTransBinInVO;
 import com.bosch.binin.api.domain.vo.ManualTransferOrderVO;
-import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
-import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.api.enumeration.ManuTransStatusEnum;
 import com.bosch.binin.api.enumeration.MaterialTransTypeEnum;
 import com.bosch.binin.mapper.BinInMapper;
@@ -74,7 +70,7 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
         LambdaQueryWrapper<Stock> stockLambdaQueryWrapper = new LambdaQueryWrapper<>();
         stockLambdaQueryWrapper.in(Stock::getId, idList);
         stockLambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        stockLambdaQueryWrapper.ne(Stock::getFreezeStock, Double.valueOf(0));
+        stockLambdaQueryWrapper.eq(Stock::getFreezeStock, Double.valueOf(0));
         List<Stock> stockList = stockMapper.selectList(stockLambdaQueryWrapper);
         if (CollectionUtils.isEmpty(stockList) || stockList.size() != idList.size()) {
             throw new ServiceException("库存状态过期，请刷新后重新选择");
@@ -90,7 +86,9 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
 //            if (dto.getType() == MaterialTransTypeEnum.NORMAL.code()) {
 //                manualTransferOrder.setTargetBinCode(targetBinCode);
 //            }
-            manualTransferOrder.setType(dto.getType());
+            manualTransferOrder.setSsccNb(item.getSsccNumber());
+            manualTransferOrder.setMaterialNb(item.getMaterialNb());
+            manualTransferOrder.setType(dto.getNormalType());
             manualTransferOrder.setMoveType(MoveTypeEnums.IN_TRANSFER.getCode());
             manualTransferOrder.setStatus(ManuTransStatusEnum.WAITING_ISSUE.code());
             list.add(manualTransferOrder);
