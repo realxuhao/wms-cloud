@@ -64,9 +64,8 @@
         <a-button
           type="primary"
           :loading="confirmMaterialLoading"
-          :disabled="!hasSelected"
-          @click="handleConfirmMaterial"
-        >产线收货确认</a-button>
+          @click="handleAddTrans"
+        >新增仓内转储单</a-button>
       </div>
       <a-table
         table-layout="fixed"
@@ -137,6 +136,15 @@
         />
       </div>
 
+      <StockList
+        v-model="stockListVisible"
+        :orderNb="currentOrderNb"
+        :cell="currentCell"
+        :materialNb="currentMaterialNb"
+        :notQuantity="notQuantity"
+        @on-ok="loadTableList"
+      ></StockList>
+
     </div>
 
   </div>
@@ -145,6 +153,8 @@
 <script>
 import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
+import StockList from './StockList'
+
 import EditTableCell from '@/components/EditTableCell'
 
 const columns = [
@@ -328,7 +338,8 @@ export default {
   name: 'Area',
   mixins: [mixinTableList],
   components: {
-    EditTableCell
+    EditTableCell,
+    StockList
   },
   data () {
     return {
@@ -349,7 +360,7 @@ export default {
       currentOrderNb: '',
       currentCell: '',
       currentMaterialNb: '',
-      createReductionTaskVisible: false,
+      stockListVisible: false,
       notQuantity: 0
     }
   },
@@ -381,32 +392,9 @@ export default {
         this.submitLoading = false
       }
     },
-    async handleConfirmMaterial () {
-      // this.$confirm({
-      //   title: '以下物料可用库存不足，是否进行部分拣配？',
-      //   content: h => {
-      //     return (
-      //       _.map(this.selectedRowKeys, item => {
-      //         return <p>物料号：{item.materialNb}, 可用库存量：{item.avaliableQuantity}</p>
-      //       })
-      //     )
-      //   },
-      //   onOk: () => this.submitCreateReductionTask(options),
-      //   onCancel: () => {
-      //     this.selectedRowKeys = []
-      //   }
-      // })
-      try {
-        this.confirmMaterialLoading = true
-        await this.$store.dispatch('materialFeeding/confirmMaterial', this.selectedRowKeys)
-        this.$message.success('收货确认成功')
-        this.selectedRowKeys = []
-        this.loadTableList()
-      } catch (error) {
-        this.$message.error(error.message)
-      } finally {
-        this.confirmMaterialLoading = false
-      }
+    async handleAddTrans () {
+      console.log(111)
+      this.stockListVisible = true
     },
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
