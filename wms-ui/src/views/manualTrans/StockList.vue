@@ -10,6 +10,16 @@
           <a-form layout="inline" class="search-content">
             <a-row :gutter="16">
               <a-col :span="4">
+                <a-form-model-item label="仓库编码">
+                  <a-input v-model="queryForm.wareCode" placeholder="仓库编码" allow-clear />
+                </a-form-model-item>
+              </a-col>
+              <a-col :span="4">
+                <a-form-model-item label="物料号">
+                  <a-input v-model="queryForm.materialCode" placeholder="物料号" allow-clear />
+                </a-form-model-item>
+              </a-col>
+              <a-col :span="4">
                 <a-form-model-item label="批次号">
                   <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear />
                 </a-form-model-item>
@@ -96,11 +106,19 @@ const wrapperCol = {
 }
 const queryFormAttr = () => {
   return {
-    'batchNb': ''
+    'batchNb': '',
+    'wareCode': '',
+    'materialCode': ''
   }
 }
 
 const selectColumns = [
+  {
+    title: '仓库编码',
+    key: 'wareCode',
+    dataIndex: 'wareCode',
+    width: 120
+  },
   {
     title: 'SSCC码',
     key: 'ssccNumber',
@@ -226,6 +244,12 @@ export default {
       const { sortMap } = this.queryForm
       const columns = [
         {
+          title: '仓库编码',
+          key: 'wareCode',
+          dataIndex: 'wareCode',
+          width: 120
+        },
+        {
           title: 'SSCC码',
           key: 'ssccNumber',
           dataIndex: 'ssccNumber',
@@ -294,8 +318,10 @@ export default {
     },
     checkSelectWareCode () {
       const ware = []
+      const selectedStockIds = []
       this.hasSelectedList.forEach((item) => {
         ware.push(item.wareCode)
+        selectedStockIds.push(item.id)
       })
       const wareSet = [...new Set(ware)]
       if (wareSet.length !== 1) {
@@ -303,6 +329,11 @@ export default {
       } else {
         this.currentStep = 1
         this.wareCode = wareSet[0]
+        this.selectedStockIds = selectedStockIds
+        this.form.setFieldsValue({
+          idList: this.selectedStockIds
+        })
+        console.log(this.selectedStockIds)
         this.handleGetAreaList(this.wareCode)
       }
     },
@@ -375,11 +406,6 @@ export default {
         }
         console.log('Received values of form: ', values)
         try {
-          const selectedStockIds = []
-          this.hasSelectedList.forEach((item) => {
-            selectedStockIds.push(item.id)
-          })
-          this.selectedStockIds = selectedStockIds
           this.submitLoading = true
           await this.$store.dispatch('manualTrans/addManutrans', values)
           this.$emit('on-ok')
@@ -417,7 +443,6 @@ export default {
   watch: {
     stockListVisible: function (val) {
       if (val) {
-        this.queryForm.materialNb = this.materialNb
         this.loadData()
       }
     }

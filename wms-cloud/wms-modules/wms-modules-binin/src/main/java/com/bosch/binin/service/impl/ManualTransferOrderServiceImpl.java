@@ -26,6 +26,7 @@ import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -60,6 +61,7 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Boolean add(AddManualTransDTO dto) {
         List<Long> idList = dto.getIdList();
 //        String targetBinCode = dto.getTargetBinCode();
@@ -83,9 +85,6 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
             manualTransferOrder.setSourceAreaCode(item.getAreaCode());
             manualTransferOrder.setSourceBinCode(item.getBinCode());
             manualTransferOrder.setTargetAreaCode(targetAreaCode);
-//            if (dto.getType() == MaterialTransTypeEnum.NORMAL.code()) {
-//                manualTransferOrder.setTargetBinCode(targetBinCode);
-//            }
             manualTransferOrder.setSsccNb(item.getSsccNumber());
             manualTransferOrder.setMaterialNb(item.getMaterialNb());
             manualTransferOrder.setType(dto.getNormalType());
@@ -276,12 +275,12 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
         LambdaQueryWrapper<ManualTransferOrder> qw = new LambdaQueryWrapper<>();
-        qw.eq(ManualTransferOrder::getSsccNb,sscc);
-        qw.eq(ManualTransferOrder::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
-        qw.ne(ManualTransferOrder::getStatus,ManuTransStatusEnum.CANCEL.code());
+        qw.eq(ManualTransferOrder::getSsccNb, sscc);
+        qw.eq(ManualTransferOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.ne(ManualTransferOrder::getStatus, ManuTransStatusEnum.CANCEL.code());
         qw.last("limit 1");
         qw.last("for update");
         manualTransferOrderMapper.selectOne(qw);
-        return  manualTransferOrderMapper.selectOne(qw);
+        return manualTransferOrderMapper.selectOne(qw);
     }
 }
