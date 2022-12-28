@@ -19,8 +19,14 @@ const cancelManualTrans = async (options) => {
   const { data } = await createAuthInstance(baseUrl).put(url)
   return data
 }
+const addManutrans = async (formdata) => {
+  const url = `/manual-transfer/add`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
 export const manualTransService = {
   getList,
   batchIssueJob,
-  cancelManualTrans
+  cancelManualTrans,
+  addManutrans
 }

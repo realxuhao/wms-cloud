@@ -36,6 +36,10 @@ const manualTrans = {
     async cancelManualTrans ({ commit }, options) {
       const data = await manualTransService.cancelManualTrans(options)
       return data
+    },
+    async addManutrans ({ commit }, formdata) {
+      const data = await manualTransService.addManutrans(formdata)
+      return data
     }
   }
 }
