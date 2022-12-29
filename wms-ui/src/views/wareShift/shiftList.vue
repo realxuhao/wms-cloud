@@ -64,6 +64,11 @@
         </a-row>
       </a-form>
       <div class="action-content">
+        <a-button
+          type="primary"
+          :loading="confirmMaterialLoading"
+          @click="handleAddWareShift"
+        >新增移库单</a-button>
 
       </div>
       <a-table
@@ -97,6 +102,14 @@
         />
       </div>
     </div>
+    <StockList
+      v-model="stockListVisible"
+      :orderNb="currentOrderNb"
+      :cell="currentCell"
+      :materialNb="currentMaterialNb"
+      :notQuantity="notQuantity"
+      @on-ok="loadTableList"
+    ></StockList>
 
   </div>
 </template>
@@ -105,6 +118,7 @@
 import { mixinTableList } from '@/utils/mixin/index'
 import { colorMap } from '@/utils/color'
 import _ from 'lodash'
+import StockList from './StockList'
 
 const columns = [
   {
@@ -266,6 +280,9 @@ const queryFormAttr = () => {
 export default {
   name: 'ShiftList',
   mixins: [mixinTableList],
+  components: {
+    StockList
+  },
   data () {
     return {
       tableLoading: false,
@@ -276,7 +293,8 @@ export default {
         ...queryFormAttr()
       },
       columns,
-      list: []
+      list: [],
+      stockListVisible: false
     }
   },
   computed: {
@@ -285,6 +303,9 @@ export default {
     statusColorMap: () => statusColorMap
   },
   methods: {
+    handleAddWareShift () {
+      this.stockListVisible = true
+    },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()

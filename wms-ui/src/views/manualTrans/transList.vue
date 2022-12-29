@@ -393,7 +393,6 @@ export default {
       }
     },
     async handleAddTrans () {
-      console.log(111)
       this.stockListVisible = true
     },
     onSelectChange (selectedRowKeys) {
