@@ -27,6 +27,14 @@ public interface IBinInService extends IService<BinIn> {
 
     BinInVO generateInTaskByMesBarCode(String mesBarCode);
 
+    /**
+     *分配到具体的区域或者库位，如果是分配到库位，那么areaCode为null
+     * @param ssccNb
+     * @param materialCode
+     * @param binCode
+     * @param areaCode
+     * @return
+     */
     BinInVO allocateToBinOrArea(String ssccNb,String materialCode,String binCode,String areaCode);
 
 

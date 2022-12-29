@@ -21,6 +21,7 @@ import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -158,6 +159,7 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void cancel(String[] ssccNumbers) {
         List<String> ssccNumberList = Arrays.asList(ssccNumbers);
         if (CollectionUtils.isEmpty(ssccNumberList)) {
@@ -174,6 +176,17 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
         }
         manualTransferOrderList.stream().forEach(item -> item.setStatus(ManuTransStatusEnum.CANCEL.code()));
         updateBatchById(manualTransferOrderList);
+
+        LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.in(Stock::getSsccNumber, ssccNumberList);
+        stockQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        stockQueryWrapper.last("and total_stock=freeze_stock");
+        List<Stock> stockList = stockMapper.selectList(stockQueryWrapper);
+        stockList.stream().forEach(item -> {
+            item.setAvailableStock(item.getTotalStock());
+            item.setFreezeStock(DoubleMathUtil.doubleMathCalculation(item.getTotalStock(), item.getAvailableStock(), "-"));
+        });
+        stockService.updateBatchById(stockList);
 
     }
 

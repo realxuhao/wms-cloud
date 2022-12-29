@@ -45,7 +45,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import sun.plugin2.main.client.PrintBandDescriptor;
 
 import java.util.*;
 import java.util.stream.Collectors;
