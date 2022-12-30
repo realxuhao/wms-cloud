@@ -25,7 +25,10 @@ const wareShift = {
 	  const {data} = await wareShiftService.allocateBin(barCode)
 	  return data
 	},
-	
+	async getReturnMaterialList({commit},options){
+		const {data} = await wareShiftService.getReturnMaterialList(options)
+		return data
+	}
   }
 }
 

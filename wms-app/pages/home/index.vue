@@ -33,7 +33,7 @@
 						<uni-icons custom-prefix="iconfont" class="icon icon-purchasereceipt" type="icon-purchasereceipt" color="#069314"></uni-icons>
 						<view class="text">生产收料</view>
 					</view>
-					<view class="list-item" @click="handleGoto('/pages/wareTransshipment/binIn')">
+					<view class="list-item" @click="handleGoto('/pages/wareShift/cancellingStocks')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-chejiantuiliaojiaojie" type="icon-chejiantuiliao" color="#ED1820"></uni-icons>
 						<view class="text">产线退料</view>
 					</view>

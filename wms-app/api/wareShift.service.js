@@ -43,9 +43,22 @@ const allocateBin = async (barCode) => {
   })
 }
 
+const getReturnMaterialList = async (data) => {
+  const url = `/binin/returnMaterial/list`
+  const method = 'POST'
+
+  return request({
+    url,
+    method,
+	data
+  })
+}
+
+
 export const wareShiftService = {
   getList,
   binDown,
   getWaitingBinIn,
-  allocateBin
+  allocateBin,
+  getReturnMaterialList
 }

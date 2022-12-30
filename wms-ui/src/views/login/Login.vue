@@ -187,9 +187,9 @@ export default {
 .main{
   width: 380px;
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  right: 240px;
+  top: 140px;
+  transform: translateX(-50%);
+  left: 50%;
 }
 
 .header{
