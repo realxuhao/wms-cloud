@@ -10,6 +10,12 @@ const getList = async (parameter) => {
   return data
 }
 
+const addWareShift = async (options) => {
+  const url = '/ware-shift/add'
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
+  return data
+}
 export const wareShiftService = {
-  getList
+  getList,
+  addWareShift
 }

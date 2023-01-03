@@ -66,7 +66,6 @@
       <div class="action-content">
         <a-button
           type="primary"
-          :loading="confirmMaterialLoading"
           @click="handleAddWareShift"
         >新增移库单</a-button>
 
@@ -104,10 +103,6 @@
     </div>
     <StockList
       v-model="stockListVisible"
-      :orderNb="currentOrderNb"
-      :cell="currentCell"
-      :materialNb="currentMaterialNb"
-      :notQuantity="notQuantity"
       @on-ok="loadTableList"
     ></StockList>
 

@@ -144,13 +144,20 @@ export const asyncRouterMap = [
         name: 'stock',
         component: RouteView,
         redirect: '/bin-in/list',
-        meta: { title: '库存管理', icon: 'hdd', permission: [] },
+        meta: { title: '库内管理', icon: 'hdd', permission: [] },
         children: [
           {
             path: '/stock/list',
             name: 'stockList',
             component: () => import('@/views/stock/Stock'),
             meta: { title: '库存查询', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/manual-trans/list',
+            name: 'transList',
+            component: () => import('@/views/manualTrans/transList'),
+            meta: { title: '转储任务列表', permission: [] },
             hideChildrenInMenu: true
           }
         ]
@@ -193,23 +200,23 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           }
         ]
-      },
-      {
-        path: '/manual-trans',
-        name: 'manualTrans',
-        component: RouteView,
-        redirect: '/manual-trans/list',
-        meta: { title: '库内管理', icon: 'hdd', permission: [] },
-        children: [
-          {
-            path: '/manual-trans/list',
-            name: 'transList',
-            component: () => import('@/views/manualTrans/transList'),
-            meta: { title: '转储任务列表', permission: [] },
-            hideChildrenInMenu: true
-          }
-        ]
       }
+      // {
+      //   path: '/manual-trans',
+      //   name: 'manualTrans',
+      //   component: RouteView,
+      //   redirect: '/manual-trans/list',
+      //   meta: { title: '库内管理', icon: 'hdd', permission: [] },
+      //   children: [
+      //     {
+      //       path: '/manual-trans/list',
+      //       name: 'transList',
+      //       component: () => import('@/views/manualTrans/transList'),
+      //       meta: { title: '转储任务列表', permission: [] },
+      //       hideChildrenInMenu: true
+      //     }
+      //   ]
+      // }
       // account
       // {
       //   path: '/account',

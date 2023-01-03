@@ -22,15 +22,18 @@ const wareShift = {
   // }
   actions: {
     async getList ({ commit }, options) {
-      console.log('1wwq1')
       const { data: { rows } } = await wareShiftService.getList({ ...options, pageSize: 0 })
       return rows
     },
     async getPaginationList ({ commit }, options) {
-      console.log('111')
       const data = await wareShiftService.getList(options)
       return data
+    },
+    async addWareShift ({ commit }, options) {
+      const data = await wareShiftService.addWareShift(options)
+      return data
     }
+
   }
 }
 
