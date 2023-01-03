@@ -41,4 +41,6 @@ public interface IWareShiftService extends IService<WareShift> {
     WareShift getWareShiftBySsccAndStatus(String sscc);
 
     List<WareShift> getListBySSCC(List<String> ssccs);
+
+    Boolean add(AddShiftTaskDTO dto);
 }

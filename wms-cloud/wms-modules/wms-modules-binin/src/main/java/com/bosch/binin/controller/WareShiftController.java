@@ -41,6 +41,14 @@ public class WareShiftController extends BaseController {
     @Autowired
     private IWareShiftService shiftService;
 
+
+    @PostMapping(value = "/add")
+    @ApiOperation("新增移库任务")
+    @Transactional(rollbackFor = Exception.class)
+    public R<Boolean> add(@RequestBody AddShiftTaskDTO dto) {
+        return R.ok(shiftService.add(dto));
+    }
+
     @PostMapping(value = "/addShiftTask")
     @ApiOperation("外库新增需求接口")
     @Transactional(rollbackFor = Exception.class)

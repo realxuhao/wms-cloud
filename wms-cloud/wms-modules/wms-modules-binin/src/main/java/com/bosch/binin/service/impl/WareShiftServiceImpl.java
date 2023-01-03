@@ -21,6 +21,7 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -112,7 +113,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             throw new ServiceException("该SSCC码 " + ssccNb + " 不存在移库任务");
         }
         if (!KanbanStatusEnum.WAITING_BIN_DOWN.value().equals(wareShift.getStatus())) {
-            throw new ServiceException("该SSCC码 " + ssccNb + "对应任务状态为: "+KanbanStatusEnum.getDesc(String.valueOf(wareShift.getStatus()))+" 不可下架 ");
+            throw new ServiceException("该SSCC码 " + ssccNb + "对应任务状态为: " + KanbanStatusEnum.getDesc(String.valueOf(wareShift.getStatus())) + " 不可下架 ");
 
         }
 
@@ -151,7 +152,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             throw new ServiceException("该SSCC码 " + sscc + " 不存在移库任务");
         }
         if (!KanbanStatusEnum.INNER_BIN_IN.value().equals(wareShift.getStatus())) {
-            throw new ServiceException("该SSCC码 " + sscc + "对应任务状态为: "+KanbanStatusEnum.getDesc(String.valueOf(wareShift.getStatus()))+" 不可分配库位 ");
+            throw new ServiceException("该SSCC码 " + sscc + "对应任务状态为: " + KanbanStatusEnum.getDesc(String.valueOf(wareShift.getStatus())) + " 不可分配库位 ");
 
         }
         //分配库位信息
@@ -244,6 +245,46 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         qw.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<WareShift> wareShifts = wareShiftMapper.selectList(qw);
         return wareShifts;
+    }
+
+    @Override
+    public Boolean add(AddShiftTaskDTO dto) {
+        List<String> ssccNbList = dto.getSsccNbList();
+        String targetPlantNb = dto.getTargetPlantNb();
+        String targetWareCode = dto.getTargetWareCode();
+        List<WareShift> wareShiftList = new ArrayList<>();
+        LambdaQueryWrapper<Stock> stockQw = new LambdaQueryWrapper<>();
+        stockQw.in(Stock::getSsccNumber, ssccNbList);
+        stockQw.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        stockQw.eq(Stock::getFreezeStock, Double.valueOf(0));
+        List<Stock> stockList = stockService.list(stockQw);
+        if (CollectionUtils.isEmpty(stockList) || stockList.size() != ssccNbList.size()) {
+            throw new ServiceException("库存数据过期，请刷新后重试");
+        }
+        stockList.stream().forEach(item -> {
+            if (targetWareCode.equals(item.getWareCode())) {
+                throw new ServiceException("目的仓库不能属于源仓库");
+            }
+            WareShift wareShift = new WareShift();
+            wareShift.setSourcePlantNb(item.getPlantNb());
+            wareShift.setSourceWareCode(item.getWareCode());
+            wareShift.setSourceAreaCode(item.getAreaCode());
+            wareShift.setSourceBinCode(item.getBinCode());
+            wareShift.setMoveType(MoveTypeEnums.WARE_SHIFT.getCode());
+            wareShift.setSsccNb(item.getSsccNumber());
+            wareShift.setMaterialNb(item.getMaterialNb());
+            wareShift.setBatchNb(item.getBatchNb());
+            wareShift.setExpireDate(item.getExpireDate());
+            wareShift.setTargetPlant(targetPlantNb);
+            wareShift.setTargetWareCode(targetWareCode);
+            wareShift.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
+            wareShiftList.add(wareShift);
+
+            item.setFreezeStock(item.getTotalStock());
+            item.setAvailableStock(DoubleMathUtil.doubleMathCalculation(item.getTotalStock(), item.getAvailableStock(), "-"));
+        });
+        stockService.updateBatchById(stockList);
+        return saveBatch(wareShiftList);
     }
 
     @Override
