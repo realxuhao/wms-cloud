@@ -10,12 +10,12 @@ import lombok.Data;
  * @create: 2022-12-21 16:53
  **/
 @Data
-public class ManualTransBinInDTO {
+public class ManualBinInDTO {
 
     @ApiModelProperty(value = "mesBarCode")
     private String mesBarCode;
 
-    @ApiModelProperty(value = "实际库位编码")
+    @ApiModelProperty(value = "实际库位/区域编码")
     private String actualCode;
 
     @ApiModelProperty(value = "实物托盘编码")

@@ -2,6 +2,12 @@ package com.bosch.binin.mapper;
 
 import com.bosch.binin.api.domain.MaterialReturn;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bosch.binin.api.domain.dto.MaterialReturnQueryDTO;
+import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
+import com.bosch.binin.api.domain.vo.MaterialReturnVO;
+import com.bosch.binin.api.domain.vo.WareShiftVO;
+
+import java.util.List;
 
 /**
 * @author GUZ1CGD4
@@ -10,6 +16,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.bosch.binin.api.domain.MaterialReturn
 */
 public interface MaterialReturnMapper extends BaseMapper<MaterialReturn> {
+
+    List<MaterialReturnVO> list(MaterialReturnQueryDTO queryDTO);
+
 
 }
 

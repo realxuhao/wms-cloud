@@ -35,7 +35,7 @@ public interface IBinInService extends IService<BinIn> {
      * @param areaCode
      * @return
      */
-    BinInVO allocateToBinOrArea(String ssccNb,String materialCode,String binCode,String areaCode);
+    BinInVO allocateToBinOrArea(String ssccNb,String materialCode,String binCode,String areaCode,Double quantity);
 
 
     List<BinInVO> currentUserData(BinInQueryDTO queryDTO);

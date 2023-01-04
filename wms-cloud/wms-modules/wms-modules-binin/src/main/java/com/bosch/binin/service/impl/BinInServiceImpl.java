@@ -464,6 +464,10 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         Double quantity = Double.valueOf(MesBarCodeUtil.getQuantity(mesBarCode));
         String batchNb = MesBarCodeUtil.getBatchNb(mesBarCode);
+        BinInVO vo = getByMesBarCode(mesBarCode);
+        if (!Objects.isNull(vo)){
+            return vo;
+        }
         R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
         if (StringUtils.isNull(materialBinVOResullt) || CollectionUtils.isEmpty(materialBinVOResullt.getData())) {
             throw new ServiceException("该物料：" + materialNb + " 分配规则有误");
@@ -519,7 +523,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     }
 
     @Override
-    public BinInVO allocateToBinOrArea(String ssccNb, String materialCode, String binCode, String areaCode) {
+    public BinInVO allocateToBinOrArea(String ssccNb, String materialCode, String binCode, String areaCode,Double quantity) {
         BinInVO binInVO = binInMapper.selectBySsccNumber(ssccNb);
         if (binInVO != null) {
             return binInVO;
@@ -529,7 +533,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         String materialNb = oldStock.getMaterialNb();
         MaterialVO materialVO = getMaterialVOByCode(materialNb);
 
-        String mesBarCode = MesBarCodeUtil.generateMesBarCode(oldStock.getExpireDate(), sscc, materialNb, oldStock.getBatchNb(), oldStock.getTotalStock());
+        quantity=Objects.isNull(quantity)?oldStock.getTotalStock():quantity;
+
+        String mesBarCode = MesBarCodeUtil.generateMesBarCode(oldStock.getExpireDate(), sscc, materialNb, oldStock.getBatchNb(), quantity);
 
 
         if (Objects.isNull(oldStock)) {
@@ -548,7 +554,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         BinIn binIn = new BinIn();
         binIn.setSsccNumber(sscc);
-        binIn.setQuantity(oldStock.getTotalStock());
+        binIn.setQuantity(Double.valueOf(MesBarCodeUtil.getQuantity(mesBarCode)));
         binIn.setMaterialNb(materialNb);
         binIn.setBatchNb(oldStock.getBatchNb());
         binIn.setExpireDate(MesBarCodeUtil.getExpireDate(mesBarCode));

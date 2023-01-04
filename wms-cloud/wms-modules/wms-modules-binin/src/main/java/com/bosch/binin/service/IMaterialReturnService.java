@@ -3,7 +3,10 @@ package com.bosch.binin.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.bosch.binin.api.domain.MaterialReturn;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.binin.api.domain.dto.ManualBinInDTO;
 import com.bosch.binin.api.domain.dto.MaterialReturnDTO;
+import com.bosch.binin.api.domain.dto.MaterialReturnQueryDTO;
+import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.MaterialReturnVO;
 
 import java.util.List;
@@ -15,6 +18,13 @@ import java.util.List;
 */
 public interface IMaterialReturnService extends IService<MaterialReturn> {
 
-    IPage<MaterialReturnVO> getList(MaterialReturnDTO materialReturnDTO);
+    List<MaterialReturnVO> list(MaterialReturnQueryDTO queryDTO);
 
+    void issueJob(String[] ssccNumbers);
+
+    boolean addMaterialReturn(MaterialReturnDTO materialReturnDTO);
+
+    BinInVO allocateBin(String mesBarCode, String wareCode);
+
+    BinInVO performBinIn(ManualBinInDTO binInDTO);
 }

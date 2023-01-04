@@ -2,7 +2,7 @@ package com.bosch.binin.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import java.io.Serializable;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -24,7 +24,7 @@ public class MaterialReturn extends BaseEntity {
     /**
      * 料号
      */
-    private String materialCode;
+    private String materialNb;
 
     /**
      * SSCC码
@@ -44,7 +44,7 @@ public class MaterialReturn extends BaseEntity {
     /**
      * 数量
      */
-    private BigDecimal quantity;
+    private Double quantity;
 
     /**
      * 移动类型 （0： 收货，1：入库，2：上架，3：生产叫料）
@@ -58,14 +58,18 @@ public class MaterialReturn extends BaseEntity {
     private Integer status;
 
     /**
-     * 存储区id
-     */
-    private Long areaId;
-
-    /**
      * 存储区code
      */
     private String areaCode;
+
+    /**
+     * 仓库编码
+     */
+    private String wareCode;
+
+    private Date expireDate;
+
+    private String cell;
 
     /**
      * 删除标记1：删除，0:可用
@@ -88,7 +92,7 @@ public class MaterialReturn extends BaseEntity {
         }
         MaterialReturn other = (MaterialReturn) that;
         return (this.getId() == null ? other.getId() == null : this.getId().equals(other.getId()))
-            && (this.getMaterialCode() == null ? other.getMaterialCode() == null : this.getMaterialCode().equals(other.getMaterialCode()))
+            && (this.getMaterialNb() == null ? other.getMaterialNb() == null : this.getMaterialNb().equals(other.getMaterialNb()))
             && (this.getSsccNumber() == null ? other.getSsccNumber() == null : this.getSsccNumber().equals(other.getSsccNumber()))
             && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
             && (this.getQuantity() == null ? other.getQuantity() == null : this.getQuantity().equals(other.getQuantity()))
@@ -107,7 +111,7 @@ public class MaterialReturn extends BaseEntity {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((getId() == null) ? 0 : getId().hashCode());
-        result = prime * result + ((getMaterialCode() == null) ? 0 : getMaterialCode().hashCode());
+        result = prime * result + ((getMaterialNb() == null) ? 0 : getMaterialNb().hashCode());
         result = prime * result + ((getSsccNumber() == null) ? 0 : getSsccNumber().hashCode());
         result = prime * result + ((getType() == null) ? 0 : getType().hashCode());
         result = prime * result + ((getQuantity() == null) ? 0 : getQuantity().hashCode());
@@ -129,7 +133,7 @@ public class MaterialReturn extends BaseEntity {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", id=").append(id);
-        sb.append(", materialCode=").append(materialCode);
+        sb.append(", materialCode=").append(materialNb);
         sb.append(", ssccNumber=").append(ssccNumber);
         sb.append(", type=").append(type);
         sb.append(", quantity=").append(quantity);

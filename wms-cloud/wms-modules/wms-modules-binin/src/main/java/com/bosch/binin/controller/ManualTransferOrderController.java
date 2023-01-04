@@ -3,9 +3,7 @@ package com.bosch.binin.controller;
 import com.bosch.binin.api.domain.ManualTransferOrder;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
-import com.bosch.binin.api.domain.vo.ManuTransBinInVO;
 import com.bosch.binin.api.domain.vo.ManualTransferOrderVO;
-import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.service.IManualTransferOrderService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
@@ -101,7 +99,7 @@ public class ManualTransferOrderController extends BaseController {
 
     @PostMapping(value = "/in")
     @ApiOperation("转储单任务实际上架")
-    public R<BinInVO> in(@RequestBody ManualTransBinInDTO binInDTO) {
+    public R<BinInVO> in(@RequestBody ManualBinInDTO binInDTO) {
 
         return R.ok(manualTransferOrderService.performBinIn(binInDTO));
     }

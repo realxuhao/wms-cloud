@@ -3,10 +3,9 @@ package com.bosch.binin.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.ManualTransferOrder;
 import com.bosch.binin.api.domain.dto.AddManualTransDTO;
-import com.bosch.binin.api.domain.dto.ManualTransBinInDTO;
+import com.bosch.binin.api.domain.dto.ManualBinInDTO;
 import com.bosch.binin.api.domain.dto.ManualTransQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
-import com.bosch.binin.api.domain.vo.ManuTransBinInVO;
 import com.bosch.binin.api.domain.vo.ManualTransferOrderVO;
 
 import java.util.List;
@@ -32,7 +31,7 @@ public interface IManualTransferOrderService extends IService<ManualTransferOrde
     void binDown(String mesBarCode);
 
 
-    BinInVO performBinIn(ManualTransBinInDTO binInDTO);
+    BinInVO performBinIn(ManualBinInDTO binInDTO);
 
     ManualTransferOrder info(String mesBarCode);
 }

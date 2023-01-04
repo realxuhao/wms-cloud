@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.*;
 import com.bosch.binin.api.domain.dto.AddManualTransDTO;
-import com.bosch.binin.api.domain.dto.ManualTransBinInDTO;
+import com.bosch.binin.api.domain.dto.ManualBinInDTO;
 import com.bosch.binin.api.domain.dto.ManualTransQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.ManualTransferOrderVO;
@@ -128,7 +128,7 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
 //        if (manualTransferOrder.getType() == MaterialTransTypeEnum.NORMAL.code()) {
 //            binInService.allocateToBinOrArea(sscc, materialCode, manualTransferOrder.getTargetBinCode(), null);
 //        } else {
-        binInService.allocateToBinOrArea(sscc, materialCode, null, manualTransferOrder.getTargetAreaCode());
+        binInService.allocateToBinOrArea(sscc, materialCode, null, manualTransferOrder.getTargetAreaCode(),null);
 //        }
         return binInService.getByMesBarCode(mesBarCode);
     }
@@ -217,7 +217,7 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
     }
 
     @Override
-    public BinInVO performBinIn(ManualTransBinInDTO binInDTO) {
+    public BinInVO performBinIn(ManualBinInDTO binInDTO) {
         String mesBarCode = binInDTO.getMesBarCode();
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);

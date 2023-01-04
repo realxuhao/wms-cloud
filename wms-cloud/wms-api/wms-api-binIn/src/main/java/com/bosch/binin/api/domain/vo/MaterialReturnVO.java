@@ -12,19 +12,26 @@ public class MaterialReturnVO {
     /**
      * 主键id
      */
-    @ApiModelProperty(value = "备注")
+    @ApiModelProperty(value = "id")
     private Long id;
 
     /**
      * 料号
      */
-    @ApiModelProperty(value = "备注")
-    private String materialCode;
+    @ApiModelProperty(value = "物料号")
+    private String materialNb;
+
+
+    /**
+     * 料号
+     */
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
 
     /**
      * SSCC码
      */
-    @ApiModelProperty(value = "备注")
+    @ApiModelProperty(value = "SSCC")
     private String ssccNumber;
 
 
@@ -33,22 +40,33 @@ public class MaterialReturnVO {
      */
     @ApiModelProperty(value = "批次号")
     private String batchNb;
+
     /**
      * 退库类型 (0：正常退库,1：异常退库)
      */
-    @ApiModelProperty(value = "备注")
+    @ApiModelProperty(value = "退库类型 (0：正常退库,1：异常退库)")
     private Integer type;
+
+
+    /**
+     * 仓库编码
+     */
+    @ApiModelProperty(value = "仓库编码")
+    private String wareCode;
+
+    @ApiModelProperty(value = "过期时间")
+    private Date expireDate;
 
     /**
      * 数量
      */
-    @ApiModelProperty(value = "备注")
+    @ApiModelProperty(value = "数量")
     private BigDecimal quantity;
 
     /**
      * 移动类型 （0： 收货，1：入库，2：上架，3：生产叫料）
      */
-    @ApiModelProperty(value = "备注")
+    @ApiModelProperty(value = " 移动类型 （0： 收货，1：入库，2：上架，3：生产叫料）")
     private String moveType;
 
     /**
@@ -57,11 +75,6 @@ public class MaterialReturnVO {
      */
     @ApiModelProperty(value = "备注")
     private Integer status;
-    /**
-     * 存储区id
-     */
-    @ApiModelProperty(value = "areaId")
-    private Long areaId;
 
     /**
      * 存储区code
