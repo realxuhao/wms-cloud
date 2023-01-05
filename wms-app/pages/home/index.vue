@@ -108,7 +108,8 @@
 		methods:{
 			async loadPlantList(){
 				const data = await this.$store.dispatch('plant/getList')
-				const plantList = _.uniqBy(data,['factoryCode'])
+				const plantList = _.uniqBy(data,'factoryCode')
+				console.log(plantList)
 				const list = []
 				_.each(plantList,(plant,index)=>{
 					const plantIndex = index+1

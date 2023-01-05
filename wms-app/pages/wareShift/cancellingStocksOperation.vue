@@ -215,7 +215,7 @@
 				const data = await this.$store.dispatch('plant/getList')
 				this.plantList = data
 				
-				const uniqList = _.uniqBy(data,['factoryCode'])
+				const uniqList = _.uniqBy(data,'factoryCode')
 				const list = []
 				_.each(uniqList,(plant,index)=>{
 					const plantIndex = index+1
