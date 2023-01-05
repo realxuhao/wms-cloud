@@ -80,6 +80,7 @@
 
 
 .custom-input{
+	width: 100%;
 	display: flex;
 	box-sizing: border-box;
 	flex-direction: row;
@@ -122,4 +123,9 @@
 	.label{
 		width: 72px;
 	}
+}
+
+
+.width100{
+	width: 100%;
 }

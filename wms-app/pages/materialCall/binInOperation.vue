@@ -33,7 +33,7 @@
 				</view>
 			
 				<uni-popup ref="popup" :is-mask-click="false">
-					<uni-popup-dialog before-close type="warn" cancelText="返回" confirmText="上架" title="已提交"  @confirm="handleGotoBinInOperation"
+					<uni-popup-dialog before-close type="info" cancelText="返回" confirmText="上架" title="已提交"  @confirm="handleGotoBinInOperation"
 					@close="handleGoBack">
 					<view>
 						拆托完成！

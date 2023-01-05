@@ -6,7 +6,7 @@
 			</view>
 			<Message ref="message"></Message>
 			<uni-popup ref="distributionLine" type="dialog">
-				<uni-popup-dialog before-close type="warn" cancelText="上架" confirmText="配送产线" title="是否配送产线？"  @confirm="handleToLine"
+				<uni-popup-dialog before-close type="info" cancelText="上架" confirmText="配送产线" title="是否配送产线？"  @confirm="handleToLine"
 				@close="handleGoto">
 				<view>
 					<view class="text-align m-b-4">

@@ -1,6 +1,6 @@
 <template>
 	<my-page nav-title="扫描SSCC码" :shadow="false" :border="false">
-			<view class="content" slot="page-main" @click="handleGoto">
+			<view class="content" slot="page-main">
 				<image src="/static/sku-phone.png" class="m-b-8"></image>
 				<text>请将激光扫描头对准SSCC码区域</text>
 			</view>
@@ -24,7 +24,7 @@
 		},
 		data() {
 			return {
-				code:'1232132111111111111111',
+				code:'',
 			};
 		},
 		methods:{

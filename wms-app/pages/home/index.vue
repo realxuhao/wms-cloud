@@ -110,7 +110,7 @@
 		data(){
 			return {
 				dataTree:[],
-				plantName:''
+				plantName:'',
 			}
 		},
 		computed:{
@@ -135,6 +135,7 @@
 				
 				this.dataTree = list
 			},
+
 			handleGoto(url){
 				if(!this.plantName){
 					uni.showToast({

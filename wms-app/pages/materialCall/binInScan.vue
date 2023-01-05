@@ -6,7 +6,7 @@
 			</view>
 			<Message ref="message"></Message>
 			<uni-popup ref="distributionLocation" type="dialog">
-				<uni-popup-dialog before-close type="warn" cancelText="继续扫描" confirmText="上架" title="通知"  @confirm="handleGotoBinInOperation"
+				<uni-popup-dialog before-close type="info" cancelText="继续扫描" confirmText="上架" title="通知"  @confirm="handleGotoBinInOperation"
 				@close="handleDialogClose">
 				<view class="text-align">
 					<text class="label m-r-8">推荐库位:</text><text>{{info.recommendBinCode}}</text>
@@ -15,7 +15,7 @@
 			</uni-popup>
 			
 			<uni-popup ref="distributionLine" type="dialog">
-				<uni-popup-dialog before-close type="warn" cancelText="分配库位" confirmText="配送产线" title="是否配送产线？"  @confirm="handleToLine"
+				<uni-popup-dialog before-close type="info" cancelText="分配库位" confirmText="配送产线" title="是否配送产线？"  @confirm="handleToLine"
 				@close="handleToAllocateBinIn">
 				<view>
 					<view class="text-align m-b-4">

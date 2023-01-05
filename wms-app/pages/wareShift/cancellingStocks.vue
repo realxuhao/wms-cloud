@@ -11,7 +11,7 @@
 				<view class="text">确认</view>
 			</view>
 			<view class="list-item" >
-				<uni-icons custom-prefix="iconfont" class="icon icon-chejiantuiliaojiaojie" type="icon-chejiantuiliao" color="#ED1820"></uni-icons>
+				<uni-icons custom-prefix="iconfont" @click="handleGoto('/pages/wareShift/cancellingStocksBinInScan')" class="icon icon-chejiantuiliaojiaojie" type="icon-chejiantuiliao" color="#ED1820"></uni-icons>
 				<view class="text">上架</view>
 			</view>
 		</view>

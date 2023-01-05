@@ -7,7 +7,7 @@
 			<Message ref="message"></Message>
 			
 			<uni-popup ref="submitPopup" type="dialog">
-				<uni-popup-dialog before-close type="warn" cancelText="取消" confirmText="确认" title="是否确认下架?"  @confirm="handleBinDown"
+				<uni-popup-dialog before-close type="info" cancelText="取消" confirmText="确认" title="是否确认下架?"  @confirm="handleBinDown"
 				@close="handleCancel">
 				<view>
 					<view class="text-align m-b-4">

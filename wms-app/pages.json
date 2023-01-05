@@ -97,8 +97,18 @@
 			"path": "pages/wareShift/cancellingStocksOperation"
 		},
 		{
-			"path": "pages/wareShift/cancellingStocksConfirm"
+			"path": "pages/wareShift/cancellingStocksConfirm",
+			"style": {
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/wareShift/cancellingStocksBinInScan"
+		},
+		{
+			"path": "pages/wareShift/cancellingStocksBinInOperator"
 		}
+		
 	],
 	"globalStyle": {
 		"navigationStyle": "custom"

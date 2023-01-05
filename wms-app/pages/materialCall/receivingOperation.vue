@@ -24,7 +24,7 @@
 	  </view>
 	  <Message ref="message"></Message>
 	  <uni-popup ref="popup" type="dialog">
-	  	<uni-popup-dialog before-close type="warn" cancelText="取消" confirmText="确认" title="确定删除吗?"  @confirm="handleConfirmDelete"
+	  	<uni-popup-dialog before-close type="info" cancelText="取消" confirmText="确认" title="确定删除吗?"  @confirm="handleConfirmDelete"
 	  	@close="$refs.popup.close()">
 	  	</uni-popup-dialog>
 	  </uni-popup>

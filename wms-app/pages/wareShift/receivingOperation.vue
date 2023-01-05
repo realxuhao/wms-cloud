@@ -37,7 +37,7 @@
 		  </view>
 	  </view>
 	  <uni-popup ref="popup" type="dialog">
-	  	<uni-popup-dialog type="warn" title="是否确认收货?" :before-close="true" @close="$refs.popup.close()" @confirm="handleSubmit">
+	  	<uni-popup-dialog type="info" title="提示" content="请确认提交" @close="$refs.popup.close()" @confirm="handleSubmit">
 			<!-- <view class="header">已选择&nbsp;<text class="active">{{hasCheckedItems}}</text>&nbsp;托</view> -->
 		</uni-popup-dialog>
 	  </uni-popup>
