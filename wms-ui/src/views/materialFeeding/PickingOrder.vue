@@ -457,6 +457,7 @@ export default {
         } = await this.$store.dispatch('materialFeeding/getPickingOrderList', options)
         this.list = rows
         this.paginationTotal = total
+        this.selectedRowKeys = []
       } catch (error) {
         this.$message.error(error.message)
       } finally {
