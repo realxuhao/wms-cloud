@@ -108,39 +108,36 @@ export default {
   }
 }
 
-.card {
-  // box-shadow: #888 0px 0px 3px 1px;
-  padding: 12px;
-  background: #fff;
-  border-radius: 4px;
-  margin-bottom: 4px;
-
-  .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-
-    .material-name {
-      color: $primary-color;
-      font-size: 14px;
-    }
-
-    .status {
-      font-size: 14px;
-      color: $uni-color-error;
-    }
-  }
-
-  .card-text {
-    font-size: 12px;
-    color: #999;
-  }
-
-  .sscc {
-    display: flex;
-    justify-content: space-between;
-  }
-}
+ .card {
+   padding: 12px;
+   background: #fff;
+   border-radius: 4px;
+   margin-bottom: 4px;
+   .card-header {
+     display: flex;
+     justify-content: space-between;
+     align-items: flex-start;
+     margin-bottom: 12px;
+     .material-name {
+       color: $primary-color;
+       font-size: 14px;
+ 	  flex: 1;
+     }
+     .status {
+ 	  display: inline-block;
+       font-size: 14px;
+       color: $uni-color-success;
+ 	  width: 44px;
+     }
+   }
+   .card-text {
+     font-size: 12px;
+     color: #999;
+   }
+   .sscc {
+     display: flex;
+     justify-content: space-between;
+   }
+ }
 
 </style>

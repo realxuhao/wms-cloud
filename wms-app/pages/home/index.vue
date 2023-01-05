@@ -11,7 +11,7 @@
 		</view>
 		
 		<view class="main">
-			<uni-section title="常用" type="line" class="m-b-12">
+			<uni-section title="采购原材料" type="line" class="m-b-12">
 				<view class="list header-box">
 					<view class="list-item" @click="handleGoto('/pages/materialIn/index')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-ruku" type="icon-ruku"></uni-icons>
@@ -70,23 +70,12 @@
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
 						<view class="text">移库上架</view>
 					</view>
-					
 				</view>
 			</uni-section>
 			
 			
 		</view>
-		
-		<!-- <view class="action-content">
-			<view class="text" @click="handleGoto('/pages/picking/picking')">拣配下架</view>
-			<view class="text" @click="handleGoto('/pages/receivingMaterial/receivingMaterial')">生产收料</view>
-			<view class="text" @click="handleGoto('/pages/wareTransshipment/shipment')">发运</view>
-			<view class="text" @click="handleGoto('/pages/wareTransshipment/receiving')">收货</view>
-			<view class="text" @click="handleGoto('/pages/wareTransshipment/binIn')">上架</view>
-			<view class="text" @click="handleGoto('/pages/wareShift/wareShift')">移库下架</view>
-		</view>
-		 -->
-		
+	
 		
 		<ScanCode></ScanCode>
 		<uni-data-picker
@@ -198,11 +187,11 @@
 		width: 100%;
 		padding: 12px 0;
 		display: flex;
-		justify-content: space-between;
+		justify-content: flex-start;
 		border-radius: 4px;
 		background: #fff;
 		.list-item{
-			flex: 1;
+			width: 25%;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;

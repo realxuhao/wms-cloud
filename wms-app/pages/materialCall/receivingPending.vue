@@ -120,7 +120,7 @@ export default {
   .card-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 12px;
 
     .material-name {
