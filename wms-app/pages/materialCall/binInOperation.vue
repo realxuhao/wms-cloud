@@ -16,11 +16,11 @@
 				<view class="content">		
 					<uni-forms  :label-width="80" ref="form" :rules="rules" :modelValue="form" label-position="left">
 						<uni-forms-item  label="拆托SSCC码" name="newMesBarCode" required >
-							<view class="flex flex-ai">
+							
 								<view class="custom-input" :class="editFieldName==='form.newMesBarCode'?'focus':''">
 									<text :class="!form.newMesBarCode?'placeholder-text':''">{{form.newMesBarCode||'请扫描拆托SSCC码'}}</text>
 								</view>
-							</view>
+							
 						</uni-forms-item>
 						<uni-forms-item label="实际拆托数量" name="splitQuantity" required>
 							<view class="custom-input" >

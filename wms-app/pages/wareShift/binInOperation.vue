@@ -42,11 +42,9 @@
 				<view class="content">		
 					<uni-forms  :label-width="80" ref="binInForm" :rules="binInFormRules" :modelValue="binInForm" label-position="left">
 						<uni-forms-item  v-if="!materialInfo.palletCode" label="托盘编码" name="palletTypeCode" required >
-							<view class="flex flex-ai width100">
 								<view class="custom-input" :class="editFieldName==='binInForm.palletTypeCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.palletTypeCode')">
 									<text :class="!binInForm.palletTypeCode?'placeholder-text':''">{{binInForm.palletTypeCode||'请扫描托盘编码'}}</text>
 								</view>
-							</view>
 						</uni-forms-item>
 						<uni-forms-item label="目标库位" name="recommendBinCode" required>
 							<view class="custom-input" :class="editFieldName==='binInForm.recommendBinCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.recommendBinCode')">

@@ -147,7 +147,7 @@ export default {
 	  display: inline-block;
       font-size: 14px;
       color: $uni-color-success;
-	  width: 44px;
+	  width: 65px;
     }
   }
   .card-text {
