@@ -21,6 +21,7 @@ import com.bosch.binin.service.IStockService;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
+import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
@@ -65,7 +66,7 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         LambdaQueryWrapper<MaterialReturn> materialReturnQueryWrapper = new LambdaQueryWrapper<>();
         materialReturnQueryWrapper.in(MaterialReturn::getSsccNumber, ssccList);
         materialReturnQueryWrapper.eq(MaterialReturn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        materialReturnQueryWrapper.eq(MaterialReturn::getStatus, MaterialReturnStatusEnum.WAITING_ISSUE.value());
+        materialReturnQueryWrapper.eq(MaterialReturn::getStatus, MaterialReturnStatusEnum.WAITING_CONFIRM.value());
         List<MaterialReturn> materialReturnList = list(materialReturnQueryWrapper);
         if (CollectionUtils.isEmpty(materialReturnList) || materialReturnList.size() != ssccList.size()) {
             throw new ServiceException("退库数据过期，请刷新后重试");
@@ -93,9 +94,21 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         if (!Objects.isNull(stock)) {
             throw new ServiceException("该托已存在于库存中，暂时不能退料");
         }
+
+        LambdaQueryWrapper<MaterialReturn> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(MaterialReturn::getSsccNumber, MesBarCodeUtil.getSSCC(mesBarCode));
+        queryWrapper.eq(MaterialReturn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.ne(MaterialReturn::getStatus, MaterialReturnStatusEnum.CANCEL.value());
+        queryWrapper.ne(MaterialReturn::getStatus, MaterialReturnStatusEnum.FINISH.value());
+        queryWrapper.last("limit 1");
+        MaterialReturn materialReturnDO = materialReturnMapper.selectOne(queryWrapper);
+        if (materialReturnDO != null) {
+            throw new ServiceException("该mesbarcode" + mesBarCode + "已有退料任务，不可重复添加");
+        }
+
         MaterialReturn materialReturn = new MaterialReturn();
         materialReturn.setMaterialNb(MesBarCodeUtil.getMaterialNb(mesBarCode));
-        materialReturn.setStatus(MaterialReturnStatusEnum.WAITING_ISSUE.value());
+        materialReturn.setStatus(MaterialReturnStatusEnum.WAITING_CONFIRM.value());
         materialReturn.setBatchNb(MesBarCodeUtil.getBatchNb(mesBarCode));
         materialReturn.setExpireDate(MesBarCodeUtil.getExpireDate(mesBarCode));
         materialReturn.setMoveType(MoveTypeEnums.MATERIAL_RETURN.getCode());
@@ -127,11 +140,12 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
 
         }
         BinInVO binInVO = null;
+        String barCode = MesBarCodeUtil.generateMesBarCode(MesBarCodeUtil.getExpireDate(mesBarCode), sscc, materialReturn.getMaterialNb(), materialReturn.getBatchNb(), materialReturn.getQuantity());
+
         if (materialReturn.getType() == 0) {//正常退料分配到库位
-            String barCode = MesBarCodeUtil.generateMesBarCode(MesBarCodeUtil.getExpireDate(mesBarCode), sscc, materialReturn.getMaterialNb(), materialReturn.getBatchNb(), materialReturn.getQuantity());
-            binInVO = binInService.generateInTaskByMesBarCode(mesBarCode);
+            binInVO = binInService.allocateToBin(barCode);
         } else if (materialReturn.getType() == 1) {//异常退料分配到存储区
-            binInVO = binInService.allocateToBinOrArea(sscc, materialReturn.getMaterialNb(), null, materialReturn.getAreaCode(), materialReturn.getQuantity());
+            binInVO = binInService.allocateToBinOrArea(barCode,null,materialReturn.getAreaCode());
         }
 
         return binInVO;
@@ -180,11 +194,35 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
                 binIn.setPalletCode(binInDTO.getPalletCode());
             }
             binInService.updateById(binIn);
+            //插入库存
+            Stock stock = new Stock();
+            stock.setPlantNb(binIn.getPlantNb());
+            stock.setWareCode(binIn.getWareCode());
+            stock.setSsccNumber(binIn.getSsccNumber());
+            stock.setWareCode(binIn.getWareCode());
+            stock.setBinCode(binIn.getActualBinCode());
+            stock.setFrameCode(binIn.getActualFrameCode());
+            stock.setMaterialNb(binIn.getMaterialNb());
+            stock.setBatchNb(binIn.getBatchNb());
+            stock.setExpireDate(binIn.getExpireDate());
+            stock.setTotalStock(binIn.getQuantity());
+            stock.setFreezeStock(Double.valueOf(0));
+            stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
+            stock.setBinInId(binIn.getId());
+            stock.setCreateBy(SecurityUtils.getUsername());
+            stock.setCreateTime(new Date());
+            stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+            stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
+            stock.setAreaCode(binIn.getAreaCode());
+            stock.setPalletCode(binIn.getPalletCode());
+            stockService.save(stock);
+
+
         } else {
             BinInDTO dto = new BinInDTO();
             dto.setActualBinCode(binInDTO.getActualCode());
             dto.setPalletCode(binInDTO.getPalletCode());
-            dto.setMesBarCode(dto.getMesBarCode());
+            dto.setMesBarCode(binInDTO.getMesBarCode());
             BinInVO binInVO = binInService.performBinIn(dto);
         }
         return binInService.getByMesBarCode(binInDTO.getMesBarCode());

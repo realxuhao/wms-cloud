@@ -100,6 +100,9 @@ public class BinInVO {
     @ApiModelProperty(value = "托盘编码")
     private String palletCode;
 
+    @ApiModelProperty(value = "区域编码")
+    private String areaCode;
+
     /**
      * 托盘类型
      */

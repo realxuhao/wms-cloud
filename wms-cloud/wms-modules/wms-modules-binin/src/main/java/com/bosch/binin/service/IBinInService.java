@@ -25,23 +25,29 @@ public interface IBinInService extends IService<BinIn> {
 
     BinInVO getByMesBarCode(String mesBarCode);
 
+    BinInVO allocateToBin(String mesBarCode);
+
     BinInVO generateInTaskByMesBarCode(String mesBarCode);
 
     /**
-     *分配到具体的区域或者库位，如果是分配到库位，那么areaCode为null
+     * 分配到具体的区域或者库位，如果是分配到库位，那么areaCode为null
+     *
      * @param ssccNb
      * @param materialCode
      * @param binCode
      * @param areaCode
      * @return
      */
-    BinInVO allocateToBinOrArea(String ssccNb,String materialCode,String binCode,String areaCode,Double quantity);
+    BinInVO allocateToBinOrArea(String ssccNb, String materialCode, String binCode, String areaCode, Double quantity);
+
+    BinInVO allocateToBinOrArea(String mesBarCode, String binCode, String areaCode);
 
 
     List<BinInVO> currentUserData(BinInQueryDTO queryDTO);
 
     /**
      * 根据历史库存信息，生成新的上架任务（数量变化）
+     *
      * @param ssccNumber
      * @param quantity
      * @return

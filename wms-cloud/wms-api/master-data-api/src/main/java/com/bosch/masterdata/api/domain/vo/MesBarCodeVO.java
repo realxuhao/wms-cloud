@@ -21,6 +21,5 @@ public class MesBarCodeVO {
     private String batchNb;
     private Double quantity;
     private String materialName;
-
     private String unit;
 }
