@@ -190,6 +190,76 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         return binInMapper.selectBySsccNumber(sscc);
     }
 
+    @Override
+    public BinInVO allocateToBin(String mesBarCode) {
+        String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+
+        BinInVO binInVO = binInMapper.selectBySsccNumber(sscc);
+        if (binInVO != null) {
+            return binInVO;
+        }
+
+        String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
+        String batchNb = MesBarCodeUtil.getBatchNb(mesBarCode);
+        MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
+
+        if (binInVO == null) {
+            R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
+            if (StringUtils.isNull(materialBinVOResullt) || CollectionUtils.isEmpty(materialBinVOResullt.getData())) {
+                throw new ServiceException("该物料：" + materialNb + " 分配规则有误");
+            }
+
+            if (R.FAIL == materialBinVOResullt.getCode()) {
+                throw new ServiceException(materialBinVOResullt.getMsg());
+            }
+
+            BinAllocationDTO allocationDTO = new BinAllocationDTO();
+            allocationDTO.setMesBarCode(mesBarCode);
+            //获取托盘
+            allocationDTO.setPalletType(materialVO.getPalletType());
+            allocationDTO.setWareCode(SecurityUtils.getWareCode());
+
+            //获取托盘详情
+            R<Pallet> palletR = remotePalletService.getByType(materialVO.getPalletType());
+            if (!palletR.isSuccess()) {
+                throw new ServiceException("获取托盘详情失败");
+            }
+            Pallet pallet = palletR.getData();
+            if (pallet == null) {
+                throw new ServiceException("未获取到托盘数据");
+            }
+
+
+            BinAllocationVO binAllocationVO = binAssignmentService.getBinAllocationVO(allocationDTO);
+
+            BinVO binVO = getBinVOByBinCode(binAllocationVO.getRecommendBinCode());
+
+
+            BinIn binIn = new BinIn();
+            binIn.setSsccNumber(sscc);
+            binIn.setQuantity(Double.valueOf(MesBarCodeUtil.getQuantity(mesBarCode)));
+            binIn.setMaterialNb(materialNb);
+            binIn.setBatchNb(batchNb);
+            binIn.setExpireDate(MesBarCodeUtil.getExpireDate(mesBarCode));
+            binIn.setPalletType(materialVO.getPalletType());
+            //设置托盘编码,虚拟托盘直接分配编码
+            binIn.setPalletCode(pallet.getIsVirtual().equals(1) ? "V-" + pallet.getVirtualPrefixCode() + "-" + System.currentTimeMillis() : null);
+            binIn.setRecommendBinCode(binAllocationVO.getRecommendBinCode());
+            binIn.setStatus(BinInStatusEnum.PROCESSING.value());
+            binIn.setRecommendFrameId(binVO.getFrameId());
+            binIn.setRecommendFrameCode(binVO.getFrameCode());
+            binIn.setWareCode(SecurityUtils.getWareCode());
+
+            binIn.setMoveType(MoveTypeEnums.BININ.getCode());
+//            binIn.setFromPurchaseOrder(materialInVO.getFromPurchaseOrder());
+//            binIn.setPlantNb(materialInVO.getPlantNb());
+            binInMapper.insert(binIn);
+        }
+
+
+        return binInMapper.selectBySsccNumber(sscc);
+    }
+
     private MaterialVO getMaterialVOByCode(String materialNb) {
         R<MaterialVO> materialVORes = remoteMaterialService.getInfoByMaterialCode(materialNb);
         if (StringUtils.isNull(materialVORes) || Objects.isNull(materialVORes.getData())) {
@@ -530,7 +600,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         }
         StockVO oldStock = stockService.getOneBySSCC(ssccNb);
         String sscc = ssccNb;
-        String materialNb = oldStock.getMaterialNb();
+        String materialNb = materialCode;
         MaterialVO materialVO = getMaterialVOByCode(materialNb);
 
         quantity=Objects.isNull(quantity)?oldStock.getTotalStock():quantity;
@@ -583,6 +653,56 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binInMapper.insert(binIn);
 
         return binInMapper.selectBySsccNumber(sscc);
+    }
+
+    @Override
+    public BinInVO allocateToBinOrArea(String mesBarCode, String binCode, String areaCode) {
+        String ssccNb=MesBarCodeUtil.getSSCC(mesBarCode);
+        BinInVO binInVO = binInMapper.selectBySsccNumber(ssccNb);
+        if (binInVO != null) {
+            return binInVO;
+        }
+        MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
+        //获取托盘详情
+        R<Pallet> palletR = remotePalletService.getByType(materialVO.getPalletType());
+        if (!palletR.isSuccess()) {
+            throw new ServiceException("获取托盘详情失败");
+        }
+        Pallet pallet = palletR.getData();
+        if (pallet == null) {
+            throw new ServiceException("未获取到托盘数据");
+        }
+
+        BinIn binIn = new BinIn();
+        binIn.setSsccNumber(ssccNb);
+        binIn.setQuantity(Double.valueOf(MesBarCodeUtil.getQuantity(mesBarCode)));
+        binIn.setMaterialNb(MesBarCodeUtil.getMaterialNb(mesBarCode));
+        binIn.setBatchNb(MesBarCodeUtil.getBatchNb(mesBarCode));
+        binIn.setExpireDate(MesBarCodeUtil.getExpireDate(mesBarCode));
+        binIn.setPalletType(materialVO.getPalletType());
+        //设置托盘编码,虚拟托盘直接分配编码
+        binIn.setPalletCode(pallet.getIsVirtual().equals(1) ? "V-" + pallet.getVirtualPrefixCode() + "-" + System.currentTimeMillis() : null);
+
+        if (StringUtils.isNotEmpty(binCode)) {
+            BinVO binVO = getBinVOByBinCode(binCode);
+
+            binIn.setRecommendBinCode(binCode);
+            binIn.setRecommendFrameId(binVO.getFrameId());
+            binIn.setRecommendFrameCode(binVO.getFrameCode());
+            binIn.setAreaCode(binVO.getAreaCode());
+        }else {
+            binIn.setAreaCode(areaCode);
+        }
+
+
+        binIn.setWareCode(SecurityUtils.getWareCode());
+
+        binIn.setStatus(BinInStatusEnum.PROCESSING.value());
+        binIn.setMoveType(MoveTypeEnums.SPLIT_IN.getCode());
+//        binIn.setFromPurchaseOrder(oldStock.getFromPurchaseOrder());
+//        binIn.setPlantNb(oldStock.getPlantNb());
+        binInMapper.insert(binIn);
+        return  binInMapper.selectBySsccNumber(ssccNb);
     }
 
     /**

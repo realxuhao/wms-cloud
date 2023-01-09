@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
+@Data
 public class MaterialReturnVO {
     /**
      * 主键id
@@ -73,7 +75,7 @@ public class MaterialReturnVO {
      * (-1,"取消退库")
      (0,"正常")
      */
-    @ApiModelProperty(value = "备注")
+    @ApiModelProperty(value = "-1:取消任务,0:待确认,1:待上架,2:完成")
     private Integer status;
 
     /**

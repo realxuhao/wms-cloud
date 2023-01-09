@@ -36,17 +36,17 @@ public class ReturnMaterialController extends BaseController {
     private IMaterialReturnService materialReturnService;
 
 
-    @PutMapping(value = "/issue/{ssccNumbers}")
-    @ApiOperation("批量下发退库任务接口")
+    @PutMapping(value = "/confirm/{ssccNumbers}")
+    @ApiOperation("批量确认退库任务接口")
     @Transactional(rollbackFor = Exception.class)
-    public R issueJob(@PathVariable String[] ssccNumbers) {
+    public R confirmJob(@PathVariable String[] ssccNumbers) {
         materialReturnService.issueJob(ssccNumbers);
         return R.ok("下发成功");
     }
 
     @PostMapping(value = "/list")
-    @ApiOperation("获取退料待确认列表")
-    public R<PageVO<MaterialReturnVO>> list(MaterialReturnQueryDTO queryDTO) {
+    @ApiOperation("获取退料列表")
+    public R<PageVO<MaterialReturnVO>> list(@RequestBody MaterialReturnQueryDTO queryDTO) {
         if (queryDTO == null) {
             queryDTO = new MaterialReturnQueryDTO();
         }
