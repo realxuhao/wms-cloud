@@ -54,19 +54,22 @@
 				<view class="content">		
 					<uni-forms  :label-width="80" ref="binInForm" :rules="binInFormRules" :modelValue="binInForm" label-position="left">
 						<uni-forms-item  v-if="!materialInfo.palletCode" label="托盘编码" name="palletCode" required >
-							<view class="custom-input" :class="editFieldName==='binInForm.palletCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.palletCode')">
+							<!-- <view class="custom-input" :class="editFieldName==='binInForm.palletCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.palletCode')">
 								<text :class="!binInForm.palletCode?'placeholder-text':''">{{binInForm.palletCode||'请扫描托盘编码'}}</text>
-							</view>
+							</view> -->
+							<uni-easyinput v-model="binInForm.palletCode"  placeholder="请扫描托盘编码" @focus="handleSetEditFieldName('binInForm.palletCode')"></uni-easyinput>
 						</uni-forms-item>
 						<uni-forms-item  v-if="type===1" label="目标区域" name="actualCode" required >
-							<view class="custom-input" :class="editFieldName==='binInForm.actualCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.actualCode')">
+							<!-- <view class="custom-input" :class="editFieldName==='binInForm.actualCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.actualCode')">
 								<text :class="!binInForm.actualCode?'placeholder-text':''">{{binInForm.actualCode||'请扫描目标区域'}}</text>
-							</view>
+							</view> -->
+							<uni-easyinput v-model="binInForm.actualCode"  placeholder="请扫描目标区域" @focus="handleSetEditFieldName('binInForm.actualCode')"></uni-easyinput>
 						</uni-forms-item>
 						<uni-forms-item label="目标库位" name="actualCode" required v-if="type===0">
-							<view class="custom-input" :class="editFieldName==='binInForm.actualCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.actualCode')">
+							<!-- <view class="custom-input" :class="editFieldName==='binInForm.actualCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.actualCode')">
 								<text :class="!binInForm.actualCode?'placeholder-text':''">{{binInForm.actualCode||'请扫描目标库位'}}</text>
-							</view>
+							</view> -->
+							<uni-easyinput v-model="binInForm.actualCode"  placeholder="请扫描目标库位" @focus="handleSetEditFieldName('binInForm.actualCode')"></uni-easyinput>
 						</uni-forms-item>
 						<o-btn block class="submit-btn primary-button" :loading="submitLoading"  @click="handlePostBinIn">提交</o-btn>
 					</uni-forms>

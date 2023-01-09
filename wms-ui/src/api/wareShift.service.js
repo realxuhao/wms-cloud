@@ -15,7 +15,15 @@ const addWareShift = async (options) => {
   const { data } = await createAuthInstance(baseUrl).post(url, options)
   return data
 }
+
+const getReturnMaterialList = async (parameter) => {
+  const url = `/returnMaterial/list`
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter)
+  return data
+}
+
 export const wareShiftService = {
   getList,
-  addWareShift
+  addWareShift,
+  getReturnMaterialList
 }

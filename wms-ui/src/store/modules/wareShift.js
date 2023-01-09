@@ -32,6 +32,10 @@ const wareShift = {
     async addWareShift ({ commit }, options) {
       const data = await wareShiftService.addWareShift(options)
       return data
+    },
+    async getReturnMaterialList ({ commit }, options) {
+      const data = await wareShiftService.getReturnMaterialList(options)
+      return data
     }
 
   }
