@@ -56,7 +56,7 @@ public class WareShiftVO  {
     /**
      * 移动类型
      */
-    @ApiModelProperty(value = "移动类型")
+    @ApiModelProperty(value = "移动类型, (\"0\", \"收货\"),(\"1\", \"入库\"),(“2”, \"上架\"),(\"3\",\"生产叫料\"),(\"4\", \"移库\"),(\"5\",\"拆托上架\"),(\"6\",\"仓库内移动\"),(\"7\",\"生产退料\");")
     private String moveType;
 
     /**

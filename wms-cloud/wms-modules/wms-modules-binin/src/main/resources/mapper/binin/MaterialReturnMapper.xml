@@ -6,7 +6,7 @@
 
     <resultMap id="BaseResultMap" type="com.bosch.binin.api.domain.MaterialReturn">
             <result property="id" column="id" jdbcType="BIGINT"/>
-            <result property="materialCode" column="material_code" jdbcType="VARCHAR"/>
+            <result property="materialNb" column="material_code" jdbcType="VARCHAR"/>
             <result property="ssccNumber" column="sscc_number" jdbcType="VARCHAR"/>
             <result property="type" column="type" jdbcType="INTEGER"/>
             <result property="quantity" column="quantity" jdbcType="DECIMAL"/>
@@ -48,11 +48,13 @@
         <if test="status != null ">
             AND mr.status = #{status}
         </if>
-<!--        <if test="createBy != null and createBy != ''">and mr.create_by like concat('%', #{createBy}, '%')</if>-->
-<!--        <if test="startCreateTime != null">and mr.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>-->
-<!--        <if test="endCreateTime != null">and mr.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>-->
-<!--        <if test="startUpdateTime != null">and mr.update_time <![CDATA[ >= ]]> #{startUpdateTime}</if>-->
-<!--        <if test="startUpdateTime != null">and mr.update_time <![CDATA[ <= ]]> #{endUpdateTime}</if>-->
+        <if test="createBy != null and createBy != ''">and mr.create_by like concat('%', #{createBy}, '%')</if>
+        <if test="createBy != null and createBy != ''">and mr.update_by like concat('%', #{createBy}, '%')</if>
+        <if test="createTimeStart != null">and mr.create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
+        <if test="createTimeEnd != null">and mr.create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
+        <if test="updateTimeStart != null">and mr.update_time <![CDATA[ >= ]]> #{updateTimeStart}</if>
+        <if test="updateTimeEnd != null">and mr.update_time <![CDATA[ <= ]]> #{updateTimeEnd}</if>
+
 
         order by create_time desc
     </select>

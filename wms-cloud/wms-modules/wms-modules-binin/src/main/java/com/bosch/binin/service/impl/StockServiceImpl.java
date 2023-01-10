@@ -93,4 +93,9 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         Stock stock = stockMapper.selectOne(stockLambdaQueryWrapper);
         return stock;
     }
+
+    @Override
+    public List<StockVO> getBinStockLog(String binCode) {
+        return stockMapper.getBinStockLog(binCode);
+    }
 }

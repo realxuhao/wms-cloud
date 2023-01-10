@@ -32,4 +32,5 @@ public interface IStockService extends IService<Stock> {
      */
     Stock getOneStock(String sscc);
 
+    List<StockVO> getBinStockLog(String binCode);
 }

@@ -126,7 +126,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
             return checkResultVO;
         }
 
-        //称重 或者 数数
+        //称重 或者 dianshu
         if ((CheckTypeEnum.WEIGHT.getCode().equals(materialInCheckVO.getCheckType()) && checkWeight(mesBarCode, actualQuantity, actualResult, checkResultVO, materialInCheckDTO.getWeightTimes()))
                 || (CheckTypeEnum.COUNT.getCode().equals(materialInCheckVO.getCheckType()) && checkCount(materialInCheckVO, actualQuantity, actualResult, checkResultVO))) {
             batchStorageIn(materialInCheckVO, materialInCheckDTO, checkResultVO.getAverageResult());

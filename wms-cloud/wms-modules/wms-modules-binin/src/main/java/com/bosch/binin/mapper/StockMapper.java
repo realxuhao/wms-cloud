@@ -30,4 +30,5 @@ public interface StockMapper extends BaseMapper<Stock> {
 
     List<Stock> selectStockList(@Param("dtos") List<MaterialKanbanDTO> dtos);
 
+    List<StockVO> getBinStockLog(@Param("binCode")String binCode);
 }
