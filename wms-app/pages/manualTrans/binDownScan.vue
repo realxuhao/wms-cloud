@@ -46,8 +46,10 @@
 			async scanCodeCallback(data){
 				Bus.$emit('stopScan')
 				this.code = data.code
-				await this.parsedBarCode(data.code)
-				this.$refs.submitPopup.open()
+				this.parsedBarCode(data.code)
+				if (JSON.stringify(this.info)!='{}'){
+					this.$refs.submitPopup.open()
+				}
 			},
 			async parsedBarCode(barCode){
 				try{

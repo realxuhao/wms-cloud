@@ -230,10 +230,10 @@
 				this.$refs.binInForm
 				  .validate()
 				  .then((res) => {
-					if(this.binInForm.recommendBinCode!==this.binInInfo.recommendBinCode){
-						this.$refs.alertDialog.open()
-						return
-					}
+					// if(this.binInForm.recommendBinCode!==this.binInInfo.recommendBinCode){
+					// 	this.$refs.alertDialog.open()
+					// 	return
+					// }
 					this.onSubmitBinIn()
 				  })
 				  .catch((err) => {});
