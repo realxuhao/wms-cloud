@@ -27,8 +27,8 @@
                 allow-clear
                 v-model="queryForm.status"
               >
-                <a-select-option v-for="item in status" :key="item.value" :value="item.value">
-                  {{ item.text }}
+                <a-select-option v-for="(item,key) in statusMap" :key="key" :value="key">
+                  {{ item }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
@@ -331,7 +331,7 @@ const queryFormAttr = () => {
   return {
     cell: '',
     materialNb: '',
-    status: '',
+    status: undefined,
     createBy: '',
     date: [],
     updateDate: []
