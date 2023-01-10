@@ -123,8 +123,8 @@
           <a-select-option value="称重">
             称重
           </a-select-option>
-          <a-select-option value="数量">
-            数量
+          <a-select-option value="点数">
+            点数
           </a-select-option>
           <a-select-option value="免检">
             免检
