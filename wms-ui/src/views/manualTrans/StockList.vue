@@ -424,7 +424,6 @@ export default {
         const {
           data: { rows, total }
         } = await this.$store.dispatch('materialFeeding/getRuleList', this.queryForm)
-
         this.list = rows
         this.paginationTotal = total
       } catch (error) {

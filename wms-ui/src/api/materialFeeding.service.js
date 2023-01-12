@@ -81,6 +81,15 @@ const exportExcel = async (options) => {
   return data
 }
 
+const exportCallExcel = async (options) => {
+  const url = `binin/materialKanban/export`
+  const { data } = await createAuthInstance(config.apiHost).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  })
+  return data
+}
+
 const getStockInfo = async (parameter) => {
   const url = `binin/materialKanban/getStockInfo?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(config.apiHost).get(url)
@@ -99,6 +108,12 @@ const confirmMaterial = async (options) => {
   return data
 }
 
+const cancelFeeding = async (options) => {
+  const url = `binin/material-feeding/cancel/${options.id}`
+  const { data } = await createAuthInstance(config.apiHost).put(url)
+  return data
+}
+
 export const materialFeedingService = {
   getList,
   upload,
@@ -114,5 +129,7 @@ export const materialFeedingService = {
   exportExcel,
   getStockInfo,
   addShiftTask,
-  confirmMaterial
+  confirmMaterial,
+  cancelFeeding,
+  exportCallExcel
 }

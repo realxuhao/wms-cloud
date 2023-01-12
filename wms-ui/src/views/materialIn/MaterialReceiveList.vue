@@ -293,7 +293,8 @@ export default {
             onOk: () => {
               this.uploadBatchUpdate(formdata)
             },
-            onCancel () {
+            onCancel: () => {
+              this.uploadLoading = false
             }
           })
         } else {

@@ -105,6 +105,11 @@ public class Stock extends BaseEntity {
 
     private String palletCode;
 
+    /**
+     * 整托标记，0：整托，1：零托
+     */
+    private int wholeFlag;
+
 
 
 }
