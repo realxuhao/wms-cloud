@@ -53,4 +53,6 @@ public interface IMaterialCallService extends IService<MaterialCall> {
      * @return
      */
     int updateCallQuantity(MaterialKanban materialKanban);
+
+    void cancelCall(Long id);
 }

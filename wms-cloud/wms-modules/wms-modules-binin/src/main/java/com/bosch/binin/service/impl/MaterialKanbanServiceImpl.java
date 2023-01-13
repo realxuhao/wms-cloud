@@ -19,6 +19,7 @@ import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanActionTypeEnum;
+import com.bosch.binin.api.enumeration.StockWholeFlagEnum;
 import com.bosch.binin.mapper.BinInMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.StockMapper;
@@ -570,9 +571,10 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             Stock conver = BeanConverUtil.conver(stockVO, Stock.class);
             conver.setTotalStock(conver.getTotalStock() - newKanban.getQuantity());
             conver.setFreezeStock(conver.getTotalStock() - conver.getAvailableStock());
+            conver.setWholeFlag(StockWholeFlagEnum.NOT_WHOLE.code());
+
             stockMapper.updateById(conver);
         }
-
 
 
     }
@@ -636,7 +638,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         Date expireDate = parentStock.getExpireDate();
         String batchNb = parentStock.getBatchNb();
         String mesBarCode = MesBarCodeUtil.generateMesBarCode(expireDate, subKanban.getSsccNumber(), subKanban.getMaterialCode(), batchNb, subKanban.getQuantity());
-        binInService. generateInTaskByMesBarCode(mesBarCode);
+        binInService.generateInTaskByMesBarCode(mesBarCode);
 
     }
 }

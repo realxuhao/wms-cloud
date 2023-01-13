@@ -11,6 +11,12 @@ const getList = async (parameter) => {
   return data
 }
 
+const getByCell = async (cell) => {
+  const url = `/materialType/getByCell/${cell}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
 const getOne = async (id) => {
   const url = `/materialType/${id}`
   const { data } = await createAuthInstance(baseUrl).get(url)
@@ -39,5 +45,6 @@ export const materialTypeService = {
   getOne,
   edit,
   add,
-  destroy
+  destroy,
+  getByCell
 }

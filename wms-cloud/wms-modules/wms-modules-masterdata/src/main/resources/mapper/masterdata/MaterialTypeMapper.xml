@@ -46,7 +46,7 @@
         select
         t1.id,t1.code,t1.description,t1.department_id,t2.name as department_name,t1.status,t1.create_time
         from md_material_type t1,md_department t2
-        where  t1.department_id=t2.id
+        where t1.department_id=t2.id
         <if test="code != null  and code != ''">and t1.code = #{code}</if>
         <if test="description != null  and description != ''">and t1.description = #{description}</if>
         <if test="departmentId != null ">and t1.department_id = #{departmentId}</if>
@@ -55,7 +55,6 @@
         order by t1.create_time desc
 
     </select>
-
 
 
     <select id="selectMaterialTypeList" parameterType="MaterialType" resultMap="MaterialTypeResult">
@@ -71,6 +70,13 @@
     <select id="selectMaterialTypeById" parameterType="Long" resultMap="MaterialTypeResult">
         <include refid="selectMaterialTypeVo"/>
         where id = #{id}
+    </select>
+    <select id="getByCell" resultType="com.bosch.masterdata.api.domain.vo.MaterialTypeVO">
+        select mt.code as code,
+        mt.description as description
+        from md_material_type mt
+                 left join md_department md on mt.department_id = md.id
+        where md.code = #{cell}
     </select>
 
     <insert id="insertMaterialType" parameterType="MaterialType" useGeneratedKeys="true" keyProperty="id">

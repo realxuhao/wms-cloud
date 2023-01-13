@@ -25,6 +25,7 @@
         <result property="createTime" column="create_time"/>
         <result property="qualityStatus" column="quality_status"/>
         <result property="palletCode" column="pallet_code"/>
+        <result property="wholeFlag" column="whole_flag"/>
 
     </resultMap>
     <select id="selectStockVOList" resultMap="StockVOResult">
@@ -47,7 +48,8 @@
         bs.create_time as create_time,
         bs.quality_status as quality_status,
         bs.area_code as area_code,
-        bs.pallet_code as pallet_code
+        bs.pallet_code as pallet_code,
+        bs.whole_flag as whole_flag
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code
@@ -95,7 +97,8 @@
         bs.create_time as create_time,
         bs.quality_status as quality_status,
         bs.area_code as area_code,
-        bs.pallet_code as pallet_code
+        bs.pallet_code as pallet_code,
+        bs.whole_flag as whole_flag
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code
@@ -124,7 +127,8 @@
         bs.bin_in_id as bin_in_id,
         bs.create_by as create_by,
         bs.create_time as create_time,
-        bs.quality_status as quality_status
+        bs.quality_status as quality_status,
+        bs.whole_flag as whole_flag
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code
@@ -180,7 +184,8 @@
                bs.create_time         as create_time,
                bs.quality_status      as quality_status,
                bs.area_code           as area_code,
-               bs.pallet_code         as pallet_code
+               bs.pallet_code         as pallet_code,
+               bs.whole_flag          as whole_flag
         from bi_stock bs
                  left join md_ware mw
                            on mw.code = bs.ware_code

@@ -193,5 +193,14 @@ public class MaterialFeedingController extends BaseController {
         util.exportExcel(response, materialCallVOS, "叫料需求");
     }
 
-    //待收料列表查询接口
+    /**
+     * 取消kanban
+     */
+    @ApiOperation("取消叫料需求")
+    @PutMapping(value = "/cancel/{id}")
+    @Transactional(rollbackFor = Exception.class)
+    public R cancelCall(@PathVariable("id") Long id) {
+        materialCallService.cancelCall(id);
+        return R.ok();
+    }
 }

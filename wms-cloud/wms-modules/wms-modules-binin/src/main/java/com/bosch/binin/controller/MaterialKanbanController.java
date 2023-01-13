@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.*;
 
+import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
 import com.bosch.binin.api.domain.dto.SplitPalletDTO;
+import com.bosch.binin.api.domain.vo.MaterialCallVO;
 import com.bosch.binin.api.domain.vo.MaterialInfoVO;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.service.*;
@@ -21,6 +23,7 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
@@ -32,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
@@ -587,5 +591,20 @@ public class MaterialKanbanController {
             ex.printStackTrace();
             return R.fail(ex.getMessage());
         }
+    }
+
+    /**
+     * 导出叫料需求列表
+     */
+    @Log(title = "看板", businessType = BusinessType.EXPORT)
+    @PostMapping("/export")
+    @ApiOperation("叫料需求列表导出")
+    public void export(HttpServletResponse response, MaterialKanbanDTO queryDTO) {
+        startPage();
+        List<MaterialKanbanVO> materialKanbanVOS = materialKanbanService.getKanbanList(queryDTO);
+//        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
+
+        ExcelUtil<MaterialKanbanVO> util = new ExcelUtil<>(MaterialKanbanVO.class);
+        util.exportExcel(response, materialKanbanVOS, "叫料需求");
     }
 }

@@ -1,5 +1,6 @@
 package com.bosch.binin.service.impl;
 
+import com.alibaba.druid.sql.ast.statement.SQLIfStatement;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.*;
@@ -20,6 +21,7 @@ import com.bosch.binin.service.IStockService;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
+import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
@@ -96,6 +98,11 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
             //stock更新
             item.setFreezeStock(item.getTotalStock());
             item.setAvailableStock(Double.valueOf(0));
+            if (manualTransferOrder.getType() == MaterialTransTypeEnum.AB_NORMAL.code()) {
+                item.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+            } else {
+                item.setQualityStatus(QualityStatusEnums.USE.getCode());
+            }
         });
 
         stockService.updateBatchById(stockList);
@@ -128,7 +135,7 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
 //        if (manualTransferOrder.getType() == MaterialTransTypeEnum.NORMAL.code()) {
 //            binInService.allocateToBinOrArea(sscc, materialCode, manualTransferOrder.getTargetBinCode(), null);
 //        } else {
-        binInService.allocateToBinOrArea(sscc, materialCode, null, manualTransferOrder.getTargetAreaCode(),null);
+        binInService.allocateToBinOrArea(sscc, materialCode, null, manualTransferOrder.getTargetAreaCode(), null);
 //        }
         return binInService.getByMesBarCode(mesBarCode);
     }

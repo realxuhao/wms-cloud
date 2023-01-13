@@ -339,6 +339,19 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
     }
 
     @Override
+    public void cancelCall(Long id) {
+        MaterialCall materialCall = materialCallMapper.selectById(id);
+        if (materialCall==null){
+            throw new ServiceException("该条目不存在");
+        }
+        if (!materialCall.getStatus().equals(MaterialCallStatusEnum.WAITING_ISSUE.code())){
+            throw new ServiceException("只可以取消未下发状态的数据");
+        }
+        materialCall.setStatus(MaterialCallStatusEnum.CANCEL.code());
+        materialCallMapper.updateById(materialCall);
+    }
+
+    @Override
     public void deleteRequirement(List<Long> ids) {
         LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(MaterialCall::getId, ids);
@@ -442,11 +455,11 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         if (MaterialCallSortTypeEnum.BBD_FIRST.value().equals(call.getSortType())) {
             sortedStockList =
                     stockList.stream().filter(item -> item.getAvailableStock() != 0).
-                            sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getTotalStock).
+                            sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag,Comparator.reverseOrder()).
                                     thenComparing(Stock::getPlantNb)).collect(Collectors.toList());
         } else if (MaterialCallSortTypeEnum.MAIN_WARE_FIRST.value().equals(call.getSortType())) {
             sortedStockList =
-                    stockList.stream().filter(item -> item.getAvailableStock() != 0).sorted(Comparator.comparing(Stock::getPlantNb).thenComparing(Stock::getExpireDate)).collect(Collectors.toList());
+                    stockList.stream().filter(item -> item.getAvailableStock() != 0).sorted(Comparator.comparing(Stock::getPlantNb).thenComparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag,Comparator.reverseOrder())).collect(Collectors.toList());
         }
         if (CollectionUtils.isEmpty(sortedStockList)) {
             requirementResultVO.getNoStockMaterialNbs().add(RequirementResultVO.MaterialOrder.builder().materialNb(call.getMaterialNb()).orderNb(call.getOrderNb()).build());

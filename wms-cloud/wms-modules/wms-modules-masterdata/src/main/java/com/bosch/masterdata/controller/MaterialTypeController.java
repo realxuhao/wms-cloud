@@ -53,6 +53,14 @@ public class MaterialTypeController extends BaseController
         return getDataTable(list);
     }
 
+
+    @GetMapping("/getByCell/{cell}")
+    public R<List<MaterialTypeVO>> getByCell(@PathVariable("cell") String cell)
+    {
+        List<MaterialTypeVO> list = materialTypeService.getByCell(cell);
+        return R.ok(list);
+    }
+
     /**
      * 导出物料类型列表
      */
