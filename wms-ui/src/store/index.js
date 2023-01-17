@@ -28,6 +28,8 @@ import manualTrans from './modules/manualTrans'
 import materialInList from './modules/materialInList'
 import materialFeeding from './modules/materialFeeding'
 
+import split from './modules/split'
+
 // dynamic router permission control (Experimental)
 // import permission from './modules/async-router'
 import getters from './getters'
@@ -53,6 +55,8 @@ export default new Vuex.Store({
     bin,
     stock,
     materialFeeding,
+
+    split,
 
     file,
     wareShift,

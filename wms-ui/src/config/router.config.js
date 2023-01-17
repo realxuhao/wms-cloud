@@ -159,6 +159,13 @@ export const asyncRouterMap = [
             component: () => import('@/views/manualTrans/transList'),
             meta: { title: '转储任务列表', permission: [] },
             hideChildrenInMenu: true
+          },
+          {
+            path: '/split/list',
+            name: 'splitList',
+            component: () => import('@/views/split/SplitList'),
+            meta: { title: '拆托记录', permission: [] },
+            hideChildrenInMenu: true
           }
         ]
       },
