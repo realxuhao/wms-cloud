@@ -518,7 +518,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     private MaterialInVO getMaterialInVO(String mesBarCode) {
         R<MaterialInVO> materialInVOResult = remoteMaterialInService.getByMesBarCode(mesBarCode);
         if (StringUtils.isNull(materialInVOResult) || StringUtils.isNull(materialInVOResult.getData())) {
-            throw new ServiceException("该物料：" + MesBarCodeUtil.getMaterialNb(mesBarCode) + " 未入库");
+            throw new ServiceException("物料号：" + MesBarCodeUtil.getMaterialNb(mesBarCode) + ",批次号: " + MesBarCodeUtil.getBatchNb(mesBarCode) + " 未入库");
         }
 
         if (R.FAIL == materialInVOResult.getCode()) {

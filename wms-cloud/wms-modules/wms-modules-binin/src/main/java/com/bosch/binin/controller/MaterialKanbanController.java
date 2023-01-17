@@ -125,7 +125,7 @@ public class MaterialKanbanController {
     }
 
     @PostMapping(value = "splitPallet")
-    @ApiOperation("拆托")
+    @ApiOperation("看板任务拆托")
     @Transactional(rollbackFor = Exception.class)
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         materialKanbanService.splitPallet(splitPallet);

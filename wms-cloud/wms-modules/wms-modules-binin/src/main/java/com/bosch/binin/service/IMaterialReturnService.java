@@ -8,6 +8,7 @@ import com.bosch.binin.api.domain.dto.MaterialReturnDTO;
 import com.bosch.binin.api.domain.dto.MaterialReturnQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.MaterialReturnVO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ import java.util.List;
 * @description 针对表【material_return(退库表)】的数据库操作Service
 * @createDate 2022-12-12 11:09:13
 */
+@Service
 public interface IMaterialReturnService extends IService<MaterialReturn> {
 
     List<MaterialReturnVO> list(MaterialReturnQueryDTO queryDTO);

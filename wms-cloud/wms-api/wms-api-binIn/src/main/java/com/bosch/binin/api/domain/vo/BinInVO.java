@@ -131,6 +131,26 @@ public class BinInVO {
 
 
     /**
+     * 创建人
+     */
+    @ApiModelProperty(value = "入库人")
+    private String receiveBy;
+
+    /**
+     * 创建人
+     */
+    @ApiModelProperty(value = "更新人")
+    private String updateBy;
+
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(value = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
+
+    /**
      * 移动类型
      */
     @ApiModelProperty(value = "移动类型")
