@@ -34,6 +34,7 @@
                 style="width: 100%"
                 placeholder="请先选择Cell"
                 optionLabelProp="value"
+                v-model="queryForm.materialTypeList"
               >
                 <a-select-option class="white-pre-w" v-for="item in materialTypeList" :key="item.code" :value="item.code">
                   <span class="m-r-4">{{ item.code }}</span>{{ item.description }}
@@ -374,7 +375,8 @@ const queryFormAttr = () => {
     status: undefined,
     createBy: '',
     date: [],
-    updateDate: []
+    updateDate: [],
+    materialTypeList: []
   }
 }
 

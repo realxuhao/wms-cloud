@@ -11,6 +11,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class MaterialKanbanDTO extends PageDomain {
@@ -124,4 +125,7 @@ public class MaterialKanbanDTO extends PageDomain {
     @Min(value = 0,message = "数量不能小于0")
     @ApiModelProperty(value = "数量")
     private Double quantity;
+
+    @ApiModelProperty(value = "物料类型")
+    private List<String> materialTypeList;
 }

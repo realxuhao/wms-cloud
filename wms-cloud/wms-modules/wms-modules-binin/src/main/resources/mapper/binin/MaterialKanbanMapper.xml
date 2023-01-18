@@ -224,33 +224,33 @@
         WHERE mk.delete_flag = 0
           and mk.status = 1
           and mk.ware_code like concat('%', #{wareCode}, '%')
-            and mk.sscc_number not in (select sscc_nb from ware_shift where delete_flag = 0 and status = 1)
+          and mk.sscc_number not in (select sscc_nb from ware_shift where delete_flag = 0 and status = 1)
     </select>
 
     <select id="getKanbanList" parameterType="MaterialKanbanDTO"
             resultType="com.bosch.binin.api.domain.vo.MaterialKanbanVO">
-    SELECT
-    mk.id,
-    mm.name AS material_name,
-    mk.order_number,
-    mk.factory_code ,
-    mk.ware_code,
-    mk.area_code,
-    mk.bin_code,
-    mk.material_code,
-    mk.quantity,
-    mk.move_type,
-    mk.sscc_number,
-    mk.cell,
-    mk.type,
-    mk.status,
-    mk.create_by,
-    mk.update_by,
-    mk.create_time,
-    mk.update_time
-    FROM material_kanban mk
-    LEFT JOIN (SELECT * from md_material where delete_flag='0' )mm ON mk.material_code=mm.code
-    WHERE 1=1 AND mk.delete_flag='0'
+        SELECT
+        mk.id,
+        mm.name AS material_name,
+        mk.order_number,
+        mk.factory_code ,
+        mk.ware_code,
+        mk.area_code,
+        mk.bin_code,
+        mk.material_code,
+        mk.quantity,
+        mk.move_type,
+        mk.sscc_number,
+        mk.cell,
+        mk.type,
+        mk.status,
+        mk.create_by,
+        mk.update_by,
+        mk.create_time,
+        mk.update_time
+        FROM material_kanban mk
+        LEFT JOIN (SELECT * from md_material where delete_flag='0' )mm ON mk.material_code=mm.code
+        WHERE 1=1 AND mk.delete_flag='0'
         <if test="orderNumber != null and orderNumber != ''">
             and mk.order_number like concat('%', #{orderNumber}, '%')
         </if>
@@ -299,5 +299,19 @@
         <if test="updateTimeEnd != null ">
             AND <![CDATA[mk.update_time <= #{updateTimeEnd}]]>
         </if>
+        <if test="materialTypeList!= null and materialTypeList.size()>0">
+            and mk.material_code in
+            (SELECT
+            md_material_type.`code`
+            FROM
+            md_material
+            LEFT JOIN md_material_type ON md_material.material_type_id = md_material_type.id
+            AND md_material.delete_flag = 0
+            WHERE md_material_type.`code` in
+            <foreach collection="materialTypeList" item="item" open="(" close=")" separator=",">
+                #{item}
+            </foreach>)
+        </if>
+
     </select>
 </mapper>
