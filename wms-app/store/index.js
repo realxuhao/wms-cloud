@@ -11,6 +11,7 @@ import kanban from './modules/kanban'
 import wareShift from './modules/wareShift'
 import manualTrans from './modules/manualTrans'
 import material from './modules/material'
+import stock from './modules/stock'
 
 import getters from './getters'
 
@@ -27,7 +28,8 @@ export default new Vuex.Store({
 	kanban,
 	wareShift,
 	manualTrans,
-	material
+	material,
+	stock
   },
   state: {
 

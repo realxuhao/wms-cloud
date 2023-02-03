@@ -1,3 +1,5 @@
+import { fromPairs } from 'lodash'
+
 export * from './auth.service'
 export * from './materialIn.service'
 export * from './binIn.service'
@@ -8,3 +10,4 @@ export * from './wareShift.service'
 export * from './materialCall.service'
 export * from './manualTrans.service'
 export * from './material.service'
+export * from './stock.service'

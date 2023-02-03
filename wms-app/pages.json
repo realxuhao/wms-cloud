@@ -107,6 +107,9 @@
 		},
 		{
 			"path": "pages/wareShift/cancellingStocksBinInOperator"
+		},
+		{
+			"path": "pages/splitPallet/addSplit"
 		}
 		
 	],

@@ -49,6 +49,14 @@
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
 						<view class="text">转储上架</view>
 					</view>	
+					<view class="list-item" @click="handleGoto('/pages/splitPallet/addSplit')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
+						<view class="text">新建拆托</view>
+					</view>
+					<view class="list-item" @click="handleGoto('/pages/split/addSplit')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
+						<view class="text">拆托上架</view>
+					</view>
 				</view>
 			</uni-section>
 			
