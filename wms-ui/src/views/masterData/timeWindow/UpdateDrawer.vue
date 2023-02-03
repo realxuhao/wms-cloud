@@ -20,7 +20,7 @@
       <a-form-item label="时间窗口止">
         <a-time-picker
           class="width180"
-          placeholder="时间窗口起"
+          placeholder="时间窗口止"
           v-decorator="[
             'endTime',
             { rules: [{ required: true, message: '请选择时间!' }] }

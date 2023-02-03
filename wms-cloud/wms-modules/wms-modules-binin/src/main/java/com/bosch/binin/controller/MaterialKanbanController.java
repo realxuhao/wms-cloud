@@ -15,6 +15,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.masterdata.api.RemoteMaterialService;
+import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
@@ -50,7 +52,8 @@ import static com.ruoyi.common.core.utils.PageUtils.startPage;
 @Api(tags = "kanban接口")
 @RequestMapping("/materialKanban")
 public class MaterialKanbanController {
-
+    @Autowired
+    private RemoteMaterialService remoteMaterialService;
     @Autowired
     private ITranshipmentOrderService transhipmentOrderService;
     @Autowired
@@ -606,5 +609,17 @@ public class MaterialKanbanController {
 
         ExcelUtil<MaterialKanbanVO> util = new ExcelUtil<>(MaterialKanbanVO.class);
         util.exportExcel(response, materialKanbanVOS, "叫料需求");
+    }
+
+    @GetMapping (value = "/getMaterial")
+    @ApiOperation("根据mesBarCode查询物料信息")
+    public R<MaterialVO> getMaterial(@RequestParam(value = "mesBarCode") String mesBarCode) {
+        String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+        String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
+        R<MaterialVO> materialVORes = remoteMaterialService.getInfoByMaterialCode(materialNb);
+//        startPage();
+//        List<MaterialInfoVO> materialInfoVOS = materialKanbanService.materialInfo(sscc);
+
+        return materialVORes;
     }
 }

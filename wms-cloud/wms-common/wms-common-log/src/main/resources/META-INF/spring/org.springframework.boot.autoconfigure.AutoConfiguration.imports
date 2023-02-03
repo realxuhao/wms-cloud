@@ -1,2 +1,4 @@
 com.ruoyi.common.log.service.AsyncLogService
+com.ruoyi.common.log.service.WMSLogService
 com.ruoyi.common.log.aspect.LogAspect
+com.ruoyi.common.log.aspect.WMSLogAspect

@@ -78,6 +78,7 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
      */
     public List<MaterialInfoVO> materialInfoList(String sscc,String wareCode);
 
+    public List<MaterialInfoVO> materialInfo(String sscc);
     /**
      *
      * @param ids

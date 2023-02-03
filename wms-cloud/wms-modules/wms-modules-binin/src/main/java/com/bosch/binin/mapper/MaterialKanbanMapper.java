@@ -31,6 +31,8 @@ public interface MaterialKanbanMapper extends BaseMapper<MaterialKanban> {
 
     List<MaterialInfoVO> materialInfoList(String sscc, String wareCode);
 
+    List<MaterialInfoVO> materialInfo(String sscc);
+
     List<MaterialInfoVO> materialInfoBySSCC(@Param("ssccList") List<String> ssccList);
 
     List<MaterialKanbanVO> getBinDownList(String wareCode);

@@ -1,5 +1,6 @@
 package com.bosch.system.api;
 
+import com.bosch.system.api.domain.SysMoveLog;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,4 +39,15 @@ public interface RemoteLogService
      */
     @PostMapping("/logininfor")
     public R<Boolean> saveLogininfor(@RequestBody SysLogininfor sysLogininfor, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
+
+
+    /**
+     * 保存移动记录日志
+     *
+     * @param sysMoveLog 日志实体
+     * @param source 请求来源
+     * @return 结果
+     */
+    @PostMapping("/sysMoveLog")
+    public R<Boolean> saveMoveLog(@RequestBody SysMoveLog sysMoveLog, @RequestHeader(SecurityConstants.FROM_SOURCE) String source);
 }

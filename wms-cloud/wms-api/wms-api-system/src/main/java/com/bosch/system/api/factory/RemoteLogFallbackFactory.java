@@ -1,6 +1,7 @@
 package com.bosch.system.api.factory;
 
 import com.bosch.system.api.RemoteLogService;
+import com.bosch.system.api.domain.SysMoveLog;
 import com.bosch.system.api.domain.SysOperLog;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,11 @@ public class RemoteLogFallbackFactory implements FallbackFactory<RemoteLogServic
             @Override
             public R<Boolean> saveLogininfor(SysLogininfor sysLogininfor, String source)
             {
+                return null;
+            }
+
+            @Override
+            public R<Boolean> saveMoveLog(SysMoveLog sysMoveLog, String source) {
                 return null;
             }
         };

@@ -415,7 +415,11 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         List<MaterialInfoVO> materialInfoVOS = materialKanbanMapper.materialInfoList(sscc, wareCode);
         return materialInfoVOS;
     }
-
+    @Override
+    public List<MaterialInfoVO> materialInfo(String sscc) {
+        List<MaterialInfoVO> materialInfoVOS = materialKanbanMapper.materialInfo(sscc);
+        return materialInfoVOS;
+    }
     @Override
     public int updateKanbanByIds(List<Long> ids, Integer status) {
         MaterialKanban materialKanban = new MaterialKanban();
