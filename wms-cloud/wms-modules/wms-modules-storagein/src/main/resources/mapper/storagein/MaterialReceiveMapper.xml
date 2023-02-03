@@ -89,6 +89,17 @@
         </if>
         <if test="status != null">and sm.status = #{status}</if>
         order by sm.update_time desc, sm.upload_time desc
+        <choose>
+            <when test="orderField == 'status'">
+                ,status ${orderType}
+            </when>
+            <when test="orderField == 'fromPurchaseOrder'">
+                ,from_purchase_order ${orderType}
+            </when>
+            <when test="orderField == 'batchNb'">
+                ,batch_nb ${orderType}
+            </when>
+        </choose>
     </select>
 
     <select id="selectMaterialReceiveVOBySncc" parameterType="string" resultMap="MaterialReceiveVOResult">

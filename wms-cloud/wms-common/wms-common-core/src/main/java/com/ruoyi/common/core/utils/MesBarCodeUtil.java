@@ -85,6 +85,7 @@ public class MesBarCodeUtil {
 
     public static void main(String[] args) {
         String mesBarCode = "20240322669006391110024752103110422203291126000050";
+        System.out.println(mesBarCode.length());
         System.out.println(getExpireDate(mesBarCode));
         System.out.println(getSSCC(mesBarCode));
         System.out.println(getMaterialNb(mesBarCode));
@@ -96,8 +97,10 @@ public class MesBarCodeUtil {
         System.out.println(ceil1);
 
         String date = DateUtils.parseDateToStr("yyyyMMdd", new Date());
-        String barCode = generateMesBarCode(new Date(), "669006391113850530", "10302519", "2112271124", Double.valueOf(800));
+        String barCode = generateMesBarCode(new Date(), "669006391113850532", "10302519", "2112271124", Double.valueOf(800));
         System.out.println(barCode);
+
+        System.out.println("669006391110024752".length());
 
     }
 

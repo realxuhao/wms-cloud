@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -48,7 +49,7 @@ public class MaterialReceiveCotroller extends BaseController {
 
     @GetMapping("/list")
     @ApiOperation("查询收货列表")
-    public R<PageVO<MaterialReceiveVO>> list(MaterialReceiveDTO materialReceiveDTO) {
+    public R<PageVO<MaterialReceiveVO>> list(@Validated MaterialReceiveDTO materialReceiveDTO) {
         startPage();
         List<MaterialReceiveVO> list = materialReceiveService.selectMaterialReceiveList(materialReceiveDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));

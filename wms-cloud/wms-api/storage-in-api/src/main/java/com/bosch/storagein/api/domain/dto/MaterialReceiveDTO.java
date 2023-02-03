@@ -5,6 +5,7 @@ import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 @Data
@@ -96,4 +97,14 @@ public class MaterialReceiveDTO extends PageDomain {
 
     @ApiModelProperty(value = "是否可编辑")
     private Integer editFlag;
+
+
+    @ApiModelProperty(value = "排序字段")
+    private String orderField;
+
+    @ApiModelProperty(value = "排序类型,desc,asc")
+    @Pattern(regexp="asc|desc|ASC|DESC")
+    private String orderType;
+
+
 }
