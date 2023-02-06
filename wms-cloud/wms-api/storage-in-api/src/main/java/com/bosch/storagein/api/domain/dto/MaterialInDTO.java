@@ -68,7 +68,7 @@ public class MaterialInDTO extends PageDomain {
      * 应检查数量
      */
     @ApiModelProperty(value = "应检查数量")
-    private Integer checkQuantity;
+    private Double checkQuantity;
 
     /**
      * 最小标准
@@ -86,7 +86,7 @@ public class MaterialInDTO extends PageDomain {
      * 实际数量
      */
     @ApiModelProperty(value = "实际数量")
-    private Integer actualQuantity;
+    private Double actualQuantity;
 
     /**
      * 实际称重、数数结果
@@ -129,7 +129,7 @@ public class MaterialInDTO extends PageDomain {
      * 该托的物料数量
      */
     @ApiModelProperty(value = "该托的物料数量")
-    private Integer quantity;
+    private Double quantity;
 
     /**
      * 移动类型

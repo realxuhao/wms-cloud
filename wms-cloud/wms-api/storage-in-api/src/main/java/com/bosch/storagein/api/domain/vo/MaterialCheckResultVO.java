@@ -22,7 +22,7 @@ public class MaterialCheckResultVO extends MaterialInCheckVO {
     private String mesBarCode;
 
     @ApiModelProperty(value = "实际数量")
-    private Integer actualQuantity;
+    private Double actualQuantity;
 
     @ApiModelProperty(value = "实际称重、数数结果")
     private Double actualResult;

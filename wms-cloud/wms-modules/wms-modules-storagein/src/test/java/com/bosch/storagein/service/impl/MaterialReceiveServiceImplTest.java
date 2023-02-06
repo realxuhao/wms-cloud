@@ -46,7 +46,7 @@ class MaterialReceiveServiceImplTest {
         materialReceiveVO.setBatchNb("batchNb");
         materialReceiveVO.setExpireDate(new GregorianCalendar(2020, Calendar.JANUARY, 1).getTime());
         materialReceiveVO.setUnit("unit");
-        materialReceiveVO.setQuantity(0);
+        materialReceiveVO.setQuantity(Double.valueOf(0));
         materialReceiveVO.setFromPurchaseOrder("fromPurchaseOrder");
         materialReceiveVO.setPoNumberItem("poNumberItem");
         materialReceiveVO.setUploadUser("uploadUser");
@@ -65,7 +65,7 @@ class MaterialReceiveServiceImplTest {
         materialReceiveVO1.setBatchNb("batchNb");
         materialReceiveVO1.setExpireDate(new GregorianCalendar(2020, Calendar.JANUARY, 1).getTime());
         materialReceiveVO1.setUnit("unit");
-        materialReceiveVO1.setQuantity(0);
+        materialReceiveVO1.setQuantity(Double.valueOf(0));
         materialReceiveVO1.setFromPurchaseOrder("fromPurchaseOrder");
         materialReceiveVO1.setPoNumberItem("poNumberItem");
         materialReceiveVO1.setUploadUser("uploadUser");
@@ -143,7 +143,7 @@ class MaterialReceiveServiceImplTest {
         materialReceiveVO.setBatchNb("batchNb");
         materialReceiveVO.setExpireDate(new GregorianCalendar(2020, Calendar.JANUARY, 1).getTime());
         materialReceiveVO.setUnit("unit");
-        materialReceiveVO.setQuantity(0);
+        materialReceiveVO.setQuantity(Double.valueOf(0));
         materialReceiveVO.setFromPurchaseOrder("fromPurchaseOrder");
         materialReceiveVO.setPoNumberItem("poNumberItem");
         materialReceiveVO.setUploadUser("uploadUser");
@@ -162,7 +162,7 @@ class MaterialReceiveServiceImplTest {
         materialReceiveVO1.setBatchNb("batchNb");
         materialReceiveVO1.setExpireDate(new GregorianCalendar(2020, Calendar.JANUARY, 1).getTime());
         materialReceiveVO1.setUnit("unit");
-        materialReceiveVO1.setQuantity(0);
+        materialReceiveVO1.setQuantity(Double.valueOf(0));
         materialReceiveVO1.setFromPurchaseOrder("fromPurchaseOrder");
         materialReceiveVO1.setPoNumberItem("poNumberItem");
         materialReceiveVO1.setUploadUser("uploadUser");
@@ -205,7 +205,7 @@ class MaterialReceiveServiceImplTest {
         expectedResult.setBatchNb("batchNb");
         expectedResult.setExpireDate(new GregorianCalendar(2020, Calendar.JANUARY, 1).getTime());
         expectedResult.setUnit("unit");
-        expectedResult.setQuantity(0);
+        expectedResult.setQuantity(Double.valueOf(0));
         expectedResult.setFromPurchaseOrder("fromPurchaseOrder");
         expectedResult.setPoNumberItem("poNumberItem");
         expectedResult.setUploadUser("uploadUser");
@@ -223,7 +223,7 @@ class MaterialReceiveServiceImplTest {
         materialReceiveVO.setBatchNb("batchNb");
         materialReceiveVO.setExpireDate(new GregorianCalendar(2020, Calendar.JANUARY, 1).getTime());
         materialReceiveVO.setUnit("unit");
-        materialReceiveVO.setQuantity(0);
+        materialReceiveVO.setQuantity(Double.valueOf(0));
         materialReceiveVO.setFromPurchaseOrder("fromPurchaseOrder");
         materialReceiveVO.setPoNumberItem("poNumberItem");
         materialReceiveVO.setUploadUser("uploadUser");

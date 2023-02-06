@@ -92,7 +92,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
 
     @Override
     public boolean checkSampleQuantity(MaterialInCheckDTO materialInCheckDTO) {
-        Integer actualQuantity = materialInCheckDTO.getActualQuantity();
+        Double actualQuantity = materialInCheckDTO.getActualQuantity();
         MaterialVO materialVO = getMaterialVOByMesBarCode(materialInCheckDTO.getMesBarCode());
         MaterialInCheckVO materialInCheckVO = buildMaterialCheckVO(materialVO, materialInCheckDTO.getMesBarCode());
         if (actualQuantity < materialInCheckVO.getCheckQuantity()) {
@@ -103,7 +103,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
 
 
     private MaterialCheckResultVO dealCheck(MaterialInCheckDTO materialInCheckDTO) {
-        Integer actualQuantity = materialInCheckDTO.getActualQuantity();
+        Double actualQuantity = materialInCheckDTO.getActualQuantity();
         Double actualResult = materialInCheckDTO.getActualResult();
         String mesBarCode = materialInCheckDTO.getMesBarCode();
         MaterialVO materialVO = getMaterialVOByMesBarCode(mesBarCode);
@@ -189,7 +189,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
      * @param actualResult
      * @return
      */
-    private Boolean checkWeight(String mesBarCode, Integer actualQuantity,
+    private Boolean checkWeight(String mesBarCode, Double actualQuantity,
                                 Double actualResult, MaterialCheckResultVO checkResultVO, Integer weightTimes) {
         //计算平均值
         //TODO 补充计算说明
@@ -216,7 +216,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
      * @param actualResult
      * @return
      */
-    private Boolean checkCount(MaterialInCheckVO materialInCheckVO, Integer actualQuantity,
+    private Boolean checkCount(MaterialInCheckVO materialInCheckVO, Double actualQuantity,
                                Double actualResult, MaterialCheckResultVO checkResultVO) {
         double res = Math.ceil(actualResult / actualQuantity);
         checkResultVO.setAverageResult(res);
@@ -291,10 +291,10 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         List<MaterialReceiveVO> list = materialRecevieMapper.selectMaterialReceiveVOList(searchDTO);
 
         //获取该物料下的该批次的总数量
-        int total = list.stream().mapToInt(MaterialReceiveVO::getQuantity).sum();
+        Double total = list.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
         //计算最小包装数量
-        Integer totalPackage = (int) Math.ceil(Double.valueOf(total) / Double.valueOf(minPackageNumber));
-
+        Double totalPackage = Math.ceil(Double.valueOf(total) / Double.valueOf(minPackageNumber));
+        materialInCheckVO.setTotalQuantity(total);
         materialInCheckVO.setCheckQuantity(getCheckQuantity(totalPackage));
 
     }
@@ -334,21 +334,21 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
      * @param totalPackage
      * @return
      */
-    private Integer getCheckQuantity(Integer totalPackage) {
+    private Double getCheckQuantity(Double totalPackage) {
         if (totalPackage >= 1 && totalPackage <= 10) {
             return totalPackage;
         } else if (totalPackage >= 1 && totalPackage <= 50) {
-            return 10;
+            return Double.valueOf(10);
         } else if (totalPackage >= 51 && totalPackage <= 99) {
-            return 13;
+            return Double.valueOf(13);
         } else if (totalPackage >= 100 && totalPackage <= 500) {
-            return 50;
+            return Double.valueOf(50);
         } else if (totalPackage >= 501 && totalPackage <= 3200) {
-            return 80;
+            return Double.valueOf(80);
         } else if (totalPackage > 3200) {
-            return 125;
+            return Double.valueOf(125);
         }
-        return 0;
+        return Double.valueOf(0);
     }
 
 
