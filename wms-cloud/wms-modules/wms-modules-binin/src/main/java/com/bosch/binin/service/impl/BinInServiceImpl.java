@@ -382,6 +382,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         // 更新kanban和移库,转储单状态
         updateKanbanWareShiftStatus(stock, sscc);
 
+        //
+
 
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
     }
