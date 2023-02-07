@@ -366,6 +366,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         stock.setFreezeStock(Double.valueOf(0));
         stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
         stock.setBinInId(binIn.getId());
+
         stock.setCreateBy(SecurityUtils.getUsername());
         stock.setCreateTime(new Date());
         stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
