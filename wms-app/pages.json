@@ -110,8 +110,13 @@
 		},
 		{
 			"path": "pages/splitPallet/addSplit"
+		},
+		{
+			"path": "pages/sscc/scan"
+		},
+		{
+			"path": "pages/sscc/dashboard"
 		}
-		
 	],
 	"globalStyle": {
 		"navigationStyle": "custom"

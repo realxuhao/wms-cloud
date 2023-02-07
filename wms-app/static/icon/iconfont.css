@@ -1,8 +1,8 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3699882 */
-  src: url('static/icon/iconfont.woff2?t=1668074667696') format('woff2'),
-       url('static/icon/iconfont.woff?t=1668074667696') format('woff'),
-       url('static/icon/iconfont.ttf?t=1668074667696') format('truetype');
+  src: url('//at.alicdn.com/t/c/font_3699882_6rxjz1bfzv4.woff2?t=1675318335763') format('woff2'),
+       url('//at.alicdn.com/t/c/font_3699882_6rxjz1bfzv4.woff?t=1675318335763') format('woff'),
+       url('//at.alicdn.com/t/c/font_3699882_6rxjz1bfzv4.ttf?t=1675318335763') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,14 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-SSCC:before {
+  content: "\e69a";
+}
+
+.icon-kuwei:before {
+  content: "\e667";
 }
 
 .icon-purchasereceipt:before {
@@ -144,5 +152,3 @@
 .icon-rukuwancheng:before {
   content: "\e642";
 }
-
-

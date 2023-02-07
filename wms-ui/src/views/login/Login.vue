@@ -4,7 +4,7 @@
       <!-- <div class="logo">
         <img src="@/assets/logo.png" alt="">
       </div> -->
-      <h3>WMS仓储管理</h3>
+      <h3>仓库可视化管理平台</h3>
     </div>
     <a-form-model
       layout="vertical"
@@ -187,9 +187,9 @@ export default {
 .main{
   width: 380px;
   position: absolute;
-  top: 140px;
-  transform: translateX(-50%);
-  left: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 220px;
 }
 
 .header{

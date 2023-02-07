@@ -57,6 +57,14 @@
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
 						<view class="text">拆托上架</view>
 					</view>
+					<view class="list-item" @click="handleGoto('/pages/manualTrans/binIn')">
+						<uni-icons custom-prefix="iconfont" class="icon " type="icon-SSCC" color="#1296db"></uni-icons>
+						<view class="text">SSCC查询</view>
+					</view>	
+					<view class="list-item" @click="handleGoto('/pages/manualTrans/binIn')">
+						<uni-icons custom-prefix="iconfont" class="icon " type="icon-kuwei" color="#2664CB"></uni-icons>
+						<view class="text">库位查询</view>
+					</view>	
 				</view>
 			</uni-section>
 			

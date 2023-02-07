@@ -122,6 +122,7 @@
 					uni.redirectTo({
 						url:`/pages/splitPallet/splitPallet?ssccNumber=${ssccNumber}&quantity=${quantity}&mesBarCode=${this.code}`
 					})
+					Bus.$emit('startScan')
 				}
 			},
 			handleGoto(){

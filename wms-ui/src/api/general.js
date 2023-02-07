@@ -4,7 +4,6 @@ import axios from 'axios'
 import * as uuid from 'uuid'
 import store from '../store'
 import { getToken } from '@/utils/cookie'
-import { ApiError } from '@/utils/error'
 
 const okayHttpStatuses = [
   200,
@@ -30,7 +29,7 @@ const errorParser = async (response) => {
           }, 1500)
         })
       }
-      return Promise.reject({message:'Unauthorized'})
+      return Promise.reject(new Error({ message: 'Unauthorized' }))
     }
 
     // if (data instanceof Blob) {
@@ -44,10 +43,10 @@ const errorParser = async (response) => {
     // }
 
     if (data.code && data.code !== 200) {
-      return Promise.reject({
+      return Promise.reject(new Error({
         ...data,
         message: data.msg || '未知的错误，请联系要管理员！'
-      })
+      }))
     }
 
     return response
@@ -57,7 +56,7 @@ const errorParser = async (response) => {
       message: 'Forbidden',
       description: data.errorMessage
     })
-    return Promise.reject({message:'Forbidden'})
+    return Promise.reject(new Error({ message: 'Forbidden' }))
   }
   if (status === 401) {
     const token = getToken()
@@ -72,11 +71,11 @@ const errorParser = async (response) => {
         }, 1500)
       })
     }
-    return Promise.reject({message:'Unauthorized'})
+    return Promise.reject(new Error({ message: 'Unauthorized' }))
   }
 
   const errorMessage = (data && data.msg) ? data.msg : 'Unknown Network Error'
-  return Promise.reject({message:errorMessage})
+  return Promise.reject(new Error({ message: errorMessage }))
 }
 
 export const createInstance = (baseUrl, authenticated) => {
