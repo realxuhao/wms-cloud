@@ -253,7 +253,7 @@
         m.remark,
         m.pallet_id,
         m.pallet_type,
-        m.iqc
+        m.iqc,
         m.pallet_type,
         md.code as cell
         FROM
