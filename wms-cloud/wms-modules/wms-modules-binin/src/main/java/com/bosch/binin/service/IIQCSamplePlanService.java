@@ -1,5 +1,6 @@
 package com.bosch.binin.service;
 
+import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
 
@@ -13,4 +14,6 @@ import java.util.List;
  **/
 public interface IIQCSamplePlanService {
     List<IQCSamplePlanVO> getSamplePlan(IQCSamplePlanQueryDTO dto);
+
+    void manualAdd(List<IQCSamplePlanDTO> dto);
 }

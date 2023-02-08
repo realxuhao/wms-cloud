@@ -1,9 +1,8 @@
 package com.bosch.binin.controller;
 
+import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
-import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
-import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
@@ -13,9 +12,8 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -46,6 +44,12 @@ public class IQCController extends BaseController {
         startPage();
         List<IQCSamplePlanVO> list = samplePlanService.getSamplePlan(queryDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
+    @PostMapping(value = "/sample/manualAdd")
+    public R manualAdd(@RequestBody @Validated List<IQCSamplePlanDTO> dtos) {
+        samplePlanService.manualAdd(dtos);
+        return R.ok();
     }
 
 
