@@ -111,4 +111,6 @@ public class MaterialVO {
      */
     @ApiModelProperty(value = "托盘id")
     private Long palletId;
+
+    private String cell;
 }

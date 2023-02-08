@@ -55,6 +55,7 @@
         <result property="status" column="status"/>
         <result property="palletId" column="pallet_id"/>
         <result property="palletType" column="pallet_type"/>
+        <result property="cell" column="cell"/>
     </resultMap>
     <sql id="selectMaterialVo">
         select id,
@@ -244,10 +245,12 @@
         m.STATUS,
         m.remark,
         m.pallet_id,
-        m.pallet_type
+        m.pallet_type,
+        md.code as cell
         FROM
         md_material m
         LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
+                                             left join md_department md on mt.department_id = md.id
 
         <where>
             <if test="code != null  and code != ''">and m.code = #{code}</if>
@@ -269,6 +272,12 @@
             <if test="status != null ">and m.status = #{status}</if>
             <if test="palletId != null ">and m.pallet_id = #{palletId}</if>
             <if test="palletType != null ">and m.pallet_type = #{palletType}</if>
+            <if test="materialNbList!= null and materialNbList.size()>0">
+                m.code in
+                <foreach item="item" collection="materialNbList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
     </select>
 

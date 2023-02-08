@@ -18,7 +18,7 @@ public class IQCSamplePlanDTO {
     private String ssccNb;
     @NotNull
     @ApiModelProperty(value = "抽样数量")
-    private String sampleQuantity;
+    private Double sampleQuantity;
 //    @ApiModelProperty(value = "源sscc")
 //    private String sourceSsccNb;
 }
