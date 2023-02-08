@@ -100,6 +100,13 @@ public class MaterialDTO extends PageDomain {
     private Long palletWeight;
 
     /**
+     * iqc
+     */
+    @ExcelProperty(value = "IQC Plan\n[Y/N]")
+    @ApiModelProperty(value = "IQC")
+    private String iqc;
+
+    /**
      * 来料总重量（每托）
      */
     @ExcelProperty(value = "来料总重量（每托）")

@@ -28,6 +28,7 @@
         <result property="status" column="status"/>
         <result property="remark" column="remark"/>
         <result property="palletId" column="pallet_id"/>
+        <result property="iqc" column="iqc"/>
         <result property="palletType" column="pallet_type"/>
         <result property="deleteFlag" column="delete_flag"/>
     </resultMap>
@@ -55,6 +56,7 @@
         <result property="status" column="status"/>
         <result property="palletId" column="pallet_id"/>
         <result property="palletType" column="pallet_type"/>
+        <result property="iqc" column="iqc"/>
     </resultMap>
     <sql id="selectMaterialVo">
         select id,
@@ -80,7 +82,8 @@
                remark,
                pallet_id,
                pallet_type,
-               delete_flag
+               delete_flag,
+               iqc
         from md_material
     </sql>
 
@@ -106,6 +109,7 @@
             <if test="status != null and status != '' ">and status = #{status}</if>
             <if test="palletId != null  ">and pallet_id = #{palletId}</if>
             <if test="palletType != null and palletType != '' ">and pallet_type = #{palletType}</if>
+            <if test="iqc != null and iqc != '' ">and iqc = #{iqc}</if>
             <if test="deleteFlag != null  ">and delete_flag = #{deleteFlag}</if>
         </where>
     </select>
@@ -141,6 +145,7 @@
             <if test="remark != null">remark,</if>
             <if test="palletId != null">pallet_id,</if>
             <if test="palletType != null">pallet_type,</if>
+            <if test="iqc != null and iqc != ''">iqc,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="code != null and code != ''">#{code},</if>
@@ -167,6 +172,7 @@
             <if test="remark != null">#{remark},</if>
             <if test="palletId != null">#{palletId},</if>
             <if test="palletType != null">#{palletType},</if>
+            <if test="iqc != null">#{iqc},</if>
         </trim>
     </insert>
 
@@ -200,6 +206,7 @@
             <if test="palletId != null">pallet_id = #{palletId},</if>
             <if test="palletType != null">pallet_type = #{palletType},</if>
             <if test="deleteFlag != null  ">and delete_flag = #{deleteFlag}</if>
+            <if test="iqc != null and iqc != ''">iqc = #{iqc},</if>
         </trim>
         where id = #{id}
     </update>
@@ -244,7 +251,8 @@
         m.STATUS,
         m.remark,
         m.pallet_id,
-        m.pallet_type
+        m.pallet_type,
+        m.iqc
         FROM
         md_material m
         LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
@@ -269,6 +277,7 @@
             <if test="status != null ">and m.status = #{status}</if>
             <if test="palletId != null ">and m.pallet_id = #{palletId}</if>
             <if test="palletType != null ">and m.pallet_type = #{palletType}</if>
+            <if test="iqc != null ">and m.iqc = #{iqc}</if>
         </where>
     </select>
 
@@ -297,7 +306,8 @@
                m.STATUS,
                m.remark,
                m.pallet_id,
-               m.pallet_type
+               m.pallet_type,
+               m.iqc
         FROM md_material m
                  LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
         where m.id = #{id}
@@ -328,7 +338,8 @@
                m.STATUS,
                m.remark,
                m.pallet_id,
-               m.pallet_type
+               m.pallet_type,
+               m.iqc
         FROM md_material m
                  LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
         where m.CODE = #{materialCode}
