@@ -9,6 +9,7 @@ import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
+import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.mapper.IQCSamplePlanMapper;
 import com.bosch.binin.mapper.ManualTransferOrderMapper;
 import com.bosch.binin.service.IIQCSamplePlanService;
@@ -20,6 +21,7 @@ import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -51,7 +53,6 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
     public List<IQCSamplePlanVO> getSamplePlan(IQCSamplePlanQueryDTO dto) {
         return samplePlanMapper.getSamplePlan(dto);
     }
-
 
 
     @Override
@@ -96,9 +97,9 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
             iqcSamplePlan.setCell(finalMaterialVOMap.get(stock.getMaterialNb()).getCell());
             iqcSamplePlan.setMaterielNb(stock.getMaterialNb());
             iqcSamplePlan.setBinDownCode(stock.getBinCode());
-            iqcSamplePlan.setBinDownUser(SecurityUtils.getUsername());
             iqcSamplePlan.setBinDownTime(new Date());
             iqcSamplePlan.setRecommendSampleQuantity(ssccMaps.get(stock.getSsccNumber()).getSampleQuantity());
+            iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
             samplePlanList.add(iqcSamplePlan);
             stock.setFreezeStock(stock.getAvailableStock());
             stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
@@ -107,6 +108,54 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         saveBatch(samplePlanList);
 
         stockService.updateBatchById(stockList);
+
+
+    }
+
+    @Override
+    public void modifySscc(IQCSamplePlanDTO dto) {
+        if (Objects.isNull(dto) || StringUtils.isNull(dto.getSourceSsccNb())) {
+            throw new ServiceException("请选中数据后重试");
+        }
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, dto.getSourceSsccNb());
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
+        if (iqcSamplePlan == null) {
+            throw new ServiceException("sscc:" + dto.getSourceSsccNb() + "对应的抽样信息不存在");
+        }
+
+        if (iqcSamplePlan.getStatus() != IQCStatusEnum.WAITING_BIN_DOWN.code()) {
+            throw new ServiceException("状态为：" + IQCStatusEnum.getDesc(iqcSamplePlan.getStatus()) + ",不可以修改");
+        }
+
+
+        LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.eq(Stock::getSsccNumber, dto.getSsccNb()).eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        Stock stock = stockService.getOne(stockQueryWrapper);
+        if (!iqcSamplePlan.getMaterielNb().equals(stock.getMaterialNb())) {
+            throw new ServiceException("只能修改为同一物料号的库存sscc");
+        }
+        if (Objects.isNull(stock) || stock.getFreezeStock() > 0) {
+            throw new ServiceException("库存状态过期，请重新选择");
+        }
+        if (dto.getSampleQuantity() > stock.getTotalStock()) {
+            throw new ServiceException("抽样数量不能大于库存数量");
+        }
+        //老任务取消
+        iqcSamplePlan.setStatus(IQCStatusEnum.CANCEL.code());
+        updateById(iqcSamplePlan);
+
+        //新建任务
+        IQCSamplePlan samplePlan = new IQCSamplePlan();
+        samplePlan.setSsccNb(dto.getSsccNb());
+        samplePlan.setCell(iqcSamplePlan.getCell());
+        samplePlan.setMaterielNb(iqcSamplePlan.getMaterielNb());
+        samplePlan.setBinDownCode(stock.getBinCode());
+        samplePlan.setBinDownTime(new Date());
+        samplePlan.setRecommendSampleQuantity(dto.getSampleQuantity());
+        samplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
+        save(samplePlan);
 
 
     }

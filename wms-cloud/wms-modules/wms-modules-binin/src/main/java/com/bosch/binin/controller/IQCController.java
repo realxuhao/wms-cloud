@@ -52,5 +52,11 @@ public class IQCController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping(value = "/sample/modifySscc")
+    public R modifySscc(@RequestBody @Validated IQCSamplePlanDTO dto) {
+        samplePlanService.modifySscc(dto);
+        return R.ok();
+    }
+
 
 }

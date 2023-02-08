@@ -19,4 +19,7 @@ public interface IIQCSamplePlanService extends IService<IQCSamplePlan> {
     List<IQCSamplePlanVO> getSamplePlan(IQCSamplePlanQueryDTO dto);
 
     void manualAdd(List<IQCSamplePlanDTO> dto);
+
+    void modifySscc(IQCSamplePlanDTO dto);
+
 }

@@ -18,7 +18,7 @@ import java.util.Date;
  **/
 @Data
 @TableName("iqc_sample_plan")
-public class IQCSamplePlan {
+public class IQCSamplePlan extends BaseEntity {
 
     @ApiModelProperty(value = "sscc")
     private String ssccNb;
@@ -49,15 +49,14 @@ public class IQCSamplePlan {
     private Date binInTime;
     @ApiModelProperty(value = "上架库位")
     private String binInCode;
-    /** 创建者 */
-    @TableField(fill = FieldFill.INSERT)
-    @ApiModelProperty(value = "创建者")
-    private String createBy;
 
-    /** 创建时间 */
-    @TableField(fill = FieldFill.INSERT)
-    @ApiModelProperty(value = "创建时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
+
+    @ApiModelProperty(value = "状态，0：待下架，1：待收养，2：待上架，3：完成")
+    private Integer status;
+
+
+
+
+    private Integer deleteFlag;
 
 }
