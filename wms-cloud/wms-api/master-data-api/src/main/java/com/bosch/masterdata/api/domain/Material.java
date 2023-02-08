@@ -3,6 +3,7 @@ package com.bosch.masterdata.api.domain;
 import java.math.BigDecimal;
 
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -66,6 +67,11 @@ public class Material extends BaseEntity
     /** 托盘重量 */
     @Excel(name = "托盘重量")
     private Long palletWeight;
+
+
+    /** iqc */
+    @Excel(name = "IQC")
+    private String iqc;
 
     /** 来料总重量（每托） */
     @Excel(name = "来料总重量", readConverterExp = "每=托")

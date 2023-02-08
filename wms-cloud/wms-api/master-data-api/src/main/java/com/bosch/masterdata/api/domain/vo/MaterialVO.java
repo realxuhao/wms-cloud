@@ -112,5 +112,9 @@ public class MaterialVO {
     @ApiModelProperty(value = "托盘id")
     private Long palletId;
 
+    /** iqc */
+    @ApiModelProperty(value = "IQC")
+    private String iqc;
+
     private String cell;
 }
