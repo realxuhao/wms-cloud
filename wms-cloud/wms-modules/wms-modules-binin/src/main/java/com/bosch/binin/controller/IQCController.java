@@ -110,6 +110,12 @@ public class IQCController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping(value = "/sample/confirm")
+    @ApiOperation("IQC抽样确认")
+    public R confirm(@RequestBody IQCSamplePlanDTO dto) {
+        samplePlanService.confirm(dto);
+        return R.ok();
+    }
 
 
 

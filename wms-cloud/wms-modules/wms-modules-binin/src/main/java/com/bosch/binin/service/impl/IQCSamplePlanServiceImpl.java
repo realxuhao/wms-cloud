@@ -278,5 +278,24 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         return samplePlan.get(0);
     }
 
+    @Override
+    public void confirm(IQCSamplePlanDTO dto) {
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, dto.getSsccNb());
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
+        if (iqcSamplePlan == null) {
+            throw new ServiceException("没有该sscc:" + dto.getSsccNb() + "对应的IQC抽样任务");
+        }
+        if (!iqcSamplePlan.getStatus().equals(IQCStatusEnum.WAITING_SAMPLE.code())) {
+            throw new ServiceException("sscc:" + dto.getSsccNb() + "对应任务状态为:" + IQCStatusEnum.getDesc(iqcSamplePlan.getStatus()) + ",不可抽样");
+        }
+        iqcSamplePlan.setSampleQuantity(dto.getSampleQuantity());
+        iqcSamplePlan.setSampleTime(new Date());
+        iqcSamplePlan.setSampleUser(SecurityUtils.getUsername());
+        iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_IN.code());
+        samplePlanMapper.updateById(iqcSamplePlan);
+    }
+
 
 }

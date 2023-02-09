@@ -33,4 +33,6 @@ public interface IIQCSamplePlanService extends IService<IQCSamplePlan> {
     void cancel(Long id);
 
     IQCSamplePlanVO info(String mesBarCode);
+
+    void confirm(IQCSamplePlanDTO dto);
 }
