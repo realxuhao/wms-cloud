@@ -22,7 +22,7 @@ public class NmdVO implements Serializable {
      * id
      */
     @ApiModelProperty(value = "id")
-    private Integer id;
+    private Long id;
 
     /**
      * 物料code

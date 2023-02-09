@@ -18,7 +18,10 @@ import lombok.Data;
 @Data
 public class NmdDTO extends PageDomain {
 
-
+    /**
+     * id
+     */
+    private Long id;
 
     /**
      * 状态（1：启用，0：停用）
@@ -36,7 +39,7 @@ public class NmdDTO extends PageDomain {
     /**
      * 类别（0：Components，1：Package）
      */
-    @ExcelProperty(value = "分类[components,package]")
+    @ExcelProperty(value = "分类")
     @ApiModelProperty(value = "类别")
     private Integer classification;
 
@@ -50,7 +53,7 @@ public class NmdDTO extends PageDomain {
     /**
      * 抽样方案（1：正常,2：加严,3：放宽）
      */
-    @ExcelProperty(value = "正常[1]/加严[2]/放宽[3]")
+    @ExcelProperty(value = "正常/加严/放宽")
     @ApiModelProperty(value = "抽样方案")
     private Integer plan;
 

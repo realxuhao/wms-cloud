@@ -68,7 +68,7 @@
         SELECT COUNT(*) FROM md_nmd
         WHERE delete_flag='0' and  (material_code) IN
         <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
-            (#{item.code})
+            (#{item.materialCode})
         </foreach>
     </select>
 </mapper>
