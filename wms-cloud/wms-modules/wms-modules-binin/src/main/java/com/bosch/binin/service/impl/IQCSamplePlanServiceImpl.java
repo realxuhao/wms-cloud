@@ -19,6 +19,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -160,4 +161,37 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         stockService.updateById(stock);
 
     }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void binDown(String ssccNb) {
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, ssccNb);
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
+        if (iqcSamplePlan == null) {
+            throw new ServiceException("没有该sscc:" + ssccNb + "对应的IQC抽样下架任务");
+        }
+        if (iqcSamplePlan.getStatus() != IQCStatusEnum.WAITING_BIN_DOWN.code()) {
+            throw new ServiceException("sscc:" + ssccNb + "对应任务状态为:" + IQCStatusEnum.getDesc(iqcSamplePlan.getStatus()) + ",不可下架");
+        }
+        //删除库存
+        LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.eq(Stock::getSsccNumber, ssccNb).eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        Stock stock = stockService.getOne(stockQueryWrapper);
+        if (stock==null){
+            throw new ServiceException("没有该sscc:" + ssccNb + "对应的库存数据");
+        }
+        stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
+        stockService.updateById(stock);
+
+        //更新IQC任务状态
+        iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_SAMPLE.code());
+        //更新下架人下架时间
+        iqcSamplePlan.setBinDownUser(SecurityUtils.getUsername());
+        iqcSamplePlan.setBinDownTime(new Date());
+        samplePlanMapper.updateById(iqcSamplePlan);
+    }
+
+
 }

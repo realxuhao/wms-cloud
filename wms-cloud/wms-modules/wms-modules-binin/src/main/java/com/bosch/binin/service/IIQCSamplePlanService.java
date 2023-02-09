@@ -22,4 +22,5 @@ public interface IIQCSamplePlanService extends IService<IQCSamplePlan> {
 
     void modifySscc(IQCSamplePlanDTO dto);
 
+    void binDown(String ssccNb);
 }

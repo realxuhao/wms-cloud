@@ -8,6 +8,7 @@ import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
@@ -67,6 +68,13 @@ public class IQCController extends BaseController {
         IQCSamplePlanQueryDTO queryDTO = new IQCSamplePlanQueryDTO();
         queryDTO.setStatusList(Arrays.asList(IQCStatusEnum.WAITING_BIN_DOWN.code()));
         return R.ok(samplePlanService.getSamplePlan(queryDTO));
+    }
+
+    @PutMapping(value = "/binDown/{mesBarCode}")
+    @ApiOperation("IQC抽样计划执行下架接口")
+    public R binDown(@PathVariable String mesBarCode) {
+        samplePlanService.binDown(MesBarCodeUtil.getSSCC(mesBarCode));
+        return R.ok();
     }
 
 
