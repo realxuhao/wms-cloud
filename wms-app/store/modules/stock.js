@@ -17,6 +17,14 @@ const stock = {
 	  const {data} = await stockService.getStockInfoBySscc(sscc)
 	  return data
 	},
+	async getByMesBarCode({ commit }, mesBarCode) {
+	  const {data} = await stockService.getStockInfoByMesBarCode(mesBarCode)
+	  return data
+	},
+	async getByBinCode({ commit }, binCode) {
+	  const {data} = await stockService.getByBinCode(binCode)
+	  return data
+	},
   }
 }
 

@@ -41,7 +41,7 @@ export default {
             receiver = plus.android.implements('io.dcloud.feature.internal.reflect.BroadcastReceiver', {
                 onReceive: function(context, intent) {
                     plus.android.importClass(intent);
-                    let code = intent.getStringExtra('scannerdata'); // 换你的广播标签
+                    let code = intent.getStringExtra('data'); // 换你的广播标签
                     _this.queryCode(code);
                 }
             });

@@ -172,8 +172,8 @@ import material from '../../store/modules/material'
 				},
 				binInForm:{
 					mesBarCode:undefined,
-					actualCode:1,
-					palletCode:1,
+					actualCode:undefined,
+					palletCode:undefined,
 				},
 				
 				editFieldName:"binInForm.palletCode"  //'binInForm.mesBarCode','binInForm.actualCode'

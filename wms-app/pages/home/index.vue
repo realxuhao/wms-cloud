@@ -57,11 +57,11 @@
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
 						<view class="text">拆托上架</view>
 					</view>
-					<view class="list-item" @click="handleGoto('/pages/manualTrans/binIn')">
+					<view class="list-item" @click="handleGoto('/pages/sscc/scan')">
 						<uni-icons custom-prefix="iconfont" class="icon " type="icon-SSCC" color="#1296db"></uni-icons>
 						<view class="text">SSCC查询</view>
 					</view>	
-					<view class="list-item" @click="handleGoto('/pages/manualTrans/binIn')">
+					<view class="list-item" @click="handleGoto('/pages/location/scan')">
 						<uni-icons custom-prefix="iconfont" class="icon " type="icon-kuwei" color="#2664CB"></uni-icons>
 						<view class="text">库位查询</view>
 					</view>	
@@ -88,7 +88,6 @@
 					</view>
 				</view>
 			</uni-section>
-			
 			
 		</view>
 	
@@ -122,6 +121,7 @@
 			
 		},
 		methods:{
+			
 			async loadPlantList(){
 				const data = await this.$store.dispatch('plant/getList')
 				const plantList = _.uniqBy(data,'factoryCode')
@@ -207,6 +207,7 @@
 		justify-content: flex-start;
 		border-radius: 4px;
 		background: #fff;
+		flex-wrap: wrap;
 		.list-item{
 			width: 25%;
 			display: flex;
@@ -214,6 +215,7 @@
 			justify-content: center;
 			align-items: center;
 			color: #333;
+			margin-bottom: 16px;
 			.icon{
 				margin-bottom: 8px;
 				font-size: 32px !important;
