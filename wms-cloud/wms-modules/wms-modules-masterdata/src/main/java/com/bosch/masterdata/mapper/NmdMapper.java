@@ -3,6 +3,7 @@ package com.bosch.masterdata.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.masterdata.api.domain.Nmd;
+import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.dto.NmdDTO;
 import com.bosch.masterdata.api.domain.vo.NmdVO;
 
@@ -23,6 +24,27 @@ public interface NmdMapper extends BaseMapper<Nmd> {
      */
     public List<NmdVO> selectList(NmdDTO nmdDTO);
 
+
+    /**
+     * 更新nmd
+     * @param nmdDTO
+     * @return
+     */
+    public Integer updateNmd(NmdDTO nmdDTO);
+
+    /**
+     * 删除nmd
+     * @param ids
+     * @return
+     */
+    public Integer deleteNmd(Long[] ids);
+
+    /**
+     * 验证是否重复
+     * @param list
+     * @return
+     */
+    public Integer validateRecord(List<NmdDTO> list);
 }
 
 

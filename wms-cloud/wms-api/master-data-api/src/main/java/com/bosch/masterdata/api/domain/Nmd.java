@@ -48,6 +48,10 @@ public class Nmd extends BaseEntity {
     private String level;
 
     /**
+     * 删除标记1：删除，0:可用
+     */
+    private Integer deleteFlag;
+    /**
      * 抽样方案（1：正常,2：加严,3：放宽）
      */
     private Integer plan;

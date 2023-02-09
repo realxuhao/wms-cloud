@@ -29,14 +29,14 @@ public class NmdDTO extends PageDomain {
     /**
      * 物料code
      */
-    @ExcelProperty(value = "物料code")
-    @ApiModelProperty(value = "物料code")
+    @ExcelProperty(value = "料号")
+    @ApiModelProperty(value = "料号")
     private String materialCode;
 
     /**
      * 类别（0：Components，1：Package）
      */
-    @ExcelProperty(value = "类别")
+    @ExcelProperty(value = "分类[components,package]")
     @ApiModelProperty(value = "类别")
     private Integer classification;
 
@@ -50,9 +50,13 @@ public class NmdDTO extends PageDomain {
     /**
      * 抽样方案（1：正常,2：加严,3：放宽）
      */
-    @ExcelProperty(value = "抽样方案")
+    @ExcelProperty(value = "正常[1]/加严[2]/放宽[3]")
     @ApiModelProperty(value = "抽样方案")
     private Integer plan;
 
-
+    /**
+     * 备注
+     */
+    @ApiModelProperty(value = "备注")
+    private String remark;
 }
