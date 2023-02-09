@@ -20,12 +20,14 @@ import java.util.Date;
 @TableName("iqc_sample_plan")
 public class IQCSamplePlan extends BaseEntity {
 
+    private Long id;
+
     @ApiModelProperty(value = "sscc")
     private String ssccNb;
     @ApiModelProperty(value = "cell部门")
     private String cell;
     @ApiModelProperty(value = "物料号")
-    private String materielNb;
+    private String materialNb;
     @ApiModelProperty(value = "下架库位")
     private String binDownCode;
     @ApiModelProperty(value = "下架人")

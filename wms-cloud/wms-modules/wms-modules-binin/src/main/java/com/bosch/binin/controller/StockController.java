@@ -68,7 +68,7 @@ public class StockController extends BaseController {
                 stockVOR.setData(stockVO);
             }
         }
-        return getBySscc(sscc);
+        return stockVOR;
     }
 
     @GetMapping(value = "/getBySscc/{sscc}")

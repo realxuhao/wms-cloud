@@ -1,17 +1,14 @@
 package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.IQCSamplePlan;
-import com.bosch.binin.api.domain.ManualTransferOrder;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.mapper.IQCSamplePlanMapper;
-import com.bosch.binin.mapper.ManualTransferOrderMapper;
 import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.masterdata.api.RemoteMaterialService;
@@ -22,10 +19,9 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.function.Function;
@@ -56,6 +52,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void manualAdd(List<IQCSamplePlanDTO> dto) {
         if (Objects.isNull(dto)) {
             throw new ServiceException("请选中数据后重试");
@@ -81,9 +78,10 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         R<PageVO<MaterialVO>> R = remoteMaterialService.list(materialDTO);
         Map<String, MaterialVO> materialVOMap = new HashMap<>();
         if (R == null || !R.isSuccess()) {
-            List<MaterialVO> materialVOS = R.getData().getRows();
-            materialVOMap = materialVOS.stream().collect(Collectors.toMap(MaterialVO::getCode, Function.identity()));
+            throw new ServiceException("不存在该物料");
         }
+        List<MaterialVO> materialVOS = R.getData().getRows();
+        materialVOMap = materialVOS.stream().collect(Collectors.toMap(MaterialVO::getCode, Function.identity()));
 
 
         List<IQCSamplePlan> samplePlanList = new ArrayList();
@@ -95,7 +93,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
             IQCSamplePlan iqcSamplePlan = new IQCSamplePlan();
             iqcSamplePlan.setSsccNb(stock.getSsccNumber());
             iqcSamplePlan.setCell(finalMaterialVOMap.get(stock.getMaterialNb()).getCell());
-            iqcSamplePlan.setMaterielNb(stock.getMaterialNb());
+            iqcSamplePlan.setMaterialNb(stock.getMaterialNb());
             iqcSamplePlan.setBinDownCode(stock.getBinCode());
             iqcSamplePlan.setBinDownTime(new Date());
             iqcSamplePlan.setRecommendSampleQuantity(ssccMaps.get(stock.getSsccNumber()).getSampleQuantity());
@@ -133,7 +131,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
         stockQueryWrapper.eq(Stock::getSsccNumber, dto.getSsccNb()).eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         Stock stock = stockService.getOne(stockQueryWrapper);
-        if (!iqcSamplePlan.getMaterielNb().equals(stock.getMaterialNb())) {
+        if (!iqcSamplePlan.getMaterialNb().equals(stock.getMaterialNb())) {
             throw new ServiceException("只能修改为同一物料号的库存sscc");
         }
         if (Objects.isNull(stock) || stock.getFreezeStock() > 0) {
@@ -150,13 +148,16 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         IQCSamplePlan samplePlan = new IQCSamplePlan();
         samplePlan.setSsccNb(dto.getSsccNb());
         samplePlan.setCell(iqcSamplePlan.getCell());
-        samplePlan.setMaterielNb(iqcSamplePlan.getMaterielNb());
+        samplePlan.setMaterialNb(iqcSamplePlan.getMaterialNb());
         samplePlan.setBinDownCode(stock.getBinCode());
         samplePlan.setBinDownTime(new Date());
         samplePlan.setRecommendSampleQuantity(dto.getSampleQuantity());
         samplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
         save(samplePlan);
 
+        stock.setFreezeStock(stock.getAvailableStock());
+        stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
+        stockService.updateById(stock);
 
     }
 }

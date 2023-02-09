@@ -3,6 +3,7 @@ package com.bosch.binin.controller;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
+import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -57,6 +59,17 @@ public class IQCController extends BaseController {
         samplePlanService.modifySscc(dto);
         return R.ok();
     }
+
+
+    @GetMapping(value = "/binDown/list")
+    @ApiOperation("IQC抽样计划待下架列表")
+    public R<List<IQCSamplePlanVO>> binDownList() {
+        IQCSamplePlanQueryDTO queryDTO = new IQCSamplePlanQueryDTO();
+        queryDTO.setStatusList(Arrays.asList(IQCStatusEnum.WAITING_BIN_DOWN.code()));
+        return R.ok(samplePlanService.getSamplePlan(queryDTO));
+    }
+
+
 
 
 }
