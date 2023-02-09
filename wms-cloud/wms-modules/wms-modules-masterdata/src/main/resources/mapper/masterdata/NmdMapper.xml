@@ -16,22 +16,59 @@
         <result property="classification" column="classification" jdbcType="INTEGER"/>
         <result property="level" column="level" jdbcType="VARCHAR"/>
         <result property="plan" column="plan" jdbcType="INTEGER"/>
+        <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,material_code,create_by,update_by,
         create_time,update_time,status,
         remark,classification,level,
-        plan
+        plan,delete_flag
     </sql>
 
     <select id="selectList" parameterType="NmdDTO" resultMap="BaseResultMap">
+        select
         <include refid="Base_Column_List"/>
+        from md_nmd
         <where>
-
-            <if test="materialCode != null  and materialCode != ''">and material_code like concat('%', #{materialCode}, '%')</if>
-
+            delete_flag='0'
+            <if test="materialCode != null  and materialCode != ''">and material_code like concat('%', #{materialCode},
+                '%')
+            </if>
+            <if test="level != null  and level != ''">and level like concat('%', #{level}, '%')</if>
             <if test="status != null ">and status = #{status}</if>
+            <if test="classification != null ">and classification = #{classification}</if>
+            <if test="plan != null ">and plan = #{plan}</if>
         </where>
+    </select>
+
+
+    <update id="updateNmd" parameterType="NmdDTO">
+        update md_nmd
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="materialCode != null  and materialCode != ''">and material_code = #{materialCode}
+            </if>
+            <if test="level != null  and level != ''">and level = #{level}</if>
+            <if test="status != null ">and status = #{status}</if>
+            <if test="classification != null ">and classification = #{classification}</if>
+            <if test="plan != null ">and plan = #{plan}</if>
+            <if test="status != null">status = #{status}</if>
+            <if test="remark != null">remark = #{remark}</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="deleteNmd" parameterType="Long">
+        update md_nmd
+        set delete_flag='1'where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+    <select id="validateRecord" resultType="integer" parameterType="NmdDTO">
+        SELECT COUNT(*) FROM md_nmd
+        WHERE delete_flag='0' and  (material_code) IN
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            (#{item.code})
+        </foreach>
     </select>
 </mapper>
