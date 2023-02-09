@@ -1,7 +1,9 @@
 package com.bosch.binin.controller;
 
+import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
+import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.service.IIQCSamplePlanService;
@@ -77,7 +79,19 @@ public class IQCController extends BaseController {
         return R.ok();
     }
 
+    @GetMapping(value = "/binIn/{mesBarCode}")
+    @ApiOperation("IQC抽样计划分配库位接口")
+    public R<BinInVO> getBinInInfo(@PathVariable String mesBarCode) {
+        BinInVO binInVO= samplePlanService.getBinInInfo(MesBarCodeUtil.getSSCC(mesBarCode));
+        return R.ok(binInVO);
+    }
 
 
+    @PostMapping(value = "/binIn")
+    @ApiOperation("IQC抽样计划执行上架接口")
+    public R performBinIn(@RequestBody BinInDTO binInDTO) {
+        samplePlanService.performBinIn(binInDTO);
+        return R.ok();
+    }
 
 }

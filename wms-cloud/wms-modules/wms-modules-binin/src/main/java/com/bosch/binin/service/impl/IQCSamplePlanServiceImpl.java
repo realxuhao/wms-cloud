@@ -2,13 +2,18 @@ package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.IQCSamplePlan;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
+import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
+import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.mapper.IQCSamplePlanMapper;
+import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.masterdata.api.RemoteMaterialService;
@@ -18,6 +23,7 @@ import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +48,9 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
     @Autowired
     private IStockService stockService;
+
+    @Autowired
+    private IBinInService binInService;
 
     @Autowired
     private RemoteMaterialService remoteMaterialService;
@@ -179,7 +188,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
         stockQueryWrapper.eq(Stock::getSsccNumber, ssccNb).eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         Stock stock = stockService.getOne(stockQueryWrapper);
-        if (stock==null){
+        if (stock == null) {
             throw new ServiceException("没有该sscc:" + ssccNb + "对应的库存数据");
         }
         stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
@@ -191,6 +200,45 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         iqcSamplePlan.setBinDownUser(SecurityUtils.getUsername());
         iqcSamplePlan.setBinDownTime(new Date());
         samplePlanMapper.updateById(iqcSamplePlan);
+    }
+
+    @Override
+    public BinInVO getBinInInfo(String sscc) {
+
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, sscc);
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
+        if (iqcSamplePlan == null) {
+            throw new ServiceException("没有该sscc:" + sscc + "对应的IQC抽样待上架任务");
+        }
+        if (iqcSamplePlan.getStatus() != IQCStatusEnum.WAITING_BIN_IN.code()) {
+            throw new ServiceException("sscc:" + sscc + "对应任务状态为:" + IQCStatusEnum.getDesc(iqcSamplePlan.getStatus()) + ",不可上架");
+        }
+
+
+        BinInVO binInVO = binInService.generateInTaskByOldStock(sscc, iqcSamplePlan.getSampleQuantity(), SecurityUtils.getWareCode());
+
+        return binInVO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void performBinIn(BinInDTO binInDTO) {
+        String mesBarCode = binInDTO.getMesBarCode();
+        String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, sscc);
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
+        if (iqcSamplePlan == null) {
+            throw new ServiceException("没有该sscc:" + sscc + "对应的IQC抽样待上架任务");
+        }
+        if (iqcSamplePlan.getStatus() != IQCStatusEnum.WAITING_BIN_IN.code()) {
+            throw new ServiceException("sscc:" + sscc + "对应任务状态为:" + IQCStatusEnum.getDesc(iqcSamplePlan.getStatus()) + ",不可上架");
+        }
+        binInService.performBinIn(binInDTO);
+
     }
 
 

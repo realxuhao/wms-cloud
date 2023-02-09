@@ -13,6 +13,7 @@ import java.util.Date;
  **/
 @Data
 public class IQCSamplePlanVO {
+    private Long id;
     @ApiModelProperty(value = "sscc")
     private String ssccNb;
     @ApiModelProperty(value = "cell部门")
@@ -49,5 +50,7 @@ public class IQCSamplePlanVO {
     private Date binInTime;
     @ApiModelProperty(value = "上架库位")
     private String binInCode;
+    @ApiModelProperty(value = "推荐上架库位")
+    private String recommendBinCode;
 
 }

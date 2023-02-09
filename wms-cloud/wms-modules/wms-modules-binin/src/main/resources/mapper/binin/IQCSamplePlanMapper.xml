@@ -38,4 +38,10 @@
         <if test="endSampleTime != null">and isp.sample_time <![CDATA[ <= ]]> #{endSampleTime}</if>
 
     </select>
+    <select id="getBinInInfo" resultType="com.bosch.binin.api.domain.vo.IQCSamplePlanVO">
+        select isp.*,bi.recommend_bin_code as recommend_bin_code
+        from iqc_sample_plan isp
+        left join bi_in bi on bi.sscc_number = isp.sscc_nb and bi.delete_flag = 0
+        where isp.delete_flag = 0 and isp.sscc_nb = #{sscc}
+    </select>
 </mapper>
