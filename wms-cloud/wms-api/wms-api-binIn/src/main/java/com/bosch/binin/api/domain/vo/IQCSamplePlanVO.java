@@ -19,7 +19,9 @@ public class IQCSamplePlanVO {
     @ApiModelProperty(value = "cell部门")
     private String cell;
     @ApiModelProperty(value = "物料号")
-    private String materielNb;
+    private String materialNb;
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
     @ApiModelProperty(value = "批次号")
     private String batchNb;
     @ApiModelProperty(value = "BBD过期时间")
@@ -50,7 +52,6 @@ public class IQCSamplePlanVO {
     private Date binInTime;
     @ApiModelProperty(value = "上架库位")
     private String binInCode;
-    @ApiModelProperty(value = "推荐上架库位")
-    private String recommendBinCode;
-
+    @ApiModelProperty(value = "推荐抽样数量")
+    private Double recommendSampleQuantity;
 }

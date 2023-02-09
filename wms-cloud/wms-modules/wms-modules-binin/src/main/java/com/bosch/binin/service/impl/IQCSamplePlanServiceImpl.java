@@ -2,7 +2,6 @@ package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.IQCSamplePlan;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.BinInDTO;
@@ -10,7 +9,6 @@ import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
-import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.mapper.IQCSamplePlanMapper;
 import com.bosch.binin.service.IBinInService;
@@ -29,6 +27,7 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -57,7 +56,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
     @Override
     public List<IQCSamplePlanVO> getSamplePlan(IQCSamplePlanQueryDTO dto) {
-        return samplePlanMapper.getSamplePlan(dto);
+        return samplePlanMapper.getSamplePlanList(dto);
     }
 
 
@@ -108,6 +107,9 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
             iqcSamplePlan.setBinDownTime(new Date());
             iqcSamplePlan.setRecommendSampleQuantity(ssccMaps.get(stock.getSsccNumber()).getSampleQuantity());
             iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
+            iqcSamplePlan.setBatchNb(stock.getBatchNb());
+            iqcSamplePlan.setWareCode(stock.getWareCode());
+            iqcSamplePlan.setExpireDate(stock.getExpireDate());
             samplePlanList.add(iqcSamplePlan);
             stock.setFreezeStock(stock.getAvailableStock());
             stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
@@ -160,6 +162,9 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         samplePlan.setCell(iqcSamplePlan.getCell());
         samplePlan.setMaterialNb(iqcSamplePlan.getMaterialNb());
         samplePlan.setBinDownCode(stock.getBinCode());
+        samplePlan.setBatchNb(stock.getBatchNb());
+        samplePlan.setWareCode(stock.getWareCode());
+        samplePlan.setExpireDate(stock.getExpireDate());
         samplePlan.setBinDownTime(new Date());
         samplePlan.setRecommendSampleQuantity(dto.getSampleQuantity());
         samplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
@@ -237,7 +242,12 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         if (iqcSamplePlan.getStatus() != IQCStatusEnum.WAITING_BIN_IN.code()) {
             throw new ServiceException("sscc:" + sscc + "对应任务状态为:" + IQCStatusEnum.getDesc(iqcSamplePlan.getStatus()) + ",不可上架");
         }
-        binInService.performBinIn(binInDTO);
+        BinInVO binInVO = binInService.performBinIn(binInDTO);
+
+        iqcSamplePlan.setBinInCode(binInVO.getActualBinCode());
+        iqcSamplePlan.setBinInTime(new Date());
+        iqcSamplePlan.setBinInUser(SecurityUtils.getUsername());
+        samplePlanMapper.updateById(iqcSamplePlan);
 
     }
 
@@ -255,6 +265,17 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         }
         samplePlan.setStatus(IQCStatusEnum.CANCEL.code());
         updateById(samplePlan);
+    }
+
+    @Override
+    public IQCSamplePlanVO info(String mesBarCode) {
+        IQCSamplePlanQueryDTO dto = new IQCSamplePlanQueryDTO();
+        dto.setSsccNb(MesBarCodeUtil.getSSCC(mesBarCode));
+        List<IQCSamplePlanVO> samplePlan = getSamplePlan(dto);
+        if (CollectionUtils.isEmpty(samplePlan)) {
+            throw new ServiceException("没有该sscc" + MesBarCodeUtil.getSSCC(mesBarCode) + "对应的IQC抽样任务");
+        }
+        return samplePlan.get(0);
     }
 
 

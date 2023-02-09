@@ -53,12 +53,20 @@ public class IQCController extends BaseController {
     }
 
     @PostMapping(value = "/sample/manualAdd")
+    @ApiOperation("手工添加IQC抽样计划")
     public R manualAdd(@RequestBody @Validated List<IQCSamplePlanDTO> dtos) {
         samplePlanService.manualAdd(dtos);
         return R.ok();
     }
 
+    @GetMapping(value = "/sample/{mesBarCode}")
+    @ApiOperation("获取单个IQC抽样计划")
+    public R<IQCSamplePlanVO> info(@PathVariable("mesBarCode") String mesBarCode) {
+        return R.ok(samplePlanService.info(mesBarCode));
+    }
+
     @PostMapping(value = "/sample/modifySscc")
+    @ApiOperation("修改抽样SSCC")
     public R modifySscc(@RequestBody @Validated IQCSamplePlanDTO dto) {
         samplePlanService.modifySscc(dto);
         return R.ok();
@@ -101,5 +109,8 @@ public class IQCController extends BaseController {
         samplePlanService.performBinIn(binInDTO);
         return R.ok();
     }
+
+
+
 
 }
