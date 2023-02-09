@@ -241,5 +241,21 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
     }
 
+    @Override
+    public void cancel(Long id) {
+        IQCSamplePlan samplePlan = getById(id);
+        if (samplePlan == null || DeleteFlagStatus.TRUE.getCode().equals(samplePlan.getDeleteFlag())) {
+            throw new ServiceException("无该IQC抽样待上架任务");
+        }
+        if (samplePlan.getStatus() == IQCStatusEnum.CANCEL.code()) {
+            throw new ServiceException("该任务已经取消，不能再次取消");
+        }
+        if (samplePlan.getStatus() != IQCStatusEnum.WAITING_BIN_DOWN.code()) {
+            throw new ServiceException("该任务状态为:" + IQCStatusEnum.getDesc(samplePlan.getStatus()) + ",不可上架");
+        }
+        samplePlan.setStatus(IQCStatusEnum.CANCEL.code());
+        updateById(samplePlan);
+    }
+
 
 }

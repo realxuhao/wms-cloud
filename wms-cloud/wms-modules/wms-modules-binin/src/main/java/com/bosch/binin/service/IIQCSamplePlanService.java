@@ -29,4 +29,6 @@ public interface IIQCSamplePlanService extends IService<IQCSamplePlan> {
     BinInVO getBinInInfo(String sscc);
 
     void performBinIn(BinInDTO binInDTO);
+
+    void cancel(Long id);
 }

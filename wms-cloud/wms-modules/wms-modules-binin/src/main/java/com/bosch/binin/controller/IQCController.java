@@ -16,6 +16,7 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -76,6 +77,13 @@ public class IQCController extends BaseController {
     @ApiOperation("IQC抽样计划执行下架接口")
     public R binDown(@PathVariable String mesBarCode) {
         samplePlanService.binDown(MesBarCodeUtil.getSSCC(mesBarCode));
+        return R.ok();
+    }
+
+    @PutMapping(value = "/sample/cancel/{id}")
+    @ApiOperation("IQC抽样计划执行下架接口")
+    public R binDown(@PathVariable("id") Long id) {
+        samplePlanService.cancel(id);
         return R.ok();
     }
 
