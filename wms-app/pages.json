@@ -116,8 +116,14 @@
 		},
 		{
 			"path": "pages/sscc/dashboard"
+		},
+		{
+            "path" : "pages/location/scan"
+        },
+		{
+		    "path" : "pages/location/dashboard"
 		}
-	],
+    ],
 	"globalStyle": {
 		"navigationStyle": "custom"
 	}

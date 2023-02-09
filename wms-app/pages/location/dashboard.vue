@@ -1,50 +1,43 @@
 <template>
-		<my-page nav-title="SSCC信息展示">
+		<my-page nav-title="库位信息展示">
 			<view class="main" slot="page-main">
-				<view class="header m-b-8">
+				
+				<view class="header m-b-8" v-for="item in list">
 					<view class="text-line m-b-8 ">
 						<view class="label">SSCC码：</view>
-						{{info.ssccNumber}}
+						{{item.ssccNumber}}
 					</view>
 					
 					<view class="text-line m-b-8 ">
 						<view class="label">物料名称：</view>
-						{{info.materialName}}
+						{{item.materialName}}
 					</view>
 					<view class="text-line m-b-8 ">
 						<view class="label">
 							物料编码：
 						</view>
-						{{info.materialNb}}
+						{{item.materialNb}}
 					</view>
 					<view class="text-line m-b-8 ">
 						<view class="label">批次号：</view>
-						{{info.batchNb}}
+						{{item.batchNb}}
+					</view>
+					<view class="text-line m-b-8 ">
+						<view class="label">
+							数量：
+						</view>
+						{{item.totalStock}}
 					</view>
 					<view class="text-line m-b-8 ">
 						<view class="label">有效期：</view>
-						{{info.expireDate}}
+						{{item.expireDate}}
 					</view>
-					<view >
-						<view class="text-line m-b-8 ">
-							<view class="label">
-								托盘编码：
-							</view>
-							{{info.palletCode}}
-						</view>
 						<view class="text-line m-b-8 ">
 							<view class="label">
 								所在库位：
 							</view>
-							{{info.binCode}}
+							{{item.binCode}}
 						</view>
-						<view class="text-line m-b-8 ">
-							<view class="label">
-								所在仓库：
-							</view>
-							{{info.wareCode}}
-						</view>
-					</view>
 				</view>
 				
 			</view>
@@ -65,25 +58,21 @@
 		},
 		data() {
 			return {
-				info:false,
+				list:[],
 				
 			};
 		},
 		onLoad(options){
-			console.log(options)
-			this.getByMesBarCode(options.barCode)
+			this.getList(options.code)
 		},
 		onLaunch() {
 			Bus.$off("scancodedate");
 		},
 		methods:{
-			async getByMesBarCode(barCode){
+			async getList(code){
 				try{
-					const data = await this.$store.dispatch('stock/getByMesBarCode',barCode)
-					if(!data){
-						throw error({message:'系统未找到此SSCC信息，请检查'})
-					}
-					this.info = data
+					const data = await this.$store.dispatch('stock/getByBinCode',code)
+					this.list = data
 				}catch(e){
 					this.$refs.message.error(e.message)
 				}

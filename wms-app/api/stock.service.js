@@ -20,7 +20,19 @@ const getStockInfoBySscc = async (sscc) => {
   })
 }
 
+const getByBinCode = async (binCode) => {
+  const url = `/bin-in/stock/getByBinCode/${binCode}`
+  const method = 'GET'
+
+  return request({
+    url,
+    method,
+  })
+}
+
+
 export const stockService = {
   getStockInfoByMesBarCode,
-  getStockInfoBySscc
+  getStockInfoBySscc,
+  getByBinCode
 }
