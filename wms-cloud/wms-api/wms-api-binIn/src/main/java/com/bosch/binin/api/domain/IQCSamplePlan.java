@@ -1,5 +1,10 @@
 package com.bosch.binin.api.domain;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,7 +17,8 @@ import java.util.Date;
  * @create: 2023-02-07 15:31
  **/
 @Data
-public class IQCSamplePlan {
+@TableName("iqc_sample_plan")
+public class IQCSamplePlan extends BaseEntity {
 
     @ApiModelProperty(value = "sscc")
     private String ssccNb;
@@ -25,17 +31,32 @@ public class IQCSamplePlan {
     @ApiModelProperty(value = "下架人")
     private String binDownUser;
     @ApiModelProperty(value = "下架时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date binDownTime;
-    @ApiModelProperty(value = "抽样数量")
+    @ApiModelProperty(value = "推荐抽样数量")
+    private Double recommendSampleQuantity;
+    @ApiModelProperty(value = "实际抽样数量")
     private Double sampleQuantity;
     @ApiModelProperty(value = "抽样人")
     private String sampleUser;
     @ApiModelProperty(value = "抽样时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date sampleTime;
     @ApiModelProperty(value = "上架人")
     private String binInUser;
     @ApiModelProperty(value = "上架时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date binInTime;
     @ApiModelProperty(value = "上架库位")
     private String binInCode;
+
+
+    @ApiModelProperty(value = "状态，0：待下架，1：待收养，2：待上架，3：完成")
+    private Integer status;
+
+
+
+
+    private Integer deleteFlag;
+
 }

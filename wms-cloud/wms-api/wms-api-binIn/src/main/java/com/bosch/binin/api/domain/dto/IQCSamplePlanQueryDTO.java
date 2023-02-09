@@ -1,5 +1,6 @@
 package com.bosch.binin.api.domain.dto;
 
+import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * @create: 2023-02-07 15:33
  **/
 @Data
-public class IQCSamplePlanQueryDTO {
+public class IQCSamplePlanQueryDTO extends PageDomain {
     @ApiModelProperty(value = "sscc")
     private String ssccNb;
     @ApiModelProperty(value = "物料号")

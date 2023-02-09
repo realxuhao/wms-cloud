@@ -8,6 +8,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotEmpty;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 public class MaterialDTO extends PageDomain {
@@ -100,6 +101,13 @@ public class MaterialDTO extends PageDomain {
     private Long palletWeight;
 
     /**
+     * iqc
+     */
+    @ExcelProperty(value = "IQC Plan\n[Y/N]")
+    @ApiModelProperty(value = "IQC")
+    private String iqc;
+
+    /**
      * 来料总重量（每托）
      */
     @ExcelProperty(value = "来料总重量（每托）")
@@ -163,4 +171,7 @@ public class MaterialDTO extends PageDomain {
     @ExcelProperty(value = "托盘类型")
     @ApiModelProperty(value = "托盘类型")
     private String palletType;
+
+
+    private List<String> materialNbList;
 }

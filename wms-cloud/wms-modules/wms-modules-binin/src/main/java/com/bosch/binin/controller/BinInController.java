@@ -134,6 +134,8 @@ public class BinInController extends BaseController {
     }
 
 
+
+
     @GetMapping(value = "/virtualPalletCode/{palletType}")
     @ApiOperation("获取虚拟编码")
     public R<Map> virtualPalletCode(@PathVariable("palletType") String palletType) {

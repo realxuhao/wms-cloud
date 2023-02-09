@@ -2,7 +2,9 @@ package com.bosch.masterdata.api.factory;
 
 import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.Pallet;
+import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
+import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.ruoyi.common.core.domain.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +27,11 @@ public class RemoteMaterialFallbackFactory implements FallbackFactory<RemoteMate
             @Override
             public R<MaterialVO> getInfoByMaterialCode(String materialCode) {
                 return R.fail("物料明细查询失败");
+            }
+
+            @Override
+            public R<PageVO<MaterialVO>> list(MaterialDTO materialDTO) {
+                return R.fail("物料查询失败");
             }
 
 
