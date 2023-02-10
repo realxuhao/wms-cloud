@@ -21,6 +21,8 @@ public interface ITimeWindowService
      */
     public TimeWindow selectTimeWindowById(Long id);
 
+    public List<TimeWindow> selectTimeWindowByWareId(Long wareId);
+
     /**
      * 查询道口时间窗口列表
      * 
@@ -44,6 +46,9 @@ public interface ITimeWindowService
      * @return 结果
      */
     public int updateTimeWindow(TimeWindowDTO timeWindow);
+
+
+    public int saveTimeWindow(List<TimeWindowDTO> timeWindowList);
 
     /**
      * 批量删除道口时间窗口

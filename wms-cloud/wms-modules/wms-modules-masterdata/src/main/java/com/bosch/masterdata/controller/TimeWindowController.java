@@ -76,6 +76,19 @@ public class TimeWindowController extends BaseController {
     }
 
     /**
+     * 根据仓库id获取时间窗口列表
+     *
+     * @param wareId 仓库id
+     * @return
+     */
+    @RequiresPermissions("masterdata:window:getlist")
+    @GetMapping(value = "/ware/{wareId}")
+    @ApiOperation("根据仓库id获取时间窗口列表")
+    public AjaxResult getListByWareId(@PathVariable("wareId") Long wareId) {
+        return AjaxResult.success(timeWindowService.selectTimeWindowByWareId(wareId));
+    }
+
+    /**
      * 新增道口时间窗口
      */
     @RequiresPermissions("masterdata:window:add")
@@ -105,5 +118,18 @@ public class TimeWindowController extends BaseController {
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
         return toAjax(timeWindowService.deleteTimeWindowByIds(ids));
+    }
+
+    /**
+     * 保存某个仓库的时间窗口
+     *
+     * @param timeWindowDTOList 保存数据
+     * @return
+     */
+    @RequiresPermissions("masterdata:window:save")
+    @ApiOperation("保存某个仓库的时间窗口")
+    @PostMapping("/save")
+    public AjaxResult saveList(@RequestBody List<TimeWindowDTO> timeWindowDTOList) {
+        return toAjax(timeWindowService.saveTimeWindow(timeWindowDTOList));
     }
 }
