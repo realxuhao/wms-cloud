@@ -16,12 +16,16 @@
             <a-col span="4">
               <span class="table-page-search-submitButtons">
                 <a-button type="primary" @click="handleSearch" :loading="searchLoading"
-                  ><a-icon type="search" />查询</a-button
-                >
+                  ><a-icon type="search" />查询</a-button>
                 <a-button style="margin-left: 8px" type="primary" @click="handleSave" :loading="saveLoading"
-                  ><a-icon type="save" />保存</a-button
-                >
+                  ><a-icon type="save" />保存</a-button>
               </span>
+            </a-col>
+
+            <a-col span="3">
+              <a-tag class="docknum-tag" color="#1890ff">
+                该仓库总道口数：{{ queryForm.wareId == null ? null : wareOptionList.find(x => x.id == queryForm.wareId).dockNum }}
+              </a-tag>              
             </a-col>
           </a-row>
         </a-form>
@@ -39,39 +43,6 @@
 
 <script>
 import TimeWindowTable from './TimeWindowTable'
-
-const columns = [
-  {
-    title: '时间窗口起',
-    key: 'startTime',
-    dataIndex: 'startTime',
-    width: 200,
-  },
-  {
-    title: '时间窗口止',
-    key: 'endTime',
-    dataIndex: 'endTime',
-    width: 200,
-  },
-  {
-    title: '道口',
-    key: 'windowCode',
-    dataIndex: 'windowCode',
-    width: 200,
-  },
-  {
-    title: '创建时间',
-    key: 'createTime',
-    dataIndex: 'createTime',
-    width: 200,
-  },
-  {
-    title: '操作',
-    key: 'action',
-    width: 200,
-    scopedSlots: { customRender: 'action' },
-  },
-]
 
 const queryFormAttr = () => {
   return {
@@ -100,7 +71,6 @@ export default {
       paginationTotal: 0,
 
       tableLoading: false,
-      columns,
       list: [],
       wareOptionList: [
         { id: 1, code: 'W01', dockNum: 5 },
@@ -181,8 +151,8 @@ export default {
     /** 获取仓库List */
     async getWareOptionList () {
       try {
-        const data = await this.$store.dispatch('timeWindow/getWareOptionList')
-        this.wareOptionList = data
+        const data = await this.$store.dispatch('ware/getOptionList')
+        this.wareOptionList = data.data
         if(this.wareOptionList.length > 0){
           this.queryForm.wareId = this.wareOptionList[0].id;
         }
@@ -191,6 +161,7 @@ export default {
       }
     },
     async loadData() {
+      this.getWareOptionList()
       this.loadTableList()
     },
   },
@@ -201,4 +172,12 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.docknum-tag{
+    background-color: #1890ff;
+    height: 32px;
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 </style>

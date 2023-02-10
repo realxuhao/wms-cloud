@@ -34,10 +34,17 @@ const destroy = async (id) => {
   return data
 }
 
+const getOptionList = async () => {
+  const url = `/ware/all/list`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
 export const wareService = {
   getList,
   getOne,
   edit,
   add,
-  destroy
+  destroy,
+  getOptionList
 }

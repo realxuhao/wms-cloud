@@ -4,7 +4,7 @@
       <template v-for="(item, index) in timeWindowList">
         <a-col :key="index" :span="4">
           <div class="hour-div">
-            {{ item.beginHour + '-' + item.endHour }}
+            {{ item.startTime + '-' + item.endTime }}
             <a-input
               oninput="value=value.replace(/[^\d]/g,'')"
               class="center-input"
@@ -13,7 +13,7 @@
               placeholder="道口数量"
               @change="onDockNumChange(item)"
             />
-            <a-switch class="center" v-model="item.isUesd" checked-children="启用" un-checked-children="禁用"/>
+            <a-switch class="center" :checked="item.status == 1 ? true : false" @change="onStatusChange($event, item)" checked-children="启用" un-checked-children="禁用"/>
           </div>
         </a-col>
       </template>
@@ -52,24 +52,25 @@ export default {
   mounted() {
     this.loadData()
   },
-  // model: {
-  //   prop: 'wareId'
-  // },
+  model: {
+    prop: 'checked',
+    event: 'change',
+  },
   computed: {},
   methods: {
     /** 根据wareId查询数据 */
     loadData() {
       this.timeWindowList = []
       for (let i = 0; i < 24; i++) {
-        const beginHour = i < 10 ? '0' + i + ':' + '00' : i + ':' + '00'
-        const endHour = i + 1 < 10 ? '0' + (i + 1) + ':' + '00' : i + 1 + ':' + '00'
+        const startTime = i < 10 ? '0' + i + ':' + '00' : i + ':' + '00'
+        const endTime = i + 1 < 10 ? '0' + (i + 1) + ':' + '00' : i + 1 + ':' + '00'
         const row = {
-          beginHour: beginHour,
-          endHour: endHour,
+          id: null,
+          startTime: startTime,
+          endTime: endTime,
           wareId: this.wareId,
           dockNum: '',
-          status: 1,
-          isUesd: true,
+          status: 1
         }
         this.timeWindowList = [...this.timeWindowList, row]
       }
@@ -87,8 +88,19 @@ export default {
         item.dockNum = ''
       }
     },
+    /** 该时间段是否启用 */
+    onStatusChange(event, item){
+      if(event){
+        item.status = 1;
+        return true;
+      }else{
+        item.sataus = 0;
+        return false;
+      }
+    },
     /** 保存time window数据 */
     handleSave(){
+      console.info(this.timeWindowList)
       this.$emit('on-ok', true)
     },
     /** 格式化日期(暂时没有用到) */
@@ -106,7 +118,7 @@ export default {
   },
   watch: {    
     wareId (val) {
-      if (val) {
+      if (val != null) {
         this.loadData()
       }
     },
