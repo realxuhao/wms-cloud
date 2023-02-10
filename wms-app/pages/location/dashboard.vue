@@ -1,8 +1,7 @@
 <template>
 		<my-page nav-title="库位信息展示">
 			<view class="main" slot="page-main">
-				
-				<view class="header m-b-8" v-for="item in list">
+				<view class="header m-b-8" v-for="(item,index) in list" :key="index">
 					<view class="text-line m-b-8 ">
 						<view class="label">SSCC码：</view>
 						{{item.ssccNumber}}
@@ -43,7 +42,6 @@
 			</view>
 			<Message ref="message"></Message>
 		</my-page>
-	</view>
 </template>
 
 <script>
@@ -87,7 +85,7 @@
 
 <style lang="scss">
 .main{
-		height: 100%;
+		// height: 100%;
 		padding: 8px;
 		box-sizing: border-box;
 		display: flex;
