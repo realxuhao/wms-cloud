@@ -22,9 +22,13 @@ import bin from './modules/bin'
 import file from './modules/file'
 import binIn from './modules/binIn'
 import stock from './modules/stock'
+import wareShift from './modules/wareShift'
+import manualTrans from './modules/manualTrans'
 
 import materialInList from './modules/materialInList'
 import materialFeeding from './modules/materialFeeding'
+
+import split from './modules/split'
 
 // dynamic router permission control (Experimental)
 // import permission from './modules/async-router'
@@ -52,8 +56,11 @@ export default new Vuex.Store({
     stock,
     materialFeeding,
 
-    file,
+    split,
 
+    file,
+    wareShift,
+    manualTrans,
     materialInList,
     binIn
   },

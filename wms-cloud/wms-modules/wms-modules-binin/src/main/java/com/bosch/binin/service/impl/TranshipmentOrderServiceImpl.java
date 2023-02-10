@@ -77,4 +77,16 @@ public class TranshipmentOrderServiceImpl extends ServiceImpl<TranshipmentOrderM
         TranshipmentOrder transhipmentOrder = transhipmentOrderMapper.selectOne(qw);
         return transhipmentOrder;
     }
+
+    @Override
+    public Integer updateBySSCCS(List<String> ssccs) {
+        TranshipmentOrder transhipmentOrder=new TranshipmentOrder();
+        transhipmentOrder.setStatus(StatusEnums.TRUE.getCode());
+        LambdaUpdateWrapper<TranshipmentOrder> uw=new LambdaUpdateWrapper<>();
+        uw.in(TranshipmentOrder::getSsccNumber,ssccs);
+        uw.eq(TranshipmentOrder::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        uw.eq(TranshipmentOrder::getStatus,StatusEnums.FALSE.getCode());
+
+        return transhipmentOrderMapper.update(transhipmentOrder,uw);
+    }
 }

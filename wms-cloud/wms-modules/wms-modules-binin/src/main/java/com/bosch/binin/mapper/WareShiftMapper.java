@@ -2,6 +2,7 @@ package com.bosch.binin.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.binin.api.domain.WareShift;
+import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -19,4 +20,6 @@ import java.util.List;
 public interface WareShiftMapper extends BaseMapper<WareShift> {
 
     List<WareShiftVO> getWaitingBinIn(String wareCode);
+
+    List<WareShiftVO> list(WareShiftQueryDTO queryDTO);
 }

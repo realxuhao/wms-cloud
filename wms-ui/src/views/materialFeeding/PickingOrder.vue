@@ -4,11 +4,12 @@
     <div class="table-content">
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
-          <a-col :span="4">
+          <a-col :span="3">
             <a-form-model-item label="Cell">
               <a-select
                 allow-clear
                 v-model="queryForm.cell"
+                @change="handleCellChange"
               >
                 <a-select-option v-for="item in departmentList" :key="item.id" :value="item.code">
                   {{ item.code }}
@@ -17,18 +18,38 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
+            <a-form-model-item label="生产需求号">
+              <a-input v-model="queryForm.orderNumber" placeholder="生产需求号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
             <a-form-model-item label="物料编码">
               <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
+            <a-form-model-item label="物料类型">
+              <a-select
+                mode="multiple"
+                style="width: 100%"
+                placeholder="请先选择Cell"
+                optionLabelProp="value"
+                v-model="queryForm.materialTypeList"
+              >
+                <a-select-option class="white-pre-w" v-for="item in materialTypeList" :key="item.code" :value="item.code">
+                  <span class="m-r-4">{{ item.code }}</span>{{ item.description }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="3">
             <a-form-model-item label="状态">
               <a-select
                 allow-clear
                 v-model="queryForm.status"
               >
-                <a-select-option v-for="item in status" :key="item.value" :value="item.value">
-                  {{ item.text }}
+                <a-select-option v-for="(item,key) in statusMap" :key="key" :value="key">
+                  {{ item }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
@@ -39,11 +60,33 @@
                 <a-input v-model="queryForm.createBy" placeholder="创建人" allow-clear/>
               </a-form-item>
             </a-col>
+            <a-col :span="8">
+              <a-form-item label="创建时间" >
+                <a-range-picker
+                  format="YYYY-MM-DD HH:mm"
+                  :show-time="{ format: 'HH:mm' }"
+                  v-model="queryForm.date"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="8">
+              <a-form-item label="更新时间" >
+                <a-range-picker
+                  format="YYYY-MM-DD HH:mm"
+                  :show-time="{ format: 'HH:mm' }"
+                  v-model="queryForm.updateDate"
+                />
+              </a-form-item>
+            </a-col>
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+
+              <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
+
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
                 <a-icon :type="advanced ? 'up' : 'down'"/>
@@ -54,42 +97,58 @@
       </a-form>
       <div class="action-content">
         <a-button
-          style="margin-right:8px"
+          class="m-r-8"
           type="primary"
           :loading="submitLoading"
+          :disabled="!hasSelected || ![0].includes(record.status)"
+          @click="handleBatchAddJob">批量下发任务</a-button>
+
+        <a-button
+          type="primary"
+          :loading="confirmMaterialLoading"
           :disabled="!hasSelected"
-          @click="handleBatchAddJob">批量下发</a-button>
+          @click="handleConfirmMaterial"
+        >产线收货确认</a-button>
+
       </div>
       <a-table
+        table-layout="fixed"
         :row-selection="{
           selectedRowKeys: selectedRowKeys, onChange: onSelectChange ,
           getCheckboxProps:record => ({
             props: {
-              disabled: record.status === 0, // Column configuration not to be checked
+              disabled: [-1,1,6,7].includes(record.status), // Column configuration not to be checked
               name: record.name,
             },
           }),}"
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
-        rowKey="id"
+        rowKey="ssccNumber"
         :pagination="false"
         :scroll="{ x: 1300 }"
         size="middle"
       >
         <template slot="status" slot-scope="text">
           <div >
-            {{ statusMap[text] }}
+            <a-tag :color="statusColorMap[text]">{{ statusMap[text] }}</a-tag>
           </div>
         </template>
         <template slot="type" slot-scope="text">
           <div >
-            {{ typeMap[text] }}
+            <a-tag :color="typeColorMap[text]">{{ typeMap[text] }}</a-tag>
           </div>
         </template>
         <template slot="moveType" slot-scope="text">
           <div >
             {{ moveTypeMap[text] }}
+          </div>
+        </template>
+        <template slot="action" slot-scope="text, record">
+          <div class="action-con">
+            <a-popconfirm v-show="record.status===0" title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
+              <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
+            </a-popconfirm>
           </div>
         </template>
         <template slot="action" slot-scope="text, record">
@@ -100,13 +159,13 @@
               cancel-text="取消"
               @confirm="handleCancel(record)"
             >
-              <a class="danger-color m-r-4" :disabled="record.status===-1">取消</a>
+              <a class="danger-color" :disabled="[-1,6,7].includes(record.status)">取消</a>
             </a-popconfirm>
-            <a-divider type="vertical" />
-            <a
+            <!-- <a-divider type="vertical" /> -->
+            <!-- <a
               class="m-r-4"
-              :disabled="record.factoryCode!=='7752'"
-              @click="$refs.pikingOrderAddShiftTask.handleOpen(record)">新增移库任务</a>
+              :disabled="(record.factoryCode!=='7752' || record.status>0)"
+              @click="$refs.pikingOrderAddShiftTask.handleOpen(record)">新增移库任务</a> -->
           </div>
         </template>
       </a-table>
@@ -125,27 +184,41 @@
 
     </div>
 
-    <PikingOrderAddShiftTask ref="pikingOrderAddShiftTask"></PikingOrderAddShiftTask>
+    <PikingOrderAddShiftTask ref="pikingOrderAddShiftTask" @on-ok="loadTableList"></PikingOrderAddShiftTask>
   </div>
 </template>
 
 <script>
-// import _ from 'lodash'
+import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
 import EditTableCell from '@/components/EditTableCell'
 import PikingOrderAddShiftTask from './PikingOrderAddShiftTask'
+import { download } from '@/utils/file'
 
 const columns = [
   {
     title: 'cell',
     key: 'cell',
     dataIndex: 'cell',
+    width: 70
+  },
+  {
+    title: '生产需求号',
+    key: 'orderNumber',
+    dataIndex: 'orderNumber',
     width: 120
   },
   {
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
+    width: 120
+  },
+  {
+    title: '状态',
+    key: 'status',
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' },
     width: 120
   },
   {
@@ -204,13 +277,7 @@ const columns = [
     dataIndex: 'materialName',
     width: 120
   },
-  {
-    title: '状态',
-    key: 'status',
-    dataIndex: 'status',
-    scopedSlots: { customRender: 'status' },
-    width: 120
-  },
+
   {
     title: '创建人',
     key: 'createBy',
@@ -239,7 +306,7 @@ const columns = [
     title: '操作',
     key: 'action',
     fixed: 'right',
-    width: 200,
+    width: 120,
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -260,9 +327,27 @@ const status = [
 ]
 
 const statusMap = {
-  '-1': '已取消',
-  1: '已下发',
-  0: '未下发'
+  '-1': '取消任务',
+  0: '待下发',
+  1: '待下架',
+  2: '外库待发运',
+  3: '产线待收货',
+  4: '主库待收货',
+  5: '待上架',
+  6: '产线已收货',
+  7: '完成'
+}
+
+const statusColorMap = {
+  '-1': '#8f939c',
+  0: '#f3a73f',
+  1: '#f3a73f',
+  2: '#f3a73f',
+  3: '#f3a73f',
+  4: '#f3a73f',
+  5: '#f3a73f',
+  6: '#87d068',
+  7: '#87d068'
 }
 
 const moveTypeMap = {
@@ -277,12 +362,21 @@ const typeMap = {
   1: '拆托下架'
 }
 
+const typeColorMap = {
+  0: '#18bc37',
+  1: '#f3a73f'
+}
+
 const queryFormAttr = () => {
   return {
     cell: '',
     materialNb: '',
-    status: '',
-    createBy: ''
+    orderNumber: '',
+    status: undefined,
+    createBy: '',
+    date: [],
+    updateDate: [],
+    materialTypeList: []
   }
 }
 
@@ -296,6 +390,7 @@ export default {
   data () {
     return {
       tableLoading: false,
+      exportLoading: false,
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -303,10 +398,12 @@ export default {
       },
 
       submitLoading: false,
+      confirmMaterialLoading: false,
       selectedRowKeys: [],
       columns,
       list: [],
       departmentList: [],
+      materialTypeList: [],
 
       currentOrderNb: '',
       currentCell: '',
@@ -320,6 +417,8 @@ export default {
     statusMap: () => statusMap,
     moveTypeMap: () => moveTypeMap,
     typeMap: () => typeMap,
+    typeColorMap: () => typeColorMap,
+    statusColorMap: () => statusColorMap,
     hasSelected () {
       return this.selectedRowKeys.length > 0
     }
@@ -331,11 +430,41 @@ export default {
         const options = { ids: this.selectedRowKeys }
         await this.$store.dispatch('materialFeeding/batchAddJob', options)
 
-        this.$message.success('提交成功')
+        this.$message.success('下发成功')
+        this.selectedRowKeys = []
+
+        this.loadTableList()
       } catch (error) {
         this.$message.error(error.message)
       } finally {
         this.submitLoading = false
+      }
+    },
+    async handleConfirmMaterial () {
+      // this.$confirm({
+      //   title: '以下物料可用库存不足，是否进行部分拣配？',
+      //   content: h => {
+      //     return (
+      //       _.map(this.selectedRowKeys, item => {
+      //         return <p>物料号：{item.materialNb}, 可用库存量：{item.avaliableQuantity}</p>
+      //       })
+      //     )
+      //   },
+      //   onOk: () => this.submitCreateReductionTask(options),
+      //   onCancel: () => {
+      //     this.selectedRowKeys = []
+      //   }
+      // })
+      try {
+        this.confirmMaterialLoading = true
+        await this.$store.dispatch('materialFeeding/confirmMaterial', this.selectedRowKeys)
+        this.$message.success('收货确认成功')
+        this.selectedRowKeys = []
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.confirmMaterialLoading = false
       }
     },
     onSelectChange (selectedRowKeys) {
@@ -359,11 +488,20 @@ export default {
       try {
         this.tableLoading = true
 
+        const { date = [], updateDate } = this.queryForm
+        const createTimeStart = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
+        const createTimeEnd = date.length > 0 ? date[1].format(this.endDateFormat) : undefined
+        const updateTimeStart = updateDate.length > 0 ? updateDate[0].format(this.startDateFormat) : undefined
+        const updateTimeEnd = updateDate.length > 0 ? updateDate[1].format(this.endDateFormat) : undefined
+
+        const options = { ..._.omit(this.queryForm, ['date', 'updateDate']), createTimeStart, createTimeEnd, updateTimeStart, updateTimeEnd }
+
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('materialFeeding/getPickingOrderList', this.queryForm)
+        } = await this.$store.dispatch('materialFeeding/getPickingOrderList', options)
         this.list = rows
         this.paginationTotal = total
+        this.selectedRowKeys = []
       } catch (error) {
         this.$message.error(error.message)
       } finally {
@@ -373,6 +511,15 @@ export default {
     async loadDepartmentList () {
       const departmentList = await this.$store.dispatch('materialFeeding/getDepartmentList')
       this.departmentList = departmentList
+    },
+
+    async handleCellChange (value) {
+      if (!value) {
+        this.materialTypeList = []
+        return
+      }
+      const materialTypeList = await this.$store.dispatch('materialType/getByCell', value)
+      this.materialTypeList = materialTypeList.data
     },
     async loadData () {
       this.loadDepartmentList()
@@ -386,6 +533,20 @@ export default {
       } catch (error) {
         this.$message.error(error.message)
       }
+    },
+    async handleDownload () {
+      try {
+        this.exportLoading = true
+        this.queryForm.pageSize = 0
+        const blobData = await this.$store.dispatch('materialFeeding/exportCallExcel', this.queryForm)
+        console.log(blobData)
+        download(blobData, '叫料记录')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
+      }
     }
   },
   mounted () {
@@ -395,4 +556,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
+
+/deep/.ant-select-dropdown-menu-item{
+  white-space: pre-wrap !important;
+}
 </style>

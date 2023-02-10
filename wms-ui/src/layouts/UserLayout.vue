@@ -27,23 +27,18 @@ export default {
 <style lang="less" scoped>
 
 #userLayout.user-layout-wrapper {
-
     height: 100%;
+    background-image: url(~@/assets/images/login/background.jpg);
+    background-origin: 50%;
+    background-size: 100%;
+    width: 100%;
 
     .container {
-
       width: 100%;
-
       min-height: 100%;
-
-      background: #f0f2f5 url(~@/assets/images/login/background.jpg) no-repeat 50%;
-
-      background-size: 100%;
-
-      // padding: 110px 0 144px;
-
-      position: relative;
-
+      display: flex;
+      justify-content: center;
+      background: rgba(0,0,0,0.3);
     }
 
   }

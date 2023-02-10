@@ -7,7 +7,7 @@ public enum CheckTypeEnum {
 
     WEIGHT("称重", 0),
 
-    COUNT("数数", 1),
+    COUNT("点数", 1),
 
     FREE("免检", 2),
 

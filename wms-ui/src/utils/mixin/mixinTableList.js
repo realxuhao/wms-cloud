@@ -18,6 +18,14 @@ const mixinTableList = {
       tableLoading: false
     }
   },
+  computed: {
+    startDateFormat () {
+      return 'YYYY-MM-DD HH:MM:00'
+    },
+    endDateFormat () {
+      return 'YYYY-MM-DD HH:MM:00'
+    }
+  },
   methods: {
     onShowSizeChange () {
       this.queryForm.pageNum = 1

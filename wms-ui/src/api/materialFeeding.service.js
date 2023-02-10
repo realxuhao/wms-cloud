@@ -55,8 +55,8 @@ const updateQuantity = async (options) => {
 }
 
 const getPickingOrderList = async (options) => {
-  const url = `binin/materialKanban/list`
-  const { data } = await createAuthInstance(config.apiHost).post(url, options)
+  const url = `binin/materialKanban/list?${qs.stringify(options)}`
+  const { data } = await createAuthInstance(config.apiHost).get(url)
   return data
 }
 
@@ -67,8 +67,8 @@ const batchAddJob = async (options) => {
 }
 
 const cancelPickingOrder = async (options) => {
-  const url = `binin/materialKanban/cancelKanban/${options.id}`
-  const { data } = await createAuthInstance(config.apiHost).get(url)
+  const url = `binin/materialKanban/cancel/${options.id}`
+  const { data } = await createAuthInstance(config.apiHost).put(url)
   return data
 }
 
@@ -81,9 +81,36 @@ const exportExcel = async (options) => {
   return data
 }
 
+const exportCallExcel = async (options) => {
+  const url = `binin/materialKanban/export`
+  const { data } = await createAuthInstance(config.apiHost).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+  })
+  return data
+}
+
 const getStockInfo = async (parameter) => {
   const url = `binin/materialKanban/getStockInfo?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(config.apiHost).get(url)
+  return data
+}
+
+const addShiftTask = async (options) => {
+  const url = `binin/ware-shift/addShiftTask`
+  const { data } = await createAuthInstance(config.apiHost).post(url, options)
+  return data
+}
+
+const confirmMaterial = async (options) => {
+  const url = `binin/materialKanban/confirmMaterialBySSCCs?ssccs=${options}`
+  const { data } = await createAuthInstance(config.apiHost).get(url, options)
+  return data
+}
+
+const cancelFeeding = async (options) => {
+  const url = `binin/material-feeding/cancel/${options.id}`
+  const { data } = await createAuthInstance(config.apiHost).put(url)
   return data
 }
 
@@ -100,5 +127,9 @@ export const materialFeedingService = {
   batchAddJob,
   cancelPickingOrder,
   exportExcel,
-  getStockInfo
+  getStockInfo,
+  addShiftTask,
+  confirmMaterial,
+  cancelFeeding,
+  exportCallExcel
 }

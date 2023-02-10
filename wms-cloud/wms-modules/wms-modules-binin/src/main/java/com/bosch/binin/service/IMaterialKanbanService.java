@@ -52,7 +52,7 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
 
     void issueJob(String[] ssccNumbers);
 
-    List<MaterialKanbanVO> getWaitingJob(String mesbarCode);
+    MaterialKanbanVO getWaitingJob(String mesbarCode);
 
     boolean updateStocks (List<MaterialKanban> list);
 
@@ -105,7 +105,7 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
 
     void binDown(String sscc);
 
-    IPage<MaterialKanbanVO> pagebinDownList(PageDomain pageDomain,String wareCode);
+    List<MaterialKanbanVO> binDownList(PageDomain pageDomain, String wareCode);
 
     List<MaterialKanban> getListBySCAndStatus(List<String> sscc, Integer status);
 
@@ -114,4 +114,10 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     MaterialKanbanVO getKanbanBySSCC(String sscc);
 
     void splitPallet(SplitPalletDTO splitPallet);
+
+    void cancelKanban(Long id);
+
+    List<MaterialKanbanVO> waitingBinDownList(PageDomain pageDomain, String wareCode);
+
+    List<MaterialKanbanVO> getKanbanList(MaterialKanbanDTO dto);
 }

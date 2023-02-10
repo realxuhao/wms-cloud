@@ -5,6 +5,7 @@ import java.util.List;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.masterdata.api.domain.Area;
 import com.bosch.masterdata.api.domain.vo.FactoryVO;
+import com.bosch.masterdata.api.domain.vo.WareSelectVO;
 import com.bosch.masterdata.mapper.AreaMapper;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -100,5 +101,10 @@ public class WareServiceImpl extends ServiceImpl<WareMapper, Ware> implements IW
     @Override
     public List<FactoryVO> selectFactoryList() {
         return wareMapper.selectFactoryList();
+    }
+
+    @Override
+    public List<WareSelectVO> fetchWareList(){
+        return wareMapper.fetchWareList();
     }
 }

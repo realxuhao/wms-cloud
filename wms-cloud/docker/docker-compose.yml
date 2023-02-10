@@ -101,6 +101,8 @@ services:
       - wms-redis
     environment:
       NACOS_HOST: wms-nacos
+      TZ: Asia/Shanghai
+
   wms-auth:
     container_name: wms-auth
     build:
@@ -114,6 +116,8 @@ services:
       - wms-redis
     environment:
       NACOS_HOST: wms-nacos
+      TZ: Asia/Shanghai
+
   wms-modules-system:
     container_name: wms-modules-system
     build:
@@ -129,6 +133,8 @@ services:
       - wms-mysql
     environment:
       NACOS_HOST: wms-nacos
+      TZ: Asia/Shanghai
+
   wms-modules-file:
     container_name: wms-modules-file
     build:
@@ -144,6 +150,8 @@ services:
       - wms-mysql
     environment:
       NACOS_HOST: wms-nacos
+      TZ: Asia/Shanghai
+
   master-data:
     container_name: master-data
     build:
@@ -174,6 +182,8 @@ services:
       - wms-mysql
     environment:
       NACOS_HOST: wms-nacos
+      TZ: Asia/Shanghai
+
 
   bin-in:
     container_name: bin-in
@@ -190,4 +200,5 @@ services:
       - wms-mysql
     environment:
       NACOS_HOST: wms-nacos
+      TZ: Asia/Shanghai
 

@@ -47,7 +47,7 @@ public class MaterialInCheckVO {
      * 应检查数量
      */
     @ApiModelProperty(value = "应检查数量")
-    private Integer checkQuantity;
+    private Double checkQuantity;
 
     /**
      * 最小标准
@@ -96,6 +96,12 @@ public class MaterialInCheckVO {
      */
     @ApiModelProperty(value = "总托数")
     private int totalPallet;
+
+    /**
+     * 总数量
+     */
+    @ApiModelProperty(value = "总数量")
+    private Double totalQuantity;
 
 
 

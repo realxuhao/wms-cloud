@@ -3,7 +3,10 @@ package com.bosch.storagein.api.domain.dto;
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.util.Date;
 
 /**
@@ -65,5 +68,12 @@ public class MaterialQueryDTO extends PageDomain {
      */
     @ApiModelProperty(value = "仓库号")
     private String wareCode;
+
+    @ApiModelProperty(value = "排序字段")
+    private String orderField;
+
+    @ApiModelProperty(value = "排序类型,desc,asc")
+    @Pattern(regexp="asc|desc|ASC|DESC")
+    private String orderType;
 
 }

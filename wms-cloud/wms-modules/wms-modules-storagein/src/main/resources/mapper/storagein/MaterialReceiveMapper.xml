@@ -65,17 +65,19 @@
         sm.status,
         sm.edit_flag,
         sm.plant_nb
-        from si_material_receive sm left join (select  *  from md_material where delete_flag=0 )mm on sm.material_nb = mm.code
+        from si_material_receive sm left join (select * from md_material where delete_flag=0 )mm on sm.material_nb =
+        mm.code
         where sm.delete_flag=0
         <if test="plantNb != null  and plantNb != ''">and sm.plant_nb like concat('%', #{plantNb}, '%')</if>
         <if test="materialNb != null  and materialNb != ''">and sm.material_nb like concat('%', #{materialNb}, '%')</if>
         <if test="batchNb != null  and batchNb != ''">and sm.batch_nb like concat('%', #{batchNb}, '%')</if>
-        <if test="ssccNumber != null  and ssccNumber != ''">and sm.sscc_
-        number like concat('%', #{ssccNumber}, '%')</if>
+        <if test="ssccNumber != null  and ssccNumber != ''">and sm.sscc_number like concat('%', #{ssccNumber}, '%')</if>
 
-        <if test="fromPurchaseOrder != null and fromPurchaseOrder != ''">and sm.from_purchase_order like concat('%', #{fromPurchaseOrder}, '%')
+        <if test="fromPurchaseOrder != null and fromPurchaseOrder != ''">and sm.from_purchase_order like concat('%',
+            #{fromPurchaseOrder}, '%')
         </if>
-        <if test="poNumberItem != null and poNumberItem != ''">and sm.po_number_item like concat('%', #{poNumberItem}, '%')
+        <if test="poNumberItem != null and poNumberItem != ''">and sm.po_number_item like concat('%', #{poNumberItem},
+            '%')
         </if>
 
         <if test="startExpireDate != null and endExpireDate != null">and str_to_date(sm.expire_date, '%d/%m/%y') between
@@ -86,6 +88,18 @@
             #{startUploadTime} and #{endUploadTime}
         </if>
         <if test="status != null">and sm.status = #{status}</if>
+        order by sm.update_time desc, sm.upload_time desc
+        <choose>
+            <when test="orderField == 'status'">
+                ,status ${orderType}
+            </when>
+            <when test="orderField == 'fromPurchaseOrder'">
+                ,from_purchase_order ${orderType}
+            </when>
+            <when test="orderField == 'batchNb'">
+                ,batch_nb ${orderType}
+            </when>
+        </choose>
     </select>
 
     <select id="selectMaterialReceiveVOBySncc" parameterType="string" resultMap="MaterialReceiveVOResult">

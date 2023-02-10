@@ -63,7 +63,7 @@ public class MaterialReceiveVO {
      * 数量
      */
     @ApiModelProperty(value = "数量")
-    private Integer quantity;
+    private Double quantity;
 
     /**
      * 来源PO号

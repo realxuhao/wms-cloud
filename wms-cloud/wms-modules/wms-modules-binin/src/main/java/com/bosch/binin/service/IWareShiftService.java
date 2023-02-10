@@ -19,7 +19,7 @@ import java.util.List;
 public interface IWareShiftService extends IService<WareShift> {
     Boolean addShiftRequirement(AddShiftTaskDTO dto);
 
-    void binDown(String ssccNb);
+    void binDown(String mesBarCode);
 
     /**
      *
@@ -30,10 +30,17 @@ public interface IWareShiftService extends IService<WareShift> {
      */
     int updateStatusByStatus(List<String> ssccs, Integer queryStatus, Integer status);
 
-    BinInVO allocateBin(String mesBarCode);
+    BinInVO allocateBin(String mesBarCode,String wareCode);
 
-    List<WareShift> getWareShiftList(WareShiftQueryDTO queryDTO);
+    List<WareShiftVO> getWareShiftList(WareShiftQueryDTO queryDTO);
 
     List<WareShiftVO> getWaitingBinIn();
 
+    void cancelWareShift(Long id);
+
+    WareShift getWareShiftBySsccAndStatus(String sscc);
+
+    List<WareShift> getListBySSCC(List<String> ssccs);
+
+    Boolean add(AddShiftTaskDTO dto);
 }

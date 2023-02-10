@@ -200,4 +200,15 @@ public class MaterialBinServiceImpl extends ServiceImpl<MaterialBinMapper, Mater
                 SecurityUtils.getWareCode());
         return materialBinVOS;
     }
+
+    @Override
+    public List<MaterialBinVO> getListByMaterial(String materialCode,String wareCode) {
+//        LambdaQueryWrapper<MaterialBin> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+//        lambdaQueryWrapper.eq(MaterialBin::getMaterialCode, materialCode);
+//        List<MaterialBin> materialBins = materialBinMapper.selectList(lambdaQueryWrapper);
+//        List<MaterialBinVO> materialBinVOS = BeanConverUtil.converList(materialBins, MaterialBinVO.class);
+        List<MaterialBinVO> materialBinVOS = materialBinMapper.selectByWareCode(materialCode,
+                wareCode);
+        return materialBinVOS;
+    }
 }

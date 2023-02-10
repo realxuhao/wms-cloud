@@ -2,6 +2,7 @@ package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.injector.methods.SelectById;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -18,31 +19,28 @@ import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanActionTypeEnum;
+import com.bosch.binin.api.enumeration.StockWholeFlagEnum;
+import com.bosch.binin.mapper.BinInMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
-import com.bosch.binin.service.IBinInService;
-import com.bosch.binin.service.IMaterialKanbanService;
-import com.bosch.binin.service.IStockService;
-import com.bosch.binin.service.IWareShiftService;
+import com.bosch.binin.service.*;
 import com.bosch.binin.utils.BeanConverUtil;
-import com.bosch.storagein.api.enumeration.MaterialStatusEnum;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
-import com.ruoyi.common.core.enums.StatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import net.bytebuddy.implementation.bytecode.ShiftLeft;
+import org.apache.coyote.http11.filters.VoidInputFilter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,10 +59,15 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     private WareShiftMapper wareShiftMapper;
 
     @Autowired
+    @Lazy
     private IWareShiftService wareShiftService;
 
     @Autowired
     private IBinInService binInService;
+
+    @Autowired
+    @Lazy
+    private IMaterialCallService callService;
 
 
     @Override
@@ -287,10 +290,12 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
                 WareShift wareShift = WareShift.builder().sourcePlantNb(item.getFactoryCode()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
                         .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialCode()).expireDate(stock.getExpireDate()).batchNb(stock.getBatchNb())
                         .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+                        .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
                         .build();
 
                 wareShiftList.add(wareShift);
                 stock.setFreezeStock(stock.getFreezeStock() + stock.getAvailableStock());
+                stock.setAvailableStock(Double.valueOf(0));
                 stockList.add(stock);
             }
         });
@@ -336,21 +341,18 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
-    public List<MaterialKanbanVO> getWaitingJob(String mesbarCode) {
+    public MaterialKanbanVO getWaitingJob(String mesbarCode) {
         String sscc = MesBarCodeUtil.getSSCC(mesbarCode);
-        String materialNb = MesBarCodeUtil.getMaterialNb(mesbarCode);
 
-        LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
-        queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        List<MaterialKanban> kanbanList = materialKanbanMapper.selectList(queryWrapper);
-        List<MaterialKanban> kanbans = kanbanList.stream().filter(item -> "0".equals(item.getStatus())).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(kanbans)) {
+        MaterialKanbanVO kanbanVO = materialKanbanMapper.getKanbanInfoBySsccNb(sscc);
+
+        if (Objects.isNull(kanbanVO)) {
+            throw new ServiceException("该托 " + "sscc" + " 任务不存在");
+        }
+        if (!KanbanStatusEnum.WAITING_BIN_DOWN.value().equals(kanbanVO.getStatus())) {
             throw new ServiceException("该托 " + "sscc" + " 不存在下架任务");
         }
-
-        List<MaterialKanbanVO> materialKanbanVOS = BeanConverUtil.converList(kanbans, MaterialKanbanVO.class);
-        return materialKanbanVOS;
+        return kanbanVO;
     }
 
     @Override
@@ -386,8 +388,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             wareShiftMapper.updateById(wareShift);
         }
 
-        //状态修改为外库已下架
-        kanban.setStatus(KanbanStatusEnum.OUT_DOWN.value());
+        //状态修改为产线待接受
+        kanban.setStatus(KanbanStatusEnum.INNER_DOWN.value());
         materialKanbanMapper.updateById(kanban);
 
         //执行下架
@@ -397,26 +399,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
-    public IPage<MaterialKanbanVO> pagebinDownList(PageDomain pageDomain, String wareCode) {
-        IPage<MaterialKanban> page = new Page<>();
-        if (pageDomain.getPageNum() != null && pageDomain.getPageSize() != null) {
-            page = new Page<>(pageDomain.getPageNum(), pageDomain.getPageSize());
-        }
-        //查询条件
-        LambdaQueryWrapper<MaterialKanban> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-
-        lambdaQueryWrapper.like(MaterialKanban::getWareCode, wareCode);
-
-        lambdaQueryWrapper.ge(MaterialKanban::getStatus, KanbanStatusEnum.OUT_DOWN.value());
-        lambdaQueryWrapper.le(MaterialKanban::getStatus, KanbanStatusEnum.INNER_DOWN.value());
-        lambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        IPage<MaterialKanban> materialKanbanIPage = materialKanbanMapper.selectPage(page, lambdaQueryWrapper);
-        //mp提供了convert方法,将数据重新封装
-        return materialKanbanIPage.convert(u -> {
-            MaterialKanbanVO v = new MaterialKanbanVO();
-            BeanUtils.copyProperties(u, v);//拷贝
-            return v;
-        });
+    public List<MaterialKanbanVO> binDownList(PageDomain pageDomain, String wareCode) {
+        return materialKanbanMapper.getBinDownList(wareCode);
     }
 
     @Override
@@ -482,6 +466,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         List<MaterialKanban> materialKanbans = materialKanbanMapper.selectList(queryWrapper);
         return materialKanbans;
     }
+
     @Override
     public MaterialKanban getOneBySCAndStatus(String sscc, Integer status) {
         LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
@@ -491,11 +476,14 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryWrapper);
         return materialKanban;
     }
+
     @Override
     public MaterialKanbanVO getKanbanBySSCC(String sscc) {
         LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
         queryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+        queryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+
         queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryWrapper);
         MaterialKanbanVO conver = BeanConverUtil.conver(materialKanban, MaterialKanbanVO.class);
@@ -513,7 +501,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         if (Objects.isNull(stock)) {
             stockVO = stockService.getOneBySSCC(splitPallet.getSourceSsccNb());
         }
-        if (stock.getTotalStock() < Double.valueOf(MesBarCodeUtil.getQuantity(splitPallet.getNewMesBarCode()))) {
+        if (stockVO.getTotalStock() < Double.valueOf(MesBarCodeUtil.getQuantity(splitPallet.getNewMesBarCode()))) {
             throw new ServiceException("拆托数量不能超过源库存量");
         }
 
@@ -530,7 +518,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         if (materialKanban == null) {
             throw new ServiceException("任务不存在");
         }
-        if (!materialKanban.getStatus().equals(KanbanStatusEnum.INNER_BIN_IN) || !materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN)) {
+        if (!materialKanban.getStatus().equals(KanbanStatusEnum.INNER_BIN_IN.value()) && !materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN.value())) {
             throw new ServiceException("当前任务状态不正确");
         }
 
@@ -555,19 +543,102 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         newKanban.setCreateBy(SecurityUtils.getUsername());
         newKanban.setCreateTime(new Date());
         newKanban.setMoveType(MoveTypeEnums.CALL.getCode());
+        newKanban.setParentId(materialKanban.getId());
         materialKanbanMapper.insert(newKanban);
+
+        //如果有正在上架中的任务，需要删除掉
+        LambdaQueryWrapper<BinIn> qw = new LambdaQueryWrapper<>();
+        qw.eq(BinIn::getSsccNumber, splitPallet.getSourceSsccNb());
+        qw.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value());
+        qw.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.last("limit 1");
+        BinIn binInProcessing = binInService.getOne(qw);
+        if (binInProcessing != null) {
+            binInService.deleteBinInById(binInProcessing.getId());
+        }
 
         //如果老sscc没有上架，需要生成一个新的上架任务
         LambdaQueryWrapper<BinIn> bininQueryWrapper = new LambdaQueryWrapper<>();
         bininQueryWrapper.eq(BinIn::getSsccNumber, splitPallet.getSourceSsccNb());
         bininQueryWrapper.eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
-        bininQueryWrapper.last("limmit 1");
+        bininQueryWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        bininQueryWrapper.last("limit 1");
         BinIn binIn = binInService.getOne(bininQueryWrapper);
         if (binIn == null) {
             //生成上架任务
-            BinInVO binInVO = binInService.generateInTask(splitPallet.getSourceSsccNb(), Double.valueOf(MesBarCodeUtil.getQuantity(splitPallet.getNewMesBarCode())));
+            BinInVO binInVO = binInService.generateInTaskByOldStock(splitPallet.getSourceSsccNb(), Double.valueOf(MesBarCodeUtil.getQuantity(splitPallet.getNewMesBarCode())), SecurityUtils.getWareCode());
+        } else {
+            Stock conver = BeanConverUtil.conver(stockVO, Stock.class);
+            conver.setTotalStock(conver.getTotalStock() - newKanban.getQuantity());
+            conver.setFreezeStock(conver.getTotalStock() - conver.getAvailableStock());
+            conver.setWholeFlag(StockWholeFlagEnum.NOT_WHOLE.code());
+
+            stockMapper.updateById(conver);
         }
 
+
+    }
+
+    @Override
+    public void cancelKanban(Long id) {
+        //查询取消任务详情
+        LambdaQueryWrapper<MaterialKanban> qw = new LambdaQueryWrapper<>();
+        qw.eq(MaterialKanban::getId, id);
+        qw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.last("for update ");
+        MaterialKanban materialKanban = getOne(qw);
+        if (KanbanStatusEnum.FINISH.value().equals(materialKanban.getStatus()) ||
+                KanbanStatusEnum.LINE_RECEIVED.value().equals(materialKanban.getStatus()) ||
+                KanbanStatusEnum.CANCEL.value().equals(materialKanban.getStatus())) {
+            throw new ServiceException("当前状态为: " + KanbanStatusEnum.getDesc(String.valueOf(materialKanban.getStatus())) + " 不可取消");
+        }
+        //kanban 修改取消状态
+        updateKanban(id);
+        //叫料需求的下发量修改
+        callService.updateCallQuantity(materialKanban);
+        //sscc库存可用 冻结修改
+        if (materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_ISSUE.value()) || materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN.value())) {
+            if ("7751".equals(materialKanban.getFactoryCode())) {
+                updateStockBySSCC(materialKanban.getSsccNumber(),
+                        materialKanban.getQuantity());
+            }
+        }
+
+        WareShift wareShift = wareShiftService.getWareShiftBySsccAndStatus(materialKanban.getSsccNumber());
+        if (wareShift != null) {
+            wareShiftService.cancelWareShift(wareShift.getId());
+        }
+
+        if (materialKanban.getStatus().equals(KanbanStatusEnum.LINE_RECEIVED.value())) {
+            if (materialKanban.getParentId() == null) {//说明不是子任务,拆托而来的子任务
+                binInService.generateInTaskByOldStock(materialKanban.getSsccNumber(), Double.valueOf(0), materialKanban.getWareCode());
+            } else {
+                //是子任务，需要先获取之前的看板
+                dealCancelSubJob(materialKanban);
+            }
+        }
+
+
+    }
+
+    @Override
+    public List<MaterialKanbanVO> waitingBinDownList(PageDomain pageDomain, String wareCode) {
+        return materialKanbanMapper.waitingBinDownList(wareCode);
+    }
+
+    @Override
+    public List<MaterialKanbanVO> getKanbanList(MaterialKanbanDTO dto) {
+        return materialKanbanMapper.getKanbanList(dto);
+    }
+
+    private void dealCancelSubJob(MaterialKanban subKanban) {
+        MaterialKanban parentKanban = materialKanbanMapper.selectById(subKanban.getParentId());
+        //获取一个库存
+        Stock parentStock = stockService.getOneStock(parentKanban.getSsccNumber());
+        Date expireDate = parentStock.getExpireDate();
+        String batchNb = parentStock.getBatchNb();
+        String mesBarCode = MesBarCodeUtil.generateMesBarCode(expireDate, subKanban.getSsccNumber(), subKanban.getMaterialCode(), batchNb, subKanban.getQuantity());
+        binInService.generateInTaskByMesBarCode(mesBarCode);
 
     }
 }

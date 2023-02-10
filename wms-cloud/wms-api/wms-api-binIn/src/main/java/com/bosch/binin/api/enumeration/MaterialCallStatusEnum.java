@@ -7,6 +7,8 @@ package com.bosch.binin.api.enumeration;
  * @create: 2022-11-22 15:09
  **/
 public enum MaterialCallStatusEnum {
+    //已取消
+    CANCEL(-1, "已取消"),
     //待下发
     WAITING_ISSUE(0, "未下发"),
 

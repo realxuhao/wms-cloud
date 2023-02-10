@@ -22,8 +22,107 @@
 			"path": "pages/binIn/scan"
 		},
 		{
-            "path" : "pages/binIn/operation"
-        }
+			"path": "pages/binIn/operation"
+		},
+		{
+			"path": "pages/receivingMaterial/receivingMaterial"
+		},
+		{
+			"path": "pages/wareShift/binDown"
+		},
+		{
+			"path": "pages/wareShift/binDownScan"
+		},
+		{
+			"path": "pages/wareShift/receiving"
+		},
+		{
+			"path": "pages/wareShift/receivingScan"
+		},
+		{
+			"path": "pages/wareShift/receivingOperation"
+		},
+		{
+			"path": "pages/wareShift/binIn"
+		},
+		{
+			"path": "pages/wareShift/binInScan"
+		},
+		{
+			"path": "pages/wareShift/binInOperation"
+		},
+		{
+			"path": "pages/materialCall/binDown"
+		},
+		{
+			"path": "pages/materialCall/binDownScan"
+		},
+		{
+			"path": "pages/splitPallet/splitPallet"
+		},
+		{
+			"path": "pages/materialCall/receiving"
+		},
+		{
+			"path": "pages/materialCall/receivingOperation"
+		},
+		{
+			"path": "pages/materialCall/shipmentOperation"
+		},
+		{
+			"path": "pages/materialCall/shipment"
+		},
+		{
+			"path": "pages/manualTrans/binDown"
+		},
+		{
+			"path": "pages/manualTrans/binDownScan"
+		},
+		{
+			"path": "pages/manualTrans/binIn"
+		},
+		{
+			"path": "pages/manualTrans/binInScan"
+		},
+		{
+			"path": "pages/manualTrans/binInOperation"
+		},
+		{
+			"path": "pages/wareShift/cancellingStocks"
+		},
+		{
+			"path": "pages/wareShift/cancellingStocksScan"
+		},
+		{
+			"path": "pages/wareShift/cancellingStocksOperation"
+		},
+		{
+			"path": "pages/wareShift/cancellingStocksConfirm",
+			"style": {
+				"enablePullDownRefresh": true
+			}
+		},
+		{
+			"path": "pages/wareShift/cancellingStocksBinInScan"
+		},
+		{
+			"path": "pages/wareShift/cancellingStocksBinInOperator"
+		},
+		{
+			"path": "pages/splitPallet/addSplit"
+		},
+		{
+			"path": "pages/sscc/scan"
+		},
+		{
+			"path": "pages/sscc/dashboard"
+		},
+		{
+            "path" : "pages/location/scan"
+        },
+		{
+		    "path" : "pages/location/dashboard"
+		}
     ],
 	"globalStyle": {
 		"navigationStyle": "custom"

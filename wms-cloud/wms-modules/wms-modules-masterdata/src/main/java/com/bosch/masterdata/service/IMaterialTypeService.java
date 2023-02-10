@@ -65,4 +65,6 @@ public interface IMaterialTypeService extends IService<MaterialType>
     public int deleteMaterialTypeById(Long id);
 
     List<MaterialTypeVO> selectMaterialTypeVOList(MaterialTypeDTO materialTypeDTO);
+
+    List<MaterialTypeVO> getByCell(String cell);
 }

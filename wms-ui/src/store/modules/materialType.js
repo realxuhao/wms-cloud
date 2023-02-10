@@ -14,6 +14,10 @@ const materialType = {
       const data = await materialTypeService.getList(options)
       return data
     },
+    async getByCell ({ commit }, cell) {
+      const data = await materialTypeService.getByCell(cell)
+      return data
+    },
     async getOne ({ commit }, id) {
       const data = await materialTypeService.getOne(id)
       return data

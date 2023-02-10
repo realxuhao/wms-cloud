@@ -86,19 +86,19 @@ const columns = [
     title: '工厂编码',
     key: 'factoryCode',
     dataIndex: 'factoryCode',
-    width: 200
+    width: 100
   },
   {
     title: '工厂名称',
     key: 'factoryName',
     dataIndex: 'factoryName',
-    width: 200
+    width: 150
   },
   {
     title: '仓库编码',
     key: 'code',
     dataIndex: 'code',
-    width: 200
+    width: 100
   },
   {
     title: '仓库名称',
@@ -111,6 +111,24 @@ const columns = [
     key: 'location',
     dataIndex: 'location',
     width: 200
+  },
+  {
+    title: '联系人',
+    key: 'wareUser',
+    dataIndex: 'wareUser',
+    width: 150
+  },
+  {
+    title: '联系电话',
+    key: 'wareUserPhone',
+    dataIndex: 'wareUserPhone',
+    width: 150
+  },
+  {
+    title: '道口数量',
+    key: 'dockNum',
+    dataIndex: 'dockNum',
+    width: 100
   },
   {
     title: '创建时间',

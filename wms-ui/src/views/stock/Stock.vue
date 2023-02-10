@@ -178,6 +178,12 @@ const columns = [
     width: 120
   },
   {
+    title: '有效期',
+    key: 'expireDate',
+    dataIndex: 'expireDate',
+    width: 120
+  },
+  {
     title: '操作人',
     key: 'createBy',
     dataIndex: 'createBy',

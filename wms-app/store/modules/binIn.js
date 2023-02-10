@@ -1,7 +1,7 @@
 import { binInService } from '@/api'
 import { removeToken } from '@/utils/storage'
 
-const materialIn = {
+const binIn = {
  namespaced: true,
   state: {
   },
@@ -50,5 +50,5 @@ const materialIn = {
   }
 }
 
-export default materialIn
+export default binIn
 

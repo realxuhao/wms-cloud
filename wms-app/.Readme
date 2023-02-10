@@ -1,0 +1,29 @@
+Seuic 
+	开发者选项密码：4007770876
+	扫描工具密码：888888
+	
+	
+HoneyWell 设置广播方式
+
+广播模式代码优化和新版广播模式设置方法
+适用范围
+HoneywellAndroid 手持终端
+解决方案
+HoneywellAndroid 设备广播模式的设置方法分为新旧两个版本，考虑到旧版本存在扫描常亮的 bug，以后项目中我们会主推新版本设置方法，但是目前研发并没有提供新版本设置方法文档。
+而且，我们的官方的广播 Demo源码问题较多，不仅同时使用了静态和动态两种广播注册方法，而且开发指导文档也容易误导开发人员，导致有的项目中出现广播接收两次、必须安装我们的 Demo，客户的APP 才能正常接收数据的问题。
+基于上述问题，我使用动态广播的方式重新编写了广播模式源码，去掉了与广播无关的代码，只留下最精简的获取数据部分。具体的新版广播设置方法和开发方法见附件文档，将附件中的文档提供给ISV 开发人员，他们很容易可以按照文档中的步骤开发出支持 Honeywell 广播模式的APP，我们支持起来也会方便很多
+具体设置方法和开发方法如下所示
+如下涉及源码、Demo等，请从如下共享链接下载:https://share.weiyun.com/fSRgVDMI
+设置方法:
+1、进入设置-> 扫描设置->lnternal Scanner -> Default Profile -> Data ProcessingSettings -> Data lntent，勾选 Data Intent，设置Action 为
+0eltestbroatcas
+2、安装官方广播模式Demo 软件 ScanResultReceiver.apk,测试广播模式是否设置正确
+二、开发方法:
+1、在 Activity类(如 MainActivity)中新建一个广播接收对象，实现数据接收和处理private static final String INTENT ACTION SCAN RESULT="com.honeywelltestbroadcast"private BroadcastReceiver barcodeReceiver = new BroadcastReceiver0) fOverridepublic void onReceive(Context context, Intent intent) fif(NTENT ACTION SCAN RESULTequals(intent.getAction0)//获取扫描数据，并将扫描数据存放在 barcodeData 中final String barcodeData = intentgetStringExtra("data")
+2、在onCreate 函数和onResume 函数中加入下面代码来注册广播。registerReceiver(barcodeReceiver, new IntentFilter(INTENT ACTION SCAN RESULT))
+3、在onPause函数中加入下面代码来取消广播注册
+unregisterReceiver(barcodeReceiver).
+代码中标红的地方就是我们要设置的广播值 com.honeyweltestbroadcast，很多客户反映这个值太复杂，设置起来很麻烦，针对这个问题，我们只需要将代码中该字段修改一下即可。例如，可以修改为方便记忆的 Honeywell，然后在广播设置时将 Data lntent 中的Action 值也设置为 Honeywell 即可。
+Honeywel
+“霍尼韦尔传感智联与智能仓储”官方微信公众号1.输入关键词获取机器人推送服务-如输入”1900添加回车
+2.输入”rg”或”人工客服获取多项人工支持“技术支持”、“维修咨询”

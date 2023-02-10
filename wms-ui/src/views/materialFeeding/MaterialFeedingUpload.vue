@@ -3,7 +3,7 @@
     width="640px"
     :title="title"
     placement="right"
-    :closable="false"
+
     :visible="visible"
     @close="onClose"
   >
@@ -144,7 +144,7 @@ export default {
         }
 
         try {
-          console.log(values.file)
+          console.log(values)
           this.submitLoading = true
           const formData = new FormData()
           formData.append('file', values.file.file)

@@ -42,16 +42,10 @@
 				<view class="content">		
 					<uni-forms  :label-width="80" ref="binInForm" :rules="binInFormRules" :modelValue="binInForm" label-position="left">
 						<uni-forms-item  v-if="!materialInfo.palletCode" label="托盘编码" name="palletTypeCode" required >
-							<view class="flex flex-ai">
-								<view class="custom-input" :class="editFieldName==='binInForm.palletTypeCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.palletTypeCode')">
-									<text :class="!binInForm.palletTypeCode?'placeholder-text':''">{{binInForm.palletTypeCode||'请扫描托盘编码'}}</text>
-								</view>
-							</view>
+							<uni-easyinput v-model="binInForm.palletTypeCode"  placeholder="请扫描托盘编码" @focus="handleSetEditFieldName('binInForm.palletTypeCode')"></uni-easyinput>
 						</uni-forms-item>
 						<uni-forms-item label="目标库位" name="recommendBinCode" required>
-							<view class="custom-input" :class="editFieldName==='binInForm.recommendBinCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.recommendBinCode')">
-								<text :class="!binInForm.recommendBinCode?'placeholder-text':''">{{binInForm.recommendBinCode||'请扫描目标库位'}}</text>
-							</view>
+							<uni-easyinput v-model="binInForm.recommendBinCode"  placeholder="请扫描目标库位" @focus="handleSetEditFieldName('binInForm.recommendBinCode')"></uni-easyinput>
 						</uni-forms-item>
 						<o-btn block class="submit-btn primary-button" :loading="submitLoading"  @click="handlePostBinIn">提交</o-btn>
 					</uni-forms>
@@ -178,15 +172,20 @@
 			},
 		
 			async lodaData(){
-				this.getPalletList()
+				// this.getPalletList()
 			},
 			async getByMesBarCode(barCode){
 				try{
 					const data = await this.$store.dispatch('binIn/getByMesBarCode',barCode)
+					
+					if(data.palletCode){
+						this.editFieldName = 'binInForm.recommendBinCode'
+					}
+					this.materialInfo = data
+					
 					if(data && data.status ===1 ){
 						throw Error('已上架，请勿重复操作')
 					}
-					this.materialInfo = data
 				}catch(e){
 					this.$refs.message.error(e.message)
 				}
@@ -263,15 +262,7 @@
 	background: #fff;
 }
 
-.text-line{
-		color: #333;
-		font-size: 14px;
-		display: flex;
-		align-items: center;
-		.label{
-			width: 72px;
-		}
-	}
+
 	
 	.result-content{
 		width: 324px;

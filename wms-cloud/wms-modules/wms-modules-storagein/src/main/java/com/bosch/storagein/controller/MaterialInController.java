@@ -26,6 +26,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -108,7 +109,7 @@ public class MaterialInController extends BaseController {
 
     @GetMapping("/list")
     @ApiOperation("查询入库列表")
-    public R<PageVO<MaterialInVO>> list(MaterialQueryDTO queryDTO) {
+    public R<PageVO<MaterialInVO>> list(@Validated MaterialQueryDTO queryDTO) {
         if (queryDTO == null) {
             queryDTO = new MaterialQueryDTO();
         }

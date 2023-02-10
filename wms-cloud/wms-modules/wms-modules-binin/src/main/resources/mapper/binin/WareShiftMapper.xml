@@ -7,12 +7,39 @@
 
     <select id="getWaitingBinIn" resultType="com.bosch.binin.api.domain.vo.WareShiftVO">
         SELECT ws.*,
-               bi.recommend_bin_code,
-               mm.`name` as material_name
+        bi.recommend_bin_code,
+        mm.`name` as material_name
         FROM ware_shift ws
-                 LEFT JOIN bi_in bi ON ws.sscc_nb = bi.sscc_number
-                 LEFT JOIN md_material mm on ws.material_nb = mm.`code`
+        LEFT JOIN bi_in bi ON ws.sscc_nb = bi.sscc_number and bi.delete_flag=0
+        LEFT JOIN md_material mm on ws.material_nb = mm.`code` and mm.delete_flag=0
         WHERE ws.status = 5
-          and ws.target_ware_code = #{wareCode}
+        <if test="wareCode != null and wareCode != ''">
+            and ws.target_ware_code = #{wareCode}
+        </if>
+    </select>
+    <select id="list" resultType="com.bosch.binin.api.domain.vo.WareShiftVO">
+        select ws.*,
+        mm.name as material_name
+        from ware_shift ws
+        left join (SELECT * from md_material where delete_flag = '0') mm on ws.material_nb = mm.code
+        where ws.delete_flag = 0
+        <if test="sourceWareCode != null and sourceWareCode != ''">
+            AND ws.source_ware_code=#{sourceWareCode}
+        </if>
+
+        <if test="targetWareCode != null and targetWareCode != ''">
+            AND ws.target_ware_code=#{targetWareCode}
+        </if>
+
+        <if test="status != null ">
+            AND (ws.status = #{status})
+        </if>
+        <if test="createBy != null and createBy != ''">and ws.create_by like concat('%', #{createBy}, '%')</if>
+        <if test="startCreateTime != null">and ws.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
+        <if test="endCreateTime != null">and ws.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+        <if test="startUpdateTime != null">and ws.update_time <![CDATA[ >= ]]> #{startUpdateTime}</if>
+        <if test="startUpdateTime != null">and ws.update_time <![CDATA[ <= ]]> #{endUpdateTime}</if>
+
+        order by create_time desc
     </select>
 </mapper>

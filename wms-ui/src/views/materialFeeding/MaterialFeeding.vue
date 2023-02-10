@@ -17,8 +17,8 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="生产订单号">
-              <a-input v-model="queryForm.orderNb" placeholder="生产订单号" allow-clear/>
+            <a-form-model-item label="生产需求号">
+              <a-input v-model="queryForm.orderNb" placeholder="生产需求号" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
@@ -44,11 +44,30 @@
                 <a-input v-model="queryForm.createBy" placeholder="创建人" allow-clear/>
               </a-form-item>
             </a-col>
+            <a-col :span="8">
+              <a-form-item label="创建时间" >
+                <a-range-picker
+                  format="YYYY-MM-DD HH:mm"
+                  :show-time="{ format: 'HH:mm' }"
+                  v-model="queryForm.date"
+                />
+              </a-form-item>
+            </a-col>
+            <a-col :span="8">
+              <a-form-item label="修改时间" >
+                <a-range-picker
+                  format="YYYY-MM-DD HH:mm"
+                  :show-time="{ format: 'HH:mm' }"
+                  v-model="queryForm.updateDate"
+                />
+              </a-form-item>
+            </a-col>
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+              <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
                 <a-icon :type="advanced ? 'up' : 'down'"/>
@@ -59,12 +78,6 @@
       </a-form>
       <div class="action-content">
         <a-button
-          style="margin-right:8px"
-          type="primary"
-          :loading="submitLoading"
-          :disabled="!hasSelected"
-          @click="handleCheckCreateReductionTask">系统创建拣配任务</a-button>
-        <a-button
           type="primary"
           icon="upload"
           style="margin-right:8px"
@@ -72,12 +85,12 @@
           创建物料需求
         </a-button>
         <a-button
+          style="margin-right:8px"
           type="primary"
-          :loading="exportLoading"
-          icon="download"
-          @click="handleDownload">
-          导出
-        </a-button>
+          :loading="submitLoading"
+          :disabled="!hasSelected || [-1,2].includes(record.status)"
+          @click="handleCheckCreateReductionTask">系统创建拣配任务</a-button>
+
       </div>
       <a-table
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
@@ -90,19 +103,29 @@
         size="middle"
       >
         <template slot="status" slot-scope="text">
-          <div >
-            {{ statusMap[text] }}
-          </div>
+          <a-tag :color="statusColorMap[text]">{{ statusMap[text] }}</a-tag>
         </template>
         <template slot="quantity" slot-scope="text,record">
-
           <EditTableCell v-if="record.status === 0" :text="text" @change="(val)=>handleQuantityChange(record,val)" />
           <span v-else>{{ text }}</span>
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a class="primary-color" @click="handleCreateReductionTask(record)"><a-icon class="m-r-4" type="add" />人工创建拣配任务</a>
+            <a-popconfirm
+              title="确认要取消该条任务吗?"
+              ok-text="确认"
+              cancel-text="取消"
+              @confirm="handleCancel(record)"
+            >
+              <a class="danger-color" :disabled="[-1,1,2].includes(record.status)">取消</a>
+            </a-popconfirm>
+            <a-divider type="vertical" />
+            <a
+              class="primary-color"
+              :disabled="[2].includes(record.status)"
+              @click="handleCreateReductionTask(record)"><a-icon class="m-r-4" type="add" />人工创建拣配任务</a>
           </div>
+
         </template>
       </a-table>
 
@@ -129,6 +152,7 @@
         :cell="currentCell"
         :materialNb="currentMaterialNb"
         :notQuantity="notQuantity"
+        @on-ok="loadTableList"
       ></CreateReductionTask>
     </div>
 
@@ -142,16 +166,17 @@ import MaterialFeedingUpload from './MaterialFeedingUpload'
 import CreateReductionTask from './CreateReductionTask'
 import EditTableCell from '@/components/EditTableCell'
 import { download } from '@/utils/file'
+import { colorMap } from '@/utils/color'
 
 const columns = [
   {
     title: 'cell',
     key: 'cell',
     dataIndex: 'cell',
-    width: 120
+    width: 80
   },
   {
-    title: '生产订单号',
+    title: '生产需求号',
     key: 'orderNb',
     dataIndex: 'orderNb',
     width: 120
@@ -185,7 +210,7 @@ const columns = [
     title: '单位',
     key: 'unit',
     dataIndex: 'unit',
-    width: 140
+    width: 70
   },
 
   {
@@ -229,12 +254,23 @@ const columns = [
     title: '操作',
     key: 'action',
     fixed: 'right',
-    width: 140,
+    width: 180,
     scopedSlots: { customRender: 'action' }
   }
 ]
 
+const statusColorMap = {
+  '-1': colorMap['cancel'],
+  0: colorMap['error'],
+  1: colorMap['warning'],
+  2: colorMap['success']
+}
+
 const status = [
+  {
+    text: '已取消',
+    value: -1
+  },
   {
     text: '未下发',
     value: 0
@@ -250,6 +286,7 @@ const status = [
 ]
 
 const statusMap = {
+  '-1': '已取消',
   0: '未下发',
   1: '部分下发',
   2: '已全部下发'
@@ -261,6 +298,8 @@ const queryFormAttr = () => {
     materialNb: '',
     orderNb: '',
     status: '',
+    date: [],
+    updateDate: [],
     createBy: ''
   }
 }
@@ -299,6 +338,7 @@ export default {
   computed: {
     status: () => status,
     statusMap: () => statusMap,
+    statusColorMap: () => statusColorMap,
     hasSelected () {
       return this.selectedRowKeys.length > 0
     }
@@ -310,6 +350,7 @@ export default {
     async handleDownload () {
       try {
         this.exportLoading = true
+        this.queryForm.pageSize = 0
         const blobData = await this.$store.dispatch('materialFeeding/exportExcel', this.queryForm)
         console.log(blobData)
         download(blobData, '叫料记录')
@@ -358,7 +399,10 @@ export default {
           })
           return
         }
-        await this.submitCreateReductionTask()
+        await this.submitCreateReductionTask(options)
+
+        this.selectedRowKeys = []
+        this.loadTableList()
 
         this.$message.success('提交成功')
       } catch (error) {
@@ -375,9 +419,17 @@ export default {
       try {
         this.tableLoading = true
 
+        const { date = [], updateDate = [] } = this.queryForm
+        const startCreateTime = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
+        const endCreateTimeEnd = date.length > 0 ? date[1].format(this.endDateFormat) : undefined
+        const startUpdateTime = updateDate.length > 0 ? updateDate[0].format(this.startDateFormat) : undefined
+        const endUpdateTime = updateDate.length > 0 ? updateDate[1].format(this.endDateFormat) : undefined
+
+        const options = { ..._.omit(this.queryForm, ['date', 'updateDate']), startCreateTime, endCreateTimeEnd, startUpdateTime, endUpdateTime }
+
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('materialFeeding/getPaginationList', this.queryForm)
+        } = await this.$store.dispatch('materialFeeding/getPaginationList', options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -394,8 +446,16 @@ export default {
       this.loadDepartmentList()
       this.loadTableList()
     },
+    async handleCancel (record) {
+      try {
+        await this.$store.dispatch('materialFeeding/cancelFeeding', record)
+        this.$message.success('取消成功')
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      }
+    },
     handleCreateReductionTask (record) {
-      console.log(record)
       this.currentMaterialNb = record.materialNb
       this.currentOrderNb = record.orderNb
       this.currentCell = record.cell

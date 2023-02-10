@@ -25,6 +25,7 @@
         <result property="createTime" column="create_time"/>
         <result property="qualityStatus" column="quality_status"/>
         <result property="palletCode" column="pallet_code"/>
+        <result property="wholeFlag" column="whole_flag"/>
 
     </resultMap>
     <select id="selectStockVOList" resultMap="StockVOResult">
@@ -47,7 +48,8 @@
         bs.create_time as create_time,
         bs.quality_status as quality_status,
         bs.area_code as area_code,
-        bs.pallet_code as pallet_code
+        bs.pallet_code as pallet_code,
+        bs.whole_flag as whole_flag
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code
@@ -55,7 +57,9 @@
         where bs.delete_flag=0
         <if test="ssccNumber != null and ssccNumber != ''">and bs.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="plantNb != null and plantNb != ''">and bs.plant_nb like concat('%', #{plantNb}, '%')</if>
-        <if test="fromPurchaseOrder != null and fromPurchaseOrder != ''">and bs.from_purchase_order like concat('%', #{fromPurchaseOrder}, '%')</if>
+        <if test="fromPurchaseOrder != null and fromPurchaseOrder != ''">and bs.from_purchase_order like concat('%',
+            #{fromPurchaseOrder}, '%')
+        </if>
         <if test="wareCode != null and wareCode != ''">and bs.ware_code like concat('%', #{wareCode}, '%')</if>
         <if test="areaCode != null and areaCode != ''">and bs.area_code like concat('%', #{areaCode}, '%')</if>
         <if test="palletCode != null and palletCode != ''">and bs.pallet_code like concat('%', #{palletCode}, '%')</if>
@@ -93,7 +97,8 @@
         bs.create_time as create_time,
         bs.quality_status as quality_status,
         bs.area_code as area_code,
-        bs.pallet_code as pallet_code
+        bs.pallet_code as pallet_code,
+        bs.whole_flag as whole_flag
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code
@@ -122,13 +127,16 @@
         bs.bin_in_id as bin_in_id,
         bs.create_by as create_by,
         bs.create_time as create_time,
-        bs.quality_status as quality_status
+        bs.quality_status as quality_status,
+        bs.whole_flag as whole_flag
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code
         left join md_material mm on bs.material_nb = mm.code
-        where bs.material_nb = #{materialNb} and bs.quality_status = 'U'
+        where bs.quality_status = 'U'
         and bs.freeze_stock =0 and bs.delete_flag=0
+        <if test="materialNb != null and materialNb != ''">and bs.material_nb = #{materialNb}</if>
+
         <if test="wareCode != null and wareCode != ''">and bs.ware_code = #{wareCode}</if>
         <if test="batchNb != null and batchNb != ''">and bs.batch_nb = #{batchNb}</if>
         <choose>
@@ -155,5 +163,34 @@
         <foreach collection="dtos" index="index" item="item" open="(" separator="or" close=")">
             (sscc_number = #{item.ssccNumber} AND <![CDATA[available_stock >= #{item.quantity}]]>)
         </foreach>
+    </select>
+    <select id="getBinStockLog" resultMap="StockVOResult">
+        select bs.id                  as id,
+               bs.sscc_number         as sscc_number,
+               bs.plant_nb            as plant_nb,
+               bs.from_purchase_order as from_purchase_order,
+               bs.ware_code           as ware_code,
+               bs.frame_code          as frame_code,
+               bs.bin_code            as bin_code,
+               bs.material_nb         as material_nb,
+               mm.name                as material_name,
+               bs.batch_nb            as batch_nb,
+               bs.expire_date         as expire_date,
+               bs.total_stock         as total_stock,
+               bs.freeze_stock        as freeze_stock,
+               bs.available_stock     as available_stock,
+               bs.bin_in_id           as bin_in_id,
+               bs.create_by           as create_by,
+               bs.create_time         as create_time,
+               bs.quality_status      as quality_status,
+               bs.area_code           as area_code,
+               bs.pallet_code         as pallet_code,
+               bs.whole_flag          as whole_flag
+        from bi_stock bs
+                 left join md_ware mw
+                           on mw.code = bs.ware_code
+                 left join md_material mm on bs.material_nb = mm.code
+        where bs.bin_code like concat('%', #{binCode}, '%')
+        order by bs.create_time desc
     </select>
 </mapper>

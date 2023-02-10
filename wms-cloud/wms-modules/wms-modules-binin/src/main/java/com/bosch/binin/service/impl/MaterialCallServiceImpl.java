@@ -10,6 +10,7 @@ import com.bosch.binin.api.domain.dto.MaterialCalJobRequestDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
 import com.bosch.binin.api.domain.vo.MaterialCallCheckResultVO;
+import com.bosch.binin.api.domain.vo.MaterialCallVO;
 import com.bosch.binin.api.domain.vo.RequirementResultVO;
 import com.bosch.binin.api.enumeration.MaterialCallStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanActionTypeEnum;
@@ -31,6 +32,7 @@ import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
@@ -61,31 +63,34 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
 
 
     @Autowired
+    @Lazy
     private IMaterialKanbanService kanbanService;
 
     @Override
-    public List<MaterialCall> getMaterialCallList(MaterialCallQueryDTO queryDTO) {
+    public List<MaterialCallVO> getMaterialCallList(MaterialCallQueryDTO queryDTO) {
 
-        LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper();
-        if (queryDTO != null) {
-            queryWrapper.like(StringUtils.isNotEmpty(queryDTO.getMaterialNb()), MaterialCall::getMaterialNb,
-                    queryDTO.getMaterialNb())
-                    .like(StringUtils.isNotEmpty(queryDTO.getCell()), MaterialCall::getCell, queryDTO.getCell())
-                    .like(StringUtils.isNotEmpty(queryDTO.getOrderNb()), MaterialCall::getOrderNb,
-                            queryDTO.getOrderNb())
-                    .like(StringUtils.isNotEmpty(queryDTO.getCreateBy()), MaterialCall::getCreateBy,
-                            queryDTO.getCreateBy())
-                    .like(ObjectUtils.isNotEmpty(queryDTO.getStatus()), MaterialCall::getStatus, queryDTO.getStatus())
-                    .apply(ObjectUtils.allNotNull(queryDTO.getStartCreateTime()), "date_format (create_time," +
-                            "'%Y-%m-%d') >= date_format ({0},'%Y-%m-%d')", queryDTO.getStartCreateTime())
-                    .apply(ObjectUtils.allNotNull(queryDTO.getEndCreateTime()), "date_format (create_time,'%Y-%m-%d')" +
-                            " <= date_format ({0},'%Y-%m-%d')", queryDTO.getEndCreateTime())
-                    .orderByAsc(MaterialCall::getStatus)
-                    .orderByDesc(MaterialCall::getCreateTime);
-        }
-        List<MaterialCall> materialCalls = materialCallMapper.selectList(queryWrapper);
+        return materialCallMapper.getMaterialCallVOs(queryDTO);
 
-        return materialCalls;
+//        LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper();
+//        if (queryDTO != null) {
+//            queryWrapper.like(StringUtils.isNotEmpty(queryDTO.getMaterialNb()), MaterialCall::getMaterialNb,
+//                    queryDTO.getMaterialNb())
+//                    .like(StringUtils.isNotEmpty(queryDTO.getCell()), MaterialCall::getCell, queryDTO.getCell())
+//                    .like(StringUtils.isNotEmpty(queryDTO.getOrderNb()), MaterialCall::getOrderNb,
+//                            queryDTO.getOrderNb())
+//                    .like(StringUtils.isNotEmpty(queryDTO.getCreateBy()), MaterialCall::getCreateBy,
+//                            queryDTO.getCreateBy())
+//                    .like(ObjectUtils.isNotEmpty(queryDTO.getStatus()), MaterialCall::getStatus, queryDTO.getStatus())
+//                    .apply(ObjectUtils.allNotNull(queryDTO.getStartCreateTime()), "date_format (create_time," +
+//                            "'%Y-%m-%d') >= date_format ({0},'%Y-%m-%d')", queryDTO.getStartCreateTime())
+//                    .apply(ObjectUtils.allNotNull(queryDTO.getEndCreateTime()), "date_format (create_time,'%Y-%m-%d')" +
+//                            " <= date_format ({0},'%Y-%m-%d')", queryDTO.getEndCreateTime())
+//                    .orderByAsc(MaterialCall::getStatus)
+//                    .orderByDesc(MaterialCall::getCreateTime);
+//        }
+//        List<MaterialCall> materialCalls = materialCallMapper.selectList(queryWrapper);
+//
+//        return materialCalls;
     }
 
 
@@ -334,6 +339,19 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
     }
 
     @Override
+    public void cancelCall(Long id) {
+        MaterialCall materialCall = materialCallMapper.selectById(id);
+        if (materialCall==null){
+            throw new ServiceException("该条目不存在");
+        }
+        if (!materialCall.getStatus().equals(MaterialCallStatusEnum.WAITING_ISSUE.code())){
+            throw new ServiceException("只可以取消未下发状态的数据");
+        }
+        materialCall.setStatus(MaterialCallStatusEnum.CANCEL.code());
+        materialCallMapper.updateById(materialCall);
+    }
+
+    @Override
     public void deleteRequirement(List<Long> ids) {
         LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(MaterialCall::getId, ids);
@@ -437,11 +455,11 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         if (MaterialCallSortTypeEnum.BBD_FIRST.value().equals(call.getSortType())) {
             sortedStockList =
                     stockList.stream().filter(item -> item.getAvailableStock() != 0).
-                            sorted(Comparator.comparing(Stock::getExpireDate).
+                            sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag,Comparator.reverseOrder()).
                                     thenComparing(Stock::getPlantNb)).collect(Collectors.toList());
         } else if (MaterialCallSortTypeEnum.MAIN_WARE_FIRST.value().equals(call.getSortType())) {
             sortedStockList =
-                    stockList.stream().filter(item -> item.getAvailableStock() != 0).sorted(Comparator.comparing(Stock::getPlantNb).thenComparing(Stock::getExpireDate)).collect(Collectors.toList());
+                    stockList.stream().filter(item -> item.getAvailableStock() != 0).sorted(Comparator.comparing(Stock::getPlantNb).thenComparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag,Comparator.reverseOrder())).collect(Collectors.toList());
         }
         if (CollectionUtils.isEmpty(sortedStockList)) {
             requirementResultVO.getNoStockMaterialNbs().add(RequirementResultVO.MaterialOrder.builder().materialNb(call.getMaterialNb()).orderNb(call.getOrderNb()).build());

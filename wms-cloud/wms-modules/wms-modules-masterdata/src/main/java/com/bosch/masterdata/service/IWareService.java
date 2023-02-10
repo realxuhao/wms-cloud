@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.masterdata.api.domain.Area;
 import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.vo.FactoryVO;
+import com.bosch.masterdata.api.domain.vo.WareSelectVO;
 
 /**
  * 仓库Service接口
@@ -64,4 +65,6 @@ public interface IWareService extends IService<Ware>
     public int deleteWareById(String id);
 
     List<FactoryVO> selectFactoryList();
+
+    List<WareSelectVO> fetchWareList();
 }

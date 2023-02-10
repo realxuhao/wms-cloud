@@ -1,8 +1,11 @@
 package com.bosch.masterdata.service.impl;
 
+import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.domain.vo.MesBarCodeVO;
+import com.bosch.masterdata.service.IMaterialService;
 import com.bosch.masterdata.service.IMesBarCodeService;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -17,6 +20,9 @@ import java.util.Date;
 @Service
 public class MesBarCodeServiceImpl implements IMesBarCodeService {
 
+    @Autowired
+    private IMaterialService materialService;
+
     @Override
     public MesBarCodeVO parseMesBarCode(String mesBarCode) {
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
@@ -30,6 +36,10 @@ public class MesBarCodeServiceImpl implements IMesBarCodeService {
         mesBarCodeVO.setMaterialNb(materialNb);
         mesBarCodeVO.setSsccNb(sscc);
         mesBarCodeVO.setQuantity(Double.valueOf(quantity));
+        MaterialVO materialVO = materialService.selectMaterialVOBymaterialCode(materialNb);
+//        mesBarCodeVO.setMaterialVO(materialVO);
+        mesBarCodeVO.setMaterialName(materialVO.getName());
+        mesBarCodeVO.setUnit(materialVO.getUnit());
         return mesBarCodeVO;
     }
 

@@ -74,4 +74,6 @@ public interface MaterialTypeMapper extends BaseMapper<MaterialType>
      * @return 物料类型集合
      */
     public List<MaterialTypeVO> selectMaterialTypeVOList(MaterialTypeDTO materialTypeDTO);
+
+    List<MaterialTypeVO> getByCell(String cell);
 }

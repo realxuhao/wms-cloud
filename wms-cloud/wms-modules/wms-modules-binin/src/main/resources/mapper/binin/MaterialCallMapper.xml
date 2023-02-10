@@ -6,21 +6,36 @@
 
 
     <select id="getMaterialCallVOs" resultType="com.bosch.binin.api.domain.vo.MaterialCallVO">
-        select mc.id          as id,
-               mc.material_nb as material_nb,
-               mc.quantity as quantity,
-               mc.unit as unit,
-               mc.remark as remark,
-               mc.cell as cell,
-               mc.sort_type as sort_type,
-               mc.status,
-               mc.create_by,
-               mc.update_by,
-               mc.create_time,
-               mc.update_time,
-               mc.issued_quantity
-                mm.name as materialName
-        from material_call mc,
-             md_material mm where mc.material_nb=mm.code and mc.delete_flag!=0 and mm.delete_flag!=0 and
+        select mc.id as id,
+        mc.order_nb as order_nb,
+        mc.material_nb as material_nb,
+        mc.quantity as quantity,
+        mc.unit as unit,
+        mc.remark as remark,
+        mc.cell as cell,
+        mc.sort_type as sort_type,
+        mc.status as status,
+        mc.create_by as create_by,
+        mc.update_by as update_by,
+        mc.create_time as create_time,
+        mc.update_time as update_time,
+        mc.issued_quantity as issued_quantity,
+        mm.name as material_name
+        from material_call mc left join (SELECT * from md_material where delete_flag='0' ) mm on mc.material_nb =
+        mm.code
+        where
+        mc.delete_flag = 0
+        <if test="materialNb != null and materialNb != ''">and mc.material_nb like concat('%', #{materialNb}, '%')</if>
+        <if test="cell != null and cell != ''">and mc.cell like concat('%', #{cell}, '%')</if>
+        <if test="orderNb != null and orderNb != ''">and mc.order_nb like concat('%', #{orderNb}, '%')</if>
+        <if test="createBy != null and createBy != ''">and mc.create_by like concat('%', #{createBy}, '%')</if>
+        <if test="status != null ">and mc.status = #{status}</if>
+        <if test="startCreateTime != null">and mc.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
+        <if test="endCreateTime != null">and mc.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+        <if test="startUpdateTime != null">and mc.update_time <![CDATA[ >= ]]> #{startUpdateTime}</if>
+        <if test="startUpdateTime != null">and mc.update_time <![CDATA[ <= ]]> #{endUpdateTime}</if>
+
+        order by mc.status desc,mc.create_time desc
+
     </select>
 </mapper>

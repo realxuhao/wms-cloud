@@ -165,6 +165,21 @@
             #{startOperateTime} and #{endOperateTime}
         </if>
         order by operate_time desc
+
+        <choose>
+            <when test="orderField == 'actualResult'">
+                ,si.actual_result ${orderType}
+            </when>
+            <when test="orderField == 'batchNb'">
+                ,si.batch_nb ${orderType}
+            </when>
+            <when test="orderField == 'plantNb'">
+                , si.plant_nb ${orderType}
+            </when>
+            <when test="orderField == 'checkType'">
+                , si.check_type ${orderType}
+            </when>
+        </choose>
     </select>
 
 </mapper>

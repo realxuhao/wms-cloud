@@ -27,6 +27,10 @@ public interface RemoteMasterDataService {
     @GetMapping(value = "/materialBin/getListByMaterial")
     public R<List<MaterialBinVO>> getListByMaterial(@RequestParam("materialCode") String materialCode);
 
+    //根据code和仓库
+    @GetMapping(value = "/materialBin/getListByMaterialAndWare")
+    public R<List<MaterialBinVO>> getListByMaterialAndWare(@RequestParam("materialCode") String materialCode,@RequestParam("wareCode") String wareCode);
+
     @GetMapping(value = "/frame/getFrameInfo/{id}")
     public R<FrameVO> getFrameInfo(@PathVariable("id") Long id);
 

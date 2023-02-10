@@ -59,8 +59,24 @@ const materialFeeding = {
       const data = await materialFeedingService.exportExcel(options)
       return data
     },
+    async exportCallExcel ({ commit }, options) {
+      const data = await materialFeedingService.exportCallExcel(options)
+      return data
+    },
     async getStockInfo ({ commit }, options) {
       const data = await materialFeedingService.getStockInfo(options)
+      return data
+    },
+    async addShiftTask ({ commit }, options) {
+      const data = await materialFeedingService.addShiftTask(options)
+      return data
+    },
+    async confirmMaterial ({ commit }, options) {
+      const data = await materialFeedingService.confirmMaterial(options)
+      return data
+    },
+    async cancelFeeding ({ commit }, options) {
+      const data = await materialFeedingService.cancelFeeding(options)
       return data
     }
   }

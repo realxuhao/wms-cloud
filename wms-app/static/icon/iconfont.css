@@ -1,14 +1,128 @@
 @font-face {
   font-family: "iconfont"; /* Project id 3699882 */
-  src: url('static/icon/iconfont.woff2?t=1668074667696') format('woff2'),
-       url('static/icon/iconfont.woff?t=1668074667696') format('woff'),
-       url('static/icon/iconfont.ttf?t=1668074667696') format('truetype');
+   src: url('static/icon/iconfont.woff2') format('woff2'),
+        url('static/icon/iconfont.woff') format('woff'),
+        url('static/icon/iconfont.ttf') format('truetype');
 }
 
 .iconfont {
   font-family: "iconfont" !important;
   font-size: 16px;
   font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-SSCC:before {
+  content: "\e69a";
+}
+
+.icon-kuwei:before {
+  content: "\e667";
+}
+
+.icon-purchasereceipt:before {
+  content: "\e629";
+}
+
+.icon-shouhuo2:before {
+  content: "\e684";
+}
+
+.icon-shouhuo1:before {
+  content: "\ecaf";
+}
+
+.icon-baocaixiajiabeiliao:before {
+  content: "\e603";
+}
+
+.icon-shouhuo:before {
+  content: "\ec5c";
+}
+
+.icon-chejiantuiliaojiaojie:before {
+  content: "\e600";
+}
+
+.icon-zhongjianpinQAquyangrenwu:before {
+  content: "\e602";
+}
+
+.icon-suijichouyang:before {
+  content: "\ec90";
+}
+
+.icon-lishijilu:before {
+  content: "\e69d";
+}
+
+.icon-chaifen:before {
+  content: "\e653";
+}
+
+.icon-shebeibangding:before {
+  content: "\e6b0";
+}
+
+.icon-isometricfenggetubiaosheji-:before {
+  content: "\e6b2";
+}
+
+.icon-jiechubangding:before {
+  content: "\e60d";
+}
+
+.icon-zhihuan:before {
+  content: "\ec8d";
+}
+
+.icon-kucunpandian24:before {
+  content: "\e619";
+}
+
+.icon-zhijian:before {
+  content: "\e605";
+}
+
+.icon-lailiaopinzhijianyan:before {
+  content: "\e6a2";
+}
+
+.icon-chaxun:before {
+  content: "\ec44";
+}
+
+.icon-xinxi:before {
+  content: "\ec68";
+}
+
+.icon-bangding:before {
+  content: "\e606";
+}
+
+.icon-wuliufahuo:before {
+  content: "\e658";
+}
+
+.icon-icon-svg-08:before {
+  content: "\e601";
+}
+
+.icon-xiehuo:before {
+  content: "\e611";
+}
+
+.icon-xiajia:before {
+  content: "\e617";
+}
+
+.icon-discharge:before {
+  content: "\e69e";
+}
+
+.icon-001-cangku:before {
+  content: "\e618";
 }
 
 .icon-shangjia1:before {
@@ -38,4 +152,3 @@
 .icon-rukuwancheng:before {
   content: "\e642";
 }
-

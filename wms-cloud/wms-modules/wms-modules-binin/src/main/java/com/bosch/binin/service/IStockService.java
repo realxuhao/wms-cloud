@@ -22,4 +22,15 @@ public interface IStockService extends IService<Stock> {
     Double countAvailableStock(StockQueryDTO stockQueryDTO);
 
     StockVO getOneBySSCC(String ssccs);
+
+    Stock getAvailablesStockBySscc(String sscc);
+
+    /**
+     * 获取一个库存信息，主要是为了获取批次、过期时间时间，比如：拆托后，需要获得同样批次、BBD等。
+     * @param sscc
+     * @return
+     */
+    Stock getOneStock(String sscc);
+
+    List<StockVO> getBinStockLog(String binCode);
 }

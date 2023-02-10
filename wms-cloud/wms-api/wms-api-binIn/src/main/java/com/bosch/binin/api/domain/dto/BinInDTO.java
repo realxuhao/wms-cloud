@@ -20,4 +20,5 @@ public class BinInDTO {
     @ApiModelProperty(value = "实物托盘编码")
     private String palletCode;
 
+
 }

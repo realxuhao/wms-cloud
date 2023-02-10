@@ -86,6 +86,7 @@ public class MaterialReceiveServiceImpl extends ServiceImpl<MaterialRecevieMappe
 
         LambdaQueryWrapper<MaterialReceive> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.in(MaterialReceive::getSsccNumber, codes);
+        lambdaQueryWrapper.eq(MaterialReceive::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         Integer res = materialRecevieMapper.selectCount(lambdaQueryWrapper);
         return res > 0;
     }
@@ -100,7 +101,9 @@ public class MaterialReceiveServiceImpl extends ServiceImpl<MaterialRecevieMappe
 
         LambdaQueryWrapper<MaterialReceive> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(MaterialReceive::getStatus, MaterialStatusEnum.IN.getCode());
+        lambdaQueryWrapper.eq(MaterialReceive::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         lambdaQueryWrapper.in(MaterialReceive::getSsccNumber, codes);
+
         Integer res = materialRecevieMapper.selectCount(lambdaQueryWrapper);
         return res > 0;
     }

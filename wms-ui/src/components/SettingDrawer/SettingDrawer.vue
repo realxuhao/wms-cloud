@@ -4,7 +4,6 @@
       width="300"
       placement="right"
       @close="onClose"
-      :closable="false"
       :visible="visible"
       :handle="handle"
     >

@@ -1,0 +1,61 @@
+import { wareShiftService } from '@/api'
+
+const wareShift = {
+ namespaced: true,
+  state: {
+  },
+
+  mutations: {
+  },
+
+  actions: {
+    async getList ({ commit }, parameter) {
+      const {data} = await wareShiftService.getList({...parameter})
+      return data
+    },
+	async getWaitingBinIn ({ commit }, parameter) {
+      const {data} = await wareShiftService.getWaitingBinIn({...parameter})
+      return data
+    },
+	async binDown({ commit }, barCode) {
+      const {data} = await wareShiftService.binDown(barCode)
+      return data
+    },
+	async getByMesBarCode({ commit }, barCode) {
+	  const {data} = await wareShiftService.allocateBin(barCode)
+	  return data
+	},
+	async getReturnMaterialList({commit},options){
+		const {data} = await wareShiftService.getReturnMaterialList(options)
+		return data
+	},
+	async addMaterialReturn({commit},options){
+		const {data} = await wareShiftService.addMaterialReturn(options)
+		return data
+	},
+	async getCellList({commit},options){
+		const {rows} = await wareShiftService.getCellList({...options,pageSize:0})
+		return rows
+	},
+	async getWareList({commit},options){
+		const {data:{rows}} = await wareShiftService.getWareList({...options,pageSize:0})
+		return rows
+	},
+	async returnMaterialConfirm({commit},options){
+		const data = await wareShiftService.returnMaterialConfirm(options)
+		return data
+	},
+	async getAllocateBin({commit},mesBarcode){
+		const {data} = await wareShiftService.getAllocateBin(mesBarcode)
+		return data
+	},
+	async postBinIn({commit},options){
+		const {data} = await wareShiftService.postBinIn(options)
+		return data
+	},
+	
+  }
+}
+
+export default wareShift
+

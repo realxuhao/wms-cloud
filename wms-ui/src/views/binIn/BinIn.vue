@@ -24,7 +24,18 @@
               <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
             </a-form-model-item>
           </a-col>
-
+          <a-col :span="4">
+            <a-form-model-item label="状态">
+              <a-select
+                allow-clear
+                v-model="queryForm.status"
+              >
+                <a-select-option v-for="item in status" :key="item.value" :value="item.value">
+                  {{ item.text }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
           <template v-if="advanced">
             <a-col :span="4">
               <a-form-model-item label="物料编码">
@@ -74,7 +85,7 @@
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a-popconfirm title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
-              <a class="danger-color" disabled="record.status===0"><a-icon class="m-r-4" type="delete" />删除</a>
+              <a class="danger-color" :disabled="record.status===1"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
           </div>
         </template>
@@ -104,13 +115,13 @@ const columns = [
     title: '工厂编码',
     key: 'plantNb',
     dataIndex: 'plantNb',
-    width: 120
+    width: 80
   },
   {
     title: '仓库编码',
     key: 'wareCode',
     dataIndex: 'wareCode',
-    width: 120
+    width: 80
   },
   {
     title: 'SSCC码',
@@ -146,7 +157,7 @@ const columns = [
     title: '托盘类型',
     key: 'palletType',
     dataIndex: 'palletType',
-    width: 90
+    width: 70
   },
   {
     title: '数量',
@@ -174,9 +185,21 @@ const columns = [
     scopedSlots: { customRender: 'status' }
   },
   {
-    title: '操作人',
-    key: 'createBy',
-    dataIndex: 'createBy',
+    title: '入库人',
+    key: 'receiveBy',
+    dataIndex: 'receiveBy',
+    width: 80
+  },
+  {
+    title: '上架人',
+    key: 'updateBy',
+    dataIndex: 'updateBy',
+    width: 80
+  },
+  {
+    title: '上架时间',
+    key: 'updateTime',
+    dataIndex: 'updateTime',
     width: 80
   },
   {
@@ -194,9 +217,20 @@ const queryFormAttr = () => {
     wareCode: '',
     ssccNumber: '',
     materialNb: '',
-    batchNb: ''
+    batchNb: '',
+    status: ''
   }
 }
+const status = [
+  {
+    text: '待上架',
+    value: 0
+  },
+  {
+    text: '已上架',
+    value: 1
+  }
+]
 
 export default {
   name: 'BinIn',
@@ -214,6 +248,10 @@ export default {
       }
     }
   },
+  computed: {
+    status: () => status
+  },
+
   methods: {
     async handleDelete (row) {
       try {

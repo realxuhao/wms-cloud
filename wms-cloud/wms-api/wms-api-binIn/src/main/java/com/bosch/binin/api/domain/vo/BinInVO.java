@@ -100,6 +100,9 @@ public class BinInVO {
     @ApiModelProperty(value = "托盘编码")
     private String palletCode;
 
+    @ApiModelProperty(value = "区域编码")
+    private String areaCode;
+
     /**
      * 托盘类型
      */
@@ -126,6 +129,26 @@ public class BinInVO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
+
+    /**
+     * 创建人
+     */
+    @ApiModelProperty(value = "入库人")
+    private String receiveBy;
+
+    /**
+     * 创建人
+     */
+    @ApiModelProperty(value = "更新人")
+    private String updateBy;
+
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(value = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
 
     /**
      * 移动类型
