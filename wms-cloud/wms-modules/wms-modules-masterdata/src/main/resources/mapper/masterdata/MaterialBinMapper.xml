@@ -139,7 +139,7 @@
 
     <delete id="deleteMaterialBinByIds" parameterType="String">
         delete from md_material_frame where id in
-        <foreach item="id" collection="array" open="(" separator="," close=")">
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
             #{id}
         </foreach>
     </delete>

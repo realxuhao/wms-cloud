@@ -25,6 +25,18 @@ public class TimeWindowDTO extends PageDomain {
     private String endTime;
 
     /**
+     * 道口数量
+     */
+    @ApiModelProperty(value = "道口数量")
+    private String dockNum;
+
+    /**
+     * 仓库id
+     */
+    @ApiModelProperty(value = "仓库id")
+    private Long wareId;
+
+    /**
      * 道口编码
      */
     @ApiModelProperty(value = "道口编码")

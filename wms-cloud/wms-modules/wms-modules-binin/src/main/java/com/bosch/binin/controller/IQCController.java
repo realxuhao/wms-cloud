@@ -1,7 +1,9 @@
 package com.bosch.binin.controller;
 
+import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
+import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.service.IIQCSamplePlanService;
@@ -14,6 +16,7 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,12 +53,20 @@ public class IQCController extends BaseController {
     }
 
     @PostMapping(value = "/sample/manualAdd")
+    @ApiOperation("手工添加IQC抽样计划")
     public R manualAdd(@RequestBody @Validated List<IQCSamplePlanDTO> dtos) {
         samplePlanService.manualAdd(dtos);
         return R.ok();
     }
 
+    @GetMapping(value = "/sample/{mesBarCode}")
+    @ApiOperation("获取单个IQC抽样计划")
+    public R<IQCSamplePlanVO> info(@PathVariable("mesBarCode") String mesBarCode) {
+        return R.ok(samplePlanService.info(mesBarCode));
+    }
+
     @PostMapping(value = "/sample/modifySscc")
+    @ApiOperation("修改抽样SSCC")
     public R modifySscc(@RequestBody @Validated IQCSamplePlanDTO dto) {
         samplePlanService.modifySscc(dto);
         return R.ok();
@@ -77,6 +88,34 @@ public class IQCController extends BaseController {
         return R.ok();
     }
 
+    @PutMapping(value = "/sample/cancel/{id}")
+    @ApiOperation("IQC抽样计划执行下架接口")
+    public R binDown(@PathVariable("id") Long id) {
+        samplePlanService.cancel(id);
+        return R.ok();
+    }
+
+    @GetMapping(value = "/binIn/{mesBarCode}")
+    @ApiOperation("IQC抽样计划分配库位接口")
+    public R<BinInVO> getBinInInfo(@PathVariable String mesBarCode) {
+        BinInVO binInVO= samplePlanService.getBinInInfo(MesBarCodeUtil.getSSCC(mesBarCode));
+        return R.ok(binInVO);
+    }
+
+
+    @PostMapping(value = "/binIn")
+    @ApiOperation("IQC抽样计划执行上架接口")
+    public R performBinIn(@RequestBody BinInDTO binInDTO) {
+        samplePlanService.performBinIn(binInDTO);
+        return R.ok();
+    }
+
+    @PostMapping(value = "/sample/confirm")
+    @ApiOperation("IQC抽样确认")
+    public R confirm(@RequestBody IQCSamplePlanDTO dto) {
+        samplePlanService.confirm(dto);
+        return R.ok();
+    }
 
 
 

@@ -46,5 +46,16 @@ public class Ware extends BaseEntity
     @Excel(name = "状态", readConverterExp = "1=：启用，0：停用")
     private Long status;
 
+    /** 仓库联系人 */
+    @Excel(name = "仓库联系人")
+    private String wareUser;
+
+    /** 仓库联系人电话 */
+    @Excel(name = "仓库联系人电话")
+    private String wareUserPhone;
+
+    /** 道口数量 */
+     @Excel(name = "道口数量")
+    private  Long dockNum;
 
 }

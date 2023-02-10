@@ -4,11 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.IQCSamplePlan;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
+import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.mapper.IQCSamplePlanMapper;
+import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.masterdata.api.RemoteMaterialService;
@@ -18,11 +21,13 @@ import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -44,11 +49,14 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
     private IStockService stockService;
 
     @Autowired
+    private IBinInService binInService;
+
+    @Autowired
     private RemoteMaterialService remoteMaterialService;
 
     @Override
     public List<IQCSamplePlanVO> getSamplePlan(IQCSamplePlanQueryDTO dto) {
-        return samplePlanMapper.getSamplePlan(dto);
+        return samplePlanMapper.getSamplePlanList(dto);
     }
 
 
@@ -99,6 +107,9 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
             iqcSamplePlan.setBinDownTime(new Date());
             iqcSamplePlan.setRecommendSampleQuantity(ssccMaps.get(stock.getSsccNumber()).getSampleQuantity());
             iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
+            iqcSamplePlan.setBatchNb(stock.getBatchNb());
+            iqcSamplePlan.setWareCode(stock.getWareCode());
+            iqcSamplePlan.setExpireDate(stock.getExpireDate());
             samplePlanList.add(iqcSamplePlan);
             stock.setFreezeStock(stock.getAvailableStock());
             stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
@@ -151,6 +162,9 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         samplePlan.setCell(iqcSamplePlan.getCell());
         samplePlan.setMaterialNb(iqcSamplePlan.getMaterialNb());
         samplePlan.setBinDownCode(stock.getBinCode());
+        samplePlan.setBatchNb(stock.getBatchNb());
+        samplePlan.setWareCode(stock.getWareCode());
+        samplePlan.setExpireDate(stock.getExpireDate());
         samplePlan.setBinDownTime(new Date());
         samplePlan.setRecommendSampleQuantity(dto.getSampleQuantity());
         samplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
@@ -179,7 +193,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
         stockQueryWrapper.eq(Stock::getSsccNumber, ssccNb).eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         Stock stock = stockService.getOne(stockQueryWrapper);
-        if (stock==null){
+        if (stock == null) {
             throw new ServiceException("没有该sscc:" + ssccNb + "对应的库存数据");
         }
         stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
@@ -190,6 +204,96 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         //更新下架人下架时间
         iqcSamplePlan.setBinDownUser(SecurityUtils.getUsername());
         iqcSamplePlan.setBinDownTime(new Date());
+        samplePlanMapper.updateById(iqcSamplePlan);
+    }
+
+    @Override
+    public BinInVO getBinInInfo(String sscc) {
+
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, sscc);
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
+        if (iqcSamplePlan == null) {
+            throw new ServiceException("没有该sscc:" + sscc + "对应的IQC抽样待上架任务");
+        }
+        if (iqcSamplePlan.getStatus() != IQCStatusEnum.WAITING_BIN_IN.code()) {
+            throw new ServiceException("sscc:" + sscc + "对应任务状态为:" + IQCStatusEnum.getDesc(iqcSamplePlan.getStatus()) + ",不可上架");
+        }
+
+
+        BinInVO binInVO = binInService.generateInTaskByOldStock(sscc, iqcSamplePlan.getSampleQuantity(), SecurityUtils.getWareCode());
+
+        return binInVO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void performBinIn(BinInDTO binInDTO) {
+        String mesBarCode = binInDTO.getMesBarCode();
+        String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, sscc);
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
+        if (iqcSamplePlan == null) {
+            throw new ServiceException("没有该sscc:" + sscc + "对应的IQC抽样待上架任务");
+        }
+        if (iqcSamplePlan.getStatus() != IQCStatusEnum.WAITING_BIN_IN.code()) {
+            throw new ServiceException("sscc:" + sscc + "对应任务状态为:" + IQCStatusEnum.getDesc(iqcSamplePlan.getStatus()) + ",不可上架");
+        }
+        BinInVO binInVO = binInService.performBinIn(binInDTO);
+
+        iqcSamplePlan.setBinInCode(binInVO.getActualBinCode());
+        iqcSamplePlan.setBinInTime(new Date());
+        iqcSamplePlan.setBinInUser(SecurityUtils.getUsername());
+        samplePlanMapper.updateById(iqcSamplePlan);
+
+    }
+
+    @Override
+    public void cancel(Long id) {
+        IQCSamplePlan samplePlan = getById(id);
+        if (samplePlan == null || DeleteFlagStatus.TRUE.getCode().equals(samplePlan.getDeleteFlag())) {
+            throw new ServiceException("无该IQC抽样待上架任务");
+        }
+        if (samplePlan.getStatus() == IQCStatusEnum.CANCEL.code()) {
+            throw new ServiceException("该任务已经取消，不能再次取消");
+        }
+        if (samplePlan.getStatus() != IQCStatusEnum.WAITING_BIN_DOWN.code()) {
+            throw new ServiceException("该任务状态为:" + IQCStatusEnum.getDesc(samplePlan.getStatus()) + ",不可上架");
+        }
+        samplePlan.setStatus(IQCStatusEnum.CANCEL.code());
+        updateById(samplePlan);
+    }
+
+    @Override
+    public IQCSamplePlanVO info(String mesBarCode) {
+        IQCSamplePlanQueryDTO dto = new IQCSamplePlanQueryDTO();
+        dto.setSsccNb(MesBarCodeUtil.getSSCC(mesBarCode));
+        List<IQCSamplePlanVO> samplePlan = getSamplePlan(dto);
+        if (CollectionUtils.isEmpty(samplePlan)) {
+            throw new ServiceException("没有该sscc" + MesBarCodeUtil.getSSCC(mesBarCode) + "对应的IQC抽样任务");
+        }
+        return samplePlan.get(0);
+    }
+
+    @Override
+    public void confirm(IQCSamplePlanDTO dto) {
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, dto.getSsccNb());
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
+        if (iqcSamplePlan == null) {
+            throw new ServiceException("没有该sscc:" + dto.getSsccNb() + "对应的IQC抽样任务");
+        }
+        if (!iqcSamplePlan.getStatus().equals(IQCStatusEnum.WAITING_SAMPLE.code())) {
+            throw new ServiceException("sscc:" + dto.getSsccNb() + "对应任务状态为:" + IQCStatusEnum.getDesc(iqcSamplePlan.getStatus()) + ",不可抽样");
+        }
+        iqcSamplePlan.setSampleQuantity(dto.getSampleQuantity());
+        iqcSamplePlan.setSampleTime(new Date());
+        iqcSamplePlan.setSampleUser(SecurityUtils.getUsername());
+        iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_IN.code());
         samplePlanMapper.updateById(iqcSamplePlan);
     }
 

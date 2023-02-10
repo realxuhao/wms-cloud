@@ -7,7 +7,7 @@ import com.ruoyi.common.core.web.domain.BaseEntity;
 
 /**
  * 道口时间窗口对象 md_time_window
- * 
+ *
  * @author xuhao
  * @date 2022-09-22
  */
@@ -26,6 +26,16 @@ public class TimeWindow extends BaseEntity
     @Excel(name = "结束时间")
     private String endTime;
 
+    /**
+     * 道口数量
+     */
+    private String dockNum;
+
+    /**
+     * 仓库id
+     */
+    private Long wareId;
+
     /** 道口编码 */
     @Excel(name = "道口编码")
     private String windowCode;
@@ -34,50 +44,66 @@ public class TimeWindow extends BaseEntity
     @Excel(name = "状态", readConverterExp = "1=：启用，0：停用")
     private Long status;
 
-    public void setId(Long id) 
+    public void setId(Long id)
     {
         this.id = id;
     }
 
-    public Long getId() 
+    public Long getId()
     {
         return id;
     }
-    public void setStartTime(String startTime) 
+    public void setStartTime(String startTime)
     {
         this.startTime = startTime;
     }
 
-    public String getStartTime() 
+    public String getStartTime()
     {
         return startTime;
     }
-    public void setEndTime(String endTime) 
+    public void setEndTime(String endTime)
     {
         this.endTime = endTime;
     }
 
-    public String getEndTime() 
+    public String getEndTime()
     {
         return endTime;
     }
-    public void setWindowCode(String windowCode) 
+    public void setWindowCode(String windowCode)
     {
         this.windowCode = windowCode;
     }
 
-    public String getWindowCode() 
+    public String getWindowCode()
     {
         return windowCode;
     }
-    public void setStatus(Long status) 
+    public void setStatus(Long status)
     {
         this.status = status;
     }
 
-    public Long getStatus() 
+    public Long getStatus()
     {
         return status;
+    }
+
+    public String getDockNum() {
+        return dockNum;
+    }
+
+    public void setDockNum(String dockNum) {
+        this.dockNum = dockNum;
+    }
+
+    public Long getWareId() {
+        return wareId;
+    }
+
+    public void setWareId(Long wareId) {
+        this.wareId = wareId;
     }
 
     @Override
@@ -93,6 +119,8 @@ public class TimeWindow extends BaseEntity
             .append("updateTime", getUpdateTime())
             .append("status", getStatus())
             .append("remark", getRemark())
+            .append("dockNum", getDockNum())
+            .append("wareId", getWareId())
             .toString();
     }
 }
