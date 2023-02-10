@@ -32,6 +32,7 @@
       </div>
 
       <TimeWindowTable 
+        :visible="searchLoading"
         :wareId="queryForm.wareId"
         :allDockNum="queryForm.wareId == null ? null : wareOptionList.find(x => x.id == queryForm.wareId).dockNum"
         :isSave="saveLoading"
@@ -153,9 +154,6 @@ export default {
       try {
         const data = await this.$store.dispatch('ware/getOptionList')
         this.wareOptionList = data.data
-        if(this.wareOptionList.length > 0){
-          this.queryForm.wareId = this.wareOptionList[0].id;
-        }
       } catch (error) {
         this.$message.error(error.message)
       }

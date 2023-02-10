@@ -13,7 +13,7 @@
               placeholder="道口数量"
               @change="onDockNumChange(item)"
             />
-            <a-switch class="center" :checked="item.status == 1 ? true : false" @change="onStatusChange($event, item)" checked-children="启用" un-checked-children="禁用"/>
+            <a-switch class="center" v-model="item.uesd" checked-children="启用" un-checked-children="禁用"/>
           </div>
         </a-col>
       </template>
@@ -24,6 +24,12 @@
 <script>
 export default {
   props: {
+    visible: {
+      type: Boolean,
+      default() {
+        return false
+      },
+    },
     wareId: {
       type: Number,
       default() {
@@ -88,18 +94,18 @@ export default {
         item.dockNum = ''
       }
     },
-    /** 该时间段是否启用 */
-    onStatusChange(event, item){
-      if(event){
-        item.status = 1;
-        return true;
-      }else{
-        item.sataus = 0;
-        return false;
-      }
-    },
     /** 保存time window数据 */
     handleSave(){
+      this.timeWindowList.forEach(item => {
+        if(item.used == true){
+          item.status = 1
+        }else{
+          item.status = 0
+        }
+        if(item.dockNum == '' || item.dockNum == null){
+          item.dockNum = 0;
+        }
+      })
       console.info(this.timeWindowList)
       this.$emit('on-ok', true)
     },
@@ -117,8 +123,8 @@ export default {
     },
   },
   watch: {    
-    wareId (val) {
-      if (val != null) {
+    visible (val) {
+      if (val == true && this.wareId != null) {
         this.loadData()
       }
     },
