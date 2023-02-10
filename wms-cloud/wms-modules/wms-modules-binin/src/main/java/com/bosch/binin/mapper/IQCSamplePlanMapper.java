@@ -19,7 +19,8 @@ import java.util.List;
 @Mapper
 public interface IQCSamplePlanMapper  extends BaseMapper<IQCSamplePlan> {
 
-    List<IQCSamplePlanVO> getSamplePlan(IQCSamplePlanQueryDTO dto);
+    List<IQCSamplePlanVO> getSamplePlanList(IQCSamplePlanQueryDTO dto);
 
     IQCSamplePlanVO getBinInInfo(String sscc);
+
 }

@@ -5,16 +5,15 @@
 <mapper namespace="com.bosch.binin.mapper.IQCSamplePlanMapper">
 
 
-    <select id="getSamplePlan" resultType="com.bosch.binin.api.domain.vo.IQCSamplePlanVO">
-        select isp.*,bs.batch_nb as batchNb,bs.expire_date as expireDate,bs.ware_code as wareCode
+    <select id="getSamplePlanList" resultType="com.bosch.binin.api.domain.vo.IQCSamplePlanVO">
+        select isp.*,mm.name as materialName,mm.unit
         from iqc_sample_plan isp
-        left join bi_stock bs
-        on isp.sscc_nb = bs.sscc_number and bs.delete_flag = 0
+        left join  md_material mm on mm.code = isp.material_nb
         where isp.delete_flag = 0
         <if test="ssccNb != null and ssccNb != ''">and isp.sscc_nb like concat('%', #{ssccNb},
             '%')
         </if>
-        <if test="wareCode != null and wareCode != ''">and bs.ware_code like concat('%', #{wareCode},
+        <if test="wareCode != null and wareCode != ''">and isp.ware_code like concat('%', #{wareCode},
             '%')
         </if>
         <if test="materialNb != null and materialNb != ''">and isp.material_nb like concat('%', #{materialNb},
