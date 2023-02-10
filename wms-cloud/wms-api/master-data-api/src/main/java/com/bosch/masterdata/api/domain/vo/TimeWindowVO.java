@@ -54,4 +54,14 @@ public class TimeWindowVO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
+    private boolean enable;
+
+    public void setStatus(Long status) {
+        this.status = status;
+        if (status == 1) {
+            this.enable = true;
+        } else {
+            this.enable = false;
+        }
+    }
 }
