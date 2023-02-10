@@ -87,7 +87,7 @@ public class TimeWindowServiceImpl implements ITimeWindowService {
             if (timeWindowDTO.getId() == null) {
                 i += this.insertTimeWindow(timeWindowDTO);
             } else {
-                this.updateTimeWindow(timeWindowDTO);
+                i += this.updateTimeWindow(timeWindowDTO);
             }
         }
         return i;

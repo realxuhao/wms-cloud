@@ -13,7 +13,7 @@
               placeholder="道口数量"
               @change="onDockNumChange(item)"
             />
-            <a-switch class="center" v-model="item.uesd" checked-children="启用" un-checked-children="禁用"/>
+            <a-switch class="center" v-model="item.enable" checked-children="启用" un-checked-children="禁用" />
           </div>
         </a-col>
       </template>
@@ -65,7 +65,21 @@ export default {
   computed: {},
   methods: {
     /** 根据wareId查询数据 */
-    loadData() {
+    async loadData() {
+      if (this.wareId != null) {
+        const { data } = await this.$store.dispatch('timeWindow/getDataByWareId', this.wareId)
+        console.info(data)
+        if (data.length > 0) {
+          this.timeWindowList = data
+        } else {
+          //如果该仓库没有配置time window，初始化time window页面
+          this.initTimeWindowList()
+        }
+      } else {
+        this.initTimeWindowList()
+      }
+    },
+    initTimeWindowList() {
       this.timeWindowList = []
       for (let i = 0; i < 24; i++) {
         const startTime = i < 10 ? '0' + i + ':' + '00' : i + ':' + '00'
@@ -75,8 +89,9 @@ export default {
           startTime: startTime,
           endTime: endTime,
           wareId: this.wareId,
-          dockNum: '',
-          status: 1
+          dockNum: null,
+          status: 1,
+          enable: true,
         }
         this.timeWindowList = [...this.timeWindowList, row]
       }
@@ -84,30 +99,41 @@ export default {
     /** 道口数量change方法，判断是否超过该仓库道口数 */
     onDockNumChange(item) {
       const num = Number(item.dockNum)
-      if(this.wareId == 0 || this.wareId == null){
+      if (this.wareId == 0 || this.wareId == null) {
         this.$message.error('请选择仓库！')
-        item.dockNum = ''
+        item.dockNum = null
         return
       }
       if (num > this.allDockNum) {
         this.$message.error('您输入的道口数量大于仓库道口总数量，请重新输入!')
-        item.dockNum = ''
+        item.dockNum = null
       }
     },
     /** 保存time window数据 */
-    handleSave(){
-      this.timeWindowList.forEach(item => {
-        if(item.used == true){
+    async handleSave() {
+      if(this.wareId == null){
+        this.$message.error('请选择仓库！')
+        return;
+      }
+      this.timeWindowList.forEach((item) => {
+        if (item.enable == true) {
           item.status = 1
-        }else{
+        } else {
           item.status = 0
         }
-        if(item.dockNum == '' || item.dockNum == null){
-          item.dockNum = 0;
+        if (item.dockNum == '') {
+          item.dockNum = null
         }
       })
-      console.info(this.timeWindowList)
-      this.$emit('on-ok', true)
+      try {
+        await this.$store.dispatch('timeWindow/addList', this.timeWindowList)
+        this.$emit('on-ok', true)
+        this.$message.success("保存成功!")
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.loadData()
+      }
     },
     /** 格式化日期(暂时没有用到) */
     getFormatDate(value) {
@@ -122,8 +148,8 @@ export default {
         : date.getDate()
     },
   },
-  watch: {    
-    visible (val) {
+  watch: {
+    visible(val) {
       if (val == true && this.wareId != null) {
         this.loadData()
       }

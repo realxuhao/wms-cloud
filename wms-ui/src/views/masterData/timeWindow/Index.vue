@@ -108,6 +108,7 @@ export default {
     },
     /** 接收Time window数据保存返回值 */
     childernSave(val){
+      this.saveLoading = false;
       if(val == true){
         this.loadTableList();
       }
