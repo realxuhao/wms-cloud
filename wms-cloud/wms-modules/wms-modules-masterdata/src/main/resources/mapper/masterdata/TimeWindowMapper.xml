@@ -8,6 +8,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="id"    column="id"    />
         <result property="startTime"    column="start_time"    />
         <result property="endTime"    column="end_time"    />
+        <result property="wareId"    column="ware_id"    />
+        <result property="dockNum"    column="dock_num"    />
         <result property="windowCode"    column="window_code"    />
         <result property="createBy"    column="create_by"    />
         <result property="updateBy"    column="update_by"    />
@@ -21,13 +23,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="id"    column="id"    />
         <result property="startTime"    column="start_time"    />
         <result property="endTime"    column="end_time"    />
+        <result property="wareId"    column="ware_id"    />
+        <result property="dockNum"    column="dock_num"    />
         <result property="windowCode"    column="window_code"    />
         <result property="createTime"    column="create_time"    />
         <result property="status"    column="status"    />
     </resultMap>
 
     <sql id="selectTimeWindowVo">
-        select id, start_time, end_time, window_code, create_by, update_by, create_time, update_time, status, remark from md_time_window
+        select id, start_time, end_time,ware_id,dock_num,window_code, create_by, update_by, create_time, update_time, status, remark from md_time_window
     </sql>
 
     <select id="selectTimeWindowList" parameterType="TimeWindowDTO" resultMap="TimeWindowVOResult">
@@ -45,6 +49,11 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectTimeWindowVo"/>
         where id = #{id}
     </select>
+
+    <select id="selectTimeWindowByWareId" parameterType="Long" resultType="com.bosch.masterdata.api.domain.TimeWindow">
+        <include refid="selectTimeWindowVo"/>
+        where ware_id = #{wareId,jdbcType=BIGINT}
+    </select>
         
     <insert id="insertTimeWindow" parameterType="TimeWindow" useGeneratedKeys="true" keyProperty="id">
         insert into md_time_window
@@ -52,6 +61,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="startTime != null and startTime != ''">start_time,</if>
             <if test="endTime != null and endTime != ''">end_time,</if>
             <if test="windowCode != null">window_code,</if>
+            <if test="wareId != null">ware_id,</if>
+            <if test="dockNum != null">dock_num,</if>
             <if test="createBy != null">create_by,</if>
             <if test="updateBy != null">update_by,</if>
             <if test="createTime != null">create_time,</if>
@@ -63,6 +74,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="startTime != null and startTime != ''">#{startTime},</if>
             <if test="endTime != null and endTime != ''">#{endTime},</if>
             <if test="windowCode != null">#{windowCode},</if>
+            <if test="wareId != null">#{wareId},</if>
+            <if test="dockNum != null">#{dockNum},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="createTime != null">#{createTime},</if>
@@ -77,6 +90,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <trim prefix="SET" suffixOverrides=",">
             <if test="startTime != null and startTime != ''">start_time = #{startTime},</if>
             <if test="endTime != null and endTime != ''">end_time = #{endTime},</if>
+            <if test="wareId != null">ware_id = #{wareId},</if>
+            <if test="dockNum != null">dock_num = #{dockNum},</if>
             <if test="windowCode != null">window_code = #{windowCode},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
             <if test="updateBy != null">update_by = #{updateBy},</if>

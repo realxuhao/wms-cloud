@@ -73,7 +73,7 @@ public class WareController extends BaseController {
      * 获取所有仓库
      */
     @GetMapping("/all/list")
-    @ApiOperation("获取所以仓库")
+    @ApiOperation("获取所有仓库")
     public R<List<WareSelectVO>> wareList() {
         List<WareSelectVO> list = wareService.fetchWareList();
         return R.ok(list);
