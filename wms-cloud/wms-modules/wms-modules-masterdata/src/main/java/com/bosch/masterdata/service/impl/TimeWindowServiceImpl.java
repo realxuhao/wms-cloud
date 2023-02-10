@@ -36,8 +36,10 @@ public class TimeWindowServiceImpl implements ITimeWindowService {
     }
 
     @Override
-    public List<TimeWindow> selectTimeWindowByWareId(Long wareId){
-        return timeWindowMapper.selectTimeWindowByWareId(wareId);
+    public List<TimeWindowVO> selectTimeWindowByWareId(Long wareId) {
+        List<TimeWindow> timeWindows = timeWindowMapper.selectTimeWindowByWareId(wareId);
+        List<TimeWindowVO> timeWindowVOS = BeanConverUtil.converList(timeWindows, TimeWindowVO.class);
+        return timeWindowVOS;
     }
 
     /**

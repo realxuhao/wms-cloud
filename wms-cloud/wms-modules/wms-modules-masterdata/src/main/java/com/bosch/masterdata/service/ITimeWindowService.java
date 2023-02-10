@@ -21,7 +21,7 @@ public interface ITimeWindowService
      */
     public TimeWindow selectTimeWindowById(Long id);
 
-    public List<TimeWindow> selectTimeWindowByWareId(Long wareId);
+    public List<TimeWindowVO> selectTimeWindowByWareId(Long wareId);
 
     /**
      * 查询道口时间窗口列表
