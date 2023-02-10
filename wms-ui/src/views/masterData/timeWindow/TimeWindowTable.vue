@@ -1,0 +1,147 @@
+<template>
+  <div class="content">
+    <a-row :gutter="[16, 16]">
+      <template v-for="(item, index) in timeWindowList">
+        <a-col :key="index" :span="4">
+          <div class="hour-div">
+            {{ item.beginHour + '-' + item.endHour }}
+            <a-input
+              oninput="value=value.replace(/[^\d]/g,'')"
+              class="center-input"
+              v-model="item.dockNum"
+              :bordered="false"
+              placeholder="道口数量"
+              @change="onDockNumChange(item)"
+            />
+            <a-switch class="center" v-model="item.isUesd" checked-children="启用" un-checked-children="禁用"/>
+          </div>
+        </a-col>
+      </template>
+    </a-row>
+  </div>
+</template>
+
+<script>
+export default {
+  props: {
+    wareId: {
+      type: Number,
+      default() {
+        return 0
+      },
+    },
+    allDockNum: {
+      type: Number,
+      default() {
+        return 0
+      },
+    },
+    isSave: {
+      type: Boolean,
+      default() {
+        return false
+      },
+    },
+  },
+  data() {
+    return {
+      /** time window数据list */
+      timeWindowList: [],
+    }
+  },
+  mounted() {
+    this.loadData()
+  },
+  // model: {
+  //   prop: 'wareId'
+  // },
+  computed: {},
+  methods: {
+    /** 根据wareId查询数据 */
+    loadData() {
+      this.timeWindowList = []
+      for (let i = 0; i < 24; i++) {
+        const beginHour = i < 10 ? '0' + i + ':' + '00' : i + ':' + '00'
+        const endHour = i + 1 < 10 ? '0' + (i + 1) + ':' + '00' : i + 1 + ':' + '00'
+        const row = {
+          beginHour: beginHour,
+          endHour: endHour,
+          wareId: this.wareId,
+          dockNum: '',
+          status: 1,
+          isUesd: true,
+        }
+        this.timeWindowList = [...this.timeWindowList, row]
+      }
+    },
+    /** 道口数量change方法，判断是否超过该仓库道口数 */
+    onDockNumChange(item) {
+      const num = Number(item.dockNum)
+      if(this.wareId == 0 || this.wareId == null){
+        this.$message.error('请选择仓库！')
+        item.dockNum = ''
+        return
+      }
+      if (num > this.allDockNum) {
+        this.$message.error('您输入的道口数量大于仓库道口总数量，请重新输入!')
+        item.dockNum = ''
+      }
+    },
+    /** 保存time window数据 */
+    handleSave(){
+      this.$emit('on-ok', true)
+    },
+    /** 格式化日期(暂时没有用到) */
+    getFormatDate(value) {
+      const date = new Date(value)
+      if (date == undefined) {
+        return ''
+      }
+      return date.getFullYear() + '-' + (date.getMonth + 1) < 10
+        ? '0' + (date.getMonth + 1)
+        : date.getMonth + 1 + '-' + date.getDate() < 10
+        ? '0' + date.getDate()
+        : date.getDate()
+    },
+  },
+  watch: {    
+    wareId (val) {
+      if (val) {
+        this.loadData()
+      }
+    },
+    isSave(val) {
+      if (val == true) {
+        this.handleSave()
+      }
+    },
+  },
+}
+</script>
+
+<style lang="less" scoped>
+// .content{
+//   background-image: linear-gradient(to bottom right,#2f508d,#34b8ab);
+// }
+.hour-div {
+  // background-color: rgba(227, 225, 225, 0.5);
+  background-image: linear-gradient(to bottom right, #2f508d40, #34b8abbd);
+  height: 18vh;
+  line-height: 8vh;
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+}
+.center {
+  display: block;
+  margin: 0 auto;
+}
+.center-input {
+  display: block;
+  margin: 0 auto;
+  height: 3vh;
+  width: 5vw;
+  margin-bottom: 2vh;
+  text-align: center;
+}
+</style>
