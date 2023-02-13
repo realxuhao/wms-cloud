@@ -22,7 +22,7 @@
               </span>
             </a-col>
 
-            <a-col span="3">
+            <a-col span="3" v-show="queryForm.wareId != null">
               <a-tag class="docknum-tag" color="#1890ff">
                 该仓库总道口数：{{ queryForm.wareId == null ? null : wareOptionList.find(x => x.id == queryForm.wareId).dockNum }}
               </a-tag>              
@@ -37,6 +37,7 @@
         :allDockNum="queryForm.wareId == null ? null : wareOptionList.find(x => x.id == queryForm.wareId).dockNum"
         :isSave="saveLoading"
         @on-ok="childernSave"
+        centered
       ></TimeWindowTable>
     </div>
   </div>
