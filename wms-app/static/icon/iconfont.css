@@ -13,6 +13,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-zhijian1:before {
+  content: "\e63d";
+}
+
+.icon-chaifenlie:before {
+  content: "\e60b";
+}
+
 .icon-SSCC:before {
   content: "\e69a";
 }
@@ -152,3 +160,4 @@
 .icon-rukuwancheng:before {
   content: "\e642";
 }
+

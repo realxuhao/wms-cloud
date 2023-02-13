@@ -137,7 +137,7 @@
 			
 			},
 			async initScanCode(){
-				Bus.$on('scancodedate',(data)=>{
+				Bus.$on('scancodedate',async (data)=>{
 					
 					const code = data.code.trim()
 					// this.code = code
@@ -146,13 +146,11 @@
 					if(this.editFieldName==='form.mesBarCode'){
 						this.getMesBarCodeInfo(code)
 						
-						console.log(this.parsedMesBarCode.ssccNb)
 						this.form.mesBarCode = this.parsedMesBarCode.ssccNb
-						console.log(this.form.mesBarCode)
-						this.getStockInfo(this.parsedMesBarCode.ssccNb)
+						await this.getStockInfo(this.parsedMesBarCode.ssccNb)
 						// _.set(this,this.editFieldName,code)
 					} else if(this.editFieldName === 'form.newMesBarCode'){
-						this.getMesBarCodeInfo(code)
+						await this.getMesBarCodeInfo(code)
 						this.form.newMesBarCode = this.parsedMesBarCode.ssccNb
 						this.form.splitQuantity = this.parsedMesBarCode.quantity
 					}

@@ -1,8 +1,8 @@
 <template>
-	<my-page nav-title="扫描库位码" :shadow="false" :border="false">
+	<my-page nav-title="扫描SSCC码" :shadow="false" :border="false">
 			<view class="content" slot="page-main" >
 				<image src="/static/sku-phone.png" class="m-b-8"></image>
-				<text>请将激光扫描头对准库位码区域</text>
+				<text>请将激光扫描头对准SSCC码区域</text>
 			</view>
 			<Message ref="message"></Message>
 	</my-page>
@@ -31,12 +31,27 @@
 			async scanCodeCallback(data){
 				Bus.$emit('stopScan')
 				this.code = data.code
-				this.handleGoto()
+				this.checkBinIn(data.code)
 			},
-			handleGoto(){
+			async checkBinIn(barCode){
+				try{
+					uni.showLoading()
+					const data = await this.$store.dispatch('IQC/getSample',barCode)
+					if(!data && data.status ===3 ){
+						throw Error('已上架，请勿重复操作')
+					}
+					this.handleGotoOperation()
+				}catch(e){
+					this.$refs.message.error(e.message)
+				}finally{
+					uni.hideLoading()
+					Bus.$emit('startScan')
+				}
+			},
+			handleGotoOperation(){
 				Bus.$off("scancodedate",this.scanCodeCallback);
 				uni.navigateTo({
-					url:`/pages/location/dashboard?code=${this.code}`
+					url:`/pages/IQC/binInperation?barCode=${this.code}`
 				})
 			}
 		}

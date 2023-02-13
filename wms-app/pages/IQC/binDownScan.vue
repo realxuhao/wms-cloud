@@ -45,18 +45,15 @@
 		methods:{
 			async scanCodeCallback(data){
 				Bus.$emit('stopScan')
-
-				this.$refs.submitPopup.close()
-
 				this.code = data.code
-				await this.parsedBarCode(data.code)
-				if (JSON.stringify(this.info)!='{}'){
-					this.$refs.submitPopup.open()
-				}
+				this.getSample(data.code)
 			},
-			async parsedBarCode(barCode){
+			async getSample(barCode){
 				try{
-					const data = await this.$store.dispatch('kanban/parsedBarCode',barCode)
+					const data = await this.$store.dispatch('IQC/getSample',barCode)
+					if(data.status === 0){
+						this.$refs.submitPopup.open()
+					}
 					this.info = data
 				}catch(e){
 					this.$refs.message.error(e.message)
@@ -67,9 +64,8 @@
 			async handleBinDown(data){
 				try{
 					uni.showLoading()
-					await this.$store.dispatch('manualTrans/binDown',this.code)
+					await this.$store.dispatch('IQC/binDown',this.code)
 					this.$refs.message.success('下架成功')
-					Bus.$emit('startScan')
 					this.$refs.submitPopup.close()
 				}catch(e){
 					this.$refs.message.error(e.message)
@@ -81,15 +77,6 @@
 				this.$refs.submitPopup.close()
 				Bus.$emit('startScan')
 			},
-			handleGoBack(){
-				uni.navigateBack({})
-			},
-			handleGoto(){
-				Bus.$off("scancodedate",this.scanCodeCallback);
-				uni.navigateTo({
-					url:`/pages/materialIn/operator?barCode=${this.code}`
-				})
-			}
 		}
 	}
 </script>

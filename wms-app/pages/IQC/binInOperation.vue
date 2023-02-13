@@ -1,5 +1,5 @@
 <template>
-		<my-page nav-title="IQC上架">
+		<my-page nav-title="原材料上架">
 			
 			<view class="main" slot="page-main">
 				<view class="header m-b-8">
@@ -176,14 +176,14 @@
 			},
 			async getByMesBarCode(barCode){
 				try{
-					const data = await this.$store.dispatch('binIn/getByMesBarCode',barCode)
+					const data = await this.$store.dispatch('IQC/getBinInInfo',barCode)
 					
 					if(data.palletCode){
 						this.editFieldName = 'binInForm.recommendBinCode'
 					}
 					this.materialInfo = data
 					
-					if(data && data.status ===1 ){
+					if(data && data.status === 3 ){
 						throw Error('已上架，请勿重复操作')
 					}
 				}catch(e){
@@ -215,7 +215,7 @@
 						actualBinCode:this.binInForm.recommendBinCode,
 						palletCode:this.binInForm.palletTypeCode
 					}
-					const data = await this.$store.dispatch('binIn/postBinIn',options)
+					const data = await this.$store.dispatch('IQC/postBinIn',options)
 					this.$refs.popup.open()
 				}catch(e){
 					this.$refs.message.error(e.message)

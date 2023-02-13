@@ -12,6 +12,7 @@ import wareShift from './modules/wareShift'
 import manualTrans from './modules/manualTrans'
 import material from './modules/material'
 import stock from './modules/stock'
+import IQC from './modules/IQC'
 
 import getters from './getters'
 
@@ -29,7 +30,8 @@ export default new Vuex.Store({
 	wareShift,
 	manualTrans,
 	material,
-	stock
+	stock,
+	IQC
   },
   state: {
 

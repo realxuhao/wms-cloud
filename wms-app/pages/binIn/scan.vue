@@ -45,7 +45,6 @@
 					this.$refs.message.error(e.message)
 				}finally{
 					uni.hideLoading()
-					console.log(1111)
 					Bus.$emit('startScan')
 				}
 			},

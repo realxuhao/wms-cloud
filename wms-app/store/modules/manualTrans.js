@@ -1,6 +1,6 @@
 import { manualTransService } from '@/api'
 
-const manualTrans = {
+const IQC = {
  namespaced: true,
   state: {
   },
@@ -34,5 +34,5 @@ const manualTrans = {
   }
 }
 
-export default manualTrans
+export default IQC
 

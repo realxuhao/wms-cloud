@@ -122,6 +122,30 @@
         },
 		{
 		    "path" : "pages/location/dashboard"
+		},
+		{
+            "path" : "pages/IQC/binDown"
+        },
+		{
+			"path": "pages/IQC/binDownScan"
+		},
+        {
+            "path" : "pages/IQC/sample"
+        },
+		{
+		    "path" : "pages/IQC/sampleScan"
+		},
+		{
+		    "path" : "pages/IQC/sampleOperator"
+		},
+		{
+			"path": "pages/IQC/binIn"
+		},
+		{
+			"path": "pages/IQC/binInScan"
+		},
+		{
+			"path": "pages/IQC/binInOperation"
 		}
     ],
 	"globalStyle": {
