@@ -54,5 +54,23 @@ public class WareVO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
+    /**
+     * 仓库联系人
+     */
+    @ApiModelProperty(value = "仓库联系人")
+    private String wareUser;
+
+    /**
+     * 仓库联系人电话
+     */
+    @ApiModelProperty(value = "仓库联系人电话")
+    private String wareUserPhone;
+
+    /**
+     * 道口数量
+     */
+    @ApiModelProperty(value = "道口数量")
+    private  Long dockNum;
+
 
 }

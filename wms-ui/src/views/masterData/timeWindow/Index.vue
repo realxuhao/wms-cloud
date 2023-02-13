@@ -2,141 +2,123 @@
   <div class="wrapper">
     <div class="table-content">
       <div class="action-content">
-        <a-button type="primary" icon="plus" @click="handleAdd">
-          新建
-        </a-button>
-      </div>
-      <a-table
-        :columns="columns"
-        :data-source="list"
-        :loading="tableLoading"
-        rowKey="id"
-        :pagination="false"
-        size="middle"
-        :scroll="{ x: 1300 }"
-      >
-        <template slot="action" slot-scope="text, record">
-          <div class="action-con">
-            <a class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
-            <a-divider type="vertical" />
-            <a-popconfirm
-              title="确认要删除吗?"
-              ok-text="确认"
-              cancel-text="取消"
-              @confirm="handleDelete(record)"
-            >
-              <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
-            </a-popconfirm>
-          </div>
-        </template>
-      </a-table>
+        <a-form layout="inline" class="search-content">
+          <a-row :gutter="16">
+            <a-col :span="4">
+              <a-form-model-item label="仓库编码">
+                <a-select show-search v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
+                  <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
+                    {{ item.code }}</a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </a-col>
 
-      <div class="pagination-con">
-        <a-pagination
-          show-size-changer
-          show-less-items
-          :current="queryForm.pageNum"
-          :page-size.sync="queryForm.pageSize"
-          :total="paginationTotal"
-          @showSizeChange="onShowSizeChange"
-          @change="changePagination" />
+            <a-col span="4">
+              <span class="table-page-search-submitButtons">
+                <a-button type="primary" @click="handleSearch" :loading="searchLoading"
+                  ><a-icon type="search" />查询</a-button>
+                <a-button style="margin-left: 8px" type="primary" @click="handleSave" :loading="saveLoading"
+                  ><a-icon type="save" />保存</a-button>
+              </span>
+            </a-col>
+
+            <a-col span="3">
+              <a-tag class="docknum-tag" color="#1890ff">
+                该仓库总道口数：{{ queryForm.wareId == null ? null : wareOptionList.find(x => x.id == queryForm.wareId).dockNum }}
+              </a-tag>              
+            </a-col>
+          </a-row>
+        </a-form>
       </div>
 
+      <TimeWindowTable 
+        :visible="searchLoading"
+        :wareId="queryForm.wareId"
+        :allDockNum="queryForm.wareId == null ? null : wareOptionList.find(x => x.id == queryForm.wareId).dockNum"
+        :isSave="saveLoading"
+        @on-ok="childernSave"
+      ></TimeWindowTable>
     </div>
-
-    <UpdateDrawer
-      v-model="visible"
-      :updateType="updateType"
-      :id="currentUpdateId"
-      @on-ok="loadTableList"
-    ></UpdateDrawer>
   </div>
 </template>
 
 <script>
-import UpdateDrawer from './UpdateDrawer'
+import TimeWindowTable from './TimeWindowTable'
 
-const columns = [
-  {
-    title: '时间窗口起',
-    key: 'startTime',
-    dataIndex: 'startTime',
-    width: 200
-  },
-  {
-    title: '时间窗口止',
-    key: 'endTime',
-    dataIndex: 'endTime',
-    width: 200
-  },
-  {
-    title: '道口',
-    key: 'windowCode',
-    dataIndex: 'windowCode',
-    width: 200
-  },
-  {
-    title: '创建时间',
-    key: 'createTime',
-    dataIndex: 'createTime',
-    width: 200
-  },
-  {
-    title: '操作',
-    key: 'action',
-    width: 200,
-    scopedSlots: { customRender: 'action'
-    }
+const queryFormAttr = () => {
+  return {
+    wareId: null,
   }
-]
+}
 
 export default {
   name: 'TimeWindow',
   components: {
-    UpdateDrawer
+    TimeWindowTable,
   },
-  data () {
+  data() {
     return {
       visible: false,
       updateType: 'add', // edit、add
       currentUpdateId: 0,
 
       searchLoading: false,
+      saveLoading: false,
       queryForm: {
-        name: '',
-        code: '',
+        ...queryFormAttr(),
         pageSize: 20,
-        pageNum: 1
+        pageNum: 1,
       },
       paginationTotal: 0,
 
       tableLoading: false,
-      columns,
-      list: []
+      list: [],
+      wareOptionList: [
+        { id: 1, code: 'W01', dockNum: 5 },
+        { id: 2, code: 'W01', dockNum: 6 },
+      ],
     }
   },
   methods: {
-    onShowSizeChange () {
+    handleResetQuery() {
+      this.queryForm = { ...this.queryForm, ...queryFormAttr() }
+      this.handleSearch()
+    },
+    onShowSizeChange() {
       this.queryForm.pageNum = 1
       this.loadTableList()
     },
-    changePagination (page) {
+    changePagination(page) {
       this.queryForm.pageNum = page
       this.loadTableList()
     },
 
-    async handleSearch () {
+    async handleSearch() {
       this.searchLoading = true
       await this.loadTableList()
       this.searchLoading = false
     },
-
-    handleEdit (record) {
+    /** 通知子页面保存time window数据 */
+    handleSave() {
+      if(this.queryForm.wareId == null){
+        this.$message.error('请选择要保存的仓库！')
+        return        
+      }
+      this.saveLoading = true
+    },
+    /** 接收Time window数据保存返回值 */
+    childernSave(val){
+      this.saveLoading = false;
+      if(val == true){
+        this.loadTableList();
+      }
+    },
+    handleEdit(record) {
       this.updateType = 'edit'
       this.visible = true
       this.currentUpdateId = record.id
     },
-    async handleDelete (record) {
+    async handleDelete(record) {
       try {
         await this.$store.dispatch('timeWindow/destroy', record.id)
         this.$message.success('删除成功！')
@@ -148,15 +130,16 @@ export default {
       }
     },
 
-    handleAdd () {
+    handleAdd() {
       this.updateType = 'add'
       this.visible = true
       this.currentUpdateId = null
     },
 
-    async loadTableList () {
+    async loadTableList() {
       try {
         this.tableLoading = true
+        this.saveLoading = false;
 
         const { rows, total } = await this.$store.dispatch('timeWindow/getList', this.queryForm)
         this.list = rows
@@ -167,17 +150,33 @@ export default {
         this.tableLoading = false
       }
     },
-
-    async loadData () {
+    /** 获取仓库List */
+    async getWareOptionList () {
+      try {
+        const data = await this.$store.dispatch('ware/getOptionList')
+        this.wareOptionList = data.data
+      } catch (error) {
+        this.$message.error(error.message)
+      }
+    },
+    async loadData() {
+      this.getWareOptionList()
       this.loadTableList()
-    }
+    },
   },
-  mounted () {
+  mounted() {
     this.loadData()
-  }
+  },
 }
 </script>
 
 <style lang="less" scoped>
-
+.docknum-tag{
+    background-color: #1890ff;
+    height: 32px;
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 </style>

@@ -49,4 +49,22 @@ public class WareDTO extends PageDomain {
      */
     @ApiModelProperty(value = "是否是虚拟托盘 1：实物，0:虚拟")
     private Integer isVirtual;
+
+    /**
+     * 仓库联系人
+     */
+    @ApiModelProperty(value = "仓库联系人")
+    private String wareUser;
+
+    /**
+     * 仓库联系人电话
+     */
+    @ApiModelProperty(value = "仓库联系人电话")
+    private String wareUserPhone;
+
+    /**
+     * 道口数量
+     */
+    @ApiModelProperty(value = "道口数量")
+    private  Long dockNum;
 }

@@ -35,6 +35,13 @@ public class TimeWindowServiceImpl implements ITimeWindowService {
         return timeWindowMapper.selectTimeWindowById(id);
     }
 
+    @Override
+    public List<TimeWindowVO> selectTimeWindowByWareId(Long wareId) {
+        List<TimeWindow> timeWindows = timeWindowMapper.selectTimeWindowByWareId(wareId);
+        List<TimeWindowVO> timeWindowVOS = BeanConverUtil.converList(timeWindows, TimeWindowVO.class);
+        return timeWindowVOS;
+    }
+
     /**
      * 查询道口时间窗口列表
      *
@@ -71,6 +78,19 @@ public class TimeWindowServiceImpl implements ITimeWindowService {
         TimeWindow timeWindow = BeanConverUtil.conver(timeWindowDTO, TimeWindow.class);
         timeWindow.setUpdateTime(DateUtils.getNowDate());
         return timeWindowMapper.updateTimeWindow(timeWindow);
+    }
+
+    @Override
+    public int saveTimeWindow(List<TimeWindowDTO> timeWindowList) {
+        int i = 0;
+        for (TimeWindowDTO timeWindowDTO : timeWindowList) {
+            if (timeWindowDTO.getId() == null) {
+                i += this.insertTimeWindow(timeWindowDTO);
+            } else {
+                i += this.updateTimeWindow(timeWindowDTO);
+            }
+        }
+        return i;
     }
 
     /**

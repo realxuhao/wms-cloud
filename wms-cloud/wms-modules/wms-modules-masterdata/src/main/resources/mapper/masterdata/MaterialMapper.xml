@@ -282,7 +282,7 @@
             <if test="palletId != null ">and m.pallet_id = #{palletId}</if>
             <if test="palletType != null ">and m.pallet_type = #{palletType}</if>
             <if test="materialNbList!= null and materialNbList.size()>0">
-                m.code in
+               and  m.code in
                 <foreach item="item" collection="materialNbList" open="(" separator="," close=")">
                     #{item}
                 </foreach>
@@ -357,7 +357,7 @@
 
     <select id="validateRecord" resultType="integer" parameterType="MaterialDTO">
         SELECT COUNT(*) FROM md_material
-        WHERE (code) IN
+        WHERE delete_flag='0' and(code) IN
         <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
             (#{item.code})
         </foreach>

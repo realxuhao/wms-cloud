@@ -34,10 +34,24 @@ const destroy = async (id) => {
   return data
 }
 
+const getDataByWareId = async (id) => {
+  const url = `/timeWindow/ware/${id}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const addList = async (List) => {
+  const url = '/timeWindow/save'
+  const { data } = await createAuthInstance(baseUrl).post(url, List)
+  return data
+}
+
 export const timeWindowService = {
   getList,
   getOne,
   edit,
   add,
-  destroy
+  destroy,
+  getDataByWareId,
+  addList
 }

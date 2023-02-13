@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.masterdata.api.domain.Area;
 import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.vo.FactoryVO;
+import com.bosch.masterdata.api.domain.vo.WareSelectVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -68,4 +69,6 @@ public interface WareMapper extends BaseMapper<Ware>
     public int deleteWareByIds(String[] ids);
 
     List<FactoryVO> selectFactoryList();
+
+    List<WareSelectVO> fetchWareList();
 }

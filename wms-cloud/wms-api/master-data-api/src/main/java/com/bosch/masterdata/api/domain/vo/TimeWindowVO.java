@@ -27,6 +27,18 @@ public class TimeWindowVO {
     private String endTime;
 
     /**
+     * 道口数量
+     */
+    @ApiModelProperty(value = "道口数量")
+    private String dockNum;
+
+    /**
+     * 仓库id
+     */
+    @ApiModelProperty(value = "仓库id")
+    private Long wareId;
+
+    /**
      * 道口编码
      */
     @ApiModelProperty(value = "道口编码")
@@ -42,4 +54,14 @@ public class TimeWindowVO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
+    private boolean enable;
+
+    public void setStatus(Long status) {
+        this.status = status;
+        if (status == 1) {
+            this.enable = true;
+        } else {
+            this.enable = false;
+        }
+    }
 }

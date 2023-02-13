@@ -47,6 +47,32 @@
             { rules: [{ required: true, message: '请输入地点!' }] }
           ]" />
       </a-form-item>
+      <a-form-item label="联系人">
+        <a-input
+          placeholder="联系人"
+          v-decorator="[
+            'wareUser',
+            { rules: [{ required: true, message: '请输入联系人!' }] }
+          ]" />
+      </a-form-item>
+      <a-form-item label="联系电话">
+        <a-input
+          oninput="value=value.replace(/[^\d]/g,'')"
+          placeholder="联系电话"
+          v-decorator="[
+            'wareUserPhone',
+            { rules: [{ required: true, message: '请输入联系电话!' }] }
+          ]" />
+      </a-form-item>
+      <a-form-item label="道口数量">
+        <a-input
+          oninput="value=value.replace(/[^\d]/g,'')"
+          placeholder="道口数量"
+          v-decorator="[
+            'dockNum',
+            { rules: [{ required: true, message: '请输入道口数量!' }] }
+          ]" />
+      </a-form-item>
     </a-form>
 
     <div class="action">
@@ -120,7 +146,7 @@ export default {
     },
     async getAndUpdateForm () {
       const { data } = await this.$store.dispatch('ware/getOne', this.id)
-      this.form.setFieldsValue(_.pick(data, ['code', 'name', 'location']))
+      this.form.setFieldsValue(_.pick(data, ['factoryName', 'factoryCode', 'code', 'name', 'location' ,'wareUser' ,'wareUserPhone' ,'dockNum']))
     },
     async loadData () {
 

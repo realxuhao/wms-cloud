@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletResponse;
 import com.bosch.masterdata.api.domain.dto.WareDTO;
 import com.bosch.masterdata.api.domain.vo.FactoryVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
+import com.bosch.masterdata.api.domain.vo.WareSelectVO;
 import com.bosch.masterdata.api.domain.vo.WareVO;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
@@ -64,6 +65,17 @@ public class WareController extends BaseController {
     @ApiOperation("查询所有工厂")
     public R<List<FactoryVO>> list() {
         List<FactoryVO> list = wareService.selectFactoryList();
+        return R.ok(list);
+    }
+
+
+    /**
+     * 获取所有仓库
+     */
+    @GetMapping("/all/list")
+    @ApiOperation("获取所有仓库")
+    public R<List<WareSelectVO>> wareList() {
+        List<WareSelectVO> list = wareService.fetchWareList();
         return R.ok(list);
     }
 

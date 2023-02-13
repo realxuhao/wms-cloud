@@ -12,10 +12,12 @@ import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.FrameRemainVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
+import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.api.enumeration.ManuTransStatusEnum;
 import com.bosch.binin.mapper.*;
 import com.bosch.binin.service.IBinAssignmentService;
+import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.RemoteMaterialService;
@@ -93,6 +95,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Autowired
     private ManualTransferOrderMapper manualTransferOrderMapper;
+
+    @Autowired
+    private IQCSamplePlanMapper samplePlanMapper;
 
     @Override
     public List<BinInVO> selectBinVOList(BinInQueryDTO queryDTO) {
@@ -441,7 +446,18 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             manualTransferOrderMapper.updateById(manualTransferOrder);
         }
 
-
+        //如果是IQC抽样任务，需要把状态更改为完成
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, ssccNb);
+        iqcQueryWrapper.eq(IQCSamplePlan::getStatus, IQCStatusEnum.WAITING_BIN_IN.code());
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        iqcQueryWrapper.last("limit 1");
+        iqcQueryWrapper.last("for update");
+        IQCSamplePlan samplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
+        if (!Objects.isNull(samplePlan)) {
+            samplePlan.setStatus(IQCStatusEnum.FINISH.code());
+            samplePlanMapper.updateById(samplePlan);
+        }
     }
 
     @Override

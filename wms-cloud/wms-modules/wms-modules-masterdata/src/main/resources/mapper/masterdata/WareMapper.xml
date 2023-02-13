@@ -17,6 +17,9 @@
         <result property="updateTime" column="update_time"/>
         <result property="status" column="status"/>
         <result property="remark" column="remark"/>
+        <result property="wareUser" column="ware_user"/>
+        <result property="wareUserPhone" column="ware_user_phone"/>
+        <result property="dockNum" column="dock_num"/>
     </resultMap>
     <resultMap type="FactoryVO" id="FactoryResult">
         <result property="factoryCode" column="factory_code"/>
@@ -35,7 +38,10 @@
                create_time,
                update_time,
                status,
-               remark
+               remark,
+               ware_user,
+               ware_user_phone,
+               dock_num
         from md_ware
     </sql>
 
@@ -62,6 +68,9 @@
         select distinct factory_code,factory_name from md_ware where status =1
     </select>
 
+    <select id="fetchWareList" resultType="com.bosch.masterdata.api.domain.vo.WareSelectVO">
+        select id,code,dock_num as dockNum from md_ware where status =1
+    </select>
 
     <insert id="insertWare" parameterType="Ware">
         insert into md_ware
@@ -78,6 +87,9 @@
             <if test="updateTime != null">update_time,</if>
             <if test="status != null">status,</if>
             <if test="remark != null">remark,</if>
+            <if test="wareUser != null"> ware_user,</if>
+            <if test="wareUserPhone != null">ware_user_phone,</if>
+            <if test="dockNum != null">dock_num,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -92,6 +104,9 @@
             <if test="updateTime != null">#{updateTime},</if>
             <if test="status != null">#{status},</if>
             <if test="remark != null">#{remark},</if>
+            <if test="wareUser != null">#{wareUser},</if>
+            <if test="wareUserPhone != null">#{wareUserPhone},</if>
+            <if test="dockNum != null">#{dockNum},</if>
         </trim>
     </insert>
 
@@ -109,6 +124,9 @@
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="status != null ">status = #{status},</if>
             <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="wareUser != null and wareUser != ''"> ware_user = #{wareUser},</if>
+            <if test="wareUserPhone != null and wareUserPhone != ''">ware_user_phone = #{wareUserPhone},</if>
+            <if test="dockNum != null">dock_num = #{dockNum},</if>
         </trim>
         where id = #{id}
     </update>

@@ -20,12 +20,14 @@ import java.util.Date;
 @TableName("iqc_sample_plan")
 public class IQCSamplePlan extends BaseEntity {
 
+    private Long id;
+
     @ApiModelProperty(value = "sscc")
     private String ssccNb;
     @ApiModelProperty(value = "cell部门")
     private String cell;
     @ApiModelProperty(value = "物料号")
-    private String materielNb;
+    private String materialNb;
     @ApiModelProperty(value = "下架库位")
     private String binDownCode;
     @ApiModelProperty(value = "下架人")
@@ -54,7 +56,12 @@ public class IQCSamplePlan extends BaseEntity {
     @ApiModelProperty(value = "状态，0：待下架，1：待收养，2：待上架，3：完成")
     private Integer status;
 
-
+    @ApiModelProperty(value = "批次号")
+    private String batchNb;
+    @ApiModelProperty(value = "BBD过期时间")
+    private Date expireDate;
+    @ApiModelProperty(value = "仓库编码")
+    private String wareCode;
 
 
     private Integer deleteFlag;

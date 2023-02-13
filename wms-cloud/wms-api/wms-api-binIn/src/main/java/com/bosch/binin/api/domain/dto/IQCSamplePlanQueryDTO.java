@@ -21,8 +21,10 @@ public class IQCSamplePlanQueryDTO extends PageDomain {
     private String materialNb;
     @ApiModelProperty(value = "仓库号")
     private String wareCode;
-    @ApiModelProperty(value = "状态")
+    @ApiModelProperty(value = "状态(多选)0：待下架，1：待收养，2：待上架，3：完成")
     private List<Integer> statusList;
+    @ApiModelProperty(value = "状态：0：待下架，1：待收养，2：待上架，3：完成")
+    private Integer status;
     @ApiModelProperty(value = "下架人")
     private String binDownUser;
     @ApiModelProperty(value = "开始下架时间")

@@ -33,6 +33,10 @@ const ware = {
     async destroy ({ commit }, id) {
       const data = await wareService.destroy(id)
       return data
+    },
+    async getOptionList ({ commit }) {
+      const data = await wareService.getOptionList()
+      return data
     }
   }
 }

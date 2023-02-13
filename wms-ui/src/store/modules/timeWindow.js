@@ -29,6 +29,14 @@ const timeWindow = {
     async destroy ({ commit }, id) {
       const data = await timeWindowService.destroy(id)
       return data
+    },
+    async getDataByWareId ({ commit }, id) {
+      const data = await timeWindowService.getDataByWareId(id)
+      return data
+    },
+    async addList ({ commit }, List) {
+      const data = await timeWindowService.addList(List)
+      return data
     }
   }
 }
