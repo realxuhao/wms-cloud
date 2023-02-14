@@ -24,4 +24,10 @@ public class BlackDriverVO {
     @ApiModelProperty(value = "状态：1：启用黑名单 0：禁用黑名单")
     private Integer status;
 
+    /**
+     * 备注
+     */
+    @ApiModelProperty(value = "备注")
+    private String remark;
+
 }

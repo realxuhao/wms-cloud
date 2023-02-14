@@ -54,7 +54,7 @@ public class BlackDriverController extends BaseController {
     @RequiresPermissions("masterdata:driver:get")
     @GetMapping(value = "/{id}")
     @ApiOperation("获取司机黑名单详细信息")
-    public AjaxResult getInfo(@PathVariable("id") String id) {
+    public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(blackDriverService.selectBlackDriverById(id));
     }
 
@@ -75,8 +75,9 @@ public class BlackDriverController extends BaseController {
     @RequiresPermissions("masterdata:driver:edit")
     @Log(title = "司机黑名单", businessType = BusinessType.UPDATE)
     @ApiOperation("修改司机黑名单")
-    @PutMapping
-    public AjaxResult edit(@RequestBody BlackDriverDTO blackDriverDTO) {
+    @PutMapping(value = "/{id}")
+    public AjaxResult edit(@PathVariable("id") Long id, @RequestBody BlackDriverDTO blackDriverDTO) {
+        blackDriverDTO.setDriverId(id);
         return toAjax(blackDriverService.updateBlackDriver(BeanConverUtil.conver(blackDriverDTO, BlackDriver.class)));
     }
 

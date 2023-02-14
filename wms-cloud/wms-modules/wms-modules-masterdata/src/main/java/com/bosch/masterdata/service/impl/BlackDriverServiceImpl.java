@@ -24,7 +24,7 @@ public class BlackDriverServiceImpl extends ServiceImpl<BlackDriverMapper, Black
     private BlackDriverMapper blackDriverMapper;
 
     @Override
-    public BlackDriver selectBlackDriverById(String id) {
+    public BlackDriver selectBlackDriverById(Long id) {
         return super.getById(id);
     }
 
