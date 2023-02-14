@@ -214,6 +214,36 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           }
         ]
+      },
+      {
+        path: '/vehicle-reservation',
+        name: 'vehicleReservation',
+        component: RouteView,
+        redirect: '/vehicle-reservation/list',
+        meta: { title: '车辆预约管理', icon: 'hdd', permission: [] },
+        children: [
+          {
+            path: '/vehicle-reservation/purchase',
+            name: 'purchase',
+            component: () => import('@/views/vehicleReservation/purchase/Index'),
+            meta: { title: '采购订单管理', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/vehicle-reservation/supplier',
+            name: 'vr-supplier',
+            component: () => import('@/views/vehicleReservation/supplier/Index'),
+            meta: { title: '供应商预约', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/vehicle-reservation/black-driver',
+            name: 'blackDeriver',
+            component: () => import('@/views/vehicleReservation/blackDriver/Index'),
+            meta: { title: '司机黑名单', permission: [] },
+            hideChildrenInMenu: true
+          }
+        ]
       }
       // {
       //   path: '/manual-trans',

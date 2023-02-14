@@ -28,6 +28,9 @@ import manualTrans from './modules/manualTrans'
 import materialInList from './modules/materialInList'
 import materialFeeding from './modules/materialFeeding'
 
+import blackDriver from './modules/blackDriver'
+import purchase from './modules/purchase'
+
 import split from './modules/split'
 
 // dynamic router permission control (Experimental)
@@ -55,6 +58,9 @@ export default new Vuex.Store({
     bin,
     stock,
     materialFeeding,
+    
+    blackDriver,
+    purchase,
 
     split,
 
