@@ -4,12 +4,17 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.masterdata.api.domain.Nmd;
 import com.bosch.masterdata.api.domain.dto.NmdDTO;
 import com.bosch.masterdata.api.domain.vo.NmdVO;
+import com.bosch.masterdata.api.enumeration.NmdClassificationEnum;
+import com.bosch.masterdata.api.enumeration.NmdLevelEnum;
+import com.bosch.masterdata.api.enumeration.NmdPlanEnum;
 import com.bosch.masterdata.service.INmdService;
 import com.bosch.masterdata.mapper.NmdMapper;
 import com.bosch.masterdata.utils.BeanConverUtil;
+import com.ruoyi.common.core.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -40,6 +45,9 @@ public class NmdServiceImpl extends ServiceImpl<NmdMapper, Nmd>
 
     @Override
     public Integer insertNmd(NmdDTO nmdDTO) {
+        List<NmdDTO> list=new ArrayList<>();
+        list.add(nmdDTO);
+        validNmdList(list);
         Nmd nmd = BeanConverUtil.conver(nmdDTO, Nmd.class);
         int insert = nmdMapper.insert(nmd);
         return insert;
@@ -47,7 +55,9 @@ public class NmdServiceImpl extends ServiceImpl<NmdMapper, Nmd>
 
     @Override
     public Integer updateNmd(NmdDTO nmdDTO) {
-
+        List<NmdDTO> list=new ArrayList<>();
+        list.add(nmdDTO);
+        validNmdList(list);
         return nmdMapper.updateNmd(nmdDTO);
     }
 
@@ -59,6 +69,40 @@ public class NmdServiceImpl extends ServiceImpl<NmdMapper, Nmd>
     @Override
     public boolean validNmdList(List<NmdDTO> nmdDTOS) {
         return nmdMapper.validateRecord(nmdDTOS)>0;
+    }
+
+    @Override
+    public boolean validData(List<NmdDTO> nmdDTOS) {
+
+        nmdDTOS.forEach(r->{
+            //校验类别
+            if(r.getClassification()==null){
+                throw  new ServiceException("校验类别为空");
+            }
+            boolean checkClass = NmdClassificationEnum.contain(r.getClassification());
+            if (!checkClass){
+                throw  new ServiceException("校验类别不规范");
+            }
+
+            //校验检验水平级别
+            if(r.getLevel()==null){
+                throw  new ServiceException("校验检验水平级别为空");
+            }
+            boolean checkLevel = NmdLevelEnum.contain(r.getLevel().toString());
+            if (!checkLevel){
+                throw  new ServiceException("校验检验水平级别不规范");
+            }
+            //校验抽样方案
+            if(r.getPlan()==null){
+                throw  new ServiceException("校验抽样方案为空");
+            }
+            boolean checkPlan = NmdPlanEnum.contain(r.getPlan().toString());
+            if (!checkPlan){
+                throw  new ServiceException("校验抽样方案不规范");
+            }
+        });
+
+        return true;
     }
 }
 

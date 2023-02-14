@@ -126,6 +126,8 @@ public class NmdController extends BaseController {
                 if (valid) {
                     return R.fail(400, "存在重复数据");
                 } else {
+                    //校验
+                    nmdService.validData(nmdDTOList);
                     List<Nmd> nmds = BeanConverUtil.converList(nmdDTOList, Nmd.class);
                     nmdService.saveBatch(nmds);
                 }
@@ -153,6 +155,8 @@ public class NmdController extends BaseController {
                 Object data = result.getData();
                 List<NmdDTO> nmdDTOList = JSON.parseArray(JSON.toJSONString(data), NmdDTO.class);
                 if (CollectionUtils.isNotEmpty(nmdDTOList)) {
+                    //校验
+                    nmdService.validData(nmdDTOList);
                     //转换DO
                     List<Nmd> nmds = BeanConverUtil.converList(nmdDTOList, Nmd.class);
                     nmds.forEach(r -> {

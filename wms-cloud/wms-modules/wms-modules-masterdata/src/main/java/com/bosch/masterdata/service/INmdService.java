@@ -57,4 +57,13 @@ public interface INmdService extends IService<Nmd> {
      * @return
      */
     boolean validNmdList(List<NmdDTO> nmdDTOS);
+
+    /**
+     * 查询导入数据是否规范
+     *
+     * @param nmdDTOS
+     * @return
+     */
+    boolean validData(List<NmdDTO> nmdDTOS);
+
 }
