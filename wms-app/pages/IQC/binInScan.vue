@@ -27,6 +27,9 @@
 		destroyed() {
 			Bus.$off("scancodedate");
 		},
+		// mounted() {
+		// 	this.checkBinIn('20230213669006391113695972103025192112271124000800')
+		// },
 		methods:{
 			async scanCodeCallback(data){
 				Bus.$emit('stopScan')
@@ -37,8 +40,8 @@
 				try{
 					uni.showLoading()
 					const data = await this.$store.dispatch('IQC/getSample',barCode)
-					if(!data && data.status ===3 ){
-						throw Error('已上架，请勿重复操作')
+					if(!data && data.status !== 2 ){
+						throw Error('此托已上架或非IQC待上架托，请确认')
 					}
 					this.handleGotoOperation()
 				}catch(e){
@@ -51,7 +54,7 @@
 			handleGotoOperation(){
 				Bus.$off("scancodedate",this.scanCodeCallback);
 				uni.navigateTo({
-					url:`/pages/IQC/binInperation?barCode=${this.code}`
+					url:`/pages/IQC/binInOperation?barCode=${this.code}`
 				})
 			}
 		}

@@ -105,10 +105,6 @@
 					</view>
 				</view>
 			</uni-section>
-		</view>
-	
-		
-		<ScanCode></ScanCode>
 		<uni-data-picker
 			ref="picker"
 			popup-title="请选择工厂/仓库" 
@@ -116,6 +112,11 @@
 			@change="handleChangePlant"
 		>
 		</uni-data-picker>
+		</view>
+	
+		
+		<ScanCode></ScanCode>
+		
 	</view>
 </template>
 
@@ -197,9 +198,11 @@
 
 <style lang="scss">
 	.wrapper{
-		min-height: 100vh;
+		height: 100vh;
 		background: rgb(241,242,247);
 		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
 	}
 	.header{
 		padding-top: var(--status-bar-height);
@@ -211,6 +214,9 @@
 	.main{
 		padding: 8px 8px;
 		box-sizing: border-box;
+		flex: 1;
+		min-height: 0px;
+		overflow-y: auto;
 		.uni-section{
 			box-shadow: 0 2px 10px 0 #ccc;
 		}

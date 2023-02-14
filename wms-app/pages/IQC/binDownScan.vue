@@ -16,6 +16,9 @@
 					<view class="text-align m-b-4">
 						<text class="label m-r-8">物料编码:</text><text>{{info.materialNb}}</text>
 					</view>
+					<view class="text-align m-b-4">
+						<text class="label m-r-8">库位:</text><text>{{info.binDownCode}}</text>
+					</view>
 				</view>
 				</uni-popup-dialog>
 			</uni-popup>
@@ -42,6 +45,9 @@
 				info:{}
 			};
 		},
+		mounted() {
+			this.getSample('20230213669006391113695972103025192112271124000800')
+		},
 		methods:{
 			async scanCodeCallback(data){
 				Bus.$emit('stopScan')
@@ -50,14 +56,18 @@
 			},
 			async getSample(barCode){
 				try{
+					uni.showLoading()
 					const data = await this.$store.dispatch('IQC/getSample',barCode)
 					if(data.status === 0){
 						this.$refs.submitPopup.open()
+					}else{
+						throw Error('此托已下架或为非抽样托，请确认')
 					}
 					this.info = data
 				}catch(e){
 					this.$refs.message.error(e.message)
 				}finally{
+					uni.hideLoading()
 					Bus.$emit('startScan')
 				}
 			},
@@ -111,5 +121,8 @@
 			color: #fff;
 			font-size: 16px;
 		}
+	}
+	.label{
+		width: 80px;
 	}
 </style>

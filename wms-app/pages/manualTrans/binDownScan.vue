@@ -16,6 +16,9 @@
 					<view class="text-align m-b-4">
 						<text class="label m-r-8">物料编码:</text><text>{{info.materialNb}}</text>
 					</view>
+					<view class="text-align m-b-4">
+						<text class="label m-r-8">库位:</text><text>{{info.binDownCode}}</text>
+					</view>
 				</view>
 				</uni-popup-dialog>
 			</uni-popup>

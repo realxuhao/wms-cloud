@@ -39,8 +39,8 @@
 						title:'识别中'
 					})
 					const data = await this.$store.dispatch('IQC/getSample',barCode)
-					if(data.status === 2){
-						throw Error('已抽样，请勿重复操作')
+					if(data.status !== 1){
+						throw Error('此托已抽样或非IQC待抽样托，请确认')
 					}
 					this.handleGoto()
 				}catch(e){

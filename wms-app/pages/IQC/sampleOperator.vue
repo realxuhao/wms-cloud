@@ -16,6 +16,10 @@
 						{{sampleInfo.ssccNb}}
 					</view>
 					<view class="text-line m-b-8 ">
+						<view class="label">批次号：</view>
+						{{sampleInfo.batchNb}}
+					</view>
+					<view class="text-line m-b-8 ">
 						<view class="label">Cell：</view>
 						{{sampleInfo.cell}}
 					</view>
@@ -131,7 +135,6 @@
 					uni.hideLoading()
 					this.submitLoading = false
 				}
-				
 			}
 		},
 		mounted() {

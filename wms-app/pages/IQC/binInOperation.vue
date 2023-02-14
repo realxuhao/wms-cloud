@@ -1,5 +1,5 @@
 <template>
-		<my-page nav-title="原材料上架">
+		<my-page nav-title="IQC上架">
 			
 			<view class="main" slot="page-main">
 				<view class="header m-b-8">
@@ -16,6 +16,12 @@
 							物料编码：
 						</view>
 						{{materialInfo.materialNb}}
+					</view>
+					<view class="text-line m-b-8 ">
+						<view class="label">
+							批次号：
+						</view>
+						{{materialInfo.batchNb}}
 					</view>
 					<view v-if="materialInfo.recommendBinCode">
 						<view class="text-line m-b-8 ">

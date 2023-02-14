@@ -59,7 +59,7 @@ export default {
   methods: {
 	async getList(){
 		const options = {pageSize:this.pageSize,pageNum:this.pageNum,status:1}
-		const {rows,total} = await this.$store.dispatch('IQC/getList',options)
+		const {rows,total} = await this.$store.dispatch('IQC/getSampleList',options)
 		return {rows,total}
 	},
 	async loadData(){

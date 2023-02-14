@@ -1,5 +1,5 @@
 <template>
-		<my-page nav-title="IQC上架">
+		<my-page nav-title="原材料上架">
 			
 			<view class="main" slot="page-main">
 				<view class="header m-b-8">
