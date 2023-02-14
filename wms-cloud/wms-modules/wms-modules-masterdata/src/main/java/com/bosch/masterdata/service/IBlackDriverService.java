@@ -13,7 +13,7 @@ public interface IBlackDriverService extends IService<BlackDriver> {
      * @param id 仓库主键
      * @return 司机
      */
-    public BlackDriver selectBlackDriverById(String id);
+    public BlackDriver selectBlackDriverById(Long id);
 
     /**
      * 查询司机列表
