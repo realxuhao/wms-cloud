@@ -19,4 +19,9 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     public List<PurchaseOrder> selectPurchaseOrderList(PurchaseOrder purchaseOrder) {
         return purchaseOrderMapper.selectPurchaseOrderList(purchaseOrder);
     }
+
+    @Override
+    public List<PurchaseOrder> selectPurchaseOrderByName(String name) {
+        return purchaseOrderMapper.selectPurchaseOrderByName(name);
+    }
 }

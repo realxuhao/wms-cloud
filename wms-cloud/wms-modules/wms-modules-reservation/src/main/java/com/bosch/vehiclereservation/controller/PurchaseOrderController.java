@@ -9,11 +9,13 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.security.annotation.RequiresPermissions;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +37,7 @@ public class PurchaseOrderController extends BaseController {
 
 
     /**
-     * 查询司机黑名单列表
+     * 查询采购订单列表
      */
     @RequiresPermissions("vehiclereservation:purchase:list")
     @GetMapping("/list")
@@ -46,4 +48,18 @@ public class PurchaseOrderController extends BaseController {
         List<PurchaseOrderVO> blackDriverVOS = BeanConverUtil.converList(list, PurchaseOrderVO.class);
         return R.ok(new PageVO<>(blackDriverVOS, new PageInfo<>(blackDriverVOS).getTotal()));
     }
+
+    /**
+     * 根据供应商姓名获取该供应商的采购单列表
+     */
+    @GetMapping(value = "/{name}")
+    @ApiOperation("根据供应商姓名获取该供应商的采购单列表")
+    public R<PageVO<PurchaseOrderVO>> getListByName(@PathVariable("name") String name) {
+        startPage();
+        List<PurchaseOrder> list = purchaseOrderService.selectPurchaseOrderByName(name);
+        List<PurchaseOrderVO> blackDriverVOS = BeanConverUtil.converList(list, PurchaseOrderVO.class);
+        return R.ok(new PageVO<>(blackDriverVOS, new PageInfo<>(blackDriverVOS).getTotal()));
+    }
+
+
 }
