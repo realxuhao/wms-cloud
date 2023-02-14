@@ -58,4 +58,8 @@
         </where>
     </select>
 
+    <select id="selectPurchaseOrderByName" resultMap="PurchaseOrderResult">
+        <include refid="selectPurchaseOrder"/>
+        where status=0 and supplier_name = #{name}
+    </select>
 </mapper>

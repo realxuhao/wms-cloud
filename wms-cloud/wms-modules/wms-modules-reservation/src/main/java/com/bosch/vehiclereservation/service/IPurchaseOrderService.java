@@ -15,4 +15,12 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      */
     public List<PurchaseOrder> selectPurchaseOrderList(PurchaseOrder purchaseOrder);
 
+    /**
+     * 根据供应商名称查询列表
+     *
+     * @param name 供应商名称
+     * @return 采购单集合
+     */
+    public List<PurchaseOrder> selectPurchaseOrderByName(String name);
+
 }
