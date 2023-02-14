@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.vehiclereservation.mapper.PurchaseOrderMapper">
+
+    <resultMap type="com.bosch.vehiclereservation.api.domain.PurchaseOrder" id="PurchaseOrderResult">
+        <result property="purchaseId" column="purchase_id"/>
+        <result property="poCode" column="po_code"/>
+        <result property="poItem" column="po_item"/>
+        <result property="supplierName" column="supplier_name"/>
+        <result property="materialCode" column="material_code"/>
+        <result property="materialName" column="material_name"/>
+        <result property="quantity" column="quantity"/>
+        <result property="unit" column="unit"/>
+        <result property="deliveryDate" column="delivery_date"/>
+        <result property="releaseDate" column="release_date"/>
+        <result property="firstBatchChangeNo" column="first_batch_change_no"/>
+        <result property="cmsNumber" column="cms_number"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectPurchaseOrder">
+        select purchase_id,
+               po_code,
+               po_item,
+               supplier_name,
+               material_code,
+               material_name,
+               quantity,
+               unit,
+               delivery_date,
+               release_date,
+               first_batch_change_no,
+               cms_number,
+               status,
+               remark,
+               create_by,
+               update_by,
+               create_time,
+               update_time
+        from vr_purchase_order
+    </sql>
+
+
+    <select id="selectPurchaseOrderList" resultMap="PurchaseOrderResult">
+        <include refid="selectPurchaseOrder"/>
+        <where>
+            <if test="poCode != null  and poCode != ''">and po_code like concat('%', #{poCode}, '%')</if>
+            <if test="poItem != null  and poItem != ''">and po_item like concat('%', #{poItem}, '%')</if>
+            <if test="supplierName != null  and supplierName != ''">and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="status != null ">and status = #{status}</if>
+        </where>
+    </select>
+
+</mapper>

@@ -17,6 +17,7 @@
         <module>wms-modules-storagein</module>
         <module>wms-modules-binin</module>
         <module>wms-modules-monitor</module>
+        <module>wms-modules-reservation</module>
     </modules>
 
     <artifactId>wms-modules</artifactId>
