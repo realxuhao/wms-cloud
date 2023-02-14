@@ -18,6 +18,7 @@
         select driver_id,
                driver_name,
                status,
+               remark,
                create_by,
                update_by,
                create_time,
