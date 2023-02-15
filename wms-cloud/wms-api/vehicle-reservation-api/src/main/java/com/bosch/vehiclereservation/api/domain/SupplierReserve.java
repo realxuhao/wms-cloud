@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
+import java.util.Date;
+
 /**
  * 供应商预约单 vr_supplier_reserve
  *
@@ -35,7 +37,7 @@ public class SupplierReserve extends BaseEntity {
     /**
      * 预约送货日期
      */
-    private java.sql.Date reserveDate;
+    private Date reserveDate;
 
     /**
      * 时间段：09:00-10:00

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.vehiclereservation.mapper.SupplierReserveMapper">
+
+    <resultMap type="com.bosch.vehiclereservation.api.domain.SupplierReserve" id="SupplierReserveResult">
+        <result property="reserveId" column="reserve_id"/>
+        <result property="reserveNo" column="reserve_no"/>
+        <result property="wareId" column="ware_id"/>
+        <result property="reserveDate" column="reserve_date"/>
+        <result property="timeWindow" column="time_window"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectSupplierReserve">
+        select reserve_id,
+               reserve_no,
+               ware_id,
+               reserve_date,
+               time_window,
+               status,
+               remark,
+               create_by,
+               update_by,
+               create_time,
+               update_time
+        from vr_supplier_reserve
+    </sql>
+
+    <select id="selectCurdateList" resultMap="SupplierReserveResult">
+        <include refid="selectSupplierReserve"/>
+        where reserve_date = curdate() and ware_id = #{wareId}
+    </select>
+
+</mapper>

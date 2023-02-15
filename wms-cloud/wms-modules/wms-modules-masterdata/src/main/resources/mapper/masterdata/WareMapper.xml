@@ -69,7 +69,7 @@
     </select>
 
     <select id="fetchWareList" resultType="com.bosch.masterdata.api.domain.vo.WareSelectVO">
-        select id,code,dock_num as dockNum from md_ware where status =1
+        select id,code,ware_user as wareUser,dock_num as dockNum from md_ware where status =1
     </select>
 
     <insert id="insertWare" parameterType="Ware">

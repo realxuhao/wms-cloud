@@ -28,4 +28,10 @@ public class WareSelectVO {
      */
     @ApiModelProperty(value = "道口数量")
     private Long dockNum;
+
+    /**
+     * 仓库联系人
+     */
+    @ApiModelProperty(value = "仓库联系人")
+    private String wareUser;
 }
