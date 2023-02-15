@@ -27,6 +27,8 @@
         <result property="palletCode" column="pallet_code"/>
         <result property="wholeFlag" column="whole_flag"/>
         <result property="changeStatus" column="change_status"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
     </resultMap>
     <select id="selectIQCManagementList" resultMap="StockVOResult">
         select bs.id as id,
@@ -46,6 +48,8 @@
         bs.bin_in_id as bin_in_id,
         bs.create_by as create_by,
         bs.create_time as create_time,
+        bs.update_by as update_by,
+        bs.update_time as update_time,
         bs.quality_status as quality_status,
         bs.area_code as area_code,
         bs.pallet_code as pallet_code,
@@ -68,7 +72,11 @@
         <if test="binCode != null and binCode != ''">and bs.bin_code like concat('%', #{binCode}, '%')</if>
         <if test="materialNb != null and materialNb != ''">and bs.material_nb like concat('%', #{materialNb}, '%')</if>
         <if test="batchNb != null and batchNb != ''">and bs.batch_nb like concat('%', #{batchNb}, '%')</if>
-        <if test="operateUser != null and operateUser != ''">and bs.create_by like concat('%', #{operateUser}, '%')</if>
+        <if test="operateUser != null and operateUser != ''">and bs.update_by like concat('%', #{operateUser}, '%')</if>
+
+
+        <if test="startUpdateTime != null">and bs.update_time <![CDATA[ >= ]]> #{startUpdateTime}</if>
+        <if test="startUpdateTime != null">and bs.update_time <![CDATA[ <= ]]> #{endUpdateTime}</if>
 
         <if test="startExpireDate != null and endExpireDate != null">and str_to_date(bs.expire_date, '%d/%m/%y')
             between
@@ -80,8 +88,23 @@
     </select>
 
     <select id="validateStatus" resultType="int">
-         SELECT COUNT( * ) FROM bi_stock WHERE  change_status='0' AND delete_flag = 0 AND id=#{id}
+         SELECT COUNT( * ) FROM bi_stock WHERE  change_status='1' AND delete_flag = 0 AND id=#{id}
     </select>
+    <update id="changeStatus" parameterType="IQCChangeStatusDTO">
+        update bi_stock b set
+        b.change_status =1 ,
+        b.quality_status=#{qualityStatus}
+        <if test=' type != "" and type=="0" '>
+            where b.id =#{id}
+        </if>
+        <if test='type != "" and type == "1"'>
+            where b.batch_nb =
+            (SELECT a.batch_nb from
+            (SELECT batch_nb from bi_stock  where id=#{id}) a )
+        </if>
+
+    </update>
+
     <select id="selectStockVOList" resultMap="StockVOResult">
         select bs.id as id,
         bs.sscc_number as sscc_number,

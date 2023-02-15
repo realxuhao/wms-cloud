@@ -14,6 +14,7 @@ import com.bosch.masterdata.api.domain.vo.MesBarCodeVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import io.swagger.annotations.Api;
@@ -55,23 +56,33 @@ public class IQCManagementController extends BaseController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
-    @PostMapping(value = "/changeStatus")
-    @ApiOperation("修改质检状态")
-    public R allocate(@Valid  @RequestBody IQCChangeStatusDTO iqcChangeStatusDTO) {
-
+    @PostMapping(value = "/validateStatus")
+    @ApiOperation("校验质检状态")
+    public R validateStatus(@Valid  @RequestBody IQCChangeStatusDTO iqcChangeStatusDTO) {
         try {
-
             //校验勾选数据是否
             boolean b = stockService.validateStatus(iqcChangeStatusDTO.getId());
             if(b){
-
+                return R.fail(400,"此SSCC做过质检，是否确认再次变更质量状态");
             }
             return R.ok();
         } catch (Exception e) {
             logger.error(e.getMessage());
             return R.fail(e.getMessage());
         }
-
-
     }
+    @PostMapping(value = "/changeStatus")
+    @ApiOperation("修改质检状态")
+    public R changeStatus(@Valid  @RequestBody IQCChangeStatusDTO iqcChangeStatusDTO) {
+        try {
+
+            Integer integer = stockService.changeStatus(iqcChangeStatusDTO);
+
+            return R.ok();
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return R.fail(e.getMessage());
+        }
+    }
+
 }

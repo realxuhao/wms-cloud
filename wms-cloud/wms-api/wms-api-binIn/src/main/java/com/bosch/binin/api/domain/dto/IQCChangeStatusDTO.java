@@ -6,6 +6,7 @@ import lombok.Data;
 import org.springframework.beans.factory.annotation.Required;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import java.util.Date;
 import java.util.List;
@@ -16,7 +17,7 @@ public class IQCChangeStatusDTO  {
     /**
      * id
      */
-    @NotEmpty
+    @NotNull
     @ApiModelProperty(value = "id")
     private Long id;
 
@@ -24,10 +25,17 @@ public class IQCChangeStatusDTO  {
     /**
      * type
      */
-    @NotEmpty
+    @NotNull
     @Pattern(regexp = "[0,1]", message = "同批次质检:1,此托质检:0")
     @ApiModelProperty(value = "同批次质检:1,此托质检:0")
-    private Long type;
+    private String type;
 
+    /**
+     * changeStatus
+     */
+    @NotEmpty
+    @ApiModelProperty(value = "qualityStatus")
+    private String qualityStatus;
 
+    private String batchNb;
 }

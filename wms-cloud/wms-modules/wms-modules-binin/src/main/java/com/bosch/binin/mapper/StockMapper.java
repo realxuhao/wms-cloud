@@ -2,6 +2,7 @@ package com.bosch.binin.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.dto.IQCChangeStatusDTO;
 import com.bosch.binin.api.domain.dto.IQCManagementQueryDTO;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
@@ -26,6 +27,8 @@ public interface StockMapper extends BaseMapper<Stock> {
     List<StockVO> selectStockVOList(StockQueryDTO stockQueryDTO);
 
     int validateStatus(Long id);
+
+    Integer changeStatus(IQCChangeStatusDTO iqcChangeStatusDTO);
 
     List<StockVO> selectStockVOListBySSCCList(@Param("ssccList") List<String> ssccList);
 

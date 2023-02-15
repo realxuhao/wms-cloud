@@ -3,6 +3,7 @@ package com.bosch.binin.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.dto.IQCChangeStatusDTO;
 import com.bosch.binin.api.domain.dto.IQCManagementQueryDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.vo.StockVO;
@@ -46,7 +47,23 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     @Override
     public boolean validateStatus(Long id) {
-        return stockMapper.validateStatus(id)>0;
+        return stockMapper.validateStatus(id) == 1;
+    }
+
+    @Override
+    public Integer changeStatus(IQCChangeStatusDTO iqcChangeStatusDTO) {
+//        Integer i = new Integer(0);
+//        if (iqcChangeStatusDTO.getType().equals(0)) {
+//            i = stockMapper.changeStatus(iqcChangeStatusDTO);
+//        } else {
+//            LambdaQueryWrapper<Stock> queryWrapper=new LambdaQueryWrapper<>();
+//            queryWrapper.eq(Stock::getId,iqcChangeStatusDTO.getId());
+//
+//            stockMapper.selectOne(queryWrapper)
+//            i = stockMapper.changeStatus(iqcChangeStatusDTO);
+//        }
+        Integer i = stockMapper.changeStatus(iqcChangeStatusDTO);
+        return i;
     }
 
     @Override
@@ -65,7 +82,8 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         stockLambdaQueryWrapper.in(Stock::getId, ids);
         stockLambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<Stock> stockList = stockMapper.selectList(stockLambdaQueryWrapper);
-        List<Stock> collect = stockList.stream().filter(item -> item.getFreezeStock() == 0).collect(Collectors.toList());
+        List<Stock> collect =
+                stockList.stream().filter(item -> item.getFreezeStock() == 0).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(collect) || collect.size() != stockList.size()) {
             throw new ServiceException("库存状态已过期，请刷新页面");
         }

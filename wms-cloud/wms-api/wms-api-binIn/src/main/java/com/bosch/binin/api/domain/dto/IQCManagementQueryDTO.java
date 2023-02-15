@@ -110,4 +110,16 @@ public class IQCManagementQueryDTO extends PageDomain {
      */
     @ApiModelProperty(value = "已质检状态")
     private String changeStatus;
+
+    /**
+     * 开始更新时间
+     */
+    @ApiModelProperty(value = "开始更新时间")
+    private Date startUpdateTime;
+
+    /**
+     * 结束更新时间
+     */
+    @ApiModelProperty(value = "结束更新时间")
+    private Date endUpdateTime;
 }

@@ -146,5 +146,16 @@ public class StockVO {
      * 变更状态（0：未变更，1：已变更）
      */
     @ApiModelProperty(value = "变更状态（0：未变更，1：已变更）")
-    private int changeStatus;
+    private Integer changeStatus;
+
+
+    /** 更新人 */
+    @ApiModelProperty(value = "更新人")
+    private String updateBy;
+
+    /** 更新时间 */
+    @ApiModelProperty(value = "更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
+
 }
