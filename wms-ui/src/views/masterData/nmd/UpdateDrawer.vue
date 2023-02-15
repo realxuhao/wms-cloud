@@ -1,43 +1,66 @@
 <template>
   <a-drawer
-    width="640px"
+    width="800px"
     :title="title"
     placement="right"
     :visible="visible"
     @close="onClose"
   >
-    <a-form class="search-content m-b-8" :label-col="labelCol" :wrapper-col="wrapperCol" :form="form">
-      <a-form-item label="物料">
-        <a-select
-          show-search
-          style="width:100%"
-          :filter-option="filterOption"
-          v-decorator="[
-            'materialId',
-            { rules: [{ required: true, message: '请选择物料!' },] }
-          ]">
-          <a-select-option v-for="item in materialList" :key="item.id" :value="item.id">{{ item.code }}</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="跨类型">
-        <a-select
-          show-search
-          :filter-option="filterOption"
-          style="width:100%"
-          v-decorator="[
-            'frameTypeCode',
-            { rules: [{ required: true, message: '请选择跨类型!' },] }
-          ]">
-          <a-select-option v-for="item in frameTypeList" :key="item" :value="item">{{ item }}</a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="优先级">
+    <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form-item label="料号">
         <a-input
-          placeholder="优先级"
+          placeholder="料号"
           v-decorator="[
-            'priorityLevel',
-            { rules: [{ required: true, message: '请输入优先级!' }] }
+            'materialCode',
+            { rules: [{ required: true, message: '请输料号!' }] }
           ]" />
+      </a-form-item>
+      <a-form-item label="分类">
+        <a-select
+          allowClear
+          show-search
+          :filter-option="filterOption"
+          option-filter-prop="children"
+          v-decorator="[
+            'classification',
+            { rules: [{ required: true, message: '请选择料号分类！' }] }
+          ]"
+          placeholder="检验水平级别">
+          <a-select-option :value="item.value" v-for="item in category" :key="item.value">
+            {{ item.text }}
+          </a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="检验水平级别">
+        <a-select
+          allowClear
+          show-search
+          :filter-option="filterOption"
+          option-filter-prop="children"
+          v-decorator="[
+            'level',
+            { rules: [{ required: true, message: '请选择检验水平级别！' }] }
+          ]"
+          placeholder="检验水平级别">
+          <a-select-option :value="item.value" v-for="item in checkLevel" :key="item.value">
+            {{ item.text }}
+          </a-select-option>
+        </a-select>
+      </a-form-item>
+      <a-form-item label="严格程度">
+        <a-select
+          allowClear
+          show-search
+          :filter-option="filterOption"
+          v-decorator="[
+            'plan',
+            { rules: [{ required: true, message: '请选严格程度！' }] }
+          ]"
+          placeholder="严格程度">
+          <a-select-option :value="item.value" v-for="item in strictLevel" :key="item.value">
+            {{ item.text }}
+          </a-select-option>
+        </a-select>
       </a-form-item>
     </a-form>
 
@@ -59,7 +82,7 @@ const labelCol = {
   span: 5
 }
 const wrapperCol = {
-  span: 18
+  span: 19
 }
 
 export default {
@@ -82,11 +105,15 @@ export default {
         return ''
       }
     },
-    frameTypeList: {
+    category: {
       type: Array,
       default: () => []
     },
-    materialList: {
+    checkLevel: {
+      type: Array,
+      default: () => []
+    },
+    strictLevel: {
       type: Array,
       default: () => []
     }
@@ -124,14 +151,16 @@ export default {
       )
     },
     async getAndUpdateForm () {
-      const { data } = await this.$store.dispatch('material/getDispatchRuleOne', this.id)
-      const columns = ['priorityLevel', 'materialId', 'frameTypeCode']
+      const { data } = await this.$store.dispatch('nmdRule/getOne', this.id)
+      const columns = ['materialCode', 'classification', 'level', 'plan']
       this.form.setFieldsValue(_.pick(data, columns))
     },
-
-    async loadData () {
+    async loadNMDRuleList () {
     },
-    async handleSubmit (e) {
+    async loadData () {
+      await this.loadNMDRuleList()
+    },
+    handleSubmit (e) {
       e.preventDefault()
       this.form.validateFieldsAndScroll(async (err, values) => {
         if (err) {
@@ -143,14 +172,17 @@ export default {
           this.submitLoading = true
 
           if (this.updateType === 'edit') {
-            await this.$store.dispatch('material/editDispatchRule', { id: this.id, updateEntity: values })
+            await this.$store.dispatch('nmdRule/edit', { id: this.id, updateEntity: values })
           } else {
-            await this.$store.dispatch('material/addDiapatchRule', { ...values })
+            await this.$store.dispatch('nmdRule/add', values)
           }
 
           this.$emit('on-ok')
           this.onClose()
         } catch (error) {
+          console.log(error.code)
+          console.log(error.message)
+
           this.$message.error(error.message)
         } finally {
           this.submitLoading = false

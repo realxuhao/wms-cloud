@@ -13,11 +13,13 @@ import department from './modules/department'
 import materialType from './modules/materialType'
 import supplier from './modules/supplier'
 import moveType from './modules/moveType'
+import nmdRule from './modules/nmdRule'
 import timeWindow from './modules/timeWindow'
 import pallet from './modules/pallet'
 import area from './modules/area'
 import ware from './modules/ware'
 import frame from './modules/frame'
+import iqcSample from './modules/iqcSample'
 import bin from './modules/bin'
 import file from './modules/file'
 import binIn from './modules/binIn'
@@ -49,12 +51,14 @@ export default new Vuex.Store({
     materialType,
     department,
     supplier,
+    nmdRule,
     moveType,
     timeWindow,
     pallet,
     area,
     ware,
     frame,
+    iqcSample,
     bin,
     stock,
     materialFeeding,
