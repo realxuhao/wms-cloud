@@ -29,7 +29,7 @@ const blackDriver = {
     async destroy ({ commit }, id) {
       const data = await blackDriverService.destroy(id)
       return data
-    },
+    }
   }
 }
 

@@ -10,34 +10,13 @@ const getList = async (parameter) => {
   return data
 }
 
-const getOne = async (id) => {
-  const url = `/purchase/${id}`
+const getListBySupplierName = async (name) => {
+  const url = `/purchase/${name}`
   const { data } = await createAuthInstance(baseUrl).get(url)
-  return data
-}
-
-const edit = async (id, options) => {
-  const url = `/purchase/${id}`
-  const { data } = await createAuthInstance(baseUrl).put(url, options)
-  return data
-}
-
-const add = async (options) => {
-  const url = '/purchase'
-  const { data } = await createAuthInstance(baseUrl).post(url, options)
-  return data
-}
-
-const destroy = async (id) => {
-  const url = `/purchase/${id}`
-  const { data } = await createAuthInstance(baseUrl).delete(url)
   return data
 }
 
 export const purchaseService = {
   getList,
-  getOne,
-  edit,
-  add,
-  destroy
+  getListBySupplierName
 }

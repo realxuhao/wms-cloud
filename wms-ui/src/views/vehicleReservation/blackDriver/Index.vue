@@ -133,7 +133,7 @@ const queryFormAttr = () => {
 }
 
 export default {
-  name: 'vr-BlackDriver',
+  name: 'VrBlackDriver',
   mixins: [mixinTableList],
   components: {
     UpdateDrawer
@@ -148,7 +148,7 @@ export default {
         ...queryFormAttr()
       },
       columns,
-      list: [],
+      list: []
 
     }
   },

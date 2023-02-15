@@ -114,7 +114,7 @@ const columns = [
     title: '物料名称',
     key: 'materialName',
     dataIndex: 'materialName',
-    width: 150
+    width: 200
   },
   {
     title: '需求数量',
@@ -150,28 +150,28 @@ const columns = [
     title: '海关台帐号',
     key: 'cmsNumber',
     dataIndex: 'cmsNumber',
-    width: 200
+    width: 150
   },
   {
     title: '状态',
     key: 'status',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
-    width: 200
+    width: 100
   },
   {
     title: '备注',
     key: 'remark',
     dataIndex: 'remark',
     width: 200,
-    scopedSlots: { customRender: 'remark'}
+    scopedSlots: { customRender: 'remark' }
   },
   {
     title: '操作',
     key: 'action',
     fixed: 'right',
     width: 150,
-    scopedSlots: { customRender: 'action'}
+    scopedSlots: { customRender: 'action' }
   }
 ]
 
@@ -183,10 +183,10 @@ const queryFormAttr = () => {
 }
 
 export default {
-  name: 'vr-purchase',
+  name: 'VrPurchase',
   mixins: [mixinTableList],
   components: {
-    
+
   },
   props: {
   },
@@ -198,7 +198,7 @@ export default {
         ...queryFormAttr()
       },
       columns,
-      list: [],
+      list: []
 
     }
   },
@@ -208,7 +208,7 @@ export default {
       this.handleSearch()
     },
     /** 从物料管理系统中同步数据 */
-    handleSync(){
+    handleSync () {
 
     },
     /** 查询采购订单列表 */

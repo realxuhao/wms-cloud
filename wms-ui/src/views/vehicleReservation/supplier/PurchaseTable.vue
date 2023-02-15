@@ -27,12 +27,11 @@
         </a-row>
       </a-form>
 
-      <!-- <a-table
+      <a-table
         :columns="columns"
         :data-source="list"
-        :row-selection="rowSelection"
         :loading="tableLoading"
-        rowKey="driverId"
+        rowKey="purchaseId"
         :pagination="false"
         size="middle"
         :scroll="{ x: 1300 }"
@@ -47,7 +46,12 @@
             </a-tag>
           </div>
         </template>
-      </a-table> -->
+        <template slot="remark" slot-scope="reText">
+          <a-tooltip color="'purple'" :title="reText">
+            <span>{{ reText.substring(0,20) + "..." }}</span>
+          </a-tooltip>
+        </template>
+      </a-table>
 
       <div class="pagination-con">
         <a-pagination
@@ -97,7 +101,7 @@ const columns = [
     title: '物料名称',
     key: 'materialName',
     dataIndex: 'materialName',
-    width: 150
+    width: 200
   },
   {
     title: '需求数量',
@@ -133,19 +137,21 @@ const columns = [
     title: '海关台帐号',
     key: 'cmsNumber',
     dataIndex: 'cmsNumber',
-    width: 200
+    width: 150
+  },
+  {
+    title: '状态',
+    key: 'status',
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' },
+    width: 100
   },
   {
     title: '备注',
     key: 'remark',
     dataIndex: 'remark',
-    width: 200
-  },
-  {
-    title: '创建时间',
-    key: 'createTime',
-    dataIndex: 'createTime',
-    width: 200
+    width: 200,
+    scopedSlots: { customRender: 'remark' }
   }
 ]
 
@@ -157,12 +163,18 @@ const queryFormAttr = () => {
 }
 
 export default {
-  name: 'vr-supplier-purchase-table',
+  name: 'VrSupplierPurchaseTable',
   mixins: [mixinTableList],
   components: {
-    
+
   },
   props: {
+    supplierName: {
+      type: String,
+      default () {
+        return ''
+      }
+    }
   },
   data () {
     return {
@@ -183,18 +195,18 @@ export default {
       this.handleSearch()
     },
     /** 从物料管理系统中同步数据 */
-    handleSync(){
+    handleSync () {
 
     },
-    //#region 点击行事件
-    
-    //#endregion
+    // #region 点击行事件
+
+    // #endregion
     /** 查询采购订单列表 */
     async loadTableList () {
       try {
         this.tableLoading = true
 
-        const { data: { rows, total } } = await this.$store.dispatch('blackDriver/getList', this.queryForm)
+        const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', this.supplierName)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -208,7 +220,13 @@ export default {
     }
   },
   mounted () {
-    this.loadData()
+  },
+  watch: {
+    supplierName (val) {
+      if (val !== '') {
+        this.loadData()
+      }
+    }
   }
 }
 </script>

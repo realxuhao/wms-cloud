@@ -18,16 +18,16 @@
         </a-col>
       </template>
     </a-row>
-    
-    <a-modal 
+
+    <a-modal
       v-drag-modal
-      v-model="isVisibleExceedAllDockNum" 
+      v-model="isVisibleExceedAllDockNum"
       title="提示"
       :width="420"
       @cancel="close"
       @ok="handleSubmit"
-      :confirmLoading="confirmLoading">  
-      <p class="exceed-docknun-p">您输入的可预约车辆数，在时间窗口内大于总道口数，请确认是否保存？</p>    
+      :confirmLoading="confirmLoading">
+      <p class="exceed-docknun-p">您输入的可预约车辆数，在时间窗口内大于总道口数，请确认是否保存？</p>
     </a-modal>
   </div>
 </template>
@@ -38,30 +38,30 @@ export default {
   props: {
     visible: {
       type: Boolean,
-      default() {
+      default () {
         return false
-      },
+      }
     },
     wareId: {
       type: Number,
-      default() {
+      default () {
         return 0
-      },
+      }
     },
     allDockNum: {
       type: Number,
-      default() {
+      default () {
         return 0
-      },
+      }
     },
     isSave: {
       type: Boolean,
-      default() {
+      default () {
         return false
-      },
-    },
+      }
+    }
   },
-  data() {
+  data () {
     return {
       /** time window数据list */
       timeWindowList: [],
@@ -75,24 +75,24 @@ export default {
       confirmLoading: false
     }
   },
-  mounted() {
+  mounted () {
     this.loadData()
   },
   model: {
     prop: 'checked',
-    event: 'change',
+    event: 'change'
   },
   computed: {},
   methods: {
     /** 根据wareId查询数据 */
-    async loadData() {
-      this.isVisibleExceedAllDockNum = false;
+    async loadData () {
+      this.isVisibleExceedAllDockNum = false
       if (this.wareId != null) {
         const { data } = await this.$store.dispatch('timeWindow/getDataByWareId', this.wareId)
         if (data.length > 0) {
           this.timeWindowList = data
         } else {
-          //如果该仓库没有配置time window，初始化time window页面
+          // 如果该仓库没有配置time window，初始化time window页面
           this.initTimeWindowList()
         }
       } else {
@@ -100,7 +100,7 @@ export default {
       }
     },
     /** 当数据库没有该仓库数据时，初始化timewindow数据(目前按照每个小时有一个的规则生成，共24个) */
-    initTimeWindowList() {
+    initTimeWindowList () {
       this.timeWindowList = []
       for (let i = 0; i < 24; i++) {
         const startTime = i < 10 ? '0' + i + ':' + '00' : i + ':' + '00'
@@ -118,97 +118,96 @@ export default {
       }
     },
     /** 道口数量change方法，判断是否超过该仓库道口数 */
-    onDockNumChange(item) {
-      const num = Number(item.dockNum)
-      if (this.wareId == 0 || this.wareId == null) {
+    onDockNumChange (item) {
+      // const num = Number(item.dockNum)
+      if (this.wareId === 0 || this.wareId == null) {
         this.$message.error('请选择仓库！')
         item.dockNum = null
-        return
       }
     },
     /** 整合time window数据，并进行数据判断 */
-    handleSave() {
-      if(this.wareId == null){
+    handleSave () {
+      if (this.wareId == null) {
         this.$message.error('请选择仓库！')
-        return;
+        return
       }
-      //判断启用的时间的道口数量，启动时道口数不能为0
-      for(let index in this.timeWindowList){
-        if(this.timeWindowList[index].enable && (this.timeWindowList[index].dockNum == null || this.timeWindowList[index].dockNum == '' || this.timeWindowList[index].dockNum == 0)){
+      // 判断启用的时间的道口数量，启动时道口数不能为0
+      for (const index in this.timeWindowList) {
+        if (this.timeWindowList[index].enable && (this.timeWindowList[index].dockNum == null || this.timeWindowList[index].dockNum === '' || this.timeWindowList[index].dockNum === 0)) {
           this.$message.error('请确认启动的时间段，道口数量不为0！')
           this.$emit('on-ok', false)
-          return;
+          return
         }
       }
-      let openModal = false;
-      //转换enable状态为status的值
+      let openModal = false
+      // 转换enable状态为status的值
       this.timeWindowList.forEach((item) => {
-        if (item.enable == true) {
+        if (item.enable === true) {
           item.status = 1
         } else {
           item.status = 0
         }
-        if (item.dockNum == '') {
+        if (item.dockNum === '') {
           item.dockNum = 0
         }
-        if(item.dockNum > this.allDockNum && item.enable){
-          openModal = true;
+        if (item.dockNum > this.allDockNum && item.enable) {
+          openModal = true
         }
       })
-      //弹窗提醒超过道口数
-      if(openModal){
-        this.isVisibleExceedAllDockNum = true;
-      }else{
-        this.handleSubmit();
+      // 弹窗提醒超过道口数
+      if (openModal) {
+        this.isVisibleExceedAllDockNum = true
+      } else {
+        this.handleSubmit()
       }
     },
     /** 提交保存time window数据 */
-    async handleSubmit(){
-      if(this.isVisibleExceedAllDockNum){
-        this.confirmLoading = true;
+    async handleSubmit () {
+      if (this.isVisibleExceedAllDockNum) {
+        this.confirmLoading = true
       }
       try {
         await this.$store.dispatch('timeWindow/addList', this.timeWindowList)
         this.$emit('on-ok', true)
-        this.$message.success("保存成功!")
+        this.$message.success('保存成功!')
       } catch (error) {
         this.$message.error(error.message)
       } finally {
         this.loadData()
-        this.confirmLoading = false;
-        this.isVisibleExceedAllDockNum = false;
+        this.confirmLoading = false
+        this.isVisibleExceedAllDockNum = false
       }
     },
-    //** 关闭弹窗 */
-    close(){
-      this.isVisibleExceedAllDockNum = false;
+    //* * 关闭弹窗 */
+    close () {
+      this.isVisibleExceedAllDockNum = false
       this.$emit('on-ok', false)
     },
     /** 格式化日期(暂时没有用到) */
-    getFormatDate(value) {
+    getFormatDate (value) {
       const date = new Date(value)
-      if (date == undefined) {
+      if (!date) {
         return ''
       }
       return date.getFullYear() + '-' + (date.getMonth + 1) < 10
         ? '0' + (date.getMonth + 1)
         : date.getMonth + 1 + '-' + date.getDate() < 10
-        ? '0' + date.getDate()
-        : date.getDate()
-    },
+          ? '0' + date.getDate()
+          : date.getDate()
+    }
   },
   watch: {
-    visible(val) {
-      if (val == true && this.wareId != null) {
+    visible (val) {
+      if (val === true && this.wareId != null) {
         this.loadData()
       }
     },
-    isSave(val) {
-      if (val == true) {
+    isSave (val) {
+      if (val === true) {
         this.handleSave()
       }
-    },
-  },
+    }
+  }
 }
 </script>
 

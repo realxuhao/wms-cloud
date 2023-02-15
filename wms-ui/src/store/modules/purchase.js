@@ -14,22 +14,10 @@ const purchase = {
       const data = await purchaseService.getList(options)
       return data
     },
-    async getOne ({ commit }, id) {
-      const data = await purchaseService.getOne(id)
+    async getListBySupplierName ({ commit }, name) {
+      const data = await purchaseService.getListBySupplierName(name)
       return data
-    },
-    async add ({ commit }, options) {
-      const data = await purchaseService.add(options)
-      return data
-    },
-    async edit ({ commit }, { id, updateEntity }) {
-      const data = await purchaseService.edit(id, updateEntity)
-      return data
-    },
-    async destroy ({ commit }, id) {
-      const data = await purchaseService.destroy(id)
-      return data
-    },
+    }
   }
 }
 

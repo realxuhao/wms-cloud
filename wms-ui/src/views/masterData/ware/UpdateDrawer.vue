@@ -146,7 +146,7 @@ export default {
     },
     async getAndUpdateForm () {
       const { data } = await this.$store.dispatch('ware/getOne', this.id)
-      this.form.setFieldsValue(_.pick(data, ['factoryName', 'factoryCode', 'code', 'name', 'location' ,'wareUser' ,'wareUserPhone' ,'dockNum']))
+      this.form.setFieldsValue(_.pick(data, ['factoryName', 'factoryCode', 'code', 'name', 'location', 'wareUser', 'wareUserPhone', 'dockNum']))
     },
     async loadData () {
 

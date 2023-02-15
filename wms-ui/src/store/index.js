@@ -58,7 +58,7 @@ export default new Vuex.Store({
     bin,
     stock,
     materialFeeding,
-    
+
     blackDriver,
     purchase,
 

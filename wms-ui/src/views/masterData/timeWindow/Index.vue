@@ -15,23 +15,30 @@
 
             <a-col span="4">
               <span class="table-page-search-submitButtons">
-                <a-button type="primary" @click="handleSearch" :loading="searchLoading"
-                  ><a-icon type="search" />查询</a-button>
-                <a-button style="margin-left: 8px" type="primary" @click="handleSave" :loading="saveLoading"
-                  ><a-icon type="save" />保存</a-button>
+                <a-button
+                  type="primary"
+                  @click="handleSearch"
+                  :loading="searchLoading"
+                ><a-icon type="search" />查询</a-button>
+                <a-button
+                  style="margin-left: 8px"
+                  type="primary"
+                  @click="handleSave"
+                  :loading="saveLoading"
+                ><a-icon type="save" />保存</a-button>
               </span>
             </a-col>
 
             <a-col span="3" v-show="queryForm.wareId != null">
               <a-tag class="docknum-tag" color="#1890ff">
                 该仓库总道口数：{{ queryForm.wareId == null ? null : wareOptionList.find(x => x.id == queryForm.wareId).dockNum }}
-              </a-tag>              
+              </a-tag>
             </a-col>
           </a-row>
         </a-form>
       </div>
 
-      <TimeWindowTable 
+      <TimeWindowTable
         :visible="searchLoading"
         :wareId="queryForm.wareId"
         :allDockNum="queryForm.wareId == null ? null : wareOptionList.find(x => x.id == queryForm.wareId).dockNum"
@@ -48,16 +55,16 @@ import TimeWindowTable from './TimeWindowTable'
 
 const queryFormAttr = () => {
   return {
-    wareId: null,
+    wareId: null
   }
 }
 
 export default {
   name: 'TimeWindow',
   components: {
-    TimeWindowTable,
+    TimeWindowTable
   },
-  data() {
+  data () {
     return {
       visible: false,
       updateType: 'add', // edit、add
@@ -68,7 +75,7 @@ export default {
       queryForm: {
         ...queryFormAttr(),
         pageSize: 20,
-        pageNum: 1,
+        pageNum: 1
       },
       paginationTotal: 0,
 
@@ -76,50 +83,50 @@ export default {
       list: [],
       wareOptionList: [
         { id: 1, code: 'W01', dockNum: 5 },
-        { id: 2, code: 'W01', dockNum: 6 },
-      ],
+        { id: 2, code: 'W01', dockNum: 6 }
+      ]
     }
   },
   methods: {
-    handleResetQuery() {
+    handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
     },
-    onShowSizeChange() {
+    onShowSizeChange () {
       this.queryForm.pageNum = 1
       this.loadTableList()
     },
-    changePagination(page) {
+    changePagination (page) {
       this.queryForm.pageNum = page
       this.loadTableList()
     },
 
-    async handleSearch() {
+    async handleSearch () {
       this.searchLoading = true
       await this.loadTableList()
       this.searchLoading = false
     },
     /** 通知子页面保存time window数据 */
-    handleSave() {
-      if(this.queryForm.wareId == null){
+    handleSave () {
+      if (this.queryForm.wareId == null) {
         this.$message.error('请选择要保存的仓库！')
-        return        
+        return
       }
       this.saveLoading = true
     },
     /** 接收Time window数据保存返回值 */
-    childernSave(val){
-      this.saveLoading = false;
-      if(val == true){
-        this.loadTableList();
+    childernSave (val) {
+      this.saveLoading = false
+      if (val === true) {
+        this.loadTableList()
       }
     },
-    handleEdit(record) {
+    handleEdit (record) {
       this.updateType = 'edit'
       this.visible = true
       this.currentUpdateId = record.id
     },
-    async handleDelete(record) {
+    async handleDelete (record) {
       try {
         await this.$store.dispatch('timeWindow/destroy', record.id)
         this.$message.success('删除成功！')
@@ -131,16 +138,16 @@ export default {
       }
     },
 
-    handleAdd() {
+    handleAdd () {
       this.updateType = 'add'
       this.visible = true
       this.currentUpdateId = null
     },
 
-    async loadTableList() {
+    async loadTableList () {
       try {
         this.tableLoading = true
-        this.saveLoading = false;
+        this.saveLoading = false
 
         const { rows, total } = await this.$store.dispatch('timeWindow/getList', this.queryForm)
         this.list = rows
@@ -160,14 +167,14 @@ export default {
         this.$message.error(error.message)
       }
     },
-    async loadData() {
+    async loadData () {
       this.getWareOptionList()
       this.loadTableList()
-    },
+    }
   },
-  mounted() {
+  mounted () {
     this.loadData()
-  },
+  }
 }
 </script>
 

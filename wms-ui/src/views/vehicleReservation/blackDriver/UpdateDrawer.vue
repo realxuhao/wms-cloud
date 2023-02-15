@@ -16,7 +16,8 @@
           ]" />
       </a-form-item>
       <a-form-item label="是否加入黑名单">
-        <a-select style="width: 100%;"
+        <a-select
+          style="width: 100%;"
           placeholder="是否加入黑名单"
           v-decorator="[
             'status',
@@ -26,7 +27,7 @@
         </a-select>
       </a-form-item>
       <a-form-item label="备注">
-       <a-textarea
+        <a-textarea
           row="4"
           placeholder="备注"
           v-decorator="[
@@ -48,6 +49,8 @@
 </template>
 
 <script>
+import _ from 'lodash'
+
 const labelCol = {
   span: 5
 }
@@ -81,8 +84,8 @@ export default {
       form: this.$form.createForm(this),
       submitLoading: false,
       statusList: [
-        {value: 0, label: "否"},        
-        {value: 1, label: "是"}
+        { value: 0, label: '否' },
+        { value: 1, label: '是' }
       ]
     }
   },
