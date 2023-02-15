@@ -3,6 +3,7 @@ package com.bosch.binin.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.dto.IQCManagementQueryDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.mapper.StockMapper;
@@ -35,6 +36,17 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     public List<StockVO> selectStockVOList(StockQueryDTO stockQueryDTO) {
 
         return stockMapper.selectStockVOList(stockQueryDTO);
+    }
+
+    @Override
+    public List<StockVO> selectIQCManagementList(IQCManagementQueryDTO iqcManagementQueryDTO) {
+
+        return stockMapper.selectIQCManagementList(iqcManagementQueryDTO);
+    }
+
+    @Override
+    public boolean validateStatus(Long id) {
+        return stockMapper.validateStatus(id)>0;
     }
 
     @Override

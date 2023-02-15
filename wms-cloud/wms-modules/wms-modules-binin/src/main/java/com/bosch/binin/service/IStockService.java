@@ -2,6 +2,7 @@ package com.bosch.binin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.dto.IQCManagementQueryDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.StockVO;
@@ -16,6 +17,10 @@ import java.util.List;
 public interface IStockService extends IService<Stock> {
 
     List<StockVO> selectStockVOList(StockQueryDTO stockQuerySTO);
+
+    List<StockVO> selectIQCManagementList(IQCManagementQueryDTO iqcManagementQueryDTO);
+
+    boolean validateStatus(Long id);
 
     List<StockVO> selectStockVOBySortType(StockQueryDTO stockQuerySTO);
 

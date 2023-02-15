@@ -142,4 +142,9 @@ public class StockVO {
     @ApiModelProperty(value = "整托标记，0：整托，1：零托")
     private int wholeFlag;
 
+    /**
+     * 变更状态（0：未变更，1：已变更）
+     */
+    @ApiModelProperty(value = "变更状态（0：未变更，1：已变更）")
+    private int changeStatus;
 }
