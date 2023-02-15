@@ -3,6 +3,7 @@ package com.bosch.vehiclereservation.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.masterdata.api.domain.vo.TimeWindowVO;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
+import com.bosch.vehiclereservation.api.domain.dto.SupplierDTO;
 
 import java.util.List;
 
@@ -15,5 +16,9 @@ public interface ISupplierReserveService extends IService<SupplierReserve> {
      * @return 时间窗口列表
      */
     public List<TimeWindowVO> selectTimeWindowList(Long wareId);
+
+
+    public boolean insertSupplierReserve(SupplierDTO supplierReserveDTO);
+
 
 }

@@ -7,7 +7,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class SupplierPorderDTO extends PageDomain {
+public class SupplierPorderDTO {
 
     /**
      * 主键id

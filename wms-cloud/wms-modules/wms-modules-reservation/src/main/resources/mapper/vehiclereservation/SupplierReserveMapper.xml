@@ -7,6 +7,7 @@
     <resultMap type="com.bosch.vehiclereservation.api.domain.SupplierReserve" id="SupplierReserveResult">
         <result property="reserveId" column="reserve_id"/>
         <result property="reserveNo" column="reserve_no"/>
+        <result property="supplierCode" column="supplier_code" />
         <result property="wareId" column="ware_id"/>
         <result property="reserveDate" column="reserve_date"/>
         <result property="timeWindow" column="time_window"/>
@@ -21,6 +22,7 @@
     <sql id="selectSupplierReserve">
         select reserve_id,
                reserve_no,
+               supplier_code,
                ware_id,
                reserve_date,
                time_window,
@@ -38,4 +40,8 @@
         where reserve_date = curdate() and ware_id = #{wareId}
     </select>
 
+    <select id="getLastData" resultMap="SupplierReserveResult">
+        <include refid="selectSupplierReserve"/>
+        ORDER BY create_time desc,reserve_id desc LIMIT 1
+    </select>
 </mapper>

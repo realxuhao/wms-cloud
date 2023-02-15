@@ -30,6 +30,11 @@ public class SupplierReserve extends BaseEntity {
     private String reserveNo;
 
     /**
+     * 供应商编号
+     */
+    private String supplierCode;
+
+    /**
      * 仓库id
      */
     private Long wareId;

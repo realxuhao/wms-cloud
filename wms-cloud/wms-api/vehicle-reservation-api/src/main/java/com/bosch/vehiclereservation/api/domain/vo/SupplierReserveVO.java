@@ -19,6 +19,12 @@ public class SupplierReserveVO {
     private String reserveNo;
 
     /**
+     * 供应商编号
+     */
+    @ApiModelProperty(value = "供应商编号")
+    private String supplierCode;
+
+    /**
      * 仓库id
      */
     @ApiModelProperty(value = "仓库id")

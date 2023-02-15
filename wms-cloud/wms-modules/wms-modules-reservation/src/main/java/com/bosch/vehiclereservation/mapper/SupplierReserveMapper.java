@@ -19,4 +19,12 @@ public interface SupplierReserveMapper extends BaseMapper<SupplierReserve> {
      */
     public List<SupplierReserve> selectCurdateList(Long wareId);
 
+
+    /**
+     * 获取最后一条数据
+     *
+     * @return 预约信息
+     */
+    public SupplierReserve getLastData();
+
 }
