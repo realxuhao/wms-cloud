@@ -105,7 +105,7 @@ public class NmdController extends BaseController {
     @Log(title = "删除Nmd", businessType = BusinessType.DELETE)
     @ApiOperation("删除")
     @DeleteMapping("/{ids}")
-    public AjaxResult delete(@RequestParam Long[] ids) {
+    public AjaxResult delete(@PathVariable Long[] ids) {
         return toAjax(nmdService.deleteNmd(ids));
     }
 

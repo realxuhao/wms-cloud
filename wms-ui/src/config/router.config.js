@@ -97,6 +97,13 @@ export const asyncRouterMap = [
             component: () => import('@/views/masterData/bin/Index'),
             meta: { title: '库位管理', permission: [] },
             hideChildrenInMenu: true
+          },
+          {
+            path: '/nmd/rule',
+            name: 'nmdRule',
+            component: () => import('@/views/masterData/nmd/NmdRule'),
+            meta: { title: 'NMD抽样规则', permission: [] },
+            hideChildrenInMenu: true
           }
         ]
       },
@@ -211,6 +218,29 @@ export const asyncRouterMap = [
             name: 'returnMaterial',
             component: () => import('@/views/wareShift/ReturnMaterial'),
             meta: { title: '退库记录', permission: [] },
+            hideChildrenInMenu: true
+          }
+        ]
+      },
+      {
+        path: '/iqc',
+        name: 'iqc',
+        redirect: '/iqc/list',
+        component: RouteView,
+        meta: { title: 'IQC电子流', icon: 'hdd', permission: [] },
+        children: [
+          {
+            path: '/iqc/list',
+            name: 'iqcList',
+            component: () => import('@/views/iqc/sample/IQCList.vue'),
+            meta: { title: 'IQC抽样计划', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/iqc/quality',
+            name: 'iqcQuality',
+            component: () => import('@/views/iqc/sample/QualityManage.vue'),
+            meta: { title: 'IQC质检管理', permission: [] },
             hideChildrenInMenu: true
           }
         ]

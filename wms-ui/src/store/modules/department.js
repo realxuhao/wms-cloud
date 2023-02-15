@@ -1,6 +1,6 @@
 import { departmentService } from '@/api'
 
-const material = {
+const department = {
   namespaced: true,
   state: {
   },
@@ -17,4 +17,4 @@ const material = {
   }
 }
 
-export default material
+export default department

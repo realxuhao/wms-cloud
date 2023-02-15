@@ -57,10 +57,10 @@
         </trim>
         where id = #{id}
     </update>
-    <update id="deleteNmd" parameterType="Long">
+    <update id="deleteNmd" parameterType="String">
         update md_nmd
         set delete_flag='1'where id in
-        <foreach item="id" collection="ids" open="(" separator="," close=")">
+        <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
         </foreach>
     </update>
