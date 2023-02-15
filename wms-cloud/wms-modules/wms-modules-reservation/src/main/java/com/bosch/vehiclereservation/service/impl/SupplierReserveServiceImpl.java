@@ -102,12 +102,24 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
         SupplierReserve supplierReserve = BeanConverUtil.conver(supplierReserveDTO, SupplierReserve.class);
         supplierReserve.setCreateTime(DateUtils.getNowDate());
         supplierReserve.setCreateBy(SecurityUtils.getUsername());
+
+        List<SupplierPorderDTO> supplierPorderDTOList = supplierDTO.getSupplierPorderDTOS();
+        supplierPorderDTOList.forEach(c -> {
+            c.setReserveNo(supplierReserveDTO.getReserveNo());
+            BigDecimal arriveQuantity = supplierPorderService.getArriveQuantityByPurchaseId(c.getPurchaseId());
+            BigDecimal sum = arriveQuantity.add(c.getArriveQuantity());
+            PurchaseOrder purchaseOrder = purchaseOrderMapper.selectById(c.getPurchaseId());
+            if (!Objects.isNull(purchaseOrder)) {
+                BigDecimal subtract = purchaseOrder.getQuantity().subtract(sum);
+                if (subtract.compareTo(BigDecimal.ZERO) < 0) {
+                    throw new ServiceException("实际送货数量超过剩余需求量");
+                }
+                c.setSurplusQuantity(purchaseOrder.getQuantity().subtract(arriveQuantity));
+            }
+        });
+
         boolean res = super.save(supplierReserve);
         if (res) {
-            List<SupplierPorderDTO> supplierPorderDTOList = supplierDTO.getSupplierPorderDTOS();
-            supplierPorderDTOList.forEach(c -> {
-                c.setReserveNo(supplierReserveDTO.getReserveNo());
-            });
             List<SupplierPorder> supplierPorderList = BeanConverUtil.converList(supplierPorderDTOList, SupplierPorder.class);
             supplierPorderList.forEach(c -> {
                 c.setCreateTime(DateUtils.getNowDate());
