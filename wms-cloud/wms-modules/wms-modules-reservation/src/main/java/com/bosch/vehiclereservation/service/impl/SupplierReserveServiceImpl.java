@@ -77,6 +77,20 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
     @Override
     public boolean insertSupplierReserve(SupplierDTO supplierDTO) {
         SupplierReserveDTO supplierReserveDTO = supplierDTO.getSupplierReserveDTO();
+        String[] timeWindow = supplierReserveDTO.getTimeWindow().split("-");
+        R<List<TimeWindowVO>> result = remoteTimeWindowService.getListByWareId(supplierReserveDTO.getWareId());
+        List<TimeWindowVO> timeWindowVOList = result.getData();
+        List<TimeWindowVO> data = timeWindowVOList.stream().filter(c -> c.getStatus().intValue() == WinTimeStatusEnum.ENABL.getCode()
+                && c.getStartTime().equals(timeWindow[0]) && c.getEndTime().equals(timeWindow[1])).collect(Collectors.toList());
+        if (data == null) {
+            throw new ServiceException(supplierReserveDTO.getTimeWindow() + "该时段已约满");
+        } else {
+            List<SupplierReserve> supplierReserves = supplierReserveMapper.selectReserveDateList(supplierReserveDTO.getWareId(), supplierReserveDTO.getReserveDate());
+            long count = Long.parseLong(data.get(0).getDockNum()) - supplierReserves.stream().filter(c -> c.getTimeWindow().equals(supplierReserveDTO.getTimeWindow())).count();
+            if (count <= 0) {
+                throw new ServiceException(supplierReserveDTO.getTimeWindow() + "该时段已约满");
+            }
+        }
         //获取当前日期
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
