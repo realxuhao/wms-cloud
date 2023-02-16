@@ -10,8 +10,8 @@ import java.util.Date;
 /**
  * 司机取货预约单对象 vr_driver_pickup
  *
- *   @author taojd
- *   @date 2023-02-14
+ * @author taojd
+ * @date 2023-02-14
  */
 @Data
 @TableName("vr_driver_pickup")
@@ -22,6 +22,11 @@ public class DriverPickup extends BaseEntity {
      */
     @TableId(value = "pickup_id")
     private long pickupId;
+
+    /**
+     * 微信id
+     */
+    private String wechatId;
 
     /**
      * 司机姓名

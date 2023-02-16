@@ -1,12 +1,14 @@
 package com.bosch.vehiclereservation.api.domain;
 
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 司机送货预约单对象 vr_driver_deliver
@@ -28,6 +30,11 @@ public class DriverDeliver extends BaseEntity {
      * 供应商预约单号
      */
     private String reserveNo;
+
+    /**
+     * 微信id
+     */
+    private String wechatId;
 
     /**
      * 司机姓名
@@ -64,4 +71,7 @@ public class DriverDeliver extends BaseEntity {
      */
     private Integer status;
 
+
+    @TableField(exist = false)
+    private List<String> reserveNoList;
 }
