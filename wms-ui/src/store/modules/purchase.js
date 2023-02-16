@@ -14,8 +14,8 @@ const purchase = {
       const data = await purchaseService.getList(options)
       return data
     },
-    async getListBySupplierName ({ commit }, name) {
-      const data = await purchaseService.getListBySupplierName(name)
+    async getListBySupplierName ({ commit }, option) {
+      const data = await purchaseService.getListBySupplierName(option.name, option.queryParams)
       return data
     }
   }

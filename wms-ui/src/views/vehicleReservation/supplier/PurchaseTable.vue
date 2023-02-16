@@ -247,6 +247,12 @@ export default {
       default () {
         return ''
       }
+    },
+    reloadPurchase: {
+      type: Boolean,
+      default () {
+        return false
+      }
     }
   },
   data () {
@@ -411,7 +417,7 @@ export default {
       if (this.paginationTotal > 0) {
         try {
           this.tableLoading = true
-          const { data: { rows, total } } = await this.$store.dispatch('purchase/getList', { ...this.queryForm, ...{ supplierName: this.supplierName }, ...{ status: 0 } })
+          const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', { name: this.supplierName, queryParams: { ...this.queryForm, ...{ status: 0 } } })
           this.list = rows
           this.list.forEach(item => {
             item['arriveQuantity'] = null
@@ -428,7 +434,7 @@ export default {
     async initTableList () {
       try {
         this.tableLoading = true
-        const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', this.supplierName)
+        const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', { name: this.supplierName, queryParams: this.queryForm })
         this.list = rows
         this.list.forEach(item => {
           item['arriveQuantity'] = null
@@ -455,6 +461,11 @@ export default {
   watch: {
     isVisible (val) {
       if (val && this.supplierName) {
+        this.loadData()
+      }
+    },
+    reloadPurchase (val) {
+      if (this.supplierName) {
         this.loadData()
       }
     }
