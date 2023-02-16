@@ -82,6 +82,7 @@
 
 <script>
 import UpdateDrawer from './UpdateDrawer'
+import Sortable from 'sortablejs'
 
 import { mixinTableList } from '@/utils/mixin/index'
 
@@ -153,6 +154,19 @@ export default {
     }
   },
   methods: {
+    rowDrop () {
+      const tbody = document.querySelector('.ant-table-tbody') // 元素选择器名称根据实际内容替换
+      const _this = this
+      Sortable.create(tbody, {
+        // 官网上的配置项,加到这里面来,可以实现各种效果和功能
+        animation: 150,
+        ghostClass: 'blue-background-class',
+        onEnd ({ newIndex, oldIndex }) {
+          const currRow = _this.list.splice(oldIndex, 1)[0]
+          _this.list.splice(newIndex, 0, currRow)
+        }
+      })
+    },
     async handleDelete (record) {
       try {
         await this.$store.dispatch('blackDriver/destroy', record.driverId)
@@ -170,6 +184,7 @@ export default {
       this.currentUpdateId = record.driverId
     },
     async loadTableList () {
+      console.info(this.list)
       try {
         this.tableLoading = true
 
@@ -188,6 +203,7 @@ export default {
   },
   mounted () {
     this.loadData()
+    // this.rowDrop()
   }
 }
 </script>
