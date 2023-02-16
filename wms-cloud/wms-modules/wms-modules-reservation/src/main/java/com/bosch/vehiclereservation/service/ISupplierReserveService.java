@@ -5,6 +5,7 @@ import com.bosch.masterdata.api.domain.vo.TimeWindowVO;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierDTO;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierReserveDTO;
+import com.bosch.vehiclereservation.api.domain.vo.PurchaseOrderVO;
 import com.bosch.vehiclereservation.api.domain.vo.SupplierReserveVO;
 
 import java.util.Date;
@@ -46,4 +47,6 @@ public interface ISupplierReserveService extends IService<SupplierReserve> {
      * @return boolean
      */
     public boolean deleteSupplierReserveById(Long reserveId);
+
+    public List<PurchaseOrderVO> selectPurchaseOrderList(String reserveNo);
 }

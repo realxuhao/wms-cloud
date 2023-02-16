@@ -96,4 +96,10 @@ public class PurchaseOrderVO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "实际送货数量")
+    private BigDecimal arriveQuantity;
+
+    @ApiModelProperty(value = "剩余送货数量")
+    private BigDecimal surplusQuantity;
+
 }

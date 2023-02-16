@@ -1,8 +1,6 @@
 package com.bosch.vehiclereservation.controller;
 
 import com.bosch.masterdata.api.domain.vo.TimeWindowVO;
-import com.bosch.vehiclereservation.api.domain.PurchaseOrder;
-import com.bosch.vehiclereservation.api.domain.dto.PurchaseOrderDTO;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierDTO;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierReserveDTO;
 import com.bosch.vehiclereservation.api.domain.vo.PageVO;
@@ -12,7 +10,6 @@ import com.bosch.vehiclereservation.service.ISupplierReserveService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.DateUtils;
-import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
@@ -40,7 +37,7 @@ public class SupplierReserveController extends BaseController {
      */
     @GetMapping(value = "/timewindow")
     @ApiOperation("根据仓库id获取时间窗口列表")
-    public R<List<TimeWindowVO>> getListByName(Long wareId, String reserveDate) {
+    public R<List<TimeWindowVO>> getTimeWindowList(Long wareId, String reserveDate) {
         Date date = DateUtils.parseDate(reserveDate);
         List<TimeWindowVO> list = supplierReserveService.selectTimeWindowList(wareId, date);
         return R.ok(list);
@@ -79,6 +76,16 @@ public class SupplierReserveController extends BaseController {
     @DeleteMapping("/{id}")
     public AjaxResult remove(@PathVariable Long id) {
         return toAjax(supplierReserveService.deleteSupplierReserveById(id));
+    }
+
+    /**
+     * 获取某个预约单下的采购单列表信息
+     */
+    @GetMapping(value = "/purchaseorder/{reserveNo}")
+    @ApiOperation("获取某个预约单下的采购单列表信息")
+    public R<List<PurchaseOrderVO>> getPurchaseOrderList(@PathVariable String reserveNo) {
+        List<PurchaseOrderVO> list = supplierReserveService.selectPurchaseOrderList(reserveNo);
+        return R.ok(list);
     }
 
 }

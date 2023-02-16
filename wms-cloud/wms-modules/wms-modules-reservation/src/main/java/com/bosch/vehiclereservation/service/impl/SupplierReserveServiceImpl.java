@@ -13,6 +13,7 @@ import com.bosch.vehiclereservation.api.domain.SupplierPorder;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierDTO;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierPorderDTO;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierReserveDTO;
+import com.bosch.vehiclereservation.api.domain.vo.PurchaseOrderVO;
 import com.bosch.vehiclereservation.api.domain.vo.SupplierReserveVO;
 import com.bosch.vehiclereservation.api.enumeration.OrderStatusEnum;
 import com.bosch.vehiclereservation.api.enumeration.ReserveStatusEnum;
@@ -186,7 +187,7 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
         String reserveNo = supplierReserve.getReserveNo();
         boolean res = super.removeById(reserveId);
         if (res) {
-            QueryWrapper<SupplierPorder> wrapper = new QueryWrapper<SupplierPorder>();
+            QueryWrapper<SupplierPorder> wrapper = new QueryWrapper<>();
             wrapper.eq("reserve_no", reserveNo);
             List<SupplierPorder> supplierPorderList = supplierPorderService.list(wrapper);
             supplierPorderList.forEach(c -> {
@@ -203,6 +204,21 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
             });
         }
         return res;
+    }
+
+    @Override
+    public List<PurchaseOrderVO> selectPurchaseOrderList(String reserveNo) {
+        QueryWrapper<SupplierPorder> wrapper = new QueryWrapper<>();
+        wrapper.eq("reserve_no", reserveNo);
+        List<SupplierPorder> supplierPorderList = supplierPorderService.list(wrapper);
+        List<PurchaseOrder> purchaseOrders = purchaseOrderMapper.selectBatchIds(supplierPorderList.stream().map(c -> c.getPurchaseId()).collect(Collectors.toList()));
+        List<PurchaseOrderVO> purchaseOrderVOS = BeanConverUtil.converList(purchaseOrders, PurchaseOrderVO.class);
+        purchaseOrderVOS.forEach(c -> {
+            List<SupplierPorder> supplierPorders = supplierPorderList.stream().filter(s -> s.getPurchaseId().equals(c.getPurchaseId())).collect(Collectors.toList());
+            c.setArriveQuantity(supplierPorders.get(0).getArriveQuantity());
+            c.setSurplusQuantity(supplierPorders.get(0).getSurplusQuantity());
+        });
+        return purchaseOrderVOS;
     }
 
     private void changePurchaseOrderStatus(List<SupplierPorder> supplierPorderList) {
