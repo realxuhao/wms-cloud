@@ -349,9 +349,11 @@
                m.remark,
                m.pallet_id,
                m.pallet_type,
-               m.iqc
+               m.iqc,
+               md.code as cell
         FROM md_material m
                  LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
+        left join md_department md on md.id = mt.department_id
         where m.CODE = #{materialCode}
     </select>
 

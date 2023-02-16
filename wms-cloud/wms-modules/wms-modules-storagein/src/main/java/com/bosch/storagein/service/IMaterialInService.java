@@ -10,6 +10,7 @@ import com.bosch.storagein.api.domain.dto.MaterialQueryDTO;
 import com.bosch.storagein.api.domain.vo.MaterialCheckResultVO;
 import com.bosch.storagein.api.domain.vo.MaterialInCheckVO;
 import com.bosch.storagein.api.domain.vo.MaterialInVO;
+import com.bosch.storagein.api.domain.vo.MaterialReceiveVO;
 import com.ruoyi.common.core.domain.R;
 
 import java.util.List;
@@ -37,4 +38,6 @@ public interface IMaterialInService extends IService<MaterialInDTO> {
     List<MaterialInVO> selectMaterialInList(MaterialQueryDTO queryDTO);
 
     boolean checkSampleQuantity(MaterialInCheckDTO materialInCheckDTO);
+
+    List<MaterialReceiveVO> getSameBatchList(String materialNb, String batchNb);
 }

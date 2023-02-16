@@ -56,7 +56,11 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
     @Override
     public List<IQCSamplePlanVO> getSamplePlan(IQCSamplePlanQueryDTO dto) {
-        return samplePlanMapper.getSamplePlanList(dto);
+        List<IQCSamplePlanVO> samplePlanList = samplePlanMapper.getSamplePlanList(dto);
+        if (CollectionUtils.isEmpty(samplePlanList)){
+            return Collections.emptyList();
+        }
+        return samplePlanList;
     }
 
 
@@ -196,8 +200,10 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         if (stock == null) {
             throw new ServiceException("没有该sscc:" + ssccNb + "对应的库存数据");
         }
-        stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
-        stockService.updateById(stock);
+//        stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
+//        stockService.updateById(stock);
+//
+        binInService.binDown(ssccNb);
 
         //更新IQC任务状态
         iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_SAMPLE.code());

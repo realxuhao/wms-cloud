@@ -107,6 +107,13 @@ public class MaterialInController extends BaseController {
         return R.ok(materialInService.selectByMesBarCode(mesBarCode));
     }
 
+    @GetMapping(value = "getSameBatchList")
+    @ApiOperation("获取同一批次的数据")
+    public R<List<MaterialReceiveVO>> getSameBatchList(@RequestParam("materialNb") String materialNb,
+                                                  @RequestParam("batchNb") String batchNb) {
+        return R.ok(materialInService.getSameBatchList(materialNb,batchNb));
+    }
+
     @GetMapping("/list")
     @ApiOperation("查询入库列表")
     public R<PageVO<MaterialInVO>> list(@Validated MaterialQueryDTO queryDTO) {
