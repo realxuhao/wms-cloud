@@ -1,6 +1,7 @@
 package com.bosch.masterdata.api;
 
 import com.bosch.masterdata.api.domain.Bin;
+import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.FrameVO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
@@ -46,4 +47,7 @@ public interface RemoteMasterDataService {
     //根据跨类型获取所有库位
     @GetMapping(value = "/bin/selectBinVOByFrameType/{typeCode}")
     public R<List<BinVO> > selectBinVOByFrameType(@PathVariable("typeCode") String typeCode);
+    
+    @GetMapping(value = "/ware/{id}")
+    public R<Ware> getWareInfo(@PathVariable("id") String id);
 }

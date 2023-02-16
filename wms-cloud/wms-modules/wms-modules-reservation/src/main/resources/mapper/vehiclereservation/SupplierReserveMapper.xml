@@ -3,11 +3,10 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bosch.vehiclereservation.mapper.SupplierReserveMapper">
-
     <resultMap type="com.bosch.vehiclereservation.api.domain.SupplierReserve" id="SupplierReserveResult">
         <result property="reserveId" column="reserve_id"/>
         <result property="reserveNo" column="reserve_no"/>
-        <result property="supplierCode" column="supplier_code" />
+        <result property="supplierCode" column="supplier_code"/>
         <result property="wareId" column="ware_id"/>
         <result property="reserveDate" column="reserve_date"/>
         <result property="timeWindow" column="time_window"/>
@@ -35,13 +34,28 @@
         from vr_supplier_reserve
     </sql>
 
-    <select id="selectCurdateList" resultMap="SupplierReserveResult">
+    <select id="selectReserveDateList" resultMap="SupplierReserveResult">
         <include refid="selectSupplierReserve"/>
-        where reserve_date = curdate() and ware_id = #{wareId}
+        where ware_id = #{wareId} and reserve_date = #{reserveDate}
     </select>
 
     <select id="getLastData" resultMap="SupplierReserveResult">
         <include refid="selectSupplierReserve"/>
         ORDER BY create_time desc,reserve_id desc LIMIT 1
+    </select>
+
+    <select id="selectSupplierReserveList" resultMap="SupplierReserveResult">
+        <include refid="selectSupplierReserve"/>
+        <where>
+            <if test="reserveNo != null  and reserveNo != ''">
+                and reserve_no like concat('%', #{reserveNo}, '%')
+            </if>
+            <if test="supplierCode != null  and supplierCode != ''">
+                and supplier_code = #{supplierCode}
+            </if>
+            <if test="status != null ">
+                and status = #{status}
+            </if>
+        </where>
     </select>
 </mapper>

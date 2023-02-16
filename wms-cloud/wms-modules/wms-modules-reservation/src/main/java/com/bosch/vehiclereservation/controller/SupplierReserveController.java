@@ -1,9 +1,18 @@
 package com.bosch.vehiclereservation.controller;
 
 import com.bosch.masterdata.api.domain.vo.TimeWindowVO;
+import com.bosch.vehiclereservation.api.domain.PurchaseOrder;
+import com.bosch.vehiclereservation.api.domain.dto.PurchaseOrderDTO;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierDTO;
+import com.bosch.vehiclereservation.api.domain.dto.SupplierReserveDTO;
+import com.bosch.vehiclereservation.api.domain.vo.PageVO;
+import com.bosch.vehiclereservation.api.domain.vo.PurchaseOrderVO;
+import com.bosch.vehiclereservation.api.domain.vo.SupplierReserveVO;
 import com.bosch.vehiclereservation.service.ISupplierReserveService;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
@@ -14,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -28,10 +38,11 @@ public class SupplierReserveController extends BaseController {
     /**
      * 根据仓库id获取时间窗口列表
      */
-    @GetMapping(value = "/{wareId}")
+    @GetMapping(value = "/timewindow")
     @ApiOperation("根据仓库id获取时间窗口列表")
-    public R<List<TimeWindowVO>> getListByName(@PathVariable("wareId") Long wareId) {
-        List<TimeWindowVO> list = supplierReserveService.selectTimeWindowList(wareId);
+    public R<List<TimeWindowVO>> getListByName(Long wareId, String reserveDate) {
+        Date date = DateUtils.parseDate(reserveDate);
+        List<TimeWindowVO> list = supplierReserveService.selectTimeWindowList(wareId, date);
         return R.ok(list);
     }
 
@@ -42,9 +53,22 @@ public class SupplierReserveController extends BaseController {
     @RequiresPermissions("vehiclereservation:supplier:add")
     @Log(title = "供应商预约单", businessType = BusinessType.INSERT)
     @ApiOperation("新增供应商预约单")
-    @PostMapping
+    @PostMapping("/add")
     public AjaxResult add(@RequestBody SupplierDTO supplierDTO) {
         return toAjax(supplierReserveService.insertSupplierReserve(supplierDTO));
+    }
+
+
+    /**
+     * 查询供应商预约单列表(已预约记录)
+     */
+    @RequiresPermissions("vehiclereservation:supplier:list")
+    @GetMapping("/list")
+    @ApiOperation("查询供应商预约单列表")
+    public R<PageVO<SupplierReserveVO>> list(SupplierReserveDTO supplierReserveDTO) {
+        startPage();
+        List<SupplierReserveVO> list = supplierReserveService.selectSupplierReserveVO(supplierReserveDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
 }

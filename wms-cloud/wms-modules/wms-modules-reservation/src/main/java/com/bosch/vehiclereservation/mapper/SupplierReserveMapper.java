@@ -3,8 +3,10 @@ package com.bosch.vehiclereservation.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Mapper
@@ -12,12 +14,13 @@ import java.util.List;
 public interface SupplierReserveMapper extends BaseMapper<SupplierReserve> {
 
     /**
-     * 获取今天预约的信息列表
+     * 获取预约的信息列表
      *
-     * @param wareId 仓库id
+     * @param wareId      仓库id
+     * @param reserveDate 预约的日期
      * @return 预约信息列表
      */
-    public List<SupplierReserve> selectCurdateList(Long wareId);
+    public List<SupplierReserve> selectReserveDateList(@Param("wareId") Long wareId, @Param("reserveDate") Date reserveDate);
 
 
     /**
@@ -26,5 +29,13 @@ public interface SupplierReserveMapper extends BaseMapper<SupplierReserve> {
      * @return 预约信息
      */
     public SupplierReserve getLastData();
+
+    /**
+     * 查询预约信息列表
+     *
+     * @param supplierReserve 预约信息
+     * @return 预约信息列表
+     */
+    public List<SupplierReserve> selectSupplierReserveList(SupplierReserve supplierReserve);
 
 }

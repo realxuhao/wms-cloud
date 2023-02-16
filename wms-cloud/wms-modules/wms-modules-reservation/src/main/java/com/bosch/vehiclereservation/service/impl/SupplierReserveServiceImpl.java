@@ -1,7 +1,9 @@
 package com.bosch.vehiclereservation.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.RemoteTimeWindowService;
+import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.vo.TimeWindowVO;
 import com.bosch.masterdata.api.enumeration.WinTimeStatusEnum;
 import com.bosch.vehiclereservation.api.domain.PurchaseOrder;
@@ -10,6 +12,7 @@ import com.bosch.vehiclereservation.api.domain.SupplierPorder;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierDTO;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierPorderDTO;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierReserveDTO;
+import com.bosch.vehiclereservation.api.domain.vo.SupplierReserveVO;
 import com.bosch.vehiclereservation.api.enumeration.OrderStatusEnum;
 import com.bosch.vehiclereservation.api.enumeration.ReserveStatusEnum;
 import com.bosch.vehiclereservation.mapper.PurchaseOrderMapper;
@@ -19,6 +22,7 @@ import com.bosch.vehiclereservation.service.ISupplierReserveService;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,14 +49,17 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
     private RemoteTimeWindowService remoteTimeWindowService;
 
     @Autowired
+    private RemoteMasterDataService remoteMasterDataService;
+
+    @Autowired
     private ISupplierPorderService supplierPorderService;
 
     @Override
-    public List<TimeWindowVO> selectTimeWindowList(Long wareId) {
+    public List<TimeWindowVO> selectTimeWindowList(Long wareId, Date reserveDate) {
         R<List<TimeWindowVO>> result = remoteTimeWindowService.getListByWareId(wareId);
         List<TimeWindowVO> timeWindowVOList = result.getData();
         List<TimeWindowVO> data = timeWindowVOList.stream().filter(c -> c.getStatus().intValue() == WinTimeStatusEnum.ENABL.getCode()).collect(Collectors.toList());
-        List<SupplierReserve> supplierReserves = supplierReserveMapper.selectCurdateList(wareId);
+        List<SupplierReserve> supplierReserves = supplierReserveMapper.selectReserveDateList(wareId, reserveDate);
         for (TimeWindowVO timeWindowVO : data) {
             String timeWindow = timeWindowVO.getStartTime() + "-" + timeWindowVO.getEndTime();
             long count = Long.parseLong(timeWindowVO.getDockNum()) - supplierReserves.stream().filter(c -> c.getTimeWindow().equals(timeWindow)).count();
@@ -133,6 +140,28 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
         return res;
     }
 
+    @Override
+    public List<SupplierReserveVO> selectSupplierReserveVO(SupplierReserveDTO supplierReserveDTO) {
+        if (StringUtils.isEmpty(supplierReserveDTO.getSupplierCode())) {
+            //用户信息中获取供应商code
+            //supplierReserveDTO.setSupplierCode("code");
+        }
+        SupplierReserve supplierReserve = BeanConverUtil.conver(supplierReserveDTO, SupplierReserve.class);
+        List<SupplierReserve> selectSupplierReserveList = supplierReserveMapper.selectSupplierReserveList(supplierReserve);
+        List<SupplierReserveVO> supplierReserveVOS = BeanConverUtil.converList(selectSupplierReserveList, SupplierReserveVO.class);
+        supplierReserveVOS.forEach(c -> {
+            R<Ware> wareInfo = remoteMasterDataService.getWareInfo(c.getWareId().toString());
+            Ware data = wareInfo.getData();
+            if (data != null) {
+                c.setWareName(data.getName());
+                c.setWareLocation(data.getLocation());
+                c.setWareUser(data.getWareUser());
+                c.setWareUserPhone(data.getWareUserPhone());
+            }
+        });
+        return supplierReserveVOS;
+    }
+
     private void changePurchaseOrderStatus(List<SupplierPorder> supplierPorderList) {
         supplierPorderList.forEach(c -> {
             BigDecimal sum = supplierPorderService.getArriveQuantityByPurchaseId(c.getPurchaseId());
@@ -146,4 +175,6 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
             }
         });
     }
+
+
 }
