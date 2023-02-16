@@ -264,6 +264,7 @@ export default {
       timeWindowList: [],
       /** 选中的行id list */
       selectedRowKeys: [],
+      /** 选中的行数据list */
       selectedRowList: [],
       /** 供应商预约单关联的采购信息list */
       supplierPorderDTOSList: [],
@@ -275,8 +276,11 @@ export default {
       supplierReserveDTO: { ...setSupplierReserveDTO() },
       /** 提交按钮loading */
       submitPoLoading: false,
+      /** timewindow弹窗状态 */
       isVisibleTimeWindow: false,
+      /** 是否显示仓库timewindow列表 */
       isShowTimeWindowData: false,
+      /** 提交按钮loading */
       confirmLoading: false
     }
   },
@@ -285,10 +289,6 @@ export default {
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
-    },
-    /** 从物料管理系统中同步数据 */
-    handleSync () {
-
     },
     // #region 提交选中的po和时间窗口信息
     onSelectChange (selectedRowKeys) {
