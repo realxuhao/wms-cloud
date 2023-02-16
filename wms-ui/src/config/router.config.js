@@ -239,7 +239,7 @@ export const asyncRouterMap = [
           {
             path: '/iqc/quality',
             name: 'iqcQuality',
-            component: () => import('@/views/iqc/sample/QualityManage.vue'),
+            component: () => import('@/views/iqc/quality/QualityManage.vue'),
             meta: { title: 'IQC质检管理', permission: [] },
             hideChildrenInMenu: true
           }

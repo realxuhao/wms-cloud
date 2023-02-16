@@ -29,14 +29,6 @@ const iqcSample = {
     async modifySscc ({ commit }, options) {
       const data = await iqcSampleService.modifySscc(options)
       return data
-    },
-    async getIqcQualityList ({ commit }, options) {
-      const data = await iqcSampleService.getIqcQualityList(options)
-      return data
-    },
-    async updateIqcQuality ({ commit }, options) {
-      const data = await iqcSampleService.updateIqcQuality(options)
-      return data
     }
   }
 }
