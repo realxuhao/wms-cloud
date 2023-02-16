@@ -1,5 +1,6 @@
 package com.bosch.binin.api.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -39,16 +40,19 @@ public class IQCSamplePlanVO {
     @ApiModelProperty(value = "下架人")
     private String binDownUser;
     @ApiModelProperty(value = "下架时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date binDownTime;
     @ApiModelProperty(value = "抽样数量")
     private Double sampleQuantity;
     @ApiModelProperty(value = "抽样人")
     private String sampleUser;
     @ApiModelProperty(value = "抽样时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date sampleTime;
     @ApiModelProperty(value = "上架人")
     private String binInUser;
     @ApiModelProperty(value = "上架时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date binInTime;
     @ApiModelProperty(value = "上架库位")
     private String binInCode;

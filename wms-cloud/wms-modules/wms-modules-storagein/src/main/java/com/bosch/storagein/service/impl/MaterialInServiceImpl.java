@@ -101,6 +101,11 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         return true;
     }
 
+    @Override
+    public List<MaterialReceiveVO> getSameBatchList(String materialNb,String batchNb) {
+        return materialRecevieMapper.selectSameBatchMaterialReceiveVO(materialNb, batchNb);
+    }
+
 
     private MaterialCheckResultVO dealCheck(MaterialInCheckDTO materialInCheckDTO) {
         Double actualQuantity = materialInCheckDTO.getActualQuantity();

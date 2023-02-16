@@ -19,8 +19,10 @@
         <if test="materialNb != null and materialNb != ''">and isp.material_nb like concat('%', #{materialNb},
             '%')
         </if>
+        <if test="status != null">and isp.status = #{status}
+        </if>
         <if test="statusList!= null and statusList.size()>0">
-            isp.status in
+            and isp.status in
             <foreach item="status" collection="statusList" open="(" separator="," close=")">
                 #{status}
             </foreach>

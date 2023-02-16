@@ -73,13 +73,13 @@ public class IQCController extends BaseController {
     }
 
 
-    @GetMapping(value = "/binDown/list")
-    @ApiOperation("IQC抽样计划待下架列表")
-    public R<List<IQCSamplePlanVO>> binDownList() {
-        IQCSamplePlanQueryDTO queryDTO = new IQCSamplePlanQueryDTO();
-        queryDTO.setStatusList(Arrays.asList(IQCStatusEnum.WAITING_BIN_DOWN.code()));
-        return R.ok(samplePlanService.getSamplePlan(queryDTO));
-    }
+//    @GetMapping(value = "/binDown/list")
+//    @ApiOperation("IQC抽样计划待下架列表")
+//    public R<List<IQCSamplePlanVO>> binDownList() {
+//        IQCSamplePlanQueryDTO queryDTO = new IQCSamplePlanQueryDTO();
+//        queryDTO.setStatusList(Arrays.asList(IQCStatusEnum.WAITING_BIN_DOWN.code()));
+//        return R.ok(samplePlanService.getSamplePlan(queryDTO));
+//    }
 
     @PutMapping(value = "/binDown/{mesBarCode}")
     @ApiOperation("IQC抽样计划执行下架接口")

@@ -1,5 +1,6 @@
 package com.bosch.masterdata.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.masterdata.api.domain.Nmd;
 import com.bosch.masterdata.api.domain.dto.NmdDTO;
@@ -10,6 +11,7 @@ import com.bosch.masterdata.api.enumeration.NmdPlanEnum;
 import com.bosch.masterdata.service.INmdService;
 import com.bosch.masterdata.mapper.NmdMapper;
 import com.bosch.masterdata.utils.BeanConverUtil;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -103,6 +105,16 @@ public class NmdServiceImpl extends ServiceImpl<NmdMapper, Nmd>
         });
 
         return true;
+    }
+
+    @Override
+    public Nmd getByMaterialNb(String materialNb) {
+
+        LambdaQueryWrapper<Nmd> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Nmd::getMaterialCode,materialNb);
+        queryWrapper.eq(Nmd::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        Nmd nmd = nmdMapper.selectOne(queryWrapper);
+        return nmd;
     }
 }
 

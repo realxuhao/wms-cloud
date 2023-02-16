@@ -158,4 +158,10 @@ public class StockVO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
+    /**
+     * 单位
+     */
+    @ApiModelProperty(value = "unit")
+    private String unit;
+
 }

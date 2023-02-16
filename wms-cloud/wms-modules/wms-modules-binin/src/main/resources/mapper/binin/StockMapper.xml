@@ -29,6 +29,7 @@
         <result property="changeStatus" column="change_status"/>
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
+        <result property="unit" column="unit" />
     </resultMap>
     <select id="selectIQCManagementList" resultMap="StockVOResult">
         select bs.id as id,
@@ -54,7 +55,8 @@
         bs.area_code as area_code,
         bs.pallet_code as pallet_code,
         bs.whole_flag as whole_flag,
-        bs.change_status as change_status
+        bs.change_status as change_status,
+               mm.unit as unit
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code

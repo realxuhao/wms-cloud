@@ -69,6 +69,15 @@ public class NmdController extends BaseController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
+    /**
+     * 根据物料号查询
+     */
+    @ApiOperation("查询列表")
+    @GetMapping("/getByMaterialNb/{materialNb}")
+    public R<Nmd> getByMaterialNb(@PathVariable("materialNb") String materialNb) {
+        return R.ok(nmdService.getByMaterialNb(materialNb));
+    }
+
 
     /**
      * 获取详细信息

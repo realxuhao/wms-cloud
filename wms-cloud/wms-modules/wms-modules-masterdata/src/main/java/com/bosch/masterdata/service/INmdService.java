@@ -66,4 +66,5 @@ public interface INmdService extends IService<Nmd> {
      */
     boolean validData(List<NmdDTO> nmdDTOS);
 
+    Nmd getByMaterialNb(String materialNb);
 }

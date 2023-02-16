@@ -1,36 +1,33 @@
 package com.bosch.binin.service.impl;
 
-import com.alibaba.druid.sql.ast.expr.SQLCaseExpr;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.StockLog;
 import com.bosch.binin.api.domain.*;
-import com.bosch.binin.api.domain.dto.BinAllocationDTO;
-import com.bosch.binin.api.domain.dto.BinInDTO;
-import com.bosch.binin.api.domain.dto.BinInTaskDTO;
+import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinAllocationVO;
-import com.bosch.binin.api.domain.vo.FrameRemainVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.api.enumeration.ManuTransStatusEnum;
 import com.bosch.binin.mapper.*;
-import com.bosch.binin.service.IBinAssignmentService;
-import com.bosch.binin.service.IIQCSamplePlanService;
-import com.bosch.binin.service.IStockService;
+import com.bosch.binin.service.*;
+import com.bosch.masterdata.api.RemoteIQCService;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.RemoteMaterialService;
+import com.bosch.masterdata.api.domain.Nmd;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
+import com.bosch.masterdata.api.enumeration.DeparementEnum;
+import com.bosch.masterdata.api.enumeration.NmdClassificationEnum;
 import com.bosch.storagein.api.RemoteMaterialInService;
-import com.bosch.binin.api.domain.dto.BinInQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
-import com.bosch.binin.service.IBinInService;
 import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.RemotePalletService;
 import com.bosch.storagein.api.domain.vo.MaterialInVO;
+import com.bosch.storagein.api.domain.vo.MaterialReceiveVO;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
@@ -42,7 +39,6 @@ import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import lombok.Synchronized;
-import org.apache.poi.ss.formula.functions.Odd;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,6 +94,13 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Autowired
     private IQCSamplePlanMapper samplePlanMapper;
+
+    @Autowired
+    private IIQCRuleService ruleService;
+
+    @Autowired
+    private RemoteIQCService remoteIQCService;
+
 
     @Override
     public List<BinInVO> selectBinVOList(BinInQueryDTO queryDTO) {
@@ -388,10 +391,92 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         // 更新kanban和移库,转储单状态
         updateKanbanWareShiftStatus(stock, sscc);
 
-        //
+        MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
+
+        //质检
+        if ("Y".equals(materialVO.getIqc())) {
+            if (DeparementEnum.NMD.getCode().equals(materialVO.getCell())) {
+                dealNMDIQCProcess(materialVO, binIn.getBatchNb());
+            } else {
+
+            }
+
+        }
 
 
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
+    }
+
+    private void dealNMDIQCProcess(MaterialVO materialVO, String batchNb) {
+        String materialNb = materialVO.getCode();
+        //获取收货的同批次信息
+        R<List<MaterialReceiveVO>> sameBatchListR = remoteMaterialInService.getSameBatchList(materialNb, batchNb);
+
+        if (StringUtils.isNull(sameBatchListR) || StringUtils.isNull(sameBatchListR.getData())) {
+            throw new ServiceException("不存在该批次信息");
+        }
+
+
+        if (R.FAIL == sameBatchListR.getCode()) {
+            throw new ServiceException(sameBatchListR.getMsg());
+        }
+        List<MaterialReceiveVO> sameBatchList = sameBatchListR.getData();
+        //获取上架的同批次信息
+        LambdaQueryWrapper<BinIn> binInQueryWrapper = new LambdaQueryWrapper<>();
+        binInQueryWrapper.eq(BinIn::getMaterialNb, materialNb);
+        binInQueryWrapper.eq(BinIn::getBatchNb, batchNb);
+        binInQueryWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<BinIn> binInList = binInMapper.selectList(binInQueryWrapper);
+        if (CollectionUtils.isEmpty(sameBatchList) || CollectionUtils.isEmpty(binInList) || binInList.size() != sameBatchList.size()) {
+            return;
+        }
+        double quantity = sameBatchList.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
+
+        R<Nmd> iqcInfoR = remoteIQCService.getByMaterialNb(materialNb);
+        if (StringUtils.isNull(iqcInfoR) || StringUtils.isNull(iqcInfoR.getData())) {
+            throw new ServiceException("不存在该物料的IQC信息");
+        }
+
+
+        if (R.FAIL == iqcInfoR.getCode()) {
+            throw new ServiceException(sameBatchListR.getMsg());
+        }
+
+        Nmd nmd = iqcInfoR.getData();
+        double sampleQuantity = 0;
+        if (nmd.getClassification() == NmdClassificationEnum.A.getCode()) {
+            NMDIQCRuleDTO ruleDTO = new NMDIQCRuleDTO();
+            ruleDTO.setQuantity(quantity);
+            ruleDTO.setCheckLevel(nmd.getLevel());
+            NMDIQCRule nmdiqcRule = ruleService.getNMDIQCRule(ruleDTO);
+            if (nmd.getPlan() == 1) {
+                sampleQuantity = nmdiqcRule.getNormal();
+            } else if (nmd.getPlan() == 2) {
+                sampleQuantity = nmdiqcRule.getStricture();
+            } else {
+                sampleQuantity = nmdiqcRule.getRelaxation();
+            }
+        }
+
+        Collections.shuffle(binInList);
+        double finalSampleQuantity = sampleQuantity;
+        BinIn binIn = binInList.stream().filter(binin -> binin.getQuantity() >= finalSampleQuantity).collect(Collectors.toList()).get(0);
+
+        IQCSamplePlan iqcSamplePlan = new IQCSamplePlan();
+        iqcSamplePlan.setSsccNb(binIn.getSsccNumber());
+        iqcSamplePlan.setCell(materialVO.getCell());
+        iqcSamplePlan.setMaterialNb(binIn.getMaterialNb());
+        iqcSamplePlan.setBinDownCode(binIn.getActualBinCode());
+        iqcSamplePlan.setBinDownTime(new Date());
+        iqcSamplePlan.setRecommendSampleQuantity(sampleQuantity);
+        iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
+        iqcSamplePlan.setBatchNb(binIn.getBatchNb());
+        iqcSamplePlan.setWareCode(binIn.getWareCode());
+        iqcSamplePlan.setExpireDate(binIn.getExpireDate());
+
+        samplePlanMapper.insert(iqcSamplePlan);
+
+
     }
 
     private void updateKanbanWareShiftStatus(Stock stock, String ssccNb) {
@@ -441,7 +526,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         qw.last("limit 1");
         qw.last("for update");
         ManualTransferOrder manualTransferOrder = manualTransferOrderMapper.selectOne(qw);
-        if (!Objects.isNull(manualTransferOrder)){
+        if (!Objects.isNull(manualTransferOrder)) {
             manualTransferOrder.setStatus(ManuTransStatusEnum.FINISH.code());
             manualTransferOrderMapper.updateById(manualTransferOrder);
         }
@@ -554,7 +639,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         Double quantity = Double.valueOf(MesBarCodeUtil.getQuantity(mesBarCode));
         String batchNb = MesBarCodeUtil.getBatchNb(mesBarCode);
         BinInVO vo = getByMesBarCode(mesBarCode);
-        if (!Objects.isNull(vo)){
+        if (!Objects.isNull(vo)) {
             return vo;
         }
         R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
@@ -612,7 +697,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     }
 
     @Override
-    public BinInVO allocateToBinOrArea(String ssccNb, String materialCode, String binCode, String areaCode,Double quantity) {
+    public BinInVO allocateToBinOrArea(String ssccNb, String materialCode, String binCode, String areaCode, Double quantity) {
         BinInVO binInVO = binInMapper.selectBySsccNumber(ssccNb);
         if (binInVO != null) {
             return binInVO;
@@ -622,7 +707,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         String materialNb = materialCode;
         MaterialVO materialVO = getMaterialVOByCode(materialNb);
 
-        quantity=Objects.isNull(quantity)?oldStock.getTotalStock():quantity;
+        quantity = Objects.isNull(quantity) ? oldStock.getTotalStock() : quantity;
 
         String mesBarCode = MesBarCodeUtil.generateMesBarCode(oldStock.getExpireDate(), sscc, materialNb, oldStock.getBatchNb(), quantity);
 
@@ -658,7 +743,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             binIn.setRecommendFrameId(binVO.getFrameId());
             binIn.setRecommendFrameCode(binVO.getFrameCode());
             binIn.setAreaCode(binVO.getAreaCode());
-        }else {
+        } else {
             binIn.setAreaCode(areaCode);
         }
 
@@ -676,7 +761,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Override
     public BinInVO allocateToBinOrArea(String mesBarCode, String binCode, String areaCode) {
-        String ssccNb=MesBarCodeUtil.getSSCC(mesBarCode);
+        String ssccNb = MesBarCodeUtil.getSSCC(mesBarCode);
         BinInVO binInVO = binInMapper.selectBySsccNumber(ssccNb);
         if (binInVO != null) {
             return binInVO;
@@ -709,7 +794,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             binIn.setRecommendFrameId(binVO.getFrameId());
             binIn.setRecommendFrameCode(binVO.getFrameCode());
             binIn.setAreaCode(binVO.getAreaCode());
-        }else {
+        } else {
             binIn.setAreaCode(areaCode);
         }
 
@@ -721,7 +806,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 //        binIn.setFromPurchaseOrder(oldStock.getFromPurchaseOrder());
 //        binIn.setPlantNb(oldStock.getPlantNb());
         binInMapper.insert(binIn);
-        return  binInMapper.selectBySsccNumber(ssccNb);
+        return binInMapper.selectBySsccNumber(ssccNb);
     }
 
     /**

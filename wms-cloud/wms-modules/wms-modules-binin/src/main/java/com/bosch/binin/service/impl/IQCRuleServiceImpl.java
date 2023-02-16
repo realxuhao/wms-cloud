@@ -2,7 +2,9 @@ package com.bosch.binin.service.impl;
 
 import com.bosch.binin.api.domain.NMDIQCRule;
 import com.bosch.binin.api.domain.dto.NMDIQCRuleDTO;
+import com.bosch.binin.mapper.IQCRuleMapper;
 import com.bosch.binin.service.IIQCRuleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,9 +16,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class IQCRuleServiceImpl implements IIQCRuleService {
 
+    @Autowired
+    private IQCRuleMapper ruleMapper;
+
     @Override
     public NMDIQCRule getNMDIQCRule(NMDIQCRuleDTO dto) {
-
-        return null;
+        return ruleMapper.getNMDIQCRule(dto);
     }
 }
