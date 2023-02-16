@@ -20,6 +20,7 @@ import area from './modules/area'
 import ware from './modules/ware'
 import frame from './modules/frame'
 import iqcSample from './modules/iqcSample'
+import iqcManagement from './modules/iqcManagement'
 import bin from './modules/bin'
 import file from './modules/file'
 import binIn from './modules/binIn'
@@ -60,6 +61,7 @@ export default new Vuex.Store({
     ware,
     frame,
     iqcSample,
+    iqcManagement,
     bin,
     stock,
     materialFeeding,

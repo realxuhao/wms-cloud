@@ -37,26 +37,10 @@ const getList = async (parameter) => {
   return data
 }
 
-const getIqcQualityList = async (parameter) => {
-  const url = `/sample/quality/list?${qs.stringify(parameter)}`
-  const { data } = await createAuthInstance(baseUrl).post(url, parameter)
-  return data
-}
-
-const updateIqcQuality = async (id, options) => {
-  // const url = `/nmd/${id}`
-  const url = `/sample/quality`
-  // const { data } = await createAuthInstance(baseUrl).put(url, options)
-  const { data } = await createAuthInstance(baseUrl).put(url, { ...options, id })
-  return data
-}
-
 export const iqcSampleService = {
   exportExcel,
   cancelIqc,
   getList,
   addIqcManual,
-  modifySscc,
-  getIqcQualityList,
-  updateIqcQuality
+  modifySscc
 }

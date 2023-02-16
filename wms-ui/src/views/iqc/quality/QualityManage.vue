@@ -5,57 +5,86 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           <a-col :span="4">
-            <a-form-model-item label="工厂编码">
-              <a-input v-model="queryForm.plantNb" placeholder="工厂编码" allow-clear/>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="4">
             <a-form-model-item label="仓库编码">
               <a-input v-model="queryForm.wareCode" placeholder="仓库编码" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="存储区编码">
-              <a-input v-model="queryForm.areaCode" placeholder="仓库编码" allow-clear/>
-            </a-form-model-item>
+            <a-form-item label="SSCC码">
+              <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
+            </a-form-item>
           </a-col>
           <a-col :span="4">
-            <a-form-item label="库位编码">
-              <a-input v-model="queryForm.binCode" placeholder="库位编码" allow-clear/>
+            <a-form-item label="物料编码" >
+              <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="质检状态" >
+              <a-select
+                allow-clear
+                v-model="queryForm.qualityStatus"
+              >
+                <a-select-option v-for="item in qualityStatus" :key="item.value" :value="item.text">
+                  {{ item.text }}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
           <a-col :span="4">
             <a-form-item label="状态">
-              <a-input v-model="queryForm.changeStatus" placeholder="状态" allow-clear/>
+              <a-select
+                placeholder="请选择状态"
+                allow-clear
+                v-model="queryForm.changeStatus"
+              >
+                <a-select-option v-for="(item, key) in changeStatusMap" :key="item" :value="key">
+                  {{ item }}
+                </a-select-option>
+              </a-select>
             </a-form-item>
           </a-col>
-
           <template v-if="advanced">
-            <a-col :span="4">
-              <a-form-item label="托盘编码">
-                <a-input v-model="queryForm.palletCode" placeholder="托盘编码" allow-clear/>
-              </a-form-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-item label="SSCC码">
-                <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
-              </a-form-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-item label="物料编码" >
-                <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
-              </a-form-item>
-            </a-col>
             <a-col :span="4">
               <a-form-model-item label="批次号">
                 <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
               </a-form-model-item>
             </a-col>
             <a-col :span="4">
-              <a-form-item label="操作人">
-                <a-input v-model="queryForm.operateUser" placeholder="操作人" allow-clear/>
+              <a-form-item label="修改人">
+                <a-input v-model="queryForm.operateUser" placeholder="修改人" allow-clear/>
               </a-form-item>
             </a-col>
+            <a-col :span="4">
+              <a-form-model-item label="更新时间">
+                <a-range-picker
+                  format="YYYY-MM-DD HH:mm"
+                  :show-time="{ format: 'HH:mm' }"
+                  v-model="queryForm.updateTimeList"
+                />
+              </a-form-model-item>
+            </a-col>
+<!--            <a-col :span="4">
+              <a-form-model-item label="存储区编码">
+                <a-input v-model="queryForm.areaCode" placeholder="仓库编码" allow-clear/>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-item label="库位编码">
+                <a-input v-model="queryForm.binCode" placeholder="库位编码" allow-clear/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-model-item label="工厂编码">
+                <a-input v-model="queryForm.plantNb" placeholder="工厂编码" allow-clear/>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-item label="托盘编码">
+                <a-input v-model="queryForm.palletCode" placeholder="托盘编码" allow-clear/>
+              </a-form-item>
+            </a-col>
+            -->
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
@@ -79,7 +108,7 @@
         rowKey="id"
         :pagination="false"
         size="middle"
-        :scroll="{ x: 1300 }"
+        :scroll="{ x: 1300, y: 1300 }"
       >
         <template slot="qualityStatusSlot" slot-scope="text">
           <a-tag :color="colorMap[text]">
@@ -88,7 +117,7 @@
         </template>
         <template slot="changeStatusSlot" slot-scope="text">
           <a-tag :color="colorMap[text]">
-            {{ text }}
+            {{ changeStatusMap[text] }}
           </a-tag>
         </template>
         <template slot="checkType" slot-scope="text">
@@ -106,8 +135,9 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a @click="handleUpdate(record)"><a-icon class="m-r-4" type="edit" />同批次</a>
-            <a @click="handleUpdate(record)"><a-icon class="m-r-4" type="form" />此托</a>
+            <a :disabled="record.freezeStock > 0" @click="handleUpdate('同批次', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />同批次</a>
+            <a-divider type="vertical" />
+            <a :disabled="record.freezeStock > 0" @click="handleUpdate('此托', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />此托</a>
           </div>
         </template>
       </a-table>
@@ -125,7 +155,7 @@
       </div>
     </div>
 
-    <a-modal v-model="submitVisible" title="Modal" ok-text="确认" cancel-text="取消" @ok="onSubmit">
+    <a-modal v-model="submitVisible" :title="modalTitle" ok-text="确认" cancel-text="取消" @ok="onSubmit">
       <a-form layout="inline" class="search-content">
         <a-form-model-item label="质量状态">
           <a-select
@@ -146,7 +176,8 @@
 </template>
 
 <script>
-import { mixinTableList } from '@/utils/mixin/index'
+import { mixinTableList } from '@/utils/mixin'
+import _ from 'lodash'
 
 const qualityStatus = [
   {
@@ -167,41 +198,41 @@ const colorMap = {
   'Q': 'green'
 }
 
+const changeStatusMap = {
+  0: '未变更',
+  1: '已变更'
+}
+
 const columns = [
   {
     title: '工厂编码',
     key: 'plantNb',
     dataIndex: 'plantNb',
-    width: 120
+    width: 80
   },
   {
     title: '仓库编码',
     key: 'wareCode',
     dataIndex: 'wareCode',
-    width: 120
+    width: 80
   },
   {
     title: '存储区编码',
     key: 'areaCode',
     dataIndex: 'areaCode',
-    width: 120
+    width: 90
   },
   {
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
-    width: 140
+    width: 160,
+    align: 'center'
   },
   {
     title: '库位编码',
     key: 'binCode',
     dataIndex: 'binCode',
-    width: 140
-  },
-  {
-    title: '托盘编码',
-    key: 'palletCode',
-    dataIndex: 'palletCode',
     width: 140
   },
   {
@@ -237,6 +268,12 @@ const columns = [
     width: 120
   },
   {
+    title: '单位',
+    key: 'unit',
+    dataIndex: 'unit',
+    width: 80
+  },
+  {
     title: '冻结库存',
     key: 'freezeStock',
     dataIndex: 'freezeStock',
@@ -249,9 +286,9 @@ const columns = [
     width: 120
   },
   {
-    title: '操作人',
-    key: 'createBy',
-    dataIndex: 'createBy',
+    title: '修改人',
+    key: 'updateBy',
+    dataIndex: 'updateBy',
     width: 120
   },
   {
@@ -261,7 +298,7 @@ const columns = [
     width: 200
   },
   {
-    title: '操作',
+    title: '质检操作',
     key: 'action',
     fixed: 'right',
     width: 180,
@@ -279,7 +316,9 @@ const queryFormAttr = () => {
     areaCode: '',
     binCode: '',
     palletCode: '',
-    changeStatus: undefined
+    qualityStatus: '',
+    changeStatus: undefined,
+    updateTimeList: []
   }
 }
 
@@ -297,11 +336,13 @@ export default {
       },
       columns,
       list: [],
-      submitVisible: false
+      submitVisible: false,
+      modalTitle: ''
     }
   },
   computed: {
     qualityStatus: () => qualityStatus,
+    changeStatusMap: () => changeStatusMap,
     colorMap: () => colorMap
   },
   methods: {
@@ -312,10 +353,15 @@ export default {
     async loadTableList () {
       try {
         this.tableLoading = true
+        const { updateTimeList = [] } = this.queryForm
+        const startUpdateTime = updateTimeList.length > 0 ? updateTimeList[0].format(this.startDateFormat) : undefined
+        const endUpdateTime = updateTimeList.length > 0 ? updateTimeList[1].format(this.endDateFormat) : undefined
+        const options = { ..._.omit(this.queryForm, ['updateTimeList']), startUpdateTime, endUpdateTime }
 
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('stock/getPaginationList', this.queryForm)
+        // } = await this.$store.dispatch('stock/getPaginationList', this.queryForm)
+        } = await this.$store.dispatch('iqcManagement/getIqcQualityList', options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -327,18 +373,22 @@ export default {
     async onSubmit (record) {
       // 调用API
       try {
-        await this.$store.dispatch('iqcSample/updateIqcQuality', record)
+        await this.$store.dispatch('iqcManagement/updateIqcQuality', record)
         this.$message.success('修改质检状态成功！')
         this.loadTableList()
       } catch (error) {
         this.$message.error(error.message)
       }
     },
-    handleUpdate (record) {
-      // todo
-      const flag = true
-      if (flag) {
-      // if (record.status) {
+    handleUpdate (clickMethod, record) {
+      if (clickMethod === '同批次') {
+        this.modalTitle = '物料编码:' + record.materialNb + ',批次号:' + record.batchNb
+      }
+      if (clickMethod === '此托') {
+        this.modalTitle = 'SSCC:' + record.ssccNumber + ',物料编码:' + record.materialNb
+      }
+      console.log(record.changeStatus)
+      if (record.changeStatus === 1) {
         // 检验过
         this.notQuality()
       } else {
