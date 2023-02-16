@@ -26,8 +26,9 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     }
 
     @Override
-    public List<PurchaseOrder> selectPurchaseOrderByName(String name) {
-        List<PurchaseOrder> purchaseOrders = purchaseOrderMapper.selectPurchaseOrderByName(name);
+    public List<PurchaseOrder> selectSupplierPurchaseOrder(String name, PurchaseOrder purchaseOrder) {
+        purchaseOrder.setSupplierName(name);
+        List<PurchaseOrder> purchaseOrders = purchaseOrderMapper.selectSupplierPurchaseOrder(purchaseOrder);
         purchaseOrders.forEach(c -> {
             BigDecimal sum = supplierPorderService.getArriveQuantityByPurchaseId(c.getPurchaseId());
             BigDecimal subtract = c.getQuantity().subtract(sum);

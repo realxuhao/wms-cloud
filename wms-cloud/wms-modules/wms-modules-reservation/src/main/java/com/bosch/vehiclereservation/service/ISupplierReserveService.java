@@ -38,4 +38,12 @@ public interface ISupplierReserveService extends IService<SupplierReserve> {
      * @return 供应商预约信息列表
      */
     public List<SupplierReserveVO> selectSupplierReserveVO(SupplierReserveDTO supplierReserveDTO);
+
+    /**
+     * 删除供应商预约信息
+     *
+     * @param reserveId 预约id
+     * @return boolean
+     */
+    public boolean deleteSupplierReserveById(Long reserveId);
 }

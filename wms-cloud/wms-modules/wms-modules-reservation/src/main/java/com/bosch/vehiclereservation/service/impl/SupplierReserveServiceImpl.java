@@ -1,5 +1,6 @@
 package com.bosch.vehiclereservation.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.RemoteTimeWindowService;
@@ -160,6 +161,34 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
             }
         });
         return supplierReserveVOS;
+    }
+
+    @Override
+    public boolean deleteSupplierReserveById(Long reserveId) {
+        SupplierReserve supplierReserve = super.getById(reserveId);
+        if (supplierReserve.getStatus() != ReserveStatusEnum.RESERVED.getCode()) {
+            throw new ServiceException("订单流程进行中，不允许删除！");
+        }
+        String reserveNo = supplierReserve.getReserveNo();
+        boolean res = super.removeById(reserveId);
+        if (res) {
+            QueryWrapper<SupplierPorder> wrapper = new QueryWrapper<SupplierPorder>();
+            wrapper.eq("reserve_no", reserveNo);
+            List<SupplierPorder> supplierPorderList = supplierPorderService.list(wrapper);
+            supplierPorderList.forEach(c -> {
+                boolean b = supplierPorderService.removeById(c.getId());
+                if (b) {
+                    //更新同采购单id的剩余送货数量
+                    Integer i = supplierPorderService.updateSurplusQuantityByPurchaseId(c.getPurchaseId(), c.getSurplusQuantity(), c.getArriveQuantity());
+                    PurchaseOrder purchaseOrder = purchaseOrderMapper.selectById(c.getPurchaseId());
+                    if (!Objects.isNull(purchaseOrder) && purchaseOrder.getStatus() == OrderStatusEnum.CLOSE.getCode()) {
+                        purchaseOrder.setStatus(OrderStatusEnum.NORMAL.getCode());
+                        purchaseOrderMapper.updateById(purchaseOrder);
+                    }
+                }
+            });
+        }
+        return res;
     }
 
     private void changePurchaseOrderStatus(List<SupplierPorder> supplierPorderList) {

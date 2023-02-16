@@ -50,13 +50,13 @@ public class PurchaseOrderController extends BaseController {
     }
 
     /**
-     * 根据供应商姓名获取该供应商的采购单列表
+     * 根据供应商姓名获取该供应商可预约的采购单列表
      */
-    @GetMapping(value = "/{name}")
-    @ApiOperation("根据供应商姓名获取该供应商的采购单列表")
-    public R<PageVO<PurchaseOrderVO>> getListByName(@PathVariable("name") String name) {
+    @GetMapping(value = "/list/{name}")
+    @ApiOperation("根据供应商姓名获取该供应商可预约的采购单列表")
+    public R<PageVO<PurchaseOrderVO>> getListToSupplier(@PathVariable("name") String name, PurchaseOrderDTO purchaseOrderDTO) {
         startPage();
-        List<PurchaseOrder> list = purchaseOrderService.selectPurchaseOrderByName(name);
+        List<PurchaseOrder> list = purchaseOrderService.selectSupplierPurchaseOrder(name, BeanConverUtil.conver(purchaseOrderDTO, PurchaseOrder.class));
         List<PurchaseOrderVO> blackDriverVOS = BeanConverUtil.converList(list, PurchaseOrderVO.class);
         return R.ok(new PageVO<>(blackDriverVOS, new PageInfo<>(blackDriverVOS).getTotal()));
     }

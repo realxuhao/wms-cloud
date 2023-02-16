@@ -71,4 +71,14 @@ public class SupplierReserveController extends BaseController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
+    /**
+     * 删除供应商的预约信息（只能删状态是0的数据）
+     */
+    @RequiresPermissions("vehiclereservation:supplier:remove")
+    @Log(title = "删除供应商的预约信息", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{id}")
+    public AjaxResult remove(@PathVariable Long id) {
+        return toAjax(supplierReserveService.deleteSupplierReserveById(id));
+    }
+
 }

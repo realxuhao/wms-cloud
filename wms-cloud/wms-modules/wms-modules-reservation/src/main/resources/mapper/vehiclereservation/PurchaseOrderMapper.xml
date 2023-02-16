@@ -58,8 +58,16 @@
         </where>
     </select>
 
-    <select id="selectPurchaseOrderByName" resultMap="PurchaseOrderResult">
+    <select id="selectSupplierPurchaseOrder" resultMap="PurchaseOrderResult">
         <include refid="selectPurchaseOrder"/>
-        where status=0 and supplier_name = #{name}
+        <where>
+            <if test="poCode != null  and poCode != ''">
+                and po_code like concat('%', #{poCode}, '%')
+            </if>
+            <if test="poItem != null  and poItem != ''">
+                and po_item like concat('%', #{poItem}, '%')
+            </if>
+            and status=0 and supplier_name = #{supplierName}
+        </where>
     </select>
 </mapper>

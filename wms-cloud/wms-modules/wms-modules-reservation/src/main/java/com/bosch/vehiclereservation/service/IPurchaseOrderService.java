@@ -16,11 +16,12 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
     public List<PurchaseOrder> selectPurchaseOrderList(PurchaseOrder purchaseOrder);
 
     /**
-     * 根据供应商名称查询列表
+     * 查询供应商可预约的采购单列表
      *
-     * @param name 供应商名称
+     * @param name          供应商名称
+     * @param purchaseOrder 查询信息
      * @return 采购单集合
      */
-    public List<PurchaseOrder> selectPurchaseOrderByName(String name);
+    public List<PurchaseOrder> selectSupplierPurchaseOrder(String name, PurchaseOrder purchaseOrder);
 
 }

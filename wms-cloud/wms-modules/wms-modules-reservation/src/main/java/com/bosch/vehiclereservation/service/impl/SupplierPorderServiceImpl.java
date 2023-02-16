@@ -19,4 +19,9 @@ public class SupplierPorderServiceImpl extends ServiceImpl<SupplierPorderMapper,
     public BigDecimal getArriveQuantityByPurchaseId(Long purchaseId) {
         return supplierPorderMapper.getArriveQuantityByPurchaseId(purchaseId);
     }
+
+    @Override
+    public Integer updateSurplusQuantityByPurchaseId(Long purchaseId, BigDecimal surplusQuantity, BigDecimal arriveQuantity) {
+        return supplierPorderMapper.updateSurplusQuantityByPurchaseId(purchaseId, surplusQuantity, arriveQuantity);
+    }
 }
