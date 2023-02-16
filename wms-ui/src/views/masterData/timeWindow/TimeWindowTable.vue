@@ -1,22 +1,20 @@
 <template>
   <div class="content">
     <a-row :gutter="[16, 16]">
-      <template v-for="(item, index) in timeWindowList">
-        <a-col :key="index" :span="4">
-          <div class="hour-div" :style="{'--background-image': item.enable ? openStatusColor : closeStatusColor}">
-            {{ item.startTime + '-' + item.endTime }}
-            <a-input
-              oninput="value=value.replace(/[^\d]/g,'')"
-              class="center-input"
-              v-model="item.dockNum"
-              :bordered="false"
-              placeholder="可预约车辆数"
-              @change="onDockNumChange(item)"
-            />
-            <a-switch class="center" v-model="item.enable" checked-children="启用" un-checked-children="禁用" />
-          </div>
-        </a-col>
-      </template>
+      <a-col :key="index" v-for="(item, index) in timeWindowList" :span="4">
+        <div class="hour-div" :style="{'--background-image': item.enable ? openStatusColor : closeStatusColor}">
+          {{ item.startTime + '-' + item.endTime }}
+          <a-input
+            oninput="value=value.replace(/[^\d]/g,'')"
+            class="center-input"
+            v-model="item.dockNum"
+            :bordered="false"
+            placeholder="可预约车辆数"
+            @change="onDockNumChange(item)"
+          />
+          <a-switch class="center" v-model="item.enable" checked-children="启用" un-checked-children="禁用" />
+        </div>
+      </a-col>
     </a-row>
 
     <a-modal
@@ -212,11 +210,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-// .content{
-//   background-image: linear-gradient(to bottom right,#2f508d,#34b8ab);
-// }
 .hour-div {
-  // background-color: rgba(227, 225, 225, 0.5);
   background-image: var(--background-image);
   height: 18vh;
   line-height: 8vh;

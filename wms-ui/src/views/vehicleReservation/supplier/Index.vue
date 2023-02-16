@@ -4,6 +4,7 @@
       <a-tabs defaultActiveKey="1" @change="callback" v-show="!isVisibleSupplierName">
         <a-tab-pane key="1" tab="可预约订单列表">
           <PurchaseTable
+            :isVisible="!isVisibleSupplierName"
             :supplierName="supplierName"
           />
         </a-tab-pane>
@@ -18,7 +19,8 @@
         :width="500"
         :closable="false"
         :maskClosable="false"
-        @cancel="close"
+        cancelText="关闭"
+        @cancel="handleClose"
         @ok="handleSubmitSupplierName">
         <a-input
           placeholder="请输入供应商名称"
@@ -41,18 +43,22 @@ export default {
     return {
       activeKey: 1,
       isVisibleSupplierName: true,
-      supplierName: ''
+      supplierName: '供应商A'
     }
   },
   model: {},
   computed: {},
   methods: {
-    handleSubmitSupplierName () {
+    handleClose () {
       this.isVisibleSupplierName = false
+      this.supplierName = ''
     },
-    close () {
-      this.$message.error('请输入供应商名称！')
-      this.isVisibleSupplierName = true
+    handleSubmitSupplierName () {
+      if (this.supplierName === '') {
+        this.$message.error('请输入供应商名称！')
+        return
+      }
+      this.isVisibleSupplierName = false
     },
     callback (key) {
       console.info(key)

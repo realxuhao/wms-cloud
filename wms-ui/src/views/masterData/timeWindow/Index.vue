@@ -81,10 +81,7 @@ export default {
 
       tableLoading: false,
       list: [],
-      wareOptionList: [
-        { id: 1, code: 'W01', dockNum: 5 },
-        { id: 2, code: 'W01', dockNum: 6 }
-      ]
+      wareOptionList: []
     }
   },
   methods: {

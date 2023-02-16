@@ -54,7 +54,7 @@
         </template>
         <template slot="remark" slot-scope="reText">
           <a-tooltip color="'purple'" :title="reText">
-            <span>{{ reText.substring(0,20) + "..." }}</span>
+            <span>{{ reText.length > 10 ? reText.substring(0,10) + "..." : reText }}</span>
           </a-tooltip>
         </template>
         <!-- <template slot="action" slot-scope="text, record">
@@ -120,7 +120,7 @@ const columns = [
     title: '需求数量',
     key: 'quantity',
     dataIndex: 'quantity',
-    width: 100
+    width: 130
   },
   {
     title: '单位',
@@ -132,13 +132,13 @@ const columns = [
     title: '预计到货日期',
     key: 'deliveryDate',
     dataIndex: 'deliveryDate',
-    width: 180
+    width: 120
   },
   {
     title: '需求放行日期',
     key: 'releaseDate',
     dataIndex: 'releaseDate',
-    width: 180
+    width: 120
   },
   {
     title: '首批变更号',
