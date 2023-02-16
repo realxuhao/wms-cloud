@@ -387,10 +387,8 @@ export default {
       if (clickMethod === '此托') {
         this.modalTitle = 'SSCC:' + record.ssccNumber + ',物料编码:' + record.materialNb
       }
-      // todo
-      const flag = true
-      if (flag) {
-      // if (record.status) {
+      console.log(record.changeStatus)
+      if (record.changeStatus === 1) {
         // 检验过
         this.notQuality()
       } else {
