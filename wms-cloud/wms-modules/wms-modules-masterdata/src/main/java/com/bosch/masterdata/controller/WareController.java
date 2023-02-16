@@ -98,8 +98,8 @@ public class WareController extends BaseController {
     @RequiresPermissions("masterdata:ware:query")
     @GetMapping(value = "/{id}")
     @ApiOperation("获取仓库详细信息")
-    public AjaxResult getInfo(@PathVariable("id") String id) {
-        return AjaxResult.success(wareService.selectWareById(id));
+    public R<Ware> getInfo(@PathVariable("id") String id) {
+        return R.ok(wareService.selectWareById(id));
     }
 
     /**
