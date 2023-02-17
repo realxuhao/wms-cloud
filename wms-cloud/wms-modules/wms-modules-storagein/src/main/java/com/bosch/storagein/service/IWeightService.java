@@ -13,4 +13,9 @@ import com.bosch.storagein.api.domain.Weight;
 
 public interface IWeightService extends IService<Weight> {
 
+
+    public void uploadWeight(Weight weight);
+
+    public Weight getWeightByIP(String ip);
+
 }

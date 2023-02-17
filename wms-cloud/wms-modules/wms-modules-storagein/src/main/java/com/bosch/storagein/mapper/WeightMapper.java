@@ -15,9 +15,4 @@ import org.springframework.stereotype.Repository;
 @Mapper
 @Repository("weightMapper")
 public interface WeightMapper extends BaseMapper<Weight> {
-
-
-
-
-
 }
