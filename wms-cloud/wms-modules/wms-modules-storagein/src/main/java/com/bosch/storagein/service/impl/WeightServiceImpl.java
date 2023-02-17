@@ -36,7 +36,7 @@ public class WeightServiceImpl extends ServiceImpl<WeightMapper, Weight> impleme
     public Weight getWeightByIP(String ip) {
         LambdaQueryWrapper<Weight> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Weight::getIp, ip);
-        queryWrapper.eq(Weight::getStatus, WeightStatusEnum.CANCEL.code());
+        queryWrapper.eq(Weight::getStatus, WeightStatusEnum.UNUSE.code());
         queryWrapper.orderByDesc(Weight::getUploadTime);
         queryWrapper.last("limit 1");
         Weight weight = weightMapper.selectOne(queryWrapper);
