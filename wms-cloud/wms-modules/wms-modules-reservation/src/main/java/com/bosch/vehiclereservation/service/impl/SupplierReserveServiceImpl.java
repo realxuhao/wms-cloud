@@ -181,6 +181,9 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
     @Override
     public boolean deleteSupplierReserveById(Long reserveId) {
         SupplierReserve supplierReserve = super.getById(reserveId);
+        if (supplierReserve == null) {
+            throw new ServiceException("预约单不存在！");
+        }
         if (supplierReserve.getStatus() != ReserveStatusEnum.RESERVED.getCode()) {
             throw new ServiceException("订单流程进行中，不允许删除！");
         }

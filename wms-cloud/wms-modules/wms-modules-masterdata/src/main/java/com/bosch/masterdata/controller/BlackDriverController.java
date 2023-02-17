@@ -92,4 +92,15 @@ public class BlackDriverController extends BaseController {
         return toAjax(blackDriverService.deleteBlackDriverById(id));
     }
 
+    /**
+     * 获取司机黑名单详细信息(根据司机姓名查询)
+     */
+    @GetMapping(value = "/black/{name}")
+    @ApiOperation("根据司机姓名获取司机黑名单详细信息")
+    public R<List<BlackDriverVO>> getInfoByName(@PathVariable("name") String name) {
+        List<BlackDriver> blackDrivers = blackDriverService.selectBlackDriverByName(name);
+        List<BlackDriverVO> blackDriverVOS = BeanConverUtil.converList(blackDrivers, BlackDriverVO.class);
+        return R.ok(blackDriverVOS);
+    }
+
 }

@@ -2,16 +2,20 @@ package com.bosch.vehiclereservation.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.RemoteMasterDataService;
+import com.bosch.masterdata.api.domain.vo.BlackDriverVO;
 import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.SupplierPorder;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDeliverVO;
 import com.bosch.vehiclereservation.api.enumeration.ReserveStatusEnum;
+import com.bosch.vehiclereservation.api.enumeration.ReserveTypeEnum;
 import com.bosch.vehiclereservation.api.enumeration.SignStatusEnum;
 import com.bosch.vehiclereservation.mapper.DriverDeliverMapper;
 import com.bosch.vehiclereservation.mapper.SupplierReserveMapper;
 import com.bosch.vehiclereservation.service.IDriverDeliverService;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
@@ -21,6 +25,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static com.ruoyi.common.core.utils.PageUtils.startPage;
@@ -33,6 +38,9 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
 
     @Autowired
     private SupplierReserveMapper supplierReserveMapper;
+
+    @Autowired
+    private RemoteMasterDataService remoteMasterDataService;
 
 
     @Override
@@ -64,6 +72,9 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
     @Override
     public boolean deleteDriverDeliverById(Long deliverId) {
         DriverDeliver driverDeliver = super.getById(deliverId);
+        if (driverDeliver == null) {
+            throw new ServiceException("预约单不存在！");
+        }
         if (driverDeliver.getStatus() != SignStatusEnum.NOT_SIGN.getCode()) {
             throw new ServiceException("订单已到货，不允许删除！");
         }
@@ -71,12 +82,35 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
         if (res) {
             QueryWrapper<SupplierReserve> wrapper = new QueryWrapper<>();
             wrapper.eq("reserve_no", driverDeliver.getReserveNo());
-            SupplierReserve supplierReserve = supplierReserveMapper.selectList(wrapper).get(0);
-            if (supplierReserve != null && supplierReserve.getStatus() == ReserveStatusEnum.ON_ORDER.getCode()) {
-                supplierReserve.setStatus(ReserveStatusEnum.RESERVED.getCode());
-                supplierReserveMapper.updateById(supplierReserve);
+            Optional<SupplierReserve> supplierReserve = supplierReserveMapper.selectList(wrapper).stream().findFirst();
+            if (supplierReserve.isPresent() && supplierReserve.get().getStatus() == ReserveStatusEnum.ON_ORDER.getCode()) {
+                supplierReserve.get().setStatus(ReserveStatusEnum.RESERVED.getCode());
+                supplierReserveMapper.updateById(supplierReserve.get());
             }
         }
         return res;
+    }
+
+    @Override
+    public boolean insertDriverDeliver(DriverDeliverDTO driverDeliverDTO) {
+        R<List<BlackDriverVO>> result = remoteMasterDataService.getInfoByName(driverDeliverDTO.getDriverName());
+        List<BlackDriverVO> data = result.getData();
+        if (data.size() > 0) {
+            throw new ServiceException("您已进入黑名单，请联系客户确认！");
+        }
+        QueryWrapper<DriverDeliver> wrapper = new QueryWrapper<>();
+        wrapper.eq("reserve_no", driverDeliverDTO.getReserveNo());
+        Optional<DriverDeliver> first = driverDeliverMapper.selectList(wrapper).stream().findFirst();
+        if (first.isPresent()) {
+            if (!first.get().getDriverName().equals(driverDeliverDTO.getDriverName())) {
+                throw new ServiceException("该预约单已有司机预约，请联系客户！");
+            } else {
+                throw new ServiceException("该预约单您已预约过！");
+            }
+        }
+        DriverDeliver driverDeliver = BeanConverUtil.conver(driverDeliverDTO, DriverDeliver.class);
+        driverDeliver.setStatus(SignStatusEnum.NOT_SIGN.getCode());
+        driverDeliver.setReserveType(ReserveTypeEnum.RESERVED.getCode());
+        return super.save(driverDeliver);
     }
 }

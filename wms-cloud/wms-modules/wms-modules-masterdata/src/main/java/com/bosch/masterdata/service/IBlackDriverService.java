@@ -2,6 +2,7 @@ package com.bosch.masterdata.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.masterdata.api.domain.BlackDriver;
+import com.bosch.masterdata.api.domain.vo.BlackDriverVO;
 
 import java.util.List;
 
@@ -54,5 +55,7 @@ public interface IBlackDriverService extends IService<BlackDriver> {
      * @return 结果
      */
     public boolean deleteBlackDriverById(Long id);
+
+    public List<BlackDriver> selectBlackDriverByName(String name);
 
 }

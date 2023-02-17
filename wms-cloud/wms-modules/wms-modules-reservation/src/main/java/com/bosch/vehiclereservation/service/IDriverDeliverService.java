@@ -25,4 +25,12 @@ public interface IDriverDeliverService extends IService<DriverDeliver> {
      */
     public boolean deleteDriverDeliverById(Long deliverId);
 
+    /**
+     * 新增司机的预约信息
+     *
+     * @param driverDeliverDTO 司机的预约信息
+     * @return boolean
+     */
+    public boolean insertDriverDeliver(DriverDeliverDTO driverDeliverDTO);
+
 }

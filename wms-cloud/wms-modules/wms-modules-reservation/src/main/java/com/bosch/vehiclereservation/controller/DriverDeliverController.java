@@ -2,6 +2,7 @@ package com.bosch.vehiclereservation.controller;
 
 
 import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
+import com.bosch.vehiclereservation.api.domain.dto.SupplierDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDeliverVO;
 import com.bosch.vehiclereservation.api.domain.vo.PageVO;
 import com.bosch.vehiclereservation.service.IDriverDeliverService;
@@ -56,6 +57,17 @@ public class DriverDeliverController extends BaseController {
     @DeleteMapping("/{id}")
     public AjaxResult remove(@PathVariable Long id) {
         return toAjax(driverDeliverService.deleteDriverDeliverById(id));
+    }
+
+    /**
+     * 新增司机的预约信息
+     */
+    @RequiresPermissions("vehiclereservation:driverdeliver:add")
+    @Log(title = "新增司机的预约信息", businessType = BusinessType.INSERT)
+    @ApiOperation("新增司机的预约信息")
+    @PostMapping("/add")
+    public AjaxResult add(@RequestBody DriverDeliverDTO driverDeliverDTO) {
+        return toAjax(driverDeliverService.insertDriverDeliver(driverDeliverDTO));
     }
 
 
