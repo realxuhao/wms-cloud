@@ -17,4 +17,12 @@ public interface IDriverDeliverService extends IService<DriverDeliver> {
      */
     public List<DriverDeliverVO> selectDriverDeliverVO(DriverDeliverDTO driverDeliverDTO);
 
+    /**
+     * 删除司机预约信息
+     *
+     * @param deliverId 预约id
+     * @return boolean
+     */
+    public boolean deleteDriverDeliverById(Long deliverId);
+
 }

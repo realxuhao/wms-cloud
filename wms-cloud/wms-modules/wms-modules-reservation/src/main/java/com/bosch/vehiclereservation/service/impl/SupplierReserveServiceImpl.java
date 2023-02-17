@@ -184,11 +184,10 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
         if (supplierReserve.getStatus() != ReserveStatusEnum.RESERVED.getCode()) {
             throw new ServiceException("订单流程进行中，不允许删除！");
         }
-        String reserveNo = supplierReserve.getReserveNo();
         boolean res = super.removeById(reserveId);
         if (res) {
             QueryWrapper<SupplierPorder> wrapper = new QueryWrapper<>();
-            wrapper.eq("reserve_no", reserveNo);
+            wrapper.eq("reserve_no", supplierReserve.getReserveNo());
             List<SupplierPorder> supplierPorderList = supplierPorderService.list(wrapper);
             supplierPorderList.forEach(c -> {
                 boolean b = supplierPorderService.removeById(c.getId());
