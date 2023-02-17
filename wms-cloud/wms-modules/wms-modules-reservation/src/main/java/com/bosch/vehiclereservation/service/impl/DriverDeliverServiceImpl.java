@@ -11,10 +11,11 @@ import com.bosch.vehiclereservation.service.IDriverDeliverService;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -42,7 +43,12 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
             supplierReserve.setSupplierCode(supplierName);
             List<SupplierReserve> selectSupplierReserveList = supplierReserveMapper.selectSupplierReserveList(supplierReserve);
             List<String> reserveNoList = selectSupplierReserveList.stream().map(c -> c.getReserveNo()).distinct().collect(Collectors.toList());
-            driverDeliver.setReserveNoList(reserveNoList);
+            if (!CollectionUtils.isEmpty(reserveNoList)) {
+                driverDeliver.setReserveNoList(reserveNoList);
+            } else {
+                List<DriverDeliverVO> driverDeliverVOS = new ArrayList<>();
+                return driverDeliverVOS;
+            }
         }
         startPage();
         List<DriverDeliver> driverDelivers = driverDeliverMapper.selectDriverDeliverList(driverDeliver);
