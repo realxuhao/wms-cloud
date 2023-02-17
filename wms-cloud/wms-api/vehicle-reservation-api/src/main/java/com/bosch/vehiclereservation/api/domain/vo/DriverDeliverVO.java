@@ -1,5 +1,8 @@
 package com.bosch.vehiclereservation.api.domain.vo;
 
+import com.bosch.vehiclereservation.api.enumeration.SignStatusEnum;
+import com.bosch.vehiclereservation.api.enumeration.LateEnum;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -68,4 +71,47 @@ public class DriverDeliverVO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+    /**
+     * 状态描述：0：未签到 1：已签到
+     */
+    @ApiModelProperty(value = "状态描述")
+    private String statusDes;
+
+    /**
+     * 迟到描述：0：未迟到1：迟到
+     */
+    @ApiModelProperty(value = "迟到描述")
+    private String lateDes;
+
+    public void setStatus(Integer status) {
+        this.status = status;
+        if (status != null) {
+            switch (status.intValue()) {
+                case 0:
+                    this.statusDes = SignStatusEnum.NOT_SIGN.getDesc();
+                    break;
+                case 1:
+                    this.statusDes = SignStatusEnum.SIGNED.getDesc();
+                    break;
+            }
+        }
+    }
+
+    public void setLate(Integer late) {
+        this.late = late;
+        if (late != null) {
+            switch (late.intValue()) {
+                case 0:
+                    this.lateDes = LateEnum.NOT_LATE.getDesc();
+                    break;
+                case 1:
+                    this.lateDes = LateEnum.LATE.getDesc();
+                    break;
+            }
+        }
+    }
 }

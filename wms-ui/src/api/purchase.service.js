@@ -10,9 +10,9 @@ const getList = async (parameter) => {
   return data
 }
 
-const getListBySupplierName = async (name) => {
-  const url = `/purchase/${name}`
-  const { data } = await createAuthInstance(baseUrl).get(url)
+const getListBySupplierName = async (name, parameter) => {
+  const url = `/purchase/list/${name}?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url, parameter)
   return data
 }
 

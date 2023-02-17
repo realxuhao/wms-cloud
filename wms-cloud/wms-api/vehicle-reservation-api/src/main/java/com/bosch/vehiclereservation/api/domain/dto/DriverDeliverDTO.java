@@ -70,4 +70,12 @@ public class DriverDeliverDTO extends PageDomain {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    /**
+     * 微信id
+     */
+    @ApiModelProperty(value = "微信id")
+    private String wechatId;
+
+    @ApiModelProperty(value = "供应商姓名")
+    private String supplierName;
 }

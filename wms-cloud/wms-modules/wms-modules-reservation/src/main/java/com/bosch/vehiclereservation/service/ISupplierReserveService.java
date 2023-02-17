@@ -48,5 +48,11 @@ public interface ISupplierReserveService extends IService<SupplierReserve> {
      */
     public boolean deleteSupplierReserveById(Long reserveId);
 
+    /**
+     * 根据预约单编号获取对应的采购单信息列表
+     *
+     * @param reserveNo 预约单编号
+     * @return 采购单信息列表
+     */
     public List<PurchaseOrderVO> selectPurchaseOrderList(String reserveNo);
 }

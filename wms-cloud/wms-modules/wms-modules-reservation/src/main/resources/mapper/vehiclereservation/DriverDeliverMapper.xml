@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.vehiclereservation.mapper.DriverDeliverMapper">
+    <resultMap type="com.bosch.vehiclereservation.api.domain.DriverDeliver" id="DriverDeliverResult">
+        <result property="deliverId" column="deliver_id"/>
+        <result property="reserveNo" column="reserve_no"/>
+        <result property="wechatId" column="wechat_id"/>
+        <result property="driverName" column="driver_name"/>
+        <result property="driverPhone" column="driver_phone"/>
+        <result property="carNum" column="car_num"/>
+        <result property="reserveType" column="reserve_type"/>
+        <result property="late" column="late"/>
+        <result property="signinDate" column="signin_date"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectDriverDeliver">
+        select deliver_id,
+               reserve_no,
+               wechat_id,
+               driver_name,
+               driver_phone,
+               car_num,
+               reserve_type,
+               late,
+               signin_date,
+               status,
+               remark,
+               create_by,
+               update_by,
+               create_time,
+               update_time
+        from vr_driver_deliver
+    </sql>
+
+    <select id="selectDriverDeliverList" resultMap="DriverDeliverResult">
+        <include refid="selectDriverDeliver"/>
+        <where>
+            <if test="driver.reserveNo != null  and driver.reserveNo != ''">
+                and reserve_no like concat('%', #{driver.reserveNo}, '%')
+            </if>
+            <if test="driver.driverName != null  and driver.driverName != ''">
+                and driver_name like concat('%', #{driver.driverName}, '%')
+            </if>
+            <if test="driver.driverPhone != null  and driver.driverPhone != ''">
+                and driver_phone like concat('%', #{driver.driverPhone}, '%')
+            </if>
+            <if test="driver.carNum != null  and driver.carNum != ''">
+                and car_num like concat('%', #{driver.carNum}, '%')
+            </if>
+            <if test="driver.reserveType != null ">
+                and reserve_type = #{driver.reserveType}
+            </if>
+            <if test="driver.status != null ">
+                and status = #{driver.status}
+            </if>
+            <if test="driver.wechatId != null and driver.wechatId != ''">
+                and wechat_id = #{driver.wechatId}
+            </if>
+            <if test="driver.reserveNoList != null and driver.reserveNoList.size() > 0">
+                and reserve_no in
+                <foreach item="item" index="index" collection="driver.reserveNoList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+</mapper>

@@ -9,43 +9,23 @@
               <a-input v-model="queryForm.driverName" placeholder="司机姓名" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <template v-if="advanced">
-
-          </template>
           <a-col span="4">
             <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
           </a-col>
         </a-row>
       </a-form>
 
-      <div class="action-content">
-        <a-button type="primary" class="m-r-8" icon="plus" @click="handleAdd">
-          新建
-        </a-button>
-      </div>
       <a-table
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
-        rowKey="driverId"
+        rowKey="deliverId"
         :pagination="false"
         size="middle"
         :scroll="{ x: 1300 }"
       >
-        <template slot="status" slot-scope="text">
-          <div >
-            <a-tag color="green" v-if="text===0">
-              否
-            </a-tag>
-            <a-tag color="red" v-if="text===1">
-              是
-            </a-tag>
-          </div>
-        </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
-            <a-divider type="vertical" />
             <a-popconfirm
               title="确认要删除吗?"
               ok-text="确认"
@@ -70,20 +50,10 @@
       </div>
 
     </div>
-
-    <UpdateDrawer
-      v-model="visible"
-      :updateType="updateType"
-      :driverId="currentUpdateId"
-      @on-ok="loadTableList"
-    ></UpdateDrawer>
   </div>
 </template>
 
 <script>
-import UpdateDrawer from './UpdateDrawer'
-import Sortable from 'sortablejs'
-
 import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
@@ -134,10 +104,9 @@ const queryFormAttr = () => {
 }
 
 export default {
-  name: 'VrBlackDriver',
+  name: 'VrDriverDeliverTable',
   mixins: [mixinTableList],
   components: {
-    UpdateDrawer
   },
   props: {
   },
@@ -154,37 +123,18 @@ export default {
     }
   },
   methods: {
-    rowDrop () {
-      const tbody = document.querySelector('.ant-table-tbody') // 元素选择器名称根据实际内容替换
-      const _this = this
-      Sortable.create(tbody, {
-        // 官网上的配置项,加到这里面来,可以实现各种效果和功能
-        animation: 150,
-        ghostClass: 'blue-background-class',
-        onEnd ({ newIndex, oldIndex }) {
-          const currRow = _this.list.splice(oldIndex, 1)[0]
-          _this.list.splice(newIndex, 0, currRow)
-        }
-      })
-    },
     async handleDelete (record) {
-      try {
-        await this.$store.dispatch('blackDriver/destroy', record.driverId)
-        this.$message.success('删除成功！')
+      // try {
+      //   await this.$store.dispatch('blackDriver/destroy', record.driverId)
+      //   this.$message.success('删除成功！')
 
-        this.loadTableList()
-      } catch (error) {
-        console.log(error)
-        this.$message.error('删除失败，请联系系统管理员！')
-      }
-    },
-    handleEdit (record) {
-      this.updateType = 'edit'
-      this.visible = true
-      this.currentUpdateId = record.driverId
+      //   this.loadTableList()
+      // } catch (error) {
+      //   console.log(error)
+      //   this.$message.error('删除失败，请联系系统管理员！')
+      // }
     },
     async loadTableList () {
-      console.info(this.list)
       try {
         this.tableLoading = true
 
@@ -203,7 +153,6 @@ export default {
   },
   mounted () {
     this.loadData()
-    // this.rowDrop()
   }
 }
 </script>

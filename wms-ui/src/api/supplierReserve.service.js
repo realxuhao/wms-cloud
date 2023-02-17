@@ -23,8 +23,22 @@ const addList = async (options) => {
   return data
 }
 
+const destroy = async (id) => {
+  const url = `/supplierReserve/${id}`
+  const { data } = await createAuthInstance(baseUrl).delete(url)
+  return data
+}
+
+const getDetailsList = async (reserveNo) => {
+  const url = `/supplierReserve/purchaseorder/${reserveNo}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
 export const supplierReserveService = {
   getList,
   addList,
-  getListByParam
+  getListByParam,
+  destroy,
+  getDetailsList
 }

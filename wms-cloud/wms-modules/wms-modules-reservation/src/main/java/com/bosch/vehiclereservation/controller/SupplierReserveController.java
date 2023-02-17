@@ -23,6 +23,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.List;
 
+/**
+ * 供应商预约Controller
+ *
+ * @author taojd
+ * @date 2023-02-15
+ */
 @RestController
 @RequestMapping("/supplierReserve")
 @Api(tags = "供应商预约接口")
