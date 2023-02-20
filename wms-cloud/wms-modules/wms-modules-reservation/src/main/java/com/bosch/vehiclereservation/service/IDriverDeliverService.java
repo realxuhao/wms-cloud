@@ -40,4 +40,6 @@ public interface IDriverDeliverService extends IService<DriverDeliver> {
      * @return 查询结果
      */
     public List<DriverDeliverVO> selectDriverDeliverInfo(String wechatId);
+
+    public boolean signIn(Long id);
 }
