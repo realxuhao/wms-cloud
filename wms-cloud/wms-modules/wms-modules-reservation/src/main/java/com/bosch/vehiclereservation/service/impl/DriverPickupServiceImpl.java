@@ -2,6 +2,7 @@ package com.bosch.vehiclereservation.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
 import com.bosch.vehiclereservation.api.domain.DriverPickup;
 import com.bosch.vehiclereservation.api.domain.dto.DriverPickupDTO;
@@ -101,14 +102,33 @@ public class DriverPickupServiceImpl extends ServiceImpl<DriverPickupMapper, Dri
         driverPickup.setSigninDate(DateUtils.getNowDate());
         int i = driverPickupMapper.updateById(driverPickup);
         if (i > 0) {
-            DriverDispatch driverDispatch = new DriverDispatch();
-            driverDispatch.setDriverId(id);
-            driverDispatch.setDriverType(DispatchTypeEnum.PICKUP.getCode());
-            driverDispatch.setStatus(DispatchStatusEnum.WAITE.getCode());
-            driverDispatch.setCreateTime(DateUtils.getNowDate());
-            driverDispatch.setCreateBy(SecurityUtils.getUsername());
-            driverDispatchMapper.insert(driverDispatch);
+            saveDriverDispatch(id);
         }
         return i > 0;
+    }
+
+    @Override
+    public boolean signInDriverPickup(DriverPickupDTO driverPickupDTO) {
+        DriverPickup driverPickup = BeanConverUtil.conver(driverPickupDTO, DriverPickup.class);
+        driverPickup.setStatus(SignStatusEnum.SIGNED.getCode());
+        driverPickup.setReserveType(ReserveTypeEnum.NOT_RESERVE.getCode());
+        driverPickup.setSigninDate(DateUtils.getNowDate());
+        driverPickup.setCreateTime(DateUtils.getNowDate());
+        driverPickup.setCreateBy(SecurityUtils.getUsername());
+        boolean res = super.save(driverPickup);
+        if (res) {
+            saveDriverDispatch(driverPickup.getPickupId());
+        }
+        return res;
+    }
+
+    private void saveDriverDispatch(Long id) {
+        DriverDispatch driverDispatch = new DriverDispatch();
+        driverDispatch.setDriverId(id);
+        driverDispatch.setDriverType(DispatchTypeEnum.PICKUP.getCode());
+        driverDispatch.setStatus(DispatchStatusEnum.WAITE.getCode());
+        driverDispatch.setCreateTime(DateUtils.getNowDate());
+        driverDispatch.setCreateBy(SecurityUtils.getUsername());
+        driverDispatchMapper.insert(driverDispatch);
     }
 }

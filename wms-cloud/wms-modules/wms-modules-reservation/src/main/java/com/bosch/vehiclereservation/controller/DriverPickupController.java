@@ -83,15 +83,29 @@ public class DriverPickupController extends BaseController {
     }
 
     /**
-     * 司机取货签到
+     * 司机取货签到(已预约)
      *
      * @param id 主键id
      * @return
      */
-    @ApiOperation("司机取货签到")
+    @Log(title = "司机取货签到(已预约)", businessType = BusinessType.UPDATE)
+    @ApiOperation("司机取货签到(已预约)")
     @GetMapping("/signin/{id}")
     public AjaxResult signIn(@PathVariable Long id) {
         return toAjax(driverPickupService.signIn(id));
+    }
+
+    /**
+     * 司机取货签到(未预约)
+     *
+     * @param driverPickupDTO 取货签到信息
+     * @return
+     */
+    @Log(title = "司机取货签到(未预约)", businessType = BusinessType.INSERT)
+    @ApiOperation("司机取货签到(未预约)")
+    @PostMapping("/signin")
+    public AjaxResult signInScene(@RequestBody DriverPickupDTO driverPickupDTO) {
+        return toAjax(driverPickupService.signInDriverPickup(driverPickupDTO));
     }
 
 }
