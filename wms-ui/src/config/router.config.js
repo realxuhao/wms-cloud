@@ -104,6 +104,13 @@ export const asyncRouterMap = [
             component: () => import('@/views/masterData/nmd/NmdRule'),
             meta: { title: 'NMD抽样规则', permission: [] },
             hideChildrenInMenu: true
+          },
+          {
+            path: '/ecn/rule',
+            name: 'ecnRule',
+            component: () => import('@/views/masterData/ecn/EcnRule.vue'),
+            meta: { title: 'ECN抽样规则', permission: [] },
+            hideChildrenInMenu: true
           }
         ]
       },

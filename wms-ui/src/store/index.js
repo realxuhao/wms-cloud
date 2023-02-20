@@ -14,6 +14,7 @@ import materialType from './modules/materialType'
 import supplier from './modules/supplier'
 import moveType from './modules/moveType'
 import nmdRule from './modules/nmdRule'
+import ecnRule from './modules/ecnRule'
 import timeWindow from './modules/timeWindow'
 import pallet from './modules/pallet'
 import area from './modules/area'
@@ -54,6 +55,7 @@ export default new Vuex.Store({
     department,
     supplier,
     nmdRule,
+    ecnRule,
     moveType,
     timeWindow,
     pallet,

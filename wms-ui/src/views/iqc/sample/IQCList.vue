@@ -340,6 +340,7 @@ export default {
   },
   methods: {
     handleResetQuery () {
+      this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
     },
     async handleDownload () {

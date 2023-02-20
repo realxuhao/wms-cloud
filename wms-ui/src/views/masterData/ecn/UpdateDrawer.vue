@@ -21,43 +21,29 @@
           show-search
           :filter-option="filterOption"
           option-filter-prop="children"
+          @change="onClassificationChange"
           v-decorator="[
             'classification',
-            { rules: [{ required: true, message: '请选择料号分类！' }] }
+            { rules: [{ required: true, message: '请选分类！' }] }
           ]"
-          placeholder="料号分类">
-          <a-select-option :value="item.value" v-for="item in category" :key="item.value">
+          placeholder="分类">
+          <a-select-option :value="item.text" v-for="item in category" :key="item.value">
             {{ item.text }}
           </a-select-option>
         </a-select>
       </a-form-item>
-      <a-form-item label="检验水平级别">
+      <a-form-item label="取样规则" v-if="!showPlan">
         <a-select
           allowClear
           show-search
           :filter-option="filterOption"
           option-filter-prop="children"
           v-decorator="[
-            'level',
-            { rules: [{ required: true, message: '请选择检验水平级别！' }] }
-          ]"
-          placeholder="检验水平级别">
-          <a-select-option :value="item.value" v-for="item in checkLevel" :key="item.value">
-            {{ item.text }}
-          </a-select-option>
-        </a-select>
-      </a-form-item>
-      <a-form-item label="严格程度">
-        <a-select
-          allowClear
-          show-search
-          :filter-option="filterOption"
-          v-decorator="[
             'plan',
-            { rules: [{ required: true, message: '请选严格程度！' }] }
+            { rules: [{ required: true, message: '请选择检取样规则！' }] }
           ]"
-          placeholder="严格程度">
-          <a-select-option :value="item.value" v-for="item in strictLevel" :key="item.value">
+          placeholder="取样规则">
+          <a-select-option :value="item.text" v-for="item in planSelect" :key="item.value">
             {{ item.text }}
           </a-select-option>
         </a-select>
@@ -109,11 +95,7 @@ export default {
       type: Array,
       default: () => []
     },
-    checkLevel: {
-      type: Array,
-      default: () => []
-    },
-    strictLevel: {
+    planSelect: {
       type: Array,
       default: () => []
     }
@@ -121,7 +103,8 @@ export default {
   data () {
     return {
       form: this.$form.createForm(this),
-      submitLoading: false
+      submitLoading: false,
+      showPlan: false
     }
   },
   model: {
@@ -150,15 +133,18 @@ export default {
         option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
       )
     },
+    onClassificationChange (value) {
+      if (value === 'TTS物料') {
+        this.showPlan = true
+      }
+      this.showPlan = false
+    },
     async getAndUpdateForm () {
-      const { data } = await this.$store.dispatch('nmdRule/getOne', this.id)
-      const columns = ['materialCode', 'classification', 'level', 'plan']
+      const { data } = await this.$store.dispatch('ecnRule/getOne', this.id)
+      const columns = ['materialCode', 'classification', 'plan']
       this.form.setFieldsValue(_.pick(data, columns))
     },
-    async loadNMDRuleList () {
-    },
     async loadData () {
-      await this.loadNMDRuleList()
     },
     handleSubmit (e) {
       e.preventDefault()
@@ -172,9 +158,9 @@ export default {
           this.submitLoading = true
 
           if (this.updateType === 'edit') {
-            await this.$store.dispatch('nmdRule/edit', { id: this.id, updateEntity: values })
+            await this.$store.dispatch('ecnRule/edit', { id: this.id, updateEntity: values })
           } else {
-            await this.$store.dispatch('nmdRule/add', values)
+            await this.$store.dispatch('ecnRule/add', values)
           }
 
           this.$emit('on-ok')
