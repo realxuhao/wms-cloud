@@ -1,6 +1,7 @@
 package com.bosch.masterdata.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -19,43 +20,40 @@ import com.bosch.masterdata.service.ISupplierInfoService;
 
 /**
  * 供应商Service业务层处理
- * 
+ *
  * @author xuhao
  * @date 2022-09-22
  */
 @Service
-public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, SupplierInfo>  implements ISupplierInfoService
-{
+public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, SupplierInfo> implements ISupplierInfoService {
     @Autowired
     private SupplierInfoMapper supplierInfoMapper;
 
     /**
      * 查询供应商
-     * 
+     *
      * @param id 供应商主键
      * @return 供应商
      */
     @Override
-    public SupplierInfo selectSupplierInfoById(Long id)
-    {
+    public SupplierInfo selectSupplierInfoById(Long id) {
         return supplierInfoMapper.selectSupplierInfoById(id);
     }
 
     /**
      * 查询供应商列表
-     * 
+     *
      * @param supplierInfo 供应商
      * @return 供应商
      */
     @Override
-    public List<SupplierInfo> selectSupplierInfoList(SupplierInfo supplierInfo)
-    {
+    public List<SupplierInfo> selectSupplierInfoList(SupplierInfo supplierInfo) {
         return supplierInfoMapper.selectSupplierInfoList(supplierInfo);
     }
 
     @Override
     public List<SupplierInfo> selectSupplierInfoList(SupplierInfoDTO supplierInfoDTO) {
-        SupplierInfo supplierInfo= BeanConverUtil.conver(supplierInfoDTO,SupplierInfo.class);
+        SupplierInfo supplierInfo = BeanConverUtil.conver(supplierInfoDTO, SupplierInfo.class);
 //        List<SupplierInfoVO> supplierInfoVOS =
 //                BeanConverUtil.converList(supplierInfoMapper.selectSupplierInfoList(supplierInfo),
 //                        SupplierInfoVO.class);
@@ -65,13 +63,12 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
     /**
      * 新增供应商
-     * 
+     *
      * @param supplierInfo 供应商
      * @return 结果
      */
     @Override
-    public int insertSupplierInfo(SupplierInfo supplierInfo)
-    {
+    public int insertSupplierInfo(SupplierInfo supplierInfo) {
         supplierInfo.setCreateTime(DateUtils.getNowDate());
         return supplierInfoMapper.insertSupplierInfo(supplierInfo);
     }
@@ -86,13 +83,12 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
     /**
      * 修改供应商
-     * 
+     *
      * @param supplierInfo 供应商
      * @return 结果
      */
     @Override
-    public int updateSupplierInfo(SupplierInfo supplierInfo)
-    {
+    public int updateSupplierInfo(SupplierInfo supplierInfo) {
         supplierInfo.setUpdateTime(DateUtils.getNowDate());
         return supplierInfoMapper.updateSupplierInfo(supplierInfo);
     }
@@ -107,31 +103,41 @@ public class SupplierInfoServiceImpl extends ServiceImpl<SupplierInfoMapper, Sup
 
     /**
      * 批量删除供应商
-     * 
+     *
      * @param ids 需要删除的供应商主键
      * @return 结果
      */
     @Override
-    public int deleteSupplierInfoByIds(Long[] ids)
-    {
+    public int deleteSupplierInfoByIds(Long[] ids) {
         return supplierInfoMapper.deleteSupplierInfoByIds(ids);
     }
 
     /**
      * 删除供应商信息
-     * 
+     *
      * @param id 供应商主键
      * @return 结果
      */
     @Override
-    public int deleteSupplierInfoById(Long id)
-    {
+    public int deleteSupplierInfoById(Long id) {
         return supplierInfoMapper.deleteSupplierInfoById(id);
     }
 
     public boolean validList(List<String> codes) {
-        QueryWrapper<SupplierInfo> wrapper=new QueryWrapper<>();
-        wrapper.in("code",codes);
-        return  supplierInfoMapper.selectCount(wrapper)>0;
+        QueryWrapper<SupplierInfo> wrapper = new QueryWrapper<>();
+        wrapper.in("code", codes);
+        return supplierInfoMapper.selectCount(wrapper) > 0;
+    }
+
+    @Override
+    public SupplierInfo selectSupplierInfoByCode(String code) {
+        QueryWrapper<SupplierInfo> wrapper = new QueryWrapper<>();
+        wrapper.eq("code", code);
+        Optional<SupplierInfo> first = supplierInfoMapper.selectList(wrapper).stream().findFirst();
+        if (first.isPresent()) {
+            return first.get();
+        } else {
+            return null;
+        }
     }
 }
