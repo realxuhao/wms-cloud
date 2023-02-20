@@ -393,11 +393,37 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
+
         //质检
         if ("Y".equals(materialVO.getIqc())) {
-            if (DeparementEnum.NMD.getCode().equals(materialVO.getCell())) {
-                dealNMDIQCProcess(materialVO, binIn.getBatchNb());
-            } else {
+
+
+            boolean lastFlag = true;
+
+            //获取收货的同批次信息
+            R<List<MaterialReceiveVO>> sameBatchListR = remoteMaterialInService.getSameBatchList(materialNb, binIn.getBatchNb());
+
+            if (StringUtils.isNull(sameBatchListR) || StringUtils.isNull(sameBatchListR.getData())) {
+                throw new ServiceException("不存在该批次信息");
+            }
+
+
+            if (R.FAIL == sameBatchListR.getCode()) {
+                throw new ServiceException(sameBatchListR.getMsg());
+            }
+            List<MaterialReceiveVO> sameBatchList = sameBatchListR.getData();
+            //获取上架的同批次信息
+            LambdaQueryWrapper<BinIn> binInQueryWrapper = new LambdaQueryWrapper<>();
+            binInQueryWrapper.eq(BinIn::getMaterialNb, materialNb);
+            binInQueryWrapper.eq(BinIn::getBatchNb, binIn.getBatchNb());
+            binInQueryWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            List<BinIn> binInList = binInMapper.selectList(binInQueryWrapper);
+            if (CollectionUtils.isEmpty(sameBatchList) || CollectionUtils.isEmpty(binInList) || binInList.size() != sameBatchList.size()) {
+                lastFlag = false;
+            }
+            if (lastFlag && DeparementEnum.NMD.getCode().equals(materialVO.getCell())) {
+                dealNMDIQCProcess(materialVO, binIn.getBatchNb(), binInList, sameBatchList);
+            } else if (lastFlag){
 
             }
 
@@ -407,41 +433,14 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
     }
 
-    private void dealNMDIQCProcess(MaterialVO materialVO, String batchNb) {
-        String materialNb = materialVO.getCode();
-        //获取收货的同批次信息
-        R<List<MaterialReceiveVO>> sameBatchListR = remoteMaterialInService.getSameBatchList(materialNb, batchNb);
+    private void dealNMDIQCProcess(MaterialVO materialVO, String batchNb, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
 
-        if (StringUtils.isNull(sameBatchListR) || StringUtils.isNull(sameBatchListR.getData())) {
-            throw new ServiceException("不存在该批次信息");
-        }
-
-
-        if (R.FAIL == sameBatchListR.getCode()) {
-            throw new ServiceException(sameBatchListR.getMsg());
-        }
-        List<MaterialReceiveVO> sameBatchList = sameBatchListR.getData();
-        //获取上架的同批次信息
-        LambdaQueryWrapper<BinIn> binInQueryWrapper = new LambdaQueryWrapper<>();
-        binInQueryWrapper.eq(BinIn::getMaterialNb, materialNb);
-        binInQueryWrapper.eq(BinIn::getBatchNb, batchNb);
-        binInQueryWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        List<BinIn> binInList = binInMapper.selectList(binInQueryWrapper);
-        if (CollectionUtils.isEmpty(sameBatchList) || CollectionUtils.isEmpty(binInList) || binInList.size() != sameBatchList.size()) {
-            return;
-        }
         double quantity = sameBatchList.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
 
-        R<Nmd> iqcInfoR = remoteIQCService.getByMaterialNb(materialNb);
+        R<Nmd> iqcInfoR = remoteIQCService.getByMaterialNb(materialVO.getCode());
         if (StringUtils.isNull(iqcInfoR) || StringUtils.isNull(iqcInfoR.getData())) {
             throw new ServiceException("不存在该物料的IQC信息");
         }
-
-
-        if (R.FAIL == iqcInfoR.getCode()) {
-            throw new ServiceException(sameBatchListR.getMsg());
-        }
-
         Nmd nmd = iqcInfoR.getData();
         double sampleQuantity = 0;
         if (nmd.getClassification() == NmdClassificationEnum.A.getCode()) {
