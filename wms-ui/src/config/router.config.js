@@ -173,6 +173,13 @@ export const asyncRouterMap = [
             component: () => import('@/views/split/SplitList'),
             meta: { title: '拆托记录', permission: [] },
             hideChildrenInMenu: true
+          },
+          {
+            path: '/ware-shift/return-material',
+            name: 'returnMaterial',
+            component: () => import('@/views/wareShift/ReturnMaterial'),
+            meta: { title: '退库记录', permission: [] },
+            hideChildrenInMenu: true
           }
         ]
       },
@@ -212,14 +219,8 @@ export const asyncRouterMap = [
             component: () => import('@/views/wareShift/shiftList'),
             meta: { title: '移库任务列表', permission: [] },
             hideChildrenInMenu: true
-          },
-          {
-            path: '/ware-shift/return-material',
-            name: 'returnMaterial',
-            component: () => import('@/views/wareShift/ReturnMaterial'),
-            meta: { title: '退库记录', permission: [] },
-            hideChildrenInMenu: true
           }
+
         ]
       },
       {
