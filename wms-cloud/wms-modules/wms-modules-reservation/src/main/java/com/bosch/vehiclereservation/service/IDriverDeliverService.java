@@ -34,12 +34,26 @@ public interface IDriverDeliverService extends IService<DriverDeliver> {
     public boolean insertDriverDeliver(DriverDeliverDTO driverDeliverDTO);
 
     /**
-     * 查询司机的取货预约信息
+     * 查询司机的送货预约信息
      *
      * @param wechatId 微信id
      * @return 查询结果
      */
     public List<DriverDeliverVO> selectDriverDeliverInfo(String wechatId);
 
+    /**
+     * 司机送货签到(已预约)
+     *
+     * @param id 主键id
+     * @return
+     */
     public boolean signIn(Long id);
+
+    /**
+     * 司机送货签到(未预约)
+     *
+     * @param driverDeliverDTO 签到信息
+     * @return
+     */
+    public boolean signInDriverDeliver(DriverDeliverDTO driverDeliverDTO);
 }

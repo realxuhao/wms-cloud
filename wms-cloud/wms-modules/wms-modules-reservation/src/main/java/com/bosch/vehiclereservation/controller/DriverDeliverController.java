@@ -83,14 +83,30 @@ public class DriverDeliverController extends BaseController {
     }
 
     /**
-     * 司机送货签到
+     * 司机送货签到(已预约)
      *
      * @param id 主键id
      * @return
      */
-    @ApiOperation("司机送货签到")
+    @Log(title = "司机送货签到(已预约)", businessType = BusinessType.UPDATE)
+    @ApiOperation("司机送货签到(已预约)")
     @GetMapping("/signin/{id}")
     public AjaxResult signIn(@PathVariable Long id) {
         return toAjax(driverDeliverService.signIn(id));
     }
+
+
+    /**
+     * 司机送货签到(未预约)
+     *
+     * @param driverDeliverDTO 送货签到信息
+     * @return
+     */
+    @Log(title = "司机送货签到(未预约)", businessType = BusinessType.INSERT)
+    @ApiOperation("司机送货签到(未预约)")
+    @PostMapping("/signin")
+    public AjaxResult signInScene(@RequestBody DriverDeliverDTO driverDeliverDTO) {
+        return toAjax(driverDeliverService.signInDriverDeliver(driverDeliverDTO));
+    }
+
 }

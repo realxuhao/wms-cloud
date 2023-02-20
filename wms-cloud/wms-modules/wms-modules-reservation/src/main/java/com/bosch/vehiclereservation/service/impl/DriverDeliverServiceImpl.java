@@ -6,15 +6,14 @@ import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.vo.BlackDriverVO;
 import com.bosch.masterdata.api.domain.vo.SupplierInfoVO;
 import com.bosch.vehiclereservation.api.domain.DriverDeliver;
+import com.bosch.vehiclereservation.api.domain.DriverDispatch;
 import com.bosch.vehiclereservation.api.domain.SupplierPorder;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDeliverVO;
-import com.bosch.vehiclereservation.api.enumeration.LateEnum;
-import com.bosch.vehiclereservation.api.enumeration.ReserveStatusEnum;
-import com.bosch.vehiclereservation.api.enumeration.ReserveTypeEnum;
-import com.bosch.vehiclereservation.api.enumeration.SignStatusEnum;
+import com.bosch.vehiclereservation.api.enumeration.*;
 import com.bosch.vehiclereservation.mapper.DriverDeliverMapper;
+import com.bosch.vehiclereservation.mapper.DriverDispatchMapper;
 import com.bosch.vehiclereservation.mapper.SupplierReserveMapper;
 import com.bosch.vehiclereservation.service.IDriverDeliverService;
 import com.ruoyi.common.core.domain.R;
@@ -46,6 +45,9 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
 
     @Autowired
     private RemoteMasterDataService remoteMasterDataService;
+
+    @Autowired
+    private DriverDispatchMapper driverDispatchMapper;
 
 
     @Override
@@ -180,7 +182,33 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
                 supplierReserve.get().setStatus(ReserveStatusEnum.ARRIVAL.getCode());
                 supplierReserveMapper.updateById(supplierReserve.get());
             }
+            saveDriverDispatch(id);
         }
         return i > 0;
+    }
+
+    @Override
+    public boolean signInDriverDeliver(DriverDeliverDTO driverDeliverDTO) {
+        DriverDeliver driverDeliver = BeanConverUtil.conver(driverDeliverDTO, DriverDeliver.class);
+        driverDeliver.setStatus(SignStatusEnum.SIGNED.getCode());
+        driverDeliver.setReserveType(ReserveTypeEnum.NOT_RESERVE.getCode());
+        driverDeliver.setSigninDate(DateUtils.getNowDate());
+        driverDeliver.setCreateTime(DateUtils.getNowDate());
+        driverDeliver.setCreateBy(SecurityUtils.getUsername());
+        boolean res = super.save(driverDeliver);
+        if (res) {
+            saveDriverDispatch(driverDeliver.getDeliverId());
+        }
+        return res;
+    }
+
+    private void saveDriverDispatch(Long id) {
+        DriverDispatch driverDispatch = new DriverDispatch();
+        driverDispatch.setDriverId(id);
+        driverDispatch.setDriverType(DispatchTypeEnum.DELIVER.getCode());
+        driverDispatch.setStatus(DispatchStatusEnum.WAITE.getCode());
+        driverDispatch.setCreateTime(DateUtils.getNowDate());
+        driverDispatch.setCreateBy(SecurityUtils.getUsername());
+        driverDispatchMapper.insert(driverDispatch);
     }
 }
