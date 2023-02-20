@@ -1,7 +1,7 @@
 <template>
   <a-drawer width="80%" placement="right" :visible="visible" @close="onClose">
-    <template slot='title'>
-      物料编码：{{record.materialNb}}，批次号：{{record.batchNb}}
+    <template slot="title">
+      物料编码：{{ record.materialNb }}，批次号：{{ record.batchNb }}
     </template>
     <div class="table-content">
       <a-row>
@@ -29,24 +29,24 @@
             :pagination="false"
             size="middle"
           >
-            <template slot="action" slot-scope="text, record">
+            <template slot="action" slot-scope="text, row">
               <div class="action-con">
                 <a-popconfirm
-                  class='custom-pop'
+                  class="custom-pop"
                   ok-text="确认"
                   cancel-text="取消"
                   placement="left"
-                  @confirm="handleModifySSCC(record)"
+                  @confirm="handleModifySSCC(row)"
                 >
-                  <template slot='title'>
+                  <template slot="title">
                     <p>确认提交吗？</p>
                     <a-form layout="inline" class="search-content">
                       <a-form-model-item label="抽样数量">
-                        <a-input-number  style='width:120px' v-model="record.sampleQuantity" :min='0' :max="record.availableStock"></a-input-number>
+                        <a-input-number style="width:120px" v-model="row.sampleQuantity" :min="0" :max="row.availableStock"></a-input-number>
                       </a-form-model-item>
                     </a-form>
                   </template>
-                  <a :disabled="record.freezeStock > 0"> <a-icon class="m-r-4" type="plus" />生成抽样计划</a>
+                  <a :disabled="row.freezeStock > 0"> <a-icon class="m-r-4" type="plus" />生成抽样计划</a>
                 </a-popconfirm>
               </div>
             </template>

@@ -64,7 +64,7 @@
                 />
               </a-form-model-item>
             </a-col>
-<!--            <a-col :span="4">
+            <!--            <a-col :span="4">
               <a-form-model-item label="存储区编码">
                 <a-input v-model="queryForm.areaCode" placeholder="仓库编码" allow-clear/>
               </a-form-model-item>

@@ -143,7 +143,7 @@
         >
         </IqcSample>
 
-        <EditSample ref='editSample'></EditSample>
+        <EditSample ref="editSample"></EditSample>
 
       </div>
     </div>

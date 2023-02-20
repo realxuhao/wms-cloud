@@ -87,10 +87,10 @@
         size="middle"
       >
         <template slot="updateBy" slot-scope="text, record">
-          {{record.updateBy?record.updateBy:record.createBy}}
+          {{ record.updateBy?record.updateBy:record.createBy }}
         </template>
         <template slot="updateTime" slot-scope="text, record">
-          {{record.updateTime?record.updateTime:record.createTime}}
+          {{ record.updateTime?record.updateTime:record.createTime }}
         </template>
         <template slot="classification" slot-scope="text">
           {{ classificationTextMap[text] }}

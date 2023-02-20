@@ -68,7 +68,7 @@
 				</view>
 			</uni-section>
 			
-			<uni-section title="移库业务" type="line">
+			<uni-section title="移库业务" type="line" class="m-b-12">
 				<view class="list header-box">
 					<view class="list-item" @click="handleGoto('/pages/wareShift/binDown')">
 						<uni-icons custom-prefix="iconfont" class="icon baocaixiajiabeiliao" type="icon-baocaixiajiabeiliao" color="#00ADD4"></uni-icons>
