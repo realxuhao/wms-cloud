@@ -17,6 +17,7 @@ import com.bosch.masterdata.service.INmdService;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
@@ -155,6 +156,7 @@ public class EcnController extends BaseController {
                     nmds.forEach(r -> {
                         LambdaUpdateWrapper<Ecn> wrapper = new LambdaUpdateWrapper<Ecn>();
                         wrapper.eq(Ecn::getMaterialCode, r.getMaterialCode());
+                        wrapper.eq(Ecn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
                         boolean update = ecnService.update(r, wrapper);
                         if (!update) {
 //                            r.setCreateBy(SecurityUtils.getUsername());

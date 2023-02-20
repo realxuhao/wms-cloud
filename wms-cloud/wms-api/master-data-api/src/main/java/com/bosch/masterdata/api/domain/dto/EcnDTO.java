@@ -37,7 +37,7 @@ public class EcnDTO extends PageDomain {
      */
     @ExcelProperty(value = "分类")
     @ApiModelProperty(value = "类别")
-    private Integer classification;
+    private String classification;
 
     /**
      * 取样规则

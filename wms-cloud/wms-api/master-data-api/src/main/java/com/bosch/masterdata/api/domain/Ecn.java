@@ -58,9 +58,9 @@ public class Ecn implements Serializable {
     private String remark;
 
     /**
-     * 类别（0：Components，1：Package）
+     * 类别
      */
-    private Integer classification;
+    private String classification;
 
     /**
      * 删除标记1：删除，0:可用

@@ -13,7 +13,7 @@
             <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
             <result property="status" column="status" jdbcType="INTEGER"/>
             <result property="remark" column="remark" jdbcType="VARCHAR"/>
-            <result property="classification" column="classification" jdbcType="INTEGER"/>
+            <result property="classification" column="classification" jdbcType="VARCHAR"/>
             <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
         <result property="plan" column="plan" jdbcType="VARCHAR"/>
 
@@ -36,8 +36,8 @@
                 '%')
             </if>
             <if test="status != null ">and status = #{status}</if>
-            <if test="classification != null ">and classification = #{classification}</if>
-            <if test="plan != null ">and plan = #{plan}</if>
+            <if test="classification != null and classification != '' ">and classification = #{classification}</if>
+            <if test="plan != null and plan != '' ">and plan = #{plan}</if>
         </where>
     </select>
 
