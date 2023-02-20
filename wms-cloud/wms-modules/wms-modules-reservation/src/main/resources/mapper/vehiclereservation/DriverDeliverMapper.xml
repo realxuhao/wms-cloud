@@ -6,6 +6,7 @@
     <resultMap type="com.bosch.vehiclereservation.api.domain.DriverDeliver" id="DriverDeliverResult">
         <result property="deliverId" column="deliver_id"/>
         <result property="reserveNo" column="reserve_no"/>
+        <result property="supplierCode" column="supplier_code"/>
         <result property="wechatId" column="wechat_id"/>
         <result property="driverName" column="driver_name"/>
         <result property="driverPhone" column="driver_phone"/>
@@ -22,50 +23,52 @@
     </resultMap>
 
     <sql id="selectDriverDeliver">
-        select deliver_id,
-               reserve_no,
-               wechat_id,
-               driver_name,
-               driver_phone,
-               car_num,
-               reserve_type,
-               late,
-               signin_date,
-               status,
-               remark,
-               create_by,
-               update_by,
-               create_time,
-               update_time
-        from vr_driver_deliver
+        select t1.deliver_id,
+               t1.reserve_no,
+               t2.supplier_code,
+               t1.wechat_id,
+               t1.driver_name,
+               t1.driver_phone,
+               t1.car_num,
+               t1.reserve_type,
+               t1.late,
+               t1.signin_date,
+               t1.status,
+               t1.remark,
+               t1.create_by,
+               t1.update_by,
+               t1.create_time,
+               t1.update_time
+        from vr_driver_deliver t1
+                 inner join vr_supplier_reserve t2 on t2.reserve_no = t1.reserve_no
     </sql>
 
     <select id="selectDriverDeliverList" resultMap="DriverDeliverResult">
         <include refid="selectDriverDeliver"/>
         <where>
             <if test="driver.reserveNo != null  and driver.reserveNo != ''">
-                and reserve_no like concat('%', #{driver.reserveNo}, '%')
+                and t1.reserve_no like concat('%', #{driver.reserveNo}, '%')
             </if>
             <if test="driver.driverName != null  and driver.driverName != ''">
-                and driver_name like concat('%', #{driver.driverName}, '%')
+                and t1.driver_name like concat('%', #{driver.driverName}, '%')
             </if>
             <if test="driver.driverPhone != null  and driver.driverPhone != ''">
-                and driver_phone like concat('%', #{driver.driverPhone}, '%')
+                and t1.driver_phone like concat('%', #{driver.driverPhone}, '%')
             </if>
             <if test="driver.carNum != null  and driver.carNum != ''">
-                and car_num like concat('%', #{driver.carNum}, '%')
+                and t1.car_num like concat('%', #{driver.carNum}, '%')
             </if>
             <if test="driver.reserveType != null ">
-                and reserve_type = #{driver.reserveType}
+                and t1.reserve_type = #{driver.reserveType}
             </if>
             <if test="driver.status != null ">
-                and status = #{driver.status}
+                and t1.status = #{driver.status}
             </if>
             <if test="driver.wechatId != null and driver.wechatId != ''">
-                and wechat_id = #{driver.wechatId}
+                and t1.wechat_id = #{driver.wechatId}
             </if>
             <if test="driver.reserveNoList != null and driver.reserveNoList.size() > 0">
-                and reserve_no in
+                and t1.reserve_no in
                 <foreach item="item" index="index" collection="driver.reserveNoList" open="(" separator="," close=")">
                     #{item}
                 </foreach>

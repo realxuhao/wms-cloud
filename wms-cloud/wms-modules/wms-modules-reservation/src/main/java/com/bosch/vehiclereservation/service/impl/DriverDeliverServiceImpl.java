@@ -111,6 +111,28 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
         DriverDeliver driverDeliver = BeanConverUtil.conver(driverDeliverDTO, DriverDeliver.class);
         driverDeliver.setStatus(SignStatusEnum.NOT_SIGN.getCode());
         driverDeliver.setReserveType(ReserveTypeEnum.RESERVED.getCode());
-        return super.save(driverDeliver);
+        boolean res = super.save(driverDeliver);
+        if (res) {
+            QueryWrapper<SupplierReserve> wrapperReserve = new QueryWrapper<>();
+            wrapper.eq("reserve_no", driverDeliver.getReserveNo());
+            Optional<SupplierReserve> supplierReserve = supplierReserveMapper.selectList(wrapperReserve).stream().findFirst();
+            if (supplierReserve.isPresent() && supplierReserve.get().getStatus() == ReserveStatusEnum.RESERVED.getCode()) {
+                supplierReserve.get().setStatus(ReserveStatusEnum.ON_ORDER.getCode());
+                supplierReserveMapper.updateById(supplierReserve.get());
+            }
+        }
+        return res;
+    }
+
+    @Override
+    public List<DriverDeliverVO> selectDriverDeliverInfo(String wechatId) {
+        DriverDeliver driverDeliver = new DriverDeliver();
+        driverDeliver.setWechatId(wechatId);
+        driverDeliver.setReserveType(ReserveTypeEnum.RESERVED.getCode());
+        driverDeliver.setStatus(SignStatusEnum.NOT_SIGN.getCode());
+        List<DriverDeliver> driverDelivers = driverDeliverMapper.selectDriverDeliverList(driverDeliver);
+        List<DriverDeliverVO> driverDeliverVOS = BeanConverUtil.converList(driverDelivers, DriverDeliverVO.class);
+        //暂时返回的是公司编号，后期要（调用主数据接口）修改为供应商名称
+        return driverDeliverVOS;
     }
 }

@@ -70,5 +70,15 @@ public class DriverDeliverController extends BaseController {
         return toAjax(driverDeliverService.insertDriverDeliver(driverDeliverDTO));
     }
 
-
+    /**
+     * 获取司机的预约信息
+     *
+     * @param wechatId 微信id
+     * @return
+     */
+    @ApiOperation("获取司机的预约信息")
+    @GetMapping("/info/{wechatId}")
+    public R<List<DriverDeliverVO>> getDriverDeliverInfo(@PathVariable String wechatId) {
+        return R.ok(driverDeliverService.selectDriverDeliverInfo(wechatId));
+    }
 }

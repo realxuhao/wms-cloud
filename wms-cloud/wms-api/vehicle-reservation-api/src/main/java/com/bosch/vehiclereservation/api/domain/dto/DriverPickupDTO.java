@@ -1,6 +1,7 @@
 package com.bosch.vehiclereservation.api.domain.dto;
 
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -44,6 +45,7 @@ public class DriverPickupDTO extends PageDomain {
      * 预约送货时间
      */
     @ApiModelProperty(value = "预约送货时间")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date pickupDate;
 
     /**
@@ -62,6 +64,7 @@ public class DriverPickupDTO extends PageDomain {
      * 签到时间
      */
     @ApiModelProperty(value = "签到时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date signinDate;
 
     /**
@@ -75,5 +78,11 @@ public class DriverPickupDTO extends PageDomain {
      */
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    /**
+     * 微信id
+     */
+    @ApiModelProperty(value = "微信id")
+    private String wechatId;
 
 }

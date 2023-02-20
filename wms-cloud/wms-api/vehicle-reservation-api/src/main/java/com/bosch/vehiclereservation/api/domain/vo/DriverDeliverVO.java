@@ -24,6 +24,12 @@ public class DriverDeliverVO {
     private String reserveNo;
 
     /**
+     * 供应商编号
+     */
+    @ApiModelProperty(value = "供应商编号")
+    private String supplierCode;
+
+    /**
      * 司机姓名
      */
     @ApiModelProperty(value = "司机姓名")

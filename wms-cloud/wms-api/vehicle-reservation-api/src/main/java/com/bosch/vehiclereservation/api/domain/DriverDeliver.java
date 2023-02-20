@@ -74,4 +74,7 @@ public class DriverDeliver extends BaseEntity {
 
     @TableField(exist = false)
     private List<String> reserveNoList;
+
+    @TableField(exist = false)
+    private String  supplierCode;
 }

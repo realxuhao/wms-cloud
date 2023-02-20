@@ -21,7 +21,7 @@ public class DriverPickup extends BaseEntity {
      * 主键id
      */
     @TableId(value = "pickup_id")
-    private long pickupId;
+    private Long pickupId;
 
     /**
      * 微信id
@@ -56,21 +56,21 @@ public class DriverPickup extends BaseEntity {
     /**
      * 预约类型： 0：未预约 1：已预约
      */
-    private long reserveType;
+    private Integer reserveType;
 
     /**
      * 是否迟到：0：未迟到1：迟到
      */
-    private long late;
+    private Integer late;
 
     /**
      * 签到时间
      */
-    private java.sql.Timestamp signinDate;
+    private Date signinDate;
 
     /**
      * 状态：0：未签到 1：已签到
      */
-    private long status;
+    private Integer status;
 
 }
