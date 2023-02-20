@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.dto.SupplierInfoDTO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
+import com.bosch.masterdata.api.domain.vo.SupplierInfoVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
@@ -195,5 +196,15 @@ public class SupplierInfoController extends BaseController {
             return R.fail(e.getMessage());
         }
 
+    }
+
+    /**
+     * 根据供应商编号获取供应商详细信息
+     */
+    @ApiOperation("获取供应商详情")
+    @GetMapping(value = "/info/{code}")
+    public R<SupplierInfoVO> getInfoByCode(@PathVariable("code") String code) {
+        SupplierInfoVO supplierInfoVO = BeanConverUtil.conver(supplierInfoService.selectSupplierInfoByCode(code), SupplierInfoVO.class);
+        return R.ok(supplierInfoVO);
     }
 }

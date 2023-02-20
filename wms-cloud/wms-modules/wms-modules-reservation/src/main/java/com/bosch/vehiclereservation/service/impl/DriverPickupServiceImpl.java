@@ -94,6 +94,9 @@ public class DriverPickupServiceImpl extends ServiceImpl<DriverPickupMapper, Dri
     @Override
     public boolean signIn(Long id) {
         DriverPickup driverPickup = driverPickupMapper.selectById(id);
+        if (driverPickup == null) {
+            throw new ServiceException("预约信息不存在！");
+        }
         driverPickup.setStatus(SignStatusEnum.SIGNED.getCode());
         driverPickup.setSigninDate(DateUtils.getNowDate());
         int i = driverPickupMapper.updateById(driverPickup);

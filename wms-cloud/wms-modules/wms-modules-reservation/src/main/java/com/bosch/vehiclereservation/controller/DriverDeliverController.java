@@ -81,4 +81,16 @@ public class DriverDeliverController extends BaseController {
     public R<List<DriverDeliverVO>> getDriverDeliverInfo(@PathVariable String wechatId) {
         return R.ok(driverDeliverService.selectDriverDeliverInfo(wechatId));
     }
+
+    /**
+     * 司机送货签到
+     *
+     * @param id 主键id
+     * @return
+     */
+    @ApiOperation("司机送货签到")
+    @GetMapping("/signin/{id}")
+    public AjaxResult signIn(@PathVariable Long id) {
+        return toAjax(driverDeliverService.signIn(id));
+    }
 }

@@ -82,6 +82,12 @@ public class DriverPickupController extends BaseController {
         return R.ok(driverPickupService.selectDriverPickupInfo(wechatId));
     }
 
+    /**
+     * 司机取货签到
+     *
+     * @param id 主键id
+     * @return
+     */
     @ApiOperation("司机取货签到")
     @GetMapping("/signin/{id}")
     public AjaxResult signIn(@PathVariable Long id) {
