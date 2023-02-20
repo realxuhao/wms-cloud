@@ -1,8 +1,6 @@
 package com.bosch.vehiclereservation.controller;
 
-import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
 import com.bosch.vehiclereservation.api.domain.dto.DriverPickupDTO;
-import com.bosch.vehiclereservation.api.domain.vo.DriverDeliverVO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverPickupVO;
 import com.bosch.vehiclereservation.api.domain.vo.PageVO;
 import com.bosch.vehiclereservation.service.IDriverPickupService;
@@ -70,6 +68,24 @@ public class DriverPickupController extends BaseController {
     @PostMapping("/add")
     public AjaxResult add(@RequestBody List<DriverPickupDTO> driverPickupDTOList) {
         return toAjax(driverPickupService.insertDriverPickup(driverPickupDTOList));
+    }
+
+    /**
+     * 获取司机的取货预约信息
+     *
+     * @param wechatId 微信id
+     * @return
+     */
+    @ApiOperation("获取司机的取货预约信息")
+    @GetMapping("/info/{wechatId}")
+    public R<List<DriverPickupVO>> getDriverDeliverInfo(@PathVariable String wechatId) {
+        return R.ok(driverPickupService.selectDriverPickupInfo(wechatId));
+    }
+
+    @ApiOperation("司机取货签到")
+    @GetMapping("/signin/{id}")
+    public AjaxResult signIn(@PathVariable Long id) {
+        return toAjax(driverPickupService.signIn(id));
     }
 
 }

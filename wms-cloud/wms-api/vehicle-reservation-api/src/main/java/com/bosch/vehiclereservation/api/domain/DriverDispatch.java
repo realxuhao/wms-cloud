@@ -24,6 +24,11 @@ public class DriverDispatch extends BaseEntity {
     private Long dispatchId;
 
     /**
+     * vr_driver_deliver或者vr_driver_pickup的主键
+     */
+    private Long driverId;
+
+    /**
      * 仓库id
      */
     private Long wareId;

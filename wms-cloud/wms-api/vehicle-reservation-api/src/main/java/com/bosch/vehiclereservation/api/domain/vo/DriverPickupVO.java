@@ -1,5 +1,6 @@
 package com.bosch.vehiclereservation.api.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -42,6 +43,7 @@ public class DriverPickupVO {
      * 预约送货时间
      */
     @ApiModelProperty(value = "预约送货时间")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date pickupDate;
 
     /**
@@ -60,6 +62,7 @@ public class DriverPickupVO {
      * 签到时间
      */
     @ApiModelProperty(value = "签到时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date signinDate;
 
     /**

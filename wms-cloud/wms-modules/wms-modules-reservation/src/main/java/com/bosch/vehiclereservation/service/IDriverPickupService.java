@@ -20,4 +20,8 @@ public interface IDriverPickupService extends IService<DriverPickup> {
     public boolean deleteDriverPickupById(Long pickupId);
 
     public boolean insertDriverPickup(List<DriverPickupDTO> driverPickupDTOList);
+
+    public List<DriverPickupVO> selectDriverPickupInfo(String wechatId);
+
+    public boolean signIn(Long id);
 }
