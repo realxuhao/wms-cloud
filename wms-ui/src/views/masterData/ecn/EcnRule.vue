@@ -15,31 +15,19 @@
                 allow-clear
                 v-model="queryForm.classification"
               >
-                <a-select-option v-for="item in category" :key="item.value" :value="item.value">
+                <a-select-option v-for="item in category" :key="item.value" :value="item.text">
                   {{ item.text }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="检验水平级别">
-              <a-select
-                allow-clear
-                v-model="queryForm.level"
-              >
-                <a-select-option v-for="item in checkLevel" :key="item.value" :value="item.value">
-                  {{ item.text }}
-                </a-select-option>
-              </a-select>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="4">
-            <a-form-model-item label="严格程度">
+            <a-form-model-item label="取样规则">
               <a-select
                 allow-clear
                 v-model="queryForm.plan"
               >
-                <a-select-option v-for="item in strictLevel" :key="item.value" :value="item.value">
+                <a-select-option v-for="item in planSelect" :key="item.value" :value="item.text">
                   {{ item.text }}
                 </a-select-option>
               </a-select>
@@ -92,9 +80,6 @@
         <template slot="updateTime" slot-scope="text, record">
           {{record.updateTime?record.updateTime:record.createTime}}
         </template>
-        <template slot="classification" slot-scope="text">
-          {{ classificationTextMap[text] }}
-        </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
@@ -131,8 +116,7 @@
       :updateType="updateType"
       :id="currentUpdateId"
       :category="category"
-      :strictLevel="strictLevel"
-      :checkLevel="checkLevel"
+      :planSelect="planSelect"
       @on-ok="loadTableList"
     ></UpdateDrawer>
 
@@ -141,50 +125,47 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin'
-import UpdateDrawer from './UpdateDrawer'
+import UpdateDrawer from '../ecn/UpdateDrawer.vue'
 
 const category = [
   {
-    text: 'Components',
+    text: '非TTS物料',
     value: 0
   },
   {
-    text: 'Package',
-    value: 1
-  }
-]
-
-const checkLevel = [
-  {
-    text: 'S-1',
-    value: 'S-1'
-  },
-  {
-    text: 'S-2',
-    value: 'S-2'
-  },
-  {
-    text: 'S-3',
-    value: 'S-3'
-  },
-  {
-    text: 'S-4',
-    value: 'S-4'
-  }
-]
-
-const strictLevel = [
-  {
-    text: '正常',
+    text: 'TTS物料',
     value: 1
   },
   {
-    text: '严格',
+    text: '皇冠盖',
     value: 2
   },
   {
-    text: '放宽',
+    text: '国内产品用纸箱',
     value: 3
+  },
+  {
+    text: '玻璃瓶',
+    value: 4
+  },
+  {
+    text: '说明书&标签',
+    value: 5
+  }
+]
+
+const planSelect = [
+  {
+    text: 'Ⅰ',
+    value: 0
+  },
+  {
+    text: 'Ⅱ',
+    value: 1
+  },
+  {
+    text: 'Ⅲ',
+    value: 2
   }
 ]
 
@@ -208,16 +189,10 @@ const columns = [
     scopedSlots: { customRender: 'classification' }
   },
   {
-    title: '校验水平级别',
-    key: 'level',
-    dataIndex: 'level',
-    width: 120
-  },
-  {
-    title: '正常[1]/加严[2]/放宽[3]',
+    title: '取样规则',
     key: 'plan',
     dataIndex: 'plan',
-    width: 140
+    width: 120
   },
   {
     title: '操作人',
@@ -245,9 +220,8 @@ const columns = [
 const queryFormAttr = () => {
   return {
     materialCode: '',
-    classification: '',
-    level: '',
-    plan: ''
+    classification: null,
+    plan: null
   }
 }
 
@@ -272,8 +246,7 @@ export default {
   },
   computed: {
     category: () => category,
-    strictLevel: () => strictLevel,
-    checkLevel: () => checkLevel,
+    planSelect: () => planSelect,
     classificationTextMap: () => classificationTextMap
   },
   methods: {
@@ -287,7 +260,7 @@ export default {
 
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('nmdRule/getList', this.queryForm)
+        } = await this.$store.dispatch('ecnRule/getList', this.queryForm)
         console.log('rows')
         console.log(rows)
         this.list = rows
@@ -305,7 +278,7 @@ export default {
     },
     async handleDelete (record) {
       try {
-        await this.$store.dispatch('nmdRule/destroy', record.id)
+        await this.$store.dispatch('ecnRule/destroy', record.id)
         this.$message.success('删除成功！')
 
         this.loadTableList()
@@ -316,14 +289,14 @@ export default {
     },
     async handleDownloadTemplate () {
       try {
-        this.$store.dispatch('file/downloadByFilename', 'NMD.xlsx')
+        this.$store.dispatch('file/downloadByFilename', 'ECN.xlsx')
       } catch (error) {
         this.$message.error(error.message)
       }
     },
     async uploadBatchUpdate (formdata) {
       try {
-        await this.$store.dispatch('nmdRule/uploadBatchUpdate', formdata)
+        await this.$store.dispatch('ecnRule/uploadBatchUpdate', formdata)
         this.loadTableList()
       } catch (error) {
         this.$message.error(error.message)
@@ -340,7 +313,7 @@ export default {
         formdata.append('file', file)
 
         this.uploadLoading = true
-        await this.$store.dispatch('nmdRule/upload', formdata)
+        await this.$store.dispatch('ecnRule/upload', formdata)
 
         this.queryForm.pageNum = 1
         this.loadTableList()

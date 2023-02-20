@@ -49,5 +49,8 @@ public interface RemoteMasterDataService {
     public R<Ware> getWareInfo(@PathVariable("id") String id);
 
     @GetMapping(value = "/driver/black/{name}")
-    public R<List<BlackDriverVO>> getInfoByName(@PathVariable("name") String name);
+    public R<List<BlackDriverVO>> getBlackDriverByName(@PathVariable("name") String name);
+
+    @GetMapping(value = "/supplierInfo/info/{code}")
+    public R<SupplierInfoVO> getSupplierInfoByCode(@PathVariable("code") String code);
 }

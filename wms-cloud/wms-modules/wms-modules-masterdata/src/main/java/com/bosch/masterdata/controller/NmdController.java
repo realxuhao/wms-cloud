@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
+import com.bosch.masterdata.api.domain.Ecn;
 import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.api.domain.Nmd;
 import com.bosch.masterdata.api.domain.TimeWindow;
@@ -21,6 +22,7 @@ import com.bosch.masterdata.service.impl.NmdServiceImpl;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
@@ -171,6 +173,7 @@ public class NmdController extends BaseController {
                     nmds.forEach(r -> {
                         LambdaUpdateWrapper<Nmd> wrapper = new LambdaUpdateWrapper<Nmd>();
                         wrapper.eq(Nmd::getMaterialCode, r.getMaterialCode());
+                        wrapper.eq(Nmd::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
                         boolean update = nmdService.update(r, wrapper);
                         if (!update) {
                             r.setCreateBy(SecurityUtils.getUsername());

@@ -26,7 +26,7 @@ public enum EcnClassificationEnum {
         return this.code;
     }
 
-    public static boolean contain(Integer desc){
+    public static boolean contain(String desc){
         for (EcnClassificationEnum ele : values()) {
             if (ele.desc.equals(desc)) {
                 return true;

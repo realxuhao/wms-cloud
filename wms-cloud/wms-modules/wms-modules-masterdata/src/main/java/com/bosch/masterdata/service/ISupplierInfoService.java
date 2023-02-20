@@ -73,4 +73,6 @@ public interface ISupplierInfoService extends IService<SupplierInfo>
      * @return
      */
     public boolean validList(List<String> codes);
+
+    public SupplierInfo selectSupplierInfoByCode(String code);
 }
