@@ -7,7 +7,6 @@ import com.bosch.masterdata.api.domain.vo.BlackDriverVO;
 import com.bosch.masterdata.api.domain.vo.SupplierInfoVO;
 import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
-import com.bosch.vehiclereservation.api.domain.SupplierPorder;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDeliverVO;
@@ -183,7 +182,11 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
                 supplierReserve.get().setStatus(ReserveStatusEnum.ARRIVAL.getCode());
                 supplierReserveMapper.updateById(supplierReserve.get());
             }
-            saveDriverDispatch(id);
+            Long wareId = null;
+            if (supplierReserve.isPresent() && supplierReserve.get().getWareId() != null) {
+                wareId = supplierReserve.get().getWareId();
+            }
+            saveDriverDispatch(id, wareId);
         }
         return i > 0;
     }
@@ -198,14 +201,15 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
         driverDeliver.setCreateBy(SecurityUtils.getUsername());
         boolean res = super.save(driverDeliver);
         if (res) {
-            saveDriverDispatch(driverDeliver.getDeliverId());
+            saveDriverDispatch(driverDeliver.getDeliverId(), null);
         }
         return res;
     }
 
-    private void saveDriverDispatch(Long id) {
+    private void saveDriverDispatch(Long id, Long wareId) {
         DriverDispatch driverDispatch = new DriverDispatch();
         driverDispatch.setDriverId(id);
+        driverDispatch.setWareId(wareId);
         driverDispatch.setDriverType(DispatchTypeEnum.DELIVER.getCode());
         driverDispatch.setStatus(DispatchStatusEnum.WAITE.getCode());
         driverDispatch.setCreateTime(DateUtils.getNowDate());
