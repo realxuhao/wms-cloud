@@ -142,6 +142,7 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
         List<DriverDeliver> driverDelivers = driverDeliverMapper.selectDriverDeliverList(driverDeliver);
         List<DriverDeliverVO> driverDeliverVOS = BeanConverUtil.converList(driverDelivers, DriverDeliverVO.class);
         //暂时返回的是公司编号，后期要（调用主数据接口）修改为供应商名称
+        //remoteMasterDataService.getSupplierInfoByCode("code");
         return driverDeliverVOS;
     }
 

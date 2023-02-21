@@ -1,5 +1,6 @@
 package com.bosch.vehiclereservation.api.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -42,12 +43,14 @@ public class DriverDispatchVO {
      * 进厂时间
      */
     @ApiModelProperty(value = "进厂时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date comeinDate;
 
     /**
      * 完成时间
      */
     @ApiModelProperty(value = "完成时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date completeDate;
 
     /**
@@ -62,4 +65,70 @@ public class DriverDispatchVO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    /**
+     * 预约单号
+     */
+    @ApiModelProperty(value = "预约单号")
+    private String reserveNo;
+
+    /**
+     * 供应商编号
+     */
+    @ApiModelProperty(value = "供应商编号")
+    private String supplierCode;
+
+    /**
+     * 司机姓名
+     */
+    @ApiModelProperty(value = "司机姓名")
+    private String driverName;
+
+    /**
+     * 司机联系方式
+     */
+    @ApiModelProperty(value = "司机联系方式")
+    private String driverPhone;
+
+    /**
+     * 车牌
+     */
+    @ApiModelProperty(value = "车牌")
+    private String carNum;
+
+    /**
+     * 预约类型： 0：未预约 1：已预约
+     */
+    @ApiModelProperty(value = "预约类型")
+    private Integer reserveType;
+
+    /**
+     * 是否迟到：0：未迟到 1：迟到
+     */
+    @ApiModelProperty(value = "是否迟到")
+    private Integer late;
+
+    /**
+     * 签到时间
+     */
+    @ApiModelProperty(value = "签到时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date signinDate;
+
+    /**
+     * 司机签到状态：0：未签到 1：已签到
+     */
+    @ApiModelProperty(value = "司机签到状态")
+    private Integer driverStatus;
+
+    /**
+     * 预约时间
+     */
+    @ApiModelProperty(value = "预约时间")
+    private String reserveDate;
+
+    /**
+     * 车间
+     */
+    @ApiModelProperty(value = "车间")
+    private String cell;
 }
