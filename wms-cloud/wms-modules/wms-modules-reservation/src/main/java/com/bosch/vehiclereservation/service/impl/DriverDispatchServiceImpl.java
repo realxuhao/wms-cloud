@@ -21,4 +21,9 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
     public List<DriverDispatchVO> selectTodaySignData(Long wareId) {
         return driverDispatchMapper.selectTodaySignData(wareId);
     }
+
+    @Override
+    public List<DriverDispatchVO> selectTodayNotSignData() {
+        return driverDispatchMapper.selectTodayNotSignData();
+    }
 }

@@ -39,10 +39,23 @@ public class DriverDispatchController extends BaseController {
      * @return 车辆调度信息列表
      */
     @RequiresPermissions("vehiclereservation:driverdispatch:signlist")
-    @GetMapping("/list")
+    @GetMapping("/signlist")
     @ApiOperation("查询司机送货信息列表")
     public R<List<DriverDispatchVO>> getTodaySignData(Long wareId) {
         List<DriverDispatchVO> list = driverDispatchService.selectTodaySignData(wareId);
+        return R.ok(list);
+    }
+
+    /**
+     * 获取今天未签到车辆数据
+     *
+     * @return 车辆预约信息列表
+     */
+    @RequiresPermissions("vehiclereservation:driverdispatch:nosignlist")
+    @GetMapping("/nosignlist")
+    @ApiOperation("查询司机送货信息列表")
+    public R<List<DriverDispatchVO>> getTodayNoSignData() {
+        List<DriverDispatchVO> list = driverDispatchService.selectTodayNotSignData();
         return R.ok(list);
     }
 

@@ -17,4 +17,10 @@ public interface IDriverDispatchService extends IService<DriverDispatch> {
      */
     public List<DriverDispatchVO> selectTodaySignData(Long wareId);
 
+    /**
+     * 获取今天未签到车辆数据
+     *
+     * @return 车辆预约信息列表
+     */
+    public List<DriverDispatchVO> selectTodayNotSignData();
 }

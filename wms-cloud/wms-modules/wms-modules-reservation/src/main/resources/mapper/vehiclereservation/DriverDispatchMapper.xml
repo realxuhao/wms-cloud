@@ -92,4 +92,34 @@
         </where>
         order by t.signinDate desc
     </select>
+
+    <select id="selectTodayNotSignData" resultType="com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO">
+        SELECT *
+        from (SELECT 0                                                                     as driverType,
+                     t2.ware_id                                                            as wareId,
+                     t2.supplier_code                                                      as supplierCode,
+                     t1.driver_name                                                        as driverName,
+                     t1.driver_phone                                                       as driverPhone,
+                     t1.car_num                                                            as carNum,
+                     t1.reserve_type                                                       as reserveType,
+                     CONCAT(DATE_FORMAT(t2.reserve_date, '%Y-%m-%d'), ' ', t2.time_window) as reserveDate,
+                     ''                                                                    as cell
+              from vr_driver_deliver t1
+                       LEFT JOIN vr_supplier_reserve t2 on t2.reserve_no = t1.reserve_no
+              where t1.`status` = 0
+                and DATE_FORMAT(t2.reserve_date, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
+              UNION
+              SELECT 1                                       as driverType,
+                     ''                                      as wareId,
+                     ''                                      as supplierCode,
+                     t1.driver_name                          as driverName,
+                     t1.driver_phone                         as driverPhone,
+                     t1.car_num                              as carNum,
+                     t1.reserve_type                         as reserveType,
+                     DATE_FORMAT(t1.pickup_date, '%Y-%m-%d') as reserveDate,
+                     t1.cell
+              from vr_driver_pickup t1
+              where t1.`status` = 0
+                and DATE_FORMAT(t1.pickup_date, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')) t
+    </select>
 </mapper>

@@ -26,4 +26,11 @@ public interface DriverDispatchMapper extends BaseMapper<DriverDispatch> {
      */
     public List<DriverDispatchVO> selectTodaySignData(Long wareId);
 
+
+    /**
+     * 查询当天未签到车辆信息列表
+     *
+     * @return
+     */
+    public List<DriverDispatchVO> selectTodayNotSignData();
 }
