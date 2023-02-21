@@ -20,7 +20,7 @@ public class Ecn implements Serializable {
      * id
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
     /**
      * 物料code
