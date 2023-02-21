@@ -5,11 +5,10 @@ import javax.servlet.http.HttpServletRequest;
 import com.bosch.auth.form.LoginBody;
 import com.bosch.auth.form.RegisterBody;
 import com.bosch.auth.service.SysLoginService;
+import com.bosch.auth.service.WxLoginService;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.JwtUtils;
 import com.ruoyi.common.core.utils.StringUtils;
@@ -31,6 +30,9 @@ public class TokenController
 
     @Autowired
     private SysLoginService sysLoginService;
+
+    @Autowired
+    private WxLoginService wxLoginService;
 
     @PostMapping("login")
     public R<?> login(@RequestBody LoginBody form)
@@ -75,5 +77,15 @@ public class TokenController
         // 用户注册
         sysLoginService.register(registerBody.getUsername(), registerBody.getPassword());
         return R.ok();
+    }
+
+    /**
+     * 小程序登录获取openid & token
+     */
+    @GetMapping("/wx/getOpenId/{code}")
+    @ApiOperation("小程序登录验证，获取openid")
+    public R<?> getOpenId(@PathVariable String code) throws Exception {
+        String openid = wxLoginService.WxGetOpenId(code);
+        return R.ok(wxLoginService.wxCreateToken(openid));
     }
 }
