@@ -18,4 +18,5 @@ public interface IWeightService extends IService<Weight> {
 
     public Weight getWeightByIP(String ip);
 
+    Weight getByPort(Integer port);
 }
