@@ -1,9 +1,6 @@
 package com.bosch.vehiclereservation.api.domain.vo;
 
-import com.bosch.vehiclereservation.api.enumeration.DispatchTypeEnum;
-import com.bosch.vehiclereservation.api.enumeration.LateEnum;
-import com.bosch.vehiclereservation.api.enumeration.ReserveTypeEnum;
-import com.bosch.vehiclereservation.api.enumeration.SignStatusEnum;
+import com.bosch.vehiclereservation.api.enumeration.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -174,6 +171,13 @@ public class DriverDispatchVO {
     private String driverStatusDes;
 
 
+    /**
+     * 状态：0：等待 1：进厂 2：完成
+     */
+    @ApiModelProperty(value = "状态描述")
+    private String statusDes;
+
+
     public void setDriverType(Integer driverType) {
         this.driverType = driverType;
         if (driverType != null) {
@@ -225,6 +229,23 @@ public class DriverDispatchVO {
             case 1:
                 this.driverStatusDes = SignStatusEnum.SIGNED.getDesc();
                 break;
+        }
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+        if (status != null) {
+            switch (status.intValue()) {
+                case 0:
+                    this.statusDes = DispatchStatusEnum.WAITE.getDesc();
+                    break;
+                case 1:
+                    this.statusDes = DispatchStatusEnum.ENTER.getDesc();
+                    break;
+                case 2:
+                    this.statusDes = DispatchStatusEnum.COMPLETE.getDesc();
+                    break;
+            }
         }
     }
 }

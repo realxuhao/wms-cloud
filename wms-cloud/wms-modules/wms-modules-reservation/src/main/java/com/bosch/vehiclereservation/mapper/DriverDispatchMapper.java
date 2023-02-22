@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public interface DriverDispatchMapper extends BaseMapper<DriverDispatch> {
      * @param wareId 仓库id
      * @return 车辆调度信息列表
      */
-    public List<DriverDispatchVO> selectTodaySignData(Long wareId);
+    public List<DriverDispatchVO> selectTodaySignData(@Param("wareId") Long wareId,@Param("statusList") List<Integer> statusList);
 
 
     /**

@@ -35,14 +35,14 @@ public class DriverDispatchController extends BaseController {
     /**
      * 获取今天签到车辆数据
      *
-     * @param wareId 仓库id
+     * @param driverDispatchDTO 查询条件
      * @return 车辆调度信息列表
      */
     @RequiresPermissions("vehiclereservation:driverdispatch:signlist")
-    @GetMapping("/signlist")
+    @PostMapping("/signlist")
     @ApiOperation("获取今天签到车辆数据")
-    public R<List<DriverDispatchVO>> getTodaySignData(Long wareId) {
-        List<DriverDispatchVO> list = driverDispatchService.selectTodaySignData(wareId);
+    public R<List<DriverDispatchVO>> getTodaySignData(@RequestBody DriverDispatchDTO driverDispatchDTO) {
+        List<DriverDispatchVO> list = driverDispatchService.selectTodaySignData(driverDispatchDTO);
         return R.ok(list);
     }
 
@@ -82,6 +82,19 @@ public class DriverDispatchController extends BaseController {
     @ApiOperation("进厂")
     public AjaxResult dispatchEnter(@PathVariable("id") Long dispatchId) {
         return toAjax(driverDispatchService.dispatchEnter(dispatchId));
+    }
+
+    /**
+     * 完成(取货/送货)
+     *
+     * @param dispatchId 主键id
+     * @return
+     */
+    @RequiresPermissions("vehiclereservation:driverdispatch:complete")
+    @GetMapping("/complete/{id}")
+    @ApiOperation("完成")
+    public AjaxResult dispatchComplete(@PathVariable("id") Long dispatchId) {
+        return toAjax(driverDispatchService.dispatchComplete(dispatchId));
     }
 
 }

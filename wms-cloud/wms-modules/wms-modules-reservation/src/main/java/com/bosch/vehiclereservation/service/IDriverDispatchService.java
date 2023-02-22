@@ -13,10 +13,10 @@ public interface IDriverDispatchService extends IService<DriverDispatch> {
     /**
      * 获取今天签到车辆数据
      *
-     * @param wareId 仓库id
+     * @param driverDispatchDTO 查询条件
      * @return 车辆调度信息列表
      */
-    public List<DriverDispatchVO> selectTodaySignData(Long wareId);
+    public List<DriverDispatchVO> selectTodaySignData(DriverDispatchDTO driverDispatchDTO);
 
     /**
      * 获取今天未签到车辆数据
@@ -40,4 +40,12 @@ public interface IDriverDispatchService extends IService<DriverDispatch> {
      * @return boolean
      */
     boolean dispatchEnter(Long dispatchId);
+
+    /**
+     * 完成(取货/送货)
+     *
+     * @param dispatchId 主键id
+     * @return
+     */
+    boolean dispatchComplete(Long dispatchId);
 }
