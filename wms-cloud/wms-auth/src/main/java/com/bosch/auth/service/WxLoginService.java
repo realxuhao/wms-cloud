@@ -69,7 +69,7 @@ public class WxLoginService
         Map<String, Object> claimsMap = new HashMap<String, Object>();
         claimsMap.put(SecurityConstants.USER_KEY, token);
         claimsMap.put(SecurityConstants.DETAILS_USER_ID, 0l);
-        claimsMap.put(SecurityConstants.DETAILS_USERNAME, openid);
+        claimsMap.put(SecurityConstants.DETAILS_USERNAME, "wx-miniapp");
 
         // 接口返回信息
         Map<String, Object> rspMap = new HashMap<String, Object>();

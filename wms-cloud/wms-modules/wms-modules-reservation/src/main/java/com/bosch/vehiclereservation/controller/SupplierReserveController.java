@@ -1,6 +1,7 @@
 package com.bosch.vehiclereservation.controller;
 
 import com.bosch.masterdata.api.domain.vo.TimeWindowVO;
+import com.bosch.vehiclereservation.api.domain.SupplierReserve;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierDTO;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierReserveDTO;
 import com.bosch.vehiclereservation.api.domain.vo.PageVO;
@@ -94,4 +95,9 @@ public class SupplierReserveController extends BaseController {
         return R.ok(list);
     }
 
+    @GetMapping(value = "/selectByReserveNo/{reserveNo}")
+    @ApiOperation("根据预约单号查询预约数据")
+    public R<SupplierReserveVO> selectDataByReserveNo(@PathVariable String reserveNo) {
+        return R.ok(supplierReserveService.selectDataByReserveNo(reserveNo));
+    }
 }

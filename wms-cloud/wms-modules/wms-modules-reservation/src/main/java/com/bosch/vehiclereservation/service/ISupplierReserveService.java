@@ -55,4 +55,6 @@ public interface ISupplierReserveService extends IService<SupplierReserve> {
      * @return 采购单信息列表
      */
     public List<PurchaseOrderVO> selectPurchaseOrderList(String reserveNo);
+
+    public SupplierReserveVO selectDataByReserveNo(String reserveNo);
 }
