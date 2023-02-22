@@ -46,7 +46,19 @@ public class WeightServiceImpl extends ServiceImpl<WeightMapper, Weight> impleme
         return weight;
     }
 
-
+    @Override
+    public Weight getByPort(Integer port) {
+        LambdaQueryWrapper<Weight> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Weight::getPort, port);
+        queryWrapper.eq(Weight::getStatus, WeightStatusEnum.UNUSE.code());
+        queryWrapper.orderByDesc(Weight::getUploadTime);
+        queryWrapper.last("limit 1");
+        Weight weight = weightMapper.selectOne(queryWrapper);
+        if (weight == null) {
+            throw new ServiceException(port + "下暂时没有可用的称重数据");
+        }
+        return weight;
+    }
 
 
 }
