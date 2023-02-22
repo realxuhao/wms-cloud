@@ -2,11 +2,12 @@
 
 # 使用说明，用来提示输入参数
 usage() {
-	echo "Usage: sh 执行脚本.sh [port|base|modules|stop|rm]"
+	echo "Usage: sh 执行脚本.sh [port|base|modules-up|modules-stop|modules-rm|modules-build]"
 	exit 1
 }
 
 # 开启所需端口
+# 如果是部署在华为云，不需要开启端口，华为云的端口开启需要在控制台
 port(){
 	firewall-cmd --add-port=80/tcp --permanent
 	firewall-cmd --add-port=8080/tcp --permanent
@@ -30,23 +31,25 @@ port(){
 base(){
 	docker-compose up -d wms-mysql wms-redis wms-minio wms-nacos
 }
-nacos(){
-	docker-compose up -d wms-nacos
-}
 
 # 启动程序模块（必须）
-modules(){
-	docker-compose up -d  wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in
+modules-up(){
+	docker-compose up -d  wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation
 }
 
 # 关闭所有环境/模块
-stop(){
-	docker-compose stop
+modules-stop(){
+	docker-compose stop wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation
 }
 
 # 删除所有环境/模块
-rm(){
-	docker-compose rm
+modules-rm(){
+	docker-compose rm wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation
+}
+
+# 模块编译
+modules-build(){
+	docker-compose build wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation
 }
 
 # 根据输入参数，选择执行对应方法，不输入则执行使用说明
@@ -57,20 +60,17 @@ case "$1" in
 "base")
 	base
 ;;
-"nacos")
-	nacos
+"modules-up")
+	modules-up
 ;;
-"modules")
-	modules
+"modules-stop")
+	modules-stop
 ;;
-"wms")
-	wms
+"modules-rm")
+	modules-rm
 ;;
-"stop")
-	stop
-;;
-"rm")
-	rm
+"modules-build")
+	modules-build
 ;;
 *)
 	usage
