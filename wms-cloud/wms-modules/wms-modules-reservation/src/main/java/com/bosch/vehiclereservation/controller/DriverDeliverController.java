@@ -40,7 +40,7 @@ public class DriverDeliverController extends BaseController {
      * @param driverDeliverDTO 查询条件
      * @return 司机送货信息列表
      */
-    @RequiresPermissions("vehiclereservation:driverdeliver:list")
+//    @RequiresPermissions("vehiclereservation:driverdeliver:list")
     @GetMapping("/list")
     @ApiOperation("查询司机送货信息列表")
     public R<PageVO<DriverDeliverVO>> list(DriverDeliverDTO driverDeliverDTO) {
@@ -62,7 +62,7 @@ public class DriverDeliverController extends BaseController {
     /**
      * 新增司机的预约信息
      */
-    @RequiresPermissions("vehiclereservation:driverdeliver:add")
+//    @RequiresPermissions("vehiclereservation:driverdeliver:add")
     @Log(title = "新增司机的预约信息", businessType = BusinessType.INSERT)
     @ApiOperation("新增司机的预约信息")
     @PostMapping("/add")

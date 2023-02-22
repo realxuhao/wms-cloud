@@ -77,4 +77,16 @@ public class DriverDeliver extends BaseEntity {
 
     @TableField(exist = false)
     private String  supplierCode;
+
+    /**
+     * 预约送货日期
+     */
+    @TableField(exist = false)
+    private Date reserveDate;
+
+    /**
+     * 时间段：09:00-10:00
+     */
+    @TableField(exist = false)
+    private String timeWindow;
 }
