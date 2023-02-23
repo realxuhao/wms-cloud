@@ -1,12 +1,15 @@
 package com.bosch.weight;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.template.engine.freemarker.FreemarkerEngine;
 import com.bosch.weight.util.PropertiesConstants;
 import com.bosch.weight.util.PropertiesUtils;
 import com.bosch.weight.util.ReceiveUtil;
 import org.apache.log4j.Logger;
 
-import java.awt.EventQueue;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -50,33 +53,92 @@ public class UDPListenerWindow {
 
 
     public static void main(String[] args) {
-        EventQueue.invokeLater(() -> {
-            try {
-                UDPListenerWindow window = new UDPListenerWindow();
-                window.frame.setVisible(true);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
+        new UDPListenerWindow();
+
+//        EventQueue.invokeLater(() -> {
+//            try {
+//                UDPListenerWindow window = new UDPListenerWindow();
+//                window.frame.setVisible(true);
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//        });
     }
 
     public UDPListenerWindow() {
-        initialize();
-    }
-
-    private void initialize() {
         frame = new JFrame();
-        frame.setBounds(100, 100, 250, 250);
+        frame.setBounds(100, 100, 300, 300);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                frame.setVisible(false);
+                logger.info("**************************");
+            }
+        });
+
+        initialize();
+
+        systemTray();
+        frame.setVisible(true);
+
+    }
+
+    /**
+     * 系统托盘
+     *
+     * @author xuhao
+     * @date 2021/8/13 16:02
+     */
+    private void systemTray() {
+
+        if (SystemTray.isSupported()) { // 判断系统是否支持托盘功能.
+            // 创建托盘右击弹出菜单
+            PopupMenu popupMenu = new PopupMenu();
+
+            //邮件菜单
+            MenuItem itemShowFrame = new MenuItem("显示主菜单");
+            MenuItem itemExit = new MenuItem("退出");
+            itemShowFrame.addActionListener(e -> frame.setVisible(true));
+            itemExit.addActionListener(e -> {
+                logger.info("------------退出----------------");
+                System.exit(0);
+            });
+            popupMenu.add(itemShowFrame);
+            popupMenu.add(itemExit);
+
+            //创建托盘图标
+            ImageIcon icon = new ImageIcon("./img/logo.png"); // 创建图片对象
+            TrayIcon trayIcon = new TrayIcon(icon.getImage(), "文件夹监听",
+                    popupMenu);
+            trayIcon.setImageAutoSize(true);
+            trayIcon.addActionListener(e -> frame.setVisible(true));
+
+            //把托盘图标添加到系统托盘
+            //这个可以点击关闭之后再放到托盘里面，在此是打开程序直接显示托盘图标了
+            try {
+                SystemTray.getSystemTray().add(trayIcon);
+            } catch (AWTException e1) {
+                e1.printStackTrace();
+            }
+        }
+    }
+
+
+
+    private void initialize() {
+
 
         JPanel panel = new JPanel();
-        panel.setBounds(0, 0, 250, 240);
+        panel.setBounds(0, 0, 300, 300);
         frame.getContentPane().add(panel);
         panel.setLayout(null);
 
         textField1 = new JTextField();
-        textField1.setBounds(10, 34, 86, 20);
+        textField1.setBounds(20, 34, 86, 30);
         panel.add(textField1);
         textField1.setColumns(10);
         if (PropertiesUtils.getKeyValue(PropertiesConstants.PORT_1, PropertiesConstants.CUSTOM_PATH) != null &&
@@ -85,7 +147,7 @@ public class UDPListenerWindow {
         }
 
         button1 = new JButton("Start");
-        button1.setBounds(106, 33, 89, 23);
+        button1.setBounds(136, 33, 89, 30);
         panel.add(button1);
         button1.addActionListener(e -> {
             if (StrUtil.isEmpty(textField1.getText())) {
@@ -122,6 +184,8 @@ public class UDPListenerWindow {
                     JOptionPane.showMessageDialog(panel, ex.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
                 }
             } else {
+                PropertiesUtils.updateProperties(PropertiesConstants.PORT_1, textField1.getText(), PropertiesConstants.CUSTOM_PATH);
+
                 isSocket1Connected = false;
                 socket1.close();
                 button1.setText("Start");
@@ -129,12 +193,16 @@ public class UDPListenerWindow {
         });
 
         textField2 = new JTextField();
-        textField2.setBounds(10, 75, 86, 20);
+        textField2.setBounds(20, 75, 86, 30);
         panel.add(textField2);
         textField2.setColumns(10);
+        if (PropertiesUtils.getKeyValue(PropertiesConstants.PORT_2, PropertiesConstants.CUSTOM_PATH) != null &&
+                !"".equals(PropertiesUtils.getKeyValue(PropertiesConstants.PORT_2, PropertiesConstants.CUSTOM_PATH))) {
+            textField2.setText(PropertiesUtils.getKeyValue(PropertiesConstants.PORT_2, PropertiesConstants.CUSTOM_PATH));
+        }
 
         button2 = new JButton("Start");
-        button2.setBounds(106, 74, 89, 23);
+        button2.setBounds(136, 74, 89, 30);
         panel.add(button2);
         button2.addActionListener(e -> {
             if (StrUtil.isEmpty(textField2.getText())) {
@@ -143,6 +211,8 @@ public class UDPListenerWindow {
             }
             if (!isSocket2Connected) {
                 int port = Integer.parseInt(textField2.getText());
+                PropertiesUtils.updateProperties(PropertiesConstants.PORT_2, textField2.getText(), PropertiesConstants.CUSTOM_PATH);
+
                 try {
                     socket2 = new DatagramSocket(port);
                     isSocket2Connected = true;
@@ -172,6 +242,8 @@ public class UDPListenerWindow {
 
                 }
             } else {
+                PropertiesUtils.updateProperties(PropertiesConstants.PORT_2, textField2.getText(), PropertiesConstants.CUSTOM_PATH);
+
                 isSocket2Connected = false;
                 socket2.close();
                 button2.setText("Start");
@@ -180,12 +252,16 @@ public class UDPListenerWindow {
 
 
         textField3 = new JTextField();
-        textField3.setBounds(10, 106, 86, 20);
+        textField3.setBounds(20, 106, 86, 30);
         panel.add(textField3);
         textField3.setColumns(10);
+        if (PropertiesUtils.getKeyValue(PropertiesConstants.PORT_3, PropertiesConstants.CUSTOM_PATH) != null &&
+                !"".equals(PropertiesUtils.getKeyValue(PropertiesConstants.PORT_3, PropertiesConstants.CUSTOM_PATH))) {
+            textField3.setText(PropertiesUtils.getKeyValue(PropertiesConstants.PORT_3, PropertiesConstants.CUSTOM_PATH));
+        }
 
         button3 = new JButton("Start");
-        button3.setBounds(106, 105, 89, 23);
+        button3.setBounds(136, 105, 89, 30);
         panel.add(button3);
         button3.addActionListener(e -> {
             if (StrUtil.isEmpty(textField3.getText())) {
@@ -194,6 +270,8 @@ public class UDPListenerWindow {
             }
             if (!isSocket3Connected) {
                 int port = Integer.parseInt(textField3.getText());
+                PropertiesUtils.updateProperties(PropertiesConstants.PORT_3, textField3.getText(), PropertiesConstants.CUSTOM_PATH);
+
                 try {
                     socket3 = new DatagramSocket(port);
                     isSocket3Connected = true;
@@ -223,6 +301,8 @@ public class UDPListenerWindow {
 
                 }
             } else {
+                PropertiesUtils.updateProperties(PropertiesConstants.PORT_3, textField3.getText(), PropertiesConstants.CUSTOM_PATH);
+
                 isSocket3Connected = false;
                 socket3.close();
                 button3.setText("Start");
@@ -231,20 +311,27 @@ public class UDPListenerWindow {
 
 
         textField4 = new JTextField();
-        textField4.setBounds(10, 142, 86, 20);
+        textField4.setBounds(20, 142, 86, 30);
         panel.add(textField4);
         textField4.setColumns(10);
+        if (PropertiesUtils.getKeyValue(PropertiesConstants.PORT_4, PropertiesConstants.CUSTOM_PATH) != null &&
+                !"".equals(PropertiesUtils.getKeyValue(PropertiesConstants.PORT_4, PropertiesConstants.CUSTOM_PATH))) {
+            textField4.setText(PropertiesUtils.getKeyValue(PropertiesConstants.PORT_4, PropertiesConstants.CUSTOM_PATH));
+        }
 
         button4 = new JButton("Start");
-        button4.setBounds(106, 141, 89, 23);
+        button4.setBounds(136, 141, 89, 30);
         panel.add(button4);
         button4.addActionListener(e -> {
             if (StrUtil.isEmpty(textField4.getText())) {
                 JOptionPane.showMessageDialog(panel, "请输入端口号", "确认", JOptionPane.WARNING_MESSAGE);
                 return;
             }
+
             if (!isSocket4Connected) {
                 int port = Integer.parseInt(textField4.getText());
+                PropertiesUtils.updateProperties(PropertiesConstants.PORT_4, textField4.getText(), PropertiesConstants.CUSTOM_PATH);
+
                 try {
                     socket4 = new DatagramSocket(port);
                     isSocket4Connected = true;
@@ -274,6 +361,8 @@ public class UDPListenerWindow {
 
                 }
             } else {
+                PropertiesUtils.updateProperties(PropertiesConstants.PORT_4, textField4.getText(), PropertiesConstants.CUSTOM_PATH);
+
                 isSocket4Connected = false;
                 socket4.close();
                 button4.setText("Start");

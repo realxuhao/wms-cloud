@@ -42,7 +42,7 @@
                     <archive>
                         <manifest>
                             <!--这里要替换成jar包main方法所在类 -->
-                            <mainClass>cn.bosch.weight.UDPListenerWindow</mainClass>
+                            <mainClass>com.bosch.weight.UDPListenerWindow</mainClass>
                         </manifest>
                         <manifestEntries>
                             <Class-Path>.</Class-Path>
