@@ -1,6 +1,7 @@
 package com.bosch.vehiclereservation.controller;
 
 import com.bosch.masterdata.api.domain.vo.TimeWindowVO;
+import com.bosch.vehiclereservation.api.domain.SupplierReserve;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierDTO;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierReserveDTO;
 import com.bosch.vehiclereservation.api.domain.vo.PageVO;
@@ -40,6 +41,10 @@ public class SupplierReserveController extends BaseController {
 
     /**
      * 根据仓库id获取时间窗口列表
+     *
+     * @param wareId      仓库id
+     * @param reserveDate 预约时间
+     * @return
      */
     @GetMapping(value = "/timewindow")
     @ApiOperation("根据仓库id获取时间窗口列表")
@@ -52,6 +57,9 @@ public class SupplierReserveController extends BaseController {
 
     /**
      * 新增供应商预约单
+     *
+     * @param supplierDTO 新增对象
+     * @return
      */
     @RequiresPermissions("vehiclereservation:supplier:add")
     @Log(title = "供应商预约单", businessType = BusinessType.INSERT)
@@ -64,10 +72,13 @@ public class SupplierReserveController extends BaseController {
 
     /**
      * 查询供应商预约单列表(已预约记录)
+     *
+     * @param supplierReserveDTO 查询条件
+     * @return
      */
     @RequiresPermissions("vehiclereservation:supplier:list")
     @GetMapping("/list")
-    @ApiOperation("查询供应商预约单列表")
+    @ApiOperation("查询供应商预约单列表(已预约记录)")
     public R<PageVO<SupplierReserveVO>> list(SupplierReserveDTO supplierReserveDTO) {
         startPage();
         List<SupplierReserveVO> list = supplierReserveService.selectSupplierReserveVO(supplierReserveDTO);
@@ -76,6 +87,9 @@ public class SupplierReserveController extends BaseController {
 
     /**
      * 删除供应商的预约信息（只能删状态是0的数据）
+     *
+     * @param id 主键id
+     * @return
      */
     @RequiresPermissions("vehiclereservation:supplier:remove")
     @Log(title = "删除供应商的预约信息", businessType = BusinessType.DELETE)
@@ -86,6 +100,9 @@ public class SupplierReserveController extends BaseController {
 
     /**
      * 获取某个预约单下的采购单列表信息
+     *
+     * @param reserveNo 预约单号
+     * @return
      */
     @GetMapping(value = "/purchaseorder/{reserveNo}")
     @ApiOperation("获取某个预约单下的采购单列表信息")
@@ -94,4 +111,15 @@ public class SupplierReserveController extends BaseController {
         return R.ok(list);
     }
 
+    /**
+     * 根据预约单号查询预约数据
+     *
+     * @param reserveNo 预约单号
+     * @return
+     */
+    @GetMapping(value = "/selectByReserveNo/{reserveNo}")
+    @ApiOperation("根据预约单号查询预约数据")
+    public R<SupplierReserveVO> selectDataByReserveNo(@PathVariable String reserveNo) {
+        return R.ok(supplierReserveService.selectDataByReserveNo(reserveNo));
+    }
 }

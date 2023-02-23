@@ -89,14 +89,21 @@
             <if test="wareId != null ">
                 and t.wareId = #{wareId}
             </if>
+            <if test="statusList != null and statusList.size() > 0">
+                and t.status in
+                <foreach item="item" index="index" collection="statusList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
-        order by t.signinDate desc
+        order by t.signinDate
     </select>
 
     <select id="selectTodayNotSignData" resultType="com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO">
         SELECT *
         from (SELECT 0                                                                     as driverType,
                      t2.ware_id                                                            as wareId,
+                     t2.reserve_no                                                         as reserveNo,
                      t2.supplier_code                                                      as supplierCode,
                      t1.driver_name                                                        as driverName,
                      t1.driver_phone                                                       as driverPhone,
@@ -111,6 +118,7 @@
               UNION
               SELECT 1                                       as driverType,
                      ''                                      as wareId,
+                     ''                                      as reserveNo,
                      ''                                      as supplierCode,
                      t1.driver_name                          as driverName,
                      t1.driver_phone                         as driverPhone,

@@ -1,5 +1,6 @@
 package com.bosch.vehiclereservation.api.domain.vo;
 
+import com.bosch.vehiclereservation.api.enumeration.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -20,6 +21,12 @@ public class DriverDispatchVO {
      */
     @ApiModelProperty(value = "仓库id")
     private Long wareId;
+
+    /**
+     * 仓库名称
+     */
+    @ApiModelProperty(value = "仓库名称")
+    private String wareName;
 
     /**
      * 道口编号
@@ -78,6 +85,12 @@ public class DriverDispatchVO {
     private String supplierCode;
 
     /**
+     * 供应商名称
+     */
+    @ApiModelProperty(value = "供应商名称")
+    private String supplierName;
+
+    /**
      * 司机姓名
      */
     @ApiModelProperty(value = "司机姓名")
@@ -131,4 +144,108 @@ public class DriverDispatchVO {
      */
     @ApiModelProperty(value = "车间")
     private String cell;
+
+
+    /**
+     * 订单类型：0：送货 1：取货
+     */
+    @ApiModelProperty(value = "订单类型描述")
+    private String driverTypeDes;
+
+    /**
+     * 预约类型： 0：未预约 1：已预约
+     */
+    @ApiModelProperty(value = "预约类型描述")
+    private String reserveTypeDes;
+
+    /**
+     * 是否迟到：0：未迟到 1：迟到
+     */
+    @ApiModelProperty(value = "是否迟到描述")
+    private String lateDes;
+
+    /**
+     * 司机签到状态：0：未签到 1：已签到
+     */
+    @ApiModelProperty(value = "司机签到状态描述")
+    private String driverStatusDes;
+
+
+    /**
+     * 状态：0：等待 1：进厂 2：完成
+     */
+    @ApiModelProperty(value = "状态描述")
+    private String statusDes;
+
+
+    public void setDriverType(Integer driverType) {
+        this.driverType = driverType;
+        if (driverType != null) {
+            switch (driverType.intValue()) {
+                case 0:
+                    this.driverTypeDes = DispatchTypeEnum.DELIVER.getDesc();
+                    break;
+                case 1:
+                    this.driverTypeDes = DispatchTypeEnum.PICKUP.getDesc();
+                    break;
+            }
+        }
+    }
+
+    public void setReserveType(Integer reserveType) {
+        this.reserveType = reserveType;
+        if (reserveType != null) {
+            switch (reserveType.intValue()) {
+                case 0:
+                    this.reserveTypeDes = ReserveTypeEnum.NOT_RESERVE.getDesc();
+                    break;
+                case 1:
+                    this.reserveTypeDes = ReserveTypeEnum.RESERVED.getDesc();
+                    break;
+            }
+        }
+    }
+
+    public void setLate(Integer late) {
+        this.late = late;
+        if (late != null) {
+            switch (late.intValue()) {
+                case 0:
+                    this.lateDes = LateEnum.NOT_LATE.getDesc();
+                    break;
+                case 1:
+                    this.lateDes = LateEnum.LATE.getDesc();
+                    break;
+            }
+        }
+    }
+
+    public void setDriverStatus(Integer driverStatus) {
+        this.driverStatus = driverStatus;
+        switch (driverStatus.intValue()) {
+            case 0:
+                this.driverStatusDes = SignStatusEnum.NOT_SIGN.getDesc();
+                break;
+            case 1:
+                this.driverStatusDes = SignStatusEnum.SIGNED.getDesc();
+                break;
+        }
+    }
+
+    public void setStatus(Integer status) {
+        this.status = status;
+        if (status != null) {
+            switch (status.intValue()) {
+                case 0:
+                    this.statusDes = DispatchStatusEnum.WAITE.getDesc();
+                    break;
+                case 1:
+                    this.statusDes = DispatchStatusEnum.ENTER.getDesc();
+                    break;
+                case 2:
+                    this.statusDes = DispatchStatusEnum.COMPLETE.getDesc();
+                    break;
+            }
+        }
+    }
 }
