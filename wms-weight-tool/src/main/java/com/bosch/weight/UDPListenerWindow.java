@@ -1,10 +1,14 @@
 package com.bosch.weight;
 
 import cn.hutool.core.util.StrUtil;
+import com.bosch.weight.util.PropertiesConstants;
+import com.bosch.weight.util.PropertiesUtils;
 import com.bosch.weight.util.ReceiveUtil;
 import org.apache.log4j.Logger;
 
 import java.awt.EventQueue;
+import java.io.File;
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
@@ -33,6 +37,18 @@ public class UDPListenerWindow {
     private boolean isSocket4Connected = false;
 
 
+    static {
+        File file = new File(PropertiesConstants.CUSTOM_PATH);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                logger.error("创建custom.properties文件错误", e);
+            }
+        }
+    }
+
+
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             try {
@@ -50,12 +66,12 @@ public class UDPListenerWindow {
 
     private void initialize() {
         frame = new JFrame();
-        frame.setBounds(100, 100, 450, 300);
+        frame.setBounds(100, 100, 250, 250);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setLayout(null);
 
         JPanel panel = new JPanel();
-        panel.setBounds(0, 0, 434, 261);
+        panel.setBounds(0, 0, 250, 240);
         frame.getContentPane().add(panel);
         panel.setLayout(null);
 
@@ -63,6 +79,10 @@ public class UDPListenerWindow {
         textField1.setBounds(10, 34, 86, 20);
         panel.add(textField1);
         textField1.setColumns(10);
+        if (PropertiesUtils.getKeyValue(PropertiesConstants.PORT_1, PropertiesConstants.CUSTOM_PATH) != null &&
+                !"".equals(PropertiesUtils.getKeyValue(PropertiesConstants.PORT_1, PropertiesConstants.CUSTOM_PATH))) {
+            textField1.setText(PropertiesUtils.getKeyValue(PropertiesConstants.PORT_1, PropertiesConstants.CUSTOM_PATH));
+        }
 
         button1 = new JButton("Start");
         button1.setBounds(106, 33, 89, 23);
@@ -74,6 +94,8 @@ public class UDPListenerWindow {
             }
             if (!isSocket1Connected) {
                 int port = Integer.parseInt(textField1.getText());
+                PropertiesUtils.updateProperties(PropertiesConstants.PORT_1, textField1.getText(), PropertiesConstants.CUSTOM_PATH);
+
                 try {
                     socket1 = new DatagramSocket(port);
                     isSocket1Connected = true;
