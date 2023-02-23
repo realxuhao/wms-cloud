@@ -104,6 +104,7 @@ public class DriverDeliverVO {
      * 预约送货日期
      */
     @ApiModelProperty(value = "预约送货日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date reserveDate;
 
     /**

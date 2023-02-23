@@ -44,7 +44,7 @@
       >
         <template slot="arriveQuantity" slot-scope="text, record">
           <div>
-            <a-input-number style="width: 85%;" :v-model="text" @change="e => onArriveNumChange(e,record.purchaseId)" />
+            <a-input-number style="width: 85%;" :v-model="text == null ? '' : text" @change="e => onArriveNumChange(e,record.purchaseId)" />
           </div>
         </template>
         <template slot="remark" slot-scope="reText">
@@ -302,7 +302,7 @@ export default {
     },
     /** 实际送货数量值变化回调函数 */
     onArriveNumChange (value, purchaseId) {
-      this.list.find(x => x.purchaseId === purchaseId).arriveQuantity = Number(value)
+      this.list.find(x => x.purchaseId === purchaseId).arriveQuantity = value == null ? null : Number(value)
     },
     /** 仓库变化，重新查询时间窗口 */
     onWareIdChange () {
@@ -360,6 +360,9 @@ export default {
           this.$message.error('请填写完整已选择订单的送货数量！')
           return
         }
+      }
+      if (!(this.supplierReserveDTO.wareId == null || this.supplierReserveDTO.reserveDate == null)) {
+        this.getTimeWindowList()
       }
       this.isVisibleTimeWindow = true
     },
