@@ -25,10 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.ruoyi.common.core.utils.PageUtils.startPage;
@@ -140,8 +137,16 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
         driverDeliver.setStatus(SignStatusEnum.NOT_SIGN.getCode());
         List<DriverDeliver> driverDelivers = driverDeliverMapper.selectDriverDeliverList(driverDeliver);
         List<DriverDeliverVO> driverDeliverVOS = BeanConverUtil.converList(driverDelivers, DriverDeliverVO.class);
-        //暂时返回的是公司编号，后期要（调用主数据接口）修改为供应商名称
-        //remoteMasterDataService.getSupplierInfoByCode("code");
+        Map<String, String> supplierMap = new HashMap<>();
+        for (DriverDeliverVO driverDeliverVO : driverDeliverVOS) {
+            if (!supplierMap.keySet().contains(driverDeliverVO.getSupplierCode())) {
+                SupplierInfoVO supplierInfoVO = remoteMasterDataService.getSupplierInfoByCode(driverDeliverVO.getSupplierCode()).getData();
+                if (supplierInfoVO != null) {
+                    supplierMap.put(driverDeliverVO.getSupplierCode(), supplierInfoVO.getName());
+                }
+                driverDeliverVO.setSupplierName(supplierMap.get(driverDeliverVO.getSupplierCode()));
+            }
+        }
         return driverDeliverVOS;
     }
 
