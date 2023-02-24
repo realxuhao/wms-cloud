@@ -24,16 +24,40 @@
         size="middle"
         :scroll="{ x: 1300 }"
       >
+
+        <template slot="statusDes" slot-scope="text, record">
+          <div >
+            <a-tag color="orange" v-if="record.status===0">
+              {{ text }}
+            </a-tag>
+            <a-tag color="green" v-if="record.status===1">
+              {{ text }}
+            </a-tag>
+          </div>
+        </template>
+        <template slot="lateDes" slot-scope="text, record">
+          <div>
+            <a-tag color="green" v-if="record.status===0">
+              {{ text }}
+            </a-tag>
+            <a-tag color="red" v-if="record.status===1">
+              {{ text }}
+            </a-tag>
+          </div>
+        </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a-popconfirm
-              title="确认要删除吗?"
+              v-if="record.status == 0"
+              title="确认要取消吗?"
               ok-text="确认"
               cancel-text="取消"
-              @confirm="handleDelete(record)"
+              @confirm="record.status == 0 && handleDelete(record)"
             >
-              <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
+              <a class="danger-color"><a-icon class="m-r-4" type="delete" />取消</a>
             </a-popconfirm>
+            <!-- 状态不为0(即该供应商预约单未被司机预约或签到)时，不能删除，按钮灰化 -->
+            <a v-if="record.status != 0" class="not-danger-color"><a-icon class="m-r-4" type="delete" />取消</a>
           </div>
         </template>
       </a-table>
@@ -58,35 +82,48 @@ import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
   {
+    title: '预约单号',
+    key: 'reserveNo',
+    dataIndex: 'reserveNo',
+    width: 150
+  },
+  {
     title: '司机姓名',
     key: 'driverName',
     dataIndex: 'driverName',
-    width: 200
+    width: 120
   },
   {
-    title: '是否加入黑名单',
-    key: 'status',
-    dataIndex: 'status',
-    scopedSlots: { customRender: 'status' },
-    width: 200
+    title: '司机联系方式',
+    key: 'driverPhone',
+    dataIndex: 'driverPhone',
+    width: 120
   },
   {
-    title: '备注',
-    key: 'remark',
-    dataIndex: 'remark',
-    width: 200
+    title: '车牌号',
+    key: 'carNum',
+    dataIndex: 'carNum',
+    width: 120
   },
   {
-    title: '创建时间',
-    key: 'createTime',
-    dataIndex: 'createTime',
-    width: 200
+    title: '是否签到',
+    key: 'statusDes',
+    dataIndex: 'statusDes',
+    scopedSlots: { customRender: 'statusDes' },
+    width: 100
   },
   {
-    title: '创建人',
-    key: 'createBy',
-    dataIndex: 'createBy',
-    width: 200
+    title: '是否迟到',
+    key: 'lateDes',
+    dataIndex: 'lateDes',
+    scopedSlots: { customRender: 'lateDes' },
+    width: 100
+  },
+  {
+    title: '签到时间',
+    key: 'signinDate',
+    dataIndex: 'signinDate',
+    width: 150
   },
   {
     title: '操作',
@@ -142,23 +179,24 @@ export default {
   },
   methods: {
     async handleDelete (record) {
-      // try {
-      //   await this.$store.dispatch('blackDriver/destroy', record.driverId)
-      //   this.$message.success('删除成功！')
+      try {
+        await this.$store.dispatch('driverDeliver/destroy', record.deliverId)
+        this.$message.success('删除成功！')
 
-      //   this.loadTableList()
-      // } catch (error) {
-      //   console.log(error)
-      //   this.$message.error('删除失败，请联系系统管理员！')
-      // }
+        this.loadTableList()
+      } catch (error) {
+        console.log(error)
+        this.$message.error('删除失败，请联系系统管理员！')
+      }
     },
     async loadTableList () {
       try {
         this.tableLoading = true
-
-        const { data: { rows, total } } = await this.$store.dispatch('blackDriver/getList', this.queryForm)
+        this.queryForm = { ...this.queryForm, ...{ supplierName: this.supplierName } }
+        const { data: { rows, total } } = await this.$store.dispatch('driverDeliver/getList', this.queryForm)
         this.list = rows
         this.paginationTotal = total
+        console.info(rows)
       } catch (error) {
         this.$message.error(error.message)
       } finally {
