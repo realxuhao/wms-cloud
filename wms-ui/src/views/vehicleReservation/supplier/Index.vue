@@ -16,7 +16,13 @@
             :supplierName="supplierName"
           />
         </a-tab-pane>
-        <a-tab-pane key="3" tab="司机预约信息">司机预约信息</a-tab-pane>
+        <a-tab-pane key="3" tab="司机预约信息">
+          <DriverDeliverTable
+            :isVisible="!isVisibleSupplierName"
+            :reloadDeliver="reloadDeliver"
+            :supplierName="supplierName"
+          />
+        </a-tab-pane>
       </a-tabs>
 
       <a-modal
@@ -40,12 +46,14 @@
 <script>
 import PurchaseTable from './PurchaseTable.vue'
 import ReserveTable from './ReserveTable.vue'
+import DriverDeliverTable from './DriverDeliverTable.vue'
 
 export default {
   name: 'VrSupplier',
   components: {
     PurchaseTable,
-    ReserveTable
+    ReserveTable,
+    DriverDeliverTable
   },
   props: {},
   data () {
@@ -59,7 +67,9 @@ export default {
       /** 重新加载可预约订单列表参数 */
       reloadPurchase: false,
       /** 重新加载已预约参数 */
-      reloadReserve: false
+      reloadReserve: false,
+      /** 重新加载司机预约信息参数 */
+      reloadDeliver: false
     }
   },
   model: {},
@@ -82,6 +92,9 @@ export default {
       }
       if (key === '2') {
         this.reloadReserve = !this.reloadReserve
+      }
+      if (key === '2') {
+        this.reloadDeliver = !this.reloadDeliver
       }
     }
   }

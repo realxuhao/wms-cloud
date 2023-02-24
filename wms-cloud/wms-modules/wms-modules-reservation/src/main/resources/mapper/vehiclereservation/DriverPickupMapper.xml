@@ -67,6 +67,13 @@
                 and wechat_id = #{driver.wechatId}
             </if>
         </where>
-        order by pickup_date
+        <choose>
+            <when test="driver.wechatId != null and driver.wechatId != '' and driver.selectType == 1">
+                order by signin_date desc
+            </when>
+            <otherwise>
+                order by pickup_date
+            </otherwise>
+        </choose>
     </select>
 </mapper>

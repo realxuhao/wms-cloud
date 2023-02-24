@@ -89,4 +89,10 @@ public class DriverDeliver extends BaseEntity {
      */
     @TableField(exist = false)
     private String timeWindow;
+
+    /**
+     * 查询类型：0:不执行按照签到时间排序规则 1:按照签到时间排序
+     */
+    @TableField(exist = false)
+    private Integer selectType;
 }

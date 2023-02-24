@@ -356,7 +356,7 @@ export default {
         return
       }
       for (let i = 0; i < this.selectedRowList.length; i++) {
-        if (this.selectedRowList[i].arriveQuantity === null || this.selectedRowList[i].arriveQuantity <= 0 || this.selectedRowList[i].arriveQuantity === '') {
+        if (this.selectedRowList[i].arriveQuantity === null || this.selectedRowList[i].arriveQuantity === undefined || this.selectedRowList[i].arriveQuantity <= 0 || this.selectedRowList[i].arriveQuantity === '') {
           this.$message.error('请填写完整已选择订单的送货数量！')
           return
         }
@@ -418,12 +418,15 @@ export default {
     /** 如果供应商精确查询后有数据，则可以进行页面中的筛选查询 */
     async loadTableList () {
       if (this.paginationTotal > 0) {
+        this.selectedRowKeys = []
+        this.selectedRowList = []
+        this.list = []
         try {
           this.tableLoading = true
           const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', { name: this.supplierName, queryParams: { ...this.queryForm, ...{ status: 0 } } })
           this.list = rows
           this.list.forEach(item => {
-            item['arriveQuantity'] = null
+            this.$set(item, 'arriveQuantity', undefined)
           })
           this.paginationTotal = total
         } catch (error) {
@@ -436,11 +439,14 @@ export default {
     /** 获取了供应商名称后精确查询，采购订单列表 */
     async initTableList () {
       try {
+        this.selectedRowKeys = []
+        this.selectedRowList = []
+        this.list = []
         this.tableLoading = true
         const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', { name: this.supplierName, queryParams: this.queryForm })
         this.list = rows
         this.list.forEach(item => {
-          item['arriveQuantity'] = null
+          this.$set(item, 'arriveQuantity', undefined)
         })
         this.paginationTotal = total
       } catch (error) {

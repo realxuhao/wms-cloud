@@ -78,6 +78,13 @@
                 </foreach>
             </if>
         </where>
-        order by reserve_date,time_window
+        <choose>
+            <when test="driver.wechatId != null and driver.wechatId != '' and driver.selectType == 1">
+                order by signin_date desc
+            </when>
+            <otherwise>
+                order by reserve_date,time_window
+            </otherwise>
+        </choose>
     </select>
 </mapper>

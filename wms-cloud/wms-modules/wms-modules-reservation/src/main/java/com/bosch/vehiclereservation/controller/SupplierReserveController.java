@@ -122,4 +122,10 @@ public class SupplierReserveController extends BaseController {
     public R<SupplierReserveVO> selectDataByReserveNo(@PathVariable String reserveNo) {
         return R.ok(supplierReserveService.selectDataByReserveNo(reserveNo));
     }
+
+    @GetMapping(value = "/selectByReserveNo/wx/{reserveNo}")
+    @ApiOperation("根据预约单号查询预约数据")
+    public R<SupplierReserveVO> selectDataByReserveNoForWx(@PathVariable String reserveNo) {
+        return R.ok(supplierReserveService.selectDataByReserveNoForWx(reserveNo));
+    }
 }

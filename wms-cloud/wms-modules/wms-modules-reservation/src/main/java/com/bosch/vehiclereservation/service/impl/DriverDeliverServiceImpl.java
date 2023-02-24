@@ -67,6 +67,7 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
             }
         }
         startPage();
+        driverDeliver.setSelectType(1);
         List<DriverDeliver> driverDelivers = driverDeliverMapper.selectDriverDeliverList(driverDeliver);
         List<DriverDeliverVO> driverDeliverVOS = BeanConverUtil.converList(driverDelivers, DriverDeliverVO.class);
         return driverDeliverVOS;
@@ -135,6 +136,7 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
         driverDeliver.setWechatId(wechatId);
         driverDeliver.setReserveType(ReserveTypeEnum.RESERVED.getCode());
         driverDeliver.setStatus(SignStatusEnum.NOT_SIGN.getCode());
+        driverDeliver.setSelectType(0);
         List<DriverDeliver> driverDelivers = driverDeliverMapper.selectDriverDeliverList(driverDeliver);
         List<DriverDeliverVO> driverDeliverVOS = BeanConverUtil.converList(driverDelivers, DriverDeliverVO.class);
         Map<String, String> supplierMap = new HashMap<>();

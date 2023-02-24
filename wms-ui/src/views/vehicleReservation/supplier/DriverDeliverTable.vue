@@ -109,6 +109,24 @@ export default {
   components: {
   },
   props: {
+    isVisible: {
+      type: Boolean,
+      default () {
+        return false
+      }
+    },
+    supplierName: {
+      type: String,
+      default () {
+        return ''
+      }
+    },
+    reloadDeliver: {
+      type: Boolean,
+      default () {
+        return false
+      }
+    }
   },
   data () {
     return {
@@ -153,6 +171,18 @@ export default {
   },
   mounted () {
     this.loadData()
+  },
+  watch: {
+    isVisible (val) {
+      if (val && this.supplierName) {
+        this.loadData()
+      }
+    },
+    reloadDeliver (val) {
+      if (this.supplierName) {
+        this.loadData()
+      }
+    }
   }
 }
 </script>
