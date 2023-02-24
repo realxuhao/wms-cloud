@@ -1,7 +1,9 @@
 package com.bosch.masterdata.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.masterdata.api.domain.Ecn;
+import com.bosch.masterdata.api.domain.Nmd;
 import com.bosch.masterdata.api.domain.dto.EcnDTO;
 import com.bosch.masterdata.api.domain.vo.EcnVO;
 import com.bosch.masterdata.api.enumeration.*;
@@ -9,6 +11,7 @@ import com.bosch.masterdata.mapper.EcnMapper;
 import com.bosch.masterdata.mapper.NmdMapper;
 import com.bosch.masterdata.service.IEcnService;
 import com.bosch.masterdata.utils.BeanConverUtil;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -91,6 +94,15 @@ public class EcnServiceImpl extends ServiceImpl<EcnMapper, Ecn>
         });
 
         return true;
+    }
+
+    @Override
+    public Ecn getByMaterialNb(String materialNb) {
+        LambdaQueryWrapper<Ecn> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Ecn::getMaterialCode,materialNb);
+        queryWrapper.eq(Ecn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        Ecn ecn = ecnMapper.selectOne(queryWrapper);
+        return ecn;
     }
 }
 

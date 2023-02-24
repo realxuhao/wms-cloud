@@ -1,5 +1,6 @@
 package com.bosch.masterdata.api;
 
+import com.bosch.masterdata.api.domain.Ecn;
 import com.bosch.masterdata.api.domain.Nmd;
 import com.bosch.masterdata.api.factory.RemoteIQCFallbackFactory;
 import com.bosch.masterdata.api.factory.RemoteMaterialFallbackFactory;
@@ -19,6 +20,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(contextId = "remoteIQCService", configuration = FeignConfig.class,value = ServiceNameConstants.MASTER_DATA_SERVICE, fallbackFactory = RemoteIQCFallbackFactory.class)
 public interface RemoteIQCService {
 
-    @GetMapping("/getByMaterialNb/{materialNb}")
-    public R<Nmd> getByMaterialNb(@PathVariable("materialNb") String materialNb);
+    @GetMapping("/nmd/getByMaterialNb/{materialNb}")
+    public R<Nmd> getNmdByMaterialNb(@PathVariable("materialNb") String materialNb);
+
+
+    @GetMapping("/ecn/getByMaterialNb/{materialNb}")
+    public R<Ecn> getEcnByMaterialNb(@PathVariable("materialNb") String materialNb);
 }

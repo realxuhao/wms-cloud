@@ -8,6 +8,7 @@ package com.bosch.masterdata.api.enumeration;
  **/
 public enum DeparementEnum {
     NMD("NMD"),
+    ECN("ECN"),
 
     FSMP("FSMP");
 

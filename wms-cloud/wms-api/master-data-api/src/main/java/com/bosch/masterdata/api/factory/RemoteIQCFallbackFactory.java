@@ -2,6 +2,7 @@ package com.bosch.masterdata.api.factory;
 
 import com.bosch.masterdata.api.RemoteIQCService;
 import com.bosch.masterdata.api.RemoteMaterialService;
+import com.bosch.masterdata.api.domain.Ecn;
 import com.bosch.masterdata.api.domain.Nmd;
 import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
@@ -29,7 +30,12 @@ public class RemoteIQCFallbackFactory implements FallbackFactory<RemoteIQCServic
 
 
             @Override
-            public R<Nmd> getByMaterialNb(String materialNb) {
+            public R<Nmd> getNmdByMaterialNb(String materialNb) {
+                return R.fail("根据物料号查询IQC规则失败");
+            }
+
+            @Override
+            public R<Ecn> getEcnByMaterialNb(String materialNb) {
                 return R.fail("根据物料号查询IQC规则失败");
             }
         };
