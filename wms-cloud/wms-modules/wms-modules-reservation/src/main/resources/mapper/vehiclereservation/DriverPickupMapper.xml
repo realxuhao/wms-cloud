@@ -67,5 +67,6 @@
                 and wechat_id = #{driver.wechatId}
             </if>
         </where>
+        order by pickup_date
     </select>
 </mapper>

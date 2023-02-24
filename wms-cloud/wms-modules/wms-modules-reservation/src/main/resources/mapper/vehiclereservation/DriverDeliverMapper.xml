@@ -78,5 +78,6 @@
                 </foreach>
             </if>
         </where>
+        order by reserve_date,time_window
     </select>
 </mapper>
