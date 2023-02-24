@@ -64,4 +64,6 @@ public interface IEcnService extends IService<Ecn> {
      * @return
      */
     boolean validData(List<EcnDTO> ecnDTOS);
+
+    Ecn getByMaterialNb(String materialNb);
 }

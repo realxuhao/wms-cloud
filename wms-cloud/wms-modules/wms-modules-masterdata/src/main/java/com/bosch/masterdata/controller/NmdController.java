@@ -74,7 +74,7 @@ public class NmdController extends BaseController {
     /**
      * 根据物料号查询
      */
-    @ApiOperation("查询列表")
+    @ApiOperation("根据物料号查询")
     @GetMapping("/getByMaterialNb/{materialNb}")
     public R<Nmd> getByMaterialNb(@PathVariable("materialNb") String materialNb) {
         return R.ok(nmdService.getByMaterialNb(materialNb));
