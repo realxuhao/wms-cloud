@@ -156,7 +156,7 @@
     </div>
 
     <a-modal v-model="submitVisible" :title="modalTitle" ok-text="确认" cancel-text="取消" @ok="onSubmit">
-      <a-form layout="inline" class="search-content">
+<!--      <a-form layout="inline" class="search-content">
         <a-form-model-item label="质量状态">
           <a-select
             style="width: 180px"
@@ -169,6 +169,15 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
+      </a-form>-->
+      <a-form>
+        <a-form-item label="请选择质量状态">
+          <a-radio-group v-model="radioStatus" @change="radioChange">
+            <a-radio v-for="item in qualityStatus" :key="item.id" :value="item.text">
+              {{ item.text }}
+            </a-radio>
+          </a-radio-group>
+        </a-form-item>
       </a-form>
     </a-modal>
 
@@ -337,7 +346,9 @@ export default {
       columns,
       list: [],
       submitVisible: false,
-      modalTitle: ''
+      modalTitle: '',
+      modalRecord: undefined,
+      radioStatus: undefined
     }
   },
   computed: {
@@ -373,7 +384,8 @@ export default {
     async onSubmit (record) {
       // 调用API
       try {
-        await this.$store.dispatch('iqcManagement/updateIqcQuality', record)
+        // await this.$store.dispatch('iqcManagement/updateIqcQuality', record)
+        await this.$store.dispatch('iqcManagement/updateIqcQuality', this.modalRecord)
         this.$message.success('修改质检状态成功！')
         this.loadTableList()
       } catch (error) {
@@ -395,6 +407,7 @@ export default {
         // 没有检验过
         this.submitVisible = true
       }
+      this.modalRecord = record
     },
     notQuality () {
       this.$confirm({
@@ -403,6 +416,9 @@ export default {
           this.submitVisible = true
         }
       })
+    },
+    radioChange () {
+      this.modalRecord.qualityStatus = this.radioStatus
     },
     async loadData () {
       this.loadTableList()
