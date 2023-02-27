@@ -1,5 +1,6 @@
 package com.bosch.vehiclereservation.api.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
@@ -72,5 +73,10 @@ public class DriverPickup extends BaseEntity {
      * 状态：0：未签到 1：已签到
      */
     private Integer status;
+    /**
+     * 查询类型：0:不执行按照签到时间排序规则 1:按照签到时间排序
+     */
+    @TableField(exist = false)
+    private Integer selectType;
 
 }

@@ -15,4 +15,21 @@
         where purchase_id = #{purchaseId}
           and surplus_quantity <![CDATA[ < ]]> #{surplusQuantity}
     </update>
+
+    <select id="getSupplierReserveList" resultType="com.bosch.vehiclereservation.api.domain.vo.SupplierReserveDetailVO">
+        SELECT t1.purchase_id      as purchaseId,
+               t1.reserve_no       as reserveNo,
+               t1.arrive_quantity  as arriveQuantity,
+               t1.surplus_quantity as surplusQuantity,
+               t2.supplier_code    as supplierCode,
+               t2.`status`,
+               t2.reserve_date     as reserveDate,
+               t2.time_window      as timeWindow,
+               t3.signin_date      as signinDate
+        FROM vr_supplier_porder t1
+                 INNER JOIN vr_supplier_reserve t2 on t1.reserve_no = t2.reserve_no
+                 LEFT JOIN vr_driver_deliver t3 on t2.reserve_no = t3.reserve_no
+        WHERE t1.purchase_id = #{purchaseId}
+    </select>
+
 </mapper>

@@ -9,6 +9,19 @@
               <a-input v-model="queryForm.reserveNo" placeholder="采购订单号" allow-clear/>
             </a-form-model-item>
           </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="预约状态">
+              <a-select
+                allow-clear
+                show-search
+                v-model="queryForm.status"
+                style="width: 100%"
+                placeholder="预约状态">
+                <a-select-option v-for="item in statusList" :key="item.value" :value="item.value">
+                  {{ item.label }}</a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
@@ -26,6 +39,22 @@
         size="middle"
         :scroll="{ x: 1300 }"
       >
+        <template slot="statusDes" slot-scope="text, record">
+          <div >
+            <a-tag color="blue" v-if="record.status===0">
+              {{ text }}
+            </a-tag>
+            <a-tag color="orange" v-if="record.status===1">
+              {{ text }}
+            </a-tag>
+            <a-tag color="cyan" v-if="record.status===2">
+              {{ text }}
+            </a-tag>
+            <a-tag color="green" v-if="record.status===3">
+              {{ text }}
+            </a-tag>
+          </div>
+        </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a class="primary-color" @click="handleDetails(record.reserveNo)"><a-icon class="m-r-4" type="table" />详情</a>
@@ -126,6 +155,7 @@ const columns = [
     title: '预约状态',
     key: 'statusDes',
     dataIndex: 'statusDes',
+    scopedSlots: { customRender: 'statusDes' },
     width: 150
   },
   {
@@ -145,7 +175,8 @@ const columns = [
 
 const queryFormAttr = () => {
   return {
-    reserveNo: ''
+    reserveNo: '',
+    status: null
   }
 }
 
@@ -182,6 +213,12 @@ export default {
         pageNum: 1,
         ...queryFormAttr()
       },
+      statusList: [
+        { value: 0, label: '已预约' },
+        { value: 1, label: '在途（司机已预约）' },
+        { value: 2, label: '已到货（司机现场签到）' },
+        { value: 3, label: '已完成' }
+      ],
       columns,
       list: [],
       detailsList: [],

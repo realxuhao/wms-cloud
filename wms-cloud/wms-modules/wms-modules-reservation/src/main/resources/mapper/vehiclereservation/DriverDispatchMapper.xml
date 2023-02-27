@@ -3,6 +3,131 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bosch.vehiclereservation.mapper.DriverDispatchMapper">
+    <resultMap type="com.bosch.vehiclereservation.api.domain.DriverDispatch" id="DriverDispatchResult">
+        <result property="dispatchId" column="dispatch_id"/>
+        <result property="driverId" column="driver_id"/>
+        <result property="wareId" column="ware_id"/>
+        <result property="dockCode" column="dock_code"/>
+        <result property="driverType" column="driver_type"/>
+        <result property="sortNo" column="sort_no"/>
+        <result property="comeinDate" column="comein_date"/>
+        <result property="completeDate" column="complete_date"/>
+        <result property="status" column="status"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
 
+    <sql id="selectDriverDispatch">
+        select dispatch_id,
+               driver_id,
+               ware_id,
+               dock_code,
+               driver_type,
+               sort_no,
+               comein_date,
+               complete_date,
+               status,
+               remark,
+               create_by,
+               update_by,
+               create_time,
+               update_time
+        from vr_driver_dispatch
+    </sql>
 
+    <select id="selectTodaySignData" resultType="com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO">
+        SELECT *
+        from (SELECT t1.dispatch_id as dispatchId,
+        t1.ware_id as wareId,
+        t1.dock_code as dockCode,
+        t1.driver_type as driverType,
+        t1.sort_no as sortNo,
+        t1.comein_date as comeinDate,
+        t1.complete_date as completeDate,
+        t1.`status`,
+        t2.reserve_no as reserveNo,
+        t3.supplier_code as supplierCode,
+        t2.driver_name as driverName,
+        t2.driver_phone as driverPhone,
+        t2.car_num as carNum,
+        t2.reserve_type as reserveType,
+        t2.late,
+        t2.signin_date as signinDate,
+        t2.`status` as driverStatus,
+        CONCAT(DATE_FORMAT(t3.reserve_date, '%Y-%m-%d'), ' ', t3.time_window) as reserveDate,
+        '' as cell
+        from vr_driver_dispatch t1
+        INNER JOIN vr_driver_deliver t2 ON t1.driver_id = t2.deliver_id and t1.driver_type = 0
+        LEFT JOIN vr_supplier_reserve t3 on t3.reserve_no = t2.reserve_no
+        UNION
+        SELECT t1.dispatch_id as dispatchId,
+        t1.ware_id as wareId,
+        t1.dock_code as dockCode,
+        t1.driver_type as driverType,
+        t1.sort_no as sortNo,
+        t1.comein_date as comeinDate,
+        t1.complete_date as completeDate,
+        t1.`status`,
+        '' as reserveNo,
+        '' as supplierCode,
+        t2.driver_name as driverName,
+        t2.driver_phone as driverPhone,
+        t2.car_num as carNum,
+        t2.reserve_type as reserveType,
+        t2.late,
+        t2.signin_date as signinDate,
+        t2.`status` as driverStatus,
+        DATE_FORMAT(t2.pickup_date, '%Y-%m-%d') as reserveDate,
+        t2.cell
+        from vr_driver_dispatch t1
+        INNER JOIN vr_driver_pickup t2 ON t1.driver_id = t2.pickup_id and t1.driver_type = 1) t
+        <where>
+            and DATE_FORMAT(t.signinDate, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
+            <if test="wareId != null ">
+                and t.wareId = #{wareId}
+            </if>
+            <if test="statusList != null and statusList.size() > 0">
+                and t.status in
+                <foreach item="item" index="index" collection="statusList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by t.signinDate
+    </select>
+
+    <select id="selectTodayNotSignData" resultType="com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO">
+        SELECT *
+        from (SELECT 0                                                                     as driverType,
+                     t2.ware_id                                                            as wareId,
+                     t2.reserve_no                                                         as reserveNo,
+                     t2.supplier_code                                                      as supplierCode,
+                     t1.driver_name                                                        as driverName,
+                     t1.driver_phone                                                       as driverPhone,
+                     t1.car_num                                                            as carNum,
+                     t1.reserve_type                                                       as reserveType,
+                     CONCAT(DATE_FORMAT(t2.reserve_date, '%Y-%m-%d'), ' ', t2.time_window) as reserveDate,
+                     ''                                                                    as cell
+              from vr_driver_deliver t1
+                       LEFT JOIN vr_supplier_reserve t2 on t2.reserve_no = t1.reserve_no
+              where t1.`status` = 0
+                and DATE_FORMAT(t2.reserve_date, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
+              UNION
+              SELECT 1                                       as driverType,
+                     ''                                      as wareId,
+                     ''                                      as reserveNo,
+                     ''                                      as supplierCode,
+                     t1.driver_name                          as driverName,
+                     t1.driver_phone                         as driverPhone,
+                     t1.car_num                              as carNum,
+                     t1.reserve_type                         as reserveType,
+                     DATE_FORMAT(t1.pickup_date, '%Y-%m-%d') as reserveDate,
+                     t1.cell
+              from vr_driver_pickup t1
+              where t1.`status` = 0
+                and DATE_FORMAT(t1.pickup_date, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')) t
+    </select>
 </mapper>

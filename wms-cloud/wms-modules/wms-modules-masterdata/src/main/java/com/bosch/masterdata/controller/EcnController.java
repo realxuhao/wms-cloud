@@ -65,6 +65,16 @@ public class EcnController extends BaseController {
 
 
     /**
+     * 根据物料号查询
+     */
+    @ApiOperation("根据物料号查询")
+    @GetMapping("/getByMaterialNb/{materialNb}")
+    public R<Ecn> getByMaterialNb(@PathVariable("materialNb") String materialNb) {
+        return R.ok(ecnService.getByMaterialNb(materialNb));
+    }
+
+
+    /**
      * 获取详细信息
      */
     @ApiOperation("获取详细信息")

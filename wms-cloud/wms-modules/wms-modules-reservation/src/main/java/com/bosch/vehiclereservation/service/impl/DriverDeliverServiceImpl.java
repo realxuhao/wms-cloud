@@ -7,7 +7,6 @@ import com.bosch.masterdata.api.domain.vo.BlackDriverVO;
 import com.bosch.masterdata.api.domain.vo.SupplierInfoVO;
 import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
-import com.bosch.vehiclereservation.api.domain.SupplierPorder;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDeliverVO;
@@ -26,10 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.ruoyi.common.core.utils.PageUtils.startPage;
@@ -71,6 +67,7 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
             }
         }
         startPage();
+        driverDeliver.setSelectType(1);
         List<DriverDeliver> driverDelivers = driverDeliverMapper.selectDriverDeliverList(driverDeliver);
         List<DriverDeliverVO> driverDeliverVOS = BeanConverUtil.converList(driverDelivers, DriverDeliverVO.class);
         return driverDeliverVOS;
@@ -139,9 +136,19 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
         driverDeliver.setWechatId(wechatId);
         driverDeliver.setReserveType(ReserveTypeEnum.RESERVED.getCode());
         driverDeliver.setStatus(SignStatusEnum.NOT_SIGN.getCode());
+        driverDeliver.setSelectType(0);
         List<DriverDeliver> driverDelivers = driverDeliverMapper.selectDriverDeliverList(driverDeliver);
         List<DriverDeliverVO> driverDeliverVOS = BeanConverUtil.converList(driverDelivers, DriverDeliverVO.class);
-        //暂时返回的是公司编号，后期要（调用主数据接口）修改为供应商名称
+        Map<String, String> supplierMap = new HashMap<>();
+        for (DriverDeliverVO driverDeliverVO : driverDeliverVOS) {
+            if (!supplierMap.keySet().contains(driverDeliverVO.getSupplierCode())) {
+                SupplierInfoVO supplierInfoVO = remoteMasterDataService.getSupplierInfoByCode(driverDeliverVO.getSupplierCode()).getData();
+                if (supplierInfoVO != null) {
+                    supplierMap.put(driverDeliverVO.getSupplierCode(), supplierInfoVO.getName());
+                }
+                driverDeliverVO.setSupplierName(supplierMap.get(driverDeliverVO.getSupplierCode()));
+            }
+        }
         return driverDeliverVOS;
     }
 
@@ -182,7 +189,11 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
                 supplierReserve.get().setStatus(ReserveStatusEnum.ARRIVAL.getCode());
                 supplierReserveMapper.updateById(supplierReserve.get());
             }
-            saveDriverDispatch(id);
+            Long wareId = null;
+            if (supplierReserve.isPresent() && supplierReserve.get().getWareId() != null) {
+                wareId = supplierReserve.get().getWareId();
+            }
+            saveDriverDispatch(id, wareId);
         }
         return i > 0;
     }
@@ -197,14 +208,15 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
         driverDeliver.setCreateBy(SecurityUtils.getUsername());
         boolean res = super.save(driverDeliver);
         if (res) {
-            saveDriverDispatch(driverDeliver.getDeliverId());
+            saveDriverDispatch(driverDeliver.getDeliverId(), null);
         }
         return res;
     }
 
-    private void saveDriverDispatch(Long id) {
+    private void saveDriverDispatch(Long id, Long wareId) {
         DriverDispatch driverDispatch = new DriverDispatch();
         driverDispatch.setDriverId(id);
+        driverDispatch.setWareId(wareId);
         driverDispatch.setDriverType(DispatchTypeEnum.DELIVER.getCode());
         driverDispatch.setStatus(DispatchStatusEnum.WAITE.getCode());
         driverDispatch.setCreateTime(DateUtils.getNowDate());

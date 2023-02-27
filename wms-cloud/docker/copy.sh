@@ -35,6 +35,9 @@ cp ../wms-modules/wms-modules-storagein/target/wms-modules-storagein.jar ./wms/m
 echo "begin copy bin-in "
 cp ../wms-modules/wms-modules-binin/target/wms-modules-binin.jar ./wms/modules/binin/jar
 
+echo "begin copy reservation "
+cp ../wms-modules/wms-modules-reservation/target/wms-modules-reservation.jar ./wms/modules/reservation/jar
+
 
 
 

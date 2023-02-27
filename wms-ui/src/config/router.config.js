@@ -275,6 +275,13 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           },
           {
+            path: '/vehicle-reservation/dispatch',
+            name: 'dispatch',
+            component: () => import('@/views/vehicleReservation/dispatch/Index'),
+            meta: { title: '仓库调度', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
             path: '/vehicle-reservation/black-driver',
             name: 'blackDeriver',
             component: () => import('@/views/vehicleReservation/blackDriver/Index'),

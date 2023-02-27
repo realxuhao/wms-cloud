@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class DriverDispatchDTO extends PageDomain {
@@ -63,4 +64,9 @@ public class DriverDispatchDTO extends PageDomain {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    /**
+     * 状态：0：等待 1：进厂 2：完成
+     */
+    @ApiModelProperty(value = "状态：0：等待 1：进厂 2：完成")
+    private List<Integer> statusList;
 }

@@ -95,7 +95,7 @@ public class WareController extends BaseController {
     /**
      * 获取仓库详细信息
      */
-    @RequiresPermissions("masterdata:ware:query")
+    //@RequiresPermissions("masterdata:ware:query")
     @GetMapping(value = "/{id}")
     @ApiOperation("获取仓库详细信息")
     public R<Ware> getInfo(@PathVariable("id") String id) {

@@ -57,5 +57,6 @@
                 and status = #{status}
             </if>
         </where>
+        order by reserve_date desc, time_window desc
     </select>
 </mapper>

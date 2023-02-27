@@ -202,3 +202,21 @@ services:
       NACOS_HOST: wms-nacos
       TZ: Asia/Shanghai
 
+
+  reservation:
+    container_name: reservation
+    build:
+      context: ./wms/modules/reservation
+      dockerfile: dockerfile
+    ports:
+      - "8891:8891"
+    depends_on:
+      - wms-redis
+      - wms-mysql
+    links:
+      - wms-redis
+      - wms-mysql
+    environment:
+      NACOS_HOST: wms-nacos
+      TZ: Asia/Shanghai
+

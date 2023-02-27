@@ -4,6 +4,7 @@ import com.bosch.vehiclereservation.api.domain.PurchaseOrder;
 import com.bosch.vehiclereservation.api.domain.dto.PurchaseOrderDTO;
 import com.bosch.vehiclereservation.api.domain.vo.PageVO;
 import com.bosch.vehiclereservation.api.domain.vo.PurchaseOrderVO;
+import com.bosch.vehiclereservation.api.domain.vo.SupplierReserveDetailVO;
 import com.bosch.vehiclereservation.service.IPurchaseOrderService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
@@ -59,6 +60,29 @@ public class PurchaseOrderController extends BaseController {
         List<PurchaseOrder> list = purchaseOrderService.selectSupplierPurchaseOrder(name, BeanConverUtil.conver(purchaseOrderDTO, PurchaseOrder.class));
         List<PurchaseOrderVO> blackDriverVOS = BeanConverUtil.converList(list, PurchaseOrderVO.class);
         return R.ok(new PageVO<>(blackDriverVOS, new PageInfo<>(blackDriverVOS).getTotal()));
+    }
+
+    /**
+     * 关闭采购单
+     *
+     * @param id 采购单id
+     * @return
+     */
+    @RequiresPermissions("vehiclereservation:purchase:close")
+    @GetMapping("/close/{id}")
+    @ApiOperation("关闭采购单")
+    public AjaxResult close(@PathVariable("id") Long id) {
+        return toAjax(purchaseOrderService.closePurchaseOrder(id));
+    }
+
+    /**
+     * 根据采购单id查看该采购单被预约的明细信息
+     */
+    @GetMapping(value = "/detail/{purchaseId}")
+    @ApiOperation("根据采购单id查看该采购单被预约的明细信息")
+    public R<List<SupplierReserveDetailVO>> getSupplierReserveList(@PathVariable("purchaseId") Long purchaseId) {
+        List<SupplierReserveDetailVO> list = purchaseOrderService.getSupplierReserveList(purchaseId);
+        return R.ok(list);
     }
 
 

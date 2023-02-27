@@ -7,6 +7,8 @@
         <result property="deliverId" column="deliver_id"/>
         <result property="reserveNo" column="reserve_no"/>
         <result property="supplierCode" column="supplier_code"/>
+        <result property="reserveDate" column="reserve_date"/>
+        <result property="timeWindow" column="time_window"/>
         <result property="wechatId" column="wechat_id"/>
         <result property="driverName" column="driver_name"/>
         <result property="driverPhone" column="driver_phone"/>
@@ -26,6 +28,8 @@
         select t1.deliver_id,
                t1.reserve_no,
                t2.supplier_code,
+               t2.reserve_date,
+               t2.time_window,
                t1.wechat_id,
                t1.driver_name,
                t1.driver_phone,
@@ -40,7 +44,7 @@
                t1.create_time,
                t1.update_time
         from vr_driver_deliver t1
-                 inner join vr_supplier_reserve t2 on t2.reserve_no = t1.reserve_no
+                 left join vr_supplier_reserve t2 on t2.reserve_no = t1.reserve_no
     </sql>
 
     <select id="selectDriverDeliverList" resultMap="DriverDeliverResult">
@@ -74,5 +78,13 @@
                 </foreach>
             </if>
         </where>
+        <choose>
+            <when test="driver.wechatId != null and driver.wechatId != '' and driver.selectType == 1">
+                order by signin_date desc
+            </when>
+            <otherwise>
+                order by reserve_date,time_window
+            </otherwise>
+        </choose>
     </select>
 </mapper>

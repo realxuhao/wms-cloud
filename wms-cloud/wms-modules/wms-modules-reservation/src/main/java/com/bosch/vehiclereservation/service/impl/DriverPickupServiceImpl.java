@@ -36,6 +36,7 @@ public class DriverPickupServiceImpl extends ServiceImpl<DriverPickupMapper, Dri
     @Override
     public List<DriverPickupVO> selectDriverPickupVO(DriverPickupDTO driverPickupDTO) {
         DriverPickup driverPickup = BeanConverUtil.conver(driverPickupDTO, DriverPickup.class);
+        driverPickup.setSelectType(1);
         List<DriverPickup> driverPickups = driverPickupMapper.selectDriverPickupList(driverPickup);
         List<DriverPickupVO> driverDeliverVOS = BeanConverUtil.converList(driverPickups, DriverPickupVO.class);
         return driverDeliverVOS;
@@ -87,6 +88,7 @@ public class DriverPickupServiceImpl extends ServiceImpl<DriverPickupMapper, Dri
         driverPickup.setWechatId(wechatId);
         driverPickup.setReserveType(ReserveTypeEnum.RESERVED.getCode());
         driverPickup.setStatus(SignStatusEnum.NOT_SIGN.getCode());
+        driverPickup.setSelectType(0);
         List<DriverPickup> driverPickups = driverPickupMapper.selectDriverPickupList(driverPickup);
         List<DriverPickupVO> driverPickupVOS = BeanConverUtil.converList(driverPickups, DriverPickupVO.class);
         return driverPickupVOS;

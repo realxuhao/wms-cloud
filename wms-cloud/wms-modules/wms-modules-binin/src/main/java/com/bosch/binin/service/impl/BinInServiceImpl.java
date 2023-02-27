@@ -16,11 +16,14 @@ import com.bosch.binin.service.*;
 import com.bosch.masterdata.api.RemoteIQCService;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.RemoteMaterialService;
+import com.bosch.masterdata.api.domain.Ecn;
 import com.bosch.masterdata.api.domain.Nmd;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.enumeration.DeparementEnum;
+import com.bosch.masterdata.api.enumeration.EcnClassificationEnum;
+import com.bosch.masterdata.api.enumeration.EcnPlanEnum;
 import com.bosch.masterdata.api.enumeration.NmdClassificationEnum;
 import com.bosch.storagein.api.RemoteMaterialInService;
 import com.bosch.binin.api.domain.vo.BinInVO;
@@ -28,6 +31,7 @@ import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.RemotePalletService;
 import com.bosch.storagein.api.domain.vo.MaterialInVO;
 import com.bosch.storagein.api.domain.vo.MaterialReceiveVO;
+import com.ibm.icu.text.UFormat;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
@@ -40,6 +44,7 @@ import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -94,6 +99,10 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Autowired
     private IQCSamplePlanMapper samplePlanMapper;
+
+    @Autowired
+    @Lazy
+    private IIQCSamplePlanService samplePlanService;
 
     @Autowired
     private IIQCRuleService ruleService;
@@ -421,9 +430,11 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             if (CollectionUtils.isEmpty(sameBatchList) || CollectionUtils.isEmpty(binInList) || binInList.size() != sameBatchList.size()) {
                 lastFlag = false;
             }
-            if (lastFlag && DeparementEnum.NMD.getCode().equals(materialVO.getCell())) {
+            if (lastFlag && DeparementEnum.NMD.getCode().equals(materialVO.getCell())) {//NMD
                 dealNMDIQCProcess(materialVO, binIn.getBatchNb(), binInList, sameBatchList);
-            } else if (lastFlag){
+            } else if (lastFlag && DeparementEnum.ECN.getCode().equals(materialVO.getCell())) {//ECN
+                dealECNIQCProcess(materialVO, binIn.getBatchNb(), binInList, sameBatchList);
+            } else if (lastFlag && DeparementEnum.FSMP.getCode().equals(materialVO.getCell())) {//FSMP
 
             }
 
@@ -433,11 +444,181 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
     }
 
+    private void dealECNIQCProcess(MaterialVO materialVO, String batchNb, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
+
+        R<Ecn> ecnR = remoteIQCService.getEcnByMaterialNb(materialVO.getCode());
+        if (StringUtils.isNull(ecnR) || StringUtils.isNull(ecnR.getData())) {
+            throw new ServiceException("不存在该物料的IQC信息");
+        }
+        Ecn ecn = ecnR.getData();
+        List<IQCSamplePlan> samplePlanList = new ArrayList<>();
+
+        if (EcnClassificationEnum.TTS.getCode().equals(ecn.getClassification())) {//TTS
+            samplePlanList = dealEcnTtsIqc(materialVO, ecn, binInList, sameBatchList);
+        } else if (EcnClassificationEnum.UNTTS.getCode().equals(ecn.getClassification())//非TTS
+                || EcnClassificationEnum.HGG.getCode().equals(ecn.getClassification())//皇冠盖
+                || EcnClassificationEnum.SMS.getCode().equals(ecn.getClassification())) {//说明书&标签
+            samplePlanList = dealSameBatchQuantity(materialVO, ecn, binInList, sameBatchList);
+        } else if (EcnClassificationEnum.ZX.getCode().equals(ecn.getClassification())) {//国内产品纸箱
+            Collections.shuffle(binInList);
+            BinIn binIn = binInList.get(0);
+            IQCSamplePlan samplePlan = convertToSamplePlan(binIn, Double.valueOf(2), materialVO.getCell());
+            samplePlanList.add(samplePlan);
+        } else if (EcnClassificationEnum.BLP.getCode().equals(ecn.getClassification())) {//玻璃瓶
+            samplePlanList = dealEcnBlpProcess(materialVO, binInList, sameBatchList);
+        }
+
+        samplePlanService.saveBatch(samplePlanList);
+
+
+    }
+
+    private List<IQCSamplePlan> dealEcnBlpProcess(MaterialVO materialVO, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
+        double quantity = sameBatchList.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
+        NMDIQCRuleDTO ruleDTO = new NMDIQCRuleDTO();
+        ruleDTO.setQuantity(quantity);
+        ruleDTO.setCheckLevel("Ⅰ");
+        NMDIQCRule iqcRule = ruleService.getNMDIQCRule(ruleDTO);
+        //抽样量
+        Integer sampleQuantity = iqcRule.getNormal();
+        //总托数
+        int totalPallet = sameBatchList.size();
+        List<IQCSamplePlan> res = new ArrayList<>();
+
+        if (totalPallet <= 3) {
+            double sample = Math.ceil(sampleQuantity / totalPallet);
+            res = convertToSamplePlans(binInList, materialVO.getCell(), sample);
+        } else if (totalPallet > 3 && totalPallet <= 300) {
+            Collections.shuffle(binInList);
+            List<BinIn> binIns = binInList.subList(0, (int) Math.round(Math.sqrt(totalPallet) + 1));
+            double sample = Math.ceil(sampleQuantity / (Math.sqrt(totalPallet) + 1));
+            res = convertToSamplePlans(binIns, materialVO.getCell(), sample);
+        } else {
+            Collections.shuffle(binInList);
+            List<BinIn> binIns = binInList.subList(0, (int) Math.round(Math.sqrt(totalPallet) / 2 + 1));
+            double sample = Math.ceil(sampleQuantity / (Math.sqrt(totalPallet) / 2 + 1));
+            res = convertToSamplePlans(binIns, materialVO.getCell(), sample);
+        }
+
+        return res;
+    }
+
+    private List<IQCSamplePlan> dealEcnTtsIqc(MaterialVO materialVO, Ecn ecn, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
+        //总托数
+        int totalPallet = sameBatchList.size();
+        List<IQCSamplePlan> samplePlanList = new ArrayList<>();
+
+        if (EcnPlanEnum.A.getCode().equals(ecn.getPlan())) {
+            double ceil = Math.ceil(Math.sqrt(totalPallet));
+            Collections.shuffle(binInList);
+            List<BinIn> sampleBinInList = binInList.subList(0, (int) ceil);
+            samplePlanList = convertToSamplePlans(sampleBinInList, materialVO.getCell(), Double.valueOf(0));
+        } else if (EcnPlanEnum.C.getCode().equals(ecn.getPlan())) {
+            samplePlanList = convertToSamplePlans(binInList, materialVO.getCell(), Double.valueOf(0));
+        } else if (EcnPlanEnum.B.getCode().equals(ecn.getPlan())) {
+            samplePlanList = dealSameBatchQuantity(materialVO, ecn, binInList, sameBatchList);
+        }
+        return samplePlanList;
+
+
+    }
+
+    private List<IQCSamplePlan> dealSameBatchQuantity(MaterialVO materialVO, Ecn ecn, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
+        double quantity = sameBatchList.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
+        double criteria = Math.ceil(quantity / materialVO.getPackageWeight().doubleValue());
+        if (criteria <= 3) {
+            return convertToSamplePlans(binInList, materialVO.getCell(), Double.valueOf(0));
+        } else if (criteria > 3 && criteria <= 300) {
+            int sampleQuantity = (int) Math.round(Math.sqrt(criteria) + 1);
+            return generateByQuantity(binInList, sampleQuantity, materialVO.getCell());
+        } else {
+            int sampleQuantity = (int) Math.round(Math.sqrt(criteria) / 2 + 1);
+            return generateByQuantity(binInList, sampleQuantity, materialVO.getCell());
+        }
+    }
+
+    private List<IQCSamplePlan> generateByQuantity(List<BinIn> binInList, Integer quantity, String cell) {
+        Collections.shuffle(binInList);
+        List<BinIn> list = new ArrayList<>();
+        int count = 0;
+        for (BinIn binIn : binInList) {
+            list.add(binIn);
+            count += binIn.getQuantity();
+            if (count >= quantity) {
+                break;
+            }
+        }
+        double sum = list.stream().mapToDouble(BinIn::getQuantity).sum();
+        double abs = Math.abs(quantity - sum);
+        List<IQCSamplePlan> res = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            BinIn binIn = list.get(i);
+            IQCSamplePlan iqcSamplePlan = new IQCSamplePlan();
+            iqcSamplePlan.setSsccNb(binIn.getSsccNumber());
+            iqcSamplePlan.setCell(cell);
+            iqcSamplePlan.setMaterialNb(binIn.getMaterialNb());
+            iqcSamplePlan.setBinDownCode(binIn.getActualBinCode());
+            iqcSamplePlan.setBinDownTime(new Date());
+            if (abs > 0) {
+                if (i != list.size() - 1) {
+                    iqcSamplePlan.setRecommendSampleQuantity(binIn.getQuantity());
+                } else {
+                    iqcSamplePlan.setRecommendSampleQuantity(binIn.getQuantity() - abs);
+                }
+            } else {
+                iqcSamplePlan.setRecommendSampleQuantity(binIn.getQuantity());
+            }
+            iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
+            iqcSamplePlan.setBatchNb(binIn.getBatchNb());
+            iqcSamplePlan.setWareCode(binIn.getWareCode());
+            iqcSamplePlan.setExpireDate(binIn.getExpireDate());
+            res.add(iqcSamplePlan);
+        }
+        return res;
+    }
+
+    private IQCSamplePlan convertToSamplePlan(BinIn binIn, Double quantity, String cell) {
+        IQCSamplePlan iqcSamplePlan = new IQCSamplePlan();
+        iqcSamplePlan.setSsccNb(binIn.getSsccNumber());
+        iqcSamplePlan.setCell(cell);
+        iqcSamplePlan.setMaterialNb(binIn.getMaterialNb());
+        iqcSamplePlan.setBinDownCode(binIn.getActualBinCode());
+        iqcSamplePlan.setBinDownTime(new Date());
+        iqcSamplePlan.setRecommendSampleQuantity(quantity);
+        iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
+        iqcSamplePlan.setBatchNb(binIn.getBatchNb());
+        iqcSamplePlan.setWareCode(binIn.getWareCode());
+        iqcSamplePlan.setExpireDate(binIn.getExpireDate());
+        return iqcSamplePlan;
+    }
+
+
+    private List<IQCSamplePlan> convertToSamplePlans(List<BinIn> binInList, String cell, Double sampleQuantity) {
+        List<IQCSamplePlan> list = new ArrayList<>();
+        binInList.stream().forEach(binIn -> {
+            IQCSamplePlan iqcSamplePlan = new IQCSamplePlan();
+            iqcSamplePlan.setSsccNb(binIn.getSsccNumber());
+            iqcSamplePlan.setCell(cell);
+            iqcSamplePlan.setMaterialNb(binIn.getMaterialNb());
+            iqcSamplePlan.setBinDownCode(binIn.getActualBinCode());
+            iqcSamplePlan.setBinDownTime(new Date());
+            iqcSamplePlan.setRecommendSampleQuantity(sampleQuantity);
+            iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
+            iqcSamplePlan.setBatchNb(binIn.getBatchNb());
+            iqcSamplePlan.setWareCode(binIn.getWareCode());
+            iqcSamplePlan.setExpireDate(binIn.getExpireDate());
+            list.add(iqcSamplePlan);
+
+        });
+        return list;
+    }
+
+
     private void dealNMDIQCProcess(MaterialVO materialVO, String batchNb, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
 
         double quantity = sameBatchList.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
 
-        R<Nmd> iqcInfoR = remoteIQCService.getByMaterialNb(materialVO.getCode());
+        R<Nmd> iqcInfoR = remoteIQCService.getNmdByMaterialNb(materialVO.getCode());
         if (StringUtils.isNull(iqcInfoR) || StringUtils.isNull(iqcInfoR.getData())) {
             throw new ServiceException("不存在该物料的IQC信息");
         }

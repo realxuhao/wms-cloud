@@ -35,6 +35,8 @@ import materialFeeding from './modules/materialFeeding'
 import blackDriver from './modules/blackDriver'
 import purchase from './modules/purchase'
 import supplierReserve from './modules/supplierReserve'
+import driverDeliver from './modules/driverDeliver'
+import driverDispatch from './modules/driverDispatch'
 
 import split from './modules/split'
 
@@ -71,6 +73,8 @@ export default new Vuex.Store({
     blackDriver,
     purchase,
     supplierReserve,
+    driverDeliver,
+    driverDispatch,
 
     split,
 
