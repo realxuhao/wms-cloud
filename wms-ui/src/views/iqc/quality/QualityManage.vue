@@ -156,7 +156,7 @@
     </div>
 
     <a-modal v-model="submitVisible" :title="modalTitle" ok-text="确认" cancel-text="取消" @ok="onSubmit">
-      <a-form layout="inline" class="search-content">
+<!--      <a-form layout="inline" class="search-content">
         <a-form-model-item label="质量状态">
           <a-select
             style="width: 180px"
@@ -169,7 +169,12 @@
             </a-select-option>
           </a-select>
         </a-form-model-item>
-      </a-form>
+      </a-form>-->
+      <a-radio-group v-model="modalRecord.qualityStatus">
+        <a-radio v-for="item in qualityStatus" :key="item.id" :value="item.text">
+          {{ item.text }}
+        </a-radio>
+      </a-radio-group>
     </a-modal>
 
   </div>
@@ -337,7 +342,8 @@ export default {
       columns,
       list: [],
       submitVisible: false,
-      modalTitle: ''
+      modalTitle: '',
+      modalRecord: undefined
     }
   },
   computed: {
@@ -395,6 +401,7 @@ export default {
         // 没有检验过
         this.submitVisible = true
       }
+      this.modalRecord = record
     },
     notQuality () {
       this.$confirm({
