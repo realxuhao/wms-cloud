@@ -111,7 +111,6 @@ export default {
       } catch (error) {
         this.$message.error(error.message)
       } finally {
-        console.info(this.list)
         this.tableLoading = false
       }
     },

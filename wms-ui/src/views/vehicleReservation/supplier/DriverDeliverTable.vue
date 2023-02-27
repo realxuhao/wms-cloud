@@ -37,10 +37,10 @@
         </template>
         <template slot="lateDes" slot-scope="text, record">
           <div>
-            <a-tag color="green" v-if="record.status===0">
+            <a-tag color="green" v-if="record.late===0">
               {{ text }}
             </a-tag>
-            <a-tag color="red" v-if="record.status===1">
+            <a-tag color="red" v-if="record.late===1">
               {{ text }}
             </a-tag>
           </div>
@@ -196,7 +196,6 @@ export default {
         const { data: { rows, total } } = await this.$store.dispatch('driverDeliver/getList', this.queryForm)
         this.list = rows
         this.paginationTotal = total
-        console.info(rows)
       } catch (error) {
         this.$message.error(error.message)
       } finally {
@@ -226,4 +225,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.not-danger-color{
+  color: #aaa
+}
 </style>

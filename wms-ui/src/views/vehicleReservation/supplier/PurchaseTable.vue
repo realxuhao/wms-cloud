@@ -426,7 +426,7 @@ export default {
           const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', { name: this.supplierName, queryParams: { ...this.queryForm, ...{ status: 0 } } })
           this.list = rows
           this.list.forEach(item => {
-            this.$set(item, 'arriveQuantity', undefined)
+            this.$set(item, 'arriveQuantity', null)
           })
           this.paginationTotal = total
         } catch (error) {
@@ -446,7 +446,7 @@ export default {
         const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', { name: this.supplierName, queryParams: this.queryForm })
         this.list = rows
         this.list.forEach(item => {
-          this.$set(item, 'arriveQuantity', undefined)
+          this.$set(item, 'arriveQuantity', null)
         })
         this.paginationTotal = total
       } catch (error) {
@@ -510,5 +510,8 @@ export default {
 }
 /deep/.ant-form-item-control-wrapper{
   width: 80%;
+}
+.not-danger-color{
+  color: #aaa
 }
 </style>
