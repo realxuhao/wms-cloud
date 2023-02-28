@@ -54,10 +54,10 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
                 if (!wareMap.keySet().contains(dispatchVO.getWareId())) {
                     Ware ware = remoteMasterDataService.getWareInfo(dispatchVO.getWareId().toString()).getData();
                     if (ware != null) {
-                        wareMap.put(dispatchVO.getWareId(), ware.getName());
+                        wareMap.put(dispatchVO.getWareId(), ware.getCode());
                     }
                 }
-                dispatchVO.setWareName(wareMap.get(dispatchVO.getWareId()));
+                dispatchVO.setWareCode(wareMap.get(dispatchVO.getWareId()));
             }
             if (StringUtils.isNotEmpty(dispatchVO.getSupplierCode())) {
                 if (!supplierMap.keySet().contains(dispatchVO.getSupplierCode())) {

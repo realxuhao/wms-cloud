@@ -202,9 +202,9 @@ const signColumns = [
     width: 80
   },
   {
-    title: '仓库',
-    key: 'wareName',
-    dataIndex: 'wareName',
+    title: '仓库编码',
+    key: 'wareCode',
+    dataIndex: 'wareCode',
     width: 120
   },
   {
