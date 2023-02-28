@@ -37,4 +37,6 @@ public class IQCSamplePlanQueryDTO extends PageDomain {
     private Date startSampleTime;
     @ApiModelProperty(value = "结束抽样时间")
     private Date endSampleTime;
+    @ApiModelProperty(value = "cell")
+    private String cell;
 }

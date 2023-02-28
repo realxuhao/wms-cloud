@@ -9,6 +9,7 @@ import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDispatchDTO;
+import com.bosch.vehiclereservation.api.domain.dto.DriverSortDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO;
 import com.bosch.vehiclereservation.api.enumeration.DispatchStatusEnum;
 import com.bosch.vehiclereservation.api.enumeration.DispatchTypeEnum;
@@ -45,7 +46,7 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
 
     @Override
     public List<DriverDispatchVO> selectTodaySignData(DriverDispatchDTO driverDispatchDTO) {
-        List<DriverDispatchVO> driverDispatchVOS = driverDispatchMapper.selectTodaySignData(driverDispatchDTO.getWareId(), driverDispatchDTO.getStatusList());
+        List<DriverDispatchVO> driverDispatchVOS = driverDispatchMapper.selectTodaySignData(driverDispatchDTO.getWareId(), driverDispatchDTO.getStatusList(), driverDispatchDTO.isToday(), driverDispatchDTO.getDriverType());
         Map<Long, String> wareMap = new HashMap<>();
         Map<String, String> supplierMap = new HashMap<>();
         for (DriverDispatchVO dispatchVO : driverDispatchVOS) {
@@ -53,10 +54,10 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
                 if (!wareMap.keySet().contains(dispatchVO.getWareId())) {
                     Ware ware = remoteMasterDataService.getWareInfo(dispatchVO.getWareId().toString()).getData();
                     if (ware != null) {
-                        wareMap.put(dispatchVO.getWareId(), ware.getName());
+                        wareMap.put(dispatchVO.getWareId(), ware.getCode());
                     }
                 }
-                dispatchVO.setWareName(wareMap.get(dispatchVO.getWareId()));
+                dispatchVO.setWareCode(wareMap.get(dispatchVO.getWareId()));
             }
             if (StringUtils.isNotEmpty(dispatchVO.getSupplierCode())) {
                 if (!supplierMap.keySet().contains(dispatchVO.getSupplierCode())) {
@@ -128,5 +129,31 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
             }
         }
         return i > 0;
+    }
+
+    @Override
+    public boolean dispatchSort(DriverSortDTO driverDispatchDTO) {
+        if (driverDispatchDTO.getDispatchId() == null) {
+            return false;
+        }
+        DriverDispatch driverDispatch = driverDispatchMapper.selectById(driverDispatchDTO.getDispatchId());
+        if (driverDispatch == null) {
+            return false;
+        }
+        if (driverDispatch.getSortNo() == driverDispatchDTO.getNewSortNo()) {
+            return false;
+        }
+        Integer sortNO = driverDispatch.getSortNo();
+        driverDispatch.setSortNo(driverDispatchDTO.getNewSortNo());
+        int i = driverDispatchMapper.updateById(driverDispatch);
+        if (i > 0) {
+            if (sortNO > driverDispatchDTO.getNewSortNo()) {
+                driverDispatchMapper.updateSortNo(driverDispatchDTO.getDispatchId(), driverDispatchDTO.getNewSortNo(), sortNO, "add");
+            }
+            if (sortNO < driverDispatchDTO.getNewSortNo()) {
+                driverDispatchMapper.updateSortNo(driverDispatchDTO.getDispatchId(), sortNO, driverDispatchDTO.getNewSortNo(), "sub");
+            }
+        }
+        return false;
     }
 }

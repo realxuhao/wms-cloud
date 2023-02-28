@@ -25,8 +25,8 @@ public class DriverDispatchVO {
     /**
      * 仓库名称
      */
-    @ApiModelProperty(value = "仓库名称")
-    private String wareName;
+    @ApiModelProperty(value = "仓库编码")
+    private String wareCode;
 
     /**
      * 道口编号

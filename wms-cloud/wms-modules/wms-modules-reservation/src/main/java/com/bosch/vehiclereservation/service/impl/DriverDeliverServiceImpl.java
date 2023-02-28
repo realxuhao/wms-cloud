@@ -214,9 +214,11 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
     }
 
     private void saveDriverDispatch(Long id, Long wareId) {
+        Integer maxSortNo = driverDispatchMapper.getMaxSortNo();
         DriverDispatch driverDispatch = new DriverDispatch();
         driverDispatch.setDriverId(id);
         driverDispatch.setWareId(wareId);
+        driverDispatch.setSortNo(maxSortNo + 1);
         driverDispatch.setDriverType(DispatchTypeEnum.DELIVER.getCode());
         driverDispatch.setStatus(DispatchStatusEnum.WAITE.getCode());
         driverDispatch.setCreateTime(DateUtils.getNowDate());

@@ -24,6 +24,10 @@
 						{{sampleInfo.cell}}
 					</view>
 					<view class="text-line m-b-8 ">
+						<view class="label">库存量：</view>
+						{{sampleInfo.quantity}}
+					</view>
+					<view class="text-line m-b-8 ">
 						<view class="label">推荐抽样数量：</view>
 						{{sampleInfo.recommendSampleQuantity}} {{sampleInfo.unit}}
 					</view>

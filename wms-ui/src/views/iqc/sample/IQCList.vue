@@ -226,6 +226,12 @@ const columns = [
     width: 90
   },
   {
+    title: '推荐抽样数量',
+    key: 'recommendSampleQuantity',
+    dataIndex: 'recommendSampleQuantity',
+    width: 90
+  },
+  {
     title: '单位',
     key: 'unit',
     dataIndex: 'unit',
@@ -249,12 +255,7 @@ const columns = [
     dataIndex: 'binDownTime',
     width: 120
   },
-  {
-    title: '推荐抽样数量',
-    key: 'recommendSampleQuantity',
-    dataIndex: 'recommendSampleQuantity',
-    width: 90
-  },
+
   {
     title: '抽样数量',
     key: 'sampleQuantity',

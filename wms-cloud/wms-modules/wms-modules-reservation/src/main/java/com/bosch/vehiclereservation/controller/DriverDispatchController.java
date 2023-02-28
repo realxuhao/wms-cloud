@@ -2,6 +2,7 @@ package com.bosch.vehiclereservation.controller;
 
 import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDispatchDTO;
+import com.bosch.vehiclereservation.api.domain.dto.DriverSortDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDeliverVO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO;
 import com.bosch.vehiclereservation.api.domain.vo.PageVO;
@@ -32,6 +33,23 @@ public class DriverDispatchController extends BaseController {
     @Autowired
     private IDriverDispatchService driverDispatchService;
 
+
+    /**
+     * 获取签到车辆数据
+     *
+     * @param driverDispatchDTO 查询条件
+     * @return 车辆调度信息列表
+     */
+    @RequiresPermissions("vehiclereservation:driverdispatch:pagelist")
+    @PostMapping("/pagelist")
+    @ApiOperation("获取签到车辆数据")
+    public R<PageVO<DriverDispatchVO>> getSignDataPageList(@RequestBody DriverDispatchDTO driverDispatchDTO) {
+        driverDispatchDTO.setToday(false);
+        startPage();
+        List<DriverDispatchVO> list = driverDispatchService.selectTodaySignData(driverDispatchDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
     /**
      * 获取今天签到车辆数据
      *
@@ -42,6 +60,7 @@ public class DriverDispatchController extends BaseController {
     @PostMapping("/signlist")
     @ApiOperation("获取今天签到车辆数据")
     public R<List<DriverDispatchVO>> getTodaySignData(@RequestBody DriverDispatchDTO driverDispatchDTO) {
+        driverDispatchDTO.setToday(true);
         List<DriverDispatchVO> list = driverDispatchService.selectTodaySignData(driverDispatchDTO);
         return R.ok(list);
     }
@@ -95,6 +114,19 @@ public class DriverDispatchController extends BaseController {
     @ApiOperation("完成")
     public AjaxResult dispatchComplete(@PathVariable("id") Long dispatchId) {
         return toAjax(driverDispatchService.dispatchComplete(dispatchId));
+    }
+
+    /**
+     * 车辆进厂排序
+     *
+     * @param driverDispatchDTO
+     * @return
+     */
+    @RequiresPermissions("vehiclereservation:driverdispatch:sort")
+    @PostMapping("/sort")
+    @ApiOperation("车辆进厂排序")
+    public AjaxResult dispatchSortNO(@RequestBody DriverSortDTO driverDispatchDTO) {
+        return toAjax(driverDispatchService.dispatchSort(driverDispatchDTO));
     }
 
 }

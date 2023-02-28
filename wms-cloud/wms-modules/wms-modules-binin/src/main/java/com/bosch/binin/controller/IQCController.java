@@ -3,15 +3,20 @@ package com.bosch.binin.controller;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
+import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
+import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -20,8 +25,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.ruoyi.common.core.utils.PageUtils.startPage;
 
 /**
  * @program: wms-cloud
@@ -98,7 +106,7 @@ public class IQCController extends BaseController {
     @GetMapping(value = "/binIn/{mesBarCode}")
     @ApiOperation("IQC抽样计划分配库位接口")
     public R<BinInVO> getBinInInfo(@PathVariable String mesBarCode) {
-        BinInVO binInVO= samplePlanService.getBinInInfo(MesBarCodeUtil.getSSCC(mesBarCode));
+        BinInVO binInVO = samplePlanService.getBinInInfo(MesBarCodeUtil.getSSCC(mesBarCode));
         return R.ok(binInVO);
     }
 
@@ -117,6 +125,19 @@ public class IQCController extends BaseController {
         return R.ok();
     }
 
+
+    /**
+     * 导出列表
+     */
+    @PostMapping("/sample/export")
+    @ApiOperation("列表导出")
+    public void export(HttpServletResponse response, IQCSamplePlanQueryDTO queryDTO) {
+        List<IQCSamplePlanVO> iqcSamplePlanVOS = samplePlanService.getSamplePlan(queryDTO);
+//        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
+
+        ExcelUtil<IQCSamplePlanVO> util = new ExcelUtil<>(IQCSamplePlanVO.class);
+        util.exportExcel(response, iqcSamplePlanVOS, "IQC列表");
+    }
 
 
 }

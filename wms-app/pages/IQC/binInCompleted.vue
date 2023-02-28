@@ -18,7 +18,7 @@
 	           	<text class="status">已上架</text>
 	             </view>
 	             <view class="card-text m-b-4">物料编码：{{item.materialNb}}</view>
-				 <view class="card-text m-b-4">库位：{{item.sourceBinCode}}</view>
+				 <view class="card-text m-b-4">库位：{{item.binInCode}}</view>
 				 <view class="card-text m-b-4">Cell：{{item.cell}}</view>
 	             <view class="card-text sscc">
 					<view class="card-text m-b-4">SSCC码：{{item.ssccNb}}</view>
