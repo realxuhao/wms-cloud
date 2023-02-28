@@ -3,6 +3,30 @@
     <div class="table-content">
       <a-tabs defaultActiveKey="1" @change="callback">
         <a-tab-pane key="1" tab="今日已签到列表">
+
+          <div class="action-content">
+            <a-form layout="inline" class="search-content">
+              <a-row :gutter="16">
+                <a-col :span="4">
+                  <a-form-model-item label="仓库编码">
+                    <a-select show-search allow-clear v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
+                      <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
+                        {{ item.code }}</a-select-option>
+                    </a-select>
+                  </a-form-model-item>
+                </a-col>
+                <a-col span="4">
+                  <span class="table-page-search-submitButtons">
+                    <a-button
+                      type="primary"
+                      @click="handleSearch"
+                      :loading="searchLoading"
+                    ><a-icon type="search" />查询</a-button>
+                  </span>
+                </a-col>
+              </a-row>
+            </a-form>
+          </div>
           <a-table
             class="sign"
             :columns="signColumns"
@@ -331,12 +355,25 @@ export default {
       notSignList: [],
       // #endregion
       queryForm: {
-      }
+        wareId: null
+      },
+      /** 仓库list */
+      wareOptionList: []
     }
   },
   model: {},
   computed: {},
   methods: {
+    /** 获取仓库List */
+    async getWareOptionList () {
+      this.wareOptionList = []
+      try {
+        const data = await this.$store.dispatch('ware/getOptionList')
+        this.wareOptionList = data.data
+      } catch (error) {
+        this.$message.error(error.message)
+      }
+    },
     rowDrop () {
       const tbody = document.querySelector('.sign .ant-table-tbody') // 元素选择器名称根据实际内容替换
       const _this = this
@@ -344,10 +381,18 @@ export default {
         // 官网上的配置项,加到这里面来,可以实现各种效果和功能
         animation: 150,
         ghostClass: 'blue-background-class',
-        onEnd ({ newIndex, oldIndex }) {
+        async onEnd ({ newIndex, oldIndex }) {
           const currRow = _this.signList.splice(oldIndex, 1)[0]
           _this.signList.splice(newIndex, 0, currRow)
-          console.info(_this.signList)
+          try {
+            this.tableLoading = true
+            const { data } = await this.$store.dispatch('driverDispatch/getTodaySignlist', { dispatchId: currRow.dispatchId, newSortNo: newIndex })
+            console.info(data)
+          } catch (error) {
+            this.$message.error(error.message)
+          } finally {
+            this.tableLoading = false
+          }
         }
       })
     },
@@ -358,6 +403,11 @@ export default {
       if (key === '2') {
         this.loadNotSignTableList()
       }
+    },
+    async handleSearch () {
+      this.searchLoading = true
+      await this.loadSignTableList()
+      this.searchLoading = false
     },
     /** 分配仓库及道口 */
     handleSetDock (record) {
@@ -378,6 +428,7 @@ export default {
         this.$message.success('入厂成功！')
 
         this.loadSignTableList()
+        this.sendMessageToWx()
       } catch (error) {
         console.log(error)
         this.$message.error('入厂失败，请联系系统管理员！')
@@ -394,6 +445,10 @@ export default {
         console.log(error)
         this.$message.error('完成失败，请联系系统管理员！')
       }
+    },
+    async sendMessageToWx () {
+      const { data } = await this.$store.dispatch('driverDispatch/getWxToken')
+      console.info(data)
     },
     async loadSignTableList () {
       try {
@@ -433,12 +488,14 @@ export default {
       }
     },
     async loadData () {
+      this.getWareOptionList()
       this.loadSignTableList()
     }
   },
   mounted () {
     this.loadData()
     this.rowDrop()
+    this.sendMessageToWx()
   }
 }
 </script>

@@ -38,10 +38,25 @@ const complete = async (id) => {
   return data
 }
 
+/** 排序 */
+const sort = async (options) => {
+  const url = `/driverDispatch/sort`
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
+  return data
+}
+
+const getWxToken = async () => {
+  const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx420ee1934a1dd092&secret=5ae128d2b787864b20b1d3b16ef5aadb`
+  const { data } = await createAuthInstance().get(url)
+  return data
+}
+
 export const driverDispatchService = {
   getTodaySignlist,
   getTodayNoSignList,
   importDock,
   enter,
-  complete
+  complete,
+  sort,
+  getWxToken
 }

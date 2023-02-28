@@ -29,6 +29,14 @@ const driverDispatch = {
     async complete ({ commit }, id) {
       const data = await driverDispatchService.complete(id)
       return data
+    },
+    async sort ({ commit }, options) {
+      const data = await driverDispatchService.sort(options)
+      return data
+    },
+    async getWxToken ({ commit }) {
+      const data = await driverDispatchService.getWxToken()
+      return data
     }
   }
 }
