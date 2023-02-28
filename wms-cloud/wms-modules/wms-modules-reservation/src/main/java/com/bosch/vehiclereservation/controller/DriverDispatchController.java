@@ -33,6 +33,23 @@ public class DriverDispatchController extends BaseController {
     @Autowired
     private IDriverDispatchService driverDispatchService;
 
+
+    /**
+     * 获取签到车辆数据
+     *
+     * @param driverDispatchDTO 查询条件
+     * @return 车辆调度信息列表
+     */
+    @RequiresPermissions("vehiclereservation:driverdispatch:pagelist")
+    @PostMapping("/pagelist")
+    @ApiOperation("获取签到车辆数据")
+    public R<PageVO<DriverDispatchVO>> getSignDataPageList(@RequestBody DriverDispatchDTO driverDispatchDTO) {
+        driverDispatchDTO.setToday(false);
+        startPage();
+        List<DriverDispatchVO> list = driverDispatchService.selectTodaySignData(driverDispatchDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
     /**
      * 获取今天签到车辆数据
      *
@@ -43,6 +60,7 @@ public class DriverDispatchController extends BaseController {
     @PostMapping("/signlist")
     @ApiOperation("获取今天签到车辆数据")
     public R<List<DriverDispatchVO>> getTodaySignData(@RequestBody DriverDispatchDTO driverDispatchDTO) {
+        driverDispatchDTO.setToday(true);
         List<DriverDispatchVO> list = driverDispatchService.selectTodaySignData(driverDispatchDTO);
         return R.ok(list);
     }

@@ -39,6 +39,8 @@ public class IQCSamplePlan extends BaseEntity {
     private Double recommendSampleQuantity;
     @ApiModelProperty(value = "实际抽样数量")
     private Double sampleQuantity;
+    @ApiModelProperty(value = "数量")
+    private Double quantity;
     @ApiModelProperty(value = "抽样人")
     private String sampleUser;
     @ApiModelProperty(value = "抽样时间")

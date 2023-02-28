@@ -69,4 +69,10 @@ public class DriverDispatchDTO extends PageDomain {
      */
     @ApiModelProperty(value = "状态：0：等待 1：进厂 2：完成")
     private List<Integer> statusList;
+
+    /**
+     * 是否是今天签到的数据
+     */
+    @ApiModelProperty(value = "是否是今天签到的数据")
+    private boolean isToday;
 }
