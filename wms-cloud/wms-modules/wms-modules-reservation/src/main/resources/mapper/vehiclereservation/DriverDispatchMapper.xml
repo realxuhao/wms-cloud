@@ -130,4 +130,25 @@
               where t1.`status` = 0
                 and DATE_FORMAT(t1.pickup_date, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')) t
     </select>
+
+    <select id="getMaxSortNo" resultType="java.lang.Integer">
+        SELECT max(sort_no) FROM vr_driver_dispatch
+    </select>
+
+    <update id="updateSortNo">
+        UPDATE vr_driver_dispatch
+        <choose>
+            <when test="opt=='add'">
+                set sort_no = sort_no + 1
+            </when>
+            <when test="opt=='sub'">
+                set sort_no = sort_no - 1
+            </when>
+            <otherwise>
+                set sort_no = sort_no
+            </otherwise>
+        </choose>
+        where sort_no BETWEEN #{startIndex} and #{endIndex} and dispatch_id != #{dispatchId}
+    </update>
+
 </mapper>

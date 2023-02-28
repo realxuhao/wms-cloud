@@ -9,6 +9,7 @@ import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDispatchDTO;
+import com.bosch.vehiclereservation.api.domain.dto.DriverSortDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO;
 import com.bosch.vehiclereservation.api.enumeration.DispatchStatusEnum;
 import com.bosch.vehiclereservation.api.enumeration.DispatchTypeEnum;
@@ -128,5 +129,31 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
             }
         }
         return i > 0;
+    }
+
+    @Override
+    public boolean dispatchSort(DriverSortDTO driverDispatchDTO) {
+        if (driverDispatchDTO.getDispatchId() == null) {
+            return false;
+        }
+        DriverDispatch driverDispatch = driverDispatchMapper.selectById(driverDispatchDTO.getDispatchId());
+        if (driverDispatch == null) {
+            return false;
+        }
+        if (driverDispatch.getSortNo() == driverDispatchDTO.getNewSortNo()) {
+            return false;
+        }
+        Integer sortNO = driverDispatch.getSortNo();
+        driverDispatch.setSortNo(driverDispatchDTO.getNewSortNo());
+        int i = driverDispatchMapper.updateById(driverDispatch);
+        if (i > 0) {
+            if (sortNO > driverDispatchDTO.getNewSortNo()) {
+                driverDispatchMapper.updateSortNo(driverDispatchDTO.getDispatchId(), driverDispatchDTO.getNewSortNo(), sortNO, "add");
+            }
+            if (sortNO < driverDispatchDTO.getNewSortNo()) {
+                driverDispatchMapper.updateSortNo(driverDispatchDTO.getDispatchId(), sortNO, driverDispatchDTO.getNewSortNo(), "sub");
+            }
+        }
+        return false;
     }
 }

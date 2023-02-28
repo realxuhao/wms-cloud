@@ -4,6 +4,7 @@ package com.bosch.vehiclereservation.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDispatchDTO;
+import com.bosch.vehiclereservation.api.domain.dto.DriverSortDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO;
 
 import java.util.List;
@@ -48,4 +49,12 @@ public interface IDriverDispatchService extends IService<DriverDispatch> {
      * @return
      */
     boolean dispatchComplete(Long dispatchId);
+
+    /**
+     * 车辆排序
+     *
+     * @param driverDispatchDTO
+     * @return
+     */
+    boolean dispatchSort(DriverSortDTO driverDispatchDTO);
 }
