@@ -125,8 +125,10 @@ public class DriverPickupServiceImpl extends ServiceImpl<DriverPickupMapper, Dri
     }
 
     private void saveDriverDispatch(Long id) {
+        Integer maxSortNo = driverDispatchMapper.getMaxSortNo();
         DriverDispatch driverDispatch = new DriverDispatch();
         driverDispatch.setDriverId(id);
+        driverDispatch.setSortNo(maxSortNo + 1);
         driverDispatch.setDriverType(DispatchTypeEnum.PICKUP.getCode());
         driverDispatch.setStatus(DispatchStatusEnum.WAITE.getCode());
         driverDispatch.setCreateTime(DateUtils.getNowDate());

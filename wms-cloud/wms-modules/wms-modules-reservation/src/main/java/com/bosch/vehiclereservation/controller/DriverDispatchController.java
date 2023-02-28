@@ -2,6 +2,7 @@ package com.bosch.vehiclereservation.controller;
 
 import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDispatchDTO;
+import com.bosch.vehiclereservation.api.domain.dto.DriverSortDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDeliverVO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO;
 import com.bosch.vehiclereservation.api.domain.vo.PageVO;
@@ -95,6 +96,19 @@ public class DriverDispatchController extends BaseController {
     @ApiOperation("完成")
     public AjaxResult dispatchComplete(@PathVariable("id") Long dispatchId) {
         return toAjax(driverDispatchService.dispatchComplete(dispatchId));
+    }
+
+    /**
+     * 车辆进厂排序
+     *
+     * @param driverDispatchDTO
+     * @return
+     */
+    @RequiresPermissions("vehiclereservation:driverdispatch:sort")
+    @PostMapping("/sort")
+    @ApiOperation("车辆进厂排序")
+    public AjaxResult dispatchSortNO(@RequestBody DriverSortDTO driverDispatchDTO) {
+        return toAjax(driverDispatchService.dispatchSort(driverDispatchDTO));
     }
 
 }
