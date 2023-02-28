@@ -25,7 +25,7 @@ public interface DriverDispatchMapper extends BaseMapper<DriverDispatch> {
      * @param wareId 仓库id
      * @return 车辆调度信息列表
      */
-    public List<DriverDispatchVO> selectTodaySignData(@Param("wareId") Long wareId, @Param("statusList") List<Integer> statusList);
+    public List<DriverDispatchVO> selectTodaySignData(@Param("wareId") Long wareId, @Param("statusList") List<Integer> statusList,@Param("today") boolean today,@Param("driverType") Integer driverType);
 
 
     /**
@@ -42,5 +42,13 @@ public interface DriverDispatchMapper extends BaseMapper<DriverDispatch> {
      */
     public Integer getMaxSortNo();
 
+    /**
+     * 车辆排序
+     * @param dispatchId
+     * @param startIndex
+     * @param endIndex
+     * @param opt
+     * @return
+     */
     public Integer updateSortNo(@Param("dispatchId") Long dispatchId, @Param("startIndex") Integer startIndex, @Param("endIndex") Integer endIndex, @Param("opt") String opt);
 }
