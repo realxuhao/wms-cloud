@@ -73,14 +73,14 @@
                 <a-divider type="vertical" />
                 <a-popconfirm
                   v-if="record.status < 1"
-                  title="确认要车辆入场吗? 请确认此道口为空"
+                  title="确认要车辆入厂吗? 请确认此道口为空"
                   ok-text="确认"
                   cancel-text="取消"
                   @confirm="record.status < 1 && handleEnter(record)"
                 >
-                  <a style="color: green"><a-icon class="m-r-4" type="login" />入场</a>
+                  <a style="color: green"><a-icon class="m-r-4" type="login" />入厂</a>
                 </a-popconfirm>
-                <a v-else class="not-danger-color" ><a-icon class="m-r-4" type="login" />入场</a>
+                <a v-else class="not-danger-color" ><a-icon class="m-r-4" type="login" />入厂</a>
                 <a-divider type="vertical" />
 
                 <a-popconfirm
@@ -347,6 +347,7 @@ export default {
         onEnd ({ newIndex, oldIndex }) {
           const currRow = _this.signList.splice(oldIndex, 1)[0]
           _this.signList.splice(newIndex, 0, currRow)
+          console.info(_this.signList)
         }
       })
     },
@@ -364,22 +365,22 @@ export default {
       this.visible = true
       this.signData = record
     },
-    /** 入场动作 */
+    /** 入厂动作 */
     async handleEnter (record) {
       console.info(record)
-      // 判断是否分配仓库和道口，没有分配不能入场
+      // 判断是否分配仓库和道口，没有分配不能入厂
       if (record.wareId === null || record.dockCode === null) {
         this.$message.error('请先分配仓库和道口！')
         return
       }
       try {
         await this.$store.dispatch('driverDispatch/enter', record.dispatchId)
-        this.$message.success('入场成功！')
+        this.$message.success('入厂成功！')
 
         this.loadSignTableList()
       } catch (error) {
         console.log(error)
-        this.$message.error('入场失败，请联系系统管理员！')
+        this.$message.error('入厂失败，请联系系统管理员！')
       }
     },
     /** 完成动作 */

@@ -282,6 +282,20 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           },
           {
+            path: '/vehicle-reservation/timeWindowBoard/ware',
+            name: 'wareTimeWindowBoard-ware',
+            component: () => import('@/views/vehicleReservation/timeWindowBoard/WareIndex'),
+            meta: { title: '仓库大屏', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/vehicle-reservation/timeWindowBoard/guard',
+            name: 'wareTimeWindowBoard-guard',
+            component: () => import('@/views/vehicleReservation/timeWindowBoard/GuardIndex'),
+            meta: { title: '门卫大屏', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
             path: '/vehicle-reservation/black-driver',
             name: 'blackDeriver',
             component: () => import('@/views/vehicleReservation/blackDriver/Index'),
