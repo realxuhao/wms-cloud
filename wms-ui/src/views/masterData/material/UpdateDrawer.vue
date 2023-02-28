@@ -213,6 +213,21 @@
             { rules: [{ required: true, message: '不能为空!' }] }
           ]" />
       </a-form-item>
+      <a-form-item label="IQC">
+        <a-select
+          v-decorator="[
+            'iqc',
+            { rules: [{ required: true, message: '请选择IQC' }] }
+          ]"
+          placeholder="IQC">
+          <a-select-option value="Y">
+            Y
+          </a-select-option>
+          <a-select-option value="N">
+            N
+          </a-select-option>
+        </a-select>
+      </a-form-item>
 
       <a-form-item label="备注">
         <a-input
@@ -308,7 +323,7 @@ export default {
       const columns = ['name', 'code', 'materialTypeId', 'packageWeight', 'palletWeight',
         'bindPallet', 'hasPallet', 'totalWeight', 'errorProofingMethod', 'lessDeviationRatio',
         'minPackageNetWeight', 'minPackageNumber', 'unit', 'remark', 'palletId', 'lessDeviationRatio',
-        'moreDeviationRatio', 'transferWeightRatio', 'minPackageNetWeight']
+        'moreDeviationRatio', 'transferWeightRatio', 'minPackageNetWeight', 'iqc']
       this.form.setFieldsValue(_.pick(data, columns))
     },
     async loadMaterialTypeList () {

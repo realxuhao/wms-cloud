@@ -257,6 +257,12 @@ const columns = [
     width: 240
   },
   {
+    title: 'IQC',
+    key: 'iqc',
+    dataIndex: 'iqc',
+    width: 120
+  },
+  {
     title: '备注',
     key: 'remark',
     dataIndex: 'remark',
