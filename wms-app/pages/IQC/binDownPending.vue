@@ -17,15 +17,15 @@
 	                <text class="material-name">{{item.materialName}}</text>
 	                <text class="status"><uni-tag size="small" :text="typeMap[item.type]" :type="typeColorMap[item.type]" /></text>
 	              </view>
-	              <view class="card-text m-b-4">物料编码：{{item.materialCode}}</view>
+	              <view class="card-text m-b-4">物料编码：{{item.materialNb}}</view>
 				  <view class="card-text sscc">
 					<text class="card-text m-b-4">Cell：{{item.cell}}</text>
-				    <text class="card-text m-b-4">源库位：{{item.binCode}}</text>
+				    <text class="card-text m-b-4">源库位：{{item.binDownCode}}</text>
 				  </view>
 					<!-- <view class="card-text m-b-4">源跨位：{{item.frameCode}}</view> -->
 	              <view class="card-text sscc">
-	                <text>SSCC码：{{item.ssccNumber}}</text>
-	                <text class="time">{{item.uploadTime}}</text>
+	                <text>SSCC码：{{item.ssccNb}}</text>
+	                <text class="time">{{item.createTime}}</text>
 	              </view>
 	            </view>
 	            <Empty v-show="!list.length"></Empty>
@@ -41,7 +41,7 @@ import Message from '@/components/Message'
 import hrPullLoad from '@/components/hr-pull-load/hr-pull-load';
 	
 const typeMap = {
-  0: '整托下架',
+  0: '整托下架', 
   1: '拆托下架'
 }
 

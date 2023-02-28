@@ -45,9 +45,9 @@
 				info:{}
 			};
 		},
-		mounted() {
-			this.getSample('20230213669006391113695972103025192112271124000800')
-		},
+		// mounted() {
+		// 	this.getSample('20230213669006391113695972103025192112271124000800')
+		// },
 		methods:{
 			async scanCodeCallback(data){
 				Bus.$emit('stopScan')
