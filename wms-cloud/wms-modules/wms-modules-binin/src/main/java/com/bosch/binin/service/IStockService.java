@@ -7,6 +7,7 @@ import com.bosch.binin.api.domain.dto.IQCManagementQueryDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.masterdata.api.domain.dto.IQCDTO;
 
 import java.util.List;
 
@@ -24,6 +25,8 @@ public interface IStockService extends IService<Stock> {
     boolean validateStatus(Long id);
 
     Integer changeStatus(IQCChangeStatusDTO iqcChangeStatusDTO);
+
+    List<IQCDTO> excelChangeStatus(List<IQCDTO> list);
 
     List<StockVO> selectStockVOBySortType(StockQueryDTO stockQuerySTO);
 
