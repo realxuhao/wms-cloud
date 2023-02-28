@@ -108,12 +108,13 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
             iqcSamplePlan.setCell(finalMaterialVOMap.get(stock.getMaterialNb()).getCell());
             iqcSamplePlan.setMaterialNb(stock.getMaterialNb());
             iqcSamplePlan.setBinDownCode(stock.getBinCode());
-            iqcSamplePlan.setBinDownTime(new Date());
+//            iqcSamplePlan.setBinDownTime(new Date());
             iqcSamplePlan.setRecommendSampleQuantity(ssccMaps.get(stock.getSsccNumber()).getSampleQuantity());
             iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
             iqcSamplePlan.setBatchNb(stock.getBatchNb());
             iqcSamplePlan.setWareCode(stock.getWareCode());
             iqcSamplePlan.setExpireDate(stock.getExpireDate());
+            iqcSamplePlan.setQuantity(stock.getTotalStock());
             samplePlanList.add(iqcSamplePlan);
             stock.setFreezeStock(stock.getAvailableStock());
             stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
@@ -253,6 +254,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         iqcSamplePlan.setBinInCode(binInVO.getActualBinCode());
         iqcSamplePlan.setBinInTime(new Date());
         iqcSamplePlan.setBinInUser(SecurityUtils.getUsername());
+        iqcSamplePlan.setStatus(IQCStatusEnum.FINISH.code());
         samplePlanMapper.updateById(iqcSamplePlan);
 
     }

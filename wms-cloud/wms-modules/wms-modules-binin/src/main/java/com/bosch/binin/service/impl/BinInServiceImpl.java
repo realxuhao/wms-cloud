@@ -571,6 +571,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
             iqcSamplePlan.setBatchNb(binIn.getBatchNb());
             iqcSamplePlan.setWareCode(binIn.getWareCode());
+            iqcSamplePlan.setQuantity(binIn.getQuantity());
+
             iqcSamplePlan.setExpireDate(binIn.getExpireDate());
             res.add(iqcSamplePlan);
         }
@@ -588,6 +590,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
         iqcSamplePlan.setBatchNb(binIn.getBatchNb());
         iqcSamplePlan.setWareCode(binIn.getWareCode());
+        iqcSamplePlan.setQuantity(binIn.getQuantity());
         iqcSamplePlan.setExpireDate(binIn.getExpireDate());
         return iqcSamplePlan;
     }
@@ -606,6 +609,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
             iqcSamplePlan.setBatchNb(binIn.getBatchNb());
             iqcSamplePlan.setWareCode(binIn.getWareCode());
+            iqcSamplePlan.setQuantity(binIn.getQuantity());
             iqcSamplePlan.setExpireDate(binIn.getExpireDate());
             list.add(iqcSamplePlan);
 
@@ -652,6 +656,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
         iqcSamplePlan.setBatchNb(binIn.getBatchNb());
         iqcSamplePlan.setWareCode(binIn.getWareCode());
+        iqcSamplePlan.setQuantity(binIn.getQuantity());
         iqcSamplePlan.setExpireDate(binIn.getExpireDate());
 
         samplePlanMapper.insert(iqcSamplePlan);
