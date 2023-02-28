@@ -46,7 +46,7 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
 
     @Override
     public List<DriverDispatchVO> selectTodaySignData(DriverDispatchDTO driverDispatchDTO) {
-        List<DriverDispatchVO> driverDispatchVOS = driverDispatchMapper.selectTodaySignData(driverDispatchDTO.getWareId(), driverDispatchDTO.getStatusList());
+        List<DriverDispatchVO> driverDispatchVOS = driverDispatchMapper.selectTodaySignData(driverDispatchDTO.getWareId(), driverDispatchDTO.getStatusList(), driverDispatchDTO.isToday(), driverDispatchDTO.getDriverType());
         Map<Long, String> wareMap = new HashMap<>();
         Map<String, String> supplierMap = new HashMap<>();
         for (DriverDispatchVO dispatchVO : driverDispatchVOS) {

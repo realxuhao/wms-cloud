@@ -85,9 +85,14 @@
         from vr_driver_dispatch t1
         INNER JOIN vr_driver_pickup t2 ON t1.driver_id = t2.pickup_id and t1.driver_type = 1) t
         <where>
-            and DATE_FORMAT(t.signinDate, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
+            <if test="today == true">
+                and DATE_FORMAT(t.signinDate, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
+            </if>
             <if test="wareId != null ">
                 and t.wareId = #{wareId}
+            </if>
+            <if test="driverType != null ">
+                and t.driverType= #{driverType}
             </if>
             <if test="statusList != null and statusList.size() > 0">
                 and t.status in
@@ -96,7 +101,7 @@
                 </foreach>
             </if>
         </where>
-        order by t.signinDate
+        order by t.sortNo
     </select>
 
     <select id="selectTodayNotSignData" resultType="com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO">
