@@ -156,13 +156,13 @@
     </div>
 
     <a-modal v-model="submitVisible" :title="modalTitle" ok-text="确认" cancel-text="取消" @ok="onSubmit">
-<!--      <a-form layout="inline" class="search-content">
+      <!--      <a-form layout="inline" class="search-content">
         <a-form-model-item label="质量状态">
           <a-select
             style="width: 180px"
             placeholder="请选择质量状态"
             allow-clear
-            v-model="queryForm.cell"
+            v-model="queryForm.qualityStatus"
           >
             <a-select-option v-for="item in qualityStatus" :key="item.id" :value="item.text">
               {{ item.text }}
@@ -196,6 +196,10 @@ const qualityStatus = [
   {
     text: 'B',
     value: 1
+  },
+  {
+    text: 'Q',
+    value: 2
   }
 ]
 
@@ -348,7 +352,8 @@ export default {
       submitVisible: false,
       modalTitle: '',
       modalRecord: undefined,
-      radioStatus: undefined
+      radioStatus: undefined,
+      qualityType: undefined
     }
   },
   computed: {
@@ -385,7 +390,8 @@ export default {
       // 调用API
       try {
         // await this.$store.dispatch('iqcManagement/updateIqcQuality', record)
-        await this.$store.dispatch('iqcManagement/updateIqcQuality', this.modalRecord)
+        const options = { ...this.modalRecord, 'type': this.qualityType }
+        await this.$store.dispatch('iqcManagement/updateIqcQuality', options)
         this.$message.success('修改质检状态成功！')
         this.loadTableList()
       } catch (error) {
@@ -395,9 +401,11 @@ export default {
     handleUpdate (clickMethod, record) {
       if (clickMethod === '同批次') {
         this.modalTitle = '物料编码:' + record.materialNb + ',批次号:' + record.batchNb
+        this.qualityType = '1'
       }
       if (clickMethod === '此托') {
         this.modalTitle = 'SSCC:' + record.ssccNumber + ',物料编码:' + record.materialNb
+        this.qualityType = '0'
       }
       console.log(record.changeStatus)
       if (record.changeStatus === 1) {
@@ -408,6 +416,7 @@ export default {
         this.submitVisible = true
       }
       this.modalRecord = record
+      this.radioStatus = record.qualityStatus
     },
     notQuality () {
       this.$confirm({
