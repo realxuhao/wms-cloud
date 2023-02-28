@@ -1,6 +1,7 @@
 package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.IQCChangeStatusDTO;
@@ -10,14 +11,17 @@ import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.utils.BeanConverUtil;
+import com.bosch.masterdata.api.domain.dto.IQCDTO;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -64,6 +68,24 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 //        }
         Integer i = stockMapper.changeStatus(iqcChangeStatusDTO);
         return i;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public List<IQCDTO> excelChangeStatus(List<IQCDTO> list) {
+        List<IQCDTO> result = new ArrayList<>();
+        for (IQCDTO iqcdto : list) {
+            LambdaUpdateWrapper<Stock> wrapper = new LambdaUpdateWrapper<>();
+            wrapper.eq(Stock::getSsccNumber, iqcdto.getSSCCNumber());
+            wrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            wrapper.set(Stock::getQualityStatus, iqcdto.getFinalSAPStatus());
+            wrapper.set(Stock::getChangeStatus, 1);
+            boolean update = this.update(wrapper);
+            if (update) {
+                result.add(iqcdto);
+            }
+        }
+        return result;
     }
 
     @Override

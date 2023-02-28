@@ -36,6 +36,15 @@
             </a-col>
           </a-row>
         </a-form>
+
+        <router-link :to="{name:'fullscreenTimeWIndow'}" v-show="!isFullscreen">
+          <a-tooltip placement="bottom" title="切为全屏">
+            <a-icon class="fullscreen" type="fullscreen" @click="handleFullscreen" />
+          </a-tooltip>
+        </router-link>
+        <router-link v-show="isFullscreen" :to="{name:'timeWindow'}" >
+          <a-icon class="fullscreen" @click="handleExitFullscreen" type="fullscreen-exit" />
+        </router-link>
       </div>
 
       <TimeWindowTable
@@ -52,6 +61,7 @@
 
 <script>
 import TimeWindowTable from './TimeWindowTable'
+import { fullscreen, exitFullscreen } from '@/utils/util'
 
 const queryFormAttr = () => {
   return {
@@ -61,6 +71,12 @@ const queryFormAttr = () => {
 
 export default {
   name: 'TimeWindow',
+  props: {
+    isFullscreen: {
+      type: Boolean,
+      default: () => false
+    }
+  },
   components: {
     TimeWindowTable
   },
@@ -85,6 +101,12 @@ export default {
     }
   },
   methods: {
+    handleFullscreen () {
+      fullscreen()
+    },
+    handleExitFullscreen () {
+      exitFullscreen()
+    },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
@@ -176,6 +198,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.wrapper{
+  position: relative;
+}
+
 .docknum-tag{
     background-color: #1890ff;
     height: 32px;
@@ -183,5 +209,18 @@ export default {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.fullscreen{
+  position: absolute;
+  right: 16px;
+  top:16px;
+  font-size: 24px;
+  transition: transform ease 0.2s;
+  cursor: pointer;
+  &:hover{
+    transform: scale(1.4);
+    transition: transform ease 0.2s;
+  }
 }
 </style>

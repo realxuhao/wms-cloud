@@ -21,31 +21,35 @@ import java.util.List;
 public class FileFallbackFactory implements FileService {
     private static final Logger log = LoggerFactory.getLogger(FileFallbackFactory.class);
 
-            @Override
-            public <T> R<List<T>> masterDataImport(MultipartFile file, String className) {
-                return R.fail("主数据文件服务调用失败");
-            }
+    @Override
+    public <T> R<List<T>> masterDataImport(MultipartFile file, String className) {
+        return R.fail("主数据文件服务调用失败");
+    }
 
-            @Override
-            public <T> R<List<T>> materialReceiveImport(MultipartFile file, String className) {
-                return R.fail("入库文件服务调用失败");
-            }
+    @Override
+    public <T> R<List<T>> IQCDataImport(MultipartFile file, String className) {
+        return R.fail("入库文件服务调用失败");
+    }
 
-            @Override
-            public R<SysFile> upload(MultipartFile file) {
-                return R.fail("miniIO上传失败");
-            }
+    @Override
+    public <T> R<List<T>> materialReceiveImport(MultipartFile file, String className) {
+        return R.fail("入库文件服务调用失败");
+    }
 
-            @Override
-            public R download(String fileName) {
-                return R.fail("");
-            }
+    @Override
+    public R<SysFile> upload(MultipartFile file) {
+        return R.fail("miniIO上传失败");
+    }
 
-            @Override
-            public <T> R<List<T>> materialCallImport(MultipartFile file, String className) {
-                return R.fail("叫料excel导入失败");
-            }
+    @Override
+    public R download(String fileName) {
+        return R.fail("");
+    }
 
+    @Override
+    public <T> R<List<T>> materialCallImport(MultipartFile file, String className) {
+        return R.fail("叫料excel导入失败");
+    }
 
 
 }
