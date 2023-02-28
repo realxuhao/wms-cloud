@@ -14,6 +14,7 @@ import com.bosch.binin.mapper.IQCSamplePlanMapper;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.binin.service.IStockService;
+import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
@@ -57,7 +58,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
     @Override
     public List<IQCSamplePlanVO> getSamplePlan(IQCSamplePlanQueryDTO dto) {
         List<IQCSamplePlanVO> samplePlanList = samplePlanMapper.getSamplePlanList(dto);
-        if (CollectionUtils.isEmpty(samplePlanList)){
+        if (CollectionUtils.isEmpty(samplePlanList)) {
             return Collections.emptyList();
         }
         return samplePlanList;
@@ -288,6 +289,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
     @Override
     public void confirm(IQCSamplePlanDTO dto) {
+
         LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
         iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, dto.getSsccNb());
         iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
@@ -301,7 +303,11 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         iqcSamplePlan.setSampleQuantity(dto.getSampleQuantity());
         iqcSamplePlan.setSampleTime(new Date());
         iqcSamplePlan.setSampleUser(SecurityUtils.getUsername());
-        iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_IN.code());
+        if (iqcSamplePlan.getSampleQuantity() != iqcSamplePlan.getQuantity()) {
+            iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_IN.code());
+        } else {
+            iqcSamplePlan.setStatus(IQCStatusEnum.FINISH.code());
+        }
         samplePlanMapper.updateById(iqcSamplePlan);
     }
 

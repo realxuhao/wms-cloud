@@ -13,6 +13,7 @@ import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.log.annotation.Log;
@@ -95,7 +96,7 @@ public class WareShiftController extends BaseController {
         if (queryDTO == null) {
             queryDTO = new WareShiftQueryDTO();
         }
-        if (SecurityUtils.getWareCode() != null) {
+        if (!StringUtils.isEmpty(SecurityUtils.getWareCode())) {
             queryDTO.setSourceWareCode(SecurityUtils.getWareCode());
         }
         startPage();
