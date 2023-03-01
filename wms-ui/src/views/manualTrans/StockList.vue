@@ -43,6 +43,7 @@
             rowKey="id"
             :pagination="false"
             size="middle"
+            :scroll="tableScroll"
             @change="handleChangeTab"
           >
           </a-table>

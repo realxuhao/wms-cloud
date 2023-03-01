@@ -22,7 +22,7 @@
         rowKey="deliverId"
         :pagination="false"
         size="middle"
-        :scroll="{ x: 1300 }"
+        :scroll="tableScroll"
       >
 
         <template slot="statusDes" slot-scope="text, record">

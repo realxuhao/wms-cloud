@@ -9,6 +9,7 @@
         rowKey="purchaseId"
         :pagination="false"
         size="small"
+        :scroll="tableScroll"
       >
       </a-table>
 

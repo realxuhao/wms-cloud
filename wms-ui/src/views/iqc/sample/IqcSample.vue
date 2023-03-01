@@ -45,6 +45,7 @@
                 },
               }),
             }"
+            :scroll="tableScroll"
             :columns="columns"
             :data-source="list"
             :loading="tableLoading"

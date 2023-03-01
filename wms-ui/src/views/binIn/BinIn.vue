@@ -70,7 +70,7 @@
         rowKey="id"
         :pagination="false"
         size="middle"
-        :scroll="{ x: 1300 }"
+        :scroll="tableScroll"
       >
         <template slot="status" slot-scope="text">
           <div >
