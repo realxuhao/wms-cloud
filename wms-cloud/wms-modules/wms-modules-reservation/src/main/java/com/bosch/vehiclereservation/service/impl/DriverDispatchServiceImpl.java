@@ -22,34 +22,20 @@ import com.bosch.vehiclereservation.mapper.DriverDeliverMapper;
 import com.bosch.vehiclereservation.mapper.DriverDispatchMapper;
 import com.bosch.vehiclereservation.mapper.SupplierReserveMapper;
 import com.bosch.vehiclereservation.service.IDriverDispatchService;
-import com.bosch.vehiclereservation.utils.BeanConverUtil;
-import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
-import io.swagger.models.auth.In;
-import org.apache.commons.compress.utils.IOUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
 
+import static javax.xml.transform.OutputKeys.MEDIA_TYPE;
+
 @Service
-@Component
 public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper, DriverDispatch> implements IDriverDispatchService {
 
     @Value("${wx.miniappid}")
@@ -192,22 +178,16 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
     public String getWxToken() {
         String token = "";
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + APPID + "&secret=" + SECERT;
-        HttpClient httpclient = new DefaultHttpClient();
-        HttpGet httpget = new HttpGet(url);
-        HttpResponse response = null;
-        byte[] res = null;
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder().url(url).get().build();
+        Call call = okHttpClient.newCall(request);
         try {
-            response = httpclient.execute(httpget);
-            res = IOUtils.toByteArray(response.getEntity().getContent());
-            JSONObject jo = JSON.parseObject(new String(res, "utf-8"));
-            token = jo.getString("access_token");
-        } catch (Exception e) {
-            throw new ServiceException("获取微信Token失败！");
-        } finally {
-            if (httpget != null) {
-                httpget.abort();
-            }
-            httpclient.getConnectionManager().shutdown();
+            Response resp = call.execute();
+            String body = resp.body().string();
+            JSONObject jsonBody = JSON.parseObject(body);
+            token = jsonBody.getString("access_token");
+        } catch (IOException e) {
+            throw new ServiceException("获取微信AccessToken失败！");
         }
         return token;
     }
@@ -218,45 +198,32 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
             return false;
         }
         String url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + dispatchSendWxDTO.getWxToken();
-        HttpPost httpPost = new HttpPost(url);
-        HttpClient httpclient = new DefaultHttpClient();
-        byte[] res = null;
+        Map<String, Map<String, String>> data = new HashMap<>();
+        Map<String, String> value1Map = new HashMap<>();
+        value1Map.put("value", "入场提醒");
+        data.put("thing1", value1Map);
+        Map<String, String> value2Map = new HashMap<>();
+        value2Map.put("value", "仓库:" + dispatchSendWxDTO.getWareCode() + ", 道口:" + dispatchSendWxDTO.getDockCode() + "。请及时入厂!");
+        data.put("thing2", value2Map);
+        WxMsgDTO wxMsgDTO = new WxMsgDTO();
+        wxMsgDTO.setTouser(dispatchSendWxDTO.getWechatId());
+        wxMsgDTO.setTemplate_id(TEMPLATEID);
+        wxMsgDTO.setPage("index");
+        wxMsgDTO.setData(data);
         try {
-            Map<String, Map<String, String>> data = new HashMap<>();
-            Map<String, String> value1Map = new HashMap<>();
-            value1Map.put("value", "入场提醒");
-            data.put("thing1", value1Map);
-            Map<String, String> value2Map = new HashMap<>();
-            value2Map.put("value", "仓库:" + dispatchSendWxDTO.getWareCode() + ", 道口:" + dispatchSendWxDTO.getDockCode() + "。请及时入厂!");
-            data.put("thing2", value2Map);
-
-            httpPost.addHeader("content-type", "application/json; charset=UTF-8");
-            httpPost.addHeader("Accept", "application/json");
-            httpPost.addHeader("Accept-Encoding", "UTF-8");
-
-            WxMsgDTO wxMsgDTO = new WxMsgDTO();
-            wxMsgDTO.setTouser(dispatchSendWxDTO.getWechatId());
-            wxMsgDTO.setTemplate_id(TEMPLATEID);
-            wxMsgDTO.setPage("index");
-            wxMsgDTO.setData(data);
-
-            StringEntity stringEntity = new StringEntity(JSONObject.parseObject(JSON.toJSONString(wxMsgDTO)).toString(), "UTF-8");
-            stringEntity.setContentType("application/x-www-form-urlencoded");
-            httpPost.setEntity(stringEntity);
-
-            HttpResponse response = httpclient.execute(httpPost);
-            res = IOUtils.toByteArray(response.getEntity().getContent());
-            JSONObject jo = JSON.parseObject(new String(res, "utf-8"));
-            return jo.size() == 3;
-        } catch (Exception e) {
+            String body = JSON.toJSONString(wxMsgDTO);
+            RequestBody reqBody = RequestBody.create(MediaType.parse(MEDIA_TYPE), body);
+            OkHttpClient okHttpClient = new OkHttpClient();
+            Request request = new Request.Builder().url(url).post(reqBody).build();
+            Call call = okHttpClient.newCall(request);
+            Response resp = call.execute();
+            String respBody = resp.body().string();
+            JSONObject jsonBody = JSON.parseObject(respBody);
+            Integer code = jsonBody.getInteger("errcode");
+            return code == 0;
+        } catch (IOException e) {
             throw new ServiceException("推送微信消息失败！");
-        } finally {
-            if (httpPost != null) {
-                httpPost.abort();
-            }
-            httpclient.getConnectionManager().shutdown();
         }
-
     }
 
 }
