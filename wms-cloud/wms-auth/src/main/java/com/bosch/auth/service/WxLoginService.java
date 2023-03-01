@@ -13,6 +13,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -30,11 +31,17 @@ public class WxLoginService
     @Autowired
     private TokenService tokenService;
 
+    @Value("${wx.miniappid}")
+    private String APPID;
+
+    @Value("${wx.secret}")
+    private String SECERT;
+
     public String WxGetOpenId(String code) throws IOException {
         Map<String,Object> rtnMap = new HashMap<String,Object>();
         String url = "https://api.weixin.qq.com/sns/jscode2session";
-        url += "?appid=wxdbed75d266b71b47";//自己的appid
-        url += "&secret=f16485d3c9097df9fa4eb4286b5cfe14";//密匙
+        url += "?appid=" + APPID;//自己的appid
+        url += "&secret=" + SECERT;//密匙
         url += "&js_code=" + code;
         url += "&grant_type=authorization_code";
         byte[] res = null;

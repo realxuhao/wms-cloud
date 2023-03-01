@@ -8,6 +8,7 @@ import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.masterdata.api.domain.dto.IQCDTO;
+import com.bosch.masterdata.api.domain.vo.IQCVO;
 
 import java.util.List;
 
@@ -26,7 +27,7 @@ public interface IStockService extends IService<Stock> {
 
     Integer changeStatus(IQCChangeStatusDTO iqcChangeStatusDTO);
 
-    List<IQCDTO> excelChangeStatus(List<IQCDTO> list);
+    List<IQCVO> excelChangeStatus(List<IQCDTO> list);
 
     List<StockVO> selectStockVOBySortType(StockQueryDTO stockQuerySTO);
 

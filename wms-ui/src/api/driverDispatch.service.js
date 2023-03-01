@@ -38,10 +38,32 @@ const complete = async (id) => {
   return data
 }
 
+/** 排序 */
+const sort = async (options) => {
+  const url = `/driverDispatch/sort`
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
+  return data
+}
+
+const getWxToken = async () => {
+  const url = `/driverDispatch/getWxToken`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const sendMsgToWx = async (options) => {
+  const url = `/driverDispatch/sendMsgToWx`
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
+  return data
+}
+
 export const driverDispatchService = {
   getTodaySignlist,
   getTodayNoSignList,
   importDock,
   enter,
-  complete
+  complete,
+  sort,
+  getWxToken,
+  sendMsgToWx
 }

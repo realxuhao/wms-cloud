@@ -23,7 +23,7 @@ public class DriverDispatchVO {
     private Long wareId;
 
     /**
-     * 仓库名称
+     * 仓库编码
      */
     @ApiModelProperty(value = "仓库编码")
     private String wareCode;
@@ -176,6 +176,9 @@ public class DriverDispatchVO {
      */
     @ApiModelProperty(value = "状态描述")
     private String statusDes;
+
+    @ApiModelProperty(value = "微信openid")
+    private String wechatId;
 
 
     public void setDriverType(Integer driverType) {

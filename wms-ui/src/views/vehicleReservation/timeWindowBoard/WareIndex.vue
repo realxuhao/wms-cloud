@@ -79,9 +79,10 @@ export default {
       try {
         const data = await this.$store.dispatch('ware/getOptionList')
         this.wareOptionList = data.data
-        this.timer = setInterval(() => {
+        if (this.wareOptionList.length > 0) {
+          this.queryForm.wareId = this.wareOptionList[0].id
           this.handleSearch()
-        }, 10 * 1000 * 1000)
+        }
       } catch (error) {
         this.$message.error(error.message)
       }
@@ -120,6 +121,9 @@ export default {
     },
     loadData () {
       this.getWareOptionList()
+      this.timer = setInterval(() => {
+        this.handleSearch()
+      }, 5 * 1000 * 1000)
     }
   },
   mounted () {

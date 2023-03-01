@@ -57,6 +57,7 @@
         t2.late,
         t2.signin_date as signinDate,
         t2.`status` as driverStatus,
+        t2.`wechat_id` as wechatId,
         CONCAT(DATE_FORMAT(t3.reserve_date, '%Y-%m-%d'), ' ', t3.time_window) as reserveDate,
         '' as cell
         from vr_driver_dispatch t1
@@ -80,6 +81,7 @@
         t2.late,
         t2.signin_date as signinDate,
         t2.`status` as driverStatus,
+        t2.`wechat_id` as wechatId,
         DATE_FORMAT(t2.pickup_date, '%Y-%m-%d') as reserveDate,
         t2.cell
         from vr_driver_dispatch t1
