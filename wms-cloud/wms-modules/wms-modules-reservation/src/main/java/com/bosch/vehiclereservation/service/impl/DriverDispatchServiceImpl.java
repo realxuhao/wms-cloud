@@ -177,19 +177,21 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
         int i = driverDispatchMapper.updateById(driverDispatch);
         if (i > 0) {
             if (sortNO > driverDispatchDTO.getNewSortNo()) {
-                driverDispatchMapper.updateSortNo(driverDispatchDTO.getDispatchId(), driverDispatchDTO.getNewSortNo(), sortNO, "add");
+                i = driverDispatchMapper.updateSortNo(driverDispatchDTO.getDispatchId(), driverDispatchDTO.getNewSortNo(), sortNO, "add");
+                return i > 0;
             }
             if (sortNO < driverDispatchDTO.getNewSortNo()) {
-                driverDispatchMapper.updateSortNo(driverDispatchDTO.getDispatchId(), sortNO, driverDispatchDTO.getNewSortNo(), "sub");
+                i = driverDispatchMapper.updateSortNo(driverDispatchDTO.getDispatchId(), sortNO, driverDispatchDTO.getNewSortNo(), "sub");
+                return i > 0;
             }
         }
-        return false;
+        return i > 0;
     }
 
     @Override
-    public String getWxToken(){
+    public String getWxToken() {
         String token = "";
-        String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+APPID+"&secret="+SECERT;
+        String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + APPID + "&secret=" + SECERT;
         HttpClient httpclient = new DefaultHttpClient();
         HttpGet httpget = new HttpGet(url);
         HttpResponse response = null;
@@ -225,7 +227,7 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
             value1Map.put("value", "入场提醒");
             data.put("thing1", value1Map);
             Map<String, String> value2Map = new HashMap<>();
-            value2Map.put("value", "仓库:" + dispatchSendWxDTO.getWareCode() + ", 道口:" + dispatchSendWxDTO.getDockCode() + "。请及时入厂!" );
+            value2Map.put("value", "仓库:" + dispatchSendWxDTO.getWareCode() + ", 道口:" + dispatchSendWxDTO.getDockCode() + "。请及时入厂!");
             data.put("thing2", value2Map);
 
             httpPost.addHeader("content-type", "application/json; charset=UTF-8");
@@ -246,7 +248,7 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
             res = IOUtils.toByteArray(response.getEntity().getContent());
             JSONObject jo = JSON.parseObject(new String(res, "utf-8"));
             return jo.size() == 3;
-        }catch (Exception e) {
+        } catch (Exception e) {
             throw new ServiceException("推送微信消息失败！");
         } finally {
             if (httpPost != null) {
