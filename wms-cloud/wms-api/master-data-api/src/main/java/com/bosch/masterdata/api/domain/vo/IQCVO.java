@@ -1,18 +1,11 @@
-package com.bosch.masterdata.api.domain.dto;
+package com.bosch.masterdata.api.domain.vo;
 
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.Objects;
-
-
 @Data
-public class IQCDTO  {
-
-
+public class IQCVO {
 
     /**
      * PlantNb
@@ -50,23 +43,8 @@ public class IQCDTO  {
     private String identification;
 
     /**
-     * 重写equals方法
+     * status 0:成功 1:失败
      */
-    @Override
-    public boolean equals(Object o) {
-        if (o == this) return true;
-        if (!(o instanceof IQCDTO)) return false;
-        IQCDTO iqcdto = (IQCDTO) o;
-        return Objects.equals(plantNb, iqcdto.plantNb) && Objects.equals(SSCCNumber, iqcdto.SSCCNumber)
-                && Objects.equals(finalSAPStatus, iqcdto.finalSAPStatus) && Objects.equals(sapProcessStatus, iqcdto.sapProcessStatus)
-                && Objects.equals(identification, iqcdto.identification);
-    }
-
-    /**
-     * 重写hashCode方法
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(plantNb, SSCCNumber, finalSAPStatus, sapProcessStatus, identification);
-    }
+    @ApiModelProperty(value = "status 0:成功 1:失败")
+    private Integer status;
 }

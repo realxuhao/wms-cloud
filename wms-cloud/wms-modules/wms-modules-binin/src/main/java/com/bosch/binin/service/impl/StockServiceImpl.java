@@ -12,6 +12,7 @@ import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.domain.dto.IQCDTO;
+import com.bosch.masterdata.api.domain.vo.IQCVO;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
@@ -72,8 +73,8 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<IQCDTO> excelChangeStatus(List<IQCDTO> list) {
-        List<IQCDTO> result = new ArrayList<>();
+    public List<IQCVO> excelChangeStatus(List<IQCDTO> list) {
+        List<IQCVO> result = new ArrayList<>();
         for (IQCDTO iqcdto : list) {
             LambdaUpdateWrapper<Stock> wrapper = new LambdaUpdateWrapper<>();
             wrapper.eq(Stock::getSsccNumber, iqcdto.getSSCCNumber());
@@ -81,9 +82,10 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             wrapper.set(Stock::getQualityStatus, iqcdto.getFinalSAPStatus());
             wrapper.set(Stock::getChangeStatus, 1);
             boolean update = this.update(wrapper);
-            if (update) {
-                result.add(iqcdto);
-            }
+            IQCVO conver = BeanConverUtil.conver(iqcdto, IQCVO.class);
+            conver.setStatus(update?0:1);
+                result.add(conver);
+
         }
         return result;
     }
