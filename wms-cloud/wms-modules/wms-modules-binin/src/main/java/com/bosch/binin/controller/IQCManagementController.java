@@ -16,6 +16,7 @@ import com.bosch.masterdata.api.RemoteMesBarCodeService;
 import com.bosch.masterdata.api.domain.Ecn;
 import com.bosch.masterdata.api.domain.dto.EcnDTO;
 import com.bosch.masterdata.api.domain.dto.IQCDTO;
+import com.bosch.masterdata.api.domain.vo.IQCVO;
 import com.bosch.masterdata.api.domain.vo.MesBarCodeVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
@@ -66,12 +67,12 @@ public class IQCManagementController extends BaseController {
 
     @PostMapping(value = "/validateStatus")
     @ApiOperation("校验质检状态")
-    public R validateStatus(@Valid  @RequestBody IQCChangeStatusDTO iqcChangeStatusDTO) {
+    public R validateStatus(@Valid @RequestBody IQCChangeStatusDTO iqcChangeStatusDTO) {
         try {
             //校验勾选数据是否
             boolean b = stockService.validateStatus(iqcChangeStatusDTO.getId());
-            if(b){
-                return R.fail(400,"此SSCC做过质检，是否确认再次变更质量状态");
+            if (b) {
+                return R.fail(400, "此SSCC做过质检，是否确认再次变更质量状态");
             }
             return R.ok();
         } catch (Exception e) {
@@ -79,9 +80,10 @@ public class IQCManagementController extends BaseController {
             return R.fail(e.getMessage());
         }
     }
+
     @PostMapping(value = "/changeStatus")
     @ApiOperation("修改质检状态")
-    public R changeStatus(@Valid  @RequestBody IQCChangeStatusDTO iqcChangeStatusDTO) {
+    public R changeStatus(@Valid @RequestBody IQCChangeStatusDTO iqcChangeStatusDTO) {
         try {
 
             Integer integer = stockService.changeStatus(iqcChangeStatusDTO);
@@ -92,6 +94,7 @@ public class IQCManagementController extends BaseController {
             return R.fail(e.getMessage());
         }
     }
+
     /**
      * 批量上传
      */
@@ -99,29 +102,41 @@ public class IQCManagementController extends BaseController {
     @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
 
     public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
-
         //解析文件服务
         R result = fileService.IQCDataImport(file, ClassType.IQCDTO.getDesc());
-        List<IQCDTO> resultList=new ArrayList<>();
+        List<IQCDTO> resultList = new ArrayList<>();
         if (result.isSuccess()) {
             Object data = result.getData();
             List<IQCDTO> list = JSON.parseArray(JSON.toJSONString(data), IQCDTO.class);
             if (CollectionUtils.isNotEmpty(list)) {
-                list.removeIf(o->!o.getSapProcessStatus().equals("O"));
+                list.removeIf(o -> !o.getSapProcessStatus().equals("O"));
                 Map<String, List<IQCDTO>> collect = list.stream().collect(Collectors.groupingBy(IQCDTO::getSSCCNumber));
-                collect.forEach((k,v)->{
+                collect.forEach((k, v) -> {
                     IQCDTO iqcdto = v.stream().max(Comparator.comparing(IQCDTO::getIdentification)).get();
                     resultList.add(iqcdto);
                 });
-
-                List<IQCDTO> iqcdtos = stockService.excelChangeStatus(resultList);
-                return R.ok(iqcdtos);
+                return R.ok(resultList);
 
             } else {
                 return R.fail("excel中无数据");
             }
         } else {
             return R.fail(result.getMsg());
+        }
+    }
+
+
+    @PostMapping(value = "/excelChangeStatus")
+    @ApiOperation("上传完excel修改质检状态")
+    public R<List<IQCVO>> excelChangeStatus(@RequestBody List<IQCDTO> iqcdtos) {
+        try {
+            List<IQCVO> result = stockService.excelChangeStatus(iqcdtos);
+
+            return R.ok(result);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return R.fail(e.getMessage());
         }
     }
 }
