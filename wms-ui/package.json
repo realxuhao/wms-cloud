@@ -27,6 +27,7 @@
     "mockjs2": "1.0.8",
     "moment": "^2.29.1",
     "nprogress": "^0.2.0",
+    "screenfull": "5.0.2",
     "sortablejs": "^1.15.0",
     "store": "^2.0.12",
     "uuid": "^8.3.2",

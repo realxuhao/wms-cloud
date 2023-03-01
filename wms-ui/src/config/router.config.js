@@ -369,6 +369,25 @@ export const asyncRouterMap = [
   },
 
   {
+    path: '/fullscreen',
+    name: 'fullscreen',
+    meta: {},
+    component: BlankLayout,
+    children: [
+      {
+        path: '/fullscreen/time-window',
+        name: 'fullscreenTimeWIndow',
+        meta: {},
+        component: () => import('@/views/masterData/timeWindow/Index'),
+        props () {
+          return {
+            isFullscreen: true
+          }
+        }
+      }
+    ]
+  },
+  {
     path: '*', redirect: '/404', hidden: true
   }
 ]

@@ -1,3 +1,5 @@
+import screenfull from 'screenfull'
+
 export function timeFix () {
   const time = new Date()
   const hour = time.getHours()
@@ -24,7 +26,7 @@ export function handleScrollHeader (callback) {
   let timer = 0
 
   let beforeScrollTop = window.pageYOffset
-  callback = callback || function () {}
+  callback = callback || function () { }
   window.addEventListener(
     'scroll',
     event => {
@@ -69,4 +71,12 @@ export function removeLoadingAnimate (id = '', timeout = 1500) {
 export function booleanResolver (str) {
   const map = { true: true, false: false }
   return map[str] === undefined ? false : map[str]
+}
+
+export function fullscreen () {
+  screenfull.toggle()
+}
+
+export function exitFullscreen () {
+  screenfull.exit()
 }

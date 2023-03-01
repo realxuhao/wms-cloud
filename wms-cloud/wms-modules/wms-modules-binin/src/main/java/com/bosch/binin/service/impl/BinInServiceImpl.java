@@ -453,18 +453,18 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         Ecn ecn = ecnR.getData();
         List<IQCSamplePlan> samplePlanList = new ArrayList<>();
 
-        if (EcnClassificationEnum.TTS.getCode().equals(ecn.getClassification())) {//TTS
+        if (EcnClassificationEnum.TTS.getDesc().equals(ecn.getClassification())) {//TTS
             samplePlanList = dealEcnTtsIqc(materialVO, ecn, binInList, sameBatchList);
-        } else if (EcnClassificationEnum.UNTTS.getCode().equals(ecn.getClassification())//非TTS
-                || EcnClassificationEnum.HGG.getCode().equals(ecn.getClassification())//皇冠盖
-                || EcnClassificationEnum.SMS.getCode().equals(ecn.getClassification())) {//说明书&标签
+        } else if (EcnClassificationEnum.UNTTS.getDesc().equals(ecn.getClassification())//非TTS
+                || EcnClassificationEnum.HGG.getDesc().equals(ecn.getClassification())//皇冠盖
+                || EcnClassificationEnum.SMS.getDesc().equals(ecn.getClassification())) {//说明书&标签
             samplePlanList = dealSameBatchQuantity(materialVO, ecn, binInList, sameBatchList);
-        } else if (EcnClassificationEnum.ZX.getCode().equals(ecn.getClassification())) {//国内产品纸箱
+        } else if (EcnClassificationEnum.ZX.getDesc().equals(ecn.getClassification())) {//国内产品纸箱
             Collections.shuffle(binInList);
             BinIn binIn = binInList.get(0);
             IQCSamplePlan samplePlan = convertToSamplePlan(binIn, Double.valueOf(2), materialVO.getCell());
             samplePlanList.add(samplePlan);
-        } else if (EcnClassificationEnum.BLP.getCode().equals(ecn.getClassification())) {//玻璃瓶
+        } else if (EcnClassificationEnum.BLP.getDesc().equals(ecn.getClassification())) {//玻璃瓶
             samplePlanList = dealEcnBlpProcess(materialVO, binInList, sameBatchList);
         }
 
@@ -508,14 +508,14 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         int totalPallet = sameBatchList.size();
         List<IQCSamplePlan> samplePlanList = new ArrayList<>();
 
-        if (EcnPlanEnum.A.getCode().equals(ecn.getPlan())) {
+        if (EcnPlanEnum.A.getDesc().equals(ecn.getPlan())) {
             double ceil = Math.ceil(Math.sqrt(totalPallet));
             Collections.shuffle(binInList);
             List<BinIn> sampleBinInList = binInList.subList(0, (int) ceil);
             samplePlanList = convertToSamplePlans(sampleBinInList, materialVO.getCell(), Double.valueOf(0));
-        } else if (EcnPlanEnum.C.getCode().equals(ecn.getPlan())) {
+        } else if (EcnPlanEnum.C.getDesc().equals(ecn.getPlan())) {
             samplePlanList = convertToSamplePlans(binInList, materialVO.getCell(), Double.valueOf(0));
-        } else if (EcnPlanEnum.B.getCode().equals(ecn.getPlan())) {
+        } else if (EcnPlanEnum.B.getDesc().equals(ecn.getPlan())) {
             samplePlanList = dealSameBatchQuantity(materialVO, ecn, binInList, sameBatchList);
         }
         return samplePlanList;

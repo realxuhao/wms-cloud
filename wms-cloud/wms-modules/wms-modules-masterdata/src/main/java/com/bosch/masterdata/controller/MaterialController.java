@@ -15,6 +15,7 @@ import com.bosch.masterdata.api.enumeration.ClassType;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
@@ -186,6 +187,7 @@ public class MaterialController extends BaseController {
                     materials.forEach(r -> {
                         LambdaUpdateWrapper<Material> wrapper = new LambdaUpdateWrapper<Material>();
                         wrapper.eq(Material::getCode, r.getCode());
+                        wrapper.eq(Material::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
                         boolean update = materialService.update(r, wrapper);
                         if (!update) {
                             r.setCreateBy(SecurityUtils.getUsername());

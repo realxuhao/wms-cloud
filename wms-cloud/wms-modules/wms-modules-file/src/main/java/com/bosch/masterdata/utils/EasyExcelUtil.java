@@ -74,7 +74,30 @@ public class EasyExcelUtil {
         return results;
     }
 
+    public static <T> List<T> readNoValid(InputStream inputStream, final Class<?> clazz, String className) {
+        if (inputStream == null) {
+            throw new ServiceException("解析出错了，文件流是null");
+        }
+        // 有个很重要的点 DataListener 不能被spring管理，要每次读取excel都要new,然后里面用到spring可以构造方法传进去
+        DataListener<T> listener = new DataListener<>();
+        ExcelReaderBuilder read = EasyExcel.read(inputStream, clazz, listener);
+        read.sheet().headRowNumber(1).doRead();
+        List<String> head = listener.getHead();
+        List<String> collect = head.stream().filter(Objects::nonNull).collect(Collectors.toList());
 
+        // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
+        //EasyExcel.read(inputStream, clazz, listener).sheet().doRead();
+        List<T> rows = listener.getRows();
+        List<T> results=new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(rows)){
+            for (T row : rows) {
+                if(!PropertyUtils.isEmpty(row)){
+                    results.add(row);
+                }
+            }
+        }
+        return results;
+    }
     public static void write(String outFile, List<?> list) {
         Class<?> clazz = list.get(0).getClass();
         EasyExcel.write(outFile, clazz).sheet().doWrite(list);

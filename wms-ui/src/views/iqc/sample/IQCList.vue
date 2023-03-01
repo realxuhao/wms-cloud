@@ -30,7 +30,7 @@
             </a-col>
             <a-col :span="4">
               <a-form-model-item label="物料编码">
-                <a-input v-model="queryForm.materielNb" placeholder="物料编码" allow-clear/>
+                <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
               </a-form-model-item>
             </a-col>
             <a-col :span="4">
@@ -303,7 +303,7 @@ const columns = [
 
 const queryFormAttr = () => {
   return {
-    materielNb: '',
+    materialNb: '',
     statusList: [],
     binDownUser: '',
     binDownTime: [],

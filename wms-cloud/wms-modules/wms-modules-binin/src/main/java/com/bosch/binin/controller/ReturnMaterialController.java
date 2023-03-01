@@ -10,6 +10,7 @@ import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
@@ -50,7 +51,7 @@ public class ReturnMaterialController extends BaseController {
         if (queryDTO == null) {
             queryDTO = new MaterialReturnQueryDTO();
         }
-        if (SecurityUtils.getWareCode() != null) {
+        if (!StringUtils.isEmpty(SecurityUtils.getWareCode())) {
             queryDTO.setWareCode(SecurityUtils.getWareCode());
         }
         startPage();

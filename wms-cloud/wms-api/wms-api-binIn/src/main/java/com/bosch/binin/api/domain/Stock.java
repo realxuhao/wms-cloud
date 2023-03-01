@@ -110,6 +110,9 @@ public class Stock extends BaseEntity {
      */
     private int wholeFlag;
 
-
+    /**
+     * 变更状态（0：未变更，1：已变更）
+     */
+    private int changeStatus;
 
 }

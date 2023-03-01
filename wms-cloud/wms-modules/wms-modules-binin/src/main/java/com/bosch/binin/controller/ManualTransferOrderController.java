@@ -8,6 +8,7 @@ import com.bosch.binin.service.IManualTransferOrderService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
@@ -38,7 +39,7 @@ public class ManualTransferOrderController extends BaseController {
         if (queryDTO == null) {
             queryDTO = new ManualTransQueryDTO();
         }
-        if (SecurityUtils.getWareCode() != null) {
+        if (!StringUtils.isEmpty(SecurityUtils.getWareCode())) {
             queryDTO.setSourceWareCode(SecurityUtils.getWareCode());
         }
         startPage();
