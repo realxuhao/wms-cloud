@@ -1,5 +1,6 @@
 package com.bosch.vehiclereservation.controller;
 
+import com.bosch.vehiclereservation.api.domain.dto.DispatchSendWxDTO;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDispatchDTO;
 import com.bosch.vehiclereservation.api.domain.dto.DriverSortDTO;
@@ -127,6 +128,28 @@ public class DriverDispatchController extends BaseController {
     @ApiOperation("车辆进厂排序")
     public AjaxResult dispatchSortNO(@RequestBody DriverSortDTO driverDispatchDTO) {
         return toAjax(driverDispatchService.dispatchSort(driverDispatchDTO));
+    }
+
+    /**
+     * 根据appid及密钥获取access_token
+     *
+     * @return
+     */
+    @GetMapping("/getWxToken")
+    @ApiOperation("根据appid及密钥获取access_token")
+    public AjaxResult getWxToken() {
+        return success(driverDispatchService.getWxToken());
+    }
+
+    /**
+     * 推送入厂消息到司机微信
+     *
+     * @return
+     */
+    @PostMapping("/sendMsgToWx")
+    @ApiOperation("推送入厂消息")
+    public AjaxResult sendMsgToWx(@RequestBody DispatchSendWxDTO dispatchSendWxDTO) {
+        return toAjax(driverDispatchService.sendMsgToWx(dispatchSendWxDTO));
     }
 
 }

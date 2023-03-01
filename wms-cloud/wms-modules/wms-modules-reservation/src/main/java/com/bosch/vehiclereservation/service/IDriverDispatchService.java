@@ -3,10 +3,12 @@ package com.bosch.vehiclereservation.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
+import com.bosch.vehiclereservation.api.domain.dto.DispatchSendWxDTO;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDispatchDTO;
 import com.bosch.vehiclereservation.api.domain.dto.DriverSortDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface IDriverDispatchService extends IService<DriverDispatch> {
@@ -57,4 +59,18 @@ public interface IDriverDispatchService extends IService<DriverDispatch> {
      * @return
      */
     boolean dispatchSort(DriverSortDTO driverDispatchDTO);
+
+    /**
+     * 根据appid及密钥获取access_token
+     *
+     * @return
+     */
+    String getWxToken();
+
+    /**
+     * 推送入厂消息到司机微信
+     *
+     * @return
+     */
+    boolean sendMsgToWx(DispatchSendWxDTO dispatchSendWxDTO);
 }

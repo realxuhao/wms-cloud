@@ -374,6 +374,7 @@ export default {
         this.$message.error(error.message)
       }
     },
+    /** table拖动 */
     rowDrop () {
       const tbody = document.querySelector('.sign .ant-table-tbody') // 元素选择器名称根据实际内容替换
       const _this = this
@@ -386,8 +387,8 @@ export default {
           _this.signList.splice(newIndex, 0, currRow)
           try {
             this.tableLoading = true
-            const { data } = await this.$store.dispatch('driverDispatch/getTodaySignlist', { dispatchId: currRow.dispatchId, newSortNo: newIndex })
-            console.info(data)
+            // const { data } = await this.$store.dispatch('driverDispatch/getTodaySignlist', { dispatchId: currRow.dispatchId, newSortNo: newIndex })
+            // console.info(data)
           } catch (error) {
             this.$message.error(error.message)
           } finally {
@@ -396,6 +397,7 @@ export default {
         }
       })
     },
+    /** 切换tab */
     callback (key) {
       if (key === '1') {
         this.loadSignTableList()
@@ -417,7 +419,6 @@ export default {
     },
     /** 入厂动作 */
     async handleEnter (record) {
-      console.info(record)
       // 判断是否分配仓库和道口，没有分配不能入厂
       if (record.wareId === null || record.dockCode === null) {
         this.$message.error('请先分配仓库和道口！')
@@ -428,7 +429,7 @@ export default {
         this.$message.success('入厂成功！')
 
         this.loadSignTableList()
-        this.sendMessageToWx()
+        this.sendMessageToWx(record)
       } catch (error) {
         console.log(error)
         this.$message.error('入厂失败，请联系系统管理员！')
@@ -446,10 +447,16 @@ export default {
         this.$message.error('完成失败，请联系系统管理员！')
       }
     },
-    async sendMessageToWx () {
-      const { data } = await this.$store.dispatch('driverDispatch/getWxToken')
-      console.info(data)
+    /** 发送微信推送 */
+    async sendMessageToWx (record) {
+      // 获取微信token
+      const { msg } = await this.$store.dispatch('driverDispatch/getWxToken')
+      if (msg) {
+        record = { ...record, ...{ wxToken: msg } }
+        await this.$store.dispatch('driverDispatch/sendMsgToWx', record)
+      }
     },
+    /** 查询已签到数据 */
     async loadSignTableList () {
       try {
         this.tableLoading = true
@@ -474,6 +481,7 @@ export default {
         this.tableLoading = false
       }
     },
+    /** 查询已预约未签到数据 */
     async loadNotSignTableList () {
       try {
         this.tableLoading = true
@@ -494,8 +502,8 @@ export default {
   },
   mounted () {
     this.loadData()
+    // 加载拖动列表事件
     this.rowDrop()
-    this.sendMessageToWx()
   }
 }
 </script>

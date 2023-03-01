@@ -37,6 +37,10 @@ const driverDispatch = {
     async getWxToken ({ commit }) {
       const data = await driverDispatchService.getWxToken()
       return data
+    },
+    async sendMsgToWx ({ commit }, options) {
+      const data = await driverDispatchService.sendMsgToWx(options)
+      return data
     }
   }
 }

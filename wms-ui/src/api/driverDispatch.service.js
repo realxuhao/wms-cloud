@@ -46,8 +46,14 @@ const sort = async (options) => {
 }
 
 const getWxToken = async () => {
-  const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx420ee1934a1dd092&secret=5ae128d2b787864b20b1d3b16ef5aadb`
-  const { data } = await createAuthInstance().get(url)
+  const url = `/driverDispatch/getWxToken`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const sendMsgToWx = async (options) => {
+  const url = `/driverDispatch/sendMsgToWx`
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
   return data
 }
 
@@ -58,5 +64,6 @@ export const driverDispatchService = {
   enter,
   complete,
   sort,
-  getWxToken
+  getWxToken,
+  sendMsgToWx
 }

@@ -1,5 +1,7 @@
 package com.bosch.vehiclereservation.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.masterdata.api.RemoteMasterDataService;
@@ -8,8 +10,10 @@ import com.bosch.masterdata.api.domain.vo.SupplierInfoVO;
 import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
+import com.bosch.vehiclereservation.api.domain.dto.DispatchSendWxDTO;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDispatchDTO;
 import com.bosch.vehiclereservation.api.domain.dto.DriverSortDTO;
+import com.bosch.vehiclereservation.api.domain.dto.WxMsgDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO;
 import com.bosch.vehiclereservation.api.enumeration.DispatchStatusEnum;
 import com.bosch.vehiclereservation.api.enumeration.DispatchTypeEnum;
@@ -24,13 +28,38 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import io.swagger.models.auth.In;
+import org.apache.commons.compress.utils.IOUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.*;
 
 @Service
+@Component
 public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper, DriverDispatch> implements IDriverDispatchService {
+
+    @Value("${wx.miniappid}")
+    private String APPID;
+
+    @Value("${wx.secret}")
+    private String SECERT;
+
+    @Value("${wx.templateid}")
+    private String TEMPLATEID;
 
     @Autowired
     private DriverDispatchMapper driverDispatchMapper;
@@ -156,4 +185,76 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
         }
         return false;
     }
+
+    @Override
+    public String getWxToken(){
+        String token = "";
+        String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid="+APPID+"&secret="+SECERT;
+        HttpClient httpclient = new DefaultHttpClient();
+        HttpGet httpget = new HttpGet(url);
+        HttpResponse response = null;
+        byte[] res = null;
+        try {
+            response = httpclient.execute(httpget);
+            res = IOUtils.toByteArray(response.getEntity().getContent());
+            JSONObject jo = JSON.parseObject(new String(res, "utf-8"));
+            token = jo.getString("access_token");
+        } catch (Exception e) {
+            throw new ServiceException("获取微信Token失败！");
+        } finally {
+            if (httpget != null) {
+                httpget.abort();
+            }
+            httpclient.getConnectionManager().shutdown();
+        }
+        return token;
+    }
+
+    @Override
+    public boolean sendMsgToWx(DispatchSendWxDTO dispatchSendWxDTO) {
+        if (StringUtils.isEmpty(dispatchSendWxDTO.getWxToken())) {
+            return false;
+        }
+        String url = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send?access_token=" + dispatchSendWxDTO.getWxToken();
+        HttpPost httpPost = new HttpPost(url);
+        HttpClient httpclient = new DefaultHttpClient();
+        byte[] res = null;
+        try {
+            Map<String, Map<String, String>> data = new HashMap<>();
+            Map<String, String> value1Map = new HashMap<>();
+            value1Map.put("value", "入场提醒");
+            data.put("thing1", value1Map);
+            Map<String, String> value2Map = new HashMap<>();
+            value2Map.put("value", "仓库:" + dispatchSendWxDTO.getWareCode() + ", 道口:" + dispatchSendWxDTO.getDockCode() + "。请及时入厂!" );
+            data.put("thing2", value2Map);
+
+            httpPost.addHeader("content-type", "application/json; charset=UTF-8");
+            httpPost.addHeader("Accept", "application/json");
+            httpPost.addHeader("Accept-Encoding", "UTF-8");
+
+            WxMsgDTO wxMsgDTO = new WxMsgDTO();
+            wxMsgDTO.setTouser(dispatchSendWxDTO.getWechatId());
+            wxMsgDTO.setTemplate_id(TEMPLATEID);
+            wxMsgDTO.setPage("index");
+            wxMsgDTO.setData(data);
+
+            StringEntity stringEntity = new StringEntity(JSONObject.parseObject(JSON.toJSONString(wxMsgDTO)).toString(), "UTF-8");
+            stringEntity.setContentType("application/x-www-form-urlencoded");
+            httpPost.setEntity(stringEntity);
+
+            HttpResponse response = httpclient.execute(httpPost);
+            res = IOUtils.toByteArray(response.getEntity().getContent());
+            JSONObject jo = JSON.parseObject(new String(res, "utf-8"));
+            return jo.size() == 3;
+        }catch (Exception e) {
+            throw new ServiceException("推送微信消息失败！");
+        } finally {
+            if (httpPost != null) {
+                httpPost.abort();
+            }
+            httpclient.getConnectionManager().shutdown();
+        }
+
+    }
+
 }
