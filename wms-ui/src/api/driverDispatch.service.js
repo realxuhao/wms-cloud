@@ -3,6 +3,13 @@ import { createAuthInstance } from './general'
 
 const baseUrl = `${config.apiHost}/vehiclereservation`
 
+/** 获取分页数据 */
+const getList = async (options) => {
+  const url = `/driverDispatch/pagelist`
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
+  return data
+}
+
 /** 获取今天签到车辆数据，包含以预约和未预约现场签到的 */
 const getTodaySignlist = async (options) => {
   const url = `/driverDispatch/signlist`
@@ -58,6 +65,7 @@ const sendMsgToWx = async (options) => {
 }
 
 export const driverDispatchService = {
+  getList,
   getTodaySignlist,
   getTodayNoSignList,
   importDock,
