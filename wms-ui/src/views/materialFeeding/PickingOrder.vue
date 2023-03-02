@@ -126,7 +126,7 @@
         :loading="tableLoading"
         rowKey="ssccNumber"
         :pagination="false"
-        :scroll="{ x: 1300 }"
+        :scroll="tableScroll"
         size="middle"
       >
         <template slot="status" slot-scope="text">

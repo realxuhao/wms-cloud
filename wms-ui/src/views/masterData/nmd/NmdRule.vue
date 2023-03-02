@@ -85,6 +85,7 @@
         rowKey="id"
         :pagination="false"
         size="middle"
+        :scroll="tableScroll"
       >
         <template slot="updateBy" slot-scope="text, record">
           {{ record.updateBy?record.updateBy:record.createBy }}
@@ -170,6 +171,18 @@ const checkLevel = [
   {
     text: 'S-4',
     value: 'S-4'
+  },
+  {
+    text: 'Ⅰ',
+    value: 'Ⅰ'
+  },
+  {
+    text: 'Ⅱ',
+    value: 'Ⅱ'
+  },
+  {
+    text: 'Ⅲ',
+    value: 'Ⅲ'
   }
 ]
 

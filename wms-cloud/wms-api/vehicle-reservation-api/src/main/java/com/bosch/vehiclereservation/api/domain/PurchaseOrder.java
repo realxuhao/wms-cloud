@@ -1,5 +1,7 @@
 package com.bosch.vehiclereservation.api.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
@@ -21,13 +23,14 @@ public class PurchaseOrder extends BaseEntity {
     /**
      * 主键id
      */
-    @TableId(value = "purchase_id")
+    @TableId(value = "purchase_id", type = IdType.AUTO)
     private Long purchaseId;
 
     /**
      * 订单PO号
      */
-    private String poCode;
+    @TableField(value = "po_code")
+    private String poNo;
 
     /**
      * 订单行号
@@ -37,17 +40,20 @@ public class PurchaseOrder extends BaseEntity {
     /**
      * 供应商名称
      */
-    private String supplierName;
+    @TableField(value = "supplier_name")
+    private String supplier;
 
     /**
      * 料号
      */
-    private String materialCode;
+    @TableField(value = "material_code")
+    private String sapCode;
 
     /**
      * 物料名称
      */
-    private String materialName;
+    @TableField(value = "material_name")
+    private String sapName;
 
     /**
      * 需求数量

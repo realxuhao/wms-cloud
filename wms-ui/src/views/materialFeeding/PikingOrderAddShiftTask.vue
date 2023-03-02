@@ -62,7 +62,7 @@
                 },
               })}"
 
-            :scroll="{ x: 1300 }"
+            :scroll="tableScroll"
             :columns="columns"
             :data-source="list"
             :loading="tableLoading"

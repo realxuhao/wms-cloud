@@ -99,7 +99,7 @@ public class IQCController extends BaseController {
     }
 
     @PutMapping(value = "/sample/cancel/{id}")
-    @ApiOperation("IQC抽样计划执行下架接口")
+    @ApiOperation("IQC抽样计划执行取消接口")
     public R binDown(@PathVariable("id") Long id) {
         samplePlanService.cancel(id);
         return R.ok();

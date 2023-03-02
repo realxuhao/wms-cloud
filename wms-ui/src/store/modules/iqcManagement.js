@@ -17,6 +17,14 @@ const iqcManagement = {
     async updateIqcQuality ({ commit }, options) {
       const data = await iqcManagementService.updateIqcQuality(options)
       return data
+    },
+    async uploadEditSSCCStatusFile ({ commit }, formdata) {
+      const data = await iqcManagementService.uploadEditSSCCStatusFile(formdata)
+      return data
+    },
+    async saveEditSSCCStatusList ({ commit }, options) {
+      const data = await iqcManagementService.saveEditSSCCStatusList(options)
+      return data
     }
   }
 }

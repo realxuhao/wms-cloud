@@ -2,8 +2,10 @@ package com.bosch.binin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.SplitRecord;
+import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.SplitPalletDTO;
 import com.bosch.binin.api.domain.dto.SplitQuertDTO;
+import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.SplitRecordVO;
 
 import java.util.List;
@@ -19,4 +21,9 @@ public interface ISplitService extends IService<SplitRecord> {
     void add(SplitPalletDTO splitPallet);
 
     List<SplitRecordVO> getList(SplitQuertDTO queryDTO);
+
+    BinInVO allocateBin(String mesBarCode, String wareCode);
+
+    void performBinIn(BinInDTO binInDTO);
+
 }

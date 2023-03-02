@@ -6,53 +6,65 @@
 
 
     <select id="getList" resultType="com.bosch.binin.api.domain.vo.SplitRecordVO">
-        select sr.id                 as id,
-               sr.source_sscc        as sourceSscc,
-               sr.sscc_nb            as ssccNb,
-               sr.material_nb        as materialNb,
-               sr.split_quantity     as splitQuantity,
-               sr.new_mes_bar_code   as newMesBarCode,
-               sr.source_total_stock as sourceTotalStock,
-               sr.create_by          as createby,
-               sr.create_time        as createTime,
-               sr.ware_code as wareCode,
-               bss.bin_code          as sourceBinCode,
-               bss.area_code         as sourceAreaCode,
-               bst.bin_code          as targetBinCode,
-               bst.area_code         as targetAreaCode,
-               mm.name               as materialName,
-               mm.unit               as unit
+        select sr.id as id,
+        sr.source_sscc as sourceSscc,
+        sr.sscc_nb as ssccNb,
+        sr.material_nb as materialNb,
+        sr.split_quantity as splitQuantity,
+        sr.new_mes_bar_code as newMesBarCode,
+        sr.source_total_stock as sourceTotalStock,
+        sr.create_by as createby,
+        sr.create_time as createTime,
+        sr.ware_code as wareCode,
+        bss.bin_code as sourceBinCode,
+        bss.area_code as sourceAreaCode,
+        bst.bin_code as targetBinCode,
+        bst.area_code as targetAreaCode,
+        mm.name as materialName,
+        mm.unit as unit,
+        sr.status as status
         from split_record sr
-                 left join (select sscc_number,
-                                   area_code,
-                                   bin_code,
-                                   total_stock,
-                                   available_stock
-                            from bi_stock
-                            where delete_flag = 0
-                                    <if test="sourceAreaCode != null and sourceAreaCode != ''">AND bi_stock.area_code like concat('%',#{sourceAreaCode},'%')</if>
-                                    <if test="sourceBinCode != null and sourceBinCode != ''">AND bi_stock.bin_code like concat('%',#{sourceBinCode},'%')</if>
+        left join (select sscc_number,
+        area_code,
+        bin_code,
+        total_stock,
+        available_stock
+        from bi_stock
+        where delete_flag = 0
+        <if test="sourceAreaCode != null and sourceAreaCode != ''">AND bi_stock.area_code like
+            concat('%',#{sourceAreaCode},'%')
+        </if>
+
+        <if test="sourceBinCode != null and sourceBinCode != ''">AND bi_stock.bin_code like
+            concat('%',#{sourceBinCode},'%')
+        </if>
 
         ) bss
-                           on bss.sscc_number = sr.source_sscc
-                 left join (select sscc_number,
-                                   area_code,
-                                   bin_code,
-                                   total_stock,
-                                   available_stock
-                            from bi_stock
-                            where delete_flag = 0
-                                <if test="targetAreaCode != null and targetAreaCode != ''">AND bi_stock.area_code like concat('%',#{targetAreaCode},'%')</if>
-                                <if test="targetBinCode != null and targetBinCode != ''">AND bi_stock.bin_code like concat('%',#{targetBinCode},'%')</if>
+        on bss.sscc_number = sr.source_sscc
+        left join (select sscc_number,
+        area_code,
+        bin_code,
+        total_stock,
+        available_stock
+        from bi_stock
+        where delete_flag = 0
+        <if test="targetAreaCode != null and targetAreaCode != ''">AND bi_stock.area_code like
+            concat('%',#{targetAreaCode},'%')
+        </if>
+        <if test="targetBinCode != null and targetBinCode != ''">AND bi_stock.bin_code like
+            concat('%',#{targetBinCode},'%')
+        </if>
 
         ) bst on bst.sscc_number = sr.sscc_nb
-                 left join md_material mm on mm.code = sr.material_nb and mm.delete_flag = 0
+        left join md_material mm on mm.code = sr.material_nb and mm.delete_flag = 0
         where sr.delete_flag = 0
         <if test="wareCode != null and wareCode != ''">
             AND sr.ware_code like concat('%',#{wareCode},'%')
         </if>
         <if test="ssccNb != null and ssccNb != ''">
             AND sr.sscc_nb like concat('%',#{ssccNb},'%')
+        </if>
+        <if test="status != null">AND sr.status =#{status}
         </if>
         <if test="materialNb != null and materialNb != ''">
             AND sr.material_nb like concat('%',#{materialNb},'%')

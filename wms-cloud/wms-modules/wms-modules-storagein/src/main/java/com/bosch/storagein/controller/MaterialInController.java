@@ -71,7 +71,7 @@ public class MaterialInController extends BaseController {
 
         List<Integer> collect = materialReceiveVOs.stream().map(MaterialReceiveVO::getStatus).collect(Collectors.toList());
         if (collect.contains(MaterialStatusEnum.IN.getCode())) {
-            return R.fail(null, ResponseConstants.BATCH_HAS_IN, "该批次已入库");
+            return R.fail(null, ResponseConstants.BATCH_HAS_IN, "该物料"+MesBarCodeUtil.getSSCC(mesBarCode)+"已入库");
         }
         return R.ok(materialInService.getMaterialCheckInfo(mesBarCode));
     }

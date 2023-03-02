@@ -40,7 +40,7 @@
         rowKey="purchaseId"
         :pagination="false"
         size="middle"
-        :scroll="{ x: 1300 }"
+        :scroll="tableScroll"
       >
         <template slot="arriveQuantity" slot-scope="text, record">
           <div>

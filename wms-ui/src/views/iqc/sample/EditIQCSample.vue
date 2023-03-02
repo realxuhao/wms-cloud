@@ -28,6 +28,7 @@
             :loading="tableLoading"
             :pagination="false"
             size="middle"
+            :scroll="tableScroll"
           >
             <template slot="action" slot-scope="text, row">
               <div class="action-con">

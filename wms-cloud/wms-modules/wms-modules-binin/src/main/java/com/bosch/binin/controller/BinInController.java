@@ -77,7 +77,7 @@ public class BinInController extends BaseController {
     @ApiOperation("实际上架")
     public R<BinInVO> in(@RequestBody BinInDTO binInDTO) {
 
-        return R.ok(binInService.performBinIn(binInDTO));
+        return R.ok(binInService.performBinInWithIQC(binInDTO));
     }
 
 

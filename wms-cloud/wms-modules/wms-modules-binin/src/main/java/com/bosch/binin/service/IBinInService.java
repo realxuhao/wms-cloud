@@ -56,6 +56,13 @@ public interface IBinInService extends IService<BinIn> {
 
     BinInVO performBinIn(BinInDTO binInDTO);
 
+    /**
+     * 原材料上架 ，走IQC
+     * @param binInDTO
+     * @return
+     */
+    public BinInVO performBinInWithIQC(BinInDTO binInDTO);
+
     int deleteBinInById(Long id);
 
     List<BinInVO> selectProcessingBinVOList(BinInQueryDTO binInQueryDTO);

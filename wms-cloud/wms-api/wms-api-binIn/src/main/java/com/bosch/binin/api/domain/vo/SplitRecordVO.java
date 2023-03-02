@@ -102,5 +102,9 @@ public class SplitRecordVO {
     @ApiModelProperty(value = "仓库")
     private String wareCode;
 
+    @ApiModelProperty(value = "状态")
+    private Integer status;
+
+
 
 }

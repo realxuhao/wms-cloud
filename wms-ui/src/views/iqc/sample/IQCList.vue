@@ -102,7 +102,7 @@
           rowKey="id"
           :pagination="false"
           size="middle"
-          :scroll="{ x: 1300 }"
+          :scroll="tableScroll"
         >
           <template slot="statusSlot" slot-scope="text">
             <a-tag :color="statusColorMap[text]">
@@ -111,7 +111,11 @@
           </template>
           <template slot="action" slot-scope="text, record">
             <div class="action-con">
-              <a class="warning-color" @click="$refs.editSample.onOpen(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
+              <a
+                :disabled="[-1].includes(record.status)"
+                class="warning-color"
+                @click="$refs.editSample.onOpen(record)">
+                <a-icon class="m-r-4" type="edit" />编辑</a>
               <a-divider type="vertical" />
               <a-popconfirm
                 title="确认要取消吗?"
@@ -119,7 +123,7 @@
                 cancel-text="取消"
                 @confirm="handleDelete(record)"
               >
-                <a :disabled="record.status!=='0'" class="danger-color"><a-icon class="m-r-4" type="delete" />取消</a>
+                <a :disabled="record.status!== 0" class="danger-color"><a-icon class="m-r-4" type="delete" />取消</a>
               </a-popconfirm>
             </div>
           </template>
@@ -143,7 +147,7 @@
         >
         </IqcSample>
 
-        <EditSample ref="editSample"></EditSample>
+        <EditSample ref="editSample" @on-ok="loadTableList"></EditSample>
 
       </div>
     </div>

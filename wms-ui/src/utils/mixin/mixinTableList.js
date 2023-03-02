@@ -1,6 +1,7 @@
 const mixinTableList = {
   data () {
     return {
+
       visible: false,
       updateType: 'add', // edit、add
       currentUpdateId: 0,
@@ -19,6 +20,7 @@ const mixinTableList = {
     }
   },
   computed: {
+    tableScroll: () => ({ x: 1300, y: 700 }),
     startDateFormat () {
       return 'YYYY-MM-DD HH:MM:00'
     },

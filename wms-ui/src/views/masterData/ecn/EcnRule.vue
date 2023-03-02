@@ -73,6 +73,7 @@
         rowKey="id"
         :pagination="false"
         size="middle"
+        :scroll="tableScroll"
       >
         <template slot="updateBy" slot-scope="text, record">
           {{ record.updateBy?record.updateBy:record.createBy }}
