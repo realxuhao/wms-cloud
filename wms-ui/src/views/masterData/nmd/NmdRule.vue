@@ -171,6 +171,18 @@ const checkLevel = [
   {
     text: 'S-4',
     value: 'S-4'
+  },
+  {
+    text: 'Ⅰ',
+    value: 'Ⅰ'
+  },
+  {
+    text: 'Ⅱ',
+    value: 'Ⅱ'
+  },
+  {
+    text: 'Ⅲ',
+    value: 'Ⅲ'
   }
 ]
 
