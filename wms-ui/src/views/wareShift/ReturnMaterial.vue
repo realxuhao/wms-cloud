@@ -266,6 +266,16 @@ const statusMap = {
   }
 }
 
+const colorMap = {
+  '待检': 'orange',
+  '已检': 'green',
+  'U': 'green',
+  'B': 'red',
+  'Q': 'green',
+  '0': 'orange',
+  '1': 'green'
+}
+
 const queryFormAttr = () => {
   return {
     wareCode: '',
@@ -302,7 +312,8 @@ export default {
   computed: {
     moveTypeMap: () => moveTypeMap,
     typeMap: () => typeMap,
-    statusMap: () => statusMap
+    statusMap: () => statusMap,
+    colorMap: () => colorMap
   },
   methods: {
     handleResetQuery () {

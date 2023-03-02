@@ -225,7 +225,9 @@ const colorMap = {
   '已检': 'green',
   'U': 'green',
   'B': 'red',
-  'Q': 'green'
+  'Q': 'green',
+  '0': 'orange',
+  '1': 'green'
 }
 
 const changeStatusMap = {
@@ -487,6 +489,7 @@ export default {
         const options = { ...this.modalRecord, 'type': this.qualityType }
         await this.$store.dispatch('iqcManagement/updateIqcQuality', options)
         this.$message.success('修改质检状态成功！')
+        this.submitVisible = false
         this.loadTableList()
       } catch (error) {
         this.$message.error(error.message)
