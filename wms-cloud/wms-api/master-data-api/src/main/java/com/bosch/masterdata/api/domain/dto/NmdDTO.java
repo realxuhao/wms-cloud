@@ -46,20 +46,21 @@ public class NmdDTO extends PageDomain {
     /**
      * 检验水平级别
      */
-    @ExcelProperty(value = "检验水平级别")
+    @ExcelProperty(value = "检验水平级别(s-1,s-2,s-3,s-4,Ⅰ,Ⅱ,Ⅲ)")
     @ApiModelProperty(value = "检验水平级别")
     private String level;
 
     /**
      * 抽样方案（1：正常,2：加严,3：放宽）
      */
-    @ExcelProperty(value = "正常/加严/放宽")
+    @ExcelProperty(value = "抽样方案（1：正常,2：加严,3：放宽）")
     @ApiModelProperty(value = "抽样方案")
     private Integer plan;
 
     /**
      * 备注
      */
+    @ExcelProperty(value = "")
     @ApiModelProperty(value = "备注")
     private String remark;
 }
