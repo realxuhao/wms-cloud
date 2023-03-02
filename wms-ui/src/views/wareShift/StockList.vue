@@ -43,6 +43,7 @@
             rowKey="ssccNumber"
             :pagination="false"
             size="middle"
+            :scroll="tableScroll"
             @change="handleChangeTab"
           >
           </a-table>

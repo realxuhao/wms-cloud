@@ -48,6 +48,7 @@
         rowKey="id"
         :pagination="false"
         size="middle"
+        :scroll="tableScroll"
       >
         <template slot="action" slot-scope="text, record">
           <div class="action-con">

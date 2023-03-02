@@ -45,6 +45,7 @@
             :pagination="false"
             size="middle"
             @change="handleChangeTab"
+            :scroll="tableScroll"
           >
           </a-table>
           <div class="pagination-con">

@@ -102,7 +102,7 @@
           rowKey="id"
           :pagination="false"
           size="middle"
-          :scroll="{ x: 1300 }"
+          :scroll="tableScroll"
         >
           <template slot="statusSlot" slot-scope="text">
             <a-tag :color="statusColorMap[text]">

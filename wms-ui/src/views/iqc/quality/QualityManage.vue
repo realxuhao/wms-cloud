@@ -64,27 +64,6 @@
                 />
               </a-form-model-item>
             </a-col>
-            <!--            <a-col :span="4">
-              <a-form-model-item label="存储区编码">
-                <a-input v-model="queryForm.areaCode" placeholder="仓库编码" allow-clear/>
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-item label="库位编码">
-                <a-input v-model="queryForm.binCode" placeholder="库位编码" allow-clear/>
-              </a-form-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-model-item label="工厂编码">
-                <a-input v-model="queryForm.plantNb" placeholder="工厂编码" allow-clear/>
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-item label="托盘编码">
-                <a-input v-model="queryForm.palletCode" placeholder="托盘编码" allow-clear/>
-              </a-form-item>
-            </a-col>
-            -->
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
@@ -99,7 +78,19 @@
         </a-row>
       </a-form>
       <div class="action-content">
-
+        <a-upload
+          :file-list="[]"
+          name="file"
+          :multiple="true"
+          :before-upload="()=>false"
+          @change="handleUpload"
+        >
+          <a-button
+            type="primary"
+            :loading="uploadLoading"
+            icon="upload"
+          >批量修改质检状态</a-button>
+        </a-upload>
       </div>
       <a-table
         :columns="columns"
@@ -108,7 +99,7 @@
         rowKey="id"
         :pagination="false"
         size="middle"
-        :scroll="{ x: 1300, y: 1300 }"
+        :scroll="tableScroll"
       >
         <template slot="qualityStatusSlot" slot-scope="text">
           <a-tag :color="colorMap[text]">
@@ -179,6 +170,32 @@
           </a-radio-group>
         </a-form-item>
       </a-form>
+    </a-modal>
+
+    <a-modal
+      v-model="editSSCCVisible"
+      :width="800"
+      title="确认质检状态"
+      :ok-button-props="{ props: { disabled: confirmDisable } }"
+      @ok="handleSubmit"
+      :confirm-loading="confirmLoading">
+      <a-table
+        :columns="editSSCCColumns"
+        :data-source="editSSCCList"
+        rowKey="ssccNumber"
+        :pagination="false"
+        size="middle"
+        :scroll="{ y: 500 }"
+      >
+        <template slot="index" slot-scope="text">
+          {{ text }}
+        </template>
+        <template slot="status" slot-scope="text">
+          <a-tag :color="statusColroMap[text]" >
+            {{ statusTextMap[text] }}
+          </a-tag>
+        </template>
+      </a-table>
     </a-modal>
 
   </div>
@@ -319,6 +336,42 @@ const columns = [
   }
 ]
 
+const editSSCCColumns = [
+  {
+    title: '序号',
+    key: 'index',
+    dataIndex: 'index'
+  },
+  {
+    title: 'SSCC码',
+    key: 'ssccnumber',
+    dataIndex: 'ssccnumber'
+  },
+  {
+    title: '质检状态',
+    key: 'finalSAPStatus',
+    dataIndex: 'finalSAPStatus'
+  },
+  {
+    title: '更新状态',
+    key: 'status',
+    dataIndex: 'status',
+    scopedSlots: { customRender: 'status' }
+  }
+]
+
+const statusTextMap = {
+  '0': '成功',
+  '1': '失败',
+  '2': '待确认'
+}
+
+const statusColroMap = {
+  '0': 'green',
+  '1': 'red',
+  '2': 'orange'
+}
+
 const queryFormAttr = () => {
   return {
     plantNb: '',
@@ -341,7 +394,6 @@ export default {
   data () {
     return {
       tableLoading: false,
-      uploadLoading: false,
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -353,15 +405,57 @@ export default {
       modalTitle: '',
       modalRecord: undefined,
       radioStatus: undefined,
-      qualityType: undefined
+      qualityType: undefined,
+
+      uploadLoading: false,
+      editSSCCVisible: false,
+      editSSCCList: [],
+      confirmLoading: false,
+      confirmDisable: false
     }
   },
   computed: {
+    editSSCCColumns: () => editSSCCColumns,
     qualityStatus: () => qualityStatus,
     changeStatusMap: () => changeStatusMap,
-    colorMap: () => colorMap
+    colorMap: () => colorMap,
+    statusTextMap: () => statusTextMap,
+    statusColroMap: () => statusColroMap
   },
   methods: {
+    async handleUpload (e) {
+      const { file } = e
+
+      const formdata = new FormData()
+
+      try {
+        formdata.append('file', file)
+
+        this.uploadLoading = true
+        const { data } = await this.$store.dispatch('iqcManagement/uploadEditSSCCStatusFile', formdata)
+
+        this.editSSCCList = _.map(data, (x, index) => ({ ...x, status: 2, index: index + 1 }))
+        this.editSSCCVisible = true
+        this.confirmDisable = false
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.uploadLoading = false
+      }
+    },
+    async handleSubmit () {
+      try {
+        this.confirmLoading = true
+        const { data } = await this.$store.dispatch('iqcManagement/saveEditSSCCStatusList', this.editSSCCList)
+        this.editSSCCList = _.map(data, (x, index) => ({ ...x, index: index + 1 }))
+        this.$message.success('提交成功')
+        this.confirmDisable = true
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.confirmLoading = false
+      }
+    },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()

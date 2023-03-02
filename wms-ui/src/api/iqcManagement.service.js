@@ -18,7 +18,21 @@ const updateIqcQuality = async (id, options) => {
   return data
 }
 
+const uploadEditSSCCStatusFile = async (formdata) => {
+  const url = `/IQCManagement/import`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
+
+const saveEditSSCCStatusList = async (options) => {
+  const url = `/IQCManagement/excelChangeStatus`
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
+  return data
+}
+
 export const iqcManagementService = {
   getIqcQualityList,
-  updateIqcQuality
+  updateIqcQuality,
+  uploadEditSSCCStatusFile,
+  saveEditSSCCStatusList
 }

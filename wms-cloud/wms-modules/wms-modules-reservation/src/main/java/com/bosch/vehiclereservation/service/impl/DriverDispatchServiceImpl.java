@@ -112,6 +112,15 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
         if (driverDispatch.getWareId() == null || StringUtils.isEmpty(driverDispatch.getDockCode())) {
             throw new ServiceException("请先分配仓库和道口！");
         }
+        QueryWrapper<DriverDispatch> wrapper = new QueryWrapper<>();
+        wrapper.eq("ware_id", driverDispatch.getWareId());
+        wrapper.eq("dock_code", driverDispatch.getDockCode());
+        wrapper.eq("status", DispatchStatusEnum.ENTER.getCode());
+        wrapper.ne("dispatch_id", driverDispatch.getDispatchId());
+        int i = driverDispatchMapper.selectList(wrapper).size();
+        if (i > 0) {
+            throw new ServiceException("道口已占用！");
+        }
         driverDispatch.setStatus(DispatchStatusEnum.ENTER.getCode());
         driverDispatch.setComeinDate(DateUtils.getNowDate());
         return driverDispatchMapper.updateById(driverDispatch) > 0;
