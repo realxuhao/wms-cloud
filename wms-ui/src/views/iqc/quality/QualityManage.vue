@@ -225,7 +225,7 @@ const colorMap = {
   '已检': 'green',
   'U': 'green',
   'B': 'red',
-  'Q': 'green',
+  'Q': 'blue',
   '0': 'orange',
   '1': 'green'
 }
