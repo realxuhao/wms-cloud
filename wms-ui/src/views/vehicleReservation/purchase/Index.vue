@@ -6,7 +6,7 @@
         <a-row :gutter="16">
           <a-col :span="4">
             <a-form-model-item label="订单PO号">
-              <a-input v-model="queryForm.poCode" placeholder="订单PO号" allow-clear/>
+              <a-input v-model="queryForm.poNo" placeholder="订单PO号" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
@@ -113,8 +113,8 @@ import DetailsTable from './DetailsTable.vue'
 const columns = [
   {
     title: '订单PO号',
-    key: 'poCode',
-    dataIndex: 'poCode',
+    key: 'poNo',
+    dataIndex: 'poNo',
     width: 150,
     fixed: 'left'
   },
@@ -127,20 +127,20 @@ const columns = [
   },
   {
     title: '供应商名称',
-    key: 'supplierName',
-    dataIndex: 'supplierName',
+    key: 'supplier',
+    dataIndex: 'supplier',
     width: 200
   },
   {
     title: '料号',
-    key: 'materialCode',
-    dataIndex: 'materialCode',
+    key: 'sapCode',
+    dataIndex: 'sapCode',
     width: 150
   },
   {
     title: '物料名称',
-    key: 'materialName',
-    dataIndex: 'materialName',
+    key: 'sapName',
+    dataIndex: 'sapName',
     width: 200
   },
   {
@@ -204,7 +204,7 @@ const columns = [
 
 const queryFormAttr = () => {
   return {
-    poCode: '',
+    poNo: '',
     poItem: ''
   }
 }
