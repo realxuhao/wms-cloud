@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.vehiclereservation.api.domain.SyncDataLog;
 import com.bosch.vehiclereservation.api.domain.dto.PoReqDTO;
 import com.bosch.vehiclereservation.api.domain.dto.RecordDTO;
-import com.bosch.vehiclereservation.api.domain.dto.WareHouseOrderDTO;
 import com.bosch.vehiclereservation.mapper.PurchaseOrderMapper;
 import com.bosch.vehiclereservation.mapper.SyncDataLogMapper;
 import com.bosch.vehiclereservation.service.ISyncDataService;
