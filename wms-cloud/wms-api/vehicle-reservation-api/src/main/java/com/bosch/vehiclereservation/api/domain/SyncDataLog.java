@@ -1,22 +1,23 @@
 package com.bosch.vehiclereservation.api.domain;
 
+
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
-import java.math.BigDecimal;
+import java.util.Date;
 
 /**
- * 供应商预约单关联的采购信息 vr_supplier_porder
+ * 采购单同步日志 vr_syncdata_log
  *
  * @author taojd
- * @date 2023-02-14
+ * @date 2023-03-01
  */
 @Data
-@TableName("vr_supplier_porder")
-public class SupplierPorder extends BaseEntity {
+@TableName("vr_syncdata_log")
+public class SyncDataLog extends BaseEntity {
 
     /**
      * 主键id
@@ -25,23 +26,17 @@ public class SupplierPorder extends BaseEntity {
     private Long id;
 
     /**
-     * 采购表id
+     * 同步开始时间
      */
-    private Long purchaseId;
+    private Date syncStartDate;
 
     /**
-     * 供应商预约单no
+     * 同步结束时间
      */
-    private String reserveNo;
+    private Date syncEndDate;
 
     /**
-     * 实际送货数量
+     * 最后一条同步数据的时间
      */
-    private BigDecimal arriveQuantity;
-
-    /**
-     * 剩余送货数量
-     */
-    private BigDecimal surplusQuantity;
-
+    private Date syncLastDate;
 }

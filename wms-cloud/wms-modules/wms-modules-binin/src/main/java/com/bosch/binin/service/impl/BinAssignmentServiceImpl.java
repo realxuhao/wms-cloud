@@ -77,7 +77,7 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
         binInWrapper.eq(BinIn::getSsccNumber, sscc);
         binInWrapper.eq(BinIn::getMaterialNb, materialNb);
         binInWrapper.eq(BinIn::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
-        binInWrapper.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value()).or().eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
+//        binInWrapper.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value()).or().eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
 
         List<BinIn> binIns = binInMapper.selectList(binInWrapper);
 

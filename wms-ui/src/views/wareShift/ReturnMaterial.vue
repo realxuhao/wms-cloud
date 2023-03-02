@@ -111,7 +111,7 @@
           <span>{{ typeMap[text]&&typeMap[text].text }}</span>
         </template>
         <template slot="status" slot-scope="text">
-          <span>{{ statusMap[text]&&statusMap[text].text }}</span>
+          <a-tag :color="colorMap[text]">{{ statusMap[text]&&statusMap[text].text }}</a-tag>
         </template>
 
       </a-table>
@@ -266,6 +266,13 @@ const statusMap = {
   }
 }
 
+const colorMap = {
+  '-1': undefined,
+  0: 'orange',
+  1: 'orange',
+  2: 'green'
+}
+
 const queryFormAttr = () => {
   return {
     wareCode: '',
@@ -302,7 +309,8 @@ export default {
   computed: {
     moveTypeMap: () => moveTypeMap,
     typeMap: () => typeMap,
-    statusMap: () => statusMap
+    statusMap: () => statusMap,
+    colorMap: () => colorMap
   },
   methods: {
     handleResetQuery () {

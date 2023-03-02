@@ -4,7 +4,7 @@ public enum EcnClassificationEnum {
     UNTTS("非TTS物料", 0),
     TTS("TTS物料", 1),
     HGG("皇冠盖", 2),
-    ZX("国内产品纸箱", 3),
+    ZX("国内产品用纸箱", 3),
     BLP("玻璃瓶", 4),
     SMS("说明书&标签", 5);
 

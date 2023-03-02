@@ -8,8 +8,8 @@
     <select id="getNMDIQCRule" resultType="com.bosch.binin.api.domain.NMDIQCRule">
         select *
         from nmd_iqc_rule nir
-        where nir.max_total_quantity <![CDATA[ <= ]]> #{quantity}
-          and nir.min_total_quantity <![CDATA[ >= ]]> #{quantity}
+        where nir.max_total_quantity <![CDATA[ >= ]]> #{quantity}
+          and nir.min_total_quantity <![CDATA[ <= ]]> #{quantity}
           and nir.check_level = #{checkLevel}
     </select>
 </mapper>
