@@ -111,7 +111,11 @@
           </template>
           <template slot="action" slot-scope="text, record">
             <div class="action-con">
-              <a class="warning-color" @click="$refs.editSample.onOpen(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
+              <a
+                :disabled="[-1].includes(record.status)"
+                class="warning-color"
+                @click="$refs.editSample.onOpen(record)">
+                <a-icon class="m-r-4" type="edit" />编辑</a>
               <a-divider type="vertical" />
               <a-popconfirm
                 title="确认要取消吗?"
@@ -143,7 +147,7 @@
         >
         </IqcSample>
 
-        <EditSample ref="editSample"></EditSample>
+        <EditSample ref="editSample" @on-ok="loadTableList"></EditSample>
 
       </div>
     </div>
