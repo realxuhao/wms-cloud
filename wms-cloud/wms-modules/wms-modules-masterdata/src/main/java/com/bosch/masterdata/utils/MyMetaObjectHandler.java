@@ -21,6 +21,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     public void updateFill(MetaObject metaObject) {
 
         this.setFieldValByName("updateTime", DateUtils.getNowDate(), metaObject);
+        System.out.println(SecurityUtils.getUsername());
         this.setFieldValByName("updateBy", SecurityUtils.getUsername(), metaObject);
     }
 }

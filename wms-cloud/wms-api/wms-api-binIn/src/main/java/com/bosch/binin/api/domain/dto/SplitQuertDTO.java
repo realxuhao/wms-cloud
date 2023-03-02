@@ -28,6 +28,7 @@ public class SplitQuertDTO {
     private String targetBinCode;
     private String sourceAreaCode;
     private String sourceBinCode;
+    private Integer status;
 
 
 }
