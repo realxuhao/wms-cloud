@@ -30,6 +30,9 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -128,6 +131,7 @@ public class IQCManagementController extends BaseController {
 
     @PostMapping(value = "/excelChangeStatus")
     @ApiOperation("上传完excel修改质检状态")
+    @Transactional(rollbackFor = Exception.class)
     public R<List<IQCVO>> excelChangeStatus(@RequestBody List<IQCDTO> iqcdtos) {
         try {
             List<IQCVO> result = stockService.excelChangeStatus(iqcdtos);
@@ -135,6 +139,7 @@ public class IQCManagementController extends BaseController {
             return R.ok(result);
 
         } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             logger.error(e.getMessage());
             return R.fail(e.getMessage());
         }
