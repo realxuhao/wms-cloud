@@ -6,11 +6,11 @@
 
     <resultMap type="com.bosch.vehiclereservation.api.domain.PurchaseOrder" id="PurchaseOrderResult">
         <result property="purchaseId" column="purchase_id"/>
-        <result property="poCode" column="po_code"/>
+        <result property="poNo" column="po_code"/>
         <result property="poItem" column="po_item"/>
-        <result property="supplierName" column="supplier_name"/>
-        <result property="materialCode" column="material_code"/>
-        <result property="materialName" column="material_name"/>
+        <result property="supplier" column="supplier_name"/>
+        <result property="sapCode" column="material_code"/>
+        <result property="sapName" column="material_name"/>
         <result property="quantity" column="quantity"/>
         <result property="unit" column="unit"/>
         <result property="deliveryDate" column="delivery_date"/>

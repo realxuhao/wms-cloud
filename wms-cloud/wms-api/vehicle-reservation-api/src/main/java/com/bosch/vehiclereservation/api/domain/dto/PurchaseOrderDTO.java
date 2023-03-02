@@ -20,7 +20,7 @@ public class PurchaseOrderDTO extends PageDomain {
      * 订单PO号
      */
     @ApiModelProperty(value = "订单PO号")
-    private String poCode;
+    private String poNo;
 
     /**
      * 订单行号
@@ -32,19 +32,19 @@ public class PurchaseOrderDTO extends PageDomain {
      * 供应商名称
      */
     @ApiModelProperty(value = "供应商名称")
-    private String supplierName;
+    private String supplier;
 
     /**
      * 料号
      */
     @ApiModelProperty(value = "料号")
-    private String materialCode;
+    private String sapCode;
 
     /**
      * 物料名称
      */
     @ApiModelProperty(value = "物料名称")
-    private String materialName;
+    private String sapName;
 
     /**
      * 需求数量
