@@ -1,4 +1,3 @@
-
 package com.bosch.vehiclereservation.api.domain.dto;
 
 import lombok.Data;
