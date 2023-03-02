@@ -54,14 +54,25 @@
         </template>
         <template slot="remark" slot-scope="reText">
           <a-tooltip color="'purple'" :title="reText">
-            <span>{{ reText.length > 10 ? reText.substring(0,10) + "..." : reText }}</span>
+            <span>{{ reText ? reText.length > 10 ? reText.substring(0,10) + "..." : reText : "" }}</span>
           </a-tooltip>
         </template>
-        <!-- <template slot="action" slot-scope="text, record">
+        <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
+            <a class="primary-color" @click="handleDetails(record.purchaseId)"><a-icon class="m-r-4" type="table" />跟踪</a>
+            <a-divider type="vertical" />
+            <a-popconfirm
+              v-if="record.status == 0"
+              title="确认要完成吗?"
+              ok-text="确认"
+              cancel-text="取消"
+              @confirm="record.status == 0 && handleComplete(record)"
+            >
+              <a style="color: green"><a-icon class="m-r-4" type="check-circle" />完成</a>
+            </a-popconfirm>
+            <a v-else class="not-danger-color" ><a-icon class="m-r-4" type="check-circle" />完成</a>
           </div>
-        </template> -->
+        </template>
       </a-table>
 
       <div class="pagination-con">
@@ -76,12 +87,28 @@
       </div>
 
     </div>
-    <!-- TODO:订单完成按钮 & 查看关联预约单弹窗(预约信息及状态) -->
+    <!-- TODO:同步数据按钮 -->
+
+    <a-modal
+      v-drag-modal
+      v-model="isVisibleDetails"
+      title="订单预约信息跟踪"
+      :width="1200"
+      @cancel="closeDetails">
+      <DetailsTable
+        :isVisible="isVisibleDetails"
+        :purchaseId="purchaseId"
+      />
+      <template slot="footer">
+        <a-button @click="closeDetails">关闭</a-button>
+      </template>
+    </a-modal>
   </div>
 </template>
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+import DetailsTable from './DetailsTable.vue'
 
 const columns = [
   {
@@ -186,7 +213,7 @@ export default {
   name: 'VrPurchase',
   mixins: [mixinTableList],
   components: {
-
+    DetailsTable
   },
   props: {
   },
@@ -198,11 +225,35 @@ export default {
         ...queryFormAttr()
       },
       columns,
-      list: []
+      list: [],
+      /** 预约单详情弹窗是否显示 */
+      isVisibleDetails: false,
+      purchaseId: 0
 
     }
   },
   methods: {
+    /** 查看该预约单详情(查看对应po信息) */
+    handleDetails (purchaseId) {
+      this.isVisibleDetails = true
+      this.purchaseId = purchaseId
+    },
+    /** 关闭详情页弹窗 */
+    closeDetails () {
+      this.isVisibleDetails = false
+    },
+    /** 完成动作 */
+    async handleComplete (record) {
+      try {
+        await this.$store.dispatch('purchase/close', record.purchaseId)
+        this.$message.success('已完成！')
+
+        this.loadTableList()
+      } catch (error) {
+        console.log(error)
+        this.$message.error('完成失败，请联系系统管理员！')
+      }
+    },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
@@ -236,4 +287,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.not-danger-color{
+  color: #aaa
+}
 </style>

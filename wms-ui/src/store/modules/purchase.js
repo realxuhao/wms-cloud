@@ -17,6 +17,14 @@ const purchase = {
     async getListBySupplierName ({ commit }, option) {
       const data = await purchaseService.getListBySupplierName(option.name, option.queryParams)
       return data
+    },
+    async close ({ commit }, id) {
+      const data = await purchaseService.close(id)
+      return data
+    },
+    async detail ({ commit }, id) {
+      const data = await purchaseService.detail(id)
+      return data
     }
   }
 }

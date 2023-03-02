@@ -250,7 +250,7 @@ const signColumns = [
     key: 'statusDes',
     dataIndex: 'statusDes',
     scopedSlots: { customRender: 'statusDes' },
-    width: 80
+    width: 120
   },
   {
     title: '供应商名称',
@@ -474,7 +474,9 @@ export default {
 
         const { data } = await this.$store.dispatch('driverDispatch/getTodaySignlist', this.queryForm)
         this.signList = data
-        this.firstSortNo = Number(this.signList[0].sortNo)
+        if (this.signList.length > 0) {
+          this.firstSortNo = Number(this.signList[0].sortNo)
+        }
         this.signList.forEach(item => {
           const second = new Date().getTime() / 1000 - new Date(item.signinDate).getTime() / 1000
           this.$set(item, 'waitTime', parseInt(second / 60))

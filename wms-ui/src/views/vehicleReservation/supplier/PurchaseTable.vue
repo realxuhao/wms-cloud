@@ -360,6 +360,10 @@ export default {
           this.$message.error('请填写完整已选择订单的送货数量！')
           return
         }
+        if (this.selectedRowList[i].arriveQuantity > this.selectedRowList[i].quantity) {
+          this.$message.error('送货数量不能大于需求数量！')
+          return
+        }
       }
       if (!(this.supplierReserveDTO.wareId == null || this.supplierReserveDTO.reserveDate == null)) {
         this.getTimeWindowList()
