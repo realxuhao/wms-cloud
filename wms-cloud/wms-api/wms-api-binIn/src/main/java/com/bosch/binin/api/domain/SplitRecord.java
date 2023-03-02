@@ -58,4 +58,9 @@ public class SplitRecord extends BaseEntity {
      * 仓库
      */
     private String wareCode;
+
+    /**
+     *状态
+     */
+    private Integer status;
 }

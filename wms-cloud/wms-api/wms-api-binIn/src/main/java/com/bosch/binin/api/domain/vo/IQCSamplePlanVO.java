@@ -33,6 +33,7 @@ public class IQCSamplePlanVO {
     private String batchNb;
     @ApiModelProperty(value = "BBD过期时间")
     @Excel(name = "BBD过期时间")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date expireDate;
     @ApiModelProperty(value = "状态")
     @Excel(name = "状态")

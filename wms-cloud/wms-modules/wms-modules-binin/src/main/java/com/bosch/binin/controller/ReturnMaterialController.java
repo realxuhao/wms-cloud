@@ -63,16 +63,15 @@ public class ReturnMaterialController extends BaseController {
     @PostMapping(value = "/addMaterialReturn")
     @ApiOperation("新增退库")
     public R save(@RequestBody MaterialReturnDTO materialReturnDTO) {
-        try {
-            if (Objects.isNull(materialReturnDTO)) {
-                throw  new ServiceException("请扫描MesBarCode");
-            }
-            boolean save = materialReturnService.addMaterialReturn(materialReturnDTO);
-            return R.ok(save);
-        } catch (Exception e) {
-            return R.fail(e.getMessage());
+
+        if (Objects.isNull(materialReturnDTO)) {
+            throw new ServiceException("请扫描MesBarCode");
         }
+        boolean save = materialReturnService.addMaterialReturn(materialReturnDTO);
+        return R.ok(save);
+
     }
+
     @GetMapping(value = "/allocateBin/{mesBarCode}")
     @ApiOperation("退库上架分配库位")
     @Transactional(rollbackFor = Exception.class)
