@@ -1,6 +1,5 @@
 package com.bosch.vehiclereservation.service;
 
-
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.bosch.vehiclereservation.api.domain.PurchaseOrder;
@@ -8,11 +7,9 @@ import com.bosch.vehiclereservation.api.domain.SyncDataLog;
 import com.bosch.vehiclereservation.api.domain.dto.PoReqDTO;
 import com.bosch.vehiclereservation.api.domain.dto.RecordDTO;
 import com.bosch.vehiclereservation.api.domain.dto.WareHouseOrderDTO;
-import com.bosch.vehiclereservation.mapper.PurchaseOrderMapper;
-import com.bosch.vehiclereservation.mapper.SyncDataLogMapper;
-import com.bosch.vehiclereservation.service.impl.SyncDataServiceImpl;
 import com.bosch.vehiclereservation.utils.BeanConverUtil;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DateUtils;
 import okhttp3.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +19,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -37,17 +33,19 @@ public class StaticScheduleTask {
     @Autowired
     private IPurchaseOrderService purchaseOrderService;
 
-    //@Value("${apiurl.purchase-order}")
+    @Value("${apiurl.purchase-order}")
     private String purchaseOrderUrl;
 
     @Scheduled(cron = "0/55 * * * * ?")
     private void syncPurchaseOrderTasks() {
         System.out.println("执行定时任务时间: " + LocalDateTime.now());
-        //syncData();
+        syncData();
     }
 
     private void syncData() {
-        //SyncDataLog syncDataLog = new SyncDataLog();
+        SyncDataLog syncDataLog = new SyncDataLog();
+        syncDataLog.setSyncStartDate(DateUtils.getNowDate());
+        syncDataLog.setSyncLastDate(DateUtils.getNowDate());
         int pageIndex = 1;
         int pageSize = 100;
         SyncDataLog lastSyncData = syncDataService.getLastSyncData();
@@ -70,7 +68,7 @@ public class StaticScheduleTask {
                 if (wareHouseOrderDTO.getRecords().size() == 0) {
                     break;
                 }
-                if (lastSyncData != null) {
+                if (lastSyncData == null) {
                     initPurchaseOrders(wareHouseOrderDTO.getRecords());
                 } else {
                     comparePurchaseOrders(wareHouseOrderDTO.getRecords());
@@ -81,6 +79,8 @@ public class StaticScheduleTask {
         } catch (IOException e) {
             throw new ServiceException("供应商采购单接口调用失败！");
         }
+        syncDataLog.setSyncEndDate(DateUtils.getNowDate());
+        syncDataService.save(syncDataLog);
     }
 
     /**
@@ -113,7 +113,7 @@ public class StaticScheduleTask {
                 PurchaseOrder purchaseOrderUpdate = BeanConverUtil.conver(recordDTO, PurchaseOrder.class);
                 purchaseOrderUpdate.setPurchaseId(purchaseOrder.getPurchaseId());
                 purchaseOrderUpdate.setStatus(purchaseOrder.getStatus());
-                purchaseOrderService.save(purchaseOrderUpdate);
+                purchaseOrderService.saveOrUpdate(purchaseOrderUpdate);
             } else {
                 PurchaseOrder purchaseOrder = BeanConverUtil.conver(recordDTO, PurchaseOrder.class);
                 purchaseOrder.setStatus(0);
