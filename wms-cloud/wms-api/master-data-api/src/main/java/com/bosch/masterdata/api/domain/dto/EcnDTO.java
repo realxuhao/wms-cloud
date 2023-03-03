@@ -33,7 +33,7 @@ public class EcnDTO extends PageDomain {
     private String materialCode;
 
     /**
-     * 类别（0：Components，1：Package）
+     *
      */
     @ExcelProperty(value = "分类")
     @ApiModelProperty(value = "类别")

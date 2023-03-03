@@ -25,7 +25,7 @@ public enum NmdPlanEnum {
 
     public static boolean contain(String desc){
         for (NmdPlanEnum ele : values()) {
-            if (ele.desc.toString().equals(desc)) {
+            if (ele.code.toString().equals(desc)) {
                 return true;
             }
         }

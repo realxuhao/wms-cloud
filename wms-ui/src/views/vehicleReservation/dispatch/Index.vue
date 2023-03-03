@@ -174,6 +174,13 @@ import SetDockDrawer from './SetDockDrawer'
 
 import { mixinTableList } from '@/utils/mixin/index'
 const signColumns = [
+
+  {
+    title: '操作',
+    key: 'action',
+    width: 220,
+    scopedSlots: { customRender: 'action' }
+  },
   {
     title: '预约类型',
     key: 'driverTypeDes',
@@ -243,7 +250,7 @@ const signColumns = [
     key: 'statusDes',
     dataIndex: 'statusDes',
     scopedSlots: { customRender: 'statusDes' },
-    width: 80
+    width: 120
   },
   {
     title: '供应商名称',
@@ -262,12 +269,6 @@ const signColumns = [
     key: 'driverPhone',
     dataIndex: 'driverPhone',
     width: 120
-  },
-  {
-    title: '操作',
-    key: 'action',
-    width: 250,
-    scopedSlots: { customRender: 'action' }
   }
 ]
 const notSignColumns = [
@@ -347,6 +348,7 @@ export default {
       signList: [],
       /** 已签到数据分配道口 */
       signData: null,
+      firstSortNo: null,
       // #endregion
       // #region 未签到页面参数
       /** 未签到页面字段 */
@@ -386,13 +388,22 @@ export default {
           const currRow = _this.signList.splice(oldIndex, 1)[0]
           _this.signList.splice(newIndex, 0, currRow)
           try {
-            this.tableLoading = true
-            // const { data } = await this.$store.dispatch('driverDispatch/getTodaySignlist', { dispatchId: currRow.dispatchId, newSortNo: newIndex })
-            // console.info(data)
+            if (newIndex !== oldIndex) {
+              _this.tableLoading = true
+              let newSort = 0
+              if (newIndex > oldIndex) {
+                newSort = Number(newIndex) + _this.firstSortNo + 1
+              } else {
+                newSort = Number(newIndex) + _this.firstSortNo
+              }
+              const param = { dispatchId: currRow.dispatchId, newSortNo: newSort }
+              await _this.$store.dispatch('driverDispatch/sort', param)
+              _this.handleSearch()
+            }
           } catch (error) {
-            this.$message.error(error.message)
+            _this.$message.error(error.message)
           } finally {
-            this.tableLoading = false
+            _this.tableLoading = false
           }
         }
       })
@@ -463,6 +474,9 @@ export default {
 
         const { data } = await this.$store.dispatch('driverDispatch/getTodaySignlist', this.queryForm)
         this.signList = data
+        if (this.signList.length > 0) {
+          this.firstSortNo = Number(this.signList[0].sortNo)
+        }
         this.signList.forEach(item => {
           const second = new Date().getTime() / 1000 - new Date(item.signinDate).getTime() / 1000
           this.$set(item, 'waitTime', parseInt(second / 60))

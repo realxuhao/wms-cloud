@@ -24,8 +24,8 @@ import { mixinTableList } from '@/utils/mixin/index'
 const columns = [
   {
     title: '订单PO号',
-    key: 'poCode',
-    dataIndex: 'poCode',
+    key: 'poNo',
+    dataIndex: 'poNo',
     width: 120
   },
   {
@@ -36,20 +36,20 @@ const columns = [
   },
   {
     title: '供应商名称',
-    key: 'supplierName',
-    dataIndex: 'supplierName',
+    key: 'supplier',
+    dataIndex: 'supplier',
     width: 180
   },
   {
     title: '料号',
-    key: 'materialCode',
-    dataIndex: 'materialCode',
+    key: 'sapCode',
+    dataIndex: 'sapCode',
     width: 150
   },
   {
     title: '物料名称',
-    key: 'materialName',
-    dataIndex: 'materialName',
+    key: 'sapName',
+    dataIndex: 'sapName',
     width: 200
   },
   {

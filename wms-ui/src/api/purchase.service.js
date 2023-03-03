@@ -16,7 +16,21 @@ const getListBySupplierName = async (name, parameter) => {
   return data
 }
 
+const close = async (id) => {
+  const url = `/purchase/close/${id}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const detail = async (id) => {
+  const url = `/purchase/detail/${id}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
 export const purchaseService = {
   getList,
-  getListBySupplierName
+  getListBySupplierName,
+  close,
+  detail
 }

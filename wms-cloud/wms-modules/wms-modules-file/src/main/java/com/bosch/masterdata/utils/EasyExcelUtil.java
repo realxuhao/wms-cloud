@@ -53,6 +53,7 @@ public class EasyExcelUtil {
         // 有个很重要的点 DataListener 不能被spring管理，要每次读取excel都要new,然后里面用到spring可以构造方法传进去
         DataListener<T> listener = new DataListener<>();
         ExcelReaderBuilder read = EasyExcel.read(inputStream, clazz, listener);
+
         read.sheet().headRowNumber(1).doRead();
         List<String> head = listener.getHead();
         List<String> collect = head.stream().filter(Objects::nonNull).collect(Collectors.toList());

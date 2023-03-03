@@ -51,9 +51,9 @@
     <select id="selectPurchaseOrderList" resultMap="PurchaseOrderResult">
         <include refid="selectPurchaseOrder"/>
         <where>
-            <if test="poCode != null  and poCode != ''">and po_code like concat('%', #{poCode}, '%')</if>
+            <if test="poNo != null  and poNo != ''">and po_code like concat('%', #{poNo}, '%')</if>
             <if test="poItem != null  and poItem != ''">and po_item like concat('%', #{poItem}, '%')</if>
-            <if test="supplierName != null  and supplierName != ''">and supplier_name like concat('%', #{supplierName}, '%')</if>
+            <if test="supplier != null  and supplier != ''">and supplier_name like concat('%', #{supplier}, '%')</if>
             <if test="status != null ">and status = #{status}</if>
         </where>
     </select>
@@ -61,13 +61,13 @@
     <select id="selectSupplierPurchaseOrder" resultMap="PurchaseOrderResult">
         <include refid="selectPurchaseOrder"/>
         <where>
-            <if test="poCode != null  and poCode != ''">
-                and po_code like concat('%', #{poCode}, '%')
+            <if test="poNo != null  and poNo != ''">
+                and po_code like concat('%', #{poNo}, '%')
             </if>
             <if test="poItem != null  and poItem != ''">
                 and po_item like concat('%', #{poItem}, '%')
             </if>
-            and status=0 and supplier_name = #{supplierName}
+            and status=0 and supplier_name = #{supplier}
         </where>
     </select>
 </mapper>
