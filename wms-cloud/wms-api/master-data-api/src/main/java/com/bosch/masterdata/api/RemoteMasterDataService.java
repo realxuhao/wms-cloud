@@ -2,14 +2,13 @@ package com.bosch.masterdata.api;
 
 import com.bosch.masterdata.api.domain.Bin;
 import com.bosch.masterdata.api.domain.Ware;
+import com.bosch.masterdata.api.domain.dto.BlackDriverDTO;
 import com.bosch.masterdata.api.domain.vo.*;
 import com.bosch.masterdata.api.factory.RemoteMaterialFallbackFactory;
 import com.ruoyi.common.core.constant.ServiceNameConstants;
 import com.ruoyi.common.core.domain.R;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -48,8 +47,11 @@ public interface RemoteMasterDataService {
     @GetMapping(value = "/ware/{id}")
     public R<Ware> getWareInfo(@PathVariable("id") String id);
 
-    @GetMapping(value = "/driver/black/{name}")
-    public R<List<BlackDriverVO>> getBlackDriverByName(@PathVariable("name") String name);
+    @GetMapping(value = "/driver/black/{wechatId}")
+    public R<List<BlackDriverVO>> getBlackDriverByWechatId(@PathVariable("wechatId") String wechatId);
+
+    @PostMapping("/driver/save")
+    public R<Boolean> saveBlackDriver(@RequestBody BlackDriverDTO blackDriverDTO);
 
     @GetMapping(value = "/supplierInfo/info/{code}")
     public R<SupplierInfoVO> getSupplierInfoByCode(@PathVariable("code") String code);

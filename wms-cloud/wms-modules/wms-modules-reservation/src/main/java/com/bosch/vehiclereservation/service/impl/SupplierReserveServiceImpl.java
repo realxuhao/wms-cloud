@@ -79,7 +79,7 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
     @Override
     public boolean insertSupplierReserve(SupplierDTO supplierDTO) {
         SupplierReserveDTO supplierReserveDTO = supplierDTO.getSupplierReserveDTO();
-        String[] timeWindow = supplierReserveDTO.getTimeWindow().split("-");
+        /*String[] timeWindow = supplierReserveDTO.getTimeWindow().split("-");
         R<List<TimeWindowVO>> result = remoteTimeWindowService.getListByWareId(supplierReserveDTO.getWareId());
         List<TimeWindowVO> timeWindowVOList = result.getData();
         List<TimeWindowVO> data = timeWindowVOList.stream().filter(c -> c.getStatus().intValue() == WinTimeStatusEnum.ENABL.getCode()
@@ -92,7 +92,7 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
             if (count <= 0) {
                 throw new ServiceException(supplierReserveDTO.getTimeWindow() + "该时段已约满");
             }
-        }
+        }*/
         //获取当前日期
         Date date = new Date();
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd");
@@ -225,61 +225,52 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
     }
 
     @Override
-    public SupplierReserveVO selectDataByReserveNo(String reserveNo){
+    public SupplierReserveVO selectDataByReserveNo(String reserveNo) {
         QueryWrapper<SupplierReserve> wrapperReserve = new QueryWrapper<>();
         wrapperReserve.eq("reserve_no", reserveNo);
         Optional<SupplierReserve> supplierReserve = supplierReserveMapper.selectList(wrapperReserve).stream().findFirst();
-        if (supplierReserve.isPresent()){
+        if (supplierReserve.isPresent()) {
             SupplierReserve reserve = supplierReserve.get();
-            if(reserve.getStatus() > 0){
+            if (reserve.getStatus() > 0) {
                 throw new ServiceException("该预约单已有司机预约，请联系客户！");
             }
-            SupplierReserveVO voData = new SupplierReserveVO();
+            SupplierReserveVO voData = BeanConverUtil.conver(reserve, SupplierReserveVO.class);
             R<Ware> wareInfo = remoteMasterDataService.getWareInfo(reserve.getWareId().toString());
             Ware ware = wareInfo.getData();
             if (ware != null) {
-                voData.setReserveId(reserve.getReserveId());
-                voData.setSupplierCode(reserve.getSupplierCode());
-                voData.setReserveDate(reserve.getReserveDate());
-                voData.setTimeWindow(reserve.getTimeWindow());
-                voData.setReserveNo(reserve.getReserveNo());
                 voData.setWareName(ware.getName());
                 voData.setWareLocation(ware.getLocation());
                 voData.setWareUser(ware.getWareUser());
                 voData.setWareUserPhone(ware.getWareUserPhone());
             }
             return voData;
-        }else{
+        } else {
             throw new ServiceException("该预约单号不存在！");
         }
     }
 
 
-    public SupplierReserveVO selectDataByReserveNoForWx(String reserveNo){
+    public SupplierReserveVO selectDataByReserveNoForWx(String reserveNo) {
         QueryWrapper<SupplierReserve> wrapperReserve = new QueryWrapper<>();
         wrapperReserve.eq("reserve_no", reserveNo);
         Optional<SupplierReserve> supplierReserve = supplierReserveMapper.selectList(wrapperReserve).stream().findFirst();
-        if (supplierReserve.isPresent()){
+        if (supplierReserve.isPresent()) {
             SupplierReserve reserve = supplierReserve.get();
-            SupplierReserveVO voData = new SupplierReserveVO();
+            SupplierReserveVO voData = BeanConverUtil.conver(reserve, SupplierReserveVO.class);
             R<Ware> wareInfo = remoteMasterDataService.getWareInfo(reserve.getWareId().toString());
             Ware ware = wareInfo.getData();
             if (ware != null) {
-                voData.setReserveId(reserve.getReserveId());
-                voData.setSupplierCode(reserve.getSupplierCode());
-                voData.setReserveDate(reserve.getReserveDate());
-                voData.setTimeWindow(reserve.getTimeWindow());
-                voData.setReserveNo(reserve.getReserveNo());
                 voData.setWareName(ware.getName());
                 voData.setWareLocation(ware.getLocation());
                 voData.setWareUser(ware.getWareUser());
                 voData.setWareUserPhone(ware.getWareUserPhone());
             }
             return voData;
-        }else{
+        } else {
             throw new ServiceException("该预约单号不存在！");
         }
     }
+
     private void changePurchaseOrderStatus(List<SupplierPorder> supplierPorderList) {
         supplierPorderList.forEach(c -> {
             BigDecimal sum = supplierPorderService.getArriveQuantityByPurchaseId(c.getPurchaseId());

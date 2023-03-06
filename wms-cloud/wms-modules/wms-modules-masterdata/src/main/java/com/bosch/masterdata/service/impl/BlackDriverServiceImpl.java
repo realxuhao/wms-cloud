@@ -60,11 +60,30 @@ public class BlackDriverServiceImpl extends ServiceImpl<BlackDriverMapper, Black
     }
 
     @Override
-    public List<BlackDriver> selectBlackDriverByName(String name) {
+    public List<BlackDriver> selectBlackDriverByWechatId(String wechatId) {
         QueryWrapper<BlackDriver> wrapper = new QueryWrapper<>();
-        wrapper.eq("driver_name", name);
+        wrapper.eq("wechat_id", wechatId);
         wrapper.eq("status", 1);
         List<BlackDriver> lst = blackDriverMapper.selectList(wrapper);
         return lst;
+    }
+
+    @Override
+    public boolean saveBlackDriver(BlackDriver blackDriver) {
+        QueryWrapper<BlackDriver> wrapper = new QueryWrapper<>();
+        wrapper.eq("wechat_id", blackDriver.getWechatId());
+        Optional<BlackDriver> first = blackDriverMapper.selectList(wrapper).stream().findFirst();
+        if (first.isPresent()) {
+            blackDriver.setDriverId(first.get().getDriverId());
+            blackDriver.setStatus(first.get().getStatus());
+            blackDriver.setUpdateTime(DateUtils.getNowDate());
+            blackDriver.setUpdateBy(SecurityUtils.getUsername());
+            return super.saveOrUpdate(blackDriver);
+        } else {
+            blackDriver.setStatus(0);
+            blackDriver.setCreateTime(DateUtils.getNowDate());
+            blackDriver.setCreateBy(SecurityUtils.getUsername());
+            return super.save(blackDriver);
+        }
     }
 }
