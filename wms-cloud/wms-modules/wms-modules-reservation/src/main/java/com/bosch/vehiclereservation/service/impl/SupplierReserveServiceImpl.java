@@ -17,6 +17,7 @@ import com.bosch.vehiclereservation.api.domain.vo.PurchaseOrderVO;
 import com.bosch.vehiclereservation.api.domain.vo.SupplierReserveVO;
 import com.bosch.vehiclereservation.api.enumeration.OrderStatusEnum;
 import com.bosch.vehiclereservation.api.enumeration.ReserveStatusEnum;
+import com.bosch.vehiclereservation.mapper.DriverDeliverMapper;
 import com.bosch.vehiclereservation.mapper.PurchaseOrderMapper;
 import com.bosch.vehiclereservation.mapper.SupplierReserveMapper;
 import com.bosch.vehiclereservation.service.ISupplierPorderService;
@@ -44,6 +45,9 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
 
     @Autowired
     private SupplierReserveMapper supplierReserveMapper;
+
+    @Autowired
+    private DriverDeliverMapper driverDeliverMapper;
 
     @Autowired
     private PurchaseOrderMapper purchaseOrderMapper;
