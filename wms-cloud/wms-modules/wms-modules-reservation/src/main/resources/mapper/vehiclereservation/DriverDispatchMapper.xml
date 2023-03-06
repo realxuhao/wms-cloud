@@ -38,8 +38,9 @@
         from vr_driver_dispatch
     </sql>
 
-    <select id="selectTodaySignData" resultType="com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO">
-        SELECT *
+    <select id="selectTodaySignData"  resultType="com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO">
+        SELECT t.dispatchId,t.wareId,t.dockCode,t.driverType,t.sortNo,t.comeinDate,t.completeDate,t.status,t.reserveNo,t.supplierCode,t.driverName,
+        t.driverPhone,t.carNum,t.reserveType,t.late,t.signinDate,t.driverStatus,t.wechatId,t.reserveDate,t.cell
         from (SELECT t1.dispatch_id as dispatchId,
         t1.ware_id as wareId,
         t1.dock_code as dockCode,
@@ -58,7 +59,7 @@
         t2.signin_date as signinDate,
         t2.`status` as driverStatus,
         t2.`wechat_id` as wechatId,
-        CONCAT(DATE_FORMAT(t3.reserve_date, '%Y-%m-%d'), ' ', t3.time_window) as reserveDate,
+        CONCAT(DATE_FORMAT(t2.reserve_date, '%Y-%m-%d'), ' ', t2.time_window) as reserveDate,
         '' as cell
         from vr_driver_dispatch t1
         INNER JOIN vr_driver_deliver t2 ON t1.driver_id = t2.deliver_id and t1.driver_type = 0
@@ -87,7 +88,7 @@
         from vr_driver_dispatch t1
         INNER JOIN vr_driver_pickup t2 ON t1.driver_id = t2.pickup_id and t1.driver_type = 1) t
         <where>
-            <if test="today == true">
+            <if test="isToday == true">
                 and DATE_FORMAT(t.signinDate, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
             </if>
             <if test="signinDate != null ">
@@ -119,7 +120,7 @@
         t1.driver_phone as driverPhone,
         t1.car_num as carNum,
         t1.reserve_type as reserveType,
-        CONCAT(DATE_FORMAT(t2.reserve_date, '%Y-%m-%d'), ' ', t2.time_window) as reserveDate,
+        CONCAT(DATE_FORMAT(t1.reserve_date, '%Y-%m-%d'), ' ', t1.time_window) as reserveDate,
         '' as cell
         from vr_driver_deliver t1
         LEFT JOIN vr_supplier_reserve t2 on t2.reserve_no = t1.reserve_no

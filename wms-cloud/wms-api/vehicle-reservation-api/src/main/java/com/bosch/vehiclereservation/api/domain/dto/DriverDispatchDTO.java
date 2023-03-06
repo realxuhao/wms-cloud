@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 @Data
-public class DriverDispatchDTO extends PageDomain {
+public class DriverDispatchDTO {
 
     /**
      * 主键id

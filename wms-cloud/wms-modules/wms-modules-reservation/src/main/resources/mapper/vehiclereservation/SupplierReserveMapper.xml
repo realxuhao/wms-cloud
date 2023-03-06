@@ -9,6 +9,7 @@
         <result property="supplierCode" column="supplier_code"/>
         <result property="wareId" column="ware_id"/>
         <result property="reserveDate" column="reserve_date"/>
+        <result property="timeWindow" column="time_window"/>
         <result property="status" column="status"/>
         <result property="remark" column="remark"/>
         <result property="createBy" column="create_by"/>
@@ -18,43 +19,45 @@
     </resultMap>
 
     <sql id="selectSupplierReserve">
-        select reserve_id,
-               reserve_no,
-               supplier_code,
-               ware_id,
-               reserve_date,
-               status,
-               remark,
-               create_by,
-               update_by,
-               create_time,
-               update_time
-        from vr_supplier_reserve
+        select t1.reserve_id,
+               t1.reserve_no,
+               t1.supplier_code,
+               t1.ware_id,
+               t1.reserve_date,
+               t2.time_window,
+               t1.status,
+               t1.remark,
+               t1.create_by,
+               t1.update_by,
+               t1.create_time,
+               t1.update_time
+        from vr_supplier_reserve t1 left join vr_driver_deliver t2
+            on t2.reserve_no = t1.reserve_no
     </sql>
 
     <select id="selectReserveDateList" resultMap="SupplierReserveResult">
         <include refid="selectSupplierReserve"/>
-        where ware_id = #{wareId} and reserve_date = #{reserveDate}
+        where t1.ware_id = #{wareId} and t2.reserve_date = #{reserveDate}
     </select>
 
     <select id="getLastData" resultMap="SupplierReserveResult">
         <include refid="selectSupplierReserve"/>
-        ORDER BY create_time desc,reserve_id desc LIMIT 1
+        ORDER BY t1.create_time desc,t1.reserve_id desc LIMIT 1
     </select>
 
     <select id="selectSupplierReserveList" resultMap="SupplierReserveResult">
         <include refid="selectSupplierReserve"/>
         <where>
             <if test="reserveNo != null  and reserveNo != ''">
-                and reserve_no like concat('%', #{reserveNo}, '%')
+                and t1.reserve_no like concat('%', #{reserveNo}, '%')
             </if>
             <if test="supplierCode != null  and supplierCode != ''">
-                and supplier_code = #{supplierCode}
+                and t1.supplier_code = #{supplierCode}
             </if>
             <if test="status != null ">
-                and status = #{status}
+                and t1.status = #{status}
             </if>
         </where>
-        order by reserve_date desc
+        order by t1.reserve_date desc
     </select>
 </mapper>

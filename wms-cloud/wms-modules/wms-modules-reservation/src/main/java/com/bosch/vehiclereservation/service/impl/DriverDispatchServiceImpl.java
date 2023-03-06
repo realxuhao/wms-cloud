@@ -22,6 +22,7 @@ import com.bosch.vehiclereservation.mapper.DriverDeliverMapper;
 import com.bosch.vehiclereservation.mapper.DriverDispatchMapper;
 import com.bosch.vehiclereservation.mapper.SupplierReserveMapper;
 import com.bosch.vehiclereservation.service.IDriverDispatchService;
+import com.bosch.vehiclereservation.utils.BeanConverUtil;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
@@ -61,6 +62,7 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
 
     @Override
     public List<DriverDispatchVO> selectTodaySignData(DriverDispatchDTO driverDispatchDTO) {
+        //DriverDispatch driverDispatch = BeanConverUtil.conver(driverDispatchDTO, DriverDispatch.class);
         List<DriverDispatchVO> driverDispatchVOS = driverDispatchMapper.selectTodaySignData(driverDispatchDTO);
         Map<Long, String> wareMap = new HashMap<>();
         Map<String, String> supplierMap = new HashMap<>();
