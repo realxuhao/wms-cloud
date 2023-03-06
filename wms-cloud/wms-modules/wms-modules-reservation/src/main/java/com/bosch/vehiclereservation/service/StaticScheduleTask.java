@@ -30,95 +30,11 @@ public class StaticScheduleTask {
     @Autowired
     private ISyncDataService syncDataService;
 
-    @Autowired
-    private IPurchaseOrderService purchaseOrderService;
-
-    @Value("${apiurl.purchase-order}")
-    private String purchaseOrderUrl;
-
-    @Scheduled(cron = "0/55 * * * * ?")
+    @Scheduled(cron = "0 1 0 * * ?")
     private void syncPurchaseOrderTasks() {
         System.out.println("执行定时任务时间: " + LocalDateTime.now());
-        syncData();
+        syncDataService.syncData();
     }
 
-    private void syncData() {
-        SyncDataLog syncDataLog = new SyncDataLog();
-        syncDataLog.setSyncStartDate(DateUtils.getNowDate());
-        syncDataLog.setSyncLastDate(DateUtils.getNowDate());
-        int pageIndex = 1;
-        int pageSize = 100;
-        SyncDataLog lastSyncData = syncDataService.getLastSyncData();
-        PoReqDTO reqDTO = new PoReqDTO();
-        reqDTO.setSize(pageSize);
-        reqDTO.setCurrent(pageIndex);
-        if (lastSyncData != null) {
-            reqDTO.setUpdateDate(lastSyncData.getSyncLastDate());
-        }
-        try {
-            while (true) {
-                String body = JSON.toJSONString(reqDTO);
-                RequestBody reqBody = RequestBody.create(MediaType.parse("application/json"), body);
-                OkHttpClient okHttpClient = new OkHttpClient();
-                Request request = new Request.Builder().url(purchaseOrderUrl).post(reqBody).build();
-                Call call = okHttpClient.newCall(request);
-                Response resp = call.execute();
-                String respBody = resp.body().string();
-                WareHouseOrderDTO wareHouseOrderDTO = JSON.parseObject(respBody, WareHouseOrderDTO.class);
-                if (wareHouseOrderDTO.getRecords().size() == 0) {
-                    break;
-                }
-                if (lastSyncData == null) {
-                    initPurchaseOrders(wareHouseOrderDTO.getRecords());
-                } else {
-                    comparePurchaseOrders(wareHouseOrderDTO.getRecords());
-                }
-                pageIndex++;
-                reqDTO.setCurrent(pageIndex);
-            }
-        } catch (IOException e) {
-            throw new ServiceException("供应商采购单接口调用失败！");
-        }
-        syncDataLog.setSyncEndDate(DateUtils.getNowDate());
-        syncDataService.save(syncDataLog);
-    }
 
-    /**
-     * 初始化数据
-     *
-     * @param recordDTOList
-     */
-    private void initPurchaseOrders(List<RecordDTO> recordDTOList) {
-        List<RecordDTO> lst = recordDTOList.stream().filter(c -> c.getDeleteFlag() == 0).collect(Collectors.toList());
-        List<PurchaseOrder> purchaseOrders = BeanConverUtil.converList(lst, PurchaseOrder.class);
-        purchaseOrders.forEach(c -> {
-            c.setStatus(0);
-        });
-        purchaseOrderService.saveBatch(purchaseOrders);
-    }
-
-    /**
-     * 增量比较数据
-     *
-     * @param recordDTOList
-     */
-    private void comparePurchaseOrders(List<RecordDTO> recordDTOList) {
-        for (RecordDTO recordDTO : recordDTOList) {
-            QueryWrapper<PurchaseOrder> wrapper = new QueryWrapper<>();
-            wrapper.eq("po_code", recordDTO.getPoNo());
-            wrapper.eq("po_item", recordDTO.getPoItem());
-            Optional<PurchaseOrder> first = purchaseOrderService.list(wrapper).stream().findFirst();
-            if (first.isPresent()) {
-                PurchaseOrder purchaseOrder = first.get();
-                PurchaseOrder purchaseOrderUpdate = BeanConverUtil.conver(recordDTO, PurchaseOrder.class);
-                purchaseOrderUpdate.setPurchaseId(purchaseOrder.getPurchaseId());
-                purchaseOrderUpdate.setStatus(purchaseOrder.getStatus());
-                purchaseOrderService.saveOrUpdate(purchaseOrderUpdate);
-            } else {
-                PurchaseOrder purchaseOrder = BeanConverUtil.conver(recordDTO, PurchaseOrder.class);
-                purchaseOrder.setStatus(0);
-                purchaseOrderService.save(purchaseOrder);
-            }
-        }
-    }
 }

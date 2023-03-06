@@ -72,10 +72,10 @@ public class DriverDispatchController extends BaseController {
      * @return 车辆预约信息列表
      */
     @RequiresPermissions("vehiclereservation:driverdispatch:nosignlist")
-    @GetMapping("/nosignlist")
+    @PostMapping("/nosignlist")
     @ApiOperation("获取今天未签到车辆数据")
-    public R<List<DriverDispatchVO>> getTodayNoSignData() {
-        List<DriverDispatchVO> list = driverDispatchService.selectTodayNotSignData();
+    public R<List<DriverDispatchVO>> getTodayNoSignData(@RequestBody DriverDispatchDTO driverDispatchDTO) {
+        List<DriverDispatchVO> list = driverDispatchService.selectTodayNotSignData(driverDispatchDTO);
         return R.ok(list);
     }
 

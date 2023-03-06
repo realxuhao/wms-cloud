@@ -27,6 +27,12 @@ public class PurchaseOrder extends BaseEntity {
     private Long purchaseId;
 
     /**
+     * 物料系统ID
+     */
+    @TableField(value = "po_id")
+    private String poId;
+
+    /**
      * 订单PO号
      */
     @TableField(value = "po_code")

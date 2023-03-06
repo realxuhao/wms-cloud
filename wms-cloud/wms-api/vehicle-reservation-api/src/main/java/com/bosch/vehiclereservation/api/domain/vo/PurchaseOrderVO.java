@@ -17,6 +17,12 @@ public class PurchaseOrderVO {
     private Long purchaseId;
 
     /**
+     * 物料系统ID
+     */
+    @ApiModelProperty(value = "物料系统ID")
+    private String poId;
+
+    /**
      * 订单PO号
      */
     @ApiModelProperty(value = "订单PO号")

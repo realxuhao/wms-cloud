@@ -2,6 +2,7 @@ package com.bosch.vehiclereservation.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
+import com.bosch.vehiclereservation.api.domain.dto.DriverDispatchDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -22,10 +23,14 @@ public interface DriverDispatchMapper extends BaseMapper<DriverDispatch> {
     /**
      * 查询当天签到车辆信息列表
      *
-     * @param wareId 仓库id
+     * @param driverDispatchDTO 查询参数
      * @return 车辆调度信息列表
      */
-    public List<DriverDispatchVO> selectTodaySignData(@Param("wareId") Long wareId, @Param("statusList") List<Integer> statusList,@Param("today") boolean today,@Param("driverType") Integer driverType);
+     /* @Param("wareId") Long wareId,
+    @Param("statusList") List<Integer> statusList,
+    @Param("today") boolean today,
+    @Param("driverType") Integer driverType*/
+    public List<DriverDispatchVO> selectTodaySignData(DriverDispatchDTO driverDispatchDTO);
 
 
     /**
@@ -33,7 +38,7 @@ public interface DriverDispatchMapper extends BaseMapper<DriverDispatch> {
      *
      * @return
      */
-    public List<DriverDispatchVO> selectTodayNotSignData();
+    public List<DriverDispatchVO> selectTodayNotSignData(DriverDispatchDTO driverDispatchDTO);
 
     /**
      * 获取最大排序值
@@ -44,6 +49,7 @@ public interface DriverDispatchMapper extends BaseMapper<DriverDispatch> {
 
     /**
      * 车辆排序
+     *
      * @param dispatchId
      * @param startIndex
      * @param endIndex

@@ -6,6 +6,8 @@ import com.bosch.vehiclereservation.api.domain.vo.PageVO;
 import com.bosch.vehiclereservation.api.domain.vo.PurchaseOrderVO;
 import com.bosch.vehiclereservation.api.domain.vo.SupplierReserveDetailVO;
 import com.bosch.vehiclereservation.service.IPurchaseOrderService;
+import com.bosch.vehiclereservation.service.ISyncDataService;
+import com.bosch.vehiclereservation.service.StaticScheduleTask;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
@@ -36,6 +38,9 @@ public class PurchaseOrderController extends BaseController {
     @Autowired
     private IPurchaseOrderService purchaseOrderService;
 
+
+    @Autowired
+    private ISyncDataService syncDataService;
 
     /**
      * 查询采购订单列表
@@ -83,6 +88,17 @@ public class PurchaseOrderController extends BaseController {
     public R<List<SupplierReserveDetailVO>> getSupplierReserveList(@PathVariable("purchaseId") Long purchaseId) {
         List<SupplierReserveDetailVO> list = purchaseOrderService.getSupplierReserveList(purchaseId);
         return R.ok(list);
+    }
+
+
+    /**
+     * 同步采购单
+     */
+    @RequiresPermissions("vehiclereservation:purchase:syncdata")
+    @GetMapping("/syncdata")
+    @ApiOperation("同步采购单")
+    public AjaxResult syncData() {
+        return toAjax(syncDataService.syncData());
     }
 
 

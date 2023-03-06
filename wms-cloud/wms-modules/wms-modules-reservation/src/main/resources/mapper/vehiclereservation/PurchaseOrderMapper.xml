@@ -6,6 +6,7 @@
 
     <resultMap type="com.bosch.vehiclereservation.api.domain.PurchaseOrder" id="PurchaseOrderResult">
         <result property="purchaseId" column="purchase_id"/>
+        <result property="poId" column="po_id"/>
         <result property="poNo" column="po_code"/>
         <result property="poItem" column="po_item"/>
         <result property="supplier" column="supplier_name"/>
@@ -27,6 +28,7 @@
 
     <sql id="selectPurchaseOrder">
         select purchase_id,
+               po_id,
                po_code,
                po_item,
                supplier_name,

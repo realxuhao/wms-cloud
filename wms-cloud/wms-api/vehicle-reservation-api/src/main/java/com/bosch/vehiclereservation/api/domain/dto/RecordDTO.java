@@ -1,7 +1,6 @@
-
 package com.bosch.vehiclereservation.api.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.alibaba.fastjson2.annotation.JSONField;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -9,6 +8,11 @@ import java.util.Date;
 
 @Data
 public class RecordDTO {
+
+    /**
+     * 物料系统ID
+     */
+    private String poId;
 
     /**
      * 物料系统ID
@@ -53,13 +57,13 @@ public class RecordDTO {
     /**
      * 预计收到日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    //@JsonFormat(pattern = "yyyy-MM-dd")
     private Date deliveryDate;
 
     /**
      * 需求放行日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    //@JsonFormat(pattern = "yyyy-MM-dd")
     private Date releaseDate;
 
     /**
@@ -75,13 +79,13 @@ public class RecordDTO {
     /**
      * 创建日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    //@JsonFormat(pattern = "yyyy-MM-dd")
     private Date createDate;
 
     /**
      * 更新日期
      */
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    //@JsonFormat(pattern = "yyyy-MM-dd")
     private String updateDate;
 
     /**
@@ -109,4 +113,9 @@ public class RecordDTO {
      */
     private Integer type;
 
+
+    public void setId(String id) {
+        this.id = id;
+        this.poId = id;
+    }
 }

@@ -26,7 +26,7 @@ public interface IDriverDispatchService extends IService<DriverDispatch> {
      *
      * @return 车辆预约信息列表
      */
-    public List<DriverDispatchVO> selectTodayNotSignData();
+    public List<DriverDispatchVO> selectTodayNotSignData(DriverDispatchDTO driverDispatchDTO);
 
     /**
      * 分配道口信息

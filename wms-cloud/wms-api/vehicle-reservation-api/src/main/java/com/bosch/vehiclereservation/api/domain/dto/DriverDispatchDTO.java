@@ -1,5 +1,6 @@
 package com.bosch.vehiclereservation.api.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -75,4 +76,11 @@ public class DriverDispatchDTO extends PageDomain {
      */
     @ApiModelProperty(value = "是否是今天签到的数据")
     private boolean isToday;
+
+    /**
+     * 签到时间
+     */
+    @ApiModelProperty(value = "签到时间")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date signinDate;
 }

@@ -61,7 +61,7 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
 
     @Override
     public List<DriverDispatchVO> selectTodaySignData(DriverDispatchDTO driverDispatchDTO) {
-        List<DriverDispatchVO> driverDispatchVOS = driverDispatchMapper.selectTodaySignData(driverDispatchDTO.getWareId(), driverDispatchDTO.getStatusList(), driverDispatchDTO.isToday(), driverDispatchDTO.getDriverType());
+        List<DriverDispatchVO> driverDispatchVOS = driverDispatchMapper.selectTodaySignData(driverDispatchDTO);
         Map<Long, String> wareMap = new HashMap<>();
         Map<String, String> supplierMap = new HashMap<>();
         for (DriverDispatchVO dispatchVO : driverDispatchVOS) {
@@ -88,8 +88,8 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
     }
 
     @Override
-    public List<DriverDispatchVO> selectTodayNotSignData() {
-        return driverDispatchMapper.selectTodayNotSignData();
+    public List<DriverDispatchVO> selectTodayNotSignData(DriverDispatchDTO driverDispatchDTO) {
+        return driverDispatchMapper.selectTodayNotSignData(driverDispatchDTO);
     }
 
     @Override
