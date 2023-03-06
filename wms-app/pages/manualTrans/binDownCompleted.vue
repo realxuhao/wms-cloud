@@ -17,13 +17,13 @@
 	           	<text class="material-name">{{item.materialName}}</text>
 	           	<text class="status">已下架</text>
 	             </view>
-	            <view class="card-text m-b-4">物料编码：{{item.materialCode}}</view>
+	            <view class="card-text m-b-4">物料编码：{{item.materialNb}}</view>
 	            <view class="card-text sscc">
-					<text class="card-text m-b-4">Cell：{{item.cell}}</text>
-	              <text class="card-text m-b-4">源库位：{{item.binCode}}</text>
+					<!-- <text class="card-text m-b-4">Cell：{{item.cell}}</text> -->
+	              <text class="card-text m-b-4">源库位：{{item.sourceBinCode}}</text>
 	            </view>
 	             <view class="card-text sscc">
-					<text>SSCC码：{{item.ssccNumber}}</text>
+					<text>SSCC码：{{item.ssccNb}}</text>
 					<text class="time">{{item.createTime}}</text>
 	             </view>
 	             </view>

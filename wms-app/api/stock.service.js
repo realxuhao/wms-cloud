@@ -30,9 +30,20 @@ const getByBinCode = async (binCode) => {
   })
 }
 
+const addSplit = async (options) => {
+  const url = `/bin-in/split/add`
+  const method = 'POST'
+
+  return request({
+    url,
+    method,
+	data:options
+  })
+}
 
 export const stockService = {
   getStockInfoByMesBarCode,
   getStockInfoBySscc,
-  getByBinCode
+  getByBinCode,
+  addSplit
 }

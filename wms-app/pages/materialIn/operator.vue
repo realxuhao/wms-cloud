@@ -26,6 +26,11 @@
 						<!-- <uni-tag size="small"  :circle="false" :text="materialInfo.totalPallet+''"></uni-tag> -->
 						{{materialInfo.totalQuantity}}
 					</view>
+					<view class="text-line m-b-8">
+						<view class="label">单位：</view>
+						<!-- <uni-tag size="small"  :circle="false" :text="materialInfo.totalPallet+''"></uni-tag> -->
+						{{materialInfo.unit}}
+					</view>
 					<view class="text-line m-b-8" v-show="materialInfo.checkType!==2">
 						<view class="label">抽样件数：</view>
 						{{materialInfo.checkQuantity}}

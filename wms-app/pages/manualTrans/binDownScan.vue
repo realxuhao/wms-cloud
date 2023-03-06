@@ -11,13 +11,13 @@
 				@close="handleCancel">
 				<view>
 					<view class="text-align m-b-4">
-						<text class="label m-r-8">SSCC码:</text><text>{{info.ssccNb}}</text>
+						<text class="label m-r-8">SSCC码:</text><text>{{info.ssccNumber}}</text>
 					</view>
 					<view class="text-align m-b-4">
 						<text class="label m-r-8">物料编码:</text><text>{{info.materialNb}}</text>
 					</view>
 					<view class="text-align m-b-4">
-						<text class="label m-r-8">库位:</text><text>{{info.binDownCode}}</text>
+						<text class="label m-r-8">库位:</text><text>{{info.binCode}}</text>
 					</view>
 				</view>
 				</uni-popup-dialog>
@@ -59,7 +59,7 @@
 			},
 			async parsedBarCode(barCode){
 				try{
-					const data = await this.$store.dispatch('kanban/parsedBarCode',barCode)
+					const data = await this.$store.dispatch('stock/getInfoByMesBarCode',barCode)
 					this.info = data
 				}catch(e){
 					this.$refs.message.error(e.message)
