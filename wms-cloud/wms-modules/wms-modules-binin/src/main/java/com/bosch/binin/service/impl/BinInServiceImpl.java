@@ -468,24 +468,25 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         }
         BinVO actualBinVO = getBinVOByBinCode(binInDTO.getActualBinCode());
 
+        //2023.3.4 客户修改。实际上架可以上架到任意一个库位，不做限制
         if (!binInDTO.getActualBinCode().equals(binIn.getRecommendBinCode())) {
-            //不在的时候，看actual bin code在不在分配规则内
-            R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
-            if (StringUtils.isNull(materialBinVOResullt) || StringUtils.isNull(materialBinVOResullt.getData())) {
-                throw new ServiceException("该物料：" + materialNb + " 暂无分配规则");
-            }
-
-            if (R.FAIL == materialBinVOResullt.getCode()) {
-                throw new ServiceException(materialBinVOResullt.getMsg());
-            }
-
-            List<MaterialBinVO> materialBinVOS = materialBinVOResullt.getData();
-
-
-            List<String> frameCodeList = materialBinVOS.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
-            if (StringUtils.isEmpty(frameCodeList) || !frameCodeList.contains(actualBinVO.getFrameTypeCode())) {
-                throw new ServiceException("该物料" + materialNb + " 不能分配到" + binInDTO.getActualBinCode());
-            }
+//            //不在的时候，看actual bin code在不在分配规则内
+//            R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
+//            if (StringUtils.isNull(materialBinVOResullt) || StringUtils.isNull(materialBinVOResullt.getData())) {
+//                throw new ServiceException("该物料：" + materialNb + " 暂无分配规则");
+//            }
+//
+//            if (R.FAIL == materialBinVOResullt.getCode()) {
+//                throw new ServiceException(materialBinVOResullt.getMsg());
+//            }
+//
+//            List<MaterialBinVO> materialBinVOS = materialBinVOResullt.getData();
+//
+//
+//            List<String> frameCodeList = materialBinVOS.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
+//            if (StringUtils.isEmpty(frameCodeList) || !frameCodeList.contains(actualBinVO.getFrameTypeCode())) {
+//                throw new ServiceException("该物料" + materialNb + " 不能分配到" + binInDTO.getActualBinCode());
+//            }
 
             LambdaQueryWrapper<BinIn> finishQueryWrapper = new LambdaQueryWrapper<>();
             finishQueryWrapper.eq(BinIn::getActualBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.FINISH.value()).eq(BinIn::getDeleteFlag, 0);
