@@ -230,7 +230,7 @@ const columns = [
     width: 90
   },
   {
-    title: '推荐抽样数量',
+    title: '推荐抽样量',
     key: 'recommendSampleQuantity',
     dataIndex: 'recommendSampleQuantity',
     width: 90
@@ -267,13 +267,13 @@ const columns = [
     width: 90
   },
   {
-    title: '质检人',
+    title: '抽样人',
     key: 'sampleUser',
     dataIndex: 'sampleUser',
     width: 120
   },
   {
-    title: '质检时间',
+    title: '抽样时间',
     key: 'sampleTime',
     dataIndex: 'sampleTime',
     width: 120

@@ -162,6 +162,12 @@ const columns = [
     width: 100
   },
   {
+    title: 'cell',
+    dataIndex: 'cell',
+    key: 'cell',
+    width: 50
+  },
+  {
     title: '托盘类型',
     dataIndex: 'palletType',
     key: 'palletType',
