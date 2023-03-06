@@ -113,7 +113,7 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
         wrapper.eq("reserve_no", driverDeliverDTO.getReserveNo());
         Optional<DriverDeliver> first = driverDeliverMapper.selectList(wrapper).stream().findFirst();
         if (first.isPresent()) {
-            if (!first.get().getDriverName().equals(driverDeliverDTO.getDriverName())) {
+            if (!first.get().getWechatId().equals(driverDeliverDTO.getWechatId())) {
                 throw new ServiceException("该预约单已有司机预约，请联系客户！");
             } else {
                 throw new ServiceException("该预约单您已预约过！");
