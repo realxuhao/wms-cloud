@@ -14,6 +14,14 @@
               </a-form-model-item>
             </a-col>
             <a-col span="4">
+              <a-form-model-item label="签到时间" style="display: flex;">
+                <a-date-picker
+                  v-model="queryForm.signinDate"
+                  format="YYYY-MM-DD"
+                />
+              </a-form-model-item>
+            </a-col>
+            <a-col span="4">
               <span class="table-page-search-submitButtons">
                 <a-button
                   type="primary"
@@ -107,6 +115,7 @@
 <script>
 
 import { mixinTableList } from '@/utils/mixin/index'
+import moment from 'moment'
 const signColumns = [
   {
     title: '预约类型',
@@ -201,7 +210,8 @@ const signColumns = [
 
 const queryFormAttr = () => {
   return {
-    wareId: ''
+    wareId: '',
+    signinDate: null
   }
 }
 export default {
@@ -228,6 +238,7 @@ export default {
   model: {},
   computed: {},
   methods: {
+    moment,
     /** 获取仓库List */
     async getWareOptionList () {
       this.wareOptionList = []
@@ -247,7 +258,7 @@ export default {
     async loadTableList () {
       try {
         this.tableLoading = true
-
+        this.queryForm.signinDate = this.queryForm.signinDate == null ? null : moment(new Date(this.queryForm.signinDate)).format('YYYY-MM-DD')
         const { data: { rows, total } } = await this.$store.dispatch('driverDispatch/getList', this.queryForm)
         this.list = rows
         this.paginationTotal = total

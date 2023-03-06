@@ -81,7 +81,7 @@ public class TimeWindowController extends BaseController {
      * @param wareId 仓库id
      * @return
      */
-    @RequiresPermissions("masterdata:window:getlist")
+//    @RequiresPermissions("masterdata:window:getlist")
     @GetMapping(value = "/ware/{wareId}")
     @ApiOperation("根据仓库id获取时间窗口列表")
     public R<List<TimeWindowVO>> getListByWareId(@PathVariable("wareId") Long wareId) {

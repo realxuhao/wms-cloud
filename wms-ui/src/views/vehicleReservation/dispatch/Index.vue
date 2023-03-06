@@ -122,6 +122,29 @@
           </a-table>
         </a-tab-pane>
         <a-tab-pane key="2" tab="今日未签到列表">
+          <div class="action-content">
+            <a-form layout="inline" class="search-content">
+              <a-row :gutter="16">
+                <a-col span="4">
+                  <a-form-model-item label="预约时间" style="display: flex;">
+                    <a-date-picker
+                      v-model="searchNotSignDate"
+                      format="YYYY-MM-DD"
+                    />
+                  </a-form-model-item>
+                </a-col>
+                <a-col span="4">
+                  <span class="table-page-search-submitButtons">
+                    <a-button
+                      type="primary"
+                      @click="handleSearchNot"
+                      :loading="searchLoading"
+                    ><a-icon type="search" />查询</a-button>
+                  </span>
+                </a-col>
+              </a-row>
+            </a-form>
+          </div>
           <a-table
             :columns="notSignColumns"
             :data-source="notSignList"
@@ -171,6 +194,7 @@
 <script>
 import Sortable from 'sortablejs'
 import SetDockDrawer from './SetDockDrawer'
+import moment from 'moment'
 
 import { mixinTableList } from '@/utils/mixin/index'
 const signColumns = [
@@ -355,6 +379,7 @@ export default {
       notSignColumns,
       /** 未签到页面数据 */
       notSignList: [],
+      searchNotSignDate: null,
       // #endregion
       queryForm: {
         wareId: null
@@ -366,6 +391,7 @@ export default {
   model: {},
   computed: {},
   methods: {
+    moment,
     /** 获取仓库List */
     async getWareOptionList () {
       this.wareOptionList = []
@@ -420,6 +446,11 @@ export default {
     async handleSearch () {
       this.searchLoading = true
       await this.loadSignTableList()
+      this.searchLoading = false
+    },
+    async handleSearchNot () {
+      this.searchLoading = true
+      await this.loadNotSignTableList()
       this.searchLoading = false
     },
     /** 分配仓库及道口 */
@@ -499,10 +530,8 @@ export default {
     async loadNotSignTableList () {
       try {
         this.tableLoading = true
-
-        const { data } = await this.$store.dispatch('driverDispatch/getTodayNoSignList')
+        const { data } = await this.$store.dispatch('driverDispatch/getTodayNoSignList', { signinDate: this.searchNotSignDate == null ? null : moment(new Date(this.searchNotSignDate)).format('YYYY-MM-DD') })
         this.notSignList = data
-        console.info(data)
       } catch (error) {
         this.$message.error(error.message)
       } finally {
