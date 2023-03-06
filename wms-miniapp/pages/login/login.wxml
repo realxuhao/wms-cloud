@@ -1,0 +1,17 @@
+<image class="top-image" src='/img/nutricia-color.png'></image>
+<view style="height:98%">
+  
+  <view class="bottom-view">
+    <image class="logo-image" src='/img/Nutricialogo.jpg'></image>
+  </view>
+  <view class="top-view">
+    <view class="text-view">
+      <view>欢迎，</view>
+      <view>纽迪希亚</view>
+      <view>司机预约管理小程序</view>
+    </view>
+    <view class="button-view">
+      <button  bindtap="start" class="button">登 录</button>
+    </view>
+  </view>
+</view>

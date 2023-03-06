@@ -1,0 +1,5 @@
+<cover-view class='wx-toast-box' animation="{{animationData}}">
+  <cover-view class='wx-toast-content'>
+    <cover-view class='wx-toast-toast'>{{ content }}</cover-view>
+  </cover-view>
+</cover-view>

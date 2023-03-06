@@ -1,0 +1,39 @@
+/* pages/main-page/main-page.wxss */
+
+.top-image{
+  width: 100%;
+  height: 10px;
+  display: block;
+}
+
+.first-text{
+  display: block;
+  font-size: large;
+  padding-left: 5%;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.weui-article__h3{
+  display: block;
+  font-size: inherit;
+  padding-left: 5%;
+  padding-top: 15px;
+}
+
+.van-grid-item__content{
+  border-radius: 12%;
+}
+
+.third-view{
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.van-grid-item {
+  height: 100px;
+}
+
+.van-grid-item__text{
+  font-size: 16px;
+}

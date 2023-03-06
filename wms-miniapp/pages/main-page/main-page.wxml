@@ -1,0 +1,84 @@
+<!--pages/main-page/main-page.wxml-->
+<image class="top-image" src='/img/nutricia-color.png'></image>
+<view class="main-page-view">
+  <view class="first-view">
+    <text class="weui-article__h3">功能菜单</text>
+    <van-grid clickable column-num="2" gutter="6" icon-size="30px">
+      <van-grid-item
+        icon="records"
+        link-type="navigateTo"
+        url="/pages/reservation/deliver/add/add-deliver"
+        icon-color="rgb(23 57 131)"
+        text="送货预约"
+      />
+      <van-grid-item
+        icon="description"
+        link-type="navigateTo"
+        url="/pages/reservation/pickup/add/add-pickup"
+        icon-color="rgb(39 140 62)"
+        text="取货预约"
+      />
+      <van-grid-item
+        icon="sign"
+        link-type="navigateTo"
+        url="/pages/sign-in/deliver/add/add-deliver"
+        icon-color="#52c1f3"
+        text="送货签到"
+      />
+      <van-grid-item
+        icon="sign"
+        link-type="navigateTo"
+        url="/pages/sign-in/pickup/add/add-deliver"
+        icon-color="#14ec1d"
+        text="取货签到"
+      />
+      <van-grid-item
+        icon="todo-list-o"
+        link-type="navigateTo"
+        url="/pages/reservation/deliver/list/list-deliver"
+        icon-color="#3F51B5"
+        text="送货预约列表"
+      />
+      <van-grid-item
+        icon="label-o"
+        link-type="navigateTo"
+        url="/pages/reservation/pickup/list/list-pickup"
+        icon-color="#03A9F4"
+        text="取货预约列表"
+      />
+      <van-grid-item
+        icon="certificate"
+        link-type="navigateTo"
+        url="/pages/sign-in/deliver/list/list-deliver"
+        icon-color="#009688"
+        text="送货签到列表"
+      />
+      <van-grid-item
+        icon="passed"
+        link-type="navigateTo"
+        url="/pages/sign-in/pickup/list/list-deliver"
+        icon-color="#7dd01d"
+        text="取货签到列表"
+      />
+    </van-grid>
+  </view>
+  <!-- <view class="third-view">
+    <view class="weui-article__h3">近十条预约记录</view>
+			<view class="weui-cells weui-cells_after-title">
+				<block wx:for="{{reservationList}}" wx:for-item="arr" wx:key="id">
+          <view class="weui-cell weui-cell_access" hover-class="weui-cell_active" bindtap="dispatchCheckDetail"
+          data-index="{{arr.id}}">
+            <view class="weui-cell__hd">
+								<icon class="icon-box-img" type="warn"
+									style="margin-right: 16px;vertical-align: middle;width:20px; height: 20px;"></icon>
+							</view>
+            <view class="weui-cell__bd" style="font-size: 15px;">
+              <view>2021-11-01 12:23:32</view>
+              <view style="margin-top: 5px;">窜货告警详情{{arr.id}}</view>
+            </view>
+            <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+          </view>
+				</block>
+      </view>
+    </view> -->
+</view>

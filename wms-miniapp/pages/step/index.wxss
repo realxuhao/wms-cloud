@@ -1,0 +1,53 @@
+/* pages/reservation/deliver/add/add-deliver.wxss */
+page {
+  background-color: #ececec;
+}
+
+.top-image{
+  width: 100%;
+  height: 10px;
+  display: block;
+}
+
+.view-class{
+  background-color: #fff;
+  border-radius: 3%;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+  overflow: hidden;
+}
+
+.title{
+  display: block;
+  padding-left: 14px;
+  margin-top: 10px;
+  padding-bottom: 10px;
+  font-weight: 600;
+  border-bottom: 1px solid #f3f3f3;
+}
+
+.van-field__label{
+  font-weight: 400;
+}
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.block {
+  width: 120px;
+  height: 120px;
+  background-color: #fff;
+}
+
+.desc-class{
+  color: #9E9E9E;
+  font-size: 15px;
+  margin-top: 10px;
+  line-height: 25px;
+}
+

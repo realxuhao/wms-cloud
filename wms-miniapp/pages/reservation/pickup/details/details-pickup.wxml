@@ -1,0 +1,20 @@
+<image class="top-image" src='/img/nutricia-color.png'></image>
+<view class="view-class">
+  <view wx:if="{{hasData}}" > 
+  <text class="title">取货预约单详情</text>
+  <van-cell-group>    
+    <van-cell center title="取货车间" value="{{pickupData.cell}}" /> 
+    <van-cell center title="取货日期" value="{{pickupData.pickupDate}}" /> 
+    <van-cell center title="司机姓名" value="{{pickupData.driverName}}" /> 
+    <van-cell center title="司机联系方式" value="{{pickupData.driverPhone}}" /> 
+    <van-cell center title="车牌号" value="{{pickupData.carNum}}" />    
+  </van-cell-group>
+</view>
+<view wx:if="{{!hasData}}" > 
+  <van-empty description="暂无数据" />
+</view>
+
+<view class="weui-footer_fixed-bottom">
+    <button style="background: #F44336;" class="weui-btn weui-btn_primary" bindtap="cancelPickup">取消该预约</button>
+  </view>
+</view>

@@ -1,0 +1,14 @@
+<image class="top-image" src='/img/nutricia-color.png'></image>
+<view class="view-class">
+  <view wx:if="{{hasData}}" > 
+  <text class="title">送货预约已签到列表(近二十条)</text>
+  <van-cell-group wx:for="{{list}}" wx:for-item="item" wx:key="deliverId">
+    <van-cell center title="{{item.reserveNo}}" value="已签到"
+      label="签到时间：{{item.signinDate}}" >
+    </van-cell>
+  </van-cell-group>
+</view>
+<view wx:if="{{!hasData}}" > 
+  <van-empty description="暂无数据" />
+</view>
+</view>

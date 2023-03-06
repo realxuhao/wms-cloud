@@ -1,0 +1,4 @@
+<image class="top-image" src='/img/nutricia-color.png'></image>
+<view  class="main-page-view"> 
+  <van-empty description="敬请期待" />
+</view>

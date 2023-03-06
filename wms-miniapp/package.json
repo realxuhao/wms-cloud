@@ -1,0 +1,19 @@
+{
+  "name": "towercranemonitor_mp",
+  "version": "1.0.0",
+  "description": "管理页面",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@miniprogram-component-plus/tabs": "^1.0.0",
+    "@vant/weapp": "^1.9.2",
+    "weui-miniprogram": "^1.0.6"
+  },
+  "devDependencies": {
+    "miniprogram-api-typings": "^3.4.4"
+  }
+}
