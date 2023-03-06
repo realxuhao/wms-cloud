@@ -2,6 +2,8 @@ package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.IQCChangeStatusDTO;
@@ -25,6 +27,9 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -75,17 +80,46 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     @Transactional(rollbackFor = Exception.class)
     public List<IQCVO> excelChangeStatus(List<IQCDTO> list) {
         List<IQCVO> result = new ArrayList<>();
-        for (IQCDTO iqcdto : list) {
-            LambdaUpdateWrapper<Stock> wrapper = new LambdaUpdateWrapper<>();
-            wrapper.eq(Stock::getSsccNumber, iqcdto.getSSCCNumber());
-            wrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-            wrapper.set(Stock::getQualityStatus, iqcdto.getFinalSAPStatus());
-            wrapper.set(Stock::getChangeStatus, 1);
-            boolean update = this.update(wrapper);
-            IQCVO conver = BeanConverUtil.conver(iqcdto, IQCVO.class);
-            conver.setStatus(update?0:1);
-                result.add(conver);
+        // 定义每个线程处理的数据量
+        int batchSize = 100;
+        // 计算需要启动的线程数
+        int threadCount = (int) Math.ceil((double) list.size() / batchSize);
+        // 创建线程池
+        ExecutorService executorService = Executors.newFixedThreadPool(threadCount);
+        // 使用循环分配数据给每个线程处理
+        for (int i = 0; i < threadCount; i++) {
+            int start = i * batchSize;
+            int end = Math.min(start + batchSize, list.size());
+            // 创建一个线程处理当前批次的数据
+            executorService.execute(() -> {
+                // 获取当前线程处理的数据
+                List<IQCDTO> batchList = list.subList(start, end);
+                // 执行批量更新操作
+                for (IQCDTO iqcdto : batchList) {
+                    LambdaUpdateWrapper<Stock> wrapper = new LambdaUpdateWrapper<>();
+                    wrapper.eq(Stock::getSsccNumber, iqcdto.getSSCCNumber());
+                    wrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+                    wrapper.set(Stock::getQualityStatus, iqcdto.getFinalSAPStatus());
+                    wrapper.set(Stock::getChangeStatus, 1);
+                    boolean update = this.update(wrapper);
+                    IQCVO conver = BeanConverUtil.conver(iqcdto, IQCVO.class);
+                    conver.setStatus(update ? 0 : 1);
+                    //result.add(conver);
+                    synchronized(result) { // 确保线程安全
+                        result.add(conver); // 添加到结果列表
+                    }
+                }
+            });
+        }
 
+// 关闭线程池
+        executorService.shutdown();
+        try {
+            // 等待所有线程执行完毕
+            executorService.awaitTermination(Long.MAX_VALUE, TimeUnit.NANOSECONDS);
+        } catch (InterruptedException e) {
+            // 处理线程被中断的异常
+            e.printStackTrace();
         }
         return result;
     }

@@ -29,7 +29,7 @@
 		},
 		methods:{
 			async scanCodeCallback(data){
-				Bus.$emit('stopScan')
+				// Bus.$emit('stopScan')
 				this.code = data.code
 				this.handleGoto()
 			},

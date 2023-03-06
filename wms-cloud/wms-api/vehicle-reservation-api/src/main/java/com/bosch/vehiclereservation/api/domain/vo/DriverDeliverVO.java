@@ -54,6 +54,19 @@ public class DriverDeliverVO {
     private String carNum;
 
     /**
+     * 预约送货日期
+     */
+    @ApiModelProperty(value = "预约送货日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date reserveDate;
+
+    /**
+     * 时间段：09:00-10:00
+     */
+    @ApiModelProperty(value = "时间段")
+    private String timeWindow;
+
+    /**
      * 预约类型： 0：未预约 1：已预约
      */
     @ApiModelProperty(value = "预约类型： 0：未预约 1：已预约")
@@ -100,18 +113,6 @@ public class DriverDeliverVO {
     @ApiModelProperty(value = "迟到描述")
     private String lateDes;
 
-    /**
-     * 预约送货日期
-     */
-    @ApiModelProperty(value = "预约送货日期")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date reserveDate;
-
-    /**
-     * 时间段：09:00-10:00
-     */
-    @ApiModelProperty(value = "时间段")
-    private String timeWindow;
 
     public void setStatus(Integer status) {
         this.status = status;

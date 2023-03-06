@@ -274,6 +274,14 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         }
         samplePlan.setStatus(IQCStatusEnum.CANCEL.code());
         updateById(samplePlan);
+        //库存
+        LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.eq(Stock::getSsccNumber,samplePlan.getSsccNb());
+        stockQueryWrapper.eq(Stock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        Stock stock = stockService.getOne(stockQueryWrapper);
+        stock.setFreezeStock(Double.valueOf(0));
+        stock.setAvailableStock(stock.getTotalStock());
+        stockService.updateById(stock);
     }
 
     @Override

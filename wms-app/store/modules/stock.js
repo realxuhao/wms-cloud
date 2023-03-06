@@ -25,6 +25,10 @@ const stock = {
 	  const {data} = await stockService.getByBinCode(binCode)
 	  return data
 	},
+	async addSplit({ commit }, options) {
+	  const {data} = await stockService.addSplit(options)
+	  return data
+	},
   }
 }
 

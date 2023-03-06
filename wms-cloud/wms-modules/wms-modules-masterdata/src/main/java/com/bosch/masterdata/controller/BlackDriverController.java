@@ -93,14 +93,21 @@ public class BlackDriverController extends BaseController {
     }
 
     /**
-     * 获取司机黑名单详细信息(根据司机姓名查询)
+     * 获取司机黑名单详细信息(根据司机wechatId查询)
      */
-    @GetMapping(value = "/black/{name}")
-    @ApiOperation("根据司机姓名获取司机黑名单详细信息")
-    public R<List<BlackDriverVO>> getInfoByName(@PathVariable("name") String name) {
-        List<BlackDriver> blackDrivers = blackDriverService.selectBlackDriverByName(name);
+    @GetMapping(value = "/black/{wechatId}")
+    @ApiOperation("根据司机wechatId获取司机黑名单详细信息")
+    public R<List<BlackDriverVO>> getInfoByName(@PathVariable("wechatId") String wechatId) {
+        List<BlackDriver> blackDrivers = blackDriverService.selectBlackDriverByWechatId(wechatId);
         List<BlackDriverVO> blackDriverVOS = BeanConverUtil.converList(blackDrivers, BlackDriverVO.class);
         return R.ok(blackDriverVOS);
     }
+
+    @ApiOperation("保存司机名单")
+    @PostMapping("save")
+    public R<Boolean> save(@RequestBody BlackDriverDTO blackDriverDTO) {
+        return R.ok(blackDriverService.saveBlackDriver(BeanConverUtil.conver(blackDriverDTO, BlackDriver.class)));
+    }
+
 
 }

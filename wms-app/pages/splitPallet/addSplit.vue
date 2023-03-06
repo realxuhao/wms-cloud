@@ -3,12 +3,8 @@
 		<view class="main" slot="page-main">
 			<view class="header m-b-8">
 				<view class="text-line m-b-8 ">
-					<view class="label">源SSCC：</view>
-
-
-					<input class="custom-input" focus placeholder="扫描源SSCC" v-model="form.mesBarCode" @focus="handleSetEditFieldName('form.mesBarCode')"
-						@blur="handleLeaveFocus" />
-
+					<view class="label">SSCC码：</view>
+					{{stockInfo.ssccNumber}}
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">物料编码：</view>
@@ -30,18 +26,14 @@
 
 			<view class="content">
 				<uni-forms :label-width="110" ref="form" :rules="rules" :modelValue="form" label-position="left">
-					<uni-forms-item label="拆托SSCC码" name="ssccNumber" required>
-						<input class="custom-input" focus placeholder="扫描拆托mesBarCode" v-model="form.newMesBarCode" @focus="handleSetEditFieldName('form.newMesBarCode')"
-							@blur="handleLeaveFocus" />
-						<!-- <view class="custom-input">
-							<text
-								:class="!form.ssccNumber?'placeholder-text':''">{{form.ssccNumber||'请扫描拆托SSCC码'}}</text>
-						</view> -->
+					<uni-forms-item label="拆托SSCC码" name="newMesBarCode" required>
+						<input class="custom-input" focus placeholder="扫描SSCC码" v-model="form.newMesBarCode" @focus="handleSetEditFieldName('form.newMesBarCode')"
+							 />
 					</uni-forms-item>
 					<uni-forms-item label="实际拆托数量" name="splitQuantity" required>
-						<view class="custom-input">
-							<text>{{form.splitQuantity}}</text>
-						</view>
+						
+						<input class="custom-input" placeholder="实际拆托数量" v-model="form.splitQuantity" 
+							 />
 					</uni-forms-item>
 					<o-btn block class="submit-btn primary-button" :loading="submitLoading" @click="handlePost">提交
 					</o-btn>
@@ -49,14 +41,14 @@
 
 			</view>
 
-			<uni-popup ref="popup" :is-mask-click="false">
+			<!-- <uni-popup ref="popup" :is-mask-click="false">
 				<uni-popup-dialog before-close type="info" cancelText="返回" confirmText="原托上架" title="拆托完成!"
 					@confirm="handleGotoBinInOperation" @close="handleGoBack">
 					<view>
 						请将拆托配送产线。
 					</view>
 				</uni-popup-dialog>
-			</uni-popup>
+			</uni-popup> -->
 		</view>
 		<Message ref="message"></Message>
 	</my-page>
@@ -78,10 +70,15 @@
 				code: '',
 				submitLoading: false,
 				rules: {
-					ssccNumber: {
+					newMesBarCode: {
 						rules: [{
 							required: true,
 							errorMessage: '不能为空',
+						},
+						{
+							minLength:18,
+							maxLength:18,
+							errorMessage:'非法的SSCC码'
 						}]
 					},
 					splitQuantity: {
@@ -104,34 +101,25 @@
 			};
 		},
 		onLoad(options) {
-			this.params = options
+			// this.params = options
+			this.getStockInfo(options.barCode)
 			this.initScanCode()
-			this.form.mesBarCode = ''
+			this.form.mesBarCode = options.barCode
+			
 		},
 		
 		onLaunch() {
 			Bus.$off("scancodedate");
 		},
 		methods: {
-			async handleLeaveFocus(e) {
+			// async handleLeaveFocus(e) {
+				// const inputText = e.target.value
 				
-				const inputText = e.target.value
-				if (this.editFieldName === 'form.mesBarCode'){
-					if (inputText.length === 50) {
-						const data = await this.$store.dispatch('stock/getInfoByMesBarCode', inputText)
-						this.stockInfo = data
-					}else if (inputText.length === 18){
-						const data = await this.$store.dispatch('stock/getInfoBySscc', inputText)
-						this.stockInfo = data
-					}
-				}else if (this.editFieldName === 'form.newMesBarCode'){
-					if (inputText.length === 50) {
-						this.getMesBarCodeInfo(inputText)
-						this.form.splitQuantity = this.parsedMesBarCode.quantity
-					}
-				}
-
-			},
+				// if(inputText.length&& inputText.length>18||inputText.length<18){
+				// 	this.$$refs.message.error('非法的SSCC码')
+				// 	return
+				// }
+			// },
 			async handleSetEditFieldName(editFieldName) {
 				this.editFieldName = editFieldName
 			
@@ -140,16 +128,8 @@
 				Bus.$on('scancodedate',async (data)=>{
 					
 					const code = data.code.trim()
-					// this.code = code
-					// this.getMesBarCodeInfo(code)
-				
-					if(this.editFieldName==='form.mesBarCode'){
-						this.getMesBarCodeInfo(code)
-						
-						this.form.mesBarCode = this.parsedMesBarCode.ssccNb
-						await this.getStockInfo(this.parsedMesBarCode.ssccNb)
-						// _.set(this,this.editFieldName,code)
-					} else if(this.editFieldName === 'form.newMesBarCode'){
+					
+					if(this.editFieldName === 'form.newMesBarCode'){
 						await this.getMesBarCodeInfo(code)
 						this.form.newMesBarCode = this.parsedMesBarCode.ssccNb
 						this.form.splitQuantity = this.parsedMesBarCode.quantity
@@ -157,13 +137,14 @@
 				})
 			},
 			async getStockInfo(code) {
-				if (code.length === 50) {
+				// if (code.length === 50) {
 					const data = await this.$store.dispatch('stock/getInfoByMesBarCode', code)
+					console.log(data)
 					this.stockInfo = data
-				}else {
-					const data = await this.$store.dispatch('stock/getInfoBySscc', code)
-					this.stockInfo = data
-				}
+				// }else {
+				// 	const data = await this.$store.dispatch('stock/getInfoBySscc', code)
+				// 	this.stockInfo = data
+				// }
 			},
 			async getMesBarCodeInfo(code) {
 				try {
@@ -196,7 +177,7 @@
 			},
 			handleGotoBinInOperation() {
 				uni.redirectTo({
-					url: `/pages/binIn/operation?barCode=${this.params.mesBarCode}`
+					url: `/pages/binIn/operation?barCode=${this.form.mesBarCode}`
 				})
 			},
 			async onSubmit() {
@@ -208,10 +189,13 @@
 
 					const options = {
 						...this.form,
-						sourceSsccNb: this.params.ssccNumber
+						sourceSsccNb: this.stockInfo.ssccNumber
 					}
-					const data = await this.$store.dispatch('kanban/splitPallet', options)
-					this.$refs.popup.open()
+					const data = await this.$store.dispatch('stock/addSplit', options)
+					this.$refs.message.success('拆托完成')
+					setTimeout(()=>{
+						uni.navigateBack(-1)
+					},100)
 				} catch (e) {
 					this.$refs.message.error(e.message)
 				} finally {
@@ -219,7 +203,7 @@
 					this.submitLoading = false
 				}
 			}
-		}
+		},
 	}
 </script>
 

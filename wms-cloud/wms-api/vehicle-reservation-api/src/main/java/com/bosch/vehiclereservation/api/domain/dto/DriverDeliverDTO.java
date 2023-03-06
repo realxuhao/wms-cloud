@@ -1,6 +1,5 @@
 package com.bosch.vehiclereservation.api.domain.dto;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -23,6 +22,12 @@ public class DriverDeliverDTO extends PageDomain {
     private String reserveNo;
 
     /**
+     * 微信id
+     */
+    @ApiModelProperty(value = "微信id")
+    private String wechatId;
+
+    /**
      * 司机姓名
      */
     @ApiModelProperty(value = "司机姓名")
@@ -39,6 +44,24 @@ public class DriverDeliverDTO extends PageDomain {
      */
     @ApiModelProperty(value = "车牌")
     private String carNum;
+
+    /**
+     * 仓库id
+     */
+    @ApiModelProperty(value = "仓库id")
+    private Long wareId;
+
+    /**
+     * 预约送货日期
+     */
+    @ApiModelProperty(value = "预约送货日期")
+    private Date reserveDate;
+
+    /**
+     * 时间段：09:00-10:00
+     */
+    @ApiModelProperty(value = "时间段")
+    private String timeWindow;
 
     /**
      * 预约类型： 0：未预约 1：已预约
@@ -69,12 +92,6 @@ public class DriverDeliverDTO extends PageDomain {
      */
     @ApiModelProperty(value = "备注")
     private String remark;
-
-    /**
-     * 微信id
-     */
-    @ApiModelProperty(value = "微信id")
-    private String wechatId;
 
     @ApiModelProperty(value = "供应商姓名")
     private String supplierName;

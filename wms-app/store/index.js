@@ -13,6 +13,7 @@ import manualTrans from './modules/manualTrans'
 import material from './modules/material'
 import stock from './modules/stock'
 import IQC from './modules/IQC'
+import splitPallet from './modules/splitPallet'
 
 import getters from './getters'
 
@@ -31,7 +32,8 @@ export default new Vuex.Store({
 	manualTrans,
 	material,
 	stock,
-	IQC
+	IQC,
+	splitPallet
   },
   state: {
 
