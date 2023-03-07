@@ -2,6 +2,7 @@ package com.bosch.vehiclereservation.api.domain;
 
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
@@ -46,8 +47,9 @@ public class SupplierReserve extends BaseEntity {
     private Date reserveDate;
 
     /**
-     * 时间段：09:00-10:00
+     * 时间段
      */
+    @TableField(exist = false)
     private String timeWindow;
 
     /**

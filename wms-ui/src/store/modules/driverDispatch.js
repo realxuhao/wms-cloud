@@ -18,8 +18,8 @@ const driverDispatch = {
       const data = await driverDispatchService.getTodaySignlist(options)
       return data
     },
-    async getTodayNoSignList ({ commit }) {
-      const data = await driverDispatchService.getTodayNoSignList()
+    async getTodayNoSignList ({ commit }, options) {
+      const data = await driverDispatchService.getTodayNoSignList(options)
       return data
     },
     async importDock ({ commit }, options) {

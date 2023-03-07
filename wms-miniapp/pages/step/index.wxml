@@ -1,0 +1,29 @@
+<image class="top-image" src='/img/nutricia-color.png'></image>
+<view  class="main-page-view"> 
+
+  <view class="view-class">
+    <text class="title">送货预约功能</text>
+    <van-steps
+      desc-class="desc-class"
+      steps="{{ steps }}"
+      active="{{ active }}"
+      direction="vertical"
+      active-color="#38f"
+    >
+    </van-steps>  
+  </view>
+  <view></view>
+  <view class="view-class">
+    <text class="title">取货预约功能</text>
+    <van-steps
+      desc-class="desc-class"
+      steps="{{ steps2 }}"
+      active="{{ active }}"
+      direction="vertical"
+      active-color="#38f"
+    >
+    </van-steps>  
+  </view>
+
+
+</view>

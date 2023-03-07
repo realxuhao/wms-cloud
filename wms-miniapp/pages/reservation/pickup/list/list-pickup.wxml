@@ -1,0 +1,16 @@
+<image class="top-image" src='/img/nutricia-color.png'></image>
+<view class="view-class">
+  <view wx:if="{{hasData}}" > 
+  <text class="title">取货预约列表</text>
+  <van-cell-group wx:for="{{list}}" wx:for-item="item" wx:key="pickupId">
+    <van-cell center is-link title="{{item.cell}}" value="详情"
+      label="{{item.pickupDate}}"
+      data-cid="{{item.pickupId}}"
+      bind:click="onDetails" >      
+    </van-cell>
+  </van-cell-group>
+</view>
+<view wx:if="{{!hasData}}" > 
+  <van-empty description="暂无数据" />
+</view>
+</view>

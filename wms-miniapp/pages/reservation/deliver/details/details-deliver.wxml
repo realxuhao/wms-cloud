@@ -1,0 +1,22 @@
+<image class="top-image" src='/img/nutricia-color.png'></image>
+<view class="view-class">
+  <view wx:if="{{hasData}}" > 
+  <text class="title">送货预约单详情</text>
+  <van-cell-group>
+    <van-cell center title="供应商预约单号" value="{{supplierData.reserveNo}}" />  
+    <van-cell center title="供应商名称" value="{{supplierData.supplierCode}}" />  
+    <van-cell center title="送货地址" value="{{supplierData.wareLocation}}" />  
+    <van-cell center title="送货联系人" value="{{supplierData.wareUser}}" />  
+    <van-cell center title="联系方式" value="{{supplierData.wareUserPhone}}" />  
+    <van-cell center title="送货时间" value="{{supplierData.reserveDate}} {{supplierData.timeWindow}}" />  
+    <van-cell center title="司机姓名" value="{{deliverData.driverName}}" /> 
+    <van-cell center title="司机联系方式" value="{{deliverData.driverPhone}}" /> 
+    <van-cell center title="车牌号" value="{{deliverData.carNum}}" />   
+    <van-cell center title="状态" value="{{deliverData.statusDes}}" />   
+    <van-cell center title="司机预约创建时间" value="{{deliverData.createTime}}" />         
+  </van-cell-group>
+</view>
+<view wx:if="{{!hasData}}" > 
+  <van-empty description="暂无数据" />
+</view>
+</view>

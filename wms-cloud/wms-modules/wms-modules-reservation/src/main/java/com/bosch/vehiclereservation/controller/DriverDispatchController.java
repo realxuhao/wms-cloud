@@ -12,6 +12,7 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
+import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.security.annotation.RequiresPermissions;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,7 +45,7 @@ public class DriverDispatchController extends BaseController {
     @RequiresPermissions("vehiclereservation:driverdispatch:pagelist")
     @PostMapping("/pagelist")
     @ApiOperation("获取签到车辆数据")
-    public R<PageVO<DriverDispatchVO>> getSignDataPageList(@RequestBody DriverDispatchDTO driverDispatchDTO) {
+    public R<PageVO<DriverDispatchVO>> getSignDataPageList(@RequestBody DriverDispatchDTO driverDispatchDTO, PageDomain pageDomain) {
         driverDispatchDTO.setToday(false);
         startPage();
         List<DriverDispatchVO> list = driverDispatchService.selectTodaySignData(driverDispatchDTO);

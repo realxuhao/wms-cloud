@@ -107,6 +107,7 @@
 
     </update>
 
+
     <select id="selectStockVOList" resultMap="StockVOResult">
         select bs.id as id,
         bs.sscc_number as sscc_number,

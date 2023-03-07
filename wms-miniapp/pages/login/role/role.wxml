@@ -1,0 +1,59 @@
+<!--pages/login/role/role.wxml-->
+<image class="top-image" src='/img/nutricia-color.png'></image>
+<view class="main-view">
+  <text class="weui-article__h3">角色功能</text>
+  <view class="page-section" style="padding-top: 15px">
+    <view class="weui-cells weui-cells_after-title" style="width: 85%;border-radius: 10px;"> 
+      <picker bindchange="selectRole" value="{{roleIndex}}" range="{{roleName}}">
+        <van-cell is-link title="请选择角色" size="large">
+          <view class="weui-input">{{roleName[roleIndex]}}</view>
+        </van-cell>
+      </picker>
+    </view>
+  </view>
+
+  <view class="page-section" style="margin-top: 30px;">
+    <view class="weui-cells weui-cells_after-title"  style="width: 85%;border-radius: 10px;">
+      <picker data-field="date" mode="date" value="{{time}}"
+          bindchange="selectTime">
+      <van-cell is-link title="请选择有效期" size="large">
+        <view class="weui-input">{{time}}</view>
+      </van-cell>      
+    </picker>
+    </view>
+  </view>
+
+  <view style="padding-top: 7%;">
+    <button wx:if="{{isPermissionGranted == false}}" open-type="openSetting" bindopensetting="permissionCallback">授予权限</button>
+    <button wx:else class="weui-btn weui-btn_primary" bindtap="submit">确定</button>
+  </view>
+
+</view>
+
+<!-- <mp-form-page title="角色功能">
+  <mp-toptips ></mp-toptips>
+
+  <mp-form id="form" models="{{formData}}">
+    <mp-cells title="请选择">
+      <mp-cell prop="role" title="角色" ext-class="">
+        <picker bindchange="selectRole" value="{{roleIndex}}" range="{{roleName}}">
+          <view class="weui-input">{{roleName[roleIndex]}}</view>
+        </picker>
+      </mp-cell>
+
+      <mp-cell link prop="time" title="过期时间" ext-class="">
+        <picker data-field="date" mode="date" value="{{time}}"
+          bindchange="selectTime">
+          <view class="weui-input">{{time}}</view>
+        </picker>
+      </mp-cell>   
+    </mp-cells>
+
+    <view>
+      <button wx:if="{{isPermissionGranted == false}}" open-type="openSetting" bindopensetting="permissionCallback">授予权限</button>
+      <button wx:else class="weui-btn weui-btn_primary" bindtap="submit">确定</button>
+    </view>
+    
+  </mp-form>
+
+</mp-form-page> -->

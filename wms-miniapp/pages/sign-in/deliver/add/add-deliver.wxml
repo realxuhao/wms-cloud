@@ -1,0 +1,77 @@
+<image class="top-image" src='/img/nutricia-color.png'></image>
+<view class="view-class" wx:if="{{radio == 1}}">
+  <view wx:if="{{hasData}}" > 
+  <text class="title">未签到预约单列表</text>
+  <van-cell-group wx:for="{{deliverList}}" wx:for-item="item" wx:key="deliverId">
+    <van-cell center is-link title="{{item.reserveNo}}" value="点击签到"
+      label="{{item.reserveDate}} - {{item.timeWindow}}"
+      data-cid="{{item.deliverId}}"
+      bind:click="onSignIn" >
+      
+    </van-cell>
+  </van-cell-group>
+</view>
+<view wx:if="{{!hasData}}" > 
+  <van-empty description="暂无数据" />
+</view>
+</view>
+
+<view class="view-class"  wx:if="{{radio == 0}}">
+  <view class="form">
+    <view class="view-class">
+      <text class="title">司机信息</text>
+        <van-field
+          required
+          size="large"
+          label="姓名"
+          error-message="{{driverNameError}}"
+          model:value="{{ driverName }}"
+          placeholder="请输入姓名"
+          bind:change="driverNameChange"
+        />
+        <van-field
+          required
+          size="large"
+          label="手机号码"
+          type="number"
+          error-message="{{driverPhoneError}}"
+          model:value="{{ driverPhone }}"
+          placeholder="请输入手机号码"
+          bind:change="driverPhoneChange"
+        />
+        <van-field
+          required
+          size="large"
+          label="车牌号"
+          error-message="{{carNumError}}"
+          model:value="{{ carNum }}"
+          placeholder="请输入车牌号"
+          bind:change="carNumChange"
+        />
+    </view>
+    <view style="margin-top: 20px;margin-bottom: 20px;">
+      <button class="weui-btn weui-btn_primary" bindtap="submit">确定签到</button>
+    </view>
+  </view>
+</view>
+
+
+<van-notify id="van-notify" />
+
+<van-dialog
+  use-slot
+  title="请选择是否已预约"
+  show="{{ showDialog }}"
+  show-cancel-button
+  bind:cancel="onClose"
+  bind:confirm="getDeliverList"
+>
+  <view class="radio-view">
+    <van-radio-group value="{{ radio }}" bind:change="onRadioChange" direction="horizontal">
+      <van-radio  checked-color="#07c160" name="1">已预约</van-radio>
+      <van-radio  checked-color="#07c160" name="0">未预约</van-radio>
+    </van-radio-group>
+  </view>
+</van-dialog>
+
+<van-dialog id="van-dialog" />

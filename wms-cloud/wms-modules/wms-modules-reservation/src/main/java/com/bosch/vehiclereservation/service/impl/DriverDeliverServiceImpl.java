@@ -3,8 +3,12 @@ package com.bosch.vehiclereservation.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.masterdata.api.RemoteMasterDataService;
+import com.bosch.masterdata.api.RemoteTimeWindowService;
+import com.bosch.masterdata.api.domain.dto.BlackDriverDTO;
 import com.bosch.masterdata.api.domain.vo.BlackDriverVO;
 import com.bosch.masterdata.api.domain.vo.SupplierInfoVO;
+import com.bosch.masterdata.api.domain.vo.TimeWindowVO;
+import com.bosch.masterdata.api.enumeration.WinTimeStatusEnum;
 import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
@@ -41,6 +45,9 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
 
     @Autowired
     private RemoteMasterDataService remoteMasterDataService;
+
+    @Autowired
+    private RemoteTimeWindowService remoteTimeWindowService;
 
     @Autowired
     private DriverDispatchMapper driverDispatchMapper;
@@ -97,7 +104,7 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
 
     @Override
     public boolean insertDriverDeliver(DriverDeliverDTO driverDeliverDTO) {
-        R<List<BlackDriverVO>> result = remoteMasterDataService.getBlackDriverByName(driverDeliverDTO.getDriverName());
+        R<List<BlackDriverVO>> result = remoteMasterDataService.getBlackDriverByWechatId(driverDeliverDTO.getWechatId(), true);
         List<BlackDriverVO> data = result.getData();
         if (data.size() > 0) {
             throw new ServiceException("您已进入黑名单，请联系客户确认！");
@@ -106,10 +113,31 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
         wrapper.eq("reserve_no", driverDeliverDTO.getReserveNo());
         Optional<DriverDeliver> first = driverDeliverMapper.selectList(wrapper).stream().findFirst();
         if (first.isPresent()) {
-            if (!first.get().getDriverName().equals(driverDeliverDTO.getDriverName())) {
+            if (!first.get().getWechatId().equals(driverDeliverDTO.getWechatId())) {
                 throw new ServiceException("该预约单已有司机预约，请联系客户！");
             } else {
                 throw new ServiceException("该预约单您已预约过！");
+            }
+        }
+        BlackDriverDTO blackDriverDTO = new BlackDriverDTO();
+        blackDriverDTO.setWechatId(driverDeliverDTO.getWechatId());
+        blackDriverDTO.setDriverName(driverDeliverDTO.getDriverName());
+        blackDriverDTO.setDriverPhone(driverDeliverDTO.getDriverPhone());
+        blackDriverDTO.setCarNum(driverDeliverDTO.getCarNum());
+        R<Boolean> booleanR = remoteMasterDataService.saveBlackDriver(blackDriverDTO);
+
+        String[] timeWindow = driverDeliverDTO.getTimeWindow().split("-");
+        R<List<TimeWindowVO>> resultWindow = remoteTimeWindowService.getListByWareId(driverDeliverDTO.getWareId());
+        List<TimeWindowVO> timeWindowVOList = resultWindow.getData();
+        List<TimeWindowVO> dataWindow = timeWindowVOList.stream().filter(c -> c.getStatus().intValue() == WinTimeStatusEnum.ENABL.getCode()
+                && c.getStartTime().equals(timeWindow[0]) && c.getEndTime().equals(timeWindow[1])).collect(Collectors.toList());
+        if (dataWindow == null) {
+            throw new ServiceException(driverDeliverDTO.getTimeWindow() + "该时段已约满");
+        } else {
+            List<SupplierReserve> supplierReserves = supplierReserveMapper.selectReserveDateList(driverDeliverDTO.getWareId(), driverDeliverDTO.getReserveDate());
+            long count = Long.parseLong(dataWindow.get(0).getDockNum()) - supplierReserves.stream().filter(c -> c.getTimeWindow().equals(driverDeliverDTO.getTimeWindow())).count();
+            if (count <= 0) {
+                throw new ServiceException(driverDeliverDTO.getTimeWindow() + "该时段已约满");
             }
         }
         DriverDeliver driverDeliver = BeanConverUtil.conver(driverDeliverDTO, DriverDeliver.class);

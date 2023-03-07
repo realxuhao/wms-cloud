@@ -9,9 +9,9 @@ import java.util.List;
 public interface IBlackDriverService extends IService<BlackDriver> {
 
     /**
-     * 查询仓库
+     * 查询司机信息
      *
-     * @param id 仓库主键
+     * @param id 司机主键
      * @return 司机
      */
     public BlackDriver selectBlackDriverById(Long id);
@@ -56,6 +56,14 @@ public interface IBlackDriverService extends IService<BlackDriver> {
      */
     public boolean deleteBlackDriverById(Long id);
 
-    public List<BlackDriver> selectBlackDriverByName(String name);
+    public List<BlackDriver> selectBlackDriverByWechatId(String wechatId,boolean isBlack);
+
+    /**
+     * 保存信息
+     *
+     * @param blackDriver 司机信息
+     * @return
+     */
+    public boolean saveBlackDriver(BlackDriver blackDriver);
 
 }

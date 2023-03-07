@@ -70,7 +70,7 @@
         v-drag-modal
         v-model="isVisibleTimeWindow"
         title="预约时间窗口"
-        :width="980"
+        :width="560"
         :closable="false"
         cancelText="关闭"
         @cancel="handleClose"
@@ -78,7 +78,7 @@
         :confirmLoading="confirmLoading">
         <div>
           <a-row :gutter="16">
-            <a-col :span="8">
+            <a-col :span="20">
               <a-form-model-item label="仓库联系人" style="display: flex;">
                 <a-select
                   show-search
@@ -91,7 +91,9 @@
                 </a-select>
               </a-form-model-item>
             </a-col>
-            <a-col :span="8">
+          </a-row>
+          <a-row :gutter="16">
+            <a-col :span="20">
               <a-form-model-item label="送货日期" style="display: flex;">
                 <a-date-picker
                   v-model="supplierReserveDTO.reserveDate"
@@ -101,11 +103,8 @@
                 />
               </a-form-model-item>
             </a-col>
-            <a-col :span="8">
-              <p class="select-tw">{{ '已选择的时间段: ' + supplierReserveDTO.timeWindow }}</p>
-            </a-col>
           </a-row>
-          <a-row :gutter="[16, 16]" v-show="isShowTimeWindowData">
+          <!-- <a-row :gutter="[16, 16]" v-show="isShowTimeWindowData">
             <a-col :key="index" v-for="(item, index) in timeWindowList" :span="4">
               <a-button @click="onClickTimeWindow(item)" class="hour-div" :style="{'--background-image': item.color}">
                 {{ item.startTime + '-' + item.endTime }}
@@ -120,7 +119,7 @@
             <span>不可预约</span>
             <a-avatar shape="square" size="small" style=" background-image:linear-gradient(to bottom right, #2f508d40, #34b8abbd);"></a-avatar>
             <span>可预约</span>
-          </div>
+          </div> -->
         </div>
       </a-modal>
     </div>
@@ -224,8 +223,7 @@ const queryFormAttr = () => {
 const setSupplierReserveDTO = () => {
   return {
     wareId: null,
-    reserveDate: null,
-    timeWindow: ''
+    reserveDate: null
   }
 }
 
@@ -306,21 +304,21 @@ export default {
     },
     /** 仓库变化，重新查询时间窗口 */
     onWareIdChange () {
-      this.supplierReserveDTO.timeWindow = ''
-      if (this.supplierReserveDTO.wareId != null && this.supplierReserveDTO.reserveDate != null) {
-        this.getTimeWindowList()
-      } else {
-        this.isShowTimeWindowData = false
-      }
+      // this.supplierReserveDTO.timeWindow = ''
+      // if (this.supplierReserveDTO.wareId != null && this.supplierReserveDTO.reserveDate != null) {
+      //   this.getTimeWindowList()
+      // } else {
+      //   this.isShowTimeWindowData = false
+      // }
     },
     /** 选择日期变化回调，重新查询当天时间窗口情况 */
     onDateChange () {
-      this.supplierReserveDTO.timeWindow = ''
-      if (this.supplierReserveDTO.wareId != null && this.supplierReserveDTO.reserveDate != null) {
-        this.getTimeWindowList()
-      } else {
-        this.isShowTimeWindowData = false
-      }
+      // this.supplierReserveDTO.timeWindow = ''
+      // if (this.supplierReserveDTO.wareId != null && this.supplierReserveDTO.reserveDate != null) {
+      //   this.getTimeWindowList()
+      // } else {
+      //   this.isShowTimeWindowData = false
+      // }
     },
     async getTimeWindowList () {
       const param = {
@@ -340,11 +338,11 @@ export default {
     },
     /** 点击时间窗口button回调函数 */
     onClickTimeWindow (item) {
-      if (item.enable) {
-        this.supplierReserveDTO.timeWindow = item.startTime + '-' + item.endTime
-      } else {
-        this.supplierReserveDTO.timeWindow = ''
-      }
+      // if (item.enable) {
+      //   this.supplierReserveDTO.timeWindow = item.startTime + '-' + item.endTime
+      // } else {
+      //   this.supplierReserveDTO.timeWindow = ''
+      // }
     },
     /** 提交选中的PO单，判断后弹出时间窗口 */
     handleSumbitPo () {
@@ -365,9 +363,9 @@ export default {
           return
         }
       }
-      if (!(this.supplierReserveDTO.wareId == null || this.supplierReserveDTO.reserveDate == null)) {
-        this.getTimeWindowList()
-      }
+      // if (!(this.supplierReserveDTO.wareId == null || this.supplierReserveDTO.reserveDate == null)) {
+      //   this.getTimeWindowList()
+      // }
       this.isVisibleTimeWindow = true
     },
     /** 提交供应商预约信息 */
@@ -380,10 +378,10 @@ export default {
         this.$message.error('请选择要预约的日期!')
         return
       }
-      if (this.supplierReserveDTO.timeWindow === '') {
-        this.$message.error('请选择要预约的时间段!')
-        return
-      }
+      // if (this.supplierReserveDTO.timeWindow === '') {
+      //   this.$message.error('请选择要预约的时间段!')
+      //   return
+      // }
       try {
         this.confirmLoading = true
         this.supplierReserveDTO.reserveDate = this.supplierReserveDTO.reserveDate == null ? null : moment(new Date(this.supplierReserveDTO.reserveDate)).format('YYYY-MM-DD')

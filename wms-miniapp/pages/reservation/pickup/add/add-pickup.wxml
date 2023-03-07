@@ -1,0 +1,61 @@
+<image class="top-image" src='/img/nutricia-color.png'></image>
+<view> 
+  <view class="form">
+    <view class="view-class">
+      <text class="title">司机信息</text>
+        <van-field
+          required
+          size="large"
+          label="姓名"
+          error-message="{{driverNameError}}"
+          model:value="{{ driverName }}"
+          placeholder="请输入姓名"
+          bind:change="driverNameChange"
+        />
+        <van-field
+          required
+          size="large"
+          label="手机号码"
+          type="number"
+          error-message="{{driverPhoneError}}"
+          model:value="{{ driverPhone }}"
+          placeholder="请输入手机号码"
+          bind:change="driverPhoneChange"
+        />
+        <van-field
+          required
+          size="large"
+          label="车牌号"
+          error-message="{{carNumError}}"
+          model:value="{{ carNum }}"
+          placeholder="请输入车牌号"
+          bind:change="carNumChange"
+        />
+    </view>
+    <view class="view-class">
+      <text class="title">预约取货信息</text>
+      <picker bindchange="cellChange" value="{{cellIndex}}" range="{{cellList}}">
+        <van-cell is-link title="车间" size="large" required >
+            <view class="weui-input">{{cellList[cellIndex]}}</view>
+        </van-cell>
+      </picker>
+      <van-cell is-link required size="large" title="取货日期(可多选)" value="{{ selectDateText }}" bind:click="onDisplay" />
+      <van-calendar   
+        color="#07c160"     
+        show="{{ showCalendar }}"
+        min-date="{{ minDate }}"
+        max-date="{{ maxDate }}"
+        type="multiple"
+        bind:close="onClose"
+        bind:confirm="onConfirm"
+      />
+    </view>
+    <view style="margin-top: 20px;margin-bottom: 20px;">
+      <button class="weui-btn weui-btn_primary" bindtap="submit">确定</button>
+    </view>
+  </view>
+</view>
+
+<van-notify id="van-notify" />
+
+<van-dialog id="van-dialog" />

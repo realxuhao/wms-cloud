@@ -1,0 +1,140 @@
+<image class="top-image" src='/img/nutricia-color.png'></image>
+<view>
+  <view class="form">
+    <view class="view-class">
+      <text class="title">供应商预约单信息</text>
+      <van-field
+        size="small"
+        readonly
+        label="预约单号"
+        model:value="{{ reserveNo }}"
+      />
+      <van-field
+        size="small"
+        readonly
+        label="供应商名称"
+        model:value="{{ supplierCode }}"
+      />
+      <van-field
+        size="small"
+        readonly
+        label="送货地址"
+        model:value="{{ wareLocation }}"
+      />
+      <van-field
+        size="small"
+        readonly
+        label="送货联系人"
+        model:value="{{ wareUser }}"
+      />
+      <van-field
+        size="small"
+        readonly
+        label="联系方式"
+        model:value="{{ wareUserPhone }}"
+      />
+      <!-- <van-field
+        size="small"
+        readonly
+        label="送货时间"
+        model:value="{{ reserveDate + ' ' + timeWindow }}"
+      /> -->
+    </view>
+    <view class="view-class">
+      <text class="title">预约送货时间</text>
+        <!-- 选择送货时间 -->     
+        <van-cell is-link required size="large" title="送货日期" value="{{ reserveDate }}" bind:click="onDateDisplay" />
+        <van-popup show="{{ showDate }}" 
+        position="bottom" custom-style="{ height: '30%' }">
+          <van-datetime-picker
+            type="date"
+            min-date="{{ minDate }}"
+            max-date="{{ maxDate }}"
+            bind:cancel="onDateClose"
+            bind:confirm="onDateConfirm"
+          />
+        </van-popup>        
+        <!-- 选择送货时间段 timeWindow -->
+        <van-cell is-link required size="large" title="送货时间段" value="{{ timeWindow }}" bind:click="onTimeWindowDisplay" />
+        <van-popup show="{{ showTimeWindow }}" 
+          position="bottom" 
+          
+          bind:close="onTimeWindowClose"
+          custom-style="{ height: '30%' }">
+          <van-grid square            
+            class="timeWindow-grid"
+            column-num="4"
+            gutter="{{ 10 }}">
+            <van-grid-item 
+              use-slot
+              wx:for="{{timeWindowList}}"
+              wx:for-item="item" 
+              wx:key="id"
+              data-cid="{{item.id}}"
+              bind:click="onClickTimeWindow" >
+              <text>{{ item.startTime }}-{{ item.endTime }} </text>
+              <text 
+                class="timeWindow-text"
+                style="--textColor: {{item.color}}">
+                {{ item.enable? '可预约':'已约满' }}</text>
+            </van-grid-item>
+          </van-grid>
+        </van-popup>
+    </view>
+    <view class="view-class">
+      <text class="title">司机信息</text>
+        <van-field
+          required
+          size="large"
+          label="姓名"
+          error-message="{{driverNameError}}"
+          model:value="{{ driverName }}"
+          placeholder="请输入姓名"
+          bind:change="driverNameChange"
+        />
+        <van-field
+          required
+          size="large"
+          label="手机号码"
+          type="number"
+          error-message="{{driverPhoneError}}"
+          model:value="{{ driverPhone }}"
+          placeholder="请输入手机号码"
+          bind:change="driverPhoneChange"
+        />
+        <van-field
+          required
+          size="large"
+          label="车牌号"
+          error-message="{{carNumError}}"
+          model:value="{{ carNum }}"
+          placeholder="请输入车牌号"
+          bind:change="carNumChange"
+        />   
+    </view>
+    <view style="margin-top: 20px;margin-bottom: 20px;">
+      <button class="weui-btn weui-btn_primary" bindtap="submit">确定</button>
+    </view>
+  </view>
+</view>
+
+<van-notify id="van-notify" />
+
+<van-dialog
+  use-slot
+  title="请输入供应商预约单号"
+  show="{{ showDialog }}"
+  show-cancel-button
+  bind:cancel="onClose"
+  bind:confirm="getSupplierReserve"
+>
+  <van-cell-group>
+    <van-field
+      type="number"
+      model:value="{{ reserveNo }}"
+      placeholder="请输入供应商预约单号"
+    />
+  </van-cell-group>
+</van-dialog>
+
+<van-dialog id="van-dialog" />

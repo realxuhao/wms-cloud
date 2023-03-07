@@ -53,6 +53,16 @@ public class DriverDeliver extends BaseEntity {
     private String carNum;
 
     /**
+     * 预约送货日期
+     */
+    private Date reserveDate;
+
+    /**
+     * 时间段：09:00-10:00
+     */
+    private String timeWindow;
+
+    /**
      * 预约类型： 0：未预约 1：已预约
      */
     private Integer reserveType;
@@ -78,18 +88,6 @@ public class DriverDeliver extends BaseEntity {
 
     @TableField(exist = false)
     private String supplierCode;
-
-    /**
-     * 预约送货日期
-     */
-    @TableField(exist = false)
-    private Date reserveDate;
-
-    /**
-     * 时间段：09:00-10:00
-     */
-    @TableField(exist = false)
-    private String timeWindow;
 
     /**
      * 查询类型：0:不执行按照签到时间排序规则 1:按照签到时间排序

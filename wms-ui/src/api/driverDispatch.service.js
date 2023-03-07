@@ -18,9 +18,9 @@ const getTodaySignlist = async (options) => {
 }
 
 /** 获取今天已预约未签到车辆数据 */
-const getTodayNoSignList = async () => {
+const getTodayNoSignList = async (options) => {
   const url = `/driverDispatch/nosignlist`
-  const { data } = await createAuthInstance(baseUrl).get(url)
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
   return data
 }
 

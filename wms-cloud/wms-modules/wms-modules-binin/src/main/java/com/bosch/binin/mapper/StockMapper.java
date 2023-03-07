@@ -7,10 +7,13 @@ import com.bosch.binin.api.domain.dto.IQCManagementQueryDTO;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.masterdata.api.domain.dto.IQCDTO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -29,6 +32,7 @@ public interface StockMapper extends BaseMapper<Stock> {
     int validateStatus(Long id);
 
     Integer changeStatus(IQCChangeStatusDTO iqcChangeStatusDTO);
+
 
     List<StockVO> selectStockVOListBySSCCList(@Param("ssccList") List<String> ssccList);
 

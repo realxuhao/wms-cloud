@@ -4,6 +4,8 @@ import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class SupplierReserveDTO extends PageDomain {
 
@@ -35,13 +37,7 @@ public class SupplierReserveDTO extends PageDomain {
      * 预约送货日期
      */
     @ApiModelProperty(value = "预约送货日期")
-    private java.sql.Date reserveDate;
-
-    /**
-     * 时间段：09:00-10:00
-     */
-    @ApiModelProperty(value = "时间段")
-    private String timeWindow;
+    private Date reserveDate;
 
     /**
      * 状态：0：已预约 1：在途（司机已预约） 2：已到货（司机现场签到） 3：已完成
