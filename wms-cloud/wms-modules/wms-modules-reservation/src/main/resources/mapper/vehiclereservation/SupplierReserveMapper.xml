@@ -57,6 +57,9 @@
             <if test="status != null ">
                 and t1.status = #{status}
             </if>
+            <if test="reserveDate != null ">
+                and DATE_FORMAT(t1.reserve_date, '%Y-%m-%d') = DATE_FORMAT(#{reserveDate}, '%Y-%m-%d')
+            </if>
         </where>
         order by t1.reserve_date desc
     </select>

@@ -18,7 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
 * @author GUZ1CGD4
@@ -74,6 +77,13 @@ public class FsmpServiceImpl extends ServiceImpl<FsmpMapper, Fsmp>
 
     @Override
     public boolean validData(List<FsmpDTO> fsmpDTOS) {
+        List<String> collect = fsmpDTOS.stream().map(FsmpDTO::getMaterialCode).collect(Collectors.toList());
+
+        HashSet<String> strings = new HashSet<>(collect);
+        if(collect.size()!=strings.size()){
+            throw  new ServiceException("存在重复的物料编码");
+        }
+        
         fsmpDTOS.forEach(r->{
             //校验类别
             if(r.getClassification()==null){

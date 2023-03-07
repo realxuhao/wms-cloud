@@ -52,7 +52,7 @@
     </update>
 
     <select id="validateRecord" resultType="integer" parameterType="FsmpDTO">
-        SELECT COUNT(*) FROM md_ecn
+        SELECT COUNT(*) FROM md_fsmp
         WHERE delete_flag='0' and  (material_code) IN
         <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
             (#{item.materialCode})

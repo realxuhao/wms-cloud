@@ -20,6 +20,7 @@ public enum ClassType {
     MATERIALCALL("MaterialCallDTO", new ArrayList<String>(Arrays.asList("订单号","物料代码","物料名称","数量","单位","备注"))),
     NMDDTO("NmdDTO", new ArrayList<String>(Arrays.asList("料号","分类","检验水平级别(s-1,s-2,s-3,s-4,Ⅰ,Ⅱ,Ⅲ)","抽样方案（1：正常,2：加严,3：放宽）"))),
     ECNDTO("EcnDTO", new ArrayList<String>(Arrays.asList("料号","分类","TTS取样规则"))),
+    FSMPDTO("FsmpDTO", new ArrayList<String>(Arrays.asList("料号","取样方式"))),
     IQCDTO("IQCDTO", new ArrayList<String>(Arrays.asList("PlantNb","SSCCNumber","FinalSAPStatus","SAPProcessStatus","Identification")));
     private String desc;
     private List<String> strings;

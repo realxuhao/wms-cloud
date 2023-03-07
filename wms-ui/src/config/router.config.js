@@ -102,14 +102,21 @@ export const asyncRouterMap = [
             path: '/nmd/rule',
             name: 'nmdRule',
             component: () => import('@/views/masterData/nmd/NmdRule'),
-            meta: { title: 'NMD抽样规则', permission: [] },
+            meta: { title: 'NMD抽样', permission: [] },
             hideChildrenInMenu: true
           },
           {
             path: '/ecn/rule',
             name: 'ecnRule',
             component: () => import('@/views/masterData/ecn/EcnRule.vue'),
-            meta: { title: 'ECN抽样规则', permission: [] },
+            meta: { title: 'ECN抽样', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/fsmp/rule',
+            name: 'fsmpRule',
+            component: () => import('@/views/masterData/fsmp/FSMPRule.vue'),
+            meta: { title: 'FSMP抽样', permission: [] },
             hideChildrenInMenu: true
           }
         ]
@@ -306,7 +313,7 @@ export const asyncRouterMap = [
             path: '/vehicle-reservation/black-driver',
             name: 'blackDeriver',
             component: () => import('@/views/vehicleReservation/blackDriver/Index'),
-            meta: { title: '司机黑名单', permission: [] },
+            meta: { title: '司机名单', permission: [] },
             hideChildrenInMenu: true
           }
         ]

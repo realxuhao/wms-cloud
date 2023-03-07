@@ -1,37 +1,42 @@
 <template>
   <a-drawer
-    width="640px"
+    width="800px"
     :title="title"
     placement="right"
     :visible="visible"
     @close="onClose"
   >
     <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <!-- <a-form-item label="司机姓名">
+      <a-form-item label="料号">
         <a-input
-          placeholder="司机姓名"
+          placeholder="料号"
           v-decorator="[
-            'driverName',
-            { rules: [{ required: true, message: '请输入司机姓名!' }] }
+            'materialCode',
+            { rules: [{ required: true, message: '请输料号!' }] }
           ]" />
-      </a-form-item> -->
-      <a-form-item label="是否加入黑名单">
+      </a-form-item>
+      <a-form-item label="抽样方式">
         <a-select
-          style="width: 100%;"
-          placeholder="是否加入黑名单"
+          allowClear
+          show-search
+          :filter-option="filterOption"
+          option-filter-prop="children"
           v-decorator="[
-            'status',
-            { rules: [{ required: true, message: '请选择是否加入黑名单!' }] }
-          ]">
-          <a-select-option v-for="item in statusList" :key="item.value" :value="item.value">{{ item.label }}</a-select-option>
+            'classification',
+            { rules: [{ required: true, message: '请选择抽样方式！' }] }
+          ]"
+          placeholder="抽样方式">
+          <a-select-option :value="item.value" v-for="item in category" :key="item.value">
+            {{ item.text }}
+          </a-select-option>
         </a-select>
       </a-form-item>
-      <a-form-item label="备注">
-        <a-textarea
-          row="4"
-          placeholder="备注"
+      <a-form-item label="描述">
+        <a-input
+          type="textarea"
+          placeholder="描述"
           v-decorator="[
-            'remark'
+            'remark',
           ]" />
       </a-form-item>
     </a-form>
@@ -59,7 +64,7 @@ const wrapperCol = {
 
 export default {
   props: {
-    driverId: {
+    id: {
       type: Number,
       default () {
         return 0
@@ -76,16 +81,16 @@ export default {
       default () {
         return ''
       }
+    },
+    category: {
+      type: Array,
+      default: () => []
     }
   },
   data () {
     return {
       form: this.$form.createForm(this),
-      submitLoading: false,
-      statusList: [
-        { value: 0, label: '否' },
-        { value: 1, label: '是' }
-      ]
+      submitLoading: false
     }
   },
   model: {
@@ -109,12 +114,20 @@ export default {
 
       this.$emit('change', false)
     },
+    filterOption (input, option) {
+      return (
+        option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      )
+    },
     async getAndUpdateForm () {
-      const { data } = await this.$store.dispatch('blackDriver/getOne', this.driverId)
-      this.form.setFieldsValue(_.pick(data, ['status', 'remark']))
+      const { data } = await this.$store.dispatch('fsmpRule/getOne', this.id)
+      const columns = ['materialCode', 'classification', 'remark']
+      this.form.setFieldsValue(_.pick(data, columns))
+    },
+    async loadNMDRuleList () {
     },
     async loadData () {
-
+      await this.loadNMDRuleList()
     },
     handleSubmit (e) {
       e.preventDefault()
@@ -128,14 +141,17 @@ export default {
           this.submitLoading = true
 
           if (this.updateType === 'edit') {
-            await this.$store.dispatch('blackDriver/edit', { id: this.driverId, updateEntity: values })
+            await this.$store.dispatch('fsmpRule/edit', { id: this.id, updateEntity: values })
           } else {
-            await this.$store.dispatch('blackDriver/add', values)
+            await this.$store.dispatch('fsmpRule/add', values)
           }
 
           this.$emit('on-ok')
           this.onClose()
         } catch (error) {
+          console.log(error.code)
+          console.log(error.message)
+
           this.$message.error(error.message)
         } finally {
           this.submitLoading = false
@@ -167,5 +183,13 @@ export default {
   background: #fff;
   text-align: right;
   z-index: 1;
+}
+/deep/.ant-drawer-body{
+  // overflow-y: auto;
+  padding-bottom: 60px;
+}
+
+/deep/.ant-input-number{
+  width: 100%;
 }
 </style>

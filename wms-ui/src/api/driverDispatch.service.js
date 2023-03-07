@@ -1,12 +1,13 @@
 import config from '@/config/api.config'
 import { createAuthInstance } from './general'
+import qs from 'qs'
 
 const baseUrl = `${config.apiHost}/vehiclereservation`
 
 /** 获取分页数据 */
-const getList = async (options) => {
-  const url = `/driverDispatch/pagelist`
-  const { data } = await createAuthInstance(baseUrl).post(url, options)
+const getList = async (parameter, options) => {
+  const url = `/driverDispatch/pagelist?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).post(url, { ...options, parameter })
   return data
 }
 

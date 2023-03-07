@@ -119,6 +119,7 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
         wrapper.eq("dock_code", driverDispatch.getDockCode());
         wrapper.eq("status", DispatchStatusEnum.ENTER.getCode());
         wrapper.ne("dispatch_id", driverDispatch.getDispatchId());
+        wrapper.between("comein_date", DateUtils.parseDate(DateUtils.getDate() + " 00:00:00"), DateUtils.parseDate(DateUtils.getDate() + " 23:59:59"));
         int i = driverDispatchMapper.selectList(wrapper).size();
         if (i > 0) {
             throw new ServiceException("道口已占用！");

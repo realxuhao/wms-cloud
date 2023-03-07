@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,7 +17,7 @@ import java.util.Date;
  */
 @TableName(value ="md_fsmp")
 @Data
-public class Fsmp implements Serializable {
+public class Fsmp extends BaseEntity {
     /**
      * id
      */
@@ -37,15 +39,7 @@ public class Fsmp implements Serializable {
      */
     private String updateBy;
 
-    /**
-     * 创建时间
-     */
-    private Date createTime;
 
-    /**
-     * 修改时间
-     */
-    private Date updateTime;
 
     /**
      * 状态（1：启用，0：停用）

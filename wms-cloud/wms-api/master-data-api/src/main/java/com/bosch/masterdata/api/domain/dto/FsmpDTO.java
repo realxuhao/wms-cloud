@@ -31,7 +31,7 @@ public class FsmpDTO extends PageDomain {
     /**
      *
      */
-    @ExcelProperty(value = "分类")
+    @ExcelProperty(value = "取样方式")
     @ApiModelProperty(value = "类别")
     private String classification;
 
