@@ -54,6 +54,11 @@ const wareShift = {
 		return data
 	},
 	
+	async shiftBinIn({commit},options){
+		const {data} = await wareShiftService.shiftBinIn(options)
+		return data
+	},
+	
   }
 }
 
