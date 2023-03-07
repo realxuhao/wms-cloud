@@ -56,7 +56,7 @@ public interface IBlackDriverService extends IService<BlackDriver> {
      */
     public boolean deleteBlackDriverById(Long id);
 
-    public List<BlackDriver> selectBlackDriverByWechatId(String wechatId);
+    public List<BlackDriver> selectBlackDriverByWechatId(String wechatId,boolean isBlack);
 
     /**
      * 保存信息

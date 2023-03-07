@@ -48,7 +48,7 @@ public interface RemoteMasterDataService {
     public R<Ware> getWareInfo(@PathVariable("id") String id);
 
     @GetMapping(value = "/driver/black/{wechatId}")
-    public R<List<BlackDriverVO>> getBlackDriverByWechatId(@PathVariable("wechatId") String wechatId);
+    public R<List<BlackDriverVO>> getBlackDriverByWechatId(@PathVariable("wechatId") String wechatId, @RequestParam(required = false, value = "isBlack") boolean isBlack);
 
     @PostMapping("/driver/save")
     public R<Boolean> saveBlackDriver(@RequestBody BlackDriverDTO blackDriverDTO);

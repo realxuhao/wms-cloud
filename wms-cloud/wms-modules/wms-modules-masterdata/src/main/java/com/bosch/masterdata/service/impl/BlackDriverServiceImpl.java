@@ -60,10 +60,12 @@ public class BlackDriverServiceImpl extends ServiceImpl<BlackDriverMapper, Black
     }
 
     @Override
-    public List<BlackDriver> selectBlackDriverByWechatId(String wechatId) {
+    public List<BlackDriver> selectBlackDriverByWechatId(String wechatId, boolean isBlack) {
         QueryWrapper<BlackDriver> wrapper = new QueryWrapper<>();
         wrapper.eq("wechat_id", wechatId);
-        wrapper.eq("status", 1);
+        if (isBlack) {
+            wrapper.eq("status", 1);
+        }
         List<BlackDriver> lst = blackDriverMapper.selectList(wrapper);
         return lst;
     }

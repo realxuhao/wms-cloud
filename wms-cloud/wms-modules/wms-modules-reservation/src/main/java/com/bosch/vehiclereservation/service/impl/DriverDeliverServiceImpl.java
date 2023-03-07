@@ -104,7 +104,7 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
 
     @Override
     public boolean insertDriverDeliver(DriverDeliverDTO driverDeliverDTO) {
-        R<List<BlackDriverVO>> result = remoteMasterDataService.getBlackDriverByWechatId(driverDeliverDTO.getWechatId());
+        R<List<BlackDriverVO>> result = remoteMasterDataService.getBlackDriverByWechatId(driverDeliverDTO.getWechatId(), true);
         List<BlackDriverVO> data = result.getData();
         if (data.size() > 0) {
             throw new ServiceException("您已进入黑名单，请联系客户确认！");

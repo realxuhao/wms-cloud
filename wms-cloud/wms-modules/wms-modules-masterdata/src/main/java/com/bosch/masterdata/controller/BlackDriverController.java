@@ -97,8 +97,8 @@ public class BlackDriverController extends BaseController {
      */
     @GetMapping(value = "/black/{wechatId}")
     @ApiOperation("根据司机wechatId获取司机黑名单详细信息")
-    public R<List<BlackDriverVO>> getInfoByName(@PathVariable("wechatId") String wechatId) {
-        List<BlackDriver> blackDrivers = blackDriverService.selectBlackDriverByWechatId(wechatId);
+    public R<List<BlackDriverVO>> getInfoByWechatId(@PathVariable("wechatId") String wechatId, boolean isBlack) {
+        List<BlackDriver> blackDrivers = blackDriverService.selectBlackDriverByWechatId(wechatId, isBlack);
         List<BlackDriverVO> blackDriverVOS = BeanConverUtil.converList(blackDrivers, BlackDriverVO.class);
         return R.ok(blackDriverVOS);
     }
