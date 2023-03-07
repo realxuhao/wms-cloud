@@ -14,6 +14,7 @@ import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
+import com.bosch.binin.mapper.IQCSamplePlanMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
 import com.bosch.binin.service.IBinInService;
@@ -65,6 +66,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     @Autowired
     @Lazy //懒加载
     private IMaterialKanbanService kanbanService;
+
+    private IQCSamplePlanMapper samplePlanMapper;
 
     @Override
     public Boolean addShiftRequirement(AddShiftTaskDTO dto) {
@@ -296,10 +299,10 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
         String mesBarCode = binInDTO.getMesBarCode();
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
-        LambdaQueryWrapper<WareShift> iqcQueryWrapper = new LambdaQueryWrapper<>();
-        iqcQueryWrapper.eq(WareShift::getSsccNb, sscc);
-        iqcQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        WareShift wareShift = wareShiftMapper.selectOne(iqcQueryWrapper);
+        LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
+        wareShiftQueryWrapper.eq(WareShift::getSsccNb, sscc);
+        wareShiftQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        WareShift wareShift = wareShiftMapper.selectOne(wareShiftQueryWrapper);
         if (wareShift == null) {
             throw new ServiceException("没有该sscc:" + sscc + "对应的移库待上架任务");
         }
@@ -343,6 +346,21 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             stockService.updateById(stock);
 
         }
+
+        //移库上架完后，看是不是IQC任务，如果是IQC任务，把IQC任务状态修改为待抽样
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        //待下架任务,该kanban状态，待下架
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, sscc);
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        IQCSamplePlan samplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
+        if (samplePlan != null) {
+            samplePlan.setStatus(IQCStatusEnum.WAITING_SAMPLE.code());
+            samplePlan.setBinDownCode(binInVO.getActualBinCode());
+            samplePlan.setWareCode(binInVO.getWareCode());
+            samplePlanMapper.updateById(samplePlan);
+        }
+
+
     }
 
     @Override
