@@ -1,6 +1,7 @@
 package com.bosch.masterdata.api;
 
 import com.bosch.masterdata.api.domain.Ecn;
+import com.bosch.masterdata.api.domain.Fsmp;
 import com.bosch.masterdata.api.domain.Nmd;
 import com.bosch.masterdata.api.factory.RemoteIQCFallbackFactory;
 import com.bosch.masterdata.api.factory.RemoteMaterialFallbackFactory;
@@ -26,4 +27,7 @@ public interface RemoteIQCService {
 
     @GetMapping("/ecn/getByMaterialNb/{materialNb}")
     public R<Ecn> getEcnByMaterialNb(@PathVariable("materialNb") String materialNb);
+
+    @GetMapping("/fsmp/getByMaterialNb/{materialNb}")
+    public R<Fsmp> getFsmpByMaterialNb(@PathVariable("materialNb") String materialNb);
 }

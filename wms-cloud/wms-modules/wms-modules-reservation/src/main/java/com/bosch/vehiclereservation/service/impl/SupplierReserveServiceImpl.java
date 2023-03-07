@@ -34,10 +34,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -170,15 +167,18 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
         SupplierReserve supplierReserve = BeanConverUtil.conver(supplierReserveDTO, SupplierReserve.class);
         List<SupplierReserve> selectSupplierReserveList = supplierReserveMapper.selectSupplierReserveList(supplierReserve);
         List<SupplierReserveVO> supplierReserveVOS = BeanConverUtil.converList(selectSupplierReserveList, SupplierReserveVO.class);
+        Map<Long, Ware> wareMap = new HashMap<>();
         supplierReserveVOS.forEach(c -> {
-            R<Ware> wareInfo = remoteMasterDataService.getWareInfo(c.getWareId().toString());
-            Ware data = wareInfo.getData();
-            if (data != null) {
-                c.setWareName(data.getName());
-                c.setWareLocation(data.getLocation());
-                c.setWareUser(data.getWareUser());
-                c.setWareUserPhone(data.getWareUserPhone());
+            if (!wareMap.keySet().contains(c.getWareId())) {
+                Ware wareInfo = remoteMasterDataService.getWareInfo(c.getWareId().toString()).getData();
+                if (wareInfo != null) {
+                    wareMap.put(c.getWareId(), wareInfo);
+                }
             }
+            c.setWareName(wareMap.get(c.getWareId()).getName());
+            c.setWareLocation(wareMap.get(c.getWareId()).getLocation());
+            c.setWareUser(wareMap.get(c.getWareId()).getWareUser());
+            c.setWareUserPhone(wareMap.get(c.getWareId()).getWareUserPhone());
         });
         return supplierReserveVOS;
     }

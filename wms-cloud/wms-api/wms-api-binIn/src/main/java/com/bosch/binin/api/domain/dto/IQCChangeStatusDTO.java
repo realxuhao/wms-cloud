@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @Data
-public class IQCChangeStatusDTO  {
+public class IQCChangeStatusDTO {
     /**
      * id
      */
@@ -36,6 +36,11 @@ public class IQCChangeStatusDTO  {
     @NotEmpty
     @ApiModelProperty(value = "qualityStatus")
     private String qualityStatus;
+
+
+    @ApiModelProperty(value = "fromStatusList")
+    private List<String> fromStatusList;
+
 
     private String batchNb;
 }
