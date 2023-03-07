@@ -17,6 +17,7 @@ import com.bosch.masterdata.api.RemoteIQCService;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.Ecn;
+import com.bosch.masterdata.api.domain.Fsmp;
 import com.bosch.masterdata.api.domain.Nmd;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
@@ -468,24 +469,25 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         }
         BinVO actualBinVO = getBinVOByBinCode(binInDTO.getActualBinCode());
 
+        //2023.3.4 客户修改。实际上架可以上架到任意一个库位，不做限制
         if (!binInDTO.getActualBinCode().equals(binIn.getRecommendBinCode())) {
-            //不在的时候，看actual bin code在不在分配规则内
-            R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
-            if (StringUtils.isNull(materialBinVOResullt) || StringUtils.isNull(materialBinVOResullt.getData())) {
-                throw new ServiceException("该物料：" + materialNb + " 暂无分配规则");
-            }
-
-            if (R.FAIL == materialBinVOResullt.getCode()) {
-                throw new ServiceException(materialBinVOResullt.getMsg());
-            }
-
-            List<MaterialBinVO> materialBinVOS = materialBinVOResullt.getData();
-
-
-            List<String> frameCodeList = materialBinVOS.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
-            if (StringUtils.isEmpty(frameCodeList) || !frameCodeList.contains(actualBinVO.getFrameTypeCode())) {
-                throw new ServiceException("该物料" + materialNb + " 不能分配到" + binInDTO.getActualBinCode());
-            }
+//            //不在的时候，看actual bin code在不在分配规则内
+//            R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
+//            if (StringUtils.isNull(materialBinVOResullt) || StringUtils.isNull(materialBinVOResullt.getData())) {
+//                throw new ServiceException("该物料：" + materialNb + " 暂无分配规则");
+//            }
+//
+//            if (R.FAIL == materialBinVOResullt.getCode()) {
+//                throw new ServiceException(materialBinVOResullt.getMsg());
+//            }
+//
+//            List<MaterialBinVO> materialBinVOS = materialBinVOResullt.getData();
+//
+//
+//            List<String> frameCodeList = materialBinVOS.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
+//            if (StringUtils.isEmpty(frameCodeList) || !frameCodeList.contains(actualBinVO.getFrameTypeCode())) {
+//                throw new ServiceException("该物料" + materialNb + " 不能分配到" + binInDTO.getActualBinCode());
+//            }
 
             LambdaQueryWrapper<BinIn> finishQueryWrapper = new LambdaQueryWrapper<>();
             finishQueryWrapper.eq(BinIn::getActualBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.FINISH.value()).eq(BinIn::getDeleteFlag, 0);
@@ -582,7 +584,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             } else if (lastFlag && DeparementEnum.ECN.getCode().equals(materialVO.getCell())) {//ECN
                 dealECNIQCProcess(materialVO, binIn.getBatchNb(), binInList, sameBatchList);
             } else if (lastFlag && DeparementEnum.FSMP.getCode().equals(materialVO.getCell())) {//FSMP
-
+                dealFSMPIQCProces(materialVO, binIn.getBatchNb(), binInList, sameBatchList);
             }
 
         }
@@ -591,11 +593,79 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
     }
 
+    private void dealFSMPIQCProces(MaterialVO materialVO, String batchNb, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
+        R<Fsmp> fsmpR = remoteIQCService.getFsmpByMaterialNb(materialVO.getCode());
+        if (StringUtils.isNull(fsmpR) || StringUtils.isNull(fsmpR.getData())) {
+            throw new ServiceException("FSMP不存在该物料的IQC信息，请先维护主数据");
+        }
+        Fsmp fsmp = fsmpR.getData();
+        List<IQCSamplePlan> samplePlanList = new ArrayList<>();
+
+        if (sameBatchList.size() > 3) {//大于三托，取非连续的三托
+            List<String> ssccList = sameBatchList.stream().map(MaterialReceiveVO::getSsccNumber).collect(Collectors.toList());
+            List<String> randomSscc = getRandomNonConsecutive(ssccList);
+            List<BinIn> binIns = binInList.stream().filter(item -> randomSscc.contains(item.getSsccNumber())).collect(Collectors.toList());
+            samplePlanList = convertToSamplePlans(binIns, materialVO.getCell(), null);
+        }else {//随机下架一托
+            Collections.shuffle(binInList);
+            IQCSamplePlan samplePlan = convertToSamplePlan(binInList.get(0), null, materialVO.getCell());
+            samplePlanList.add(samplePlan);
+        }
+        samplePlanService.saveBatch(samplePlanList);
+
+
+
+    }
+
+    /**
+     * 不连续三托
+     *
+     * @param list
+     * @return
+     */
+    private List<String> getRandomNonConsecutive(List<String> list) {
+        if (list == null || list.size() < 3) {
+            throw new IllegalArgumentException("List must contain at least three elements.");
+        }
+
+        long[] arr = list.stream().mapToLong(Long::parseLong).sorted().toArray();
+
+        int count = 0;
+        long[] result = new long[3];
+        int index = new Random().nextInt(arr.length);
+        long current = arr[index];
+        result[count] = current;
+        count++;
+
+        while (count < 3) {
+            long next = current + 2;
+            int i = Arrays.binarySearch(arr, next);
+            if (i < 0) {
+                i = -i - 1;
+            }
+            if (i >= arr.length - count) {
+                break;
+            }
+            long temp = arr[i + new Random().nextInt(arr.length - i - count)];
+            if (Math.abs(temp - current) > 1) {
+                result[count] = temp;
+                current = temp;
+                count++;
+            }
+        }
+
+        List<String> resList = new ArrayList<>();
+        for (long num : result) {
+            resList.add(String.valueOf(num));
+        }
+        return resList;
+    }
+
     private void dealECNIQCProcess(MaterialVO materialVO, String batchNb, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
 
         R<Ecn> ecnR = remoteIQCService.getEcnByMaterialNb(materialVO.getCode());
         if (StringUtils.isNull(ecnR) || StringUtils.isNull(ecnR.getData())) {
-            throw new ServiceException("不存在该物料的IQC信息");
+            throw new ServiceException("ECN不存在该物料的IQC信息，请先维护主数据");
         }
         Ecn ecn = ecnR.getData();
         List<IQCSamplePlan> samplePlanList = new ArrayList<>();
