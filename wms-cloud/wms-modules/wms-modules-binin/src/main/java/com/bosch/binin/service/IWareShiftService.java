@@ -43,4 +43,6 @@ public interface IWareShiftService extends IService<WareShift> {
     List<WareShift> getListBySSCC(List<String> ssccs);
 
     Boolean add(AddShiftTaskDTO dto);
+
+    void performBinIn(BinInDTO binInDTO);
 }

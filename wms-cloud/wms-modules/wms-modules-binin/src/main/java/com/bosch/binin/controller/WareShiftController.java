@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
+import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
@@ -131,6 +132,15 @@ public class WareShiftController extends BaseController {
 
         shiftService.cancelWareShift(id);
 
+        return R.ok();
+    }
+
+
+
+    @PostMapping(value = "/binIn")
+    @ApiOperation("移库上架接口")
+    public R performBinIn(@RequestBody BinInDTO binInDTO) {
+        shiftService.performBinIn(binInDTO);
         return R.ok();
     }
 
