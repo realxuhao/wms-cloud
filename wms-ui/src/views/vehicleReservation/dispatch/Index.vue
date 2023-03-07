@@ -121,7 +121,7 @@
             </template>
           </a-table>
         </a-tab-pane>
-        <a-tab-pane key="2" tab="今日未签到列表">
+        <a-tab-pane key="2" tab="未签到列表">
           <div class="action-content">
             <a-form layout="inline" class="search-content">
               <a-row :gutter="16">

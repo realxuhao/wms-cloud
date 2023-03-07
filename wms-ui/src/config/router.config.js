@@ -306,7 +306,7 @@ export const asyncRouterMap = [
             path: '/vehicle-reservation/black-driver',
             name: 'blackDeriver',
             component: () => import('@/views/vehicleReservation/blackDriver/Index'),
-            meta: { title: '司机黑名单', permission: [] },
+            meta: { title: '司机名单', permission: [] },
             hideChildrenInMenu: true
           }
         ]

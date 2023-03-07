@@ -14,7 +14,7 @@
               </a-form-model-item>
             </a-col>
             <a-col span="4">
-              <a-form-model-item label="签到时间" style="display: flex;">
+              <a-form-model-item label="签到日期" style="display: flex;">
                 <a-date-picker
                   v-model="queryForm.signinDate"
                   format="YYYY-MM-DD"
@@ -28,6 +28,7 @@
                   @click="handleSearch"
                   :loading="searchLoading"
                 ><a-icon type="search" />查询</a-button>
+                <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
               </span>
             </a-col>
           </a-row>
@@ -238,6 +239,10 @@ export default {
   model: {},
   computed: {},
   methods: {
+    handleResetQuery () {
+      this.queryForm = { ...this.queryForm, ...queryFormAttr() }
+      this.handleSearch()
+    },
     moment,
     /** 获取仓库List */
     async getWareOptionList () {
@@ -259,7 +264,16 @@ export default {
       try {
         this.tableLoading = true
         this.queryForm.signinDate = this.queryForm.signinDate == null ? null : moment(new Date(this.queryForm.signinDate)).format('YYYY-MM-DD')
-        const { data: { rows, total } } = await this.$store.dispatch('driverDispatch/getList', this.queryForm)
+        const parameter = {
+          pageSize: this.queryForm.pageSize,
+          pageNum: this.queryForm.pageNum
+        }
+        const param = {
+          wareId: this.queryForm.wareId,
+          signinDate: this.queryForm.signinDate
+        }
+        console.info(parameter)
+        const { data: { rows, total } } = await this.$store.dispatch('driverDispatch/getList', parameter, param)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {

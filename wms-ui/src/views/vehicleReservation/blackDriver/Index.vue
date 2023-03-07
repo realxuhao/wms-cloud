@@ -18,11 +18,11 @@
         </a-row>
       </a-form>
 
-      <div class="action-content">
+      <!-- <div class="action-content">
         <a-button type="primary" class="m-r-8" icon="plus" @click="handleAdd">
           新建
         </a-button>
-      </div>
+      </div> -->
       <a-table
         :columns="columns"
         :data-source="list"
@@ -90,6 +90,18 @@ const columns = [
     title: '司机姓名',
     key: 'driverName',
     dataIndex: 'driverName',
+    width: 200
+  },
+  {
+    title: '联系方式',
+    key: 'driverPhone',
+    dataIndex: 'driverPhone',
+    width: 200
+  },
+  {
+    title: '车牌号',
+    key: 'carNum',
+    dataIndex: 'carNum',
     width: 200
   },
   {

@@ -10,7 +10,16 @@
             </a-form-model-item>
           </a-col>
           <a-col span="4">
+            <a-form-model-item label="预约日期" style="display: flex;">
+              <a-date-picker
+                v-model="queryForm.reserveDate"
+                format="YYYY-MM-DD"
+              />
+            </a-form-model-item>
+          </a-col>
+          <a-col span="4">
             <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+            <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
           </a-col>
         </a-row>
       </a-form>
@@ -78,6 +87,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
@@ -86,6 +96,18 @@ const columns = [
     key: 'reserveNo',
     dataIndex: 'reserveNo',
     width: 150
+  },
+  {
+    title: '预约日期',
+    key: 'reserveDate',
+    dataIndex: 'reserveDate',
+    width: 120
+  },
+  {
+    title: '预约时间',
+    key: 'timeWindow',
+    dataIndex: 'timeWindow',
+    width: 120
   },
   {
     title: '司机姓名',
@@ -136,7 +158,8 @@ const columns = [
 
 const queryFormAttr = () => {
   return {
-    driverName: ''
+    driverName: '',
+    reserveDate: null
   }
 }
 
@@ -178,6 +201,11 @@ export default {
     }
   },
   methods: {
+    handleResetQuery () {
+      this.queryForm = { ...this.queryForm, ...queryFormAttr() }
+      this.handleSearch()
+    },
+    moment,
     async handleDelete (record) {
       try {
         await this.$store.dispatch('driverDeliver/destroy', record.deliverId)
@@ -192,6 +220,7 @@ export default {
     async loadTableList () {
       try {
         this.tableLoading = true
+        this.queryForm.reserveDate = this.queryForm.reserveDate == null ? null : moment(new Date(this.queryForm.reserveDate)).format('YYYY-MM-DD')
         this.queryForm = { ...this.queryForm, ...{ supplierName: this.supplierName } }
         const { data: { rows, total } } = await this.$store.dispatch('driverDeliver/getList', this.queryForm)
         this.list = rows
