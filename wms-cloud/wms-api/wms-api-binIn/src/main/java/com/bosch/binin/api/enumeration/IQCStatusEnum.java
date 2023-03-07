@@ -6,7 +6,10 @@ public enum IQCStatusEnum {
 
     WAITING_SAMPLE(1, "待抽样"),
     WAITING_BIN_IN(2, "待上架"),
-    FINISH(3, "完成");
+
+    FINISH(3, "完成"),
+
+    WARE_SHIFTING(4, "移库中");
 
 
     private Integer code;

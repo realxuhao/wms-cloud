@@ -6,6 +6,7 @@ import com.bosch.binin.api.domain.ManualTransferOrder;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
+import com.bosch.binin.api.domain.dto.IQCWareShiftDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
 
@@ -35,4 +36,6 @@ public interface IIQCSamplePlanService extends IService<IQCSamplePlan> {
     IQCSamplePlanVO info(String mesBarCode);
 
     void confirm(IQCSamplePlanDTO dto);
+
+    void addShift(IQCWareShiftDTO dto);
 }

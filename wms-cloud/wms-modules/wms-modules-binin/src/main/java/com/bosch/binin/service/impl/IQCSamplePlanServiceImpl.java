@@ -4,16 +4,20 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.IQCSamplePlan;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
+import com.bosch.binin.api.domain.dto.IQCWareShiftDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
+import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.mapper.IQCSamplePlanMapper;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.binin.service.IStockService;
+import com.bosch.binin.service.IWareShiftService;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.dto.MaterialDTO;
@@ -21,6 +25,7 @@ import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
@@ -54,6 +59,9 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
     @Autowired
     private RemoteMaterialService remoteMaterialService;
+
+    @Autowired
+    private IWareShiftService wareShiftService;
 
     @Override
     public List<IQCSamplePlanVO> getSamplePlan(IQCSamplePlanQueryDTO dto) {
@@ -276,8 +284,8 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         updateById(samplePlan);
         //库存
         LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
-        stockQueryWrapper.eq(Stock::getSsccNumber,samplePlan.getSsccNb());
-        stockQueryWrapper.eq(Stock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        stockQueryWrapper.eq(Stock::getSsccNumber, samplePlan.getSsccNb());
+        stockQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         Stock stock = stockService.getOne(stockQueryWrapper);
         stock.setFreezeStock(Double.valueOf(0));
         stock.setAvailableStock(stock.getTotalStock());
@@ -317,6 +325,37 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
             iqcSamplePlan.setStatus(IQCStatusEnum.FINISH.code());
         }
         samplePlanMapper.updateById(iqcSamplePlan);
+    }
+
+    @Override
+    public void addShift(IQCWareShiftDTO dto) {
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, dto.getSscc());
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        iqcQueryWrapper.eq(IQCSamplePlan::getStatus, IQCStatusEnum.WAITING_BIN_DOWN.code());
+        IQCSamplePlan samplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
+        if (Objects.isNull(samplePlan)) {
+            throw new ServiceException("存在非IQC抽样任务数据或非待下架状态数据，请刷新后重新选择");
+        }
+        //查询库存
+        LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.eq(Stock::getSsccNumber, dto.getSscc());
+        stockQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        Stock stock = stockService.getOne(stockQueryWrapper);
+        if (stock.getPlantNb() == "7751") {
+            throw new ServiceException("IQC移库只能选择外库数据");
+        }
+        WareShift wareShift = WareShift.builder().sourcePlantNb(stock.getPlantNb()).sourceWareCode(stock.getWareCode()).sourceAreaCode(stock.getAreaCode())
+                .sourceBinCode(stock.getBinCode()).materialNb(stock.getMaterialNb()).batchNb(stock.getBatchNb()).expireDate(stock.getExpireDate())
+                .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+                .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                .build();
+        wareShiftService.save(wareShift);
+
+        samplePlan.setStatus(IQCStatusEnum.WARE_SHIFTING.code());
+        samplePlanMapper.updateById(samplePlan);
+
+
     }
 
 
