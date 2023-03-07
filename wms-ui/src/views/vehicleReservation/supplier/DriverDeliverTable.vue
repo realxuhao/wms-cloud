@@ -5,6 +5,11 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           <a-col :span="4">
+            <a-form-model-item label="预约单号">
+              <a-input v-model="queryForm.reserveNo" placeholder="预约单号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
             <a-form-model-item label="司机姓名">
               <a-input v-model="queryForm.driverName" placeholder="司机姓名" allow-clear/>
             </a-form-model-item>
@@ -158,6 +163,7 @@ const columns = [
 
 const queryFormAttr = () => {
   return {
+    reserveNo: '',
     driverName: '',
     reserveDate: null
   }

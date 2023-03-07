@@ -272,7 +272,6 @@ export default {
           wareId: this.queryForm.wareId,
           signinDate: this.queryForm.signinDate
         }
-        console.info(parameter)
         const { data: { rows, total } } = await this.$store.dispatch('driverDispatch/getList', parameter, param)
         this.list = rows
         this.paginationTotal = total

@@ -23,8 +23,8 @@
                t1.surplus_quantity as surplusQuantity,
                t2.supplier_code    as supplierCode,
                t2.`status`,
-               t2.reserve_date     as reserveDate,
-               t2.time_window      as timeWindow,
+               t3.reserve_date     as reserveDate,
+               t3.time_window      as timeWindow,
                t3.signin_date      as signinDate
         FROM vr_supplier_porder t1
                  INNER JOIN vr_supplier_reserve t2 on t1.reserve_no = t2.reserve_no

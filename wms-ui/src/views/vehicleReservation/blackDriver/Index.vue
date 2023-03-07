@@ -124,12 +124,6 @@ const columns = [
     width: 200
   },
   {
-    title: '创建人',
-    key: 'createBy',
-    dataIndex: 'createBy',
-    width: 200
-  },
-  {
     title: '操作',
     key: 'action',
     width: 200,

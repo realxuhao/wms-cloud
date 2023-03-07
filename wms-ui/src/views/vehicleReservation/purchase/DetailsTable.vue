@@ -28,7 +28,7 @@
           </div>
         </template>
         <template slot="reserveDate" slot-scope="text, record">
-          {{ record.reserveDate + " " + record.timeWindow }}
+          {{ record.timeWindow ? record.reserveDate + " " + record.timeWindow : '' }}
         </template>
       </a-table>
 
