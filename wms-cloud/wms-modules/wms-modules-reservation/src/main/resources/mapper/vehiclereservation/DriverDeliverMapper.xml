@@ -71,6 +71,9 @@
             <if test="driver.wechatId != null and driver.wechatId != ''">
                 and t1.wechat_id = #{driver.wechatId}
             </if>
+            <if test="driver.reserveDate != null ">
+                and DATE_FORMAT(t1.reserve_date, '%Y-%m-%d') = DATE_FORMAT(#{driver.reserveDate}, '%Y-%m-%d')
+            </if>
             <if test="driver.reserveNoList != null and driver.reserveNoList.size() > 0">
                 and t1.reserve_no in
                 <foreach item="item" index="index" collection="driver.reserveNoList" open="(" separator="," close=")">
