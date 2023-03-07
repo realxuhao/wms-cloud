@@ -113,7 +113,7 @@ public class FsmpController extends BaseController {
     public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
 
         //解析文件服务
-        R result = fileService.masterDataImport(file, ClassType.ECNDTO.getDesc());
+        R result = fileService.masterDataImport(file, ClassType.FSMPDTO.getDesc());
         if (result.isSuccess()) {
             Object data = result.getData();
             List<FsmpDTO> dtoList = JSON.parseArray(JSON.toJSONString(data), FsmpDTO.class);
