@@ -126,7 +126,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
                     item.getIssuedQuantity(), "-"));
             Double requireQuantity = item.getUnIssuedQuantity();
             Double stockQuantity = materialAvailableStockMap.get(item.getMaterialNb());
-            if (Objects.isNull(stockQuantity)){
+            if (Objects.isNull(stockQuantity)) {
                 throw new ServiceException("下发失败，该物料暂时没有库存或库存状态不可用");
             }
             if (requireQuantity > stockQuantity) {
@@ -283,7 +283,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         qw.last("for update");
         MaterialCall materialCallDB = materialCallMapper.selectOne(qw);
         if (materialCallDB == null) {
-            throw new ServiceException("未查询到相关订单号:"+materialCallNew.getOrderNb()+".物料号:"+materialCallNew.getMaterialNb()+"的叫料需求");
+            throw new ServiceException("未查询到相关订单号:" + materialCallNew.getOrderNb() + ".物料号:" + materialCallNew.getMaterialNb() + "的叫料需求");
         }
         //获取看kanban数据
         LambdaQueryWrapper<MaterialKanban> kanbanqw = new LambdaQueryWrapper<>();
@@ -293,12 +293,12 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         kanbanqw.last("for update");
         MaterialKanban materialKanban = materialKanbanMapper.selectOne(kanbanqw);
         if (materialKanban == null) {
-            throw new ServiceException("未查询到相关sscc码"+dto.getSsccNumber()+"的kanban任务");
+            throw new ServiceException("未查询到相关sscc码" + dto.getSsccNumber() + "的kanban任务");
         }
         //下发量=需求原下发量-kanban原数量+kanban修改后数量
-        double newQuantity = DoubleMathUtil.doubleMathCalculation(materialCallDB.getIssuedQuantity(),materialKanban.getQuantity()
+        double newQuantity = DoubleMathUtil.doubleMathCalculation(materialCallDB.getIssuedQuantity(), materialKanban.getQuantity()
                 , "-");
-        newQuantity =DoubleMathUtil.doubleMathCalculation(newQuantity,materialCallNew.getIssuedQuantity(),"+");
+        newQuantity = DoubleMathUtil.doubleMathCalculation(newQuantity, materialCallNew.getIssuedQuantity(), "+");
         //更新叫料表
         if (materialCallDB.getQuantity() <= newQuantity) {
             materialCallDB.setStatus(MaterialCallStatusEnum.FULL_ISSUED.code());
@@ -341,10 +341,10 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
     @Override
     public void cancelCall(Long id) {
         MaterialCall materialCall = materialCallMapper.selectById(id);
-        if (materialCall==null){
+        if (materialCall == null) {
             throw new ServiceException("该条目不存在");
         }
-        if (!materialCall.getStatus().equals(MaterialCallStatusEnum.WAITING_ISSUE.code())){
+        if (!materialCall.getStatus().equals(MaterialCallStatusEnum.WAITING_ISSUE.code())) {
             throw new ServiceException("只可以取消未下发状态的数据");
         }
         materialCall.setStatus(MaterialCallStatusEnum.CANCEL.code());
@@ -439,7 +439,8 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         lambdaQueryWrapper.eq(Stock::getMaterialNb, materialNb);
         lambdaQueryWrapper.eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode());
         lambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        lambdaQueryWrapper.eq(Stock::getFreezeStock,0);
+        lambdaQueryWrapper.eq(Stock::getFreezeStock, 0);
+        lambdaQueryWrapper.le(Stock::getExpireDate, new Date());
         List<Stock> stockList = stockService.list(lambdaQueryWrapper);
         if (CollectionUtils.isEmpty(stockList)) {
             stockList = new ArrayList<>();
@@ -455,11 +456,11 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         if (MaterialCallSortTypeEnum.BBD_FIRST.value().equals(call.getSortType())) {
             sortedStockList =
                     stockList.stream().filter(item -> item.getAvailableStock() != 0).
-                            sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag,Comparator.reverseOrder()).
+                            sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder()).
                                     thenComparing(Stock::getPlantNb)).collect(Collectors.toList());
         } else if (MaterialCallSortTypeEnum.MAIN_WARE_FIRST.value().equals(call.getSortType())) {
             sortedStockList =
-                    stockList.stream().filter(item -> item.getAvailableStock() != 0).sorted(Comparator.comparing(Stock::getPlantNb).thenComparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag,Comparator.reverseOrder())).collect(Collectors.toList());
+                    stockList.stream().filter(item -> item.getAvailableStock() != 0).sorted(Comparator.comparing(Stock::getPlantNb).thenComparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder())).collect(Collectors.toList());
         }
         if (CollectionUtils.isEmpty(sortedStockList)) {
             requirementResultVO.getNoStockMaterialNbs().add(RequirementResultVO.MaterialOrder.builder().materialNb(call.getMaterialNb()).orderNb(call.getOrderNb()).build());

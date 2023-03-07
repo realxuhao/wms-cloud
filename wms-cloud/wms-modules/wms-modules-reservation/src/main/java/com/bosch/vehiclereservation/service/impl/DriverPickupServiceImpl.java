@@ -2,6 +2,8 @@ package com.bosch.vehiclereservation.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.RemoteMasterDataService;
+import com.bosch.masterdata.api.domain.dto.BlackDriverDTO;
 import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
 import com.bosch.vehiclereservation.api.domain.DriverPickup;
@@ -14,6 +16,7 @@ import com.bosch.vehiclereservation.api.enumeration.SignStatusEnum;
 import com.bosch.vehiclereservation.mapper.DriverDispatchMapper;
 import com.bosch.vehiclereservation.mapper.DriverPickupMapper;
 import com.bosch.vehiclereservation.service.IDriverPickupService;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
@@ -32,6 +35,9 @@ public class DriverPickupServiceImpl extends ServiceImpl<DriverPickupMapper, Dri
 
     @Autowired
     private DriverDispatchMapper driverDispatchMapper;
+
+    @Autowired
+    private RemoteMasterDataService remoteMasterDataService;
 
     @Override
     public List<DriverPickupVO> selectDriverPickupVO(DriverPickupDTO driverPickupDTO) {
@@ -76,6 +82,12 @@ public class DriverPickupServiceImpl extends ServiceImpl<DriverPickupMapper, Dri
                 i += driverPickupMapper.insert(driverPickup);
             }
         }
+        BlackDriverDTO blackDriverDTO = new BlackDriverDTO();
+        blackDriverDTO.setWechatId(driverPickups.get(0).getWechatId());
+        blackDriverDTO.setDriverName(driverPickups.get(0).getDriverName());
+        blackDriverDTO.setDriverPhone(driverPickups.get(0).getDriverPhone());
+        blackDriverDTO.setCarNum(driverPickups.get(0).getCarNum());
+        R<Boolean> booleanR = remoteMasterDataService.saveBlackDriver(blackDriverDTO);
         if (i == 0) {
             throw new ServiceException("您已预约过！");
         }
