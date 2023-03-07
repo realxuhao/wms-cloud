@@ -28,6 +28,7 @@ import binIn from './modules/binIn'
 import stock from './modules/stock'
 import wareShift from './modules/wareShift'
 import manualTrans from './modules/manualTrans'
+import fsmpRule from './modules/fsmpRule'
 
 import materialInList from './modules/materialInList'
 import materialFeeding from './modules/materialFeeding'
@@ -58,6 +59,7 @@ export default new Vuex.Store({
     supplier,
     nmdRule,
     ecnRule,
+    fsmpRule,
     moveType,
     timeWindow,
     pallet,
