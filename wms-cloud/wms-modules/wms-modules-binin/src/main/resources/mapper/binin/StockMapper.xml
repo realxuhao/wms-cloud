@@ -29,7 +29,7 @@
         <result property="changeStatus" column="change_status"/>
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
-        <result property="unit" column="unit" />
+        <result property="unit" column="unit"/>
     </resultMap>
     <select id="selectIQCManagementList" resultMap="StockVOResult">
         select bs.id as id,
@@ -56,7 +56,7 @@
         bs.pallet_code as pallet_code,
         bs.whole_flag as whole_flag,
         bs.change_status as change_status,
-               mm.unit as unit
+        mm.unit as unit
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code
@@ -90,7 +90,11 @@
     </select>
 
     <select id="validateStatus" resultType="int">
-         SELECT COUNT( * ) FROM bi_stock WHERE  change_status='1' AND delete_flag = 0 AND id=#{id}
+        SELECT COUNT(*)
+        FROM bi_stock
+        WHERE change_status = '1'
+          AND delete_flag = 0
+          AND id = #{id}
     </select>
     <update id="changeStatus" parameterType="IQCChangeStatusDTO">
         update bi_stock b set
@@ -102,7 +106,11 @@
         <if test='type != "" and type == "1"'>
             where b.batch_nb =
             (SELECT a.batch_nb from
-            (SELECT batch_nb from bi_stock  where id=#{id}) a )
+            (SELECT batch_nb from bi_stock where id=#{id}) a )
+                and b.quality_status in
+                  <foreach collection="fromStatusList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                  </foreach>
         </if>
 
     </update>

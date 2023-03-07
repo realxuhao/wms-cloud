@@ -583,13 +583,17 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             } else if (lastFlag && DeparementEnum.ECN.getCode().equals(materialVO.getCell())) {//ECN
                 dealECNIQCProcess(materialVO, binIn.getBatchNb(), binInList, sameBatchList);
             } else if (lastFlag && DeparementEnum.FSMP.getCode().equals(materialVO.getCell())) {//FSMP
-
+                dealFSMPIQCProces(materialVO, binIn.getBatchNb(), binInList, sameBatchList);
             }
 
         }
 
 
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
+    }
+
+    private void dealFSMPIQCProces(MaterialVO materialVO, String batchNb, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
+
     }
 
     private void dealECNIQCProcess(MaterialVO materialVO, String batchNb, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
