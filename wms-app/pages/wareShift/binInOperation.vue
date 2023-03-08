@@ -221,7 +221,7 @@
 						actualBinCode:this.binInForm.recommendBinCode,
 						palletCode:this.binInForm.palletTypeCode
 					}
-					const data = await this.$store.dispatch('binIn/postBinIn',options)
+					const data = await this.$store.dispatch('wareShift/shiftBinIn',options)
 					this.$refs.popup.open()
 				}catch(e){
 					this.$refs.message.error(e.message)

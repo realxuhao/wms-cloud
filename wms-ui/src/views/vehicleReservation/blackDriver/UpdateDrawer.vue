@@ -7,14 +7,14 @@
     @close="onClose"
   >
     <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-form-item label="司机姓名">
+      <!-- <a-form-item label="司机姓名">
         <a-input
           placeholder="司机姓名"
           v-decorator="[
             'driverName',
             { rules: [{ required: true, message: '请输入司机姓名!' }] }
           ]" />
-      </a-form-item>
+      </a-form-item> -->
       <a-form-item label="是否加入黑名单">
         <a-select
           style="width: 100%;"
@@ -111,7 +111,7 @@ export default {
     },
     async getAndUpdateForm () {
       const { data } = await this.$store.dispatch('blackDriver/getOne', this.driverId)
-      this.form.setFieldsValue(_.pick(data, ['driverName', 'status', 'remark']))
+      this.form.setFieldsValue(_.pick(data, ['status', 'remark']))
     },
     async loadData () {
 

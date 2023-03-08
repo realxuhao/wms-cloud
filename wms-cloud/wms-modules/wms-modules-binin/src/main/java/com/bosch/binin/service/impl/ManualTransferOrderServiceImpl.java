@@ -253,6 +253,7 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
         queryWrapper.ne(ManualTransferOrder::getStatus, ManuTransStatusEnum.CANCEL.code());
         queryWrapper.last("for update");
         ManualTransferOrder manualTransferOrder = manualTransferOrderMapper.selectOne(queryWrapper);
+        BinVO actualBinVO = binInService.getBinVOByBinCode(binInDTO.getActualCode());
 
 
         if (manualTransferOrder.getType() == MaterialTransTypeEnum.AB_NORMAL.code()) {
@@ -268,7 +269,7 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
             binInService.updateById(binIn);
         } else {
             // 正常入库
-            BinVO actualBinVO = binInService.getBinVOByBinCode(binInDTO.getActualCode());
+//            BinVO actualBinVO = binInService.getBinVOByBinCode(binInDTO.getActualCode());
             //校验库位是否是存取区的
             if (!binIn.getAreaCode().equals(actualBinVO.getAreaCode())) {
                 throw new ServiceException("当前库位：" + binInDTO.getActualCode() + " 不属于" + binIn.getAreaCode() + "存储区");
@@ -286,6 +287,37 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
             binInService.saveOrUpdate(binIn);
 
         }
+
+        //更新库存
+        //插入库存
+        Stock stock = new Stock();
+        stock.setPlantNb(binIn.getPlantNb());
+        stock.setWareCode(actualBinVO.getWareCode());
+        stock.setSsccNumber(binIn.getSsccNumber());
+        stock.setWareCode(binIn.getWareCode());
+        stock.setBinCode(binIn.getActualBinCode());
+        stock.setFrameCode(binIn.getActualFrameCode());
+        stock.setMaterialNb(binIn.getMaterialNb());
+        stock.setBatchNb(binIn.getBatchNb());
+        stock.setExpireDate(binIn.getExpireDate());
+        stock.setTotalStock(binIn.getQuantity());
+        stock.setFreezeStock(Double.valueOf(0));
+        stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
+        stock.setBinInId(binIn.getId());
+
+        stock.setCreateBy(SecurityUtils.getUsername());
+        stock.setCreateTime(new Date());
+        stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+        stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
+        stock.setAreaCode(binIn.getAreaCode());
+        stock.setPalletCode(binIn.getPalletCode());
+        stockMapper.insert(stock);
+
+        //更新仓内转储状态为完成
+        manualTransferOrder.setStatus(ManuTransStatusEnum.FINISH.code());
+        manualTransferOrderMapper.updateById(manualTransferOrder);
+
+
 
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
     }

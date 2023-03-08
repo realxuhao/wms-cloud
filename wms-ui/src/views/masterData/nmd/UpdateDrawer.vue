@@ -9,6 +9,7 @@
     <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-form-item label="料号">
         <a-input
+          :disabled="updateType === 'edit'"
           placeholder="料号"
           v-decorator="[
             'materialCode',

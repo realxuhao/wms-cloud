@@ -10,10 +10,9 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="分类">
+            <a-form-model-item label="取样方式">
               <a-select
                 allow-clear
-                placeholder="分类"
                 v-model="queryForm.classification"
               >
                 <a-select-option v-for="item in category" :key="item.value" :value="item.value">
@@ -22,7 +21,7 @@
               </a-select>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
+          <!-- <a-col :span="4">
             <a-form-model-item label="检验水平级别">
               <a-select
                 allow-clear
@@ -33,8 +32,8 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-          </a-col>
-          <a-col :span="4">
+          </a-col> -->
+          <!-- <a-col :span="4">
             <a-form-model-item label="严格程度">
               <a-select
                 allow-clear
@@ -45,7 +44,7 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-          </a-col>
+          </a-col> -->
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
@@ -147,97 +146,31 @@ import UpdateDrawer from './UpdateDrawer'
 
 const category = [
   {
-    text: 'Components',
-    value: 0
+    text: 'A',
+    value: 'A'
   },
   {
-    text: 'Package',
-    value: 1
+    text: 'B',
+    value: 'B'
   }
 ]
-
-const checkLevel = [
-  {
-    text: 'S-1',
-    value: 'S-1'
-  },
-  {
-    text: 'S-2',
-    value: 'S-2'
-  },
-  {
-    text: 'S-3',
-    value: 'S-3'
-  },
-  {
-    text: 'S-4',
-    value: 'S-4'
-  },
-  {
-    text: 'Ⅰ',
-    value: 'Ⅰ'
-  },
-  {
-    text: 'Ⅱ',
-    value: 'Ⅱ'
-  },
-  {
-    text: 'Ⅲ',
-    value: 'Ⅲ'
-  }
-]
-
-const strictLevel = [
-  {
-    text: '正常',
-    value: 1
-  },
-  {
-    text: '严格',
-    value: 2
-  },
-  {
-    text: '放宽',
-    value: 3
-  }
-]
-
-const classificationTextMap = {
-  0: 'Components',
-  1: 'Package'
-}
 
 const columns = [
   {
     title: '料号',
     key: 'materialCode',
-    dataIndex: 'materialCode',
-    width: 120
+    dataIndex: 'materialCode'
   },
   {
-    title: '分类',
+    title: '取样方式',
     key: 'classification',
     dataIndex: 'classification',
-    width: 120,
     scopedSlots: { customRender: 'classification' }
-  },
-  {
-    title: '校验水平级别',
-    key: 'level',
-    dataIndex: 'level',
-    width: 120
-  },
-  {
-    title: '正常[1]/加严[2]/放宽[3]',
-    key: 'plan',
-    dataIndex: 'plan',
-    width: 140
   },
   {
     title: '操作人',
     key: 'updateBy',
     dataIndex: 'updateBy',
-    width: 120,
     scopedSlots: { customRender: 'updateBy' }
   },
   {
@@ -285,10 +218,7 @@ export default {
     }
   },
   computed: {
-    category: () => category,
-    strictLevel: () => strictLevel,
-    checkLevel: () => checkLevel,
-    classificationTextMap: () => classificationTextMap
+    category: () => category
   },
   methods: {
     handleResetQuery () {
@@ -301,7 +231,7 @@ export default {
 
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('nmdRule/getList', this.queryForm)
+        } = await this.$store.dispatch('fsmp/getList', this.queryForm)
         console.log('rows')
         console.log(rows)
         this.list = rows
@@ -319,7 +249,7 @@ export default {
     },
     async handleDelete (record) {
       try {
-        await this.$store.dispatch('nmdRule/destroy', record.id)
+        await this.$store.dispatch('fsmpRule/destroy', record.id)
         this.$message.success('删除成功！')
 
         this.loadTableList()
@@ -330,14 +260,14 @@ export default {
     },
     async handleDownloadTemplate () {
       try {
-        this.$store.dispatch('file/downloadByFilename', 'NMD.xlsx')
+        this.$store.dispatch('file/downloadByFilename', 'FSMP.xlsx')
       } catch (error) {
         this.$message.error(error.message)
       }
     },
     async uploadBatchUpdate (formdata) {
       try {
-        await this.$store.dispatch('nmdRule/uploadBatchUpdate', formdata)
+        await this.$store.dispatch('fsmpRule/uploadBatchUpdate', formdata)
         this.loadTableList()
       } catch (error) {
         this.$message.error(error.message)
@@ -354,7 +284,7 @@ export default {
         formdata.append('file', file)
 
         this.uploadLoading = true
-        await this.$store.dispatch('nmdRule/upload', formdata)
+        await this.$store.dispatch('fsmpRule/upload', formdata)
 
         this.queryForm.pageNum = 1
         this.loadTableList()

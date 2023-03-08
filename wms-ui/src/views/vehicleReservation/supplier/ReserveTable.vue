@@ -5,8 +5,8 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           <a-col :span="4">
-            <a-form-model-item label="采购订单号">
-              <a-input v-model="queryForm.reserveNo" placeholder="采购订单号" allow-clear/>
+            <a-form-model-item label="预约单号">
+              <a-input v-model="queryForm.reserveNo" placeholder="预约单号" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
@@ -23,8 +23,17 @@
             </a-form-model-item>
           </a-col>
           <a-col span="4">
+            <a-form-model-item label="预约日期" style="display: flex;">
+              <a-date-picker
+                v-model="queryForm.reserveDate"
+                format="YYYY-MM-DD"
+              />
+            </a-form-model-item>
+          </a-col>
+          <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
             </span>
           </a-col>
         </a-row>
@@ -104,6 +113,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import { mixinTableList } from '@/utils/mixin/index'
 import ReserveDetailsTable from './ReserveDetailsTable.vue'
 
@@ -137,18 +147,12 @@ const columns = [
     title: '仓库地址',
     key: 'wareLocation',
     dataIndex: 'wareLocation',
-    width: 200
+    width: 250
   },
   {
     title: '预约日期',
     key: 'reserveDate',
     dataIndex: 'reserveDate',
-    width: 120
-  },
-  {
-    title: '预约时间',
-    key: 'timeWindow',
-    dataIndex: 'timeWindow',
     width: 120
   },
   {
@@ -176,7 +180,8 @@ const columns = [
 const queryFormAttr = () => {
   return {
     reserveNo: '',
-    status: null
+    status: null,
+    reserveDate: null
   }
 }
 
@@ -229,6 +234,11 @@ export default {
     }
   },
   methods: {
+    handleResetQuery () {
+      this.queryForm = { ...this.queryForm, ...queryFormAttr() }
+      this.handleSearch()
+    },
+    moment,
     /** 查看该预约单详情(查看对应po信息) */
     handleDetails (reserveNo) {
       this.isVisibleDetails = true
@@ -255,6 +265,7 @@ export default {
         return
       }
       try {
+        this.queryForm.reserveDate = this.queryForm.reserveDate == null ? null : moment(new Date(this.queryForm.reserveDate)).format('YYYY-MM-DD')
         this.tableLoading = true
         const { data: { rows, total } } = await this.$store.dispatch('supplierReserve/getList', { ...{ supplierCode: this.supplierName }, ...this.queryForm })
         this.list = rows

@@ -157,7 +157,6 @@ export default {
         this.list = []
         const { data } = await this.$store.dispatch('driverDispatch/getTodaySignlist', this.queryForm)
         this.list = data
-        console.info(this.list)
       } catch (error) {
         this.$message.error(error.message)
       } finally {

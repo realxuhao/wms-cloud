@@ -63,7 +63,7 @@ export default {
       /** 输入供应商名称弹窗是否显示 */
       isVisibleSupplierName: true,
       /** 输入的供应商名称，后续需要做精确查询 */
-      supplierName: '供应商A',
+      supplierName: '',
       /** 重新加载可预约订单列表参数 */
       reloadPurchase: false,
       /** 重新加载已预约参数 */
