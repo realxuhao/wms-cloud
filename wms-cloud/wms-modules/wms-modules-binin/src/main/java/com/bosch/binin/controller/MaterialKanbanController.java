@@ -467,6 +467,7 @@ public class MaterialKanbanController {
             int updateWare = wareShiftService.updateStatusByStatus(ssccs, KanbanStatusEnum.INNER_RECEIVING.value(),
                     KanbanStatusEnum.INNER_BIN_IN.value());
 
+
             Integer updateOrder = transhipmentOrderService.updateBySSCCS(ssccs);
             return R.ok();
         } catch (Exception ex) {

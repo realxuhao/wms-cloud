@@ -111,19 +111,6 @@
             {{ changeStatusMap[text] }}
           </a-tag>
         </template>
-        <template slot="checkType" slot-scope="text">
-          <div >
-            <a-tag color="orange" v-if="text===0">
-              称重
-            </a-tag>
-            <a-tag color="blue" v-if="text===1">
-              数数
-            </a-tag>
-            <a-tag color="#87d068" v-if="text===2">
-              免检
-            </a-tag>
-          </div>
-        </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a :disabled="record.freezeStock > 0" @click="handleUpdate('同批次', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />同批次</a>
