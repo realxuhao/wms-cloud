@@ -2,11 +2,13 @@ package com.bosch.masterdata.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.domain.Ecn;
 import com.bosch.masterdata.api.domain.Fsmp;
 import com.bosch.masterdata.api.domain.Fsmp;
 import com.bosch.masterdata.api.domain.dto.FsmpDTO;
 import com.bosch.masterdata.api.domain.vo.FsmpVO;
 import com.bosch.masterdata.api.enumeration.FsmpClassificationEnum;
+import com.bosch.masterdata.mapper.FsmpMapper;
 import com.bosch.masterdata.mapper.FsmpMapper;
 import com.bosch.masterdata.mapper.FsmpMapper;
 import com.bosch.masterdata.service.IFsmpService;
@@ -33,18 +35,18 @@ public class FsmpServiceImpl extends ServiceImpl<FsmpMapper, Fsmp>
     implements IFsmpService {
 
     @Autowired
-    private FsmpMapper FsmpMapper;
+    private FsmpMapper fsmpMapper;
 
     @Override
     public List<FsmpVO> selectList(FsmpDTO fsmpDTO) {
-        List<FsmpVO> FsmpVOS = FsmpMapper.selectList(fsmpDTO);
+        List<FsmpVO> FsmpVOS = fsmpMapper.selectList(fsmpDTO);
         return FsmpVOS;
     }
 
 
     @Override
     public FsmpVO selectFsmpById(Long id) {
-        Fsmp Fsmp = FsmpMapper.selectById(id);
+        Fsmp Fsmp = fsmpMapper.selectById(id);
         FsmpVO conver = BeanConverUtil.conver(Fsmp, FsmpVO.class);
         return conver;
     }
@@ -53,26 +55,38 @@ public class FsmpServiceImpl extends ServiceImpl<FsmpMapper, Fsmp>
     public Integer insertFsmp(FsmpDTO fsmpDTO) {
         List<FsmpDTO> list=new ArrayList<>();
         list.add(fsmpDTO);
-        validFsmpList(list);
+        if  (validFsmpList(list)){
+            throw new ServiceException("存在重复物料号的数据");
+        };
         Fsmp Fsmp = BeanConverUtil.conver(fsmpDTO, Fsmp.class);
-        int insert = FsmpMapper.insert(Fsmp);
+        int insert = fsmpMapper.insert(Fsmp);
         return insert;
     }
 
     @Override
     public Integer updateFsmp(FsmpDTO fsmpDTO) {
-        return null;
+        // 检查code是否重复
+        LambdaQueryWrapper<Fsmp> queryWrapper=new LambdaQueryWrapper<>();
+        queryWrapper.eq(Fsmp::getMaterialCode,fsmpDTO.getMaterialCode());
+        queryWrapper.eq(Fsmp::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        Fsmp fsmp = fsmpMapper.selectOne(queryWrapper);
+        if (fsmp != null && !fsmp.getId().equals(fsmpDTO.getId())) {
+            // 如果code已存在且不是当前对象，则抛出异常
+            throw new ServiceException("存在重复物料号的数据");
+        }
+        Fsmp conver = BeanConverUtil.conver(fsmpDTO, Fsmp.class);
+        return fsmpMapper.updateById(conver);
     }
 
     @Override
     public Integer deleteFsmp(Long[] ids) {
-        return FsmpMapper.deleteFsmp(ids);
+        return fsmpMapper.deleteFsmp(ids);
     }
 
 
     @Override
     public boolean validFsmpList(List<FsmpDTO> FsmpDTOS) {
-        return FsmpMapper.validateRecord(FsmpDTOS)>0;
+        return fsmpMapper.validateRecord(FsmpDTOS)>0;
     }
 
     @Override
@@ -103,7 +117,7 @@ public class FsmpServiceImpl extends ServiceImpl<FsmpMapper, Fsmp>
         LambdaQueryWrapper<Fsmp> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Fsmp::getMaterialCode,materialNb);
         queryWrapper.eq(Fsmp::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        Fsmp Fsmp = FsmpMapper.selectOne(queryWrapper);
+        Fsmp Fsmp = fsmpMapper.selectOne(queryWrapper);
         return Fsmp;
     }
 }
