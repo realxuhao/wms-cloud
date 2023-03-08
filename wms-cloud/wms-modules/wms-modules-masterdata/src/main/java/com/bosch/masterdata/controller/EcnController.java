@@ -99,8 +99,8 @@ public class EcnController extends BaseController {
     @ApiOperation("修改")
     @PutMapping
     public AjaxResult edit(@RequestBody EcnDTO ecnDTO) {
-        Ecn ecn = BeanConverUtil.conver(ecnDTO, Ecn.class);
-        return toAjax(ecnService.updateById(ecn));
+
+        return toAjax(ecnService.updateEcn(ecnDTO));
     }
 
     /**

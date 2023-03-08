@@ -49,7 +49,9 @@ public class EcnServiceImpl extends ServiceImpl<EcnMapper, Ecn>
     public Integer insertEcn(EcnDTO ecnDTO) {
         List<EcnDTO> list=new ArrayList<>();
         list.add(ecnDTO);
-        validEcnList(list);
+        if  (validEcnList(list)){
+            throw new ServiceException("存在重复物料号的数据");
+        };
         Ecn ecn = BeanConverUtil.conver(ecnDTO, Ecn.class);
         int insert = ecnMapper.insert(ecn);
         return insert;
@@ -57,7 +59,17 @@ public class EcnServiceImpl extends ServiceImpl<EcnMapper, Ecn>
 
     @Override
     public Integer updateEcn(EcnDTO ecnDTO) {
-        return null;
+        // 检查code是否重复
+        LambdaQueryWrapper<Ecn> queryWrapper=new LambdaQueryWrapper<>();
+        queryWrapper.eq(Ecn::getMaterialCode,ecnDTO.getMaterialCode());
+        queryWrapper.eq(Ecn::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        Ecn ecn = ecnMapper.selectOne(queryWrapper);
+        if (ecn != null && !ecn.getId().equals(ecnDTO.getId())) {
+            // 如果code已存在且不是当前对象，则抛出异常
+            throw new ServiceException("存在重复物料号的数据");
+        }
+        Ecn conver = BeanConverUtil.conver(ecnDTO, Ecn.class);
+        return ecnMapper.updateById(conver);
     }
 
     @Override

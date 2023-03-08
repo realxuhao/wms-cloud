@@ -106,8 +106,8 @@ public class NmdController extends BaseController {
     @ApiOperation("修改")
     @PutMapping
     public AjaxResult edit(@RequestBody NmdDTO nmdDTO) {
-        Nmd nmd = BeanConverUtil.conver(nmdDTO, Nmd.class);
-        return toAjax(nmdService.updateById(nmd));
+
+        return toAjax(nmdService.updateNmd(nmdDTO));
     }
 
     /**
