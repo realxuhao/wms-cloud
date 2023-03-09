@@ -118,6 +118,18 @@ const postBinIn = async (data) => {
   })
 }
 
+
+const shiftBinIn = async (data) => {
+  const url = `/binin/ware-shift/binIn`
+  const method = 'POST'
+
+  return request({
+    url,
+    method,
+	data
+  })
+}
+
 export const wareShiftService = {
   getList,
   binDown,
@@ -129,5 +141,6 @@ export const wareShiftService = {
   getWareList,
   returnMaterialConfirm,
   getAllocateBin,
-  postBinIn
+  postBinIn,
+  shiftBinIn
 }

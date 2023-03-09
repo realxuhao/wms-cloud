@@ -91,8 +91,8 @@ public class FsmpController extends BaseController {
     @ApiOperation("修改")
     @PutMapping
     public AjaxResult edit(@RequestBody FsmpDTO dto) {
-        Fsmp fsmp = BeanConverUtil.conver(dto, Fsmp.class);
-        return toAjax(fsmpService.updateById(fsmp));
+        //Fsmp fsmp = BeanConverUtil.conver(dto, Fsmp.class);
+        return toAjax(fsmpService.updateFsmp(dto));
     }
 
     /**

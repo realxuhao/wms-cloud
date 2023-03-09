@@ -49,7 +49,9 @@ public class NmdServiceImpl extends ServiceImpl<NmdMapper, Nmd>
     public Integer insertNmd(NmdDTO nmdDTO) {
         List<NmdDTO> list=new ArrayList<>();
         list.add(nmdDTO);
-        validNmdList(list);
+        if  (validNmdList(list)){
+            throw new ServiceException("存在重复物料号的数据");
+        };
         Nmd nmd = BeanConverUtil.conver(nmdDTO, Nmd.class);
         int insert = nmdMapper.insert(nmd);
         return insert;
@@ -57,10 +59,18 @@ public class NmdServiceImpl extends ServiceImpl<NmdMapper, Nmd>
 
     @Override
     public Integer updateNmd(NmdDTO nmdDTO) {
-        List<NmdDTO> list=new ArrayList<>();
-        list.add(nmdDTO);
-        validNmdList(list);
-        return nmdMapper.updateNmd(nmdDTO);
+
+        // 检查code是否重复
+        LambdaQueryWrapper<Nmd> queryWrapper=new LambdaQueryWrapper<>();
+        queryWrapper.eq(Nmd::getMaterialCode,nmdDTO.getMaterialCode());
+        queryWrapper.eq(Nmd::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        Nmd nmd = nmdMapper.selectOne(queryWrapper);
+        if (nmd != null && !nmd.getId().equals(nmdDTO.getId())) {
+            // 如果code已存在且不是当前对象，则抛出异常
+            throw new ServiceException("存在重复物料号的数据");
+        }
+        Nmd conver = BeanConverUtil.conver(nmdDTO, Nmd.class);
+        return nmdMapper.updateById(conver);
     }
 
     @Override

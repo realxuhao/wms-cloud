@@ -1,9 +1,6 @@
 package com.bosch.binin.controller;
 
-import com.bosch.binin.api.domain.dto.BinInDTO;
-import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
-import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
-import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
+import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
@@ -27,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 
@@ -139,6 +137,16 @@ public class IQCController extends BaseController {
 
         ExcelUtil<IQCSamplePlanVO> util = new ExcelUtil<>(IQCSamplePlanVO.class);
         util.exportExcel(response, iqcSamplePlanVOS, "IQC列表");
+    }
+
+    /**
+     * IQC 外库的可以增加移库
+     */
+    @PostMapping(value = "/sample/addShift")
+    @ApiOperation("IQC外库增加移库接口")
+    public R addShift(@Valid  @RequestBody IQCWareShiftDTO dto) {
+        samplePlanService.addShift(dto);
+        return R.ok();
     }
 
 

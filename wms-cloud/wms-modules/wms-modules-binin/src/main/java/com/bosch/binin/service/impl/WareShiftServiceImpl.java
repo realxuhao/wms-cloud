@@ -3,14 +3,18 @@ package com.bosch.binin.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.domain.IQCSamplePlan;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
+import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
+import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
+import com.bosch.binin.mapper.IQCSamplePlanMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
 import com.bosch.binin.service.IBinInService;
@@ -33,6 +37,7 @@ import org.springframework.util.CollectionUtils;
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,6 +66,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     @Autowired
     @Lazy //懒加载
     private IMaterialKanbanService kanbanService;
+
+    private IQCSamplePlanMapper samplePlanMapper;
 
     @Override
     public Boolean addShiftRequirement(AddShiftTaskDTO dto) {
@@ -285,6 +292,75 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         });
         stockService.updateBatchById(stockList);
         return saveBatch(wareShiftList);
+    }
+
+    @Override
+    public void performBinIn(BinInDTO binInDTO) {
+
+        String mesBarCode = binInDTO.getMesBarCode();
+        String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+        LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
+        wareShiftQueryWrapper.eq(WareShift::getSsccNb, sscc);
+        wareShiftQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        WareShift wareShift = wareShiftMapper.selectOne(wareShiftQueryWrapper);
+        if (wareShift == null) {
+            throw new ServiceException("没有该sscc:" + sscc + "对应的移库待上架任务");
+        }
+        if (wareShift.getStatus() != KanbanStatusEnum.INNER_BIN_IN.value()) {
+            throw new ServiceException("sscc:" + sscc + "对应任务状态为:" + KanbanStatusEnum.getDesc(String.valueOf(wareShift.getStatus())) + ",不可上架");
+        }
+        BinInVO binInVO = binInService.performBinIn(binInDTO);
+        //更新移库任务
+        wareShift.setStatus(KanbanStatusEnum.FINISH.value());
+        wareShift.setTargetPlant(binInVO.getPlantNb());
+        wareShift.setTargetWareCode(binInVO.getWareCode());
+        wareShift.setTargetAreaCode(binInVO.getAreaCode());
+        wareShift.setTargetBinCode(binInVO.getActualBinCode());
+        wareShiftMapper.updateById(wareShift);
+
+        //如果是看板所产生的移库任务，看板任务也要随之更新
+        //如果是kanban任务
+        LambdaQueryWrapper<MaterialKanban> kanbanQueryWrapper = new LambdaQueryWrapper<>();
+        //待下架任务,该kanban状态，待下架
+        kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
+        kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+        kanbanQueryWrapper.last("limit 1");
+        kanbanQueryWrapper.last("for update");
+        MaterialKanban materialKanban = kanbanMapper.selectOne(kanbanQueryWrapper);
+        if (!Objects.isNull(materialKanban)) {
+            materialKanban.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
+            materialKanban.setFactoryCode(binInVO.getPlantNb());
+            materialKanban.setWareCode(binInVO.getWareCode());
+            materialKanban.setAreaCode(binInVO.getAreaCode());
+            materialKanban.setBinCode(binInVO.getActualBinCode());
+            kanbanMapper.updateById(materialKanban);
+            //需要冻结库存
+            LambdaQueryWrapper<Stock> stockQw = new LambdaQueryWrapper<>();
+            stockQw.eq(Stock::getSsccNumber, sscc);
+            stockQw.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            Stock stock = stockService.getOne(stockQw);
+
+            stock.setFreezeStock(materialKanban.getQuantity());
+            stock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(stock.getTotalStock(), stock.getFreezeStock(), "-"));
+            stockService.updateById(stock);
+
+        }
+
+        //移库上架完后，看是不是IQC任务，如果是IQC任务，把IQC任务状态修改为待抽样
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        //待下架任务,该kanban状态，待下架
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, sscc);
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        IQCSamplePlan samplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
+        if (samplePlan != null) {
+            samplePlan.setStatus(IQCStatusEnum.WAITING_SAMPLE.code());
+            samplePlan.setBinDownCode(binInVO.getActualBinCode());
+            samplePlan.setWareCode(binInVO.getWareCode());
+            samplePlanMapper.updateById(samplePlan);
+        }
+
+
     }
 
     @Override

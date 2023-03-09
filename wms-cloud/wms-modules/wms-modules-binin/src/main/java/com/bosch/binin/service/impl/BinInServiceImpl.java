@@ -334,13 +334,10 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             }
 
             List<MaterialBinVO> materialBinVOS = materialBinVOResullt.getData();
-
-
-            List<String> frameCodeList = materialBinVOS.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
-            if (StringUtils.isEmpty(frameCodeList) || !frameCodeList.contains(actualBinVO.getFrameTypeCode())) {
-                throw new ServiceException("该物料" + materialNb + " 不能分配到" + binInDTO.getActualBinCode());
-            }
-
+//            List<String> frameCodeList = materialBinVOS.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
+//            if (StringUtils.isEmpty(frameCodeList) || !frameCodeList.contains(actualBinVO.getFrameTypeCode())) {
+//                throw new ServiceException("该物料" + materialNb + " 不能分配到" + binInDTO.getActualBinCode());
+//            }
             LambdaQueryWrapper<BinIn> finishQueryWrapper = new LambdaQueryWrapper<>();
             finishQueryWrapper.eq(BinIn::getActualBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.FINISH.value()).eq(BinIn::getDeleteFlag, 0);
             List<BinIn> binInFinish = binInMapper.selectList(finishQueryWrapper);
@@ -397,51 +394,6 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         StockLog stockLog = BeanConverUtil.conver(stock, StockLog.class);
         stockLog.setMoveType(MoveTypeEnums.BININ.getCode());
         stockLogMapper.insert(stockLog);
-
-        // 更新kanban和移库,转储单状态
-        updateKanbanWareShiftStatus(stock, sscc);
-
-//        MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
-
-
-//        //质检
-//        if ("Y".equals(materialVO.getIqc())) {
-//
-//
-//            boolean lastFlag = true;
-//
-//            //获取收货的同批次信息
-//            R<List<MaterialReceiveVO>> sameBatchListR = remoteMaterialInService.getSameBatchList(materialNb, binIn.getBatchNb());
-//
-//            if (StringUtils.isNull(sameBatchListR) || StringUtils.isNull(sameBatchListR.getData())) {
-//                throw new ServiceException("不存在该批次信息");
-//            }
-//
-//
-//            if (R.FAIL == sameBatchListR.getCode()) {
-//                throw new ServiceException(sameBatchListR.getMsg());
-//            }
-//            List<MaterialReceiveVO> sameBatchList = sameBatchListR.getData();
-//            //获取上架的同批次信息
-//            LambdaQueryWrapper<BinIn> binInQueryWrapper = new LambdaQueryWrapper<>();
-//            binInQueryWrapper.eq(BinIn::getMaterialNb, materialNb);
-//            binInQueryWrapper.eq(BinIn::getBatchNb, binIn.getBatchNb());
-//            binInQueryWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-//            List<BinIn> binInList = binInMapper.selectList(binInQueryWrapper);
-//            if (CollectionUtils.isEmpty(sameBatchList) || CollectionUtils.isEmpty(binInList) || binInList.size() != sameBatchList.size()) {
-//                lastFlag = false;
-//            }
-//            if (lastFlag && DeparementEnum.NMD.getCode().equals(materialVO.getCell())) {//NMD
-//                dealNMDIQCProcess(materialVO, binIn.getBatchNb(), binInList, sameBatchList);
-//            } else if (lastFlag && DeparementEnum.ECN.getCode().equals(materialVO.getCell())) {//ECN
-//                dealECNIQCProcess(materialVO, binIn.getBatchNb(), binInList, sameBatchList);
-//            } else if (lastFlag && DeparementEnum.FSMP.getCode().equals(materialVO.getCell())) {//FSMP
-//
-//            }
-
-//        }
-
-
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
     }
 
@@ -921,30 +873,18 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         }
 
         //如果是转储单任务，需要把状态修改为完成
-        LambdaQueryWrapper<ManualTransferOrder> qw = new LambdaQueryWrapper<>();
-        qw.eq(ManualTransferOrder::getSsccNb, ssccNb);
-        qw.eq(ManualTransferOrder::getStatus, ManuTransStatusEnum.WAITING_BIN_IN.code());
-        qw.eq(ManualTransferOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        qw.last("limit 1");
-        qw.last("for update");
-        ManualTransferOrder manualTransferOrder = manualTransferOrderMapper.selectOne(qw);
-        if (!Objects.isNull(manualTransferOrder)) {
-            manualTransferOrder.setStatus(ManuTransStatusEnum.FINISH.code());
-            manualTransferOrderMapper.updateById(manualTransferOrder);
-        }
-
-        //如果是IQC抽样任务，需要把状态更改为完成
-//        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
-//        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, ssccNb);
-//        iqcQueryWrapper.eq(IQCSamplePlan::getStatus, IQCStatusEnum.WAITING_BIN_IN.code());
-//        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-//        iqcQueryWrapper.last("limit 1");
-//        iqcQueryWrapper.last("for update");
-//        IQCSamplePlan samplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
-//        if (!Objects.isNull(samplePlan)) {
-//            samplePlan.setStatus(IQCStatusEnum.FINISH.code());
-//            samplePlanMapper.updateById(samplePlan);
+//        LambdaQueryWrapper<ManualTransferOrder> qw = new LambdaQueryWrapper<>();
+//        qw.eq(ManualTransferOrder::getSsccNb, ssccNb);
+//        qw.eq(ManualTransferOrder::getStatus, ManuTransStatusEnum.WAITING_BIN_IN.code());
+//        qw.eq(ManualTransferOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+//        qw.last("limit 1");
+//        qw.last("for update");
+//        ManualTransferOrder manualTransferOrder = manualTransferOrderMapper.selectOne(qw);
+//        if (!Objects.isNull(manualTransferOrder)) {
+//            manualTransferOrder.setStatus(ManuTransStatusEnum.FINISH.code());
+//            manualTransferOrderMapper.updateById(manualTransferOrder);
 //        }
+
     }
 
     @Override

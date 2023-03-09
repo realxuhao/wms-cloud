@@ -16,38 +16,29 @@
             { rules: [{ required: true, message: '请输料号!' }] }
           ]" />
       </a-form-item>
-      <a-form-item label="分类">
+      <a-form-item label="抽样方式">
         <a-select
           allowClear
           show-search
           :filter-option="filterOption"
           option-filter-prop="children"
-          @change="onClassificationChange"
           v-decorator="[
             'classification',
-            { rules: [{ required: true, message: '请选分类！' }] }
+            { rules: [{ required: true, message: '请选择抽样方式！' }] }
           ]"
-          placeholder="分类">
-          <a-select-option :value="item.text" v-for="item in category" :key="item.value">
+          placeholder="抽样方式">
+          <a-select-option :value="item.value" v-for="item in category" :key="item.value">
             {{ item.text }}
           </a-select-option>
         </a-select>
       </a-form-item>
-      <a-form-item label="取样规则" v-if="!showPlan">
-        <a-select
-          allowClear
-          show-search
-          :filter-option="filterOption"
-          option-filter-prop="children"
+      <a-form-item label="描述">
+        <a-input
+          type="textarea"
+          placeholder="描述"
           v-decorator="[
-            'plan',
-            { rules: [{ required: true, message: '请选择检取样规则！' }] }
-          ]"
-          placeholder="取样规则">
-          <a-select-option :value="item.text" v-for="item in planSelect" :key="item.value">
-            {{ item.text }}
-          </a-select-option>
-        </a-select>
+            'remark',
+          ]" />
       </a-form-item>
     </a-form>
 
@@ -95,17 +86,12 @@ export default {
     category: {
       type: Array,
       default: () => []
-    },
-    planSelect: {
-      type: Array,
-      default: () => []
     }
   },
   data () {
     return {
       form: this.$form.createForm(this),
-      submitLoading: false,
-      showPlan: false
+      submitLoading: false
     }
   },
   model: {
@@ -134,18 +120,15 @@ export default {
         option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
       )
     },
-    onClassificationChange (value) {
-      if (value === 'TTS物料') {
-        this.showPlan = true
-      }
-      this.showPlan = false
-    },
     async getAndUpdateForm () {
-      const { data } = await this.$store.dispatch('ecnRule/getOne', this.id)
-      const columns = ['materialCode', 'classification', 'plan']
+      const { data } = await this.$store.dispatch('fsmpRule/getOne', this.id)
+      const columns = ['materialCode', 'classification', 'remark']
       this.form.setFieldsValue(_.pick(data, columns))
     },
+    async loadNMDRuleList () {
+    },
     async loadData () {
+      await this.loadNMDRuleList()
     },
     handleSubmit (e) {
       e.preventDefault()
@@ -159,9 +142,9 @@ export default {
           this.submitLoading = true
 
           if (this.updateType === 'edit') {
-            await this.$store.dispatch('ecnRule/edit', { id: this.id, updateEntity: values })
+            await this.$store.dispatch('fsmpRule/edit', { id: this.id, updateEntity: values })
           } else {
-            await this.$store.dispatch('ecnRule/add', values)
+            await this.$store.dispatch('fsmpRule/add', values)
           }
 
           this.$emit('on-ok')
