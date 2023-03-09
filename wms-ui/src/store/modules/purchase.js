@@ -25,6 +25,10 @@ const purchase = {
     async detail ({ commit }, id) {
       const data = await purchaseService.detail(id)
       return data
+    },
+    async syncdata ({ commit }) {
+      const data = await purchaseService.syncdata()
+      return data
     }
   }
 }
