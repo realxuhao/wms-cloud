@@ -28,7 +28,7 @@
       </a-form>
 
       <div class="action-content">
-        <a-button type="primary" class="m-r-8" @click="handleSync">
+        <a-button type="primary" class="m-r-8" @click="handleSync" :loading="syncLoading">
           <a-icon type="redo"></a-icon>
           同步数据
         </a-button>
@@ -228,6 +228,7 @@ export default {
       list: [],
       /** 预约单详情弹窗是否显示 */
       isVisibleDetails: false,
+      syncLoading: false,
       purchaseId: 0
 
     }
@@ -259,8 +260,15 @@ export default {
       this.handleSearch()
     },
     /** 从物料管理系统中同步数据 */
-    handleSync () {
-
+    async handleSync () {
+      this.syncLoading = true
+      const data = await this.$store.dispatch('purchase/syncdata')
+      if (data.code === 200) {
+        this.$message.success('同步完成')
+      } else {
+        this.$message.error('同步失败，请联系系统管理员！')
+      }
+      this.syncLoading = false
     },
     /** 查询采购订单列表 */
     async loadTableList () {

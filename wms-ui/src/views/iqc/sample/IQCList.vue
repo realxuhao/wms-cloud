@@ -123,7 +123,34 @@
                 cancel-text="取消"
                 @confirm="handleDelete(record)"
               >
-                <a :disabled="record.status!== 0" class="danger-color"><a-icon class="m-r-4" type="delete" />取消</a>
+                <a :disabled="record.status!== 0" class="danger-color"><a-icon class="m-r-4" type="delete" /><a-icon type="to-top" />取消</a>
+              </a-popconfirm>
+              <a-divider type="vertical" />
+              <a-popconfirm
+                class="custom-pop"
+                ok-text="确认"
+                cancel-text="取消"
+                placement="left"
+                @confirm="handleMoveTargetWareCode(record)"
+              >
+                <template slot="title">
+                  <p>确认提交吗？</p>
+                  <a-form layout="inline" class="search-content">
+                    <a-form-item label="目的仓库" required>
+                      <a-select placeholder="请选择目的仓库" v-model="record.targetWareCode" style="width:200px" >
+                        <a-select-option
+                          v-for="item in wareList"
+                          :key="item.id"
+                          :disabled="record.wareCode === item.code"
+                          :value="item.code"
+                        >
+                          {{ item.code }}&emsp;{{ item.name }}
+                        </a-select-option>
+                      </a-select>
+                    </a-form-item>
+                  </a-form>
+                </template>
+                <a :disabled="record.status!== 0 || record.plantNb === '7752'" ><a-icon class="m-r-4" type="to-top" />移库</a>
               </a-popconfirm>
             </div>
           </template>
@@ -180,6 +207,12 @@ const statusColorMap = {
 }
 
 const columns = [
+  {
+    title: '工厂',
+    key: 'plantNb',
+    dataIndex: 'plantNb',
+    width: 120
+  },
   {
     title: '仓库',
     key: 'wareCode',
@@ -300,7 +333,7 @@ const columns = [
     title: '操作',
     key: 'action',
     fixed: 'right',
-    width: 180,
+    width: 210,
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -336,6 +369,7 @@ export default {
       },
       columns,
       list: [],
+      wareList: [],
       iqcSampleVisible: false
     }
   },
@@ -353,13 +387,37 @@ export default {
         this.exportLoading = true
         this.queryForm.pageSize = 0
         const blobData = await this.$store.dispatch('iqcSample/exportExcel', this.queryForm)
-        console.log(blobData)
         download(blobData, '抽样计划列表')
       } catch (error) {
         console.log(error)
         this.$message.error(error.message)
       } finally {
         this.exportLoading = false
+      }
+    },
+    async handleMoveTargetWareCode (record) {
+      if (!record.targetWareCode) {
+        this.$message.error('请先选择目标库位')
+        return
+      }
+
+      try {
+        const options = { sscc: record.ssccNb, targetWareCode: record.targetWareCode }
+        await this.$store.dispatch('iqcSample/addShift', options)
+        this.$message.success('修改成功')
+
+        this.loadTableList()
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      }
+    },
+    async getWareList () {
+      try {
+        const data = await this.$store.dispatch('ware/getList', {})
+        this.wareList = data
+      } catch (error) {
+        this.$message.error('获取仓库数据失败！')
       }
     },
     async handleCancel (record) {
@@ -429,6 +487,7 @@ export default {
     async loadData () {
       this.loadTableList()
       this.loadCellList()
+      this.getWareList()
     }
   },
   mounted () {

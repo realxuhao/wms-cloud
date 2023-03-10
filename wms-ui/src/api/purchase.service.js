@@ -28,9 +28,16 @@ const detail = async (id) => {
   return data
 }
 
+const syncdata = async () => {
+  const url = `/purchase/syncdata`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
 export const purchaseService = {
   getList,
   getListBySupplierName,
   close,
-  detail
+  detail,
+  syncdata
 }

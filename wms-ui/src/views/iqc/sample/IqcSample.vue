@@ -24,6 +24,19 @@
                   <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear />
                 </a-form-model-item>
               </a-col>
+              <a-col :span="4">
+                <a-form-model-item label="cell部门">
+                  <a-select
+                    placeholder="请选择cell部门"
+                    allow-clear
+                    v-model="queryForm.cell"
+                  >
+                    <a-select-option v-for="item in cellList" :key="item.id" :value="item.name">
+                      {{ item.name }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-model-item>
+              </a-col>
               <a-col span="4">
                 <span class="table-page-search-submitButtons">
                   <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
@@ -119,7 +132,8 @@ const queryFormAttr = () => {
   return {
     'batchNb': '',
     'wareCode': '',
-    'materialNb': ''
+    'materialNb': '',
+    'cell': ''
   }
 }
 
@@ -199,7 +213,8 @@ export default {
       list: [],
       hasSelectedList: [],
       wareCode: '',
-      wareList: []
+      wareList: [],
+      cellList: []
     }
   },
   model: {
@@ -361,8 +376,13 @@ export default {
         this.tableLoading = false
       }
     },
+    async loadCellList () {
+      const { data } = await this.$store.dispatch('department/getList')
+      this.cellList = data
+    },
     loadData () {
       this.loadTableList()
+      this.loadCellList()
     },
     handleChangeTab (p, f, { field, order }) {
       this.queryForm.sortMap[field] = this.queryForm.sortMap[field] === 'descend' ? 'ascend' : 'descend'

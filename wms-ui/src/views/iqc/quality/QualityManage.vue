@@ -149,7 +149,19 @@
         </a-form-model-item>
       </a-form>-->
       <a-form>
+        <a-form-item label="起始质量状态">
+          <a-checkbox-group v-model="fromStatusList">
+            <a-checkbox v-for="item in qualityStatus" :key="item.id" :value="item.text">
+              {{ item.text }}
+            </a-checkbox>
+          </a-checkbox-group>
+        </a-form-item>
         <a-form-item label="请选择质量状态">
+          <!-- <a-radio-group v-model="fromStatusList">
+            <a-radio v-for="item in qualityStatus" :key="item.id" :value="item.text">
+              {{ item.text }}
+            </a-radio>
+          </a-radio-group> -->
           <a-radio-group v-model="radioStatus" @change="radioChange">
             <a-radio v-for="item in qualityStatus" :key="item.id" :value="item.text">
               {{ item.text }}
@@ -164,6 +176,7 @@
       :width="800"
       title="确认质检状态"
       :ok-button-props="{ props: { disabled: confirmDisable } }"
+      @cancel="handleCancel"
       @ok="handleSubmit"
       :confirm-loading="confirmLoading">
       <a-table
@@ -395,6 +408,7 @@ export default {
       modalRecord: undefined,
       radioStatus: undefined,
       qualityType: undefined,
+      fromStatusList: [],
 
       uploadLoading: false,
       editSSCCVisible: false,
@@ -445,6 +459,9 @@ export default {
         this.confirmLoading = false
       }
     },
+    handleCancel () {
+      this.loadTableList()
+    },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
@@ -473,7 +490,7 @@ export default {
       // 调用API
       try {
         // await this.$store.dispatch('iqcManagement/updateIqcQuality', record)
-        const options = { ...this.modalRecord, 'type': this.qualityType }
+        const options = { ...this.modalRecord, 'type': this.qualityType, fromStatusList: this.fromStatusList }
         await this.$store.dispatch('iqcManagement/updateIqcQuality', options)
         this.$message.success('修改质检状态成功！')
         this.submitVisible = false
