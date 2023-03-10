@@ -29,6 +29,10 @@ const iqcSample = {
     async modifySscc ({ commit }, options) {
       const data = await iqcSampleService.modifySscc(options)
       return data
+    },
+    async addShift ({ commit }, options) {
+      const data = await iqcSampleService.addShift(options)
+      return data
     }
   }
 }

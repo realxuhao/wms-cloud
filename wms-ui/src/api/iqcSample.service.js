@@ -37,10 +37,16 @@ const getList = async (parameter) => {
   return data
 }
 
+const addShift = async (options) => {
+  const url = `/sample/addShift`
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
+  return data
+}
 export const iqcSampleService = {
   exportExcel,
   cancelIqc,
   getList,
   addIqcManual,
-  modifySscc
+  modifySscc,
+  addShift
 }

@@ -333,7 +333,7 @@ export default {
       this.form.setFieldsValue({
         targetWareCode: undefined
       })
-      console.log('selecteddPlantNb', selectedPlantNb)
+
       const options = { factoryCode: selectedPlantNb }
       try {
         const data = await this.$store.dispatch('ware/getList', options)
