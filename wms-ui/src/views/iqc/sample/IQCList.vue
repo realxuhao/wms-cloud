@@ -150,7 +150,7 @@
                     </a-form-item>
                   </a-form>
                 </template>
-                <a :disabled="record.status!== 0 || record.plantNb === '7752'" ><a-icon class="m-r-4" type="to-top" />移库</a>
+                <a :disabled="!(record.status!== -1 && record.plantNb === '7752')" ><a-icon class="m-r-4" type="to-top" />移库</a>
               </a-popconfirm>
             </div>
           </template>
