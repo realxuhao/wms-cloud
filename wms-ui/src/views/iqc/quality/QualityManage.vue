@@ -46,6 +46,19 @@
           </a-col>
           <template v-if="advanced">
             <a-col :span="4">
+              <a-form-model-item label="cell部门">
+                <a-select
+                  placeholder="请选择cell部门"
+                  allow-clear
+                  v-model="queryForm.cell"
+                >
+                  <a-select-option v-for="item in cellList" :key="item.id" :value="item.name">
+                    {{ item.name }}
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="4">
               <a-form-model-item label="批次号">
                 <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
               </a-form-model-item>
@@ -162,7 +175,7 @@
         </a-form-model-item>
       </a-form>-->
       <a-form>
-        <a-form-item label="起始质量状态">
+        <a-form-item label="起始质量状态" v-show="qualityType==='1'">
           <a-checkbox-group v-model="fromStatusList">
             <a-checkbox v-for="item in qualityStatus" :key="item.id" :value="item.text">
               {{ item.text }}
@@ -273,6 +286,12 @@ const columns = [
     dataIndex: 'ssccNumber',
     width: 160,
     align: 'center'
+  },
+  {
+    title: 'cell部门',
+    key: 'cell',
+    dataIndex: 'cell',
+    width: 90
   },
   {
     title: '库位编码',
@@ -398,6 +417,7 @@ const queryFormAttr = () => {
     binCode: '',
     palletCode: '',
     qualityStatus: '',
+    cell: undefined,
     changeStatus: undefined,
     updateTimeList: []
   }
@@ -427,7 +447,8 @@ export default {
       editSSCCVisible: false,
       editSSCCList: [],
       confirmLoading: false,
-      confirmDisable: false
+      confirmDisable: false,
+      cellList: []
     }
   },
   computed: {
@@ -458,6 +479,10 @@ export default {
       } finally {
         this.uploadLoading = false
       }
+    },
+    async loadCellList () {
+      const { data } = await this.$store.dispatch('department/getList')
+      this.cellList = data
     },
     async handleSubmit () {
       try {
@@ -507,6 +532,7 @@ export default {
         await this.$store.dispatch('iqcManagement/updateIqcQuality', options)
         this.$message.success('修改质检状态成功！')
         this.submitVisible = false
+        this.fromStatusList = []
         this.loadTableList()
       } catch (error) {
         this.$message.error(error.message)
@@ -549,6 +575,7 @@ export default {
   },
   mounted () {
     this.loadData()
+    this.loadCellList()
   }
 }
 </script>

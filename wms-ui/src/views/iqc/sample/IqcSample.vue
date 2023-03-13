@@ -151,6 +151,12 @@ const selectColumns = [
     width: 120
   },
   {
+    title: 'cell部门',
+    key: 'cell',
+    dataIndex: 'cell',
+    width: 90
+  },
+  {
     title: '物料编码',
     key: 'materialNb',
     dataIndex: 'materialNb',
