@@ -6,6 +6,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import org.ehcache.javadoc.PrivateApi;
 
 /**
  * 区域对象 md_area
@@ -37,6 +38,10 @@ public class Area extends BaseEntity
     /** 状态（1：启用，0：停用） */
     @Excel(name = "状态", readConverterExp = "1=：启用，0：停用")
     private Long status;
+
+    /** 存储区类型 */
+    @Excel(name = "存储区类型")
+    private Integer areaType;
 
 
 }

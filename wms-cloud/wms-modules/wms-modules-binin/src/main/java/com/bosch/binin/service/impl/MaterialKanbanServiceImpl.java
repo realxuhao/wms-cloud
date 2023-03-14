@@ -2,7 +2,6 @@ package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.injector.methods.SelectById;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -20,7 +19,6 @@ import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanActionTypeEnum;
 import com.bosch.binin.api.enumeration.StockWholeFlagEnum;
-import com.bosch.binin.mapper.BinInMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
@@ -34,7 +32,6 @@ import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import org.apache.coyote.http11.filters.VoidInputFilter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -499,7 +496,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         Stock stock = stockMapper.selectOne(stockQueryWrapper);
         StockVO stockVO = BeanConverUtil.conver(stock, StockVO.class);
         if (Objects.isNull(stock)) {
-            stockVO = stockService.getOneBySSCC(splitPallet.getSourceSsccNb());
+            stockVO = stockService.getLastOneBySSCC(splitPallet.getSourceSsccNb());
         }
         if (stockVO.getTotalStock() < Double.valueOf(MesBarCodeUtil.getQuantity(splitPallet.getNewMesBarCode()))) {
             throw new ServiceException("拆托数量不能超过源库存量");

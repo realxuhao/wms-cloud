@@ -22,6 +22,10 @@ public class IQCSamplePlan extends BaseEntity {
 
     private Long id;
 
+    /**
+     * 工厂
+     */
+    private String plantNb;
     @ApiModelProperty(value = "sscc")
     private String ssccNb;
     @ApiModelProperty(value = "cell部门")

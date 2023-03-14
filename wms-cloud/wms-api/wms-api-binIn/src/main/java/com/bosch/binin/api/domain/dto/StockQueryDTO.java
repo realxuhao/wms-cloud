@@ -105,4 +105,7 @@ public class StockQueryDTO extends PageDomain {
     @ApiModelProperty(value = "操作人")
     private String operateUser;
 
+    private String cell;
+
+
 }

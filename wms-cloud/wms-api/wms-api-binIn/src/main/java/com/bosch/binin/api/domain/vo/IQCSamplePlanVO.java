@@ -80,6 +80,7 @@ public class IQCSamplePlanVO {
     @ApiModelProperty(value = "推荐抽样数量")
     @Excel(name = "推荐抽样数量")
     private Double recommendSampleQuantity;
+    private String plantNb;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;

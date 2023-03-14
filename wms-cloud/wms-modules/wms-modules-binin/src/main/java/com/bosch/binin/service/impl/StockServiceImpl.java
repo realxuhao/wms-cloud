@@ -151,7 +151,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     }
 
     @Override
-    public StockVO getOneBySSCC(String ssccs) {
+    public StockVO getLastOneBySSCC(String ssccs) {
 
         LambdaQueryWrapper<Stock> stockLambdaQueryWrapper = new LambdaQueryWrapper<>();
         stockLambdaQueryWrapper.eq(Stock::getSsccNumber, ssccs);

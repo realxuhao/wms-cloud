@@ -3,6 +3,7 @@ package com.ruoyi.common.core.utils;
 
 import com.ruoyi.common.core.exception.ServiceException;
 
+import java.math.BigInteger;
 import java.text.ParseException;
 import java.util.Date;
 
@@ -97,10 +98,12 @@ public class MesBarCodeUtil {
         System.out.println(ceil1);
 
         String date = DateUtils.parseDateToStr("yyyyMMdd", new Date());
-        String barCode = generateMesBarCode(new Date(), "669006391113301881", "10383077", "2005201270", Double.valueOf(600));
+        String barCode = generateMesBarCode(new Date(), "669006391113713288", "10302519", "2211092174", Double.valueOf(3000));
         System.out.println(barCode);
 
         System.out.println("669006391110024752".length());
+
+        System.out.println(Long.valueOf("669006391110024752"));
 
     }
 

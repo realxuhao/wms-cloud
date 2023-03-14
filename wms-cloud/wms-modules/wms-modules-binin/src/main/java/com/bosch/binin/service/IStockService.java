@@ -33,7 +33,7 @@ public interface IStockService extends IService<Stock> {
 
     Double countAvailableStock(StockQueryDTO stockQueryDTO);
 
-    StockVO getOneBySSCC(String ssccs);
+    StockVO getLastOneBySSCC(String ssccs);
 
     Stock getAvailablesStockBySscc(String sscc);
 

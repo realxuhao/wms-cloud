@@ -40,6 +40,9 @@ public interface IBinInService extends IService<BinIn> {
      */
     BinInVO allocateToBinOrArea(String ssccNb, String materialCode, String binCode, String areaCode, Double quantity);
 
+
+    BinInVO performToAreaType(String mesBarCode, Integer areaType);
+
     BinInVO allocateToBinOrArea(String mesBarCode, String binCode, String areaCode);
 
 

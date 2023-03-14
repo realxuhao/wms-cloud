@@ -164,4 +164,6 @@ public class StockVO {
     @ApiModelProperty(value = "unit")
     private String unit;
 
+    private String cell;
+
 }
