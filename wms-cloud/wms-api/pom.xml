@@ -15,6 +15,7 @@
         <module>storage-in-api</module>
         <module>wms-api-binIn</module>
         <module>vehicle-reservation-api</module>
+        <module>wms-api-product</module>
 
     </modules>
 

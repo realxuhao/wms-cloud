@@ -18,6 +18,7 @@
         <module>wms-modules-binin</module>
         <module>wms-modules-monitor</module>
         <module>wms-modules-reservation</module>
+        <module>wms-modules-product</module>
     </modules>
 
     <artifactId>wms-modules</artifactId>
