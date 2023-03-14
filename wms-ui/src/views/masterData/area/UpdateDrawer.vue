@@ -33,6 +33,16 @@
           <a-select-option v-for="item in wareList" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
         </a-select>
       </a-form-item>
+      <a-form-item label="区域类型">
+        <!--  {pattern:/d/,required:true,message:'只能输入数字和小数点!'} -->
+        <a-select
+          v-decorator="[
+            'areaType',
+            { rules: [{ required: true, message: '请选择区域类型!' },] }
+          ]">
+          <a-select-option v-for="(value, key) in areaTypeMap" :key="key" :value="key">{{ value }}</a-select-option>
+        </a-select>
+      </a-form-item>
     </a-form>
 
     <div class="action">
@@ -54,6 +64,11 @@ const labelCol = {
 }
 const wrapperCol = {
   span: 19
+}
+const areaTypeMap = {
+  0: '原材料',
+  1: '成品',
+  2: 'IQC'
 }
 
 export default {
@@ -90,6 +105,8 @@ export default {
     event: 'change'
   },
   computed: {
+    areaTypeMap: () => areaTypeMap,
+
     title () {
       return this.updateType === 'edit' ? '编辑' : '新增'
     },
@@ -99,6 +116,7 @@ export default {
     wrapperCol () {
       return wrapperCol
     }
+
   },
   methods: {
     onClose () {
