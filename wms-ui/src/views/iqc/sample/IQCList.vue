@@ -115,7 +115,7 @@
                 :disabled="[-1].includes(record.status)"
                 class="warning-color"
                 @click="$refs.editSample.onOpen(record)">
-                <a-icon class="m-r-4" type="edit" />编辑</a>
+                <a :disabled="!(record.status=== 0|| record.status=== 1)" class="danger-color"><a-icon class="m-r-4" type="edit" />编辑</a></a>
               <a-divider type="vertical" />
               <a-popconfirm
                 title="确认要取消吗?"
@@ -150,7 +150,7 @@
                     </a-form-item>
                   </a-form>
                 </template>
-                <a :disabled="!(record.status!== -1 && record.plantNb === '7752')" ><a-icon class="m-r-4" type="to-top" />移库</a>
+                <a :disabled="!(record.status=== 0 && record.plantNb === '7752')" ><a-icon class="m-r-4" type="to-top" />移库</a>
               </a-popconfirm>
             </div>
           </template>
@@ -195,7 +195,8 @@ const statusTextMap = {
   0: '待下架',
   1: '待抽样',
   2: '待上架',
-  3: '完成'
+  3: '完成',
+  4: '移库中'
 }
 
 const statusColorMap = {
@@ -203,7 +204,8 @@ const statusColorMap = {
   0: 'orange',
   1: 'orange',
   2: 'orange',
-  3: 'green'
+  3: 'green',
+  4: 'orange'
 }
 
 const columns = [
