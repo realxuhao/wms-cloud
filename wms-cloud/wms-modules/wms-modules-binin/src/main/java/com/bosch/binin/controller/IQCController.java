@@ -153,7 +153,7 @@ public class IQCController extends BaseController {
      * IQC此库抽样，取消移库
      */
     @ApiOperation("IQC此库抽样，取消移库")
-    @GetMapping(value = "/sample/cancelWareShift/{ssccNb}")
+    @PutMapping(value = "/sample/cancelWareShift/{ssccNb}")
     @Transactional(rollbackFor = Exception.class)
     public R cancelWareShift(@PathVariable("ssccNb") String ssccNb) {
 

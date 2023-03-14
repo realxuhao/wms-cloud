@@ -35,10 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -67,6 +64,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     @Lazy //懒加载
     private IMaterialKanbanService kanbanService;
 
+    @Autowired
+    @Lazy
     private IIQCSamplePlanService samplePlanService;
 
     @Override
@@ -365,12 +364,14 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
     @Override
     public int updateStatusByStatus(List<String> ssccs, Integer queryStatus, Integer status) {
+        ArrayList<Object> ssccList = new ArrayList<>();
+        ssccList.addAll(ssccs);
 
         if (queryStatus.equals(KanbanStatusEnum.INNER_RECEIVING.value())) {
 
             //移库入库完后，看是不是IQC任务，如果是IQC任务，把IQC任务状态修改为待抽样
             LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
-            iqcQueryWrapper.in(IQCSamplePlan::getSsccNb, ssccs);
+            iqcQueryWrapper.in(IQCSamplePlan::getSsccNb, ssccList);
             iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
             List<IQCSamplePlan> samplePlanList = samplePlanService.list(iqcQueryWrapper);
             if (!CollectionUtils.isEmpty(samplePlanList)) {
@@ -402,14 +403,18 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                 wareShiftMapper.update(wareShiftIQC, uwIQC);
 
                 //  其余的更新为待上架
-                ssccs.removeAll(iqcSSCCList);
+
+                ssccList.removeAll(iqcSSCCList);
             }
+        }
+        if (CollectionUtils.isEmpty(ssccList)){
+            return 0;
         }
         WareShift wareShift = new WareShift();
         wareShift.setStatus(status);
         wareShift.setTargetWareCode(SecurityUtils.getWareCode());
         LambdaUpdateWrapper<WareShift> uw = new LambdaUpdateWrapper<>();
-        uw.in(WareShift::getSsccNb, ssccs);
+        uw.in(WareShift::getSsccNb, ssccList);
         uw.eq(WareShift::getStatus, queryStatus);
         uw.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 //        uw.eq(WareShift::getTargetWareCode, SecurityUtils.getWareCode());

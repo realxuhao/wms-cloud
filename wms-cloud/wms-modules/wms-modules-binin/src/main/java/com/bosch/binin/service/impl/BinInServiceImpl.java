@@ -546,8 +546,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             if (!CollectionUtils.isEmpty(samplePlanList)) {
                 if ("7752".equals(samplePlanList.get(0).getPlantNb())) {
 
-                    List<String> samplanSscc = samplePlanList.stream().map(IQCSamplePlan::getSsccNb).collect(Collectors.toList());
-                    List<BinIn> inList = binInList.stream().filter(item -> samplanSscc.contains(samplanSscc)).collect(Collectors.toList());
+                    List<String> samplanSsccList = samplePlanList.stream().map(IQCSamplePlan::getSsccNb).collect(Collectors.toList());
+                    List<BinIn> inList = binInList.stream().filter(item -> samplanSsccList.contains(item.getSsccNumber())).collect(Collectors.toList());
 
 
                     List<WareShift> wareShiftList = new ArrayList<>();
@@ -892,7 +892,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         //冻结库存
         LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
         stockQueryWrapper.eq(Stock::getSsccNumber, iqcSamplePlan.getSsccNb());
-        stockQueryWrapper.eq(Stock::getDeleteFlag, iqcSamplePlan.getDeleteFlag());
+        stockQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         stockQueryWrapper.last("limit 1");
         Stock stock = stockService.getOne(stockQueryWrapper);
         stock.setFreezeStock(stock.getTotalStock());
