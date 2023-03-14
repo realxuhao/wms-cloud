@@ -146,6 +146,18 @@
 		},
 		{
 			"path": "pages/IQC/binInOperation"
+		},
+		{
+			"path": "pages/splitPallet/scan"
+		},
+		{
+			"path": "pages/splitPallet/binIn"
+		},
+		{
+			"path": "pages/splitPallet/binInScan"
+		},
+		{
+			"path": "pages/splitPallet/binInOperation"
 		}
     ],
 	"globalStyle": {
