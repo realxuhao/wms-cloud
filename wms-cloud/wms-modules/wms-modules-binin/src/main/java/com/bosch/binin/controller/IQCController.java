@@ -149,5 +149,18 @@ public class IQCController extends BaseController {
         return R.ok();
     }
 
+    /**
+     * IQC此库抽样，取消移库
+     */
+    @ApiOperation("IQC此库抽样，取消移库")
+    @GetMapping(value = "/sample/cancelWareShift/{ssccNb}")
+    @Transactional(rollbackFor = Exception.class)
+    public R cancelWareShift(@PathVariable("ssccNb") String ssccNb) {
+
+        samplePlanService.cancelWareShift(ssccNb);
+
+        return R.ok();
+    }
+
 
 }

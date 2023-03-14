@@ -789,7 +789,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             } else {
                 iqcSamplePlan.setRecommendSampleQuantity(binIn.getQuantity());
             }
-            iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
+            iqcSamplePlan.setStatus(binIn.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
             iqcSamplePlan.setBatchNb(binIn.getBatchNb());
             iqcSamplePlan.setWareCode(binIn.getWareCode());
             iqcSamplePlan.setQuantity(binIn.getQuantity());
@@ -810,7 +810,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         iqcSamplePlan.setBinDownCode(binIn.getActualBinCode());
         iqcSamplePlan.setBinDownTime(new Date());
         iqcSamplePlan.setRecommendSampleQuantity(quantity);
-        iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
+        iqcSamplePlan.setStatus(binIn.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
         iqcSamplePlan.setBatchNb(binIn.getBatchNb());
         iqcSamplePlan.setWareCode(binIn.getWareCode());
         iqcSamplePlan.setQuantity(binIn.getQuantity());
@@ -831,7 +831,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             iqcSamplePlan.setBinDownCode(binIn.getActualBinCode());
             iqcSamplePlan.setBinDownTime(new Date());
             iqcSamplePlan.setRecommendSampleQuantity(sampleQuantity);
-            iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
+            iqcSamplePlan.setStatus(binIn.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
             iqcSamplePlan.setBatchNb(binIn.getBatchNb());
             iqcSamplePlan.setWareCode(binIn.getWareCode());
             iqcSamplePlan.setQuantity(binIn.getQuantity());
@@ -880,7 +880,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         iqcSamplePlan.setBinDownCode(binIn.getActualBinCode());
         iqcSamplePlan.setBinDownTime(new Date());
         iqcSamplePlan.setRecommendSampleQuantity(sampleQuantity);
-        iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
+        iqcSamplePlan.setStatus(binIn.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
         iqcSamplePlan.setBatchNb(binIn.getBatchNb());
         iqcSamplePlan.setWareCode(binIn.getWareCode());
         iqcSamplePlan.setQuantity(binIn.getQuantity());

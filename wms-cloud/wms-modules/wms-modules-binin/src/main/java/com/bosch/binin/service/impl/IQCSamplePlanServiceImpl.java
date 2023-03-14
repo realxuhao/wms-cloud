@@ -376,5 +376,31 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
     }
 
+    @Override
+    public void cancelWareShift(String ssccNb) {
+        LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
+        wareShiftQueryWrapper.eq(WareShift::getSsccNb, ssccNb);
+        wareShiftQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        wareShiftQueryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.FINISH.value());
+        wareShiftQueryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
+        wareShiftQueryWrapper.last("limit 1");
+        WareShift wareShift = wareShiftService.getOne(wareShiftQueryWrapper);
+        if (!wareShift.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN.value())) {
+            throw new ServiceException("当前移库状态为: " + KanbanStatusEnum.getDesc(String.valueOf(wareShift.getStatus())) + ",不可以变更取样地点");
+        }
+        wareShift.setStatus(KanbanStatusEnum.CANCEL.value());
+        wareShiftService.updateById(wareShift);
+
+        //修改抽样任务状态为待下架
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb,ssccNb);
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        iqcQueryWrapper.eq(IQCSamplePlan::getStatus,IQCStatusEnum.WARE_SHIFTING.code());
+        iqcQueryWrapper.last("limit 1");
+        IQCSamplePlan samplePlan = this.getOne(iqcQueryWrapper);
+        samplePlan.setStatus(IQCStatusEnum.WAITING_BIN_IN.code());
+        this.updateById(samplePlan);
+    }
+
 
 }
