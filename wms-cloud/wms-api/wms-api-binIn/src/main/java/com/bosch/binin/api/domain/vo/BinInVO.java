@@ -113,7 +113,7 @@ public class BinInVO {
      * 状态(0：待上架,1:已上架)
      */
     @ApiModelProperty(value = "status，状态(0：待上架,1:已上架)")
-    private Integer status;
+    private int status;
 
     /**
      * 创建人
