@@ -115,7 +115,7 @@
                 :disabled="[-1].includes(record.status)"
                 class="warning-color"
                 @click="$refs.editSample.onOpen(record)">
-                <a :disabled="!(record.status=== 0|| record.status=== 1)" class="danger-color"><a-icon class="m-r-4" type="edit" />编辑</a></a>
+                <a :disabled="!(record.status=== 0 || record.status===4)" class="danger-color"><a-icon class="m-r-4" type="edit" />编辑</a></a>
               <a-divider type="vertical" />
               <a-popconfirm
                 title="确认要取消吗?"
@@ -123,7 +123,7 @@
                 cancel-text="取消"
                 @confirm="handleDelete(record)"
               >
-                <a :disabled="record.status!== 0" class="danger-color"><a-icon class="m-r-4" type="delete" /><a-icon type="to-top" />取消</a>
+                <a :disabled="!(record.status=== 0 || record.status === 4)" class="danger-color"><a-icon class="m-r-4" type="delete" /><a-icon type="to-top" />取消</a>
               </a-popconfirm>
               <a-divider type="vertical" />
               <a-popconfirm
@@ -131,11 +131,11 @@
                 ok-text="确认"
                 cancel-text="取消"
                 placement="left"
-                @confirm="handleMoveTargetWareCode(record)"
+                @confirm="handleCancelShift(record)"
               >
                 <template slot="title">
                   <p>确认提交吗？</p>
-                  <a-form layout="inline" class="search-content">
+                  <!-- <a-form layout="inline" class="search-content">
                     <a-form-item label="目的仓库" required>
                       <a-select placeholder="请选择目的仓库" v-model="record.targetWareCode" style="width:200px" >
                         <a-select-option
@@ -148,9 +148,9 @@
                         </a-select-option>
                       </a-select>
                     </a-form-item>
-                  </a-form>
+                  </a-form> -->
                 </template>
-                <a :disabled="!(record.status=== 0 && record.plantNb === '7752')" ><a-icon class="m-r-4" type="to-top" />移库</a>
+                <a :disabled="!(record.status=== 4 && record.plantNb === '7752')" ><a-icon class="m-r-4" type="to-top" />此库抽样</a>
               </a-popconfirm>
             </div>
           </template>
@@ -335,7 +335,7 @@ const columns = [
     title: '操作',
     key: 'action',
     fixed: 'right',
-    width: 210,
+    width: 230,
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -397,15 +397,16 @@ export default {
         this.exportLoading = false
       }
     },
-    async handleMoveTargetWareCode (record) {
-      if (!record.targetWareCode) {
-        this.$message.error('请先选择目标库位')
-        return
-      }
+    async handleCancelShift (record) {
+      // if (!record.targetWareCode) {
+      //   this.$message.error('请先选择目标库位')
+      //   return
+      // }
 
       try {
-        const options = { sscc: record.ssccNb, targetWareCode: record.targetWareCode }
-        await this.$store.dispatch('iqcSample/addShift', options)
+        // const options = { sscc: record.ssccNb, targetWareCode: record.targetWareCode }
+
+        await this.$store.dispatch('iqcSample/cancelShift', record)
         this.$message.success('修改成功')
 
         this.loadTableList()
