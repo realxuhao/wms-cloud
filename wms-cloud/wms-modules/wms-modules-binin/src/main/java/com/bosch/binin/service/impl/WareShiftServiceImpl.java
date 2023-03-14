@@ -11,16 +11,15 @@ import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
+import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.mapper.IQCSamplePlanMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
-import com.bosch.binin.service.IBinInService;
-import com.bosch.binin.service.IMaterialKanbanService;
-import com.bosch.binin.service.IWareShiftService;
-import com.bosch.binin.service.IStockService;
+import com.bosch.binin.service.*;
+import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
@@ -40,6 +39,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @program: wms-cloud
@@ -67,7 +67,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     @Lazy //懒加载
     private IMaterialKanbanService kanbanService;
 
-    private IQCSamplePlanMapper samplePlanMapper;
+    private IIQCSamplePlanService samplePlanService;
 
     @Override
     public Boolean addShiftRequirement(AddShiftTaskDTO dto) {
@@ -347,24 +347,64 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
         }
 
-        //移库上架完后，看是不是IQC任务，如果是IQC任务，把IQC任务状态修改为待抽样
-        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
-        //待下架任务,该kanban状态，待下架
-        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, sscc);
-        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        IQCSamplePlan samplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
-        if (samplePlan != null) {
-            samplePlan.setStatus(IQCStatusEnum.WAITING_SAMPLE.code());
-            samplePlan.setBinDownCode(binInVO.getActualBinCode());
-            samplePlan.setWareCode(binInVO.getWareCode());
-            samplePlanMapper.updateById(samplePlan);
-        }
+//        //移库上架完后，看是不是IQC任务，如果是IQC任务，把IQC任务状态修改为待抽样
+//        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+//        //待下架任务,该kanban状态，待下架
+//        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, sscc);
+//        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+//        IQCSamplePlan samplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
+//        if (samplePlan != null) {
+//            samplePlan.setStatus(IQCStatusEnum.WAITING_SAMPLE.code());
+//            samplePlan.setBinDownCode(binInVO.getActualBinCode());
+//            samplePlan.setWareCode(binInVO.getWareCode());
+//            samplePlanMapper.updateById(samplePlan);
+//        }
 
 
     }
 
     @Override
     public int updateStatusByStatus(List<String> ssccs, Integer queryStatus, Integer status) {
+
+        if (queryStatus.equals(KanbanStatusEnum.INNER_RECEIVING.value())) {
+
+            //移库入库完后，看是不是IQC任务，如果是IQC任务，把IQC任务状态修改为待抽样
+            LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+            iqcQueryWrapper.in(IQCSamplePlan::getSsccNb, ssccs);
+            iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            List<IQCSamplePlan> samplePlanList = samplePlanService.list(iqcQueryWrapper);
+            if (!CollectionUtils.isEmpty(samplePlanList)) {
+
+
+                samplePlanList.stream().forEach(samplePlan->{
+                    //直接上架到IQC虚拟区域
+                    StockVO lastOneBySSCC = stockService.getLastOneBySSCC(samplePlan.getSsccNb());
+                    String mesBarCode = MesBarCodeUtil.generateMesBarCode(lastOneBySSCC.getExpireDate(), lastOneBySSCC.getSsccNumber(), lastOneBySSCC.getMaterialNb(), lastOneBySSCC.getBatchNb(), lastOneBySSCC.getTotalStock());
+                    BinInVO binInVO = binInService.performToAreaType(mesBarCode, AreaTypeEnum.IQC.getCode());
+                    //修改IQC抽样状态
+                    samplePlan.setStatus(IQCStatusEnum.WAITING_SAMPLE.code());
+                    samplePlan.setWareCode(SecurityUtils.getWareCode());
+                    samplePlan.setBinDownCode(binInVO.getActualBinCode());
+                    samplePlan.setPlantNb(binInVO.getPlantNb());
+                });
+                samplePlanService.updateBatchById(samplePlanList);
+
+                List<String> iqcSSCCList = samplePlanList.stream().map(IQCSamplePlan::getSsccNb).collect(Collectors.toList());
+                //属于IQC的移库，更新为完成状态
+                WareShift wareShiftIQC = new WareShift();
+                wareShiftIQC.setStatus(KanbanStatusEnum.FINISH.value());
+                wareShiftIQC.setTargetWareCode(SecurityUtils.getWareCode());
+                LambdaUpdateWrapper<WareShift> uwIQC = new LambdaUpdateWrapper<>();
+                uwIQC.in(WareShift::getSsccNb, iqcSSCCList);
+                uwIQC.eq(WareShift::getStatus, queryStatus);
+                uwIQC.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+                uwIQC.eq(WareShift::getTargetWareCode, SecurityUtils.getWareCode());
+                wareShiftMapper.update(wareShiftIQC, uwIQC);
+
+                //  其余的更新为待上架
+                ssccs.removeAll(iqcSSCCList);
+            }
+        }
         WareShift wareShift = new WareShift();
         wareShift.setStatus(status);
         wareShift.setTargetWareCode(SecurityUtils.getWareCode());
@@ -373,6 +413,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         uw.eq(WareShift::getStatus, queryStatus);
         uw.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 //        uw.eq(WareShift::getTargetWareCode, SecurityUtils.getWareCode());
+
 
         return wareShiftMapper.update(wareShift, uw);
     }

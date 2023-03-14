@@ -10,7 +10,7 @@ public class AreaDTO extends PageDomain {
     /** id */
     @ExcelProperty(value = "id")
     @ApiModelProperty(value = "id")
-    private Integer id;
+    private Long id;
 
     /** 仓库id */
     @ApiModelProperty(value = "仓库id")
@@ -31,5 +31,16 @@ public class AreaDTO extends PageDomain {
     @ApiModelProperty(value = "存储区名称")
     @ExcelProperty(value = "存储区名称")
     private String name;
+
+
+    /** 存储区类型 */
+    @ApiModelProperty(value = "存储区类型")
+    private Integer areaType;
+
+
+    /** 存储区类型 */
+    @ApiModelProperty(value = "存储区类型")
+    @ExcelProperty(value = "存储区类型")
+    private String areaTypeDesc;
 
 }

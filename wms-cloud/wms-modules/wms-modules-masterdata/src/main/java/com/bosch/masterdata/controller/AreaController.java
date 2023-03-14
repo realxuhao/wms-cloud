@@ -36,15 +36,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 区域Controller
- * 
+ *
  * @author xuhao
  * @date 2022-09-26
  */
 @Api(tags = "存储区接口")
 @RestController
 @RequestMapping("/area")
-public class AreaController extends BaseController
-{
+public class AreaController extends BaseController {
     @Autowired
     private IAreaService areaService;
 
@@ -57,8 +56,7 @@ public class AreaController extends BaseController
     @RequiresPermissions("masterdata:area:export")
     @Log(title = "区域", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    public void export(HttpServletResponse response, Area area)
-    {
+    public void export(HttpServletResponse response, Area area) {
         List<Area> list = areaService.selectAreaList(area);
         ExcelUtil<Area> util = new ExcelUtil<Area>(Area.class);
         util.exportExcel(response, list, "区域数据");
@@ -69,8 +67,7 @@ public class AreaController extends BaseController
      */
     //@RequiresPermissions("masterdata:area:query")
     @GetMapping(value = "/{id}")
-    public AjaxResult getInfo(@PathVariable("id") Integer id)
-    {
+    public AjaxResult getInfo(@PathVariable("id") Integer id) {
         return AjaxResult.success(areaService.selectAreaById(id));
     }
 
@@ -80,9 +77,8 @@ public class AreaController extends BaseController
     @RequiresPermissions("masterdata:area:remove")
     @Log(title = "区域", businessType = BusinessType.DELETE)
     @ApiOperation("删除区域")
-	@DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Integer[] ids)
-    {
+    @DeleteMapping("/{ids}")
+    public AjaxResult remove(@PathVariable Integer[] ids) {
         return toAjax(areaService.deleteAreaByIds(ids));
     }
 
@@ -91,12 +87,24 @@ public class AreaController extends BaseController
      */
     @ApiOperation("查询区域信息")
     @GetMapping("/areaVOList")
-    public R<PageVO<AreaVO>> list(AreaDTO areaDTO)
-    {
+    public R<PageVO<AreaVO>> list(AreaDTO areaDTO) {
         startPage();
         List<AreaVO> list = areaService.selectAreaVOList(areaDTO);
 
-        return R.ok(new PageVO<>(list,new PageInfo<>(list).getTotal()));
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
+    /**
+     * 查询某个仓库下的所有区域
+     */
+    @ApiOperation("查询某个仓库下的所有区域")
+    @GetMapping("/getByWareCode/{wareCode}")
+    public R<List<AreaVO>> getByWareCode(@PathVariable("wareCode") String wareCode) {
+        AreaDTO areaDTO = new AreaDTO();
+        areaDTO.setWareCode(wareCode);
+        List<AreaVO> list = areaService.selectAreaVOList(areaDTO);
+
+        return R.ok(list);
     }
 
     /**
@@ -106,8 +114,7 @@ public class AreaController extends BaseController
     @ApiOperation("新增区域")
     @Log(title = "区域", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody AreaDTO areaDTO)
-    {
+    public AjaxResult add(@RequestBody AreaDTO areaDTO) {
         return toAjax(areaService.insertArea(areaDTO));
     }
 
@@ -118,18 +125,18 @@ public class AreaController extends BaseController
     @ApiOperation("修改区域")
     @Log(title = "区域", businessType = BusinessType.UPDATE)
     @PutMapping("/{id}")
-    public AjaxResult edit(@PathVariable("id") Integer id,@RequestBody AreaDTO areaDTO)
-    {
+    public AjaxResult edit(@PathVariable("id") Long id, @RequestBody AreaDTO areaDTO) {
         areaDTO.setId(id);
         return toAjax(areaService.updateArea(areaDTO));
     }
+
     /**
      * 批量上传存储区
      */
     @ApiOperation("批量上传存储区")
-    @PostMapping(value = "/import" , headers = "content-type=multipart/form-data")
+    @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
     @Transactional(rollbackFor = Exception.class)
-    public R importExcel(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
+    public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
         try {
             //解析文件服务
             R result = fileService.masterDataImport(file, ClassType.AREADTO.getDesc());
@@ -165,9 +172,9 @@ public class AreaController extends BaseController
      * 批量更新存储区
      */
     @ApiOperation("批量更新存储区")
-    @PostMapping(value = "/saveBatch" , headers = "content-type=multipart/form-data")
+    @PostMapping(value = "/saveBatch", headers = "content-type=multipart/form-data")
     @Transactional(rollbackFor = Exception.class)
-    public R saveBatch(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
+    public R saveBatch(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
 
         try {
             //解析文件服务
@@ -180,11 +187,11 @@ public class AreaController extends BaseController
                     List<AreaDTO> areaDTOS = areaService.setValue(dtos);
                     //转换DO
                     List<Area> dos = BeanConverUtil.converList(areaDTOS, Area.class);
-                    dos.forEach(r->{
-                        LambdaUpdateWrapper<Area> wrapper=new LambdaUpdateWrapper<Area>();
-                        wrapper.eq(Area::getCode,r.getCode());
+                    dos.forEach(r -> {
+                        LambdaUpdateWrapper<Area> wrapper = new LambdaUpdateWrapper<Area>();
+                        wrapper.eq(Area::getCode, r.getCode());
                         boolean update = areaService.update(r, wrapper);
-                        if (!update){
+                        if (!update) {
                             r.setCreateBy(SecurityUtils.getUsername());
                             r.setCreateTime(DateUtils.getNowDate());
                             areaService.save(r);
@@ -192,7 +199,7 @@ public class AreaController extends BaseController
                     });
                 }
                 return R.ok("导入成功");
-            }else {
+            } else {
                 return R.fail(result.getMsg());
             }
         } catch (Exception e) {

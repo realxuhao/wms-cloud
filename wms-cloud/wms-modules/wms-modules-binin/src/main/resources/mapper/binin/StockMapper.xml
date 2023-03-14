@@ -30,6 +30,7 @@
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="unit" column="unit"/>
+        <result property="cell" column="cell"/>
     </resultMap>
     <select id="selectIQCManagementList" resultMap="StockVOResult">
         select bs.id as id,
@@ -56,11 +57,14 @@
         bs.pallet_code as pallet_code,
         bs.whole_flag as whole_flag,
         bs.change_status as change_status,
-        mm.unit as unit
+        mm.unit as unit,
+        mt.code as cell
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code
         left join md_material mm on bs.material_nb = mm.code
+        LEFT JOIN md_material_type mt ON mm.material_type_id = mt.id
+        left join md_department md on mt.department_id = md.id
         where bs.delete_flag=0
         <if test="ssccNumber != null and ssccNumber != ''">and bs.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="plantNb != null and plantNb != ''">and bs.plant_nb like concat('%', #{plantNb}, '%')</if>
@@ -75,6 +79,7 @@
         <if test="materialNb != null and materialNb != ''">and bs.material_nb like concat('%', #{materialNb}, '%')</if>
         <if test="batchNb != null and batchNb != ''">and bs.batch_nb like concat('%', #{batchNb}, '%')</if>
         <if test="operateUser != null and operateUser != ''">and bs.update_by like concat('%', #{operateUser}, '%')</if>
+        <if test="cell != null and cell != ''">and md.code like concat('%', #{cell}, '%')</if>
 
 
         <if test="startUpdateTime != null">and bs.update_time <![CDATA[ >= ]]> #{startUpdateTime}</if>
@@ -107,10 +112,10 @@
             where b.batch_nb =
             (SELECT a.batch_nb from
             (SELECT batch_nb from bi_stock where id=#{id}) a )
-                and b.quality_status in
-                  <foreach collection="fromStatusList" index="index" item="item" open="(" separator="," close=")">
-                    #{item}
-                  </foreach>
+            and b.quality_status in
+            <foreach collection="fromStatusList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </if>
 
     </update>
@@ -138,11 +143,14 @@
         bs.area_code as area_code,
         bs.pallet_code as pallet_code,
         bs.whole_flag as whole_flag,
-        bs.change_status as change_status
+        bs.change_status as change_status,
+        md.code as cell
         from bi_stock bs
         left join md_ware mw
         on mw.code = bs.ware_code
         left join md_material mm on bs.material_nb = mm.code
+        LEFT JOIN md_material_type mt ON mm.material_type_id = mt.id
+        left join md_department md on mt.department_id = md.id
         where bs.delete_flag=0
         <if test="ssccNumber != null and ssccNumber != ''">and bs.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="plantNb != null and plantNb != ''">and bs.plant_nb like concat('%', #{plantNb}, '%')</if>
@@ -157,6 +165,8 @@
         <if test="materialNb != null and materialNb != ''">and bs.material_nb like concat('%', #{materialNb}, '%')</if>
         <if test="batchNb != null and batchNb != ''">and bs.batch_nb like concat('%', #{batchNb}, '%')</if>
         <if test="operateUser != null and operateUser != ''">and bs.create_by like concat('%', #{operateUser}, '%')</if>
+        <if test="cell != null and cell != ''">and md.code like concat('%', #{cell}, '%')</if>
+
 
         <if test="startExpireDate != null and endExpireDate != null">and str_to_date(bs.expire_date, '%d/%m/%y')
             between

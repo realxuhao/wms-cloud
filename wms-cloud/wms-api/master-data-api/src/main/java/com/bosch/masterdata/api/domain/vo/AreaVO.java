@@ -1,6 +1,7 @@
 package com.bosch.masterdata.api.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.core.annotation.Excel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -52,4 +53,11 @@ public class AreaVO {
     @ApiModelProperty(value = "更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
+
+
+    /** 存储区类型 */
+    @ApiModelProperty(value = "存储区类型")
+    private Integer areaType;
+
+    private String plantNb;
 }

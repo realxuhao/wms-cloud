@@ -60,6 +60,11 @@
         size="middle"
         :scroll="tableScroll"
       >
+        <template slot="areaType" slot-scope="text">
+          <div >
+            {{ areaTypeMap[text] }}
+          </div>
+        </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
@@ -111,6 +116,14 @@ const columns = [
     width: 200
   },
   {
+    title: '类型',
+    key: 'areaType',
+    dataIndex: 'areaType',
+    width: 200,
+    scopedSlots: { customRender: 'areaType' }
+
+  },
+  {
     title: '仓库编码',
     key: 'wareCode',
     dataIndex: 'wareCode',
@@ -143,11 +156,20 @@ const queryFormAttr = () => {
   }
 }
 
+const areaTypeMap = {
+  0: '原材料',
+  1: '成品',
+  2: 'IQC'
+}
+
 export default {
   name: 'Area',
   mixins: [mixinTableList],
   components: {
     UpdateDrawer
+  },
+  computed: {
+    areaTypeMap: () => areaTypeMap
   },
   data () {
     return {

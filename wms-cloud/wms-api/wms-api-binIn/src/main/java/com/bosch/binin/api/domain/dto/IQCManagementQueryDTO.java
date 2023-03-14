@@ -29,6 +29,13 @@ public class IQCManagementQueryDTO extends PageDomain {
 
 
     /**
+     * cell
+     */
+    @ApiModelProperty(value = "cell")
+    private String cell;
+
+
+    /**
      * PO号
      */
     @ApiModelProperty(value = "PO号")

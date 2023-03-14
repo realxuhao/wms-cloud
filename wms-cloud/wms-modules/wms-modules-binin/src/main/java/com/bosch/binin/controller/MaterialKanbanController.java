@@ -1,24 +1,19 @@
 package com.bosch.binin.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.*;
 
-import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
 import com.bosch.binin.api.domain.dto.SplitPalletDTO;
-import com.bosch.binin.api.domain.vo.MaterialCallVO;
 import com.bosch.binin.api.domain.vo.MaterialInfoVO;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.service.*;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
@@ -402,7 +397,7 @@ public class MaterialKanbanController {
             //*根据sscc获取kanban信息
             //根据sscc获取stock信息
             collect.stream().forEach(r -> {
-                StockVO oneBySSCC = stockService.getOneBySSCC(r);
+                StockVO oneBySSCC = stockService.getLastOneBySSCC(r);
                 if (oneBySSCC == null) {
                     throw new ServiceException("根据sscc" + r + "未获取到库存信息");
                 }
@@ -466,6 +461,7 @@ public class MaterialKanbanController {
             //更新移库表为待上架
             int updateWare = wareShiftService.updateStatusByStatus(ssccs, KanbanStatusEnum.INNER_RECEIVING.value(),
                     KanbanStatusEnum.INNER_BIN_IN.value());
+
 
             Integer updateOrder = transhipmentOrderService.updateBySSCCS(ssccs);
             return R.ok();

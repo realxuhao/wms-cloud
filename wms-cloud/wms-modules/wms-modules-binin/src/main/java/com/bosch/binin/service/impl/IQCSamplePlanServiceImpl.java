@@ -108,6 +108,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
         List<IQCSamplePlan> samplePlanList = new ArrayList();
         Map<String, MaterialVO> finalMaterialVOMap = materialVOMap;
+        List<WareShift> wareShiftList = new ArrayList<>();
         stockList.stream().forEach(stock -> {
             if (stock.getTotalStock() < ssccMaps.get(stock.getSsccNumber()).getSampleQuantity()) {
                 throw new ServiceException("抽样数量不能大于库存数量，请重试");
@@ -119,20 +120,34 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
             iqcSamplePlan.setBinDownCode(stock.getBinCode());
 //            iqcSamplePlan.setBinDownTime(new Date());
             iqcSamplePlan.setRecommendSampleQuantity(ssccMaps.get(stock.getSsccNumber()).getSampleQuantity());
-            iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
+            iqcSamplePlan.setStatus(stock.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
             iqcSamplePlan.setBatchNb(stock.getBatchNb());
             iqcSamplePlan.setWareCode(stock.getWareCode());
             iqcSamplePlan.setExpireDate(stock.getExpireDate());
             iqcSamplePlan.setQuantity(stock.getTotalStock());
+            iqcSamplePlan.setPlantNb(stock.getPlantNb());
             samplePlanList.add(iqcSamplePlan);
+            //库存冻结
             stock.setFreezeStock(stock.getAvailableStock());
             stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
+            //如果是外库的，新增移库
+            if (stock.getPlantNb().equals("7752")) {
+                WareShift wareShift = WareShift.builder().sourcePlantNb(stock.getPlantNb()).sourceWareCode(stock.getWareCode()).sourceAreaCode(stock.getAreaCode())
+                        .sourceBinCode(stock.getBinCode()).materialNb(stock.getMaterialNb()).batchNb(stock.getBatchNb()).expireDate(stock.getExpireDate())
+                        .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+                        .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                        .build();
+                wareShiftList.add(wareShift);
+            }
+
+
         });
 
         saveBatch(samplePlanList);
 
         stockService.updateBatchById(stockList);
 
+        wareShiftService.saveBatch(wareShiftList);
 
     }
 
@@ -178,6 +193,8 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         samplePlan.setBinDownCode(stock.getBinCode());
         samplePlan.setBatchNb(stock.getBatchNb());
         samplePlan.setWareCode(stock.getWareCode());
+        iqcSamplePlan.setPlantNb(stock.getPlantNb());
+
         samplePlan.setExpireDate(stock.getExpireDate());
         samplePlan.setBinDownTime(new Date());
         samplePlan.setRecommendSampleQuantity(dto.getSampleQuantity());
@@ -349,6 +366,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
                 .sourceBinCode(stock.getBinCode()).materialNb(stock.getMaterialNb()).batchNb(stock.getBatchNb()).expireDate(stock.getExpireDate())
                 .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
                 .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                .targetWareCode(dto.getTargetWareCode())
                 .build();
         wareShiftService.save(wareShift);
 
