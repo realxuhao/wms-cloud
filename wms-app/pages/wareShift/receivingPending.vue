@@ -58,7 +58,7 @@ export default {
   methods: {
 	  async getList(){
 		const options = {pageSize:this.pageSize,pageNum:this.pageNum,status:4}
-		const {rows,total} = await this.$store.dispatch('wareShift/getList',options)
+		const {rows,total} = await this.$store.dispatch('wareShift/innerReceivingList',options)
 		return {rows,total}
 	  },
 	  async handleRefresh(){

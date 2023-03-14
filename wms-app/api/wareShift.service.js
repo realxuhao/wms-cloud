@@ -11,6 +11,16 @@ const getList = async (data) => {
   })
 }
 
+const innerReceivingList = async (data) => {
+  const url = `/binin/ware-shift/innerReceivingList`
+  const method = 'GET'
+
+  return request({
+    url,
+    method,
+    data
+  })
+}
 const binDown = async (barCode) => {
   const url = `/binin/ware-shift/binDown/${barCode}`
   const method = 'PUT'
@@ -142,5 +152,6 @@ export const wareShiftService = {
   returnMaterialConfirm,
   getAllocateBin,
   postBinIn,
-  shiftBinIn
+  shiftBinIn,
+  innerReceivingList
 }

@@ -9,10 +9,15 @@ const wareShift = {
   },
 
   actions: {
+	  
     async getList ({ commit }, parameter) {
       const {data} = await wareShiftService.getList({...parameter})
       return data
     },
+	async innerReceivingList ({ commit }, parameter) {
+	  const {data} = await wareShiftService.innerReceivingList({...parameter})
+	  return data
+	},
 	async getWaitingBinIn ({ commit }, parameter) {
       const {data} = await wareShiftService.getWaitingBinIn({...parameter})
       return data
