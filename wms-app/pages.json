@@ -118,25 +118,25 @@
 			"path": "pages/sscc/dashboard"
 		},
 		{
-            "path" : "pages/location/scan"
-        },
-		{
-		    "path" : "pages/location/dashboard"
+			"path": "pages/location/scan"
 		},
 		{
-            "path" : "pages/IQC/binDown"
-        },
+			"path": "pages/location/dashboard"
+		},
+		{
+			"path": "pages/IQC/binDown"
+		},
 		{
 			"path": "pages/IQC/binDownScan"
 		},
-        {
-            "path" : "pages/IQC/sample"
-        },
 		{
-		    "path" : "pages/IQC/sampleScan"
+			"path": "pages/IQC/sample"
 		},
 		{
-		    "path" : "pages/IQC/sampleOperator"
+			"path": "pages/IQC/sampleScan"
+		},
+		{
+			"path": "pages/IQC/sampleOperator"
 		},
 		{
 			"path": "pages/IQC/binIn"
@@ -158,8 +158,11 @@
 		},
 		{
 			"path": "pages/splitPallet/binInOperation"
+		},
+		{
+			"path": "pages/finishedProduct/packOperator"
 		}
-    ],
+	],
 	"globalStyle": {
 		"navigationStyle": "custom"
 	}
