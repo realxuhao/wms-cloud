@@ -34,6 +34,9 @@ public class BinVO {
     @ApiModelProperty(value = "仓库编码")
     private String wareCode;
 
+    @ApiModelProperty(value = "工厂编码")
+    private String plantNb;
+
     /** 仓库名称 */
     @ApiModelProperty(value = "仓库名称")
     private String wareName;
