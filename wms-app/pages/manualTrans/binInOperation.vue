@@ -1,334 +1,316 @@
 <template>
-		<my-page nav-title="转储上架">
-			
-			<view class="main" slot="page-main">
-				<view class="header m-b-8">
+	<my-page nav-title="转储上架">
+		<view class="main" slot="page-main">
+			<view class="header m-b-8">
+				<view class="text-line m-b-8 ">
+					<view class="label">SSCC码：</view>
+					{{ binInInfo.ssccNumber }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">物料名称：</view>
+					{{ binInInfo.materialName }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">物料编码：</view>
+					{{ binInInfo.materialNb }}
+				</view>
+				<view class="text-line m-b-8 " v-if="manualTransInfo.type === 0">
+					<view class="label">转储类型：</view>
+					正常
+				</view>
+				<view class="text-line m-b-8 " v-if="manualTransInfo.type === 1">
+					<view class="label">转储类型：</view>
+					异常
+				</view>
+				<view v-if="binInInfo.recommendBinCode">
 					<view class="text-line m-b-8 ">
-						<view class="label">SSCC码：</view>
-						{{binInInfo.ssccNumber}}
+						<view class="label">托盘类型：</view>
+						{{ binInInfo.palletType }}
+					</view>
+					<view class="text-line m-b-8 " v-show="binInInfo.palletCode">
+						<view class="label">托盘编码：</view>
+						{{ binInInfo.palletCode }}
 					</view>
 					<view class="text-line m-b-8 ">
-						<view class="label">物料名称：</view>
-						{{binInInfo.materialName}}
-					</view>
-					<view class="text-line m-b-8 ">
-						<view class="label">
-							物料编码：
-						</view>
-						{{binInInfo.materialNb}}
-					</view>
-					<view class="text-line m-b-8 " v-if="manualTransInfo.type===0">
-						<view class="label">
-							转储类型：
-						</view>
-							正常
-					</view>
-					<view class="text-line m-b-8 " v-if="manualTransInfo.type===1">
-						<view class="label">
-							转储类型：
-						</view>
-						异常
-					</view>
-					<view v-if="binInInfo.recommendBinCode">
-						<view class="text-line m-b-8 ">
-							<view class="label">
-								托盘类型：
-							</view>
-							{{binInInfo.palletType}}
-						</view>
-						<view class="text-line m-b-8 " v-show="binInInfo.palletCode">
-							<view class="label">
-								托盘编码：
-							</view>
-							{{binInInfo.palletCode}}
-						</view>
-						<view class="text-line m-b-8 ">
-							<view class="label">
-								推荐库位：
-							</view>
-							{{binInInfo.recommendBinCode}}
-						</view>
+						<view class="label">推荐库位：</view>
+						{{ binInInfo.recommendBinCode }}
 					</view>
 				</view>
-			
-				<view class="content">		
-					<uni-forms  :label-width="80" ref="binInForm" :rules="binInFormRules" :modelValue="binInForm" label-position="left">
-						<uni-forms-item  v-if="!binInInfo.palletCode" label="托盘编码" name="palletTypeCode" required >
-								<!-- <view class="custom-input" :class="editFieldName==='binInForm.palletTypeCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.palletTypeCode')">
+			</view>
+
+			<view class="content">
+				<uni-forms :label-width="80" ref="binInForm" :rules="binInFormRules" :modelValue="binInForm" label-position="left">
+					<uni-forms-item v-if="!binInInfo.palletCode" label="托盘编码" name="palletTypeCode" required>
+						<!-- <view class="custom-input" :class="editFieldName==='binInForm.palletTypeCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.palletTypeCode')">
 									<text :class="!binInForm.palletTypeCode?'placeholder-text':''">{{binInForm.palletTypeCode||'请扫描托盘编码'}}</text>
 								</view> -->
-								<uni-easyinput v-model="binInForm.palletTypeCode"  placeholder="请扫描托盘编码" @focus="handleSetEditFieldName('binInForm.palletTypeCode')"></uni-easyinput>
-						</uni-forms-item>
-						<uni-forms-item label="目标区域" name="recommendBinCode" v-if="manualTransInfo.type===1" required>
-							<!-- <view class="custom-input" :class="editFieldName==='binInForm.recommendBinCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.recommendBinCode')">
+						<uni-easyinput v-model="binInForm.palletTypeCode" placeholder="请扫描托盘编码" @focus="handleSetEditFieldName('binInForm.palletTypeCode')"></uni-easyinput>
+					</uni-forms-item>
+					<uni-forms-item label="目标区域" name="recommendBinCode" v-if="manualTransInfo.type === 1" required>
+						<!-- <view class="custom-input" :class="editFieldName==='binInForm.recommendBinCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.recommendBinCode')">
 								<text :class="!binInForm.recommendBinCode?'placeholder-text':''">{{binInForm.recommendBinCode||'请扫描目标库位'}}</text>
 							</view> -->
-							<uni-easyinput v-model="binInForm.recommendBinCode"  placeholder="请扫描目标区域" @focus="handleSetEditFieldName('binInForm.recommendBinCode')"></uni-easyinput>
-						</uni-forms-item>
-						<uni-forms-item label="目标库位" name="recommendBinCode" v-if="manualTransInfo.type===0" required>
+						<uni-easyinput
+							v-model="binInForm.recommendBinCode"
+							placeholder="请扫描目标区域"
+							@focus="handleSetEditFieldName('binInForm.recommendBinCode')"
+						></uni-easyinput>
+					</uni-forms-item>
+					<uni-forms-item label="目标库位" name="recommendBinCode" v-if="manualTransInfo.type === 0" required>
 						<!-- 	<view class="custom-input" :class="editFieldName==='binInForm.recommendBinCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.recommendBinCode')">
 								<text :class="!binInForm.recommendBinCode?'placeholder-text':''">{{binInForm.recommendBinCode||'请扫描目标库位'}}</text>
 							</view> -->
-							<uni-easyinput v-model="binInForm.recommendBinCode"  placeholder="请扫描目标库位" @focus="handleSetEditFieldName('binInForm.recommendBinCode')"></uni-easyinput>
-						</uni-forms-item>
-						<o-btn block class="submit-btn primary-button" :loading="submitLoading"  @click="handlePostBinIn">提交</o-btn>
-					</uni-forms>
-					
-				</view>
-			
-				
-				<uni-popup ref="alertDialog" type="dialog">
-						<uni-popup-dialog 
-							type="info" 
-							cancelText="关闭" 
-							confirmText="确认" 
-							title="通知" 
-							content="扫描库位与推荐库位不一致，是否提交!" 
-							@confirm="onSubmitBinIn">
-						</uni-popup-dialog>
-				</uni-popup>
-						
-				<uni-popup ref="popup" :is-mask-click="false">
-					<view class="result-content">
-						<view class="result-status">
-							<uni-icons 
-							custom-prefix="iconfont"
-							class="success-color"
-							type="icon-chenggong" 
-							size="32"></uni-icons>
-							<text class=" text success-color">上架成功</text>
-						</view>
-						<view class="data-box" >
-							<view class="text-line m-b-8">
-								<view class="label">上架库位：</view>
-								{{binInForm.recommendBinCode}} 
-							</view>
-							
-						</view>
-						<o-btn block class="primary-button" @click="handleGoBack">返回</o-btn>
-					</view>
-				</uni-popup>
+						<uni-easyinput
+							v-model="binInForm.recommendBinCode"
+							placeholder="请扫描目标库位"
+							@focus="handleSetEditFieldName('binInForm.recommendBinCode')"
+						></uni-easyinput>
+					</uni-forms-item>
+					<o-btn block class="submit-btn primary-button" :loading="submitLoading" @click="handlePostBinIn">提交</o-btn>
+				</uni-forms>
 			</view>
-			<Message ref="message"></Message>
-		</my-page>
-	</view>
+
+			<uni-popup ref="alertDialog" type="dialog">
+				<uni-popup-dialog
+					type="info"
+					cancelText="关闭"
+					confirmText="确认"
+					title="通知"
+					content="扫描库位与推荐库位不一致，是否提交!"
+					@confirm="onSubmitBinIn"
+				></uni-popup-dialog>
+			</uni-popup>
+
+			<uni-popup ref="popup" :is-mask-click="false">
+				<view class="result-content">
+					<view class="result-status">
+						<uni-icons custom-prefix="iconfont" class="success-color" type="icon-chenggong" size="32"></uni-icons>
+						<text class=" text success-color">上架成功</text>
+					</view>
+					<view class="data-box">
+						<view class="text-line m-b-8">
+							<view class="label">上架库位：</view>
+							{{ binInForm.recommendBinCode }}
+						</view>
+					</view>
+					<o-btn block class="primary-button" @click="handleGoBack">返回</o-btn>
+				</view>
+			</uni-popup>
+		</view>
+		<Message ref="message"></Message>
+	</my-page>
 </template>
 
 <script>
-	import Message from '@/components/Message'
-	import Bus from '@/utils/bus'
-	import _ from 'lodash'
-	
-	function convertPalletList(rows){
-		const list = rows.map(item =>{
-			const text = `类型：${item.type}；宽：${item.width}；高：${item.height}`
-			return {
-				text,
-				value:item.type
-			}
-		})
-		return list
-	}
-	
-	export default {
-		components:{
-			Message,
-		},
-		data() {
-			return {
-				submitLoading:false,
-				generatePalletCodeLoading:false,
-				binInInfo:{},
-				manualTransInfo:{},
-				barCode:undefined,
-				palletTypeList:[],
-				palletForm:{
-					
-				},
-				binInFormRules:{
-					recommendBinCode:{
-						rules: [{
+import Message from '@/components/Message';
+import Bus from '@/utils/bus';
+import _ from 'lodash';
+
+function convertPalletList(rows) {
+	const list = rows.map(item => {
+		const text = `类型：${item.type}；宽：${item.width}；高：${item.height}`;
+		return {
+			text,
+			value: item.type
+		};
+	});
+	return list;
+}
+
+export default {
+	components: {
+		Message
+	},
+	data() {
+		return {
+			submitLoading: false,
+			generatePalletCodeLoading: false,
+			binInInfo: {},
+			manualTransInfo: {},
+			barCode: undefined,
+			palletTypeList: [],
+			palletForm: {},
+			binInFormRules: {
+				recommendBinCode: {
+					rules: [
+						{
 							required: true,
-							errorMessage: '目标库位不能为空',
-						}]
-					},
-					palletTypeCode:{
-						rules: [
-							{
-								required: true,
-								errorMessage: '托盘编码不能为空',
-							},
-						]
-					}
+							errorMessage: '目标库位不能为空'
+						}
+					]
 				},
-				binInForm:{
-					mesBarCode:undefined,
-					recommendBinCode:undefined,
-					palletTypeCode:undefined,
-				},
-				
-				editFieldName:"binInForm.palletTypeCode"  //'binInForm.mesBarCode','binInForm.recommendBinCode'
-			};
-		},
-		onLoad(options){
-			this.barCode = options.barCode
-			this.binInForm.barCode = options.barCode
-			this.allocateBin(options.barCode)
-			this.getManualTransInfo(options.barCode)
-			this.initScanCode()
-		},
-		onLaunch() {
-			Bus.$off("scancodedate");
-		},
-		methods:{
-			handleSetEditFieldName(editFieldName){
-				this.editFieldName = editFieldName
-			},
-			async initScanCode(){
-				Bus.$on('scancodedate',(data)=>{
-					const code = data.code.trim()
-					if(this.editFieldName){
-						_.set(this,this.editFieldName,code)
-					}
-				})
-			},
-			async handleGoBack(){
-				uni.navigateBack({delta:1})	
-			},
-		
-			async lodaData(){
-				// this.getPalletList()
-			},
-			async allocateBin(barCode) {
-				try {
-					const data = await this.$store.dispatch('manualTrans/allocateBin', barCode)
-					if (data && data.status === 1) {
-						throw Error('已上架，请勿重复操作')
-					}
-					if (data.palletCode) {
-						this.editFieldName = 'binInForm.recommendBinCode'
-					}
-					this.binInInfo = data
-				} catch (e) {
-					this.$refs.message.error(e.message)
+				palletTypeCode: {
+					rules: [
+						{
+							required: true,
+							errorMessage: '托盘编码不能为空'
+						}
+					]
 				}
 			},
-			async getManualTransInfo(barCode) {
-				try {
-					const data = await this.$store.dispatch('manualTrans/getManualTransInfo', barCode)
-					if (data && data.status === 3) {
-						throw Error('已上架，请勿重复操作')
-					}
-			
-					this.manualTransInfo = data
-					console.log(this.manualTransInfo)
-				} catch (e) {
-					this.$refs.message.error(e.message)
-				}
+			binInForm: {
+				mesBarCode: undefined,
+				recommendBinCode: undefined,
+				palletTypeCode: undefined
 			},
-			async handlePostBinIn(){
-				this.$refs.binInForm
-				  .validate()
-				  .then((res) => {
+
+			editFieldName: 'binInForm.palletTypeCode' //'binInForm.mesBarCode','binInForm.recommendBinCode'
+		};
+	},
+	onLoad(options) {
+		this.barCode = options.barCode;
+		this.binInForm.barCode = options.barCode;
+		this.allocateBin(options.barCode);
+		this.getManualTransInfo(options.barCode);
+		this.initScanCode();
+	},
+	onLaunch() {
+		Bus.$off('scancodedate');
+	},
+	methods: {
+		handleSetEditFieldName(editFieldName) {
+			this.editFieldName = editFieldName;
+		},
+		async initScanCode() {
+			Bus.$on('scancodedate', data => {
+				const code = data.code.trim();
+				if (this.editFieldName) {
+					_.set(this, this.editFieldName, code);
+				}
+			});
+		},
+		async handleGoBack() {
+			uni.navigateBack({ delta: 1 });
+		},
+
+		async lodaData() {
+			// this.getPalletList()
+		},
+		async allocateBin(barCode) {
+			try {
+				const data = await this.$store.dispatch('manualTrans/allocateBin', barCode);
+				if (data && data.status === 1) {
+					throw Error('已上架，请勿重复操作');
+				}
+				if (data.palletCode) {
+					this.editFieldName = 'binInForm.recommendBinCode';
+				}
+				this.binInInfo = data;
+			} catch (e) {
+				this.$refs.message.error(e.message);
+			}
+		},
+		async getManualTransInfo(barCode) {
+			try {
+				const data = await this.$store.dispatch('manualTrans/getManualTransInfo', barCode);
+				if (data && data.status === 3) {
+					throw Error('已上架，请勿重复操作');
+				}
+
+				this.manualTransInfo = data;
+				console.log(this.manualTransInfo);
+			} catch (e) {
+				this.$refs.message.error(e.message);
+			}
+		},
+		async handlePostBinIn() {
+			this.$refs.binInForm
+				.validate()
+				.then(res => {
 					// if(this.binInForm.recommendBinCode!==this.binInInfo.recommendBinCode){
 					// 	this.$refs.alertDialog.open()
 					// 	return
 					// }
-					this.onSubmitBinIn()
-				  })
-				  .catch((err) => {});
-				
-			},
-			async onSubmitBinIn(){
-				try{
-					uni.showLoading({
-						title:'正在提交'
-					})
-					this.submitLoading = true
-					
-					const options = {
-						mesBarCode:this.barCode,
-						actualCode:this.binInForm.recommendBinCode,
-						palletCode:this.binInForm.palletTypeCode
-					}
-					const data = await this.$store.dispatch('manualTrans/postBinIn',options)
-					this.$refs.popup.open()
-				}catch(e){
-					this.$refs.message.error(e.message)
-				}finally{
-					uni.hideLoading()
-					this.submitLoading = false
-				}
-				
+					this.onSubmitBinIn();
+				})
+				.catch(err => {});
+		},
+		async onSubmitBinIn() {
+			try {
+				uni.showLoading({
+					title: '正在提交'
+				});
+				this.submitLoading = true;
+
+				const options = {
+					mesBarCode: this.barCode,
+					actualCode: this.binInForm.recommendBinCode,
+					palletCode: this.binInForm.palletTypeCode
+				};
+				const data = await this.$store.dispatch('manualTrans/postBinIn', options);
+				this.$refs.popup.open();
+			} catch (e) {
+				this.$refs.message.error(e.message);
+			} finally {
+				uni.hideLoading();
+				this.submitLoading = false;
 			}
-		},
-		mounted() {
-			this.lodaData()
-		},
-		watch:{
-			'binInForm.palletTypeCode'(value){
-				this.editFieldName = 'binInForm.recommendBinCode'
-			},
+		}
+	},
+	mounted() {
+		this.lodaData();
+	},
+	watch: {
+		'binInForm.palletTypeCode'(value) {
+			this.editFieldName = 'binInForm.recommendBinCode';
 		}
 	}
+};
 </script>
 
 <style lang="scss">
-.main{
-		height: 100%;
-		padding: 8px;
-		box-sizing: border-box;
-		display: flex;
-		flex-direction: column;
-	}
+.main {
+	height: 100%;
+	padding: 8px;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+}
 
-.header{
+.header {
 	background: #fff;
 	padding: 8px;
 	border-radius: 4px;
 }
 
-.content{
+.content {
 	background: #fff;
 	padding: 8px 8px 40px;
 	border-radius: 4px;
 }
 
-/deep/.uni-data-tree{
+/deep/.uni-data-tree {
 	background: #fff;
 }
 
-
-	
-	.result-content{
-		width: 324px;
-		padding: 12px;
-		box-sizing: border-box;
-		background: #fff;
-		border-radius: 4px;
-		.result-status{
-			color: $uni-color-success;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			margin-bottom: 16px;
-			.text{
-				margin-left: 8px;
-				font-size: 14px;
-			}
-			
-		}
-		.label{
-			width: 100px;
-		}
-		.data-box{
-			margin-bottom: 16px;
-			padding: 0px 8px;
+.result-content {
+	width: 324px;
+	padding: 12px;
+	box-sizing: border-box;
+	background: #fff;
+	border-radius: 4px;
+	.result-status {
+		color: $uni-color-success;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 16px;
+		.text {
+			margin-left: 8px;
+			font-size: 14px;
 		}
 	}
-	.flex{
-		.custom-input{
-			flex: 1;
-		}
+	.label {
+		width: 100px;
 	}
+	.data-box {
+		margin-bottom: 16px;
+		padding: 0px 8px;
+	}
+}
+.flex {
+	.custom-input {
+		flex: 1;
+	}
+}
 </style>
