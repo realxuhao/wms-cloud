@@ -72,11 +72,11 @@ public class ManualTransferOrderController extends BaseController {
         return R.ok(manualTransferOrderService.info(mesBarCode));
     }
 
-    @PutMapping(value = "/issue/{ssccNumbers}")
+    @PutMapping(value = "/issue/{ids}")
     @ApiOperation("下发")
     @Transactional(rollbackFor = Exception.class)
-    public R issueJob(@PathVariable String[] ssccNumbers) {
-        manualTransferOrderService.issueJob(ssccNumbers);
+    public R issueJob(@PathVariable Long[] ids) {
+        manualTransferOrderService.issueJob(ids);
         return R.ok("下发成功");
     }
 

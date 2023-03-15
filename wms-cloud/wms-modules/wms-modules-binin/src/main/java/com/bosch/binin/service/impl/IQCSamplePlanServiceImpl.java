@@ -326,6 +326,25 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         if (!(samplePlan.getStatus() == IQCStatusEnum.WAITING_BIN_DOWN.code() || samplePlan.getStatus() == IQCStatusEnum.WARE_SHIFTING.code())) {
             throw new ServiceException("该任务状态为:" + IQCStatusEnum.getDesc(samplePlan.getStatus()) + ",不可取消");
         }
+        if (samplePlan.getPlantNb().equals("7752")){
+            //移库任务
+            LambdaQueryWrapper<WareShift> shiftQueryWrapper = new LambdaQueryWrapper<>();
+            shiftQueryWrapper.eq(WareShift::getSsccNb, samplePlan.getSsccNb());
+            shiftQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            shiftQueryWrapper.ne(WareShift::getStatus,KanbanStatusEnum.CANCEL.value());
+            shiftQueryWrapper.ne(WareShift::getStatus,KanbanStatusEnum.FINISH.value());
+
+
+            shiftQueryWrapper.last("limit 1");
+            WareShift wareShift = wareShiftService.getOne(shiftQueryWrapper);
+            if (!Objects.isNull(wareShift)) {
+                if (!wareShift.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN.value())) {
+                    throw new ServiceException("对应移库任务状态为: " + KanbanStatusEnum.getDesc(String.valueOf(wareShift.getStatus())) + ",不可取消");
+                }
+                wareShift.setStatus(KanbanStatusEnum.CANCEL.value());
+                wareShiftService.updateById(wareShift);
+            }
+        }
         samplePlan.setStatus(IQCStatusEnum.CANCEL.code());
         updateById(samplePlan);
         //库存
@@ -336,16 +355,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         stock.setFreezeStock(Double.valueOf(0));
         stock.setAvailableStock(stock.getTotalStock());
         stockService.updateById(stock);
-        //移库任务
-        LambdaQueryWrapper<WareShift> shiftQueryWrapper = new LambdaQueryWrapper<>();
-        shiftQueryWrapper.eq(WareShift::getSsccNb, samplePlan.getSsccNb());
-        shiftQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        shiftQueryWrapper.last("limit 1");
-        WareShift wareShift = wareShiftService.getOne(shiftQueryWrapper);
-        if (!Objects.isNull(wareShift)) {
-            wareShift.setStatus(KanbanStatusEnum.CANCEL.value());
-            wareShiftService.updateById(wareShift);
-        }
+
 
     }
 

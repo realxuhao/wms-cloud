@@ -126,7 +126,7 @@ public class WareShiftController extends BaseController {
      * 取消移库
      */
     @ApiOperation("取消移库任务")
-    @GetMapping(value = "/cancel/{id}")
+    @PutMapping(value = "/cancel/{id}")
     @Transactional(rollbackFor = Exception.class)
     public R cancelWareShift(@PathVariable("id") Long id) {
 

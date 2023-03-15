@@ -178,7 +178,8 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         LambdaQueryWrapper<MaterialReturn> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(MaterialReturn::getSsccNumber, ssccNb);
         queryWrapper.eq(MaterialReturn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        queryWrapper.ne(MaterialReturn::getStatus, ManuTransStatusEnum.CANCEL.code());
+        queryWrapper.ne(MaterialReturn::getStatus, MaterialReturnStatusEnum.CANCEL.value());
+        queryWrapper.ne(MaterialReturn::getStatus, MaterialReturnStatusEnum.FINISH.value());
         queryWrapper.last("limit 1");
         queryWrapper.last("for update");
         MaterialReturn materialReturn = materialReturnMapper.selectOne(queryWrapper);
@@ -225,6 +226,8 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
             dto.setMesBarCode(binInDTO.getMesBarCode());
             BinInVO binInVO = binInService.performBinIn(dto);
         }
+        materialReturn.setStatus(MaterialReturnStatusEnum.FINISH.value());
+        this.updateById(materialReturn);
         return binInService.getByMesBarCode(binInDTO.getMesBarCode());
     }
 }

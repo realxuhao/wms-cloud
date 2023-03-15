@@ -24,7 +24,7 @@ public interface IManualTransferOrderService extends IService<ManualTransferOrde
 
     BinInVO generateBinInJob(String mesBarCode, String wareCode);
 
-    void issueJob(String[] ssccNumbers);
+    void issueJob(Long[] ids);
 
     void cancel(String[] ids);
 

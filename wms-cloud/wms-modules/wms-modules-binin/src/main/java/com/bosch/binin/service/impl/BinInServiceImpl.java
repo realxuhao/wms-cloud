@@ -273,7 +273,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
             binIn.setMoveType(MoveTypeEnums.BININ.getCode());
 //            binIn.setFromPurchaseOrder(materialInVO.getFromPurchaseOrder());
-//            binIn.setPlantNb(materialInVO.getPlantNb());
+            binIn.setPlantNb(binVO.getPlantNb());
             binInMapper.insert(binIn);
         }
 
@@ -580,12 +580,12 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         Fsmp fsmp = fsmpR.getData();
         List<IQCSamplePlan> samplePlanList = new ArrayList<>();
 
-        if (sameBatchList.size() > 3) {//大于三托，取非连续的三托
+        if (fsmp.getClassification().equals(FsmpClassificationEnum.A.getDesc())&&sameBatchList.size() > 3) {//如果是A且大于三托，取非连续的三托
             List<String> ssccList = sameBatchList.stream().map(MaterialReceiveVO::getSsccNumber).collect(Collectors.toList());
             List<String> randomSscc = getRandomNonConsecutive(ssccList);
             List<BinIn> binIns = binInList.stream().filter(item -> randomSscc.contains(item.getSsccNumber())).collect(Collectors.toList());
             samplePlanList = convertToSamplePlans(binIns, materialVO.getCell(), null);
-        } else {//随机下架一托
+        } else if (fsmp.getClassification().equals(FsmpClassificationEnum.B.getDesc())||sameBatchList.size() <= 3){//随机下架一托
             Collections.shuffle(binInList);
             IQCSamplePlan samplePlan = convertToSamplePlan(binInList.get(0), null, materialVO.getCell());
             samplePlanList.add(samplePlan);
@@ -914,6 +914,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
         kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+        kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+
         kanbanQueryWrapper.last("limit 1");
         kanbanQueryWrapper.last("for update");
         MaterialKanban materialKanban = kanbanMapper.selectOne(kanbanQueryWrapper);

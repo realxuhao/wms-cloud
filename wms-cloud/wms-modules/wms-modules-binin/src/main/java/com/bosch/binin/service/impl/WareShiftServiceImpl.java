@@ -113,6 +113,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         wareShiftLambdaQueryWrapper.eq(WareShift::getSsccNb, ssccNb);
         wareShiftLambdaQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         wareShiftLambdaQueryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
+        wareShiftLambdaQueryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.FINISH.value());
+
         wareShiftLambdaQueryWrapper.last("for update");
         WareShift wareShift = wareShiftMapper.selectOne(wareShiftLambdaQueryWrapper);
         if (Objects.isNull(wareShift)) {
@@ -184,6 +186,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     public void cancelWareShift(Long id) {
         LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
         WareShift wareShift = wareShiftMapper.selectById(id);
+
         if (wareShift == null || wareShift.getDeleteFlag().equals(DeleteFlagStatus.TRUE.getCode())) {
             throw new ServiceException("移库任务不存在或者已删除");
         }
@@ -194,9 +197,11 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             throw new ServiceException("当前状态为： " + KanbanStatusEnum.getDesc(wareShift.getStatus().toString()) + " 不可以取消");
         }
         //待下架状态，需要判断是主库待下架还是外库待下架
+        MaterialKanban kanban = kanbanService.getOneBySCAndStatus(wareShift.getSsccNb(), KanbanStatusEnum.WAITING_ISSUE.value());
+
         if (KanbanStatusEnum.WAITING_BIN_DOWN.value().equals(wareShift.getStatus())) {
-            //如果不是空，走主库上架
-            if (StringUtils.isNotEmpty(wareShift.getTargetWareCode())) {
+            //如果不是空，走主库上架,且kanban里有值
+            if (StringUtils.isNotEmpty(wareShift.getTargetWareCode()) && Objects.nonNull(kanban)) {
                 binInService.generateInTaskByOldStock(wareShift.getSsccNb(), Double.valueOf(0), wareShift.getTargetWareCode());
 
             } else {
@@ -205,7 +210,20 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                     stock.setAvailableStock(stock.getTotalStock());
                     stock.setFreezeStock(Double.valueOf(0));
                     stockService.updateById(stock);
+
+                    //看IQC里面有没有。
+                    LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+                    iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, stock.getSsccNumber());
+                    iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+                    iqcQueryWrapper.eq(IQCSamplePlan::getStatus, IQCStatusEnum.WARE_SHIFTING.code());
+                    iqcQueryWrapper.last("limit 1");
+                    IQCSamplePlan samplePlan = samplePlanService.getOne(iqcQueryWrapper);
+                    if (Objects.nonNull(samplePlan)) {
+                        samplePlan.setStatus(IQCStatusEnum.CANCEL.code());
+                        samplePlanService.updateById(samplePlan);
+                    }
                 }
+
             }
         }
         //外库待发运，取消后直接在外库上架
@@ -219,7 +237,6 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 //        }
 
         //如果kanban有，需要对应更新为取消
-        MaterialKanban kanban = kanbanService.getOneBySCAndStatus(wareShift.getSsccNb(), KanbanStatusEnum.WAITING_ISSUE.value());
         if (kanban != null) {
             kanban.setStatus(KanbanStatusEnum.CANCEL.value());
             kanbanService.updateById(kanban);
@@ -324,6 +341,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
         kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+        kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+
         kanbanQueryWrapper.last("limit 1");
         kanbanQueryWrapper.last("for update");
         MaterialKanban materialKanban = kanbanMapper.selectOne(kanbanQueryWrapper);
@@ -377,7 +396,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             if (!CollectionUtils.isEmpty(samplePlanList)) {
 
 
-                samplePlanList.stream().forEach(samplePlan->{
+                samplePlanList.stream().forEach(samplePlan -> {
                     //直接上架到IQC虚拟区域
                     StockVO lastOneBySSCC = stockService.getLastOneBySSCC(samplePlan.getSsccNb());
                     String mesBarCode = MesBarCodeUtil.generateMesBarCode(lastOneBySSCC.getExpireDate(), lastOneBySSCC.getSsccNumber(), lastOneBySSCC.getMaterialNb(), lastOneBySSCC.getBatchNb(), lastOneBySSCC.getTotalStock());
@@ -407,7 +426,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                 ssccList.removeAll(iqcSSCCList);
             }
         }
-        if (CollectionUtils.isEmpty(ssccList)){
+        if (CollectionUtils.isEmpty(ssccList)) {
             return 0;
         }
         WareShift wareShift = new WareShift();

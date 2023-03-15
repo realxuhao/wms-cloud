@@ -367,6 +367,10 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         kanbanLambdaQueryWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
         kanbanLambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         kanbanLambdaQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+        kanbanLambdaQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+        kanbanLambdaQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+
+
         kanbanLambdaQueryWrapper.last("for update");
         MaterialKanban kanban = materialKanbanMapper.selectOne(kanbanLambdaQueryWrapper);
         if (Objects.isNull(kanban) || !KanbanStatusEnum.WAITING_BIN_DOWN.value().equals(kanban.getStatus())) {
@@ -419,7 +423,10 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         materialKanban.setStatus(status);
         LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
         uw.in(MaterialKanban::getId, ids);
-        uw.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL);
+        uw.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+//        uw.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+//        uw.ne(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+
         uw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 
         return materialKanbanMapper.update(materialKanban, uw);
@@ -443,7 +450,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         materialKanban.setStatus(status);
         LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
         uw.in(MaterialKanban::getSsccNumber, ssccs);
-        uw.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL);
+        uw.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
         uw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 
         return materialKanbanMapper.update(materialKanban, uw);
