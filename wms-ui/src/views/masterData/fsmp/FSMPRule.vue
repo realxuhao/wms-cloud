@@ -21,30 +21,6 @@
               </a-select>
             </a-form-model-item>
           </a-col>
-          <!-- <a-col :span="4">
-            <a-form-model-item label="检验水平级别">
-              <a-select
-                allow-clear
-                v-model="queryForm.level"
-              >
-                <a-select-option v-for="item in checkLevel" :key="item.value" :value="item.value">
-                  {{ item.text }}
-                </a-select-option>
-              </a-select>
-            </a-form-model-item>
-          </a-col> -->
-          <!-- <a-col :span="4">
-            <a-form-model-item label="严格程度">
-              <a-select
-                allow-clear
-                v-model="queryForm.plan"
-              >
-                <a-select-option v-for="item in strictLevel" :key="item.value" :value="item.value">
-                  {{ item.text }}
-                </a-select-option>
-              </a-select>
-            </a-form-model-item>
-          </a-col> -->
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
@@ -93,9 +69,6 @@
         <template slot="updateTime" slot-scope="text, record">
           {{ record.updateTime?record.updateTime:record.createTime }}
         </template>
-        <template slot="classification" slot-scope="text">
-          {{ classificationTextMap[text] }}
-        </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
@@ -132,8 +105,6 @@
       :updateType="updateType"
       :id="currentUpdateId"
       :category="category"
-      :strictLevel="strictLevel"
-      :checkLevel="checkLevel"
       @on-ok="loadTableList"
     ></UpdateDrawer>
 
@@ -164,8 +135,12 @@ const columns = [
   {
     title: '取样方式',
     key: 'classification',
-    dataIndex: 'classification',
-    scopedSlots: { customRender: 'classification' }
+    dataIndex: 'classification'
+  },
+  {
+    title: '描述',
+    key: 'remark',
+    dataIndex: 'remark'
   },
   {
     title: '操作人',
@@ -232,8 +207,6 @@ export default {
         const {
           data: { rows, total }
         } = await this.$store.dispatch('fsmp/getList', this.queryForm)
-        console.log('rows')
-        console.log(rows)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -249,7 +222,7 @@ export default {
     },
     async handleDelete (record) {
       try {
-        await this.$store.dispatch('fsmpRule/destroy', record.id)
+        await this.$store.dispatch('fsmp/destroy', record.id)
         this.$message.success('删除成功！')
 
         this.loadTableList()
@@ -267,7 +240,7 @@ export default {
     },
     async uploadBatchUpdate (formdata) {
       try {
-        await this.$store.dispatch('fsmpRule/uploadBatchUpdate', formdata)
+        await this.$store.dispatch('fsmp/uploadBatchUpdate', formdata)
         this.loadTableList()
       } catch (error) {
         this.$message.error(error.message)
@@ -284,7 +257,7 @@ export default {
         formdata.append('file', file)
 
         this.uploadLoading = true
-        await this.$store.dispatch('fsmpRule/upload', formdata)
+        await this.$store.dispatch('fsmp/upload', formdata)
 
         this.queryForm.pageNum = 1
         this.loadTableList()

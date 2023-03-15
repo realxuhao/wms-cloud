@@ -121,7 +121,7 @@ export default {
       )
     },
     async getAndUpdateForm () {
-      const { data } = await this.$store.dispatch('fsmpRule/getOne', this.id)
+      const { data } = await this.$store.dispatch('fsmp/getOne', this.id)
       const columns = ['materialCode', 'classification', 'remark']
       this.form.setFieldsValue(_.pick(data, columns))
     },
@@ -142,9 +142,9 @@ export default {
           this.submitLoading = true
 
           if (this.updateType === 'edit') {
-            await this.$store.dispatch('fsmpRule/edit', { id: this.id, updateEntity: values })
+            await this.$store.dispatch('fsmp/edit', { id: this.id, updateEntity: values })
           } else {
-            await this.$store.dispatch('fsmpRule/add', values)
+            await this.$store.dispatch('fsmp/add', values)
           }
 
           this.$emit('on-ok')

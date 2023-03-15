@@ -32,17 +32,20 @@
 						</view>
 					</view>
 					
-					<uni-section class="mb-10" title="当前托盘码" type="line">
-						<uni-list>
+					<uni-section class="mb-10" title="当前托FJ" type="line">
+						<template v-slot:right>
+							<uni-tag text="拆"></uni-tag>
+						  </template>
+						<uni-list v-show="currentTaskBarCodeList.length">
 							<uni-list-item v-for="(item,index) in currentTaskBarCodeList" :key="item" :title="item" ellipsis="1">
 								<template v-slot:footer>
 									<uni-icons @click="handleDelete(index)" custom-prefix="custom-icon" type="closeempty" size="18" color="#541b86"></uni-icons>
 								</template>
 							</uni-list-item>
 						</uni-list>
-						
+						<view v-show="!currentTaskBarCodeList.length">请扫描成品标签二维码</view>
 						<view class="footer-box">
-							<o-btn size="sm" @click="handleCancel">取消</o-btn>
+							<o-btn size="sm" @click="handleClean">清空</o-btn>
 							<o-btn size="sm" type="primary" @click="handleNext" :loading="submitLoading">下一托</o-btn>
 						</view>
 					</uni-section>
@@ -121,7 +124,7 @@
 				}
 				this.currentTaskBarCodeList.splice(index,1)
 			},
-			handleCancel(){
+			handleClean(){
 				
 			},
 			async initScanCode(){
