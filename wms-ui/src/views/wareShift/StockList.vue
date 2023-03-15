@@ -36,7 +36,13 @@
             <a-button icon="step-forward" class="m-r-8" @click="checkSelectWareCode">下一步</a-button>
           </div>
           <a-table
-            :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+            :row-selection="{ selectedRowKeys: selectedRowKeys,
+                              onChange: onSelectChange,
+                              getCheckboxProps: record => ({
+                                props: {
+                                  disabled: record.freezeStock > 0, // Column configuration not to be checked
+                                },
+                              }), }"
             :columns="columns"
             :data-source="list"
             :loading="tableLoading"
@@ -377,7 +383,7 @@ export default {
 
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('materialFeeding/getRuleList', this.queryForm)
+        } = await this.$store.dispatch('stock/getPaginationList', this.queryForm)
 
         this.list = rows
         this.paginationTotal = total

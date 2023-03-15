@@ -123,8 +123,8 @@
                 cancel-text="取消"
                 @confirm="handleDelete(record)"
               >
-                <a :disabled="!(record.status=== 0 || record.status === 4)" class="danger-color"><a-icon class="m-r-4" type="delete" /><a-icon type="to-top" />取消</a>
-              </a-popconfirm>
+                <a :disabled="!(record.status=== 0 || record.status === 4)" class="danger-color"><a-icon class="m-r-4" type="delete" />取消
+                </a></a-popconfirm>
               <a-divider type="vertical" />
               <a-popconfirm
                 class="custom-pop"

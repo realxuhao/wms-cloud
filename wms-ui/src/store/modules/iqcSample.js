@@ -33,6 +33,10 @@ const iqcSample = {
     async addShift ({ commit }, options) {
       const data = await iqcSampleService.addShift(options)
       return data
+    },
+    async cancelShift ({ commit }, options) {
+      const data = await iqcSampleService.cancelShift(options)
+      return data
     }
   }
 }

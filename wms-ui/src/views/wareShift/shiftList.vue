@@ -87,6 +87,23 @@
         <template slot="status" slot-scope="text">
           <a-tag :color="statusColorMap[text]"> {{ statusMap[text] }}</a-tag>
         </template>
+        <template slot="action" slot-scope="text, record">
+          <div class="action-con">
+            <a-popconfirm
+              title="确认要取消该条任务吗?"
+              ok-text="确认"
+              cancel-text="取消"
+              @confirm="handleCancel(record)"
+            >
+              <a class="danger-color" :disabled="[-1,7,4,5].includes(record.status)"><a-icon class="m-r-4" type="delete" />取消</a>
+            </a-popconfirm>
+            <!-- <a-divider type="vertical" /> -->
+            <!-- <a
+              class="m-r-4"
+              :disabled="(record.factoryCode!=='7752' || record.status>0)"
+              @click="$refs.pikingOrderAddShiftTask.handleOpen(record)">新增移库任务</a> -->
+          </div>
+        </template>
       </a-table>
 
       <div class="pagination-con">
@@ -226,6 +243,13 @@ const columns = [
     key: 'createTime',
     dataIndex: 'createTime',
     width: 200
+  },
+  {
+    title: '操作',
+    key: 'action',
+    fixed: 'right',
+    width: 120,
+    scopedSlots: { customRender: 'action' }
   }
 ]
 
@@ -304,6 +328,15 @@ export default {
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
+    },
+    async handleCancel (record) {
+      try {
+        await this.$store.dispatch('wareShift/cancel', record)
+        this.$message.success('取消成功')
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      }
     },
     async loadTableList () {
       try {
