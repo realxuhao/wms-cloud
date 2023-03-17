@@ -14,4 +14,11 @@ import java.util.List;
 public interface IShippingTaskService extends IService<ShippingTask> {
 
     public List<ShippingTask> selectAllByFields(ShippingTaskDTO dto);
+
+    /**
+     * 删除
+     * @param ids
+     * @return
+     */
+    Integer deleteShippingTask(Long[] ids);
 }

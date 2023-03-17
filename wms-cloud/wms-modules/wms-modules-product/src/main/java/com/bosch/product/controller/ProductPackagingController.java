@@ -26,6 +26,8 @@ import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -82,6 +84,17 @@ public class ProductPackagingController extends BaseController {
             return R.fail(e.getMessage());
         }
     }
+
+    /**
+     * 删除
+     */
+    @Log(title = "删除", businessType = BusinessType.DELETE)
+    @ApiOperation("删除")
+    @DeleteMapping("/{ids}")
+    public AjaxResult delete(@PathVariable Long[] ids) {
+        return toAjax(shippingTaskService.deleteShippingTask(ids));
+    }
+
     @PostMapping(value = "/genTask")
     @ApiOperation("生成打包任务")
     @Transactional(rollbackFor = Exception.class)
@@ -136,7 +149,7 @@ public class ProductPackagingController extends BaseController {
      * 批量上传
      */
     @ApiOperation("批量上传")
-    @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
+    @PostMapping(value = "/planImport", headers = "content-type=multipart/form-data")
     public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws Exception {
 
 

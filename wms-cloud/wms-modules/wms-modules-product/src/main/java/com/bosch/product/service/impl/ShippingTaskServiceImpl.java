@@ -25,6 +25,11 @@ public class ShippingTaskServiceImpl extends ServiceImpl<ShippingTaskMapper, Shi
     public List<ShippingTask> selectAllByFields(ShippingTaskDTO dto) {
         return shippingTaskMapper.selectAllByFields(dto);
     }
+
+    @Override
+    public Integer deleteShippingTask(Long[] ids) {
+        return shippingTaskMapper.deleteShippingTask(ids);
+    }
 }
 
 

@@ -15,6 +15,13 @@ import java.util.List;
 public interface ShippingTaskMapper extends BaseMapper<ShippingTask> {
 
     public List<ShippingTask>  selectAllByFields(ShippingTaskDTO dto);
+
+    /**
+     * 删除
+     * @param ids
+     * @return
+     */
+    public Integer deleteShippingTask(Long[] ids);
 }
 
 

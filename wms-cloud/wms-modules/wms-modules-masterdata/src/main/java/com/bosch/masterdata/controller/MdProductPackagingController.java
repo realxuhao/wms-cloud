@@ -5,6 +5,7 @@ import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.Ecn;
+import com.bosch.masterdata.api.domain.MdProductPackaging;
 import com.bosch.masterdata.api.domain.dto.EcnDTO;
 import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
 import com.bosch.masterdata.api.domain.vo.EcnVO;
@@ -30,6 +31,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+@RestController
+@RequestMapping("/mdProductPackaging")
 public class MdProductPackagingController extends BaseController {
 
     @Autowired
@@ -64,7 +67,7 @@ public class MdProductPackagingController extends BaseController {
     /**
      * 新增
      */
-    @Log(title = "新增Ecn", businessType = BusinessType.INSERT)
+    @Log(title = "新增", businessType = BusinessType.INSERT)
     @PostMapping
     @ApiOperation("新增")
     public AjaxResult add(@RequestBody MdProductPackagingDTO dto) {
@@ -74,7 +77,7 @@ public class MdProductPackagingController extends BaseController {
     /**
      * 修改
      */
-    @Log(title = "修改Ecn", businessType = BusinessType.UPDATE)
+    @Log(title = "修改", businessType = BusinessType.UPDATE)
     @ApiOperation("修改")
     @PutMapping
     public AjaxResult edit(@RequestBody MdProductPackagingDTO dto) {
@@ -92,37 +95,36 @@ public class MdProductPackagingController extends BaseController {
         return toAjax(mdProductPackagingService.deleteMdProductPackaging(ids));
     }
 
-//    /**
-//     * 批量上传
-//     */
-//    @ApiOperation("批量上传")
-//    @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
-//    public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
-//
-//        //解析文件服务
-//        R result = fileService.masterDataImport(file, ClassType.ECNDTO.getDesc());
-//        if (result.isSuccess()) {
-//            Object data = result.getData();
-//            List<EcnDTO> ecnDTOList = JSON.parseArray(JSON.toJSONString(data), EcnDTO.class);
-//            if (CollectionUtils.isNotEmpty(ecnDTOList)) {
-//                boolean valid = mdProductPackagingService.validEcnList(ecnDTOList);
-//                if (valid) {
-//                    return R.fail(400, "存在重复数据");
-//                } else {
-//                    //校验
-//                    mdProductPackagingService.validData(ecnDTOList);
-//                    List<Ecn> ecns = BeanConverUtil.converList(ecnDTOList, Ecn.class);
-//                    mdProductPackagingService.saveBatch(ecns);
-//                }
-//            } else {
-//                return R.fail("excel中无数据");
-//            }
-//            return R.ok(ecnDTOList);
-//        } else {
-//            return R.fail(result.getMsg());
-//        }
-//    }
-//
+    /**
+     * 批量上传
+     */
+    @ApiOperation("批量上传")
+    @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
+    public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
+
+        //解析文件服务
+        R result = fileService.masterDataImport(file, ClassType.MdProductPackagingDTO.getDesc());
+        if (result.isSuccess()) {
+            Object data = result.getData();
+            List<MdProductPackagingDTO> list = JSON.parseArray(JSON.toJSONString(data), MdProductPackagingDTO.class);
+            if (CollectionUtils.isNotEmpty(list)) {
+                boolean valid = mdProductPackagingService.validMdProductPackagingList(list);
+                if (valid) {
+                    return R.fail(400, "存在重复数据");
+                } else {
+                    //校验
+                    List<MdProductPackaging> dos = BeanConverUtil.converList(list, MdProductPackaging.class);
+                    mdProductPackagingService.saveBatch(dos);
+                }
+            } else {
+                return R.fail("excel中无数据");
+            }
+            return R.ok(list);
+        } else {
+            return R.fail(result.getMsg());
+        }
+    }
+
 //    /**
 //     * 批量更新
 //     */
