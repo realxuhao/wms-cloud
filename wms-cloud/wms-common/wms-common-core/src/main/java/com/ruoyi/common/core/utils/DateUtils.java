@@ -1,6 +1,7 @@
 package com.ruoyi.common.core.utils;
 
 import java.lang.management.ManagementFactory;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -9,6 +10,11 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.time.DateFormatUtils;
 
 /**
@@ -176,4 +182,26 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils
         ZonedDateTime zdt = localDateTime.atZone(ZoneId.systemDefault());
         return Date.from(zdt.toInstant());
     }
+    // 自动识别多种日期格式的方法
+    public static Date parseStringDate(String dateString) throws ParseException {
+        Date date = null;
+        DateFormat[] dateFormats = {
+                new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH),
+                new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.ENGLISH),
+                new SimpleDateFormat("yyyy/M/d HH:mm", Locale.ENGLISH)
+        };
+        for (DateFormat dateFormat : dateFormats) {
+            try {
+                date = dateFormat.parse(dateString);
+                break;
+            } catch (ParseException e) {
+                // 如果解析失败，则尝试下一个格式
+            }
+        }
+        if (date == null) {
+            throw new ParseException("Unable to parse date: " + dateString, 0);
+        }
+        return date;
+    }
+
 }

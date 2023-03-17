@@ -10,6 +10,7 @@ import com.bosch.masterdata.service.IFileUploadService;
 import com.bosch.masterdata.utils.CSVUtil;
 import com.bosch.masterdata.utils.DataListener;
 import com.bosch.masterdata.utils.EasyExcelUtil;
+import com.bosch.product.api.domain.dto.ShippingPlanDTO;
 import com.bosch.storagein.api.domain.MaterialReceive;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -102,7 +103,7 @@ public class SysFileController {
 
     }
     /**
-     * 主数据解析文件
+     * IQC解析文件
      *
      * @param file 文件信息
      * @return 结果
@@ -114,10 +115,32 @@ public class SysFileController {
         try {
             Class<?> TClass = Class.forName("com.bosch.masterdata.api.domain.dto." + className);
             List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass,className);
-//            boolean check = EasyExcelUtil.check(read);
-//            if (!check){
-//                return R.fail("excel中存在重复数据");
-//            }
+            if(CollectionUtils.isEmpty(read)){
+                return R.fail("excel中无数据");
+            }
+            return R.ok(read);
+        } catch (Exception e) {
+            if(e.getMessage()=="excel模板不正确"){
+                return R.fail(e.getMessage());
+            }
+            return R.fail("解析文件失败,文件类型不匹配");
+        }
+
+    }
+    /**
+     * packagingDataImport
+     *
+     * @param file 文件信息
+     * @return 结果
+     */
+    @ApiOperation("packagingDataImport")
+    @PostMapping(value = "/packagingDataImport")
+    public <T> R<List<T>> packagingDataImport(@RequestPart(value = "file") MultipartFile file, @RequestParam(value =
+            "className") String className) throws Exception {
+        try {
+
+            Class<?> TClass = Class.forName("com.bosch.product.api.domain.dto." + className);
+            List<T> read = EasyExcelUtil.readPackaging(file.getInputStream(), TClass,className);
             if(CollectionUtils.isEmpty(read)){
                 return R.fail("excel中无数据");
             }

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.product.mapper.ShippingTaskMapper">
+
+    <resultMap id="BaseResultMap" type="com.bosch.product.api.domain.ShippingTask">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="shippingPlanId" column="shipping_plan_id" jdbcType="BIGINT"/>
+
+        <result property="packageNo" column="package_no" jdbcType="VARCHAR"/>
+        <result property="shippingMark" column="shipping_mark" jdbcType="VARCHAR"/>
+        <result property="etoPo" column="eto_po" jdbcType="VARCHAR"/>
+        <result property="etoPlant" column="eto_plant" jdbcType="VARCHAR"/>
+        <result property="stockMovementDate" column="stock_movement_date" jdbcType="VARCHAR"/>
+        <result property="country" column="country" jdbcType="VARCHAR"/>
+        <result property="prodOrder" column="prod_order" jdbcType="VARCHAR"/>
+        <result property="qty" column="qty" jdbcType="INTEGER"/>
+        <result property="isDisassembled" column="is_disassembled" jdbcType="VARCHAR"/>
+        <result property="tr" column="tr" jdbcType="VARCHAR"/>
+        <result property="sapCode" column="sap_code" jdbcType="VARCHAR"/>
+        <result property="palletQuantity" column="pallet_quantity" jdbcType="VARCHAR"/>
+        <result property="afterPacking" column="after_packing" jdbcType="VARCHAR"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,package_no,shipping_plan_id,shipping_mark,
+        eto_po,eto_plant,stock_movement_date,
+        country,prod_order,qty,
+        is_disassembled,tr,sap_code,
+        pallet_quantity,after_packing,create_by,
+        update_by,create_time,update_time,
+        status,delete_flag,remark
+    </sql>
+
+    <select id="selectAllByFields" resultMap="BaseResultMap">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM shipping_task
+        WHERE
+        <if test="id != null">id = #{id}</if>
+        <if test="packageNo != null">AND package_no = #{packageNo}</if>
+        <if test="shippingPlanId != null">AND shipping_plan_id = #{shippingPlanId}</if>
+        <if test="shippingMark != null">AND shipping_mark = #{shippingMark}</if>
+        <if test="etoPo != null">AND eto_po = #{etoPo}</if>
+        <if test="etoPlant != null">AND eto_plant = #{etoPlant}</if>
+        <if test="stockMovementDate != null">AND stock_movement_date = #{stockMovementDate}</if>
+        <if test="country != null">AND country = #{country}</if>
+        <if test="prodOrder != null">AND prod_order = #{prodOrder}</if>
+        <if test="qty != null">AND qty = #{qty}</if>
+        <if test="isDisassembled != null">AND is_disassembled = #{isDisassembled}</if>
+        <if test="tr != null">AND tr = #{tr}</if>
+        <if test="sapCode != null">AND sap_code = #{sapCode}</if>
+        <if test="palletQuantity != null">AND pallet_quantity = #{palletQuantity}</if>
+        <if test="afterPacking != null">AND after_packing = #{afterPacking}</if>
+        <if test="createBy != null">AND create_by = #{createBy}</if>
+        <if test="updateBy != null">AND update_by = #{updateBy}</if>
+        <if test="createTime != null">AND create_time = #{createTime}
+        <if test="updateTime != null">AND update_time = #{updateTime}</if>
+        <if test="status != null">AND status = #{status}</if>
+        <if test="deleteFlag != null">AND delete_flag = #{deleteFlag}</if>
+        <if test="remark != null">AND remark = #{remark}</if>
+    </select>
+
+</mapper>

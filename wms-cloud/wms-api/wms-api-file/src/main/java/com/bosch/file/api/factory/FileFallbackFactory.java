@@ -22,6 +22,11 @@ public class FileFallbackFactory implements FileService {
     private static final Logger log = LoggerFactory.getLogger(FileFallbackFactory.class);
 
     @Override
+    public <T> R<List<T>> packagingDataImport(MultipartFile file, String className) {
+        return R.fail("成品打包文件服务调用失败");
+    }
+
+    @Override
     public <T> R<List<T>> masterDataImport(MultipartFile file, String className) {
         return R.fail("主数据文件服务调用失败");
     }
