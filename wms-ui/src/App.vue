@@ -32,6 +32,7 @@ export default {
   .top-nav{
     background: url(./assets/nutricia-color.png);
     background-repeat: no-repeat;
+    background-size: 100% 100%;
     width: 100%;
     height: 7px;
     position: fixed;

@@ -33,6 +33,8 @@
         <result property="frameWidth" column="frameWidth"/>
         <result property="frameBearWeight" column="frameBearWeight"/>
         <result property="createTime" column="createTime"/>
+        <result property="plantNb" column="plantNb"/>
+
     </resultMap>
     <sql id="selectBinVo">
         select id,
@@ -54,6 +56,7 @@
                b.NAME        as name,
                w.CODE        as wareCode,
                w.NAME        as wareName,
+               w.factory_code as planNb,
                w.id          as wareId,
                a.code        as areaCode,
                a.name        as areaName,

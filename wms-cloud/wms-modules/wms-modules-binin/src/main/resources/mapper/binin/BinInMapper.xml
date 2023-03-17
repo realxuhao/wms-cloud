@@ -30,27 +30,39 @@
 
 
     <select id="selectBinVOList" resultMap="BinInVOResult">
-        select bi.id,bi.material_nb,bi.sscc_number,mm.name as
-        material_name,bi.batch_nb,bi.expire_date,bi.ware_code,bi.recommend_bin_code,
-        bi.actual_bin_code,bi.quantity,bi.pallet_code,bi.pallet_type,bi.status,
-        bi.create_by,bi.create_time,bi.plant_nb,bi.move_type,bi.update_by,bi.update_time,sm.update_user as receive_by
-        from bi_in bi left join md_material mm on bi.material_nb = mm.code left join si_material_receive sm on
-        bi.sscc_number=sm.sscc_number and sm.delete_flag=0
-        where bi.delete_flag=0
-        <if test="materialNb != null and materialNb != ''">and bi.material_nb like concat('%', #{materialNb}, '%')</if>
-        <if test="ssccNumber != null and ssccNumber != ''">and bi.sscc_number like concat('%', #{ssccNumber}, '%')</if>
+        select bi.id,
+        sm.material_nb,
+        sm.sscc_number,
+        mm.name as material_name,
+        sm.batch_nb,
+        str_to_date(smr.expire_date,'%d/%m/%Y') as expire_date,
+        sm.ware_code,
+        bi.recommend_bin_code,
+        bi.actual_bin_code,
+        bi.quantity,
+        bi.pallet_code,
+        mm.pallet_type,
+        bi.status,
+        bi.create_by,bi.create_time,sm.plant_nb,bi.move_type,bi.update_by,bi.update_time,smr.update_user as receive_by
+        from si_material_in sm left join bi_in bi on bi.sscc_number=sm.sscc_number and sm.delete_flag = 0
+        left join si_material_receive smr on smr.sscc_number = sm.sscc_number and smr.delete_flag = 0
+        left join md_material mm on sm.material_nb = mm.code
+        where sm.delete_flag = 0 and sm.sscc_number not in (select sscc_number from bi_in where bi.delete_flag =1)
+        <if test="materialNb != null and materialNb != ''">and sm.material_nb like concat('%', #{materialNb}, '%')</if>
+        <if test="ssccNumber != null and ssccNumber != ''">and sm.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="moveType != null and moveType != ''">and bi.move_type like concat('%', #{moveType}, '%')</if>
         <if test="materialName != null  and materialName != ''">and mm.name like concat('%', #{materialName}, '%')</if>
         <if test="palletCode != null and palletCode != ''">and bi.pallet_code like concat('%', #{palletCode}, '%')</if>
 
-        <if test="batchNb != null  and batchNb != ''">and bi.batch_nb like concat('%', #{batchNb}, '%')</if>
-        <if test="plantNb != null and plantNb != ''">and bi.plant_nb like concat('%', #{plantNb}, '%')</if>
-        <if test="wareCode != null and wareCode != ''">and bi.ware_code like concat('%', #{wareCode}, '%')</if>
+        <if test="batchNb != null  and batchNb != ''">and sm.batch_nb like concat('%', #{batchNb}, '%')</if>
+        <if test="plantNb != null and plantNb != ''">and sm.plant_nb like concat('%', #{plantNb}, '%')</if>
+        <if test="wareCode != null and wareCode != ''">and sm.ware_code like concat('%', #{wareCode}, '%')</if>
         <if test="actualBinCode != null and actualBinCode != ''">and bi.actual_bin_code like concat('%',
             #{actualBinCode}, '%')
         </if>
         <if test="createBy != null and createBy != ''">and bi.create_by like concat('%', #{createBy}, '%')</if>
-        <if test="status != null ">and bi.status = #{status}</if>
+        <if test="status == 1 ">and bi.status = 1</if>
+        <if test="status == 0 ">and (bi.STATUS = 0 or sm.sscc_number not in (SELECT sscc_number from bi_in WHERE delete_flag = 0 and `status` = 1))</if>
     </select>
     <select id="selectBySsccNumber" resultType="com.bosch.binin.api.domain.vo.BinInVO">
         select bi.id,

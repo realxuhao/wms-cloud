@@ -288,7 +288,9 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         //获取看kanban数据
         LambdaQueryWrapper<MaterialKanban> kanbanqw = new LambdaQueryWrapper<>();
         kanbanqw.eq(MaterialKanban::getSsccNumber, dto.getSsccNumber());
-        kanbanqw.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL);
+        kanbanqw.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+        kanbanqw.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+
         kanbanqw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         kanbanqw.last("for update");
         MaterialKanban materialKanban = materialKanbanMapper.selectOne(kanbanqw);

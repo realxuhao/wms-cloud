@@ -38,7 +38,7 @@ public class SecurityUtils
      */
     public static String getWareCode()
     {
-        return SecurityContextHolder.getWareCode();
+        return SecurityContextHolder.getWareCode().equals(StringUtils.EMPTY) ? null : SecurityContextHolder.getWareCode();
     }
 
 

@@ -317,6 +317,22 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           }
         ]
+      },
+      {
+        path: '/finished-product',
+        name: 'finishedProduct',
+        redirect: '/finished-product/list',
+        component: RouteView,
+        meta: { title: '成品管理', icon: 'hdd', permission: [] },
+        children: [
+          {
+            path: '/finished-product/list',
+            name: 'finishedProductList',
+            component: () => import('@/views/finishedProduct/FinishedProductList.vue'),
+            meta: { title: '成品打包计划', permission: [] },
+            hideChildrenInMenu: true
+          }
+        ]
       }
       // {
       //   path: '/manual-trans',

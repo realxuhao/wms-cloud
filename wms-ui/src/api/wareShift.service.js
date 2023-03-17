@@ -22,8 +22,15 @@ const getReturnMaterialList = async (parameter) => {
   return data
 }
 
+const cancel = async (options) => {
+  const url = `/ware-shift/cancel/${options.id}`
+  const { data } = await createAuthInstance(baseUrl).put(url)
+  return data
+}
+
 export const wareShiftService = {
   getList,
   addWareShift,
-  getReturnMaterialList
+  getReturnMaterialList,
+  cancel
 }

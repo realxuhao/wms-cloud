@@ -26,6 +26,7 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -141,19 +142,19 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
     }
 
     @Override
-    public void issueJob(String[] ssccNumbers) {
-        List<String> ssccNumberList = Arrays.asList(ssccNumbers);
-        if (CollectionUtils.isEmpty(ssccNumberList)) {
+    public void issueJob(Long[] ids) {
+        List<Long> idList = Arrays.asList(ids);
+        if (CollectionUtils.isEmpty(idList)) {
             throw new ServiceException("任务为空，请选择任务后重试");
         }
         LambdaQueryWrapper<ManualTransferOrder> kanbanLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        kanbanLambdaQueryWrapper.in(ManualTransferOrder::getSsccNb, ssccNumberList);
+        kanbanLambdaQueryWrapper.in(ManualTransferOrder::getId, idList);
         kanbanLambdaQueryWrapper.eq(ManualTransferOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         kanbanLambdaQueryWrapper.eq(ManualTransferOrder::getStatus, ManuTransStatusEnum.WAITING_ISSUE.code());
 
         List<ManualTransferOrder> manualTransferOrderList = manualTransferOrderMapper.selectList(kanbanLambdaQueryWrapper);
 
-        if (CollectionUtils.isEmpty(manualTransferOrderList) || manualTransferOrderList.size() != ssccNumberList.size()) {
+        if (CollectionUtils.isEmpty(manualTransferOrderList) || manualTransferOrderList.size() != idList.size()) {
             throw new ServiceException("数据已过期，请刷新后重新选择");
         }
         manualTransferOrderList.stream().forEach(item -> {
