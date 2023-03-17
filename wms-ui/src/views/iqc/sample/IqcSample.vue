@@ -268,6 +268,12 @@ export default {
           width: 90
         },
         {
+          title: 'cell部门',
+          key: 'cell',
+          dataIndex: 'cell',
+          width: 90
+        },
+        {
           title: '批次号',
           key: 'batchNb',
           dataIndex: 'batchNb',
