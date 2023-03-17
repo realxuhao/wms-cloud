@@ -296,7 +296,7 @@ const columns = [
   },
 
   {
-    title: '抽样数量',
+    title: '抽样量',
     key: 'sampleQuantity',
     dataIndex: 'sampleQuantity',
     width: 90

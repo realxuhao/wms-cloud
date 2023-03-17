@@ -3,19 +3,27 @@
 		<view class="main" slot="page-main">
 			<view class="header m-b-8">
 				<view class="text-line m-b-8 ">
-					<view class="label">SSCC码：</view>
-					{{ materialInfo.ssccNumber }}
+					<view class="label">Shipping Mark：</view>
+					{{ shippingMark }}
 				</view>
 				<view class="text-line m-b-8 ">
-					<view class="label">物料名称：</view>
-					{{ materialInfo.materialName }}
+					<view class="label">ETO PO：</view>
+					{{ ETOPO }}
 				</view>
 				<view class="text-line m-b-8 ">
-					<view class="label">物料编码：</view>
-					{{ materialInfo.materialNb }}
+					<view class="label">Prod-order：</view>
+					{{ prodOrder }}
 				</view>
 				<view class="text-line m-b-8 ">
-					<view class="label">总打包数：</view>
+					<view class="label">SAP Code：</view>
+					{{ SAPCode }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">源托数：</view>
+					{{ palletQuantityCount }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">目标托数：</view>
 					{{ afterPackingCount }}
 				</view>
 			</view>
@@ -29,10 +37,16 @@
 				</view>
 				<uni-section class="mb-10" title="当前托FJ" type="line">
 					<template v-slot:right>
-						<uni-tag text="拆"></uni-tag>
+						<uni-tag text="拆" :inverted="tagInverted" type="primary" @click="tagInverted = !tagInverted"></uni-tag>
 					</template>
 					<uni-list v-show="currentTaskBarCodeList.length">
-						<uni-list-item v-for="(item, index) in currentTaskBarCodeList" :key="item" :title="item" ellipsis="1">
+						<uni-list-item v-for="(item, index) in currentTaskBarCodeList" :key="item.value" ellipsis="1">
+							<template v-slot:body>
+								<view class="list-item">
+									<view class="tag-box"><uni-tag v-show="item.type === '拆'" text="拆" :inverted="true" type="primary"></uni-tag></view>
+									<view class="ellipsis">{{ item.value }}</view>
+								</view>
+							</template>
 							<template v-slot:footer>
 								<uni-icons @click="handleDelete(index)" custom-prefix="custom-icon" type="closeempty" size="18" color="#541b86"></uni-icons>
 							</template>
@@ -64,19 +78,71 @@ export default {
 			submitLoading: false,
 			materialInfo: {},
 
-			taskList: [{ palletQuantity: 10, isSplit: '拆', afterPacking: 0, prodOrder: 1100247 }, { palletQuantity: 10, isSplit: '', afterPacking: 10, prodOrder: 1100248 }],
+			taskList: [
+				{
+					palletQuantity: 10,
+					isSplit: '拆',
+					afterPacking: 0,
+					prodOrder: 1100247,
+					shippingMark: 'PMO22.311',
+					ETOPO: 'SH2022161',
+					SAPCode: '100103'
+				},
+				{
+					palletQuantity: 10,
+					isSplit: '',
+					afterPacking: 10,
+					prodOrder: 1100248,
+					shippingMark: 'PMO22.311',
+					SAPCode: '86460'
+				}
+			],
 			allScanBarCodeList: [],
 			currentTaskBarCodeList: [
-				'202403226690063911100247521031104222032911260000501',
-				'202403226690063911100247521031104222032911262000050',
-				'202403226690063911103024752103110422203291126000050'
+				{
+					type: '拆',
+					value: '202403226690063911100247521031104222032911260000501'
+				},
+				{
+					type: '拆',
+					value: '2024032266900639111002475210311042220329112262000050'
+				},
+				{
+					type: '',
+					value: '2024032266900639111030247521031104222032911260020050'
+				}
 			],
-			stepIndex: 1
+			takeDownTaskBarCodeList: [],
+			stepIndex: 1,
+			tagInverted: true
 		};
 	},
 	computed: {
 		allTaskCount() {
 			const count = _.sumBy(_.filter(this.taskList, x => x.isSplit !== '拆'), 'palletQuantity');
+			return count;
+		},
+		SAPCode() {
+			const str = _.join(_.map(this.taskList, 'SAPCode'), ',');
+			return str;
+		},
+		firstTaskInfo() {
+			if (this.taskList.length) {
+				return _.first(this.taskList);
+			}
+			return {};
+		},
+		prodOrder() {
+			return _.get(this.firstTaskInfo, 'prodOrder');
+		},
+		shippingMark() {
+			return _.get(this.firstTaskInfo, 'shippingMark');
+		},
+		ETOPO() {
+			return _.get(this.firstTaskInfo, 'ETOPO');
+		},
+		palletQuantityCount() {
+			const count = _.sumBy(this.taskList, 'palletQuantity');
 			return count;
 		},
 		afterPackingCount() {
@@ -119,7 +185,14 @@ export default {
 		},
 		handleClean() {},
 		async initScanCode() {
-			Bus.$on('scancodedate', data => {});
+			Bus.$on('scancodedate', data => {
+				const item = { type: '', value: data };
+				if (!this.tagInverted) {
+					item.type = '拆';
+					this.takeDownTaskBarCodeList.push(data);
+				}
+				this.currentTaskBarCodeList.push(item);
+			});
 		},
 		async handleNext() {
 			try {
@@ -192,5 +265,23 @@ export default {
 
 /deep/.uni-list-item__container {
 	padding: 12px 4px;
+	.list-item {
+		display: flex;
+		align-items: center;
+		min-width: 0;
+		.tag-box {
+			width: 28px;
+			margin-right: 4px;
+		}
+		.ellipsis {
+			flex: 1;
+		}
+	}
+}
+
+/deep/.text-line {
+	.label {
+		width: 114px;
+	}
 }
 </style>
