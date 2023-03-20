@@ -107,5 +107,18 @@ public class PurchaseOrderVO {
 
     @ApiModelProperty(value = "剩余送货数量")
     private BigDecimal surplusQuantity;
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(value = "创建时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @ApiModelProperty(value = "修改时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date updateTime;
 
 }
