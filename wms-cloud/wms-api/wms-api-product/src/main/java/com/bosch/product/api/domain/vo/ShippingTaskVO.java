@@ -14,7 +14,7 @@ import lombok.Data;
 public class ShippingTaskVO extends BaseEntity {
 
     @ApiModelProperty(value = "打包计划id")
-    private  Long shippingPlanId;
+    private  String shippingPlanId;
 
     @ApiModelProperty(value = "打包批次号")
     private String packageNo;
@@ -55,4 +55,13 @@ public class ShippingTaskVO extends BaseEntity {
 
     @ApiModelProperty(value = "after packing")
     private String afterPacking;
+
+    /**
+     * 状态（1：已执行，0：未执行）
+     */
+    @ApiModelProperty(value = "状态（2：已执行，1:执行中,0：未执行）")
+    private Integer status;
+
+    @ApiModelProperty(value = "进度")
+    private Double rateOfProgress;
 }

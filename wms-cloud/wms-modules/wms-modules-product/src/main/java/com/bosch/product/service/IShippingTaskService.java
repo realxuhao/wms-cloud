@@ -1,8 +1,13 @@
 package com.bosch.product.service;
 
+import com.bosch.product.api.domain.ShippingPlan;
 import com.bosch.product.api.domain.ShippingTask;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.product.api.domain.dto.ListPair;
 import com.bosch.product.api.domain.dto.ShippingTaskDTO;
+import com.bosch.product.api.domain.vo.ShippingTaskVO;
+import com.bosch.product.service.impl.ShippingPlanServiceImpl;
+import javafx.util.Pair;
 
 import java.util.List;
 
@@ -21,4 +26,12 @@ public interface IShippingTaskService extends IService<ShippingTask> {
      * @return
      */
     Integer deleteShippingTask(Long[] ids);
+
+    ListPair genTask(List<ShippingPlan> list);
+
+    boolean updateStatus(Long[] ids, Integer status);
+
+    boolean checkHistory(Long taskId);
+
+    List<ShippingTaskVO> getDashboard();
 }

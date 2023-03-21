@@ -6,7 +6,7 @@
 
     <resultMap id="BaseResultMap" type="com.bosch.product.api.domain.ShippingTask">
         <id property="id" column="id" jdbcType="BIGINT"/>
-        <result property="shippingPlanId" column="shipping_plan_id" jdbcType="BIGINT"/>
+        <result property="shippingPlanId" column="shipping_plan_id" jdbcType="VARCHAR"/>
 
         <result property="packageNo" column="package_no" jdbcType="VARCHAR"/>
         <result property="shippingMark" column="shipping_mark" jdbcType="VARCHAR"/>
@@ -62,7 +62,7 @@
         <if test="afterPacking != null">AND after_packing = #{afterPacking}</if>
         <if test="createBy != null">AND create_by = #{createBy}</if>
         <if test="updateBy != null">AND update_by = #{updateBy}</if>
-        <if test="createTime != null">AND create_time = #{createTime}
+        <if test="createTime != null">AND create_time = #{createTime}</if>
         <if test="updateTime != null">AND update_time = #{updateTime}</if>
         <if test="status != null">AND status = #{status}</if>
         <if test="deleteFlag != null">AND delete_flag = #{deleteFlag}</if>
@@ -76,4 +76,23 @@
             #{id}
         </foreach>
     </update>
+
+    <update id="updateStatus" parameterType="map">
+        update shipping_task
+        set status=#{status}  where delete_flag='0' and id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="getDashboard" resultType="com.bosch.product.api.domain.vo.ShippingTaskVO" >
+        SELECT shipping_task.*,
+        ROUND(COUNT(shipping_history.shipping_task_id) / shipping_task.after_packing * 100, 2) AS rate_of_progress
+        FROM shipping_task
+        LEFT JOIN shipping_history ON shipping_task.id = shipping_history.shipping_task_id
+        WHERE shipping_task.delete_flag=0
+        GROUP BY shipping_task.id
+
+    </select>
+
 </mapper>

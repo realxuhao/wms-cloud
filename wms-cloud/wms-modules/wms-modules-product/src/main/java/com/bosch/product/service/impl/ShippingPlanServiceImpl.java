@@ -28,15 +28,7 @@ import java.util.List;
 @Service
 public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, ShippingPlan>
     implements IShippingPlanService {
-    public class Pair {
-        public List<ShippingTask> shippingTasks;
-        public List<ShippingPlan> shippingPlans;
 
-        public Pair(List<ShippingTask> shippingTask, List<ShippingPlan> shippingPlan) {
-            this.shippingTasks = shippingTask;
-            this.shippingPlans = shippingPlan;
-        }
-    }
     @Autowired
     private ShippingPlanMapper shippingPlanMapper;
     @Autowired
@@ -51,20 +43,6 @@ public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, Shi
         return shippingPlanMapper.selectList(queryWrapper);
     }
 
-    @Override
-    public Pair  converList(List<ShippingPlan> list) {
-        List<ShippingTask> result=new ArrayList<>();
-        if  (CollectionUtils.isNotEmpty(list)){
-            list.forEach(item -> {
-                ShippingTask shippingTask=BeanConverUtil.conver(item, ShippingTask.class);
-                shippingTask.setShippingPlanId(item.getId());
-                shippingTask.setPackageNo(item.getStockMovementDate().replaceAll("[\\\\:\\s]+", ""));
-                result.add(shippingTask);
-                item.setStatus(StatusEnums.TRUE.getCode());
-            }) ;
-        }
-        return new Pair(result, list);
-    }
 
 }
 

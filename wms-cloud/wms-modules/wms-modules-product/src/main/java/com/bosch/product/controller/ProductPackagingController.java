@@ -7,14 +7,18 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.Ecn;
 import com.bosch.masterdata.api.domain.dto.EcnDTO;
+import com.bosch.masterdata.api.domain.dto.PalletDTO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
+import com.bosch.masterdata.api.domain.vo.PalletVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
+import com.bosch.product.api.domain.ShippingHistory;
 import com.bosch.product.api.domain.ShippingPlan;
 import com.bosch.product.api.domain.ShippingTask;
-import com.bosch.product.api.domain.dto.ShippingPlanDTO;
+import com.bosch.product.api.domain.dto.*;
 import com.bosch.product.api.domain.dto.ShippingPlanVO;
-import com.bosch.product.api.domain.dto.ShippingTaskDTO;
 import com.bosch.product.api.domain.vo.ShippingTaskVO;
+import com.bosch.product.api.enumeration.TaskStatusEnum;
+import com.bosch.product.service.IShippingHistoryService;
 import com.bosch.product.service.IShippingPlanService;
 import com.bosch.product.service.IShippingTaskService;
 import com.bosch.product.service.impl.ShippingPlanServiceImpl;
@@ -31,6 +35,7 @@ import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -59,19 +64,82 @@ public class ProductPackagingController extends BaseController {
     @Autowired
     private IShippingTaskService shippingTaskService;
     @Autowired
+    private IShippingHistoryService shippingHistoryService;
+
+    @Autowired
     private FileService fileService;
 
-//    @PostMapping(value = "/lsit")
-//    @ApiOperation("成品导入list")
-//    public R<ShippingPlanDTO> allocate(@RequestBody ShippingPlanDTO dto) {
-//        try {
-//            return R.ok();
-//        } catch (Exception e) {
-//            logger.error(e.getMessage());
-//            return R.fail(e.getMessage());
-//        }
-//    }
-    @PostMapping(value = "/lsit")
+    @PostMapping(value = "/addPackageHistory")
+    @ApiOperation("添加打包历史记录")
+    @Transactional(rollbackFor = Exception.class)
+    public AjaxResult addPackageHistory(@RequestBody ShippingHistoryDTO dto) {
+        try {
+            ShippingHistory conver = BeanConverUtil.conver(dto, ShippingHistory.class);
+            //保存记录
+            final boolean a = shippingHistoryService.save(conver);
+            boolean b = false;
+            //修改任务为进行中
+            if (new Integer(0).equals(dto.getLastOne())) {
+                b = shippingTaskService.updateStatus(new Long[]{dto.getShippingTaskId()},
+                        TaskStatusEnum.UNDEREXECUTION.getCode());
+            } else if (new Integer(1).equals(dto.getLastOne())) {
+                //最后一托进行校验
+                boolean checkHistory = shippingTaskService.checkHistory(dto.getShippingTaskId());
+                if (!checkHistory) {
+                    TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+                    return AjaxResult.error("未通过校验");
+                }
+                //修改任务为已完成
+                b = shippingTaskService.updateStatus(new Long[]{dto.getShippingTaskId()},
+                        TaskStatusEnum.EXECUTED.getCode());
+            }
+            if (!(a && b)) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            }
+            return toAjax(a && b);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return AjaxResult.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 删除
+     */
+    @Log(title = "删除单条打包记录", businessType = BusinessType.DELETE)
+    @ApiOperation("删除单条打包记录")
+    @DeleteMapping("/deletePackageHistory/{id}")
+    public AjaxResult deletePackageHistory(@PathVariable Long id) {
+        return toAjax(shippingHistoryService.removeById(id));
+    }
+
+    /**
+     * 获取打包历史记录
+     */
+    //@RequiresPermissions("masterdata:pallet:list")
+    @PostMapping(value = "/getHistoryRecord")
+    @ApiOperation("获取打包历史记录")
+    public R getHistoryRecord(ShippingHistoryDTO dto) {
+        try {
+            List<ShippingHistory> shippingHistories = shippingHistoryService.searchAllFields(dto);
+            return R.ok(shippingHistories);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return R.fail(e.getMessage());
+        }
+    }
+
+    /**
+     * 删除
+     */
+    @Log(title = "根据TaskId删除多条打包记录", businessType = BusinessType.DELETE)
+    @ApiOperation("根据TaskId删除多条打包记录")
+    @DeleteMapping("/deleteMultiPackageHistory/{id}")
+    public AjaxResult deleteMultiPackageHistory(@PathVariable Long id) {
+        return toAjax(shippingHistoryService.deleteHistoryByTaskId(id));
+    }
+
+    @PostMapping(value = "/list")
     @ApiOperation("获取打包任务")
     public R<PageVO<ShippingTaskVO>> getTask(@RequestBody ShippingTaskDTO dto) {
         try {
@@ -79,6 +147,20 @@ public class ProductPackagingController extends BaseController {
 
             List<ShippingTaskVO> list = BeanConverUtil.converList(shippingTasks, ShippingTaskVO.class);
             return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return R.fail(e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/getDashboard")
+    @ApiOperation("获取成品打包可视化大屏")
+    public R<PageVO<ShippingTaskVO>> getDashboard() {
+        try {
+            startPage();
+            List<ShippingTaskVO> dashboard = shippingTaskService.getDashboard();
+
+            return R.ok(new PageVO<>(dashboard, new PageInfo<>(dashboard).getTotal()));
         } catch (Exception e) {
             logger.error(e.getMessage());
             return R.fail(e.getMessage());
@@ -106,38 +188,29 @@ public class ProductPackagingController extends BaseController {
             if (CollectionUtils.isEmpty(list)) {
                 return R.fail("未获取到需要打包的任务");
             }
-//            // 遍历列表中的每个元素，并将其 StockMovementDate 字段转换为 Date 类型
-//            for (ShippingPlanVO vo : vos) {
-//                if(StringUtils.isNotEmpty(vo.getStockMovementDate())){
-//                    Date date =DateUtils.parseStringDate(vo.getStockMovementDate());
-//                    // 将转换后的日期设置回 ShippingPlan 对象的 StockMovementDate 字段
-//                    vo.setStockMovementDateConvert(date);
-//                }
 //
+//            // 按照 stockMovementDate 字段分组，并按照 etoPo 字段排序
+//            Map<String, List<ShippingPlan>> groupedByDate = list.stream()
+//                    .sorted(Comparator.comparing(ShippingPlan::getEtoPo)) // 按照 etoPo 字段排序
+//                    .collect(Collectors.groupingBy(ShippingPlan::getStockMovementDate)); // 按照stockMovementDate 字段分组
+//            // 对每个分组内的元素按照 shippingMark 和 prodOrder 字段进行排序
+//            Comparator<ShippingPlan> shippingMarkComparator = Comparator.comparing(ShippingPlan::getShippingMark);
+//            Comparator<ShippingPlan> prodOrderComparator = Comparator.comparing(ShippingPlan::getProdOrder);
+//
+//            for (List<ShippingPlan> group : groupedByDate.values()) {
+//                group.sort(shippingMarkComparator.thenComparing(prodOrderComparator)); // 按照 shippingMark 和
+//                // prodOrder字段排序
 //            }
+//
+//            // 将分组后的结果转换为一个列表
+//            List<ShippingPlan> result = groupedByDate.values().stream()
+//                    .flatMap(List::stream) // 将每个分组中的列表转换为一个流
+//                    .collect(Collectors.toList()); // 将所有元素收集到一个列表中
 
-            // 按照 stockMovementDate 字段分组，并按照 etoPo 字段排序
-            Map<String, List<ShippingPlan>> groupedByDate = list.stream()
-                    .sorted(Comparator.comparing(ShippingPlan::getEtoPo)) // 按照 etoPo 字段排序
-                    .collect(Collectors.groupingBy(ShippingPlan::getStockMovementDate)); // 按照stockMovementDate 字段分组
-            // 对每个分组内的元素按照 shippingMark 和 prodOrder 字段进行排序
-            Comparator<ShippingPlan> shippingMarkComparator = Comparator.comparing(ShippingPlan::getShippingMark);
-            Comparator<ShippingPlan> prodOrderComparator = Comparator.comparing(ShippingPlan::getProdOrder);
+            ListPair listPair = shippingTaskService.genTask(list);
 
-            for (List<ShippingPlan> group : groupedByDate.values()) {
-                group.sort(shippingMarkComparator.thenComparing(prodOrderComparator)); // 按照 shippingMark 和
-                // prodOrder字段排序
-            }
-
-            // 将分组后的结果转换为一个列表
-            List<ShippingPlan> result = groupedByDate.values().stream()
-                    .flatMap(List::stream) // 将每个分组中的列表转换为一个流
-                    .collect(Collectors.toList()); // 将所有元素收集到一个列表中
-
-            ShippingPlanServiceImpl.Pair pair = shippingPlanService.converList(result);
-
-            shippingTaskService.saveBatch(pair.shippingTasks);
-            shippingPlanService.updateBatchById(pair.shippingPlans);
+            shippingTaskService.saveBatch(listPair.shippingTasks);
+            shippingPlanService.updateBatchById(listPair.shippingPlans);
             return R.ok();
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -174,33 +247,7 @@ public class ProductPackagingController extends BaseController {
         }
     }
 
-    /**
-     * 批量更新
-     */
-    @ApiOperation("批量更新")
-    @PostMapping(value = "/saveBatch", headers = "content-type=multipart/form-data")
-    @Transactional(rollbackFor = Exception.class)
-    public R saveBatch(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
 
-        try {
-            //解析文件服务
-            R result = fileService.packagingDataImport(file, ClassType.SHIPPINGPLANDTO.getDesc());
-            if (result.isSuccess()) {
-                Object data = result.getData();
-                List<ShippingPlanDTO> dtoList = JSON.parseArray(JSON.toJSONString(data), ShippingPlanDTO.class);
-                if (CollectionUtils.isNotEmpty(dtoList)) {
-
-                }
-                return R.ok("导入成功");
-            } else {
-                return R.fail(result.getMsg());
-            }
-        } catch (Exception e) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
-            return R.fail(e.getMessage());
-        }
-
-    }
 
 
 }

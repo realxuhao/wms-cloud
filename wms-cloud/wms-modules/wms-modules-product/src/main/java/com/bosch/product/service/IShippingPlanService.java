@@ -18,5 +18,5 @@ public interface IShippingPlanService extends IService<ShippingPlan> {
 
     List<ShippingPlan> getList(ShippingPlanDTO dto);
 
-    ShippingPlanServiceImpl.Pair converList (List<ShippingPlan> list);
+
 }

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.product.mapper.ShippingHistoryMapper">
+
+    <resultMap id="BaseResultMap" type="com.bosch.product.api.domain.ShippingHistory">
+        <id property="id" column="id" jdbcType="BIGINT"/>
+        <result property="shippingTaskId" column="shipping_task_id" jdbcType="BIGINT"/>
+        <result property="etoPo" column="eto_po" jdbcType="VARCHAR"/>
+        <result property="prodOrder" column="prod_order" jdbcType="VARCHAR"/>
+        <result property="ssccNumbers" column="sscc_numbers" jdbcType="VARCHAR"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,shipping_task_id,eto_po,sscc_numbers,
+        prod_order,create_by,update_by,
+        create_time,update_time,status,
+        delete_flag,remark
+    </sql>
+
+    <delete id="deleteHistoryByTaskId" parameterType="Long">
+        delete from shipping_history where shipping_task_id =#{id}
+    </delete>
+
+    <select id="searchAllFields" resultMap="BaseResultMap"
+            parameterType="com.bosch.product.api.domain.dto.ShippingHistoryDTO">
+        SELECT
+        <include refid="Base_Column_List"/>
+        FROM shipping_history
+        WHERE delete_flag=0
+        <if test="id != null">
+            AND id = #{id}
+        </if>
+        <if test="shippingTaskId != null">
+            AND shipping_task_id = #{shippingTaskId}
+        </if>
+        <if test="ssccNumbers != null">
+            AND sscc_numbers LIKE CONCAT('%', #{ssccNumbers}, '%')
+        </if>
+        <if test="etoPo != null">
+            AND eto_po LIKE CONCAT('%', #{etoPo}, '%')
+        </if>
+        <if test="prodOrder != null">
+            AND prod_order LIKE CONCAT('%', #{prodOrder}, '%')
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="createBy != null">
+            AND create_by = #{createBy}
+        </if>
+        <if test="createTime != null">
+            AND create_time = #{createTime}
+        </if>
+        <if test="updateBy != null">
+            AND update_by = #{updateBy}
+        </if>
+        <if test="updateTime != null">
+            AND update_time = #{updateTime}
+        </if>
+    </select>
+</mapper>

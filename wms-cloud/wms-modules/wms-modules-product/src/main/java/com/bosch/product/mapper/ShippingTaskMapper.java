@@ -3,6 +3,8 @@ package com.bosch.product.mapper;
 import com.bosch.product.api.domain.ShippingTask;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.product.api.domain.dto.ShippingTaskDTO;
+import com.bosch.product.api.domain.vo.ShippingTaskVO;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -22,6 +24,11 @@ public interface ShippingTaskMapper extends BaseMapper<ShippingTask> {
      * @return
      */
     public Integer deleteShippingTask(Long[] ids);
+
+
+    Integer updateStatus(@Param("ids")Long[] ids,@Param("status") Integer status);
+
+    List<ShippingTaskVO> getDashboard();
 }
 
 
