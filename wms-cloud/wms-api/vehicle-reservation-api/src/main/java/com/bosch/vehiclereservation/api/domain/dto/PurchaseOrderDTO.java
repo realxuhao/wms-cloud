@@ -1,5 +1,6 @@
 package com.bosch.vehiclereservation.api.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

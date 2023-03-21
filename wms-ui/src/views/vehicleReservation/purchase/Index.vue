@@ -2,36 +2,50 @@
   <div class="wrapper">
     <!-- table -->
     <div class="table-content">
-      <a-form layout="inline" class="search-content">
-        <a-row :gutter="16">
-          <a-col :span="4">
-            <a-form-model-item label="订单PO号">
-              <a-input v-model="queryForm.poNo" placeholder="订单PO号" allow-clear/>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="4">
-            <a-form-model-item label="订单行号">
-              <a-input v-model="queryForm.poItem" placeholder="订单行号" allow-clear/>
-            </a-form-model-item>
-          </a-col>
-          <a-col span="4">
-            <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
-              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              <a @click="toggleAdvanced" style="margin-left: 8px">
-                {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'"/>
-              </a>
-            </span>
-          </a-col>
-        </a-row>
-      </a-form>
+
+      <div class="action-content">
+        <a-form layout="inline" class="search-content">
+          <a-row :gutter="16">
+            <a-col :span="4">
+              <a-form-model-item label="订单PO号">
+                <a-input v-model="queryForm.poNo" placeholder="订单PO号" allow-clear/>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-model-item label="订单行号">
+                <a-input v-model="queryForm.poItem" placeholder="订单行号" allow-clear/>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-model-item label="供应商名称">
+                <a-input v-model="queryForm.supplier" placeholder="供应商名称" allow-clear/>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-model-item label="料号">
+                <a-input v-model="queryForm.sapCode" placeholder="料号" allow-clear/>
+              </a-form-model-item>
+            </a-col>
+            <a-col span="4">
+              <span class="table-page-search-submitButtons" >
+                <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+                <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+                <a @click="toggleAdvanced" style="margin-left: 8px">
+                  {{ advanced ? '收起' : '展开' }}
+                  <a-icon :type="advanced ? 'up' : 'down'"/>
+                </a>
+              </span>
+            </a-col>
+          </a-row>
+        </a-form>
+      </div>
 
       <div class="action-content">
         <a-button type="primary" class="m-r-8" @click="handleSync" :loading="syncLoading">
           <a-icon type="redo"></a-icon>
           同步数据
         </a-button>
+        <span>共 {{ paginationTotal }} 条</span>
       </div>
       <a-table
         :columns="columns"
@@ -40,7 +54,7 @@
         rowKey="purchaseId"
         :pagination="false"
         size="middle"
-        :scroll="tableScroll"
+        :scroll="{ x: 1300 }"
       >
         <template slot="status" slot-scope="text">
           <div >
@@ -87,7 +101,6 @@
       </div>
 
     </div>
-    <!-- TODO:同步数据按钮 -->
 
     <a-modal
       v-drag-modal
@@ -153,31 +166,31 @@ const columns = [
     title: '单位',
     key: 'unit',
     dataIndex: 'unit',
-    width: 100
+    width: 80
   },
   {
     title: '预计到货日期',
     key: 'deliveryDate',
     dataIndex: 'deliveryDate',
-    width: 120
+    width: 110
   },
   {
     title: '需求放行日期',
     key: 'releaseDate',
     dataIndex: 'releaseDate',
-    width: 120
+    width: 110
   },
   {
     title: '首批变更号',
     key: 'firstBatchChangeNo',
     dataIndex: 'firstBatchChangeNo',
-    width: 150
+    width: 100
   },
   {
     title: '海关台帐号',
     key: 'cmsNumber',
     dataIndex: 'cmsNumber',
-    width: 150
+    width: 120
   },
   {
     title: '状态',
@@ -194,6 +207,18 @@ const columns = [
     scopedSlots: { customRender: 'remark' }
   },
   {
+    title: '创建时间',
+    key: 'createTime',
+    dataIndex: 'createTime',
+    width: 120
+  },
+  {
+    title: '修改时间',
+    key: 'updateTime',
+    dataIndex: 'updateTime',
+    width: 120
+  },
+  {
     title: '操作',
     key: 'action',
     fixed: 'right',
@@ -205,7 +230,9 @@ const columns = [
 const queryFormAttr = () => {
   return {
     poNo: '',
-    poItem: ''
+    poItem: '',
+    supplier: '',
+    sapCode: ''
   }
 }
 
