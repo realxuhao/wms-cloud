@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.Ecn;
 import com.bosch.masterdata.api.domain.dto.EcnDTO;
+import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
 import com.bosch.masterdata.api.domain.dto.PalletDTO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.domain.vo.PalletVO;
@@ -143,6 +144,7 @@ public class ProductPackagingController extends BaseController {
     @ApiOperation("获取打包任务")
     public R<PageVO<ShippingTaskVO>> getTask(@RequestBody ShippingTaskDTO dto) {
         try {
+            startPage();
             List<ShippingTask> shippingTasks = shippingTaskService.selectAllByFields(dto);
 
             List<ShippingTaskVO> list = BeanConverUtil.converList(shippingTasks, ShippingTaskVO.class);
@@ -152,7 +154,18 @@ public class ProductPackagingController extends BaseController {
             return R.fail(e.getMessage());
         }
     }
+    @GetMapping(value = "/planList/{id}")
+    @ApiOperation("根据打包任务id获取打包计划")
+    public R<List<ShippingPlanVO>> planList(@PathVariable("id") Long id) {
+        try {
+            List<ShippingPlanVO> planList = shippingPlanService.getPlanList(id);
 
+            return R.ok(planList);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return R.fail(e.getMessage());
+        }
+    }
     @PostMapping(value = "/getDashboard")
     @ApiOperation("获取成品打包可视化大屏")
     public R<PageVO<ShippingTaskVO>> getDashboard() {
@@ -171,7 +184,7 @@ public class ProductPackagingController extends BaseController {
      * 删除
      */
     @Log(title = "删除", businessType = BusinessType.DELETE)
-    @ApiOperation("删除")
+    @ApiOperation("删除任务")
     @DeleteMapping("/{ids}")
     public AjaxResult delete(@PathVariable Long[] ids) {
         return toAjax(shippingTaskService.deleteShippingTask(ids));
@@ -247,7 +260,26 @@ public class ProductPackagingController extends BaseController {
         }
     }
 
+    /**
+     * 修改
+     */
+    @Log(title = "修改计划", businessType = BusinessType.UPDATE)
+    @ApiOperation("修改计划")
+    @PutMapping
+    public AjaxResult edit(@RequestBody MdProductPackagingDTO dto) {
 
+        return toAjax(shippingPlanService.updatePlan(dto));
+    }
+
+    /**
+     * 删除
+     */
+    @Log(title = "删除计划", businessType = BusinessType.DELETE)
+    @ApiOperation("删除计划")
+    @DeleteMapping("/deletePlan/{ids}")
+    public AjaxResult deletePlan(@PathVariable Long[] ids) {
+        return toAjax(shippingPlanService.deletePlan(ids));
+    }
 
 
 }

@@ -88,7 +88,7 @@ public class MdProductPackagingController extends BaseController {
     /**
      * 删除
      */
-    @Log(title = "删除Ecn", businessType = BusinessType.DELETE)
+    @Log(title = "删除成品", businessType = BusinessType.DELETE)
     @ApiOperation("删除")
     @DeleteMapping("/{ids}")
     public AjaxResult delete(@PathVariable Long[] ids) {

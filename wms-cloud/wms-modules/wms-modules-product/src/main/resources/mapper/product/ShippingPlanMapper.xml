@@ -35,4 +35,22 @@
         update_by,create_time,update_time,
         status,delete_flag
     </sql>
+
+    <update id="deletePlan" parameterType="Long[]">
+        update shipping_plan
+        set delete_flag='1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+
+    <update id="updatePlan" parameterType="ShippingPlanDTO">
+        update shipping_plan
+        set update_by=#{updateBy},
+        update_time=#{updateTime},
+        total_quantity=#{totalQuantity},
+        min_quantity=#{minQuantity}
+        where id=#{id} and delete_flag=0
+    </update>
 </mapper>
