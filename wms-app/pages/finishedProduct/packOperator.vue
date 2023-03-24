@@ -35,7 +35,7 @@
 						<text>/{{ afterPackingCount }}</text>
 					</view>
 				</view>
-				<uni-section class="mb-10" title="当前托FJ" type="line">
+				<uni-section class="mb-10" :title="`当前托${title}`" type="line">
 					<template v-slot:right>
 						<uni-tag text="拆" :inverted="tagInverted" type="primary" @click="tagInverted = !tagInverted"></uni-tag>
 					</template>
@@ -52,7 +52,7 @@
 							</template>
 						</uni-list-item>
 					</uni-list>
-					<view v-show="!currentTaskBarCodeList.length">请扫描成品标签二维码</view>
+					<view v-show="!currentTaskBarCodeList.length" class="empty">请扫描成品标签二维码</view>
 					<view class="footer-box">
 						<o-btn size="sm" @click="handleClean">清空</o-btn>
 						<o-btn size="sm" type="primary" @click="handleNext" :loading="submitLoading">下一托</o-btn>
@@ -97,6 +97,7 @@ export default {
 					SAPCode: '86460'
 				}
 			],
+			taskIndex: 0,
 			allScanBarCodeList: [],
 			currentTaskBarCodeList: [
 				{
@@ -125,6 +126,12 @@ export default {
 		SAPCode() {
 			const str = _.join(_.map(this.taskList, 'SAPCode'), ',');
 			return str;
+		},
+		title({ taskList, taskIndex }) {
+			if (!taskList.length) {
+				return '';
+			}
+			return `${taskList[taskIndex].prodOrder}-${taskList[taskIndex].SAPCode}`;
 		},
 		firstTaskInfo() {
 			if (this.taskList.length) {
@@ -183,7 +190,9 @@ export default {
 			}
 			this.currentTaskBarCodeList.splice(index, 1);
 		},
-		handleClean() {},
+		handleClean() {
+			this.onReset();
+		},
 		async initScanCode() {
 			Bus.$on('scancodedate', data => {
 				const item = { type: '', value: data };
@@ -195,9 +204,19 @@ export default {
 			});
 		},
 		async handleNext() {
+			if (!this.currentTaskBarCodeList.length) {
+				this.$refs.message.error('请扫描成品标签二维码');
+				return;
+			}
+
 			try {
 				this.submitLoading = true;
 				this.stepIndex += 1;
+				const { afterPacking } = this.taskList[this.taskIndex] && this.taskList[this.taskIndex];
+				if (this.stepIndex > afterPacking) {
+					this.taskIndex += 1;
+				}
+
 				this.onReset();
 			} catch (e) {
 				//TODO handle the exception
@@ -283,5 +302,11 @@ export default {
 	.label {
 		width: 114px;
 	}
+}
+
+.empty {
+	text-align: center;
+	padding: 12px 0;
+	color: $uni-text-color-grey;
 }
 </style>
