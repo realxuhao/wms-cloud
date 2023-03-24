@@ -154,6 +154,20 @@ public class ProductPackagingController extends BaseController {
             return R.fail(e.getMessage());
         }
     }
+    @PostMapping(value = "/allPlanList")
+    @ApiOperation("获取未生成打包任务的打包计划")
+    public R<List<ShippingPlanVO>> allPlanList(ShippingPlanDTO dto) {
+        try {
+            List<ShippingPlan> list = shippingPlanService.getList(dto);
+
+            List<ShippingPlanVO> shippingPlanVOS = BeanConverUtil.converList(list, ShippingPlanVO.class);
+            return R.ok(shippingPlanVOS);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return R.fail(e.getMessage());
+        }
+    }
+
     @GetMapping(value = "/planList/{id}")
     @ApiOperation("根据打包任务id获取打包计划")
     public R<List<ShippingPlanVO>> planList(@PathVariable("id") Long id) {
