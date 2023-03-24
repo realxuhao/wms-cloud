@@ -5,52 +5,22 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           <a-col :span="4">
-            <a-form-model-item label="工厂编码">
-              <a-input v-model="queryForm.plantNb" placeholder="工厂编码" allow-clear/>
+            <a-form-model-item label="Shipping Mark">
+              <a-input v-model="queryForm.shippingMark" placeholder="Shipping Mark" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="仓库编码">
-              <a-input v-model="queryForm.wareCode" placeholder="仓库编码" allow-clear/>
+            <a-form-model-item label="ETO PO">
+              <a-input v-model="queryForm.etoPo" placeholder="ETO PO" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="存储区编码">
-              <a-input v-model="queryForm.areaCode" placeholder="仓库编码" allow-clear/>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="4">
-            <a-form-item label="库位编码">
-              <a-input v-model="queryForm.binCode" placeholder="库位编码" allow-clear/>
+            <a-form-item label="打包人">
+              <a-input v-model="queryForm.createBy" placeholder="打包人" allow-clear/>
             </a-form-item>
           </a-col>
-
           <template v-if="advanced">
-            <a-col :span="4">
-              <a-form-item label="托盘编码">
-                <a-input v-model="queryForm.palletCode" placeholder="托盘编码" allow-clear/>
-              </a-form-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-item label="SSCC码">
-                <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
-              </a-form-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-item label="物料编码" >
-                <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
-              </a-form-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-model-item label="批次号">
-                <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-item label="操作人">
-                <a-input v-model="queryForm.operateUser" placeholder="操作人" allow-clear/>
-              </a-form-item>
-            </a-col>
+
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
@@ -111,6 +81,7 @@
 import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
+
   {
     title: 'Shipping Mark',
     key: 'shippingMark',
@@ -119,80 +90,32 @@ const columns = [
   },
   {
     title: 'ETO PO',
-    key: 'ETOPO',
-    dataIndex: 'ETOPO',
+    key: 'etoPo',
+    dataIndex: 'etoPo',
     width: 120
   },
   {
-    title: 'ETO PLANT',
-    key: 'ETOPLANT',
-    dataIndex: 'ETOPLANT',
-    width: 120
-  },
-  {
-    title: 'stock movement 移库日期',
-    key: 'stockMovement',
-    dataIndex: 'stockMovement',
-    width: 140
-  },
-  {
-    title: 'Country',
-    key: 'country',
-    dataIndex: 'country',
-    width: 140
-  },
-  {
-    title: 'Prod-order',
-    key: 'prodOrder',
-    dataIndex: 'prodOrder',
-    width: 140
-  },
-  {
-    title: 'Qty',
-    key: 'Qty',
-    dataIndex: 'Qty',
-    width: 120
-  },
-  {
-    title: '是否拆托',
-    key: 'batchNb',
-    dataIndex: 'batchNb',
-    width: 120
-  },
-  {
-    title: 'TR',
-    key: 'TR',
-    dataIndex: 'TR',
-    width: 80
-  },
-  {
-    title: 'SAP Code',
-    key: 'SAPCode',
-    dataIndex: 'SAPCode',
-    width: 120
-  },
-  {
-    title: 'Pallet Quantity',
-    key: 'PalletQuantity',
-    dataIndex: 'PalletQuantity',
-    width: 120
-  },
-  {
-    title: 'after packing',
+    title: '打包总托数',
     key: 'afterPacking',
     dataIndex: 'afterPacking',
     width: 120
   },
   {
-    title: '状态',
-    key: 'status',
-    dataIndex: 'status',
-    width: 120
+    title: '序号',
+    key: 'index',
+    dataIndex: 'shippingTaskId',
+    width: 140
   },
   {
-    title: '进度',
-    key: 'process',
-    dataIndex: 'process',
+    title: 'SSCC',
+    key: 'ssccNumbers',
+    dataIndex: 'ssccNumbers',
+    width: 140
+  },
+  {
+    title: '打包时间',
+    key: 'createTime',
+    dataIndex: 'createTime',
     width: 120
   },
   {
@@ -200,19 +123,14 @@ const columns = [
     key: 'createBy',
     dataIndex: 'createBy',
     width: 120
-  },
-  {
-    title: '打包完成时间',
-    key: 'createTime',
-    dataIndex: 'createTime',
-    width: 200
   }
+
 ]
 
 const queryFormAttr = () => {
   return {
-    plantNb: '',
-    wareCode: '',
+    shippingMark: '',
+    etoPo: '',
     ssccNumber: '',
     materialNb: '',
     batchNb: '',
@@ -229,6 +147,7 @@ export default {
     return {
       tableLoading: false,
       uploadLoading: false,
+      genTaskLoading: false,
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -243,13 +162,14 @@ export default {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
     },
+
     async loadTableList () {
       try {
         this.tableLoading = true
 
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('stock/getPaginationList', this.queryForm)
+        } = await this.$store.dispatch('finishedProduct/getHistoryRecord', this.queryForm)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {

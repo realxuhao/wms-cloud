@@ -321,15 +321,29 @@ export const asyncRouterMap = [
       {
         path: '/finished-product',
         name: 'finishedProduct',
-        redirect: '/finished-product/list',
+        redirect: '/finished-product/plan-list',
         component: RouteView,
         meta: { title: '成品管理', icon: 'hdd', permission: [] },
         children: [
           {
-            path: '/finished-product/list',
-            name: 'finishedProductList',
-            component: () => import('@/views/finishedProduct/FinishedProductList.vue'),
+            path: '/finished-product/plan-list',
+            name: 'finishedProductPalnList',
+            component: () => import('@/views/finishedProduct/FinishedProductPlanList.vue'),
             meta: { title: '成品打包计划', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/finished-product/task-list',
+            name: 'finishedProductTaskList',
+            component: () => import('@/views/finishedProduct/FinishedProductTaskList.vue'),
+            meta: { title: '成品打包任务', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/finished-product/packing-history-list',
+            name: 'finishedProductPackingHistoryList',
+            component: () => import('@/views/finishedProduct/FinishedProductPackingHistoryList.vue'),
+            meta: { title: '成品打包记录', permission: [] },
             hideChildrenInMenu: true
           }
         ]

@@ -40,6 +40,7 @@ import driverDeliver from './modules/driverDeliver'
 import driverDispatch from './modules/driverDispatch'
 
 import split from './modules/split'
+import finishedProduct from './modules/finishedProduct'
 
 // dynamic router permission control (Experimental)
 // import permission from './modules/async-router'
@@ -84,7 +85,9 @@ export default new Vuex.Store({
     wareShift,
     manualTrans,
     materialInList,
-    binIn
+    binIn,
+
+    finishedProduct
   },
   state: {
 
