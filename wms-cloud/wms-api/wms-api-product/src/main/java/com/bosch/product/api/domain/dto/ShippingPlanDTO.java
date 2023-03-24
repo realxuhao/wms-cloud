@@ -4,6 +4,7 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import com.ruoyi.common.core.web.page.PageDomain;
 import lombok.Data;
 
 import java.util.Date;
@@ -18,7 +19,7 @@ import lombok.Data;
 
 @Data
 @ApiModel(value = "ShippingPlanDTO", description = "Shipping Plan DTO")
-public class ShippingPlanDTO extends BaseEntity {
+public class ShippingPlanDTO extends PageDomain {
 
     @ApiModelProperty(value = "Shipping Mark")
     @ExcelProperty("Shipping  Mark")

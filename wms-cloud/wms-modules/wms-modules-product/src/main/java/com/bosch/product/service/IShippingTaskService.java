@@ -33,5 +33,5 @@ public interface IShippingTaskService extends IService<ShippingTask> {
 
     boolean checkHistory(Long taskId);
 
-    List<ShippingTaskVO> getDashboard();
+    List<ShippingTaskVO> getDashboard(ShippingTaskDTO dto);
 }

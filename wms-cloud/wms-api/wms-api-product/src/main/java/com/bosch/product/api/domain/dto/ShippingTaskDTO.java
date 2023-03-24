@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -19,10 +20,13 @@ import java.util.Date;
  */
 @Data
 @ApiModel(value = "ShippingTaskDTO", description = "打包任务")
-public class ShippingTaskDTO extends BaseEntity {
+public class ShippingTaskDTO extends PageDomain {
 
     @ApiModelProperty(value = "id")
     private Long id;
+
+    @ApiModelProperty(value = "stock movement 移库日期排序字段")
+    private String stockMovementDateOrderBy;
 
     @ApiModelProperty(value = "打包计划id")
     private  String shippingPlanId;
@@ -66,6 +70,9 @@ public class ShippingTaskDTO extends BaseEntity {
 
     @ApiModelProperty(value = "after packing")
     private String afterPacking;
+
+    @ApiModelProperty(value = "打包人")
+    private String createBy;
 
     /**
      * 状态（1：已执行，0：未执行）

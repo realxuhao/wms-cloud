@@ -3,10 +3,12 @@ package com.bosch.product.service.impl;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.product.api.domain.ShippingHistory;
+import com.bosch.product.api.domain.dto.ShippingDTO;
 import com.bosch.product.api.domain.dto.ShippingHistoryDTO;
 import com.bosch.product.api.domain.dto.ShippingTaskDTO;
 import com.bosch.product.api.domain.vo.ShippingHistoryVO;
 import com.bosch.product.api.domain.vo.ShippingTaskVO;
+import com.bosch.product.api.domain.vo.ShippingVO;
 import com.bosch.product.service.IShippingHistoryService;
 import com.bosch.product.mapper.ShippingHistoryMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,12 @@ public class ShippingHistoryServiceImpl extends ServiceImpl<ShippingHistoryMappe
     public List<ShippingHistory> searchAllFields(ShippingHistoryDTO dto) {
         return shippingHistoryMapper.searchAllFields(dto);
     }
+
+    @Override
+    public List<ShippingVO> selectShipping(ShippingDTO dto) {
+        return shippingHistoryMapper.selectShipping(dto);
+    }
+
 
 
 }

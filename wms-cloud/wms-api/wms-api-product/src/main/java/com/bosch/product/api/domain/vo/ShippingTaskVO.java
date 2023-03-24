@@ -1,9 +1,12 @@
 package com.bosch.product.api.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * 
@@ -31,6 +34,9 @@ public class ShippingTaskVO extends BaseEntity {
     @ApiModelProperty(value = "stock movement 移库日期")
     private String stockMovementDate;
 
+    @ApiModelProperty(value = "stock movement 移库日期排序字段")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date stockMovementDateOrderBy;
 
     @ApiModelProperty(value = "Country")
     private String country;

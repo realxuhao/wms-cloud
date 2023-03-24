@@ -138,8 +138,8 @@ public class ShippingTaskServiceImpl extends ServiceImpl<ShippingTaskMapper, Shi
     }
 
     @Override
-    public List<ShippingTaskVO> getDashboard() {
-        return shippingTaskMapper.getDashboard();
+    public List<ShippingTaskVO> getDashboard(ShippingTaskDTO dto) {
+        return shippingTaskMapper.getDashboard(dto);
     }
 
 }

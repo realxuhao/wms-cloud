@@ -25,6 +25,12 @@ public class ShippingHistory extends BaseEntity {
     private Long id;
 
     /**
+     *
+     */
+    @TableField(value = "history_index")
+    private Integer historyIndex;
+
+    /**
      * task表id
      */
     @TableField(value = "shipping_task_id")

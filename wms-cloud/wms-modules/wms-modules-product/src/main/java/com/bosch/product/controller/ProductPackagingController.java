@@ -18,6 +18,7 @@ import com.bosch.product.api.domain.ShippingTask;
 import com.bosch.product.api.domain.dto.*;
 import com.bosch.product.api.domain.dto.ShippingPlanVO;
 import com.bosch.product.api.domain.vo.ShippingTaskVO;
+import com.bosch.product.api.domain.vo.ShippingVO;
 import com.bosch.product.api.enumeration.TaskStatusEnum;
 import com.bosch.product.service.IShippingHistoryService;
 import com.bosch.product.service.IShippingPlanService;
@@ -118,12 +119,13 @@ public class ProductPackagingController extends BaseController {
      * 获取打包历史记录
      */
     //@RequiresPermissions("masterdata:pallet:list")
-    @PostMapping(value = "/getHistoryRecord")
+    @GetMapping(value = "/getHistoryRecord")
     @ApiOperation("获取打包历史记录")
-    public R getHistoryRecord(ShippingHistoryDTO dto) {
+    public R<PageVO<ShippingVO>> getHistoryRecord( ShippingDTO dto) {
         try {
-            List<ShippingHistory> shippingHistories = shippingHistoryService.searchAllFields(dto);
-            return R.ok(shippingHistories);
+            startPage();
+            List<ShippingVO> shippingVOS = shippingHistoryService.selectShipping(dto);
+            return R.ok(new PageVO<>(shippingVOS, new PageInfo<>(shippingVOS).getTotal()));
         } catch (Exception e) {
             logger.error(e.getMessage());
             return R.fail(e.getMessage());
@@ -140,9 +142,9 @@ public class ProductPackagingController extends BaseController {
         return toAjax(shippingHistoryService.deleteHistoryByTaskId(id));
     }
 
-    @PostMapping(value = "/list")
+    @GetMapping(value = "/list")
     @ApiOperation("获取打包任务")
-    public R<PageVO<ShippingTaskVO>> getTask(@RequestBody ShippingTaskDTO dto) {
+    public R<PageVO<ShippingTaskVO>> getTask( ShippingTaskDTO dto) {
         try {
             startPage();
             List<ShippingTask> shippingTasks = shippingTaskService.selectAllByFields(dto);
@@ -154,12 +156,12 @@ public class ProductPackagingController extends BaseController {
             return R.fail(e.getMessage());
         }
     }
-    @PostMapping(value = "/allPlanList")
+    @GetMapping(value = "/allPlanList")
     @ApiOperation("获取未生成打包任务的打包计划")
     public R<List<ShippingPlanVO>> allPlanList(ShippingPlanDTO dto) {
         try {
+            startPage();
             List<ShippingPlan> list = shippingPlanService.getList(dto);
-
             List<ShippingPlanVO> shippingPlanVOS = BeanConverUtil.converList(list, ShippingPlanVO.class);
             return R.ok(shippingPlanVOS);
         } catch (Exception e) {
@@ -180,12 +182,12 @@ public class ProductPackagingController extends BaseController {
             return R.fail(e.getMessage());
         }
     }
-    @PostMapping(value = "/getDashboard")
+    @GetMapping(value = "/getDashboard")
     @ApiOperation("获取成品打包可视化大屏")
-    public R<PageVO<ShippingTaskVO>> getDashboard() {
+    public R<PageVO<ShippingTaskVO>> getDashboard(ShippingTaskDTO dto) {
         try {
             startPage();
-            List<ShippingTaskVO> dashboard = shippingTaskService.getDashboard();
+            List<ShippingTaskVO> dashboard = shippingTaskService.getDashboard(dto);
 
             return R.ok(new PageVO<>(dashboard, new PageInfo<>(dashboard).getTotal()));
         } catch (Exception e) {

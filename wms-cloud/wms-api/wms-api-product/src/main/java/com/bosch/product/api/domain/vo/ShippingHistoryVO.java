@@ -1,5 +1,6 @@
 package com.bosch.product.api.domain.vo;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,6 +11,9 @@ public class ShippingHistoryVO {
 
     @ApiModelProperty(value = "id")
     private Long id;
+
+    @ApiModelProperty(value = "序号")
+    private Integer historyIndex;
 
     @ApiModelProperty(value = "shippingTaskId")
     private Long shippingTaskId;
