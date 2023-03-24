@@ -964,8 +964,11 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     }
 
     @Override
-    public int deleteBinInById(Long id) {
-        BinIn binIn = binInMapper.selectById(id);
+    public int deleteBinInBySscc(String ssccNnumber) {
+        LambdaQueryWrapper<BinIn> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(BinIn::getSsccNumber,ssccNnumber);
+        queryWrapper.eq(BinIn::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        BinIn binIn = binInMapper.selectOne(queryWrapper);
         if (binIn.getStatus().equals(BinInStatusEnum.FINISH.value())) {
             throw new ServiceException("该任务已完成上架，不可删除");
         }

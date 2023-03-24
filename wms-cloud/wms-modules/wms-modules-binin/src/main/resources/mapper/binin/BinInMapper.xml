@@ -62,7 +62,10 @@
         </if>
         <if test="createBy != null and createBy != ''">and bi.create_by like concat('%', #{createBy}, '%')</if>
         <if test="status == 1 ">and bi.status = 1</if>
-        <if test="status == 0 ">and (bi.STATUS = 0 or sm.sscc_number not in (SELECT sscc_number from bi_in WHERE delete_flag = 0 and `status` = 1))</if>
+        <if test="status == 3 ">and sm.sscc_number not in (SELECT sscc_number from bi_in WHERE delete_flag = 0 and
+            `status` = 1)
+        </if>
+        <if test="status == 0 ">and bi.STATUS = 0</if>
     </select>
     <select id="selectBySsccNumber" resultType="com.bosch.binin.api.domain.vo.BinInVO">
         select bi.id,

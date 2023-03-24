@@ -66,7 +66,7 @@ public interface IBinInService extends IService<BinIn> {
      */
     public BinInVO performBinInWithIQC(BinInDTO binInDTO);
 
-    int deleteBinInById(Long id);
+    int deleteBinInBySscc(String ssccNumber);
 
     List<BinInVO> selectProcessingBinVOList(BinInQueryDTO binInQueryDTO);
 

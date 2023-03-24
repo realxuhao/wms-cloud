@@ -558,7 +558,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         qw.last("limit 1");
         BinIn binInProcessing = binInService.getOne(qw);
         if (binInProcessing != null) {
-            binInService.deleteBinInById(binInProcessing.getId());
+            binInService.deleteBinInBySscc(binInProcessing.getSsccNumber());
         }
 
         //如果老sscc没有上架，需要生成一个新的上架任务

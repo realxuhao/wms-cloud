@@ -19,9 +19,11 @@
     </select>
     <select id="list" resultType="com.bosch.binin.api.domain.vo.WareShiftVO">
         select ws.*,
-        mm.name as material_name
+        mm.name as material_name,
+               tr.order_number as orderNb
         from ware_shift ws
         left join (SELECT * from md_material where delete_flag = '0') mm on ws.material_nb = mm.code
+        left join transhipment_order tr on tr.sscc_number = ws.sscc_nb and tr.delete_flag = 0
         where ws.delete_flag = 0
         <if test="sourceWareCode != null and sourceWareCode != ''">
             AND ws.source_ware_code=#{sourceWareCode}
