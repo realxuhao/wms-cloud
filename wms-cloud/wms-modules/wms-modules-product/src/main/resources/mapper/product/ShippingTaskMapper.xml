@@ -85,12 +85,30 @@
         </foreach>
     </update>
 
-    <select id="getDashboard" resultType="com.bosch.product.api.domain.vo.ShippingTaskVO" >
-        SELECT shipping_task.*,
+    <select id="getDashboard" resultType="com.bosch.product.api.domain.vo.ShippingTaskVO" parameterType="com.bosch.product.api.domain.dto.ShippingTaskDTO">
+        SELECT STR_TO_DATE(shipping_task.stock_movement_date, '%Y/%m/%d %H:%i') as stock_movement_date_order_by,shipping_task.*,
         ROUND(COUNT(shipping_history.shipping_task_id) / shipping_task.after_packing * 100, 2) AS rate_of_progress
         FROM shipping_task
         LEFT JOIN shipping_history ON shipping_task.id = shipping_history.shipping_task_id
+        <if test="createBy != null and createBy !=''">AND shipping_history.create_by like concat('%',#{createBy},'%')</if>
         WHERE shipping_task.delete_flag=0
+        <if test="id != null">AND shipping_task.id = #{id}</if>
+        <if test="packageNo != null and packageNo !=''">AND shipping_task.package_no like concat('%',#{packageNo},'%')</if>
+        <if test="shippingPlanId != null and shippingPlanId !=''">AND shipping_task.shipping_plan_id = #{shippingPlanId}</if>
+        <if test="shippingMark != null and shippingMark !=''">AND shipping_task.shipping_mark like concat('%',#{shippingMark},'%')</if>
+        <if test="etoPo != null and etoPo !=''">AND shipping_task.eto_po like concat('%',#{etoPo},'%')</if>
+        <if test="etoPlant != null and etoPlant !=''">AND shipping_task.eto_plant = #{etoPlant}</if>
+        <if test="stockMovementDate != null and stockMovementDate !=''">AND shipping_task.stock_movement_date = #{stockMovementDate}</if>
+        <if test="country != null and country !=''">AND shipping_task.country = #{country}</if>
+        <if test="prodOrder != null and prodOrder !=''">AND shipping_task.prod_order like concat('%',#{prodOrder},'%')</if>
+        <if test="qty != null and qty !=''">AND qty = #{qty}</if>
+        <if test="isDisassembled != null and isDisassembled !=''">AND shipping_task.is_disassembled = #{isDisassembled}</if>
+        <if test="tr != null and tr !=''">AND shipping_task.tr = #{tr}</if>
+        <if test="sapCode != null and sapCode !=''">AND shipping_task.sap_code like concat('%',#{sapCode},'%')</if>
+        <if test="palletQuantity != null and palletQuantity !=''">AND shipping_task.pallet_quantity like concat('%',#{palletQuantity},'%')</if>
+        <if test="afterPacking != null and afterPacking !=''">AND shipping_task.after_packing like concat('%',#{afterPacking},'%')</if>
+
+
         GROUP BY shipping_task.id
 
     </select>

@@ -17,13 +17,28 @@
         <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
         <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="historyIndex" column="history_index" jdbcType="BIGINT"/>
+
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,shipping_task_id,eto_po,sscc_numbers,
+        id,shipping_task_id,eto_po,sscc_numbers,history_index,
         prod_order,create_by,update_by,
         create_time,update_time,status,
         delete_flag,remark
+    </sql>
+    <sql id="Task_Base_Column_List">
+        st.id as shipping_task_id,st.package_no,st.shipping_plan_id,st.shipping_mark,
+        st.eto_po,st.eto_plant,st.stock_movement_date,
+        st.country,st.prod_order,st.qty,
+        st.is_disassembled,st.tr,st.sap_code,
+        st.pallet_quantity,st.after_packing,st.create_by as task_create_by,
+        st.update_by as task_update_by,st.create_time as task_create_time,st.update_time as task_update_time
+    </sql>
+    <sql id="History_Base_Column_List">
+        sh.id as shipping_history_id,sh.sscc_numbers,sh.history_index,sh.create_by as history_create_by,sh.update_by as history_update_by,
+        sh.create_time as history_create_time,sh.update_time as history_update_time
+
     </sql>
 
     <delete id="deleteHistoryByTaskId" parameterType="Long">
@@ -67,4 +82,35 @@
             AND update_time = #{updateTime}
         </if>
     </select>
+
+
+            <select id="selectShipping" resultType="com.bosch.product.api.domain.vo.ShippingVO" parameterType="com.bosch.product.api.domain.dto.ShippingDTO">
+                SELECT
+                <include refid="Task_Base_Column_List"/>,<include refid="History_Base_Column_List"/>
+
+                FROM shipping_task as st left join shipping_history as sh
+                WHERE st.delete_flag=0 and sh.delete_flag=0
+
+                <if test="shippingMark != null and shippingMark != '' ">
+                    AND st.shipping_mark like concat('%',#{shippingMark},'%')
+                </if>
+                <if test="etoPo != null and etoPo != ''  ">
+                    AND st.eto_po like concat('%',#{etoPo},'%')
+                </if>
+
+                <if test="startCreateTime != null">and sh.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
+                <if test="endCreateTime != null">and sh.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+                <if test="historyCreateBy != null and historyCreateBy != ''  ">
+                    AND sh.create_by = #{historyCreateBy}
+                </if>
+                <if test="afterPacking != null and afterPacking != '' ">
+                    AND st.after_packing = #{afterPacking}
+                </if>
+                <if test="ssccNumbers != null and ssccNumbers != '' ">
+                    AND sh.sscc_numbers like concat('%',#{ssccNumbers},'%')
+                </if>
+
+
+            </select>
+
 </mapper>

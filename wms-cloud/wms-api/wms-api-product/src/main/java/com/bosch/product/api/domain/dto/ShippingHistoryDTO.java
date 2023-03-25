@@ -12,6 +12,9 @@ public class ShippingHistoryDTO  extends BaseEntity {
     @ApiModelProperty(value = "id")
     private Long id;
 
+    @ApiModelProperty(value = "序号")
+    private Integer historyIndex;
+
     @ApiModelProperty(value = "shippingTaskId")
     private Long shippingTaskId;
 
