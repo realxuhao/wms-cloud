@@ -91,6 +91,19 @@ public class WareShiftVO  {
     @Excel(name = "批次号")
     private String batchNb;
 
+    @ApiModelProperty(value = "移库单号")
+    @Excel(name = "移库单号")
+    private String orderNb;
+
+
+    @ApiModelProperty(value = "移库数量")
+    @Excel(name = "移库数量")
+    private Double quantity;
+
+
+    @ApiModelProperty(value = "车牌号")
+    private String carNb;
+
     /**
      * bbd过期时间
      */

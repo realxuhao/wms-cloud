@@ -136,6 +136,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
                         .sourceBinCode(stock.getBinCode()).materialNb(stock.getMaterialNb()).batchNb(stock.getBatchNb()).expireDate(stock.getExpireDate())
                         .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
                         .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                        .quantity(stock.getTotalStock())
                         .build();
                 wareShiftList.add(wareShift);
             }
@@ -199,6 +200,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
                     .sourceBinCode(stock.getBinCode()).materialNb(stock.getMaterialNb()).batchNb(stock.getBatchNb()).expireDate(stock.getExpireDate())
                     .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
                     .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                    .quantity(stock.getTotalStock())
                     .build();
             wareShiftList.add(wareShift);
 
@@ -417,6 +419,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
                 .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
                 .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
                 .targetWareCode(dto.getTargetWareCode())
+                .quantity(stock.getTotalStock())
                 .build();
         wareShiftService.save(wareShift);
 

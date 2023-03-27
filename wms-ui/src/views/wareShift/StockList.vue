@@ -69,7 +69,7 @@
         <a-col :span="24" v-show="currentStep === 1">
           <div class="action-content">
             <a-button class="m-r-8" icon="step-backward" @click="previousStep">上一步</a-button>
-            <a-button type="primary" :disabled="!hasSelected" @click="handleSubmit" :loading="submitLoading">提交并生成拣配任务
+            <a-button type="primary" :disabled="!hasSelected" @click="handleSubmit" :loading="submitLoading">提交并生成移库任务
             </a-button>
           </div>
           <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -112,6 +112,12 @@ const queryFormAttr = () => {
 }
 
 const selectColumns = [
+  {
+    title: '工厂',
+    key: 'plantNb',
+    dataIndex: 'plantNb',
+    width: 100
+  },
   {
     title: '仓库编码',
     key: 'wareCode',

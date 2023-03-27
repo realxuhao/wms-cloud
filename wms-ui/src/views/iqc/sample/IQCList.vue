@@ -348,7 +348,9 @@ const queryFormAttr = () => {
     binDownTime: [],
     sampleUser: '',
     sampleTime: [],
-    wareCode: ''
+    wareCode: '',
+    cellList: [],
+    cell: ''
   }
 }
 export default {

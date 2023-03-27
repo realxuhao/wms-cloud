@@ -67,7 +67,7 @@
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
-        rowKey="id"
+        rowKey="ssccNumber"
         :pagination="false"
         size="middle"
         :scroll="tableScroll"
@@ -80,12 +80,15 @@
             <a-tag color="#87d068" v-if="text===1">
               已上架
             </a-tag>
+            <a-tag color="#666666" v-else>
+              入库待上架
+            </a-tag>
           </div>
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a-popconfirm title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
-              <a class="danger-color" :disabled="record.status===1"><a-icon class="m-r-4" type="delete" />删除</a>
+              <a class="danger-color" :disabled="!record.status||record.status===1"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
           </div>
         </template>
@@ -181,7 +184,7 @@ const columns = [
     title: '状态',
     key: 'status',
     dataIndex: 'status',
-    width: 80,
+    width: 120,
     scopedSlots: { customRender: 'status' }
   },
   {
@@ -229,6 +232,10 @@ const status = [
   {
     text: '已上架',
     value: 1
+  },
+  {
+    text: '入库待上架',
+    value: 3
   }
 ]
 
@@ -255,7 +262,7 @@ export default {
   methods: {
     async handleDelete (row) {
       try {
-        await this.$store.dispatch('binIn/delete', row.id)
+        await this.$store.dispatch('binIn/delete', row.ssccNumber)
         this.$message.success('删除成功！')
 
         this.loadTableList()

@@ -288,6 +288,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
                         .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialCode()).expireDate(stock.getExpireDate()).batchNb(stock.getBatchNb())
                         .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
                         .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                        .quantity(item.getQuantity())
                         .build();
 
                 wareShiftList.add(wareShift);

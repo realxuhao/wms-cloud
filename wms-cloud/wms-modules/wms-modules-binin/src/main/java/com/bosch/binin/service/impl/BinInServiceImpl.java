@@ -558,6 +558,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
                                 .sourceBinCode(item.getActualBinCode()).materialNb(item.getMaterialNb()).batchNb(item.getBatchNb()).expireDate(item.getExpireDate())
                                 .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
                                 .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                                .quantity(item.getQuantity())
                                 .build();
                         wareShiftList.add(wareShift);
                     });

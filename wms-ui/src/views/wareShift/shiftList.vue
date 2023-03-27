@@ -134,6 +134,12 @@ import StockList from './StockList'
 
 const columns = [
   {
+    title: '转运单号',
+    key: 'orderNb',
+    dataIndex: 'orderNb',
+    width: 120
+  },
+  {
     title: '源工厂',
     key: 'sourcePlantNb',
     dataIndex: 'sourcePlantNb',
@@ -162,6 +168,12 @@ const columns = [
     key: 'status',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
+    width: 120
+  },
+  {
+    title: '移库数量',
+    key: 'quantity',
+    dataIndex: 'quantity',
     width: 120
   },
   {
