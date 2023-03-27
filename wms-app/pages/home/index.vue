@@ -89,7 +89,7 @@
 				</view>
 			</uni-section>
 
-			<uni-section title="IQC质检" type="line">
+			<uni-section title="IQC质检" type="line" class="m-b-12">
 				<view class="list header-box">
 					<view class="list-item" @click="handleGoto('/pages/IQC/binDown')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" color="#00ADD4"></uni-icons>
@@ -102,6 +102,15 @@
 					<view class="list-item" @click="handleGoto('/pages/IQC/binIn')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" color="#00ADD4"></uni-icons>
 						<view class="text">上架</view>
+					</view>
+				</view>
+			</uni-section>
+
+			<uni-section title="成品管理" type="line">
+				<view class="list header-box">
+					<view class="list-item" @click="handleGoto('/pages/finishedProduct/packTask')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" color="#00ADD4"></uni-icons>
+						<view class="text">成品打包</view>
 					</view>
 				</view>
 			</uni-section>

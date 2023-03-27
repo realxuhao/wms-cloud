@@ -52,6 +52,7 @@ const errorParser = async (response) => {
 
     return response
   }
+
   if (status === 403) {
     notification.error({
       message: 'Forbidden',
@@ -60,6 +61,7 @@ const errorParser = async (response) => {
     // eslint-disable-next-line prefer-promise-reject-errors
     return Promise.reject({ message: 'Forbidden' })
   }
+
   if (status === 401) {
     const token = getToken()
     notification.error({

@@ -9,7 +9,6 @@
             <a-form-model-item label="物料名称">
               <a-input v-model="queryForm.name" placeholder="物料名称" allow-clear/>
             </a-form-model-item>
-
           </a-col>
           <a-col :span="4">
             <a-form-model-item label="物料编码">
@@ -32,6 +31,18 @@
                   v-for="item in materialTypeList"
                   :key="item.id">
                   {{ item.code }}</a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="Cell">
+              <a-select
+                allow-clear
+                v-model="queryForm.cell"
+              >
+                <a-select-option v-for="item in departmentList" :key="item.id" :value="item.code">
+                  {{ item.code }}
+                </a-select-option>
               </a-select>
             </a-form-model-item>
           </a-col>
@@ -293,7 +304,8 @@ const queryFormAttr = () => {
   return {
     code: '',
     name: '',
-    materialTypeId: ''
+    materialTypeId: '',
+    cell: ''
   }
 }
 
@@ -309,6 +321,7 @@ export default {
 
       materialTypeListLoading: false,
       materialTypeList: [],
+      departmentList: [],
 
       columns,
       list: [],
@@ -331,6 +344,10 @@ export default {
       } catch (error) {
         this.$message.error(error.message)
       }
+    },
+    async loadDepartmentList () {
+      const departmentList = await this.$store.dispatch('materialFeeding/getDepartmentList')
+      this.departmentList = departmentList
     },
     async uploadBatchUpdate (formdata) {
       try {
@@ -428,6 +445,7 @@ export default {
     async loadData () {
       this.loadTableList()
       this.loadMaterialTypeList()
+      this.loadDepartmentList()
     }
   },
   mounted () {
