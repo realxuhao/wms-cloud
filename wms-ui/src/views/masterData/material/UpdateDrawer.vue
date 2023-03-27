@@ -133,14 +133,14 @@
 
       </a-form-item>
 
-      <a-form-item label="允许负偏差比例">
+      <!-- <a-form-item label="允许负偏差比例">
         <a-input-number
           placeholder="允许负偏差比例（绝对值）"
           v-decorator="[
             'lessDeviationRatio',
             { rules: [{ required: true, message: '请输入允许负偏差比例!' }] }
           ]" />
-      </a-form-item>
+      </a-form-item> -->
 
       <a-form-item label="最小包装重量">
         <a-input-number
@@ -173,18 +173,33 @@
             'unit',
             { rules: [{ required: true, message: '请选择单位' }], initialValue: 'kg' }
           ]"
-          placeholder="物料防错方式">
+        >
+          <a-select-option value="BAG">
+            BAG
+          </a-select-option>
+          <a-select-option value="BT">
+            BT
+          </a-select-option>
+          <a-select-option value="G">
+            G
+          </a-select-option>
           <a-select-option value="KG">
             KG
-          </a-select-option>
-          <a-select-option value="M">
-            M
           </a-select-option>
           <a-select-option value="L">
             L
           </a-select-option>
+          <a-select-option value="M">
+            M
+          </a-select-option>
+          <a-select-option value="PC">
+            PC
+          </a-select-option>
           <a-select-option value="㎡">
-            ㎡
+            RLL
+          </a-select-option>
+          <a-select-option value="㎡">
+            Carton
           </a-select-option>
         </a-select>
       </a-form-item>
