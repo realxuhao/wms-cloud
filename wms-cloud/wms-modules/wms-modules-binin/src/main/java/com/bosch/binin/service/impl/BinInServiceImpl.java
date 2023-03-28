@@ -281,7 +281,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         return binInMapper.selectBySsccNumber(sscc);
     }
 
-    private MaterialVO getMaterialVOByCode(String materialNb) {
+    public MaterialVO getMaterialVOByCode(String materialNb) {
         R<MaterialVO> materialVORes = remoteMaterialService.getInfoByMaterialCode(materialNb);
         if (StringUtils.isNull(materialVORes) || Objects.isNull(materialVORes.getData())) {
             throw new ServiceException("该物料：" + materialNb + " 不存在");
@@ -542,31 +542,26 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             } else if (lastFlag && DeparementEnum.FSMP.getCode().equals(materialVO.getCell())) {//FSMP
                 samplePlanList = dealFSMPIQCProces(materialVO, binIn.getBatchNb(), binInList, sameBatchList);
             }
+            //下发的时候去新增外库任务。
             // 如果是外库的，新增移库任务
-            if (!CollectionUtils.isEmpty(samplePlanList)) {
-                if ("7752".equals(samplePlanList.get(0).getPlantNb())) {
-
-                    List<String> samplanSsccList = samplePlanList.stream().map(IQCSamplePlan::getSsccNb).collect(Collectors.toList());
-                    List<BinIn> inList = binInList.stream().filter(item -> samplanSsccList.contains(item.getSsccNumber())).collect(Collectors.toList());
-
-
-                    List<WareShift> wareShiftList = new ArrayList<>();
-
-
-                    inList.stream().forEach(item -> {
-                        WareShift wareShift = WareShift.builder().sourcePlantNb(item.getPlantNb()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
-                                .sourceBinCode(item.getActualBinCode()).materialNb(item.getMaterialNb()).batchNb(item.getBatchNb()).expireDate(item.getExpireDate())
-                                .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
-                                .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
-                                .quantity(item.getQuantity())
-                                .build();
-                        wareShiftList.add(wareShift);
-                    });
-                    wareShiftService.saveBatch(wareShiftList);
-                }
-            }
-
-
+//            if (!CollectionUtils.isEmpty(samplePlanList)) {
+//                if ("7752".equals(samplePlanList.get(0).getPlantNb())) {
+//
+//                    List<String> samplanSsccList = samplePlanList.stream().map(IQCSamplePlan::getSsccNb).collect(Collectors.toList());
+//                    List<BinIn> inList = binInList.stream().filter(item -> samplanSsccList.contains(item.getSsccNumber())).collect(Collectors.toList());
+//                    List<WareShift> wareShiftList = new ArrayList<>();
+//                    inList.stream().forEach(item -> {
+//                        WareShift wareShift = WareShift.builder().sourcePlantNb(item.getPlantNb()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
+//                                .sourceBinCode(item.getActualBinCode()).materialNb(item.getMaterialNb()).batchNb(item.getBatchNb()).expireDate(item.getExpireDate())
+//                                .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+//                                .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+//                                .quantity(item.getQuantity())
+//                                .build();
+//                        wareShiftList.add(wareShift);
+//                    });
+//                    wareShiftService.saveBatch(wareShiftList);
+//                }
+//            }
         }
 
 
@@ -585,10 +580,10 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             List<String> ssccList = sameBatchList.stream().map(MaterialReceiveVO::getSsccNumber).collect(Collectors.toList());
             List<String> randomSscc = getRandomNonConsecutive(ssccList);
             List<BinIn> binIns = binInList.stream().filter(item -> randomSscc.contains(item.getSsccNumber())).collect(Collectors.toList());
-            samplePlanList = convertToSamplePlans(binIns, materialVO.getCell(), null);
+            samplePlanList = convertToSamplePlans(binIns, materialVO, null);
         } else if (fsmp.getClassification().equals(FsmpClassificationEnum.B.getDesc())||sameBatchList.size() <= 3){//随机下架一托
             Collections.shuffle(binInList);
-            IQCSamplePlan samplePlan = convertToSamplePlan(binInList.get(0), null, materialVO.getCell());
+            IQCSamplePlan samplePlan = convertToSamplePlan(binInList.get(0), null, materialVO);
             samplePlanList.add(samplePlan);
         }
         samplePlanService.saveBatch(samplePlanList);
@@ -667,10 +662,12 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
                 || EcnClassificationEnum.HGG.getDesc().equals(ecn.getClassification())//皇冠盖
                 || EcnClassificationEnum.SMS.getDesc().equals(ecn.getClassification())) {//说明书&标签
             samplePlanList = dealSameBatchQuantity(materialVO, ecn, binInList, sameBatchList);
+            //修改单位为"件中取量"
+            samplePlanList.forEach(item->item.setUnit("件中取量"));
         } else if (EcnClassificationEnum.ZX.getDesc().equals(ecn.getClassification())) {//国内产品纸箱
             Collections.shuffle(binInList);
             BinIn binIn = binInList.get(0);
-            IQCSamplePlan samplePlan = convertToSamplePlan(binIn, Double.valueOf(2), materialVO.getCell());
+            IQCSamplePlan samplePlan = convertToSamplePlan(binIn, Double.valueOf(2), materialVO);
             samplePlanList.add(samplePlan);
         } else if (EcnClassificationEnum.BLP.getDesc().equals(ecn.getClassification())) {//玻璃瓶
             samplePlanList = dealEcnBlpProcess(materialVO, binInList, sameBatchList);
@@ -709,17 +706,17 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         if (totalPallet <= 3) {
             double sample = Math.ceil(sampleQuantity / totalPallet);
-            res = convertToSamplePlans(binInList, materialVO.getCell(), sample);
+            res = convertToSamplePlans(binInList, materialVO, sample);
         } else if (totalPallet > 3 && totalPallet <= 300) {
             Collections.shuffle(binInList);
             List<BinIn> binIns = binInList.subList(0, (int) Math.round(Math.sqrt(totalPallet) + 1));
             double sample = Math.ceil(sampleQuantity / (Math.sqrt(totalPallet) + 1));
-            res = convertToSamplePlans(binIns, materialVO.getCell(), sample);
+            res = convertToSamplePlans(binIns, materialVO, sample);
         } else {
             Collections.shuffle(binInList);
             List<BinIn> binIns = binInList.subList(0, (int) Math.round(Math.sqrt(totalPallet) / 2 + 1));
             double sample = Math.ceil(sampleQuantity / (Math.sqrt(totalPallet) / 2 + 1));
-            res = convertToSamplePlans(binIns, materialVO.getCell(), sample);
+            res = convertToSamplePlans(binIns, materialVO, sample);
         }
 
         return res;
@@ -734,11 +731,14 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             double ceil = Math.ceil(Math.sqrt(totalPallet));
             Collections.shuffle(binInList);
             List<BinIn> sampleBinInList = binInList.subList(0, (int) ceil);
-            samplePlanList = convertToSamplePlans(sampleBinInList, materialVO.getCell(), Double.valueOf(0));
+            samplePlanList = convertToSamplePlans(sampleBinInList, materialVO, Double.valueOf(0));
         } else if (EcnPlanEnum.C.getDesc().equals(ecn.getPlan())) {
-            samplePlanList = convertToSamplePlans(binInList, materialVO.getCell(), Double.valueOf(0));
+            samplePlanList = convertToSamplePlans(binInList, materialVO, Double.valueOf(0));
         } else if (EcnPlanEnum.B.getDesc().equals(ecn.getPlan())) {
             samplePlanList = dealSameBatchQuantity(materialVO, ecn, binInList, sameBatchList);
+            //单位修改为件中取量
+            samplePlanList.forEach(item->item.setUnit("件中取量"));
+
         }
         return samplePlanList;
 
@@ -749,17 +749,17 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         double quantity = sameBatchList.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
         double criteria = Math.ceil(quantity / materialVO.getPackageWeight().doubleValue());
         if (criteria <= 3) {
-            return convertToSamplePlans(binInList, materialVO.getCell(), Double.valueOf(0));
+            return convertToSamplePlans(binInList, materialVO, Double.valueOf(0));
         } else if (criteria > 3 && criteria <= 300) {
             int sampleQuantity = (int) Math.round(Math.sqrt(criteria) + 1);
-            return generateByQuantity(binInList, sampleQuantity, materialVO.getCell());
+            return generateByQuantity(binInList, sampleQuantity, materialVO);
         } else {
             int sampleQuantity = (int) Math.round(Math.sqrt(criteria) / 2 + 1);
-            return generateByQuantity(binInList, sampleQuantity, materialVO.getCell());
+            return generateByQuantity(binInList, sampleQuantity, materialVO);
         }
     }
 
-    private List<IQCSamplePlan> generateByQuantity(List<BinIn> binInList, Integer quantity, String cell) {
+    private List<IQCSamplePlan> generateByQuantity(List<BinIn> binInList, Integer quantity, MaterialVO materialVO) {
         Collections.shuffle(binInList);
         List<BinIn> list = new ArrayList<>();
         int count = 0;
@@ -777,7 +777,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             BinIn binIn = list.get(i);
             IQCSamplePlan iqcSamplePlan = new IQCSamplePlan();
             iqcSamplePlan.setSsccNb(binIn.getSsccNumber());
-            iqcSamplePlan.setCell(cell);
+            iqcSamplePlan.setCell(materialVO.getCell());
             iqcSamplePlan.setMaterialNb(binIn.getMaterialNb());
             iqcSamplePlan.setBinDownCode(binIn.getActualBinCode());
             iqcSamplePlan.setBinDownTime(new Date());
@@ -790,7 +790,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             } else {
                 iqcSamplePlan.setRecommendSampleQuantity(binIn.getQuantity());
             }
-            iqcSamplePlan.setStatus(binIn.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
+//            iqcSamplePlan.setStatus(binIn.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
+            iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_IN.code());
             iqcSamplePlan.setBatchNb(binIn.getBatchNb());
             iqcSamplePlan.setWareCode(binIn.getWareCode());
             iqcSamplePlan.setQuantity(binIn.getQuantity());
@@ -798,47 +799,51 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
 
             iqcSamplePlan.setExpireDate(binIn.getExpireDate());
+            iqcSamplePlan.setUnit(materialVO.getUnit());
             res.add(iqcSamplePlan);
         }
         return res;
     }
 
-    private IQCSamplePlan convertToSamplePlan(BinIn binIn, Double quantity, String cell) {
+    private IQCSamplePlan convertToSamplePlan(BinIn binIn, Double quantity, MaterialVO materialVO) {
         IQCSamplePlan iqcSamplePlan = new IQCSamplePlan();
         iqcSamplePlan.setSsccNb(binIn.getSsccNumber());
-        iqcSamplePlan.setCell(cell);
+        iqcSamplePlan.setCell(materialVO.getCell());
         iqcSamplePlan.setMaterialNb(binIn.getMaterialNb());
         iqcSamplePlan.setBinDownCode(binIn.getActualBinCode());
         iqcSamplePlan.setBinDownTime(new Date());
         iqcSamplePlan.setRecommendSampleQuantity(quantity);
-        iqcSamplePlan.setStatus(binIn.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
+//        iqcSamplePlan.setStatus(binIn.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
+        iqcSamplePlan.setStatus(IQCStatusEnum.WAAITTING_ISSUE.code());
         iqcSamplePlan.setBatchNb(binIn.getBatchNb());
         iqcSamplePlan.setWareCode(binIn.getWareCode());
         iqcSamplePlan.setQuantity(binIn.getQuantity());
         iqcSamplePlan.setExpireDate(binIn.getExpireDate());
         iqcSamplePlan.setPlantNb(binIn.getPlantNb());
+        iqcSamplePlan.setUnit(materialVO.getUnit());
 
         return iqcSamplePlan;
     }
 
 
-    private List<IQCSamplePlan> convertToSamplePlans(List<BinIn> binInList, String cell, Double sampleQuantity) {
+    private List<IQCSamplePlan> convertToSamplePlans(List<BinIn> binInList, MaterialVO materialVO, Double sampleQuantity) {
         List<IQCSamplePlan> list = new ArrayList<>();
         binInList.stream().forEach(binIn -> {
             IQCSamplePlan iqcSamplePlan = new IQCSamplePlan();
             iqcSamplePlan.setSsccNb(binIn.getSsccNumber());
-            iqcSamplePlan.setCell(cell);
+            iqcSamplePlan.setCell(materialVO.getCell());
             iqcSamplePlan.setMaterialNb(binIn.getMaterialNb());
             iqcSamplePlan.setBinDownCode(binIn.getActualBinCode());
             iqcSamplePlan.setBinDownTime(new Date());
             iqcSamplePlan.setRecommendSampleQuantity(sampleQuantity);
-            iqcSamplePlan.setStatus(binIn.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
+//            iqcSamplePlan.setStatus(binIn.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
+            iqcSamplePlan.setStatus(IQCStatusEnum.WAAITTING_ISSUE.code());
             iqcSamplePlan.setBatchNb(binIn.getBatchNb());
             iqcSamplePlan.setWareCode(binIn.getWareCode());
             iqcSamplePlan.setQuantity(binIn.getQuantity());
             iqcSamplePlan.setExpireDate(binIn.getExpireDate());
             iqcSamplePlan.setPlantNb(binIn.getPlantNb());
-
+            iqcSamplePlan.setUnit(materialVO.getUnit());
             list.add(iqcSamplePlan);
 
         });
@@ -881,12 +886,14 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         iqcSamplePlan.setBinDownCode(binIn.getActualBinCode());
         iqcSamplePlan.setBinDownTime(new Date());
         iqcSamplePlan.setRecommendSampleQuantity(sampleQuantity);
-        iqcSamplePlan.setStatus(binIn.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
+//        iqcSamplePlan.setStatus(binIn.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
+        iqcSamplePlan.setStatus(IQCStatusEnum.WAAITTING_ISSUE.code());
         iqcSamplePlan.setBatchNb(binIn.getBatchNb());
         iqcSamplePlan.setWareCode(binIn.getWareCode());
         iqcSamplePlan.setQuantity(binIn.getQuantity());
         iqcSamplePlan.setExpireDate(binIn.getExpireDate());
         iqcSamplePlan.setPlantNb(binIn.getPlantNb());
+        iqcSamplePlan.setUnit(materialVO.getUnit());
 
 
         samplePlanMapper.insert(iqcSamplePlan);

@@ -8,9 +8,10 @@ package com.bosch.masterdata.api.enumeration;
  **/
 public enum AreaTypeEnum {
 
-    RM("原材料存储区", 0),
-    PRO("成品存储区", 1),
-    IQC("质检存储区", 2);
+    RM("原材料", 0),
+    PRO("成品", 1),
+    IQC("质检", 2),
+    UNQUALIFIED("不合格品",3);
 
     private String desc;
     private Integer code;

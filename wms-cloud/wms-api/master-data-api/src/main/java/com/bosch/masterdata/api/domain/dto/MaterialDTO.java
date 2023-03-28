@@ -174,4 +174,7 @@ public class MaterialDTO extends PageDomain {
 
 
     private List<String> materialNbList;
+
+    @ApiModelProperty(value = "cell")
+    private String cell;
 }

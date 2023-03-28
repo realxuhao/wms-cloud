@@ -76,7 +76,7 @@ const exportExcel = async (options) => {
   const url = `binin/material-feeding/export`
   const { data } = await createAuthInstance(config.apiHost).post(url, options, {
     responseType: 'blob',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    headers: { 'Content-Type': 'application/json' }
   })
   return data
 }

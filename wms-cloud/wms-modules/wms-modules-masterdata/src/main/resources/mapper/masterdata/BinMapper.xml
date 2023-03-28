@@ -66,7 +66,8 @@
                 f.type_code        as frameTypeCode,
                f.width       as frameWidth,
                f.bear_weight as frameBearWeight,
-               b.create_time as createTime
+               b.create_time as createTime,
+               a.area_type as areaType
         FROM md_bin AS b
                  LEFT JOIN md_frame AS f ON b.frame_id = f.id
                  LEFT JOIN md_area AS a ON f.area_id = a.id

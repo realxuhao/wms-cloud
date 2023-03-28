@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.bosch.binin.api.domain.MaterialReturn;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.dto.ManualBinInDTO;
+import com.bosch.binin.api.domain.dto.MaterialReturnConfirmDTO;
 import com.bosch.binin.api.domain.dto.MaterialReturnDTO;
 import com.bosch.binin.api.domain.dto.MaterialReturnQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
@@ -22,7 +23,7 @@ public interface IMaterialReturnService extends IService<MaterialReturn> {
 
     List<MaterialReturnVO> list(MaterialReturnQueryDTO queryDTO);
 
-    void issueJob(String[] ssccNumbers);
+    void issueJob(MaterialReturnConfirmDTO confirmDTO);
 
     boolean addMaterialReturn(MaterialReturnDTO materialReturnDTO);
 

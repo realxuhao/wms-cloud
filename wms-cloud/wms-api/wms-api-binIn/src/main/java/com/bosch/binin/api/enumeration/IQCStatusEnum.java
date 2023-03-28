@@ -2,6 +2,9 @@ package com.bosch.binin.api.enumeration;
 
 public enum IQCStatusEnum {
     CANCEL(-1, "取消"),
+
+    WAAITTING_ISSUE(5,"待下发"),
+
     WAITING_BIN_DOWN(0, "待下架"),
 
     WAITING_SAMPLE(1, "待抽样"),
@@ -10,6 +13,8 @@ public enum IQCStatusEnum {
     FINISH(3, "完成"),
 
     WARE_SHIFTING(4, "移库中");
+
+
 
 
     private Integer code;

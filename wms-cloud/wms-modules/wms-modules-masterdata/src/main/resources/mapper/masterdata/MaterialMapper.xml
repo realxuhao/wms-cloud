@@ -290,6 +290,8 @@
                 </foreach>
             </if>
             <if test="iqc != null ">and m.iqc = #{iqc}</if>
+        <if test="cell != null  and cell != ''">and md.code = #{cell}</if>
+
     </select>
 
     <select id="selectMaterialVOById" parameterType="Long" resultMap="MaterialVOResult">

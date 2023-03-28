@@ -5,6 +5,7 @@ import java.util.List;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.masterdata.api.domain.Area;
 import com.bosch.masterdata.api.domain.SupplierInfo;
+import com.bosch.masterdata.api.domain.dto.AreaDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
@@ -35,7 +36,7 @@ public interface AreaMapper extends BaseMapper<Area>
      */
     public List<Area> selectAreaList(Area area);
 
-    public List<AreaVO> selectAreaVOList(Area area);
+    public List<AreaVO> selectAreaVOList(AreaDTO areaDTO);
     /**
      * 新增区域
      * 

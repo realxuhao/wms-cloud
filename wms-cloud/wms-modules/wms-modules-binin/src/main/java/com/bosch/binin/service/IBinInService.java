@@ -9,6 +9,7 @@ import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
+import com.bosch.masterdata.api.domain.vo.MaterialVO;
 
 import java.util.List;
 
@@ -73,4 +74,7 @@ public interface IBinInService extends IService<BinIn> {
     void binDown(String ssccNumber);
 
     public BinVO getBinVOByBinCode(String binCode);
+
+
+    public MaterialVO getMaterialVOByCode(String materialNb);
 }

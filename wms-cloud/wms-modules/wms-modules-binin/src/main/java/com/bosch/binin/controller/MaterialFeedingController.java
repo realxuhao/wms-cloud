@@ -184,8 +184,7 @@ public class MaterialFeedingController extends BaseController {
     @Log(title = "叫料需求", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @ApiOperation("叫料需求列表导出")
-    public void export(HttpServletResponse response, MaterialCallQueryDTO queryDTO) {
-        startPage();
+    public void export(HttpServletResponse response, @RequestBody MaterialCallQueryDTO queryDTO) {
         List<MaterialCallVO> materialCallVOS = materialCallService.getMaterialCallList(queryDTO);
 //        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
 

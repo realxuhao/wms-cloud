@@ -93,7 +93,7 @@
         </a-row>
       </a-form>
       <div class="action-content">
-
+        <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
       </div>
       <a-table
         :columns="columns"
@@ -134,6 +134,7 @@
 
 <script>
 import _ from 'lodash'
+import { download } from '@/utils/file'
 import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
@@ -141,6 +142,12 @@ const columns = [
     title: '仓库编码',
     key: 'wareCode',
     dataIndex: 'wareCode',
+    width: 120
+  },
+  {
+    title: 'cell',
+    key: 'cell',
+    dataIndex: 'cell',
     width: 120
   },
   {
@@ -165,6 +172,12 @@ const columns = [
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
+    width: 200
+  },
+  {
+    title: '数量',
+    key: 'quantity',
+    dataIndex: 'quantity',
     width: 200
   },
   {
@@ -296,6 +309,7 @@ export default {
     return {
       tableLoading: false,
       uploadLoading: false,
+      exportLoading: false,
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -316,6 +330,19 @@ export default {
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
+    },
+    async handleDownload () {
+      try {
+        this.exportLoading = true
+        this.queryForm.pageSize = 0
+        const blobData = await this.$store.dispatch('wareShift/exportExcel', this.queryForm)
+        download(blobData, '退库列表')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
+      }
     },
     async loadTableList () {
       try {
