@@ -73,14 +73,13 @@
           selectedRowKeys: selectedRowKeys, onChange: onSelectChange ,
           getCheckboxProps:record => ({
             props: {
-              disabled: [-1,1,2,3].includes(record.status), // Column configuration not to be checked
-              name: record.name,
+              disabled: [-1,1,2,3].includes(record.status)
             },
           }),}"
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
-        rowKey="ssccNb"
+        rowKey="id"
         :pagination="false"
         :scroll="tableScroll"
         size="middle"

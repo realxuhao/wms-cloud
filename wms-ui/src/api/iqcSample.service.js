@@ -42,6 +42,7 @@ const addShift = async (options) => {
   const { data } = await createAuthInstance(baseUrl).post(url, options)
   return data
 }
+
 const cancelShift = async (options) => {
   const url = `/sample/cancelWareShift/${options.ssccNb}`
   const { data } = await createAuthInstance(baseUrl).put(url)

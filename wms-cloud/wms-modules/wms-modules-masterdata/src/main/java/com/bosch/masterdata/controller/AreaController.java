@@ -107,6 +107,17 @@ public class AreaController extends BaseController {
         return R.ok(list);
     }
 
+    @ApiOperation("查询某个仓库下的所有区域")
+    @GetMapping("/getByCode/{areaCode}")
+    public R<AreaVO> getByCode(@PathVariable("areaCode") String areaCode) {
+        AreaDTO areaDTO = new AreaDTO();
+        areaDTO.setCode(areaCode);
+        List<AreaVO> list = areaService.selectAreaVOList(areaDTO);
+        if (CollectionUtils.isNotEmpty(list)){
+            return R.ok(list.get(0));
+        }
+        return R.ok(null);
+    }
     /**
      * 新增区域
      */

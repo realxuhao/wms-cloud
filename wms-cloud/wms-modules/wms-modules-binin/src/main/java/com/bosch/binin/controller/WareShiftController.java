@@ -5,8 +5,10 @@ import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
 import com.bosch.binin.api.domain.dto.BinInDTO;
+import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
+import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.service.IWareShiftService;
@@ -15,6 +17,7 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.log.annotation.Log;
@@ -27,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -142,6 +146,20 @@ public class WareShiftController extends BaseController {
     public R performBinIn(@RequestBody BinInDTO binInDTO) {
         shiftService.performBinIn(binInDTO);
         return R.ok();
+    }
+
+
+    /**
+     * 导出列表
+     */
+    @PostMapping("/sample/export")
+    @ApiOperation("移库列表导出")
+    public void export(HttpServletResponse response, WareShiftQueryDTO queryDTO) {
+        List<WareShiftVO> wareShiftList = shiftService.getWareShiftList(queryDTO);
+//        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
+
+        ExcelUtil<WareShiftVO> util = new ExcelUtil<>(WareShiftVO.class);
+        util.exportExcel(response, wareShiftList, "移库任务列表");
     }
 
 

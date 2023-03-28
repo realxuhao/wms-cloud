@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.*;
-import com.bosch.binin.api.domain.dto.BinInDTO;
-import com.bosch.binin.api.domain.dto.ManualBinInDTO;
-import com.bosch.binin.api.domain.dto.MaterialReturnDTO;
-import com.bosch.binin.api.domain.dto.MaterialReturnQueryDTO;
+import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.MaterialReturnVO;
@@ -18,7 +15,11 @@ import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IMaterialReturnService;
 import com.bosch.binin.mapper.MaterialReturnMapper;
 import com.bosch.binin.service.IStockService;
+import com.bosch.masterdata.api.RemoteMasterDataService;
+import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
+import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
@@ -54,6 +55,9 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
     @Autowired
     private IBinInService binInService;
 
+    @Autowired
+    private RemoteMasterDataService masterDataService;
+
     @Override
     public List<MaterialReturnVO> list(MaterialReturnQueryDTO queryDTO) {
         List<MaterialReturnVO> list = materialReturnMapper.list(queryDTO);
@@ -61,8 +65,8 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
     }
 
     @Override
-    public void issueJob(String[] ssccNumbers) {
-        List<String> ssccList = Arrays.asList(ssccNumbers);
+    public void issueJob(MaterialReturnConfirmDTO confirmDTO) {
+        List<String> ssccList = confirmDTO.getSsccNumbers();
         LambdaQueryWrapper<MaterialReturn> materialReturnQueryWrapper = new LambdaQueryWrapper<>();
         materialReturnQueryWrapper.in(MaterialReturn::getSsccNumber, ssccList);
         materialReturnQueryWrapper.eq(MaterialReturn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
@@ -71,18 +75,35 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         if (CollectionUtils.isEmpty(materialReturnList) || materialReturnList.size() != ssccList.size()) {
             throw new ServiceException("退库数据过期，请刷新后重试");
         }
-        materialReturnList.stream().forEach(item -> item.setStatus(MaterialReturnStatusEnum.WAITING_BIN_IN.value()));
+        R<AreaVO> areaVOR = masterDataService.getByCode(confirmDTO.getAreaCode());
+        if (areaVOR == null || !areaVOR.isSuccess()) {
+            throw new ServiceException("调用主数据服务查询区域失败");
+        }
+        if (Objects.isNull(areaVOR.getData())) {
+            throw new ServiceException("没有" + confirmDTO.getAreaCode() + "区域，请维护主数据");
+        }
+        AreaVO areaVO = areaVOR.getData();
+        boolean unquanlified = false;
+        if (AreaTypeEnum.UNQUALIFIED.getCode().equals(areaVO.getAreaType())) {
+            unquanlified = true;
+        }
+        boolean finalUnquanlified = unquanlified;
+        materialReturnList.stream().forEach(item -> {
+            item.setType(finalUnquanlified ? MaterialTransTypeEnum.NORMAL.code() : MaterialTransTypeEnum.AB_NORMAL.code());
+            item.setStatus(MaterialReturnStatusEnum.WAITING_BIN_IN.value());
+            item.setWareCode(confirmDTO.getWareCode());
+            item.setAreaCode(confirmDTO.getAreaCode());
+        });
         updateBatchById(materialReturnList);
-
     }
 
     @Override
     public boolean addMaterialReturn(MaterialReturnDTO materialReturnDTO) {
         String mesBarCode = materialReturnDTO.getMesBarCode();
-        String plantNb = materialReturnDTO.getPlantNb();
-        String wareCode = materialReturnDTO.getWareCode();
-        String areaCode = materialReturnDTO.getAreaCode();
-        Integer type = materialReturnDTO.getType();
+//        String plantNb = materialReturnDTO.getPlantNb();
+//        String wareCode = materialReturnDTO.getWareCode();
+//        String areaCode = materialReturnDTO.getAreaCode();
+//        Integer type = materialReturnDTO.getType();
         Double quantity = materialReturnDTO.getQuantity();
 
         LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
@@ -113,11 +134,11 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         materialReturn.setExpireDate(MesBarCodeUtil.getExpireDate(mesBarCode));
         materialReturn.setMoveType(MoveTypeEnums.MATERIAL_RETURN.getCode());
         materialReturn.setSsccNumber(MesBarCodeUtil.getSSCC(mesBarCode));
-        materialReturn.setAreaCode(areaCode);
-        materialReturn.setWareCode(wareCode);
-        materialReturn.setType(type);
+//        materialReturn.setAreaCode(areaCode);
+//        materialReturn.setWareCode(wareCode);
+//        materialReturn.setType(type);
         materialReturn.setQuantity(quantity);
-        materialReturn.setCell(materialReturnDTO.getCell());
+//        materialReturn.setCell(materialReturnDTO.getCell());
         return save(materialReturn);
     }
 
@@ -137,15 +158,14 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         }
         if (!MaterialReturnStatusEnum.WAITING_BIN_IN.value().equals(materialReturn.getStatus())) {
             throw new ServiceException("该SSCC码 " + sscc + "对应任务状态为: " + KanbanStatusEnum.getDesc(String.valueOf(materialReturn.getStatus())) + " 不可分配库位 ");
-
         }
         BinInVO binInVO = null;
         String barCode = MesBarCodeUtil.generateMesBarCode(MesBarCodeUtil.getExpireDate(mesBarCode), sscc, materialReturn.getMaterialNb(), materialReturn.getBatchNb(), materialReturn.getQuantity());
 
-        if (materialReturn.getType() == 0) {//正常退料分配到库位
+        if (materialReturn.getType() == MaterialTransTypeEnum.NORMAL.code()) {//正常退料分配到库位
             binInVO = binInService.allocateToBin(barCode);
-        } else if (materialReturn.getType() == 1) {//异常退料分配到存储区
-            binInVO = binInService.allocateToBinOrArea(barCode,null,materialReturn.getAreaCode());
+        } else if (materialReturn.getType() == MaterialTransTypeEnum.AB_NORMAL.code()) {//异常退料分配到存储区
+            binInVO = binInService.allocateToBinOrArea(barCode, null, materialReturn.getAreaCode());
         }
 
         return binInVO;

@@ -1,7 +1,10 @@
 <template>
 	<my-page nav-title="装车扫码">
 		<view class="main" slot="page-main">
-			<uni-notice-bar single text="请对准条形码进行扫描" />
+			<uni-forms class="form">
+				<uni-forms-item label="车牌号" required><uni-easyinput v-model="carNb" placeholder="请输入车牌号" /></uni-forms-item>
+			</uni-forms>
+
 			<view class="header">
 				<text class="m-r-4">已扫描</text>
 				<text class="error-color m-r-4">{{ codeList.length }}</text>
@@ -20,7 +23,7 @@
 					</template>
 				</uni-list-item>
 			</uni-list>
-
+			<uni-notice-bar single text="请对准条形码进行扫描" />
 			<view class="submit-btn"><o-btn class="primary-button" @click="handleSubmit" :loading="submitLoading" :disabled="codeList.length === 0" block>提交</o-btn></view>
 		</view>
 		<Message ref="message"></Message>
@@ -50,7 +53,8 @@ export default {
 		return {
 			codeList: [],
 			deleteCurrentCode: '',
-			submitLoading: false
+			submitLoading: false,
+			carNb: ''
 		};
 	},
 	onShow() {
@@ -75,9 +79,14 @@ export default {
 			this.codeList.splice(index, 1);
 		},
 		async handleSubmit() {
+			if (!this.carNb) {
+				this.$refs.message.error('请输入车牌号');
+				return;
+			}
+
 			try {
 				this.submitLoading = true;
-				await this.$store.dispatch('kanban/generateOrder', this.codeList);
+				await this.$store.dispatch('kanban/generateOrder', { carNb: this.carNb, codeList: this.codeList });
 				this.$refs.message.success('提交成功');
 				this.codeList = [];
 			} catch (e) {
@@ -120,6 +129,10 @@ export default {
 }
 
 .submit-btn {
+	padding: 0px 12px;
+}
+
+.form {
 	padding: 0px 12px;
 }
 </style>

@@ -6,7 +6,7 @@ const baseUrl = `${config.apiHost}/binin`
 
 const getList = async (parameter) => {
   const url = `/ware-shift/list?${qs.stringify(parameter)}`
-  const { data } = await createAuthInstance(baseUrl).get(url, parameter)
+  const { data } = await createAuthInstance(baseUrl).get(url)
   return data
 }
 
@@ -17,8 +17,8 @@ const addWareShift = async (options) => {
 }
 
 const getReturnMaterialList = async (parameter) => {
-  const url = `/returnMaterial/list`
-  const { data } = await createAuthInstance(baseUrl).post(url, parameter)
+  const url = `/returnMaterial/list?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
   return data
 }
 

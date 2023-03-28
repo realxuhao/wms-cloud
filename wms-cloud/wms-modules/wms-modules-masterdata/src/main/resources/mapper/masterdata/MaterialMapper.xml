@@ -163,7 +163,7 @@
             <if test="minPackageNetWeight != null">#{minPackageNetWeight},</if>
             <if test="lessDeviationRatio != null">#{lessDeviationRatio},</if>
             <if test="moreDeviationRatio != null">#{moreDeviationRatio},</if>
-            <if test="transferWeightRatio != null">transferWeightRatio,</if>
+            <if test="transferWeightRatio != null">#{transferWeightRatio},</if>
 
             <if test="createBy != null">#{createBy},</if>
             <if test="updateBy != null">#{updateBy},</if>
@@ -219,7 +219,7 @@
     </delete>
 
     <update id="deleteMaterialByIds" parameterType="String">
-        update md_material set status = 0 where id in
+        update md_material set delete_flag = 1 where id in
         -- delete from md_material
         <foreach item="id" collection="array" open="(" separator="," close=")">
             #{id}
@@ -261,7 +261,9 @@
         LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
                                              left join md_department md on mt.department_id = md.id
 
-        <where>
+        where
+            m.delete_flag = 0
+
             <if test="code != null  and code != ''">and m.code = #{code}</if>
             <if test="name != null  and name != ''">and m.name like concat('%', #{name}, '%')</if>
             <if test="minPackageNumber != null ">and m.min_package_number = #{minPackageNumber}</if>
@@ -288,7 +290,8 @@
                 </foreach>
             </if>
             <if test="iqc != null ">and m.iqc = #{iqc}</if>
-        </where>
+        <if test="cell != null  and cell != ''">and md.code = #{cell}</if>
+
     </select>
 
     <select id="selectMaterialVOById" parameterType="Long" resultMap="MaterialVOResult">
@@ -359,7 +362,7 @@
 
     <select id="validateRecord" resultType="integer" parameterType="MaterialDTO">
         SELECT COUNT(*) FROM md_material
-        WHERE delete_flag='0' and(code) IN
+        WHERE delete_flag = 0 and code  IN
         <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
             (#{item.code})
         </foreach>

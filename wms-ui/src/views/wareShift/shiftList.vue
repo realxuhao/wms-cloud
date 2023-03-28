@@ -134,6 +134,12 @@ import StockList from './StockList'
 
 const columns = [
   {
+    title: '转运单号',
+    key: 'orderNb',
+    dataIndex: 'orderNb',
+    width: 120
+  },
+  {
     title: '源工厂',
     key: 'sourcePlantNb',
     dataIndex: 'sourcePlantNb',
@@ -165,10 +171,22 @@ const columns = [
     width: 120
   },
   {
+    title: '移库数量',
+    key: 'quantity',
+    dataIndex: 'quantity',
+    width: 120
+  },
+  {
     title: '移动类型',
     key: 'moveType',
     dataIndex: 'moveType',
     scopedSlots: { customRender: 'moveType' },
+    width: 120
+  },
+  {
+    title: '车牌号',
+    key: 'carNb',
+    dataIndex: 'carNb',
     width: 120
   },
   {

@@ -59,4 +59,8 @@ public interface RemoteMasterDataService {
 
     @GetMapping("/area/getByWareCode/{wareCode}")
     public R<List<AreaVO>> getByWareCode(@PathVariable("wareCode") String wareCode);
+
+
+    @GetMapping("/area/getByCode/{areaCode}")
+    public R<AreaVO> getByCode(@PathVariable("areaCode") String areaCode);
 }

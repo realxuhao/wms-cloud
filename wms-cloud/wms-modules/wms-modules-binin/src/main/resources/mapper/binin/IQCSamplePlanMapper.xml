@@ -6,7 +6,7 @@
 
 
     <select id="getSamplePlanList" resultType="com.bosch.binin.api.domain.vo.IQCSamplePlanVO">
-        select isp.*,mm.name as materialName,mm.unit
+        select isp.*,mm.name as materialName
         from iqc_sample_plan isp
         left join md_material mm on mm.code = isp.material_nb
         where isp.delete_flag = 0

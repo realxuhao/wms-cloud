@@ -31,4 +31,8 @@ public class TranshipmentOrder extends BaseEntity {
      * deleteFlag
      */
     private Integer deleteFlag;
+
+    private Long wareShiftId;
+
+    private String carNb;
 }

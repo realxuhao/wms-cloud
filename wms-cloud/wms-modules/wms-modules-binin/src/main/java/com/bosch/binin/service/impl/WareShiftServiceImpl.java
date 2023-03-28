@@ -92,6 +92,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                     .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialNb()).batchNb(item.getBatchNb()).expireDate(item.getExpireDate())
                     .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
                     .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                    .quantity(item.getTotalStock())
                     .build();
             wareShiftList.add(wareShift);
             //更新冻结库存

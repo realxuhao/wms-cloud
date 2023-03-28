@@ -79,4 +79,7 @@ public class BinVO {
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
+
+    @ApiModelProperty(value = "存储区类型")
+    private Integer areaType;
 }

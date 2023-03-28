@@ -60,6 +60,14 @@ public class IQCController extends BaseController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
+    @PutMapping(value = "/issueJob/{ssccNumbers}")
+    @ApiOperation("批量下发任务接口")
+    @Transactional(rollbackFor = Exception.class)
+    public R issueJob(@PathVariable String[] ssccNumbers) {
+        samplePlanService.issueJob(ssccNumbers);
+        return R.ok("下发成功");
+    }
+
     @PostMapping(value = "/sample/manualAdd")
     @ApiOperation("手工添加IQC抽样计划")
     public R manualAdd(@RequestBody @Validated List<IQCSamplePlanDTO> dtos) {
@@ -77,6 +85,13 @@ public class IQCController extends BaseController {
     @ApiOperation("修改抽样SSCC")
     public R modifySscc(@RequestBody @Validated IQCSamplePlanDTO dto) {
         samplePlanService.modifySscc(dto);
+        return R.ok();
+    }
+
+    @PatchMapping(value = "/sample/modifyQuantity")
+    @ApiOperation("修改抽样数量")
+    public R modifyQuantity(@RequestParam("ssccNb") String ssccNb, @RequestParam("quantity") Double quantity) {
+        samplePlanService.modifyQuantity(ssccNb, quantity);
         return R.ok();
     }
 
@@ -129,9 +144,9 @@ public class IQCController extends BaseController {
     /**
      * 导出列表
      */
-    @PostMapping("/sample/export")
+    @PostMapping("/sampleExport")
     @ApiOperation("列表导出")
-    public void export(HttpServletResponse response, IQCSamplePlanQueryDTO queryDTO) {
+    public void export(HttpServletResponse response, @RequestBody IQCSamplePlanQueryDTO queryDTO) {
         List<IQCSamplePlanVO> iqcSamplePlanVOS = samplePlanService.getSamplePlan(queryDTO);
 //        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
 
@@ -144,7 +159,7 @@ public class IQCController extends BaseController {
      */
     @PostMapping(value = "/sample/addShift")
     @ApiOperation("IQC外库增加移库接口")
-    public R addShift(@Valid  @RequestBody IQCWareShiftDTO dto) {
+    public R addShift(@Valid @RequestBody IQCWareShiftDTO dto) {
         samplePlanService.addShift(dto);
         return R.ok();
     }

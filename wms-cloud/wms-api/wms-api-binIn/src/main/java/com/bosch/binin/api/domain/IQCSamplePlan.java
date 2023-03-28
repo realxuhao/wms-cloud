@@ -68,6 +68,8 @@ public class IQCSamplePlan extends BaseEntity {
     private Date expireDate;
     @ApiModelProperty(value = "仓库编码")
     private String wareCode;
+    @ApiModelProperty(value = "单位")
+    private String unit;
 
 
     private Integer deleteFlag;

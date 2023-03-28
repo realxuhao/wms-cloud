@@ -18,6 +18,7 @@ import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.FrameVO;
 import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
+import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.storagein.api.RemoteMaterialInService;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
@@ -76,7 +77,7 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
         binInWrapper.eq(BinIn::getBatchNb, batchNb);
         binInWrapper.eq(BinIn::getSsccNumber, sscc);
         binInWrapper.eq(BinIn::getMaterialNb, materialNb);
-        binInWrapper.eq(BinIn::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        binInWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 //        binInWrapper.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value()).or().eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
 
         List<BinIn> binIns = binInMapper.selectList(binInWrapper);
@@ -85,21 +86,21 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
         Map<String, String> usedBins = getUsedBins(binIns);
         //获取托盘详情
         R<Pallet> palletR = remotePalletService.getByType(binAllocationDTO.getPalletType());
-        if (!palletR.isSuccess()){
+        if (!palletR.isSuccess()) {
             throw new ServiceException("获取托盘详情失败");
         }
         Pallet pallet = palletR.getData();
-        if(pallet==null){
+        if (pallet == null) {
             throw new ServiceException("未获取到托盘数据");
         }
         //获取物料详情
         R<MaterialVO> materialVORes =
                 remoteMaterialService.getInfoByMaterialCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
-        if(!materialVORes.isSuccess()){
+        if (!materialVORes.isSuccess()) {
             throw new ServiceException("获取物料详情失败");
         }
         MaterialVO materVO = materialVORes.getData();
-        if(materVO==null){
+        if (materVO == null) {
             throw new ServiceException("未获取到物料详情");
         }
         //可用库位
@@ -114,93 +115,95 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
         if (CollectionUtils.isEmpty(listByMaterial.getData())) {
             throw new ServiceException("该物料号未维护可用跨");
         }
-            //跨类型根据优先级排序
-            materialBinVOList = listByMaterial.getData().stream().
-                    sorted(Comparator.comparing(MaterialBinVO::getPriorityLevel, Comparator.naturalOrder())).
-                    collect(Collectors.toList());
-            frameTypeCodes =
-                    materialBinVOList.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
-            //根据跨类型获取跨list
-            for (String frameTypeCode : frameTypeCodes) {
-                R<List<FrameVO>> framesListResult = remoteMasterDataService.getFrameInfoByType(frameTypeCode);
-                if (!framesListResult.isSuccess()) {
-                    throw new ServiceException("根据跨类型获取跨失败");
-                }
+        //跨类型根据优先级排序
+        materialBinVOList = listByMaterial.getData().stream().
+                sorted(Comparator.comparing(MaterialBinVO::getPriorityLevel, Comparator.naturalOrder())).
+                collect(Collectors.toList());
+        frameTypeCodes =
+                materialBinVOList.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
+        //根据跨类型获取跨list
+        for (String frameTypeCode : frameTypeCodes) {
+            R<List<FrameVO>> framesListResult = remoteMasterDataService.getFrameInfoByType(frameTypeCode);
+            if (!framesListResult.isSuccess()) {
+                throw new ServiceException("根据跨类型获取跨失败");
+            }
 
-                List<FrameVO> framesVOByType = framesListResult.getData();
-                if (CollectionUtils.isEmpty(framesVOByType)) {
-                    //跨类型获取到为空
+            List<FrameVO> framesVOByType = framesListResult.getData();
+            if (CollectionUtils.isEmpty(framesVOByType)) {
+                //跨类型获取到为空
+                continue;
+            }
+            //获取所有跨编码
+            List<String> framesByType = framesVOByType.stream().map(FrameVO::getCode).collect(Collectors.toList());
+            //查看list中 该物料是否有占用库位
+            //根据跨类型获取所有库位
+            R<List<BinVO>> listR = remoteMasterDataService.selectBinVOByFrameType(frameTypeCode);
+            if (!listR.isSuccess()) {
+                throw new ServiceException("根据跨类型获取所有库位失败");
+            }
+            List<BinVO> binVOs = listR.getData();
+            if (CollectionUtils.isEmpty(binVOs)) {
+                //跨类型获取库位为空
+                continue;
+            }
+            //筛选出存储区为原材料的库位
+            binVOs = binVOs.stream().filter(item -> AreaTypeEnum.RM.getCode().equals(item.getAreaType())).collect(Collectors.toList());
+            //跨下所有库位编码
+            List<String> allBins = binVOs.stream().map(BinVO::getCode).collect(Collectors.toList());
+            //判断是否有占用库位 usedBins allBins
+            //有占用库位
+            if (usedBins.size() > 0) {
+                boolean disjoint = Collections.disjoint(usedBins.keySet(), allBins);
+                //没有交集，占用库位不在该跨类型中
+                if (disjoint) {
+                    //查询下一个跨类型
                     continue;
-                }
-                //获取所有跨编码
-                List<String> framesByType = framesVOByType.stream().map(FrameVO::getCode).collect(Collectors.toList());
-                //查看list中 该物料是否有占用库位
-                //根据跨类型获取所有库位
-                R<List<BinVO>> listR = remoteMasterDataService.selectBinVOByFrameType(frameTypeCode);
-                if (!listR.isSuccess()) {
-                    throw new ServiceException("根据跨类型获取所有库位失败");
-                }
-                List<BinVO> binVOs = listR.getData();
-                if (CollectionUtils.isEmpty(binVOs)) {
-                    //跨类型获取库位为空
-                    continue;
-                }
-                //跨下所有库位编码
-                List<String> allBins = binVOs.stream().map(BinVO::getCode).collect(Collectors.toList());
-                //判断是否有占用库位 usedBins allBins
-                //有占用库位
-                if (usedBins.size()>0){
-                    boolean disjoint = Collections.disjoint(usedBins.keySet(), allBins);
-                    //没有交集，占用库位不在该跨类型中
-                    if (disjoint) {
-                        //查询下一个跨类型
-                        continue;
-                    } else {
-                        //todo 跨排序
-                        List<String> usedFrames = usedBins.values().stream().distinct().collect(Collectors.toList());
-                        List<String> usedSortFrames =sortList(usedFrames);
-                        //根据排完序的库位，在库位list中查到当前占用跨，判断跨能否放入
-                        String canUseCode = getCanUseCode(framesByType, usedSortFrames, materVO, pallet);
-                        if(StringUtils.isNotEmpty(canUseCode)){
-                            binAllocationVO.setRecommendBinCode(canUseCode);
-                            return  binAllocationVO;
-                        }else {
-                            continue;
-                        }
-                    }
-                }else {
-                    //未占用库位
+                } else {
+                    //todo 跨排序
+                    List<String> usedFrames = usedBins.values().stream().distinct().collect(Collectors.toList());
+                    List<String> usedSortFrames = sortList(usedFrames);
                     //根据排完序的库位，在库位list中查到当前占用跨，判断跨能否放入
-                    String canUseCode = getCanUseCode(framesByType, null, materVO, pallet);
-                    if(StringUtils.isNotEmpty(canUseCode)){
+                    String canUseCode = getCanUseCode(framesByType, usedSortFrames, materVO, pallet);
+                    if (StringUtils.isNotEmpty(canUseCode)) {
                         binAllocationVO.setRecommendBinCode(canUseCode);
-                        return  binAllocationVO;
-                    }else {
+                        return binAllocationVO;
+                    } else {
                         continue;
                     }
+                }
+            } else {
+                //未占用库位
+                //根据排完序的库位，在库位list中查到当前占用跨，判断跨能否放入
+                String canUseCode = getCanUseCode(framesByType, null, materVO, pallet);
+                if (StringUtils.isNotEmpty(canUseCode)) {
+                    binAllocationVO.setRecommendBinCode(canUseCode);
+                    return binAllocationVO;
+                } else {
+                    continue;
                 }
             }
+        }
         throw new ServiceException("未找到合适库位");
 //        return binAllocationVO;
     }
 
-    public List<String> sortList(List<String> frames){
+    public List<String> sortList(List<String> frames) {
         List<String> changes = new ArrayList<>();
         List<String> result = new ArrayList<>();
-        frames.forEach(r->{
+        frames.forEach(r -> {
             String[] splitr = r.split("\\.");
-            if(splitr.length<3){
-                throw  new ServiceException(r+"跨位编码有误，请去维护");
+            if (splitr.length < 3) {
+                throw new ServiceException(r + "跨位编码有误，请去维护");
             }
-            changes.add(splitr[0]+"."+splitr[2]+"."+splitr[1]);
+            changes.add(splitr[0] + "." + splitr[2] + "." + splitr[1]);
         });
-       Collections.sort(changes);
-        changes.forEach(r->{
+        Collections.sort(changes);
+        changes.forEach(r -> {
             String[] splitr = r.split("\\.");
-            result.add(splitr[0]+"."+splitr[2]+"."+splitr[1]);
+            result.add(splitr[0] + "." + splitr[2] + "." + splitr[1]);
 
         });
-        return  result;
+        return result;
     }
 
     /**
@@ -218,19 +221,19 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
         }
         List<String> framesByType = sortList(framesUnSorted);
         //未占用库位
-        if(CollectionUtils.isEmpty(framesUsed)){
+        if (CollectionUtils.isEmpty(framesUsed)) {
             //list 要去重 排序
-                for (int moveFlag = 0; moveFlag < framesByType.size(); moveFlag++) {
-                    //取下一个
-                    if (moveFlag < framesByType.size()) {
-                        FrameRemainVO frameRemainVO = validateBin(framesByType.get(moveFlag), material, pallet);
-                        //返回库位
-                        if (frameRemainVO != null) {
-                            return frameRemainVO.getRecommendBinCode();
-                        }
+            for (int moveFlag = 0; moveFlag < framesByType.size(); moveFlag++) {
+                //取下一个
+                if (moveFlag < framesByType.size()) {
+                    FrameRemainVO frameRemainVO = validateBin(framesByType.get(moveFlag), material, pallet);
+                    //返回库位
+                    if (frameRemainVO != null) {
+                        return frameRemainVO.getRecommendBinCode();
                     }
                 }
-        }else {
+            }
+        } else {
             //占用库位
             //list 要去重 排序
             for (String frame : framesUsed) {
@@ -289,8 +292,8 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
                     //宽度
                     BigDecimal frameWidth = frameData.getWidth();
                     //获取跨上剩余承重，宽度
-                    frameRemainVO = getBins(frameData.getId(),frameCode,pallet);
-                    if (StringUtils.isEmpty(frameRemainVO.getRecommendBinCode()) ){
+                    frameRemainVO = getBins(frameData.getId(), frameCode, pallet);
+                    if (StringUtils.isEmpty(frameRemainVO.getRecommendBinCode())) {
                         return null;
                     }
                     if (frameBearWeight.subtract(frameRemainVO.getFrameBearWeight()).compareTo(totalWeight) < 0) {
@@ -318,7 +321,7 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
      * @return
      */
     @Transactional(rollbackFor = Exception.class)
-    public FrameRemainVO getBins(Long frameId,String frameCode,Pallet pallet) {
+    public FrameRemainVO getBins(Long frameId, String frameCode, Pallet pallet) {
         try {
             List<BinIn> list = new ArrayList<>();
             List<String> usedBins = new ArrayList<>();
@@ -351,8 +354,8 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
             R<List<Bin>> infoByFrameId = remoteMasterDataService.getInfoByFrameId(frameId);
             if (infoByFrameId.isSuccess()) {
                 List<Bin> data = infoByFrameId.getData();
-                if(CollectionUtils.isEmpty(data)){
-                    throw new ServiceException(frameCode+"跨上未获取到库位");
+                if (CollectionUtils.isEmpty(data)) {
+                    throw new ServiceException(frameCode + "跨上未获取到库位");
                 }
                 List<String> canUseBins = data.stream().map(Bin::getCode).collect(Collectors.toList());
                 //自然排序
@@ -409,7 +412,7 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
                         throw new ServiceException("未获取到物料详情");
                     }
                 }
-            }else {
+            } else {
                 //跨上未有占用
                 frameRemainVO.setFrameBearWeight(new BigDecimal(0));
                 frameRemainVO.setFrameWidth(new BigDecimal(0));
@@ -435,7 +438,7 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
         //实际bin
 
         if (CollectionUtils.isNotEmpty(binIns)) {
-            Map<String, String> collect = binIns.stream().filter(a->a.getActualBinCode()!=null&&a.getActualFrameCode()!=null).collect(Collectors.toMap(BinIn::getActualBinCode,
+            Map<String, String> collect = binIns.stream().filter(a -> a.getActualBinCode() != null && a.getActualFrameCode() != null).collect(Collectors.toMap(BinIn::getActualBinCode,
                     BinIn::getActualFrameCode));
             usedBins.putAll(collect);
         }

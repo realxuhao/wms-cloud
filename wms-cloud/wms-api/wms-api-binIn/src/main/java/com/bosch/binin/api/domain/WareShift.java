@@ -44,6 +44,8 @@ public class WareShift extends BaseEntity {
      */
     private String sourceAreaCode;
 
+    private Double quantity;
+
     /**
      * 源库位
      */

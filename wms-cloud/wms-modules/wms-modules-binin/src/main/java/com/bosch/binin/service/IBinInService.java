@@ -9,6 +9,7 @@ import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
+import com.bosch.masterdata.api.domain.vo.MaterialVO;
 
 import java.util.List;
 
@@ -66,11 +67,14 @@ public interface IBinInService extends IService<BinIn> {
      */
     public BinInVO performBinInWithIQC(BinInDTO binInDTO);
 
-    int deleteBinInById(Long id);
+    int deleteBinInBySscc(String ssccNumber);
 
     List<BinInVO> selectProcessingBinVOList(BinInQueryDTO binInQueryDTO);
 
     void binDown(String ssccNumber);
 
     public BinVO getBinVOByBinCode(String binCode);
+
+
+    public MaterialVO getMaterialVOByCode(String materialNb);
 }

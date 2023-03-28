@@ -25,7 +25,16 @@ const iqcManagement = {
     async saveEditSSCCStatusList ({ commit }, options) {
       const data = await iqcManagementService.saveEditSSCCStatusList(options)
       return data
+    },
+    async modifyQuantity ({ commit }, options) {
+      const data = await iqcManagementService.modifyQuantity(options)
+      return data
+    },
+    async issueJob ({ commit }, options) {
+      const data = await iqcManagementService.issueJob(options)
+      return data
     }
+
   }
 }
 

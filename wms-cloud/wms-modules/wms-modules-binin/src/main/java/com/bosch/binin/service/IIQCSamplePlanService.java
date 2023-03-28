@@ -40,4 +40,8 @@ public interface IIQCSamplePlanService extends IService<IQCSamplePlan> {
     void addShift(IQCWareShiftDTO dto);
 
     void cancelWareShift(String ssccNb);
+
+    void modifyQuantity(String ssccNb, Double quantity);
+
+    void issueJob(String[] ssccNumbers);
 }

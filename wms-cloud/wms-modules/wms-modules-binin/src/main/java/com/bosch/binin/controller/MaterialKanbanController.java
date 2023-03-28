@@ -320,10 +320,10 @@ public class MaterialKanbanController {
         return R.ok(new PageVO<>(materialInfoVOS, new PageInfo<>(materialInfoVOS).getTotal()));
     }
 
-    @PostMapping(value = "/genOrderAndSetStatus")
+    @PostMapping(value = "/genOrderAndSetStatus/{carNb}")
     @ApiOperation("生成转运单号,修改对应任务状态为主库待收货")
     @Transactional(rollbackFor = Exception.class)
-    public R genTranshipmentOrder(@RequestBody List<String> mesbarCodes) {
+    public R genTranshipmentOrder(@RequestBody List<String> mesbarCodes,@PathVariable("carNb")String carNb) {
         try {
             List<TranshipmentOrder> transhipmentOrders = new ArrayList<>();
             List<String> ssccs = new ArrayList<>();
@@ -353,16 +353,26 @@ public class MaterialKanbanController {
             if (CollectionUtils.isNotEmpty(infoBySSCC)) {
                 throw new ServiceException("选择的sscc码在装运单中已存在");
             }
-            collect.forEach(r -> {
-                String sscc = MesBarCodeUtil.getSSCC(r);
-                String materialNb = MesBarCodeUtil.getMaterialNb(r);
+            listBySSCC.forEach(w->{
                 TranshipmentOrder transhipmentOrder = new TranshipmentOrder();
                 transhipmentOrder.setOrderNumber(Long.toString(l));
-                transhipmentOrder.setSsccNumber(sscc);
-                transhipmentOrder.setMaterialCode(materialNb);
+                transhipmentOrder.setSsccNumber(w.getSsccNb());
+                transhipmentOrder.setMaterialCode(w.getMaterialNb());
+                transhipmentOrder.setWareShiftId(w.getId());
+                transhipmentOrder.setCarNb(carNb);
                 transhipmentOrders.add(transhipmentOrder);
-                ssccs.add(sscc);
+                ssccs.add(w.getSsccNb());
             });
+//            collect.forEach(r -> {
+//                String sscc = MesBarCodeUtil.getSSCC(r);
+//                String materialNb = MesBarCodeUtil.getMaterialNb(r);
+//                TranshipmentOrder transhipmentOrder = new TranshipmentOrder();
+//                transhipmentOrder.setOrderNumber(Long.toString(l));
+//                transhipmentOrder.setSsccNumber(sscc);
+//                transhipmentOrder.setMaterialCode(materialNb);
+//                transhipmentOrders.add(transhipmentOrder);
+//                ssccs.add(sscc);
+//            });
 
             //List<TranshipmentOrder> transhipmentOrders = BeanConverUtil.converList(list, TranshipmentOrder.class);
             //生成转运单

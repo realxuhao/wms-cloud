@@ -1,6 +1,15 @@
 <template>
 	<my-page nav-title="产线退料确认">
 		<view class="main" slot="page-main">
+			<uni-forms class="form" :label-width="80" ref="form" :rules="formRules" :modelValue="form" label-position="left">
+				<uni-forms-item label="仓库" name="wareCode" required>
+					<uni-data-picker ref="picker" popup-title="请选择仓库" :localdata="dataTree" @change="handleChangePlant"></uni-data-picker>
+				</uni-forms-item>
+				<uni-forms-item label="存储区" name="areaCode" required>
+					<uni-data-picker ref="picker" v-model="area" popup-title="请选择存储区" :localdata="areaList" @change="handleAreaChange"></uni-data-picker>
+				</uni-forms-item>
+			</uni-forms>
+
 			<view class="flex">
 				<view class="header">
 					总共&nbsp;
@@ -37,10 +46,10 @@
 										<text class="label">SSCC码:</text>
 										{{ item.ssccNumber }}
 									</view>
-									<view class="desc">
+									<!-- <view class="desc">
 										<text class="label">状态:</text>
 										<uni-tag :text="typeMap[item.type].text" :type="typeMap[item.type].color" size="mini" />
-									</view>
+									</view> -->
 								</view>
 							</MyRadio>
 						</view>
@@ -48,7 +57,7 @@
 				</uni-list-item>
 			</uni-list>
 
-			<view class="submit-btn"><o-btn class="primary-button" @click="$refs.popup.open()" :loading="submitLoading" :disabled="!hasCheckedItems" block>提交</o-btn></view>
+			<view class="submit-btn"><o-btn class="primary-button" @click="handlePost" :loading="submitLoading" :disabled="!hasCheckedItems" block>提交</o-btn></view>
 		</view>
 		<uni-popup ref="popup" type="dialog">
 			<uni-popup-dialog type="info" title="提示" content="请确认提交" @close="$refs.popup.close()" @confirm="handleSubmit">
@@ -84,7 +93,34 @@ export default {
 		return {
 			list: [],
 			submitLoading: false,
-			barCode: ''
+			barCode: '',
+
+			formRules: {
+				wareCode: {
+					rules: [
+						{
+							required: true,
+							errorMessage: '不能为空'
+						}
+					]
+				},
+				areaCode: {
+					rules: [
+						{
+							required: true,
+							errorMessage: '不能为空'
+						}
+					]
+				}
+			},
+			form: {
+				areaCode: undefined,
+				wareCode: undefined
+			},
+			dataTree: [],
+			plantList: [],
+			areaList: [],
+			area: undefined
 		};
 	},
 	computed: {
@@ -107,20 +143,79 @@ export default {
 	},
 	mounted() {
 		this.getList();
+		this.lodaData();
 	},
 	methods: {
+		async getWareList() {
+			const data = await this.$store.dispatch('wareShift/getWareList', { wareCode: this.form.wareCode });
+			this.areaList = _.map(data, x => ({ text: x.name, value: x.code }));
+		},
+		handleChangePlant(val) {
+			const {
+				detail: { value }
+			} = val;
+
+			const factoryCode = value[0].text;
+			const factory = _.find(this.plantList, ['factoryCode', factoryCode]);
+			this.form.plantNb = factory.factoryCode;
+
+			const wareCode = value[1].text;
+			const ware = _.find(this.plantList, ['code', wareCode]);
+			this.form.wareCode = ware.code;
+
+			this.getWareList();
+		},
+		handleAreaChange(val) {
+			const {
+				detail: { value }
+			} = val;
+			this.form.areaCode = value[0].value;
+		},
+		async loadPlantList() {
+			const data = await this.$store.dispatch('plant/getList');
+			this.plantList = data;
+
+			const uniqList = _.uniqBy(data, 'factoryCode');
+			const list = [];
+			_.each(uniqList, (plant, index) => {
+				const plantIndex = index + 1;
+				const obj = { text: plant.factoryCode, children: [], value: `${plantIndex}-${index}` };
+				_.each(data, (item, itemIndex) => {
+					if (item.factoryCode === plant.factoryCode) {
+						const ware = { text: item.code, value: `${plantIndex}-${itemIndex + 1}`, code: item.code };
+						obj.children.push(ware);
+					}
+				});
+				list.push(obj);
+			});
+
+			this.dataTree = list;
+		},
+		async lodaData() {
+			this.loadPlantList();
+		},
 		async getList() {
 			const { rows } = await this.$store.dispatch('wareShift/getReturnMaterialList', { status: 0, pageSize: 0 });
 			this.list = rows;
 		},
+		async handlePost() {
+			this.$refs.form
+				.validate()
+				.then(res => {
+					this.$refs.popup.open();
+				})
+				.catch(err => {});
+		},
+
 		async handleSubmit() {
 			try {
 				uni.showLoading({
 					title: '正在提交'
 				});
 				this.submitLoading = true;
-				const sscc = _.map(_.filter(this.list, x => x.checked), x => x.ssccNumber);
-				await this.$store.dispatch('wareShift/returnMaterialConfirm', sscc);
+				const ssccNumbers = _.map(_.filter(this.list, x => x.checked), x => x.ssccNumber);
+				const options = { ...this.form, ssccNumbers };
+				await this.$store.dispatch('wareShift/returnMaterialConfirm', options);
 				this.$refs.message.success('提交成功');
 				this.$refs.popup.close();
 				this.getList();
@@ -173,5 +268,9 @@ export default {
 			margin-right: 4px;
 		}
 	}
+}
+
+.form {
+	padding: 0px 12px;
 }
 </style>

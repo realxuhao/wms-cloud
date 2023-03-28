@@ -66,9 +66,8 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements IA
 
     @Override
     public List<AreaVO> selectAreaVOList(AreaDTO areaDTO) {
-        Area area = BeanConverUtil.conver(areaDTO, Area.class);
 
-        return BeanConverUtil.converList(areaMapper.selectAreaVOList(area), AreaVO.class);
+        return areaMapper.selectAreaVOList(areaDTO);
     }
 
     /**

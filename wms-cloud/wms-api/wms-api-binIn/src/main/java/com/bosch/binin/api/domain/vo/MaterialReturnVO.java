@@ -3,6 +3,7 @@ package com.bosch.binin.api.domain.vo;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.core.annotation.Excel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -21,19 +22,29 @@ public class MaterialReturnVO {
      * 料号
      */
     @ApiModelProperty(value = "物料号")
+    @Excel(name = "物料号")
     private String materialNb;
+
+    /**
+     * 料号
+     */
+    @ApiModelProperty(value = "cell")
+    @Excel(name = "cell")
+    private String cell;
 
 
     /**
      * 料号
      */
     @ApiModelProperty(value = "物料名称")
+    @Excel(name = "物料名称")
     private String materialName;
 
     /**
      * SSCC码
      */
     @ApiModelProperty(value = "SSCC")
+    @Excel(name = "SSCC")
     private String ssccNumber;
 
 
@@ -41,12 +52,14 @@ public class MaterialReturnVO {
      * 批次号
      */
     @ApiModelProperty(value = "批次号")
+    @Excel(name = "批次号")
     private String batchNb;
 
     /**
      * 退库类型 (0：正常退库,1：异常退库)
      */
     @ApiModelProperty(value = "退库类型 (0：正常退库,1：异常退库)")
+    @Excel(name = "退库类型",readConverterExp = "0:正常退库,1:异常退库")
     private Integer type;
 
 
@@ -54,15 +67,19 @@ public class MaterialReturnVO {
      * 仓库编码
      */
     @ApiModelProperty(value = "仓库编码")
+    @Excel(name = "仓库编码")
     private String wareCode;
 
     @ApiModelProperty(value = "过期时间")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Excel(name = "过期时间")
     private Date expireDate;
 
     /**
      * 数量
      */
     @ApiModelProperty(value = "数量")
+    @Excel(name = "数量")
     private BigDecimal quantity;
 
     /**
@@ -76,12 +93,14 @@ public class MaterialReturnVO {
      (0,"正常")
      */
     @ApiModelProperty(value = "-1:取消任务,0:待确认,1:待上架,2:完成")
+    @Excel(name = "状态",readConverterExp = "-1:取消任务,0:待确认,1:待上架,2:完成")
     private Integer status;
 
     /**
      * 存储区code
      */
     @ApiModelProperty(value = "areaCode")
+    @Excel(name = "区域编码")
     private String areaCode;
 
     /**
@@ -90,23 +109,28 @@ public class MaterialReturnVO {
     private Integer deleteFlag;
     /** 创建者 */
     @ApiModelProperty(value = "创建者")
+    @Excel(name = "创建者")
     private String createBy;
 
     /** 创建时间 */
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "创建时间")
     private Date createTime;
 
     /** 更新者 */
     @ApiModelProperty(value = "更新者")
+    @Excel(name = "更新者")
     private String updateBy;
 
     /** 更新时间 */
     @ApiModelProperty(value = "更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "更新时间")
     private Date updateTime;
 
     /** 备注 */
     @ApiModelProperty(value = "备注")
+    @Excel(name = "备注")
     private String remark;
 }

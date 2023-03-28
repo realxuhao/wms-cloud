@@ -20,6 +20,7 @@ import com.bosch.binin.service.IStockService;
 import com.bosch.binin.service.IWareShiftService;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.RemoteMaterialService;
+import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
@@ -120,25 +121,32 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
             iqcSamplePlan.setBinDownCode(stock.getBinCode());
 //            iqcSamplePlan.setBinDownTime(new Date());
             iqcSamplePlan.setRecommendSampleQuantity(ssccMaps.get(stock.getSsccNumber()).getSampleQuantity());
-            iqcSamplePlan.setStatus(stock.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
+//            iqcSamplePlan.setStatus(stock.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
+            iqcSamplePlan.setStatus(IQCStatusEnum.WAAITTING_ISSUE.code());
             iqcSamplePlan.setBatchNb(stock.getBatchNb());
             iqcSamplePlan.setWareCode(stock.getWareCode());
             iqcSamplePlan.setExpireDate(stock.getExpireDate());
             iqcSamplePlan.setQuantity(stock.getTotalStock());
             iqcSamplePlan.setPlantNb(stock.getPlantNb());
+            //
+            MaterialVO materialVO = binInService.getMaterialVOByCode(stock.getMaterialNb());
+            iqcSamplePlan.setUnit(materialVO.getUnit());
+
             samplePlanList.add(iqcSamplePlan);
             //库存冻结
             stock.setFreezeStock(stock.getAvailableStock());
             stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
+            //下发的时候新增
             //如果是外库的，新增移库
-            if (stock.getPlantNb().equals("7752")) {
-                WareShift wareShift = WareShift.builder().sourcePlantNb(stock.getPlantNb()).sourceWareCode(stock.getWareCode()).sourceAreaCode(stock.getAreaCode())
-                        .sourceBinCode(stock.getBinCode()).materialNb(stock.getMaterialNb()).batchNb(stock.getBatchNb()).expireDate(stock.getExpireDate())
-                        .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
-                        .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
-                        .build();
-                wareShiftList.add(wareShift);
-            }
+//            if (stock.getPlantNb().equals("7752")) {
+//                WareShift wareShift = WareShift.builder().sourcePlantNb(stock.getPlantNb()).sourceWareCode(stock.getWareCode()).sourceAreaCode(stock.getAreaCode())
+//                        .sourceBinCode(stock.getBinCode()).materialNb(stock.getMaterialNb()).batchNb(stock.getBatchNb()).expireDate(stock.getExpireDate())
+//                        .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+//                        .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+//                        .quantity(stock.getTotalStock())
+//                        .build();
+//                wareShiftList.add(wareShift);
+//            }
 
 
         });
@@ -164,7 +172,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
             throw new ServiceException("sscc:" + dto.getSourceSsccNb() + "对应的抽样信息不存在");
         }
 
-        if (!(iqcSamplePlan.getStatus() == IQCStatusEnum.WAITING_BIN_DOWN.code() || iqcSamplePlan.getStatus() == IQCStatusEnum.WARE_SHIFTING.code())) {
+        if (!(iqcSamplePlan.getStatus() == IQCStatusEnum.WAAITTING_ISSUE.code() || iqcSamplePlan.getStatus() == IQCStatusEnum.WAITING_SAMPLE.code() || iqcSamplePlan.getStatus() == IQCStatusEnum.WARE_SHIFTING.code())) {
             throw new ServiceException("状态为：" + IQCStatusEnum.getDesc(iqcSamplePlan.getStatus()) + ",不可以修改");
         }
 
@@ -188,6 +196,9 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
             LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
             wareShiftQueryWrapper.eq(WareShift::getSsccNb, dto.getSourceSsccNb()).eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
             WareShift shift = wareShiftService.getOne(wareShiftQueryWrapper);
+            if (shift == null) {
+                return;
+            }
             if (shift != null && !(shift.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN.value())
                     || shift.getStatus().equals(KanbanStatusEnum.CANCEL.value()))) {
                 throw new ServiceException("对应移库任务状态为" + KanbanStatusEnum.getDesc(String.valueOf(shift.getStatus())) + ",不可修改");
@@ -199,6 +210,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
                     .sourceBinCode(stock.getBinCode()).materialNb(stock.getMaterialNb()).batchNb(stock.getBatchNb()).expireDate(stock.getExpireDate())
                     .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
                     .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                    .quantity(stock.getTotalStock())
                     .build();
             wareShiftList.add(wareShift);
 
@@ -323,16 +335,16 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         if (samplePlan.getStatus() == IQCStatusEnum.CANCEL.code()) {
             throw new ServiceException("该任务已经取消，不能再次取消");
         }
-        if (!(samplePlan.getStatus() == IQCStatusEnum.WAITING_BIN_DOWN.code() || samplePlan.getStatus() == IQCStatusEnum.WARE_SHIFTING.code())) {
+        if (!(samplePlan.getStatus() == IQCStatusEnum.WAAITTING_ISSUE.code() || samplePlan.getStatus() == IQCStatusEnum.WAITING_BIN_DOWN.code() || samplePlan.getStatus() == IQCStatusEnum.WARE_SHIFTING.code())) {
             throw new ServiceException("该任务状态为:" + IQCStatusEnum.getDesc(samplePlan.getStatus()) + ",不可取消");
         }
-        if (samplePlan.getPlantNb().equals("7752")){
+        if (samplePlan.getPlantNb().equals("7752")) {
             //移库任务
             LambdaQueryWrapper<WareShift> shiftQueryWrapper = new LambdaQueryWrapper<>();
             shiftQueryWrapper.eq(WareShift::getSsccNb, samplePlan.getSsccNb());
             shiftQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-            shiftQueryWrapper.ne(WareShift::getStatus,KanbanStatusEnum.CANCEL.value());
-            shiftQueryWrapper.ne(WareShift::getStatus,KanbanStatusEnum.FINISH.value());
+            shiftQueryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
+            shiftQueryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.FINISH.value());
 
 
             shiftQueryWrapper.last("limit 1");
@@ -417,6 +429,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
                 .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
                 .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
                 .targetWareCode(dto.getTargetWareCode())
+                .quantity(stock.getTotalStock())
                 .build();
         wareShiftService.save(wareShift);
 
@@ -450,6 +463,55 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         IQCSamplePlan samplePlan = this.getOne(iqcQueryWrapper);
         samplePlan.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
         this.updateById(samplePlan);
+    }
+
+    @Override
+    public void modifyQuantity(String ssccNb, Double quantity) {
+        LambdaQueryWrapper<IQCSamplePlan> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(IQCSamplePlan::getSsccNb, ssccNb);
+        queryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        IQCSamplePlan samplePlan = this.getOne(queryWrapper);
+        if (samplePlan == null) {
+            throw new ServiceException("该sscc" + ssccNb + "没有对应的抽样任务");
+        }
+        if (!(samplePlan.getStatus().equals(IQCStatusEnum.WAAITTING_ISSUE.code())
+                || samplePlan.getStatus().equals(IQCStatusEnum.WAITING_BIN_DOWN.code()))) {
+            throw new ServiceException("sscc:" + ssccNb + "对应任务状态为:" + IQCStatusEnum.getDesc(samplePlan.getStatus()) + ",不可修改");
+        }
+        samplePlan.setQuantity(quantity);
+        this.updateById(samplePlan);
+    }
+
+    @Override
+    public void issueJob(String[] ssccNumbers) {
+        LambdaQueryWrapper<IQCSamplePlan> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(IQCSamplePlan::getSsccNb, ssccNumbers);
+        queryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<IQCSamplePlan> samplePlanList = this.list(queryWrapper);
+        if (!CollectionUtils.isEmpty(samplePlanList)) {
+            ArrayList<WareShift> wareShiftList = new ArrayList<>();
+            samplePlanList.forEach(item -> {
+                if (item.getStatus() != IQCStatusEnum.WAAITTING_ISSUE.code()) {
+                    throw new ServiceException("存在已下发或者已取消任务，请重新选择");
+                }
+                item.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
+                if ("7752".equals(item.getPlantNb())) {
+                    Stock stock = stockService.getAvailablesStockBySscc(item.getSsccNb());
+                    WareShift wareShift = WareShift.builder().sourcePlantNb(stock.getPlantNb()).sourceWareCode(stock.getWareCode()).sourceAreaCode(stock.getAreaCode())
+                            .sourceBinCode(stock.getBinCode()).materialNb(stock.getMaterialNb()).batchNb(stock.getBatchNb()).expireDate(stock.getExpireDate())
+                            .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+                            .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                            .quantity(stock.getTotalStock())
+                            .build();
+                    wareShiftList.add(wareShift);
+
+                }
+            });
+            if (!CollectionUtils.isEmpty(wareShiftList)) {
+                wareShiftService.saveBatch(wareShiftList);
+            }
+            this.updateBatchById(samplePlanList);
+        }
     }
 
 

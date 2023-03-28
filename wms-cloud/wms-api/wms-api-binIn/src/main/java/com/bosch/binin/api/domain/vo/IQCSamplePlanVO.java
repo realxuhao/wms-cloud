@@ -57,6 +57,9 @@ public class IQCSamplePlanVO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Excel(name = "下架时间")
     private Date binDownTime;
+    @ApiModelProperty(value = "推荐抽样数量")
+    @Excel(name = "推荐抽样数量")
+    private Double recommendSampleQuantity;
     @ApiModelProperty(value = "抽样数量")
     @Excel(name = "抽样数量")
     private Double sampleQuantity;
@@ -77,9 +80,7 @@ public class IQCSamplePlanVO {
     @ApiModelProperty(value = "上架库位")
     @Excel(name = "上架库位")
     private String binInCode;
-    @ApiModelProperty(value = "推荐抽样数量")
-    @Excel(name = "推荐抽样数量")
-    private Double recommendSampleQuantity;
+
     private String plantNb;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

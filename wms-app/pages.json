@@ -1,6 +1,5 @@
 {
-	"pages": [
-		{
+	"pages": [{
 			"path": "pages/login/index"
 		},
 		{
@@ -161,6 +160,9 @@
 		},
 		{
 			"path": "pages/finishedProduct/packOperator"
+		},
+		{
+			"path": "pages/finishedProduct/packTask"
 		}
 	],
 	"globalStyle": {

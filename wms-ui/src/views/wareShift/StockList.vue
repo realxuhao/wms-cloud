@@ -69,7 +69,7 @@
         <a-col :span="24" v-show="currentStep === 1">
           <div class="action-content">
             <a-button class="m-r-8" icon="step-backward" @click="previousStep">上一步</a-button>
-            <a-button type="primary" :disabled="!hasSelected" @click="handleSubmit" :loading="submitLoading">提交并生成拣配任务
+            <a-button type="primary" :disabled="!hasSelected" @click="handleSubmit" :loading="submitLoading">提交并生成移库任务
             </a-button>
           </div>
           <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -110,70 +110,6 @@ const queryFormAttr = () => {
     'materialCode': ''
   }
 }
-
-const selectColumns = [
-  {
-    title: '仓库编码',
-    key: 'wareCode',
-    dataIndex: 'wareCode',
-    width: 120
-  },
-  {
-    title: 'SSCC码',
-    key: 'ssccNumber',
-    dataIndex: 'ssccNumber',
-    width: 120
-  },
-  {
-    title: '物料编码',
-    key: 'materialNb',
-    dataIndex: 'materialNb',
-    width: 120
-  },
-  {
-    title: '物料名称',
-    key: 'materialName',
-    dataIndex: 'materialName',
-    width: 90
-  },
-  {
-    title: '批次号',
-    key: 'batchNb',
-    dataIndex: 'batchNb',
-    width: 120
-  },
-  {
-    title: '可用库存',
-    key: 'availableStock',
-    dataIndex: 'availableStock',
-    width: 120
-  },
-  {
-    title: '下发量',
-    key: 'quantity',
-    dataIndex: 'quantity',
-    scopedSlots: { customRender: 'quantity' },
-    width: 120
-  },
-  {
-    title: '库存量',
-    key: 'totalStock',
-    dataIndex: 'totalStock',
-    width: 80
-  },
-  {
-    title: '冻结库存',
-    key: 'freezeStock',
-    dataIndex: 'freezeStock',
-    width: 120
-  },
-  {
-    title: '有效期',
-    key: 'expireDate',
-    dataIndex: 'expireDate',
-    width: 140
-  }
-]
 
 export default {
   name: 'StockList',
@@ -227,12 +163,15 @@ export default {
     hasSelected () {
       return this.selectedRowKeys.length > 0
     },
-    selectColumns () {
-      return selectColumns
-    },
     columns () {
       const { sortMap } = this.queryForm
       const columns = [
+        {
+          title: '工厂',
+          key: 'plantNb',
+          dataIndex: 'plantNb',
+          width: 100
+        },
         {
           title: '仓库编码',
           key: 'wareCode',

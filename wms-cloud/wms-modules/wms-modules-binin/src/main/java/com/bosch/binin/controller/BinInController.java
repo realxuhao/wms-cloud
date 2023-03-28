@@ -4,7 +4,6 @@ package com.bosch.binin.controller;
 import com.bosch.binin.api.domain.dto.BinAllocationDTO;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.BinInQueryDTO;
-import com.bosch.binin.api.domain.dto.BinInTaskDTO;
 import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
@@ -14,7 +13,6 @@ import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
@@ -146,9 +144,9 @@ public class BinInController extends BaseController {
 
 
     @ApiOperation("逻辑删除上架任务")
-    @DeleteMapping("/{id}")
-    public AjaxResult remove(@PathVariable Long id) {
-        return toAjax(binInService.deleteBinInById(id));
+    @DeleteMapping("/{ssccNumber}")
+    public AjaxResult remove(@PathVariable String ssccNumber) {
+        return toAjax(binInService.deleteBinInBySscc(ssccNumber));
     }
 
 
