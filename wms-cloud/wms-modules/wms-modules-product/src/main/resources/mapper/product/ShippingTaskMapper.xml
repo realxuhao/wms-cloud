@@ -44,29 +44,22 @@
         SELECT
         <include refid="Base_Column_List"/>
         FROM shipping_task
-        WHERE
-        <if test="id != null">id = #{id}</if>
-        <if test="packageNo != null">AND package_no = #{packageNo}</if>
+        WHERE delete_flag='0'
+        <if test="id != null">AND id = #{id}</if>
+        <if test="packageNo != null and packageNo !=''">AND package_no = #{packageNo}</if>
         <if test="shippingPlanId != null">AND shipping_plan_id = #{shippingPlanId}</if>
-        <if test="shippingMark != null">AND shipping_mark = #{shippingMark}</if>
-        <if test="etoPo != null">AND eto_po = #{etoPo}</if>
-        <if test="etoPlant != null">AND eto_plant = #{etoPlant}</if>
-        <if test="stockMovementDate != null">AND stock_movement_date = #{stockMovementDate}</if>
-        <if test="country != null">AND country = #{country}</if>
-        <if test="prodOrder != null">AND prod_order = #{prodOrder}</if>
+        <if test="shippingMark != null and shippingMark !=''">AND shipping_mark = #{shippingMark}</if>
+        <if test="etoPo != null and etoPo !=''">AND eto_po = #{etoPo}</if>
+        <if test="etoPlant != null and etoPlant !=''">AND eto_plant = #{etoPlant}</if>
+        <if test="country != null and country !=''">AND country = #{country}</if>
+        <if test="prodOrder != null and prodOrder !=''">AND prod_order = #{prodOrder}</if>
         <if test="qty != null">AND qty = #{qty}</if>
-        <if test="isDisassembled != null">AND is_disassembled = #{isDisassembled}</if>
+        <if test="isDisassembled != null and isDisassembled !=''">AND is_disassembled = #{isDisassembled}</if>
         <if test="tr != null">AND tr = #{tr}</if>
-        <if test="sapCode != null">AND sap_code = #{sapCode}</if>
-        <if test="palletQuantity != null">AND pallet_quantity = #{palletQuantity}</if>
-        <if test="afterPacking != null">AND after_packing = #{afterPacking}</if>
-        <if test="createBy != null">AND create_by = #{createBy}</if>
-        <if test="updateBy != null">AND update_by = #{updateBy}</if>
-        <if test="createTime != null">AND create_time = #{createTime}</if>
-        <if test="updateTime != null">AND update_time = #{updateTime}</if>
-        <if test="status != null">AND status = #{status}</if>
-        <if test="deleteFlag != null">AND delete_flag = #{deleteFlag}</if>
-        <if test="remark != null">AND remark = #{remark}</if>
+        <if test="sapCode != null and sapCode !=''">AND sap_code = #{sapCode}</if>
+        <if test="palletQuantity != null and palletQuantity !=''">AND pallet_quantity = #{palletQuantity}</if>
+        <if test="afterPacking != null and afterPacking !='' ">AND after_packing = #{afterPacking}</if>
+
     </select>
 
     <update id="deleteShippingTask" parameterType="Long[]">

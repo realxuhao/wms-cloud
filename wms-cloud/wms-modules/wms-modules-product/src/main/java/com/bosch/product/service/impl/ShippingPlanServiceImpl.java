@@ -1,8 +1,7 @@
 package com.bosch.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
@@ -15,12 +14,12 @@ import com.bosch.product.service.IShippingPlanService;
 import com.bosch.product.mapper.ShippingPlanMapper;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.StatusEnums;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,12 +39,75 @@ public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, Shi
     private ShippingTaskMapper shippingTaskMapper;
 
     @Override
-    public List<ShippingPlan> getList(ShippingPlanDTO dto) {
-        LambdaQueryWrapper<ShippingPlan> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ShippingPlan::getStatus, StatusEnums.FALSE);
-        queryWrapper.eq(ShippingPlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+    public List<ShippingPlan> getList(ShippingPlanDTO shippingPlanDTO) {
+        LambdaQueryWrapper<ShippingPlan> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(ShippingPlan::getStatus, StatusEnums.FALSE);
+        wrapper.eq(ShippingPlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        if (StringUtils.isNotBlank(shippingPlanDTO.getShippingMark())) {
+            wrapper.eq(ShippingPlan::getShippingMark, shippingPlanDTO.getShippingMark());
+        }
+        if (StringUtils.isNotBlank(shippingPlanDTO.getEtoPo())) {
+            wrapper.eq(ShippingPlan::getEtoPo, shippingPlanDTO.getEtoPo());
+        }
+        if (StringUtils.isNotBlank(shippingPlanDTO.getEtoPlant())) {
+            wrapper.eq(ShippingPlan::getEtoPlant, shippingPlanDTO.getEtoPlant());
+        }
 
-        return shippingPlanMapper.selectList(queryWrapper);
+        // Handle StockMovementDate range query
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        if (shippingPlanDTO.getStockMovementDateStart() != null && shippingPlanDTO.getStockMovementDateEnd() != null) {
+
+            String startDateStr = sdf.format(shippingPlanDTO.getStockMovementDateStart());
+            String endDateStr = sdf.format(shippingPlanDTO.getStockMovementDateEnd());
+            String columnExpr = "STR_TO_DATE(" + "stock_movement_date" + ", '%Y/%c/%e %k:%i')";
+            wrapper.apply(columnExpr + " BETWEEN '" + startDateStr + "' AND '" + endDateStr + "'");
+
+        } else if (shippingPlanDTO.getStockMovementDateStart() != null) {
+            String startDateStr = sdf.format(shippingPlanDTO.getStockMovementDateStart());
+            String columnExpr = "STR_TO_DATE(" + "stock_movement_date" + ", '%Y/%c/%e %k:%i')";
+            wrapper.apply(columnExpr + " >= '" + startDateStr);
+        } else if (shippingPlanDTO.getStockMovementDateEnd() != null) {
+            String endDateStr = sdf.format(shippingPlanDTO.getStockMovementDateEnd());
+            String columnExpr = "STR_TO_DATE(" + "stock_movement_date" + ", '%Y/%c/%e %k:%i')";
+            wrapper.apply(columnExpr + " <= '" + endDateStr);
+        }
+
+        if (StringUtils.isNotBlank(shippingPlanDTO.getCountry())) {
+            wrapper.eq(ShippingPlan::getCountry, shippingPlanDTO.getCountry());
+        }
+
+        if (StringUtils.isNotBlank(shippingPlanDTO.getProdOrder())) {
+            wrapper.eq(ShippingPlan::getProdOrder, shippingPlanDTO.getProdOrder());
+        }
+
+        if (shippingPlanDTO.getQty() != null) {
+            wrapper.eq(ShippingPlan::getQty, shippingPlanDTO.getQty());
+        }
+
+        if (StringUtils.isNotBlank(shippingPlanDTO.getIsDisassembled())) {
+            wrapper.eq(ShippingPlan::getIsDisassembled, shippingPlanDTO.getIsDisassembled());
+        }
+
+        if (StringUtils.isNotBlank(shippingPlanDTO.getTr())) {
+            wrapper.eq(ShippingPlan::getTr, shippingPlanDTO.getTr());
+        }
+
+        if (StringUtils.isNotBlank(shippingPlanDTO.getSapCode())) {
+            wrapper.eq(ShippingPlan::getSapCode, shippingPlanDTO.getSapCode());
+        }
+
+        if (StringUtils.isNotBlank(shippingPlanDTO.getPalletQuantity())) {
+            wrapper.eq(ShippingPlan::getPalletQuantity, shippingPlanDTO.getPalletQuantity());
+        }
+
+        if (StringUtils.isNotBlank(shippingPlanDTO.getAfterPacking())) {
+            wrapper.eq(ShippingPlan::getAfterPacking, shippingPlanDTO.getAfterPacking());
+        }
+        return shippingPlanMapper.selectList(wrapper);
+    }
+
+    private static <T> String testStr(SFunction<T, ?> lambda) {
+        return "STR_TO_DATE(" + lambda + ", '%Y/%c/%e %k:%i')";
     }
 
     @Override

@@ -103,7 +103,7 @@ const columns = [
   {
     title: '序号',
     key: 'index',
-    dataIndex: 'shippingTaskId',
+    dataIndex: 'historyIndex',
     width: 140
   },
   {
@@ -131,12 +131,7 @@ const queryFormAttr = () => {
   return {
     shippingMark: '',
     etoPo: '',
-    ssccNumber: '',
-    materialNb: '',
-    batchNb: '',
-    areaCode: '',
-    binCode: '',
-    palletCode: ''
+    createBy: ''
   }
 }
 

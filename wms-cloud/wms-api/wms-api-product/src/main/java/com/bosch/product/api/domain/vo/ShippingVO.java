@@ -17,6 +17,9 @@ public class ShippingVO {
     @ApiModelProperty(value = "计划ID")
     private String shippingPlanId;
 
+    @ApiModelProperty(value = "序号")
+    private Integer historyIndex;
+
     @ApiModelProperty(value = "打包运输标记")
     private String shippingMark;
 

@@ -22,12 +22,24 @@ const finishedProduc = {
       const data = await finishedProductService.getTaskList(options)
       return data
     },
+    async getDashboard ({ commit }, options) {
+      const data = await finishedProductService.getDashboard(options)
+      return data
+    },
     async getAllPlanList ({ commit }, options) {
       const data = await finishedProductService.getAllPlanList(options)
       return data
     },
     async destroyPlan ({ commit }, ids) {
       const data = await finishedProductService.destroyPlan(ids)
+      return data
+    },
+    async deleteTask ({ commit }, ids) {
+      const data = await finishedProductService.deleteTask(ids)
+      return data
+    },
+    async completeTask ({ commit }, ids) {
+      const data = await finishedProductService.completeTask(ids)
       return data
     },
     async getHistoryRecord ({ commit }, options) {

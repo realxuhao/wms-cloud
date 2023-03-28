@@ -70,5 +70,12 @@ public class ShippingPlanDTO extends PageDomain {
     @ExcelProperty("after packing")
     private String afterPacking;
 
+    @ApiModelProperty(value = "stockMovementDateStart移库日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date stockMovementDateStart;
+
+    @ApiModelProperty(value = "stockMovementDateEnd移库日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date stockMovementDateEnd;
 }
 

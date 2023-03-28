@@ -1,8 +1,11 @@
 package com.bosch.product.api.domain.dto;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
 import java.util.Date;
@@ -17,8 +20,10 @@ import lombok.Data;
 
 @Data
 @ApiModel(value = "ShippingPlanDTO", description = "Shipping Plan DTO")
-public class ShippingPlanVO {
+public class ShippingPlanVO extends BaseEntity {
 
+    @ApiModelProperty(value = "id")
+    private Long id;
     @ApiModelProperty(value = "Shipping Mark")
     private String shippingMark;
 

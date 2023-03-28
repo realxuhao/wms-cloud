@@ -150,7 +150,7 @@ public class ProductPackagingController extends BaseController {
             List<ShippingTask> shippingTasks = shippingTaskService.selectAllByFields(dto);
 
             List<ShippingTaskVO> list = BeanConverUtil.converList(shippingTasks, ShippingTaskVO.class);
-            return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+            return R.ok(new PageVO<>(list, new PageInfo<>(shippingTasks).getTotal()));
         } catch (Exception e) {
             logger.error(e.getMessage());
             return R.fail(e.getMessage());
@@ -158,12 +158,12 @@ public class ProductPackagingController extends BaseController {
     }
     @GetMapping(value = "/allPlanList")
     @ApiOperation("获取未生成打包任务的打包计划")
-    public R<List<ShippingPlanVO>> allPlanList(ShippingPlanDTO dto) {
+    public R<PageVO<ShippingPlanVO>> allPlanList(ShippingPlanDTO dto) {
         try {
             startPage();
             List<ShippingPlan> list = shippingPlanService.getList(dto);
             List<ShippingPlanVO> shippingPlanVOS = BeanConverUtil.converList(list, ShippingPlanVO.class);
-            return R.ok(shippingPlanVOS);
+            return R.ok(new PageVO<>(shippingPlanVOS, new PageInfo<>(list).getTotal()));
         } catch (Exception e) {
             logger.error(e.getMessage());
             return R.fail(e.getMessage());
@@ -188,7 +188,11 @@ public class ProductPackagingController extends BaseController {
         try {
             startPage();
             List<ShippingTaskVO> dashboard = shippingTaskService.getDashboard(dto);
-
+            dashboard.forEach(item -> {
+                if (item.getStatus().equals(TaskStatusEnum.EXECUTED.getCode())){
+                    item.setRateOfProgress(100.00);
+                }
+            });
             return R.ok(new PageVO<>(dashboard, new PageInfo<>(dashboard).getTotal()));
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -201,40 +205,39 @@ public class ProductPackagingController extends BaseController {
      */
     @Log(title = "删除", businessType = BusinessType.DELETE)
     @ApiOperation("删除任务")
-    @DeleteMapping("/{ids}")
-    public AjaxResult delete(@PathVariable Long[] ids) {
+    @DeleteMapping("/deleteTask/{ids}")
+    public AjaxResult deleteTask(@PathVariable Long[] ids) {
         return toAjax(shippingTaskService.deleteShippingTask(ids));
     }
+    /**
+     * 完成
+     */
+    @Log(title = "完成", businessType = BusinessType.DELETE)
+    @ApiOperation("完成任务")
+    @PutMapping("/complete/{ids}")
+    public AjaxResult complete(@PathVariable Long[] ids) {
+        boolean b =false;
+        try {
+            //修改任务为已完成
+             b = shippingTaskService.updateStatus(ids,
+                    TaskStatusEnum.EXECUTED.getCode());
 
+        }catch (Exception e){
+            return AjaxResult.error(e.getMessage());
+        }
+        return b?AjaxResult.success():AjaxResult.error();
+    }
     @PostMapping(value = "/genTask")
     @ApiOperation("生成打包任务")
     @Transactional(rollbackFor = Exception.class)
-    public R<ShippingPlanDTO> genTask(@RequestBody ShippingPlanDTO dto) {
+    public R<ShippingPlanDTO> genTask() {
         try {
-
+            ShippingPlanDTO dto=new ShippingPlanDTO();
             List<ShippingPlan> list = shippingPlanService.getList(dto);
             List<ShippingPlanVO> vos = BeanConverUtil.converList(list, ShippingPlanVO.class);
             if (CollectionUtils.isEmpty(list)) {
                 return R.fail("未获取到需要打包的任务");
             }
-//
-//            // 按照 stockMovementDate 字段分组，并按照 etoPo 字段排序
-//            Map<String, List<ShippingPlan>> groupedByDate = list.stream()
-//                    .sorted(Comparator.comparing(ShippingPlan::getEtoPo)) // 按照 etoPo 字段排序
-//                    .collect(Collectors.groupingBy(ShippingPlan::getStockMovementDate)); // 按照stockMovementDate 字段分组
-//            // 对每个分组内的元素按照 shippingMark 和 prodOrder 字段进行排序
-//            Comparator<ShippingPlan> shippingMarkComparator = Comparator.comparing(ShippingPlan::getShippingMark);
-//            Comparator<ShippingPlan> prodOrderComparator = Comparator.comparing(ShippingPlan::getProdOrder);
-//
-//            for (List<ShippingPlan> group : groupedByDate.values()) {
-//                group.sort(shippingMarkComparator.thenComparing(prodOrderComparator)); // 按照 shippingMark 和
-//                // prodOrder字段排序
-//            }
-//
-//            // 将分组后的结果转换为一个列表
-//            List<ShippingPlan> result = groupedByDate.values().stream()
-//                    .flatMap(List::stream) // 将每个分组中的列表转换为一个流
-//                    .collect(Collectors.toList()); // 将所有元素收集到一个列表中
 
             ListPair listPair = shippingTaskService.genTask(list);
 

@@ -21,8 +21,13 @@
           </a-col>
           <a-col :span="8">
             <a-form-item label="stock movement 移库日期">
-              <a-input v-model="queryForm.stockMovementDate" placeholder="stock movement 移库日期" allow-clear/>
+              <a-range-picker
+                format="YYYY-MM-DD"
+
+                v-model="queryForm.date"
+              />
             </a-form-item>
+
           </a-col>
           <template v-if="advanced">
             <a-col :span="4">
@@ -127,7 +132,7 @@
           :current="queryForm.pageNum"
           :page-size.sync="queryForm.pageSize"
           :total="paginationTotal"
-          @showSizeChange="loadTableList"
+          @showSizeChange="onShowSizeChange"
           @change="changePagination"
         />
       </div>
@@ -138,6 +143,7 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+import _ from 'lodash'
 
 const columns = [
   {
@@ -325,10 +331,13 @@ export default {
     async loadTableList () {
       try {
         this.tableLoading = true
-
+        const { date = [] } = this.queryForm
+        const stockMovementDateStart = date.length > 0 ? date[0].format('YYYY-MM-DD 00:00:00') : undefined
+        const stockMovementDateEnd = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:59') : undefined
+        const options = { ..._.omit(this.queryForm, ['date']), stockMovementDateStart, stockMovementDateEnd }
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('finishedProduct/getAllPlanList', this.queryForm)
+        } = await this.$store.dispatch('finishedProduct/getAllPlanList', options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {

@@ -41,17 +41,21 @@
         size="middle"
         :scroll="tableScroll"
       >
-        <template slot="checkType" slot-scope="text">
-          <div >
-            <a-tag color="orange" v-if="text===0">
-              称重
-            </a-tag>
-            <a-tag color="blue" v-if="text===1">
-              数数
-            </a-tag>
-            <a-tag color="#87d068" v-if="text===2">
-              免检
-            </a-tag>
+        <template slot="status" slot-scope="text">
+          <a-tag :color="statusColorMap[text]"> {{ status[text] }}</a-tag>
+        </template>
+
+        <template slot="action" slot-scope="text, record">
+          <div class="action-con">
+            <a-popconfirm v-if="record.status!=2" title="确认要强制完成任务吗?" ok-text="确认" cancel-text="取消" @confirm="onSubmit(record)">
+              <a class="warning-color"><a-icon class="m-r-4" type="complete" />完成</a>
+            </a-popconfirm>
+              <a v-if="record.status==2" class="warning-color"><a-icon class="m-r-4" type="complete" />已完成</a>
+
+            <a-divider type="vertical" />
+            <a-popconfirm title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
+              <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
+            </a-popconfirm>
           </div>
         </template>
       </a-table>
@@ -67,6 +71,8 @@
           @change="changePagination"
         />
       </div>
+      <a-modal v-model="submitVisible" :title="modalTitle" ok-text="确认" cancel-text="取消" @ok="onSubmit">
+      </a-modal>
     </div>
 
   </div>
@@ -74,79 +80,132 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+import { colorMap } from '@/utils/color'
 
 const columns = [
-  {
-    title: '移库日期',
-    key: 'stockMovement',
-    dataIndex: 'stockMovement',
-    width: 140
-  },
-  {
-    title: 'ETO PO',
-    key: 'ETOPO',
-    dataIndex: 'ETOPO',
-    width: 120
-  },
   {
     title: 'Shipping Mark',
     key: 'shippingMark',
     dataIndex: 'shippingMark',
     width: 120
   },
-
-  // {
-  //   title: '成品料号',
-  //   key: 'ETOPLANT',
-  //   dataIndex: 'ETOPLANT',
-  //   width: 120
-  // },
-
   {
-    title: '原托数',
+    title: 'ETO PO',
+    key: 'etoPo',
+    dataIndex: 'etoPo',
+    width: 120
+  },
+  {
+    title: 'ETO PLANT',
+    key: 'etoPlant',
+    dataIndex: 'etoPlant',
+    width: 120
+  },
+  {
+    title: 'stock movement 移库日期',
+    key: 'stockMovementDate',
+    dataIndex: 'stockMovementDate',
+    width: 120
+  },
+  {
+    title: 'Country',
     key: 'country',
     dataIndex: 'country',
-    width: 140
+    width: 120
   },
   {
-    title: '组托数',
+    title: 'Prod-order',
     key: 'prodOrder',
     dataIndex: 'prodOrder',
-    width: 140
+    width: 120
+  },
+
+  {
+    title: 'SAP Code',
+    key: 'sapCode',
+    dataIndex: 'sapCode',
+    width: 120
   },
   {
-    title: '进度',
-    key: 'Qty',
-    dataIndex: 'Qty',
+    title: 'Pallet Quantity',
+    key: 'palletQuantity',
+    dataIndex: 'palletQuantity',
+    width: 120
+  },
+  {
+    title: 'after packing',
+    key: 'afterPacking',
+    dataIndex: 'afterPacking',
     width: 120
   },
   {
     title: '状态',
-    key: 'batchNb',
-    dataIndex: 'batchNb',
+    key: 'status',
+    dataIndex: 'status',
+    width: 120,
+    scopedSlots: { customRender: 'status' }
+  },
+  {
+    title: '进度',
+    key: 'rateOfProgress',
+    dataIndex: 'rateOfProgress',
     width: 120
+  },
+  {
+    title: '创建者',
+    key: 'createBy',
+    dataIndex: 'createBy',
+    width: 120
+  },
+  {
+    title: '创建时间',
+    key: 'createTime',
+    dataIndex: 'createTime',
+    width: 120
+  },
+  {
+    title: '更新者',
+    key: 'updateBy',
+    dataIndex: 'updateBy',
+    width: 120
+  },
+  {
+    title: '更新时间',
+    key: 'updateTime',
+    dataIndex: 'updateTime',
+    width: 120
+  },
+  {
+    title: '操作',
+    key: 'action',
+    width: 160,
+    scopedSlots: { customRender: 'action' }
   }
-
 ]
-
 const queryFormAttr = () => {
   return {
-    plantNb: '',
-    wareCode: '',
-    ssccNumber: '',
-    materialNb: '',
-    batchNb: '',
-    areaCode: '',
-    binCode: '',
-    palletCode: ''
+    shippingMark: '',
+    etoPo: ''
   }
 }
+const status = {
+  0: '未执行',
+  1: '执行中',
+  2: '已执行'
+}
 
+const statusColorMap = {
+  0: colorMap['error'],
+  1: colorMap['warning'],
+  2: colorMap['success']
+}
 export default {
   name: 'Area',
   mixins: [mixinTableList],
   data () {
     return {
+      submitVisible: false,
+      modalTitle: '',
       tableLoading: false,
       uploadLoading: false,
       genTaskLoading: false,
@@ -159,53 +218,14 @@ export default {
       list: []
     }
   },
+  computed: {
+    status: () => status,
+    statusColorMap: () => statusColorMap
+  },
   methods: {
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
-    },
-    async handleDownloadTemplate () {
-      try {
-        this.$store.dispatch('file/downloadByFilename', '打包计划.xlsx')
-      } catch (error) {
-        this.$message.error(error.message)
-      }
-    },
-    async handleGenTask () {
-      try {
-        this.genTaskLoading = true
-        await this.$store.dispatch('finishedProduct/genTask')
-
-        this.queryForm.pageNum = 1
-        this.loadTableList()
-
-        this.$message.success('打包任务生成成功')
-      } catch (error) {
-        this.$message.error(error.message)
-      } finally {
-        this.genTaskLoading = false
-      }
-    },
-    async handleUpload (e) {
-      const { file } = e
-
-      const formdata = new FormData()
-
-      try {
-        formdata.append('file', file)
-
-        this.uploadLoading = true
-        await this.$store.dispatch('finishedProduct/planImport', formdata)
-
-        this.queryForm.pageNum = 1
-        this.loadTableList()
-
-        this.$message.success('导入成功！')
-      } catch (error) {
-        this.$message.error(error.message)
-      } finally {
-        this.uploadLoading = false
-      }
     },
     async loadTableList () {
       try {
@@ -213,7 +233,7 @@ export default {
 
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('finishedProduct/getTaskList', this.queryForm)
+        } = await this.$store.dispatch('finishedProduct/getDashboard', this.queryForm)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -224,6 +244,31 @@ export default {
     },
     async loadData () {
       this.loadTableList()
+    },
+    async handleDelete (record) {
+      try {
+        await this.$store.dispatch('finishedProduct/deleteTask', record.id)
+        this.$message.success('删除成功！')
+
+        this.loadTableList()
+      } catch (error) {
+        console.log(error)
+        this.$message.error('删除失败，请联系系统管理员！')
+      }
+    },
+    async handleEdit (record) {
+      this.submitVisible = true
+    },
+    async onSubmit (record) {
+      // 调用API
+      try {
+        await this.$store.dispatch('finishedProduct/completeTask', record.id)
+        this.$message.success('成功！')
+        this.submitVisible = false
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      }
     }
   },
   mounted () {

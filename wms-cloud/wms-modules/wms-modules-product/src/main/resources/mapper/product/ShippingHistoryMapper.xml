@@ -89,6 +89,7 @@
                 <include refid="Task_Base_Column_List"/>,<include refid="History_Base_Column_List"/>
 
                 FROM shipping_task as st left join shipping_history as sh
+                ON sh.shipping_task_id=st.id
                 WHERE st.delete_flag=0 and sh.delete_flag=0
 
                 <if test="shippingMark != null and shippingMark != '' ">

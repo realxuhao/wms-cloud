@@ -1,5 +1,6 @@
 package com.bosch.product.service.impl;
 
+import com.alibaba.fastjson2.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.product.api.domain.ShippingHistory;
@@ -12,6 +13,7 @@ import com.bosch.product.api.domain.vo.ShippingTaskVO;
 import com.bosch.product.mapper.ShippingHistoryMapper;
 import com.bosch.product.service.IShippingTaskService;
 import com.bosch.product.mapper.ShippingTaskMapper;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,6 +56,7 @@ public class ShippingTaskServiceImpl extends ServiceImpl<ShippingTaskMapper, Shi
                 list.stream()
                         .collect(Collectors.groupingBy(ShippingPlan::getStockMovementDate));
 
+
         // 遍历每个分组
         for (Map.Entry<String, List<ShippingPlan>> entry : groupedByDate.entrySet()) {
             String stockMovementDate = entry.getKey();
@@ -63,19 +66,20 @@ public class ShippingTaskServiceImpl extends ServiceImpl<ShippingTaskMapper, Shi
             Map<String, List<ShippingPlan>> groupedByMarkAndPo =
                     plans.stream()
                             .collect(Collectors.groupingBy(plan ->
-                                    plan.getShippingMark() + plan.getEtoPo()));
+                                    "ShippingMark:"+plan.getShippingMark() +" EtoPo:"+plan.getEtoPo()));
 
             // 遍历每个分组
             for (Map.Entry<String, List<ShippingPlan>> markAndPoEntry : groupedByMarkAndPo.entrySet()) {
+                try{
                 String shippingMarkAndPo = markAndPoEntry.getKey();
                 List<ShippingPlan> markAndPoPlans = markAndPoEntry.getValue();
 
                 // 将palletQuantity和afterPacking分别求和
                 int totalPalletQuantity = markAndPoPlans.stream()
-                        .mapToInt(plan -> (int) Math.floor(Double.parseDouble(plan.getPalletQuantity())))
+                        .mapToInt(plan -> (int) Math.ceil(Double.parseDouble(plan.getPalletQuantity())))
                         .sum();
                 int totalAfterPacking = markAndPoPlans.stream()
-                        .mapToInt(plan -> (int) Math.floor(Double.parseDouble(plan.getAfterPacking())))
+                        .mapToInt(plan -> (int) Math.ceil(Double.parseDouble(plan.getAfterPacking())))
                         .sum();
 
                 String idsStr = markAndPoPlans.stream()
@@ -83,7 +87,7 @@ public class ShippingTaskServiceImpl extends ServiceImpl<ShippingTaskMapper, Shi
                         .map(String::valueOf)
                         .collect(Collectors.joining(","));
 
-                markAndPoPlans.stream().forEach(sp -> sp.setStatus(1));
+
                 // 输出分组后的数据和注释
                 //ShippingTask taskDo = new ShippingTask();
                 ShippingTask conver = BeanConverUtil.conver(markAndPoPlans.get(0), ShippingTask.class);
@@ -92,12 +96,18 @@ public class ShippingTaskServiceImpl extends ServiceImpl<ShippingTaskMapper, Shi
                 conver.setPalletQuantity(String.valueOf(totalPalletQuantity));
                 conver.setAfterPacking(String.valueOf(totalAfterPacking));
                 result.add(conver);
+                //修改plan状态
+                markAndPoPlans.stream().forEach(sp -> sp.setStatus(1));
 //                System.out.println("日期：" + stockMovementDate +
 //                        "，货运标记和ETO PO：" + shippingMarkAndPo +
 //                        "，托盘数量合计：" + totalPalletQuantity +
 //                        "，装箱后数量合计：" + totalAfterPacking);
+            }catch (Exception e){
+                throw new ServiceException(markAndPoEntry.getKey()+" 的数据存在错误，请核对") ;
+            }
             }
         }
+
         return new ListPair(result,list);
     }
 
