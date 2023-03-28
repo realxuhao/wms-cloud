@@ -195,10 +195,10 @@
           <a-select-option value="PC">
             PC
           </a-select-option>
-          <a-select-option value="㎡">
+          <a-select-option value="RLL">
             RLL
           </a-select-option>
-          <a-select-option value="㎡">
+          <a-select-option value="Carton">
             Carton
           </a-select-option>
         </a-select>

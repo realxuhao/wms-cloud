@@ -30,9 +30,23 @@ const saveEditSSCCStatusList = async (options) => {
   return data
 }
 
+const modifyQuantity = async (options) => {
+  const url = `/iqc/sample/modifyQuantity?${qs.stringify(options)}`
+  const { data } = await createAuthInstance(baseUrl).put(url)
+  return data
+}
+
+const issueJob = async (ids) => {
+  const url = `/iqc/issueJob/${ids}`
+  const { data } = await createAuthInstance(baseUrl).put(url)
+  return data
+}
+
 export const iqcManagementService = {
   getIqcQualityList,
   updateIqcQuality,
   uploadEditSSCCStatusFile,
-  saveEditSSCCStatusList
+  saveEditSSCCStatusList,
+  modifyQuantity,
+  issueJob
 }

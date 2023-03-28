@@ -184,6 +184,12 @@ const columns = [
     width: 120
   },
   {
+    title: '车牌号',
+    key: 'carNb',
+    dataIndex: 'carNb',
+    width: 120
+  },
+  {
     title: 'sscc码',
     key: 'ssccNb',
     dataIndex: 'ssccNb',

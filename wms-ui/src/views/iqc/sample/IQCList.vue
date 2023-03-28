@@ -90,12 +90,16 @@
           </a-row>
         </a-form>
         <div class="action-content">
-          <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
-          <a-button style="margin-left: 8px" type="primary" class="m-r-8" icon="plus" @click="handleAddIqcSample">
+          <a-button :loading="exportLoading" class="m-r-8" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
+          <a-button type="primary" class="m-r-8" icon="plus" @click="handleAddIqcSample">
             新建抽样计划
+          </a-button>
+          <a-button type="primary" icon="plus" :loading="batchIssueLoading" @click="handleBatchIssue" :disabled="!selectedRowKeys.length">
+            批量下发
           </a-button>
         </div>
         <a-table
+          :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
           :columns="columns"
           :data-source="list"
           :loading="tableLoading"
@@ -112,10 +116,19 @@
           <template slot="action" slot-scope="text, record">
             <div class="action-con">
               <a
-                :disabled="[-1].includes(record.status)"
+                :disabled="![0,5].includes(record.status)"
                 class="warning-color"
                 @click="$refs.editSample.onOpen(record)">
-                <a :disabled="!(record.status=== 0 || record.status===4)" class="danger-color"><a-icon class="m-r-4" type="edit" />编辑</a></a>
+                <a-icon class="m-r-4" type="edit" /> 编辑
+              </a>
+              <a-divider type="vertical" />
+
+              <a
+                :disabled="![0,5].includes(record.status)"
+                class="warning-color"
+                @click="handleEditRecommendSampleQuantity(record)">
+                <a-icon class="m-r-4" type="edit" /> 编辑推荐抽样量
+              </a>
               <a-divider type="vertical" />
               <a-popconfirm
                 title="确认要取消吗?"
@@ -123,8 +136,10 @@
                 cancel-text="取消"
                 @confirm="handleDelete(record)"
               >
-                <a :disabled="!(record.status=== 0 || record.status === 4)" class="danger-color"><a-icon class="m-r-4" type="delete" />取消
-                </a></a-popconfirm>
+                <a :disabled="![0,5].includes(record.status)" class="danger-color">
+                  <a-icon class="m-r-4" type="delete" />取消
+                </a>
+              </a-popconfirm>
               <a-divider type="vertical" />
               <a-popconfirm
                 class="custom-pop"
@@ -135,22 +150,8 @@
               >
                 <template slot="title">
                   <p>确认提交吗？</p>
-                  <!-- <a-form layout="inline" class="search-content">
-                    <a-form-item label="目的仓库" required>
-                      <a-select placeholder="请选择目的仓库" v-model="record.targetWareCode" style="width:200px" >
-                        <a-select-option
-                          v-for="item in wareList"
-                          :key="item.id"
-                          :disabled="record.wareCode === item.code"
-                          :value="item.code"
-                        >
-                          {{ item.code }}&emsp;{{ item.name }}
-                        </a-select-option>
-                      </a-select>
-                    </a-form-item>
-                  </a-form> -->
                 </template>
-                <a :disabled="!(record.status=== 4 && record.plantNb === '7752')" ><a-icon class="m-r-4" type="to-top" />此库抽样</a>
+                <a :disabled="!([0,5].includes(record.status) && record.plantNb === '7752')" ><a-icon class="m-r-4" type="to-top" />此库抽样</a>
               </a-popconfirm>
             </div>
           </template>
@@ -178,6 +179,21 @@
 
       </div>
     </div>
+
+    <a-modal
+      v-model="editVisible"
+      title="修改推荐抽样数量"
+      :confirm-loading="confirmLoading"
+      ok-text="确认"
+      cancel-text="取消"
+      @ok="onSubmit">
+
+      <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form-item label="数量">
+          <a-input-number style="width:200px" :min="0" v-model="editForm.quantity"></a-input-number>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
@@ -190,13 +206,21 @@ import _ from 'lodash'
 
 // import _ from 'lodash'
 
+const labelCol = {
+  span: 3
+}
+const wrapperCol = {
+  span: 19
+}
+
 const statusTextMap = {
   '-1': '已取消',
   0: '待下架',
   1: '待抽样',
   2: '待上架',
   3: '完成',
-  4: '移库中'
+  4: '移库中',
+  5: '待下发'
 }
 
 const statusColorMap = {
@@ -205,7 +229,8 @@ const statusColorMap = {
   1: 'orange',
   2: 'orange',
   3: 'green',
-  4: 'orange'
+  4: 'orange',
+  5: 'orange'
 }
 
 const columns = [
@@ -213,7 +238,7 @@ const columns = [
     title: '工厂',
     key: 'plantNb',
     dataIndex: 'plantNb',
-    width: 120
+    width: 60
   },
   {
     title: '仓库',
@@ -225,7 +250,7 @@ const columns = [
     title: 'SSCC码',
     key: 'ssccNb',
     dataIndex: 'ssccNb',
-    width: 120
+    width: 160
   },
   {
     title: 'cell部门',
@@ -335,7 +360,7 @@ const columns = [
     title: '操作',
     key: 'action',
     fixed: 'right',
-    width: 230,
+    width: 370,
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -374,17 +399,46 @@ export default {
       columns,
       list: [],
       wareList: [],
-      iqcSampleVisible: false
+      iqcSampleVisible: false,
+      editVisible: false,
+      editForm: {
+        quantity: 0
+      },
+      confirmLoading: false,
+      selectedRowKeys: [],
+      batchIssueLoading: false
     }
   },
   computed: {
     statusTextMap: () => statusTextMap,
-    statusColorMap: () => statusColorMap
+    statusColorMap: () => statusColorMap,
+    labelCol () {
+      return labelCol
+    },
+    wrapperCol () {
+      return wrapperCol
+    }
   },
   methods: {
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
+    },
+    onSelectChange (selectedRowKeys) {
+      this.selectedRowKeys = selectedRowKeys
+    },
+    async handleBatchIssue () {
+      try {
+        this.batchIssueLoading = true
+        await this.$store.dispatch('iqcManagement/issueJob', this.selectedRowKeys)
+        this.$message.success('修改成功')
+        this.selectedRowKeys = []
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.batchIssueLoading = false
+      }
     },
     async handleDownload () {
       try {
@@ -397,6 +451,25 @@ export default {
         this.$message.error(error.message)
       } finally {
         this.exportLoading = false
+      }
+    },
+    handleEditRecommendSampleQuantity (record) {
+      console.log(record)
+      this.editForm.ssccNb = record.ssccNb
+      this.editForm.quantity = record.recommendSampleQuantity
+      this.editVisible = true
+    },
+    async onSubmit () {
+      try {
+        this.confirmLoading = true
+        await this.$store.dispatch('iqcManagement/modifyQuantity', this.editForm)
+        this.$message.success('修改成功')
+        this.editVisible = false
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.confirmLoading = false
       }
     },
     async handleCancelShift (record) {

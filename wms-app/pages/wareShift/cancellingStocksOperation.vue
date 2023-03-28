@@ -30,10 +30,10 @@
 
 			<view class="content">
 				<uni-forms :label-width="80" ref="form" :rules="formRules" :modelValue="form" label-position="left">
-					<uni-forms-item label="Cell" name="cell" required>
+					<!-- <uni-forms-item label="Cell" name="cell" required>
 						<uni-data-picker ref="picker" popup-title="请选择Cell" :localdata="cellList" @change="handleChangeCell"></uni-data-picker>
-					</uni-forms-item>
-					<uni-forms-item label="状态" name="type" required>
+					</uni-forms-item> -->
+					<!-- <uni-forms-item label="状态" name="type" required>
 						<uni-data-checkbox v-model="form.type" @change="handleTypeChange" :localdata="radioList"></uni-data-checkbox>
 					</uni-forms-item>
 					<uni-forms-item label="仓库" name="wareCode" required>
@@ -41,9 +41,8 @@
 					</uni-forms-item>
 					<uni-forms-item label="存储区" name="areaCode" required v-if="form.type === 1">
 						<uni-data-picker ref="picker" v-model="area" popup-title="请选择存储区" :localdata="areaList" @change="handleAreaChange"></uni-data-picker>
-					</uni-forms-item>
+					</uni-forms-item> -->
 					<uni-forms-item label="数量" name="quantity" required><uni-easyinput type="number" v-model="form.quantity" placeholder="数量" /></uni-forms-item>
-
 					<o-btn block class="submit-btn primary-button" :loading="submitLoading" @click="handlePost">提交</o-btn>
 				</uni-forms>
 			</view>
@@ -57,7 +56,7 @@
 
 <script>
 import Message from '@/components/Message';
-import Bus from '@/utils/bus';
+// import Bus from '@/utils/bus';
 import _ from 'lodash';
 
 const radioList = [
@@ -80,30 +79,30 @@ export default {
 			materialInfo: {},
 			barCode: undefined,
 			formRules: {
-				wareCode: {
-					rules: [
-						{
-							required: true,
-							errorMessage: '不能为空'
-						}
-					]
-				},
-				areaCode: {
-					rules: [
-						{
-							required: true,
-							errorMessage: '不能为空'
-						}
-					]
-				},
-				cell: {
-					rules: [
-						{
-							required: true,
-							errorMessage: '不能为空'
-						}
-					]
-				},
+				// wareCode: {
+				// 	rules: [
+				// 		{
+				// 			required: true,
+				// 			errorMessage: '不能为空'
+				// 		}
+				// 	]
+				// },
+				// areaCode: {
+				// 	rules: [
+				// 		{
+				// 			required: true,
+				// 			errorMessage: '不能为空'
+				// 		}
+				// 	]
+				// },
+				// cell: {
+				// 	rules: [
+				// 		{
+				// 			required: true,
+				// 			errorMessage: '不能为空'
+				// 		}
+				// 	]
+				// },
 				quantity: {
 					rules: [
 						{
@@ -114,19 +113,19 @@ export default {
 				}
 			},
 			form: {
-				quantity: undefined,
-				type: 0,
-				areaCode: undefined,
-				wareCode: undefined,
-				cell: undefined,
-				plantNb: undefined
+				quantity: undefined
+				// type: 0,
+				// areaCode: undefined,
+				// wareCode: undefined,
+				// cell: undefined,
+				// plantNb: undefined
 			},
-			materialInfo: {},
-			dataTree: [],
-			plantList: [],
-			cellList: [],
-			areaList: [],
-			area: undefined
+			materialInfo: {}
+			// dataTree: [],
+			// plantList: [],
+			// cellList: [],
+			// areaList: [],
+			// area: undefined
 		};
 	},
 	computed: {
@@ -139,21 +138,21 @@ export default {
 		this.getMaterialInfo(options.barCode);
 	},
 	methods: {
-		handleTypeChange(e) {
-			const { data } = e.detail;
-			if (data.value === 1) {
-				this.getWareList();
-			}
-		},
-		async getCellList() {
-			const data = await this.$store.dispatch('wareShift/getCellList');
-			this.cellList = _.map(data, x => ({ text: x.name, value: x.id }));
-		},
-		async getWareList() {
-			const data = await this.$store.dispatch('wareShift/getWareList', { wareCode: this.form.wareCode });
-			console.log(data);
-			this.areaList = _.map(data, x => ({ text: x.name, value: x.code }));
-		},
+		// handleTypeChange(e) {
+		// 	const { data } = e.detail;
+		// 	if (data.value === 1) {
+		// 		this.getWareList();
+		// 	}
+		// },
+		// async getCellList() {
+		// 	const data = await this.$store.dispatch('wareShift/getCellList');
+		// 	this.cellList = _.map(data, x => ({ text: x.name, value: x.id }));
+		// },
+		// async getWareList() {
+		// 	const data = await this.$store.dispatch('wareShift/getWareList', { wareCode: this.form.wareCode });
+		// 	console.log(data);
+		// 	this.areaList = _.map(data, x => ({ text: x.name, value: x.code }));
+		// },
 		async getMaterialInfo(barCode) {
 			const data = await this.$store.dispatch('material/parsedBarCode', barCode);
 			this.materialInfo = data;
@@ -161,55 +160,55 @@ export default {
 		async handleGoBack() {
 			uni.navigateBack({ delta: 1 });
 		},
-		handleChangePlant(val) {
-			const {
-				detail: { value }
-			} = val;
+		// handleChangePlant(val) {
+		// 	const {
+		// 		detail: { value }
+		// 	} = val;
 
-			const factoryCode = value[0].text;
-			const factory = _.find(this.plantList, ['factoryCode', factoryCode]);
-			this.form.plantNb = factory.factoryCode;
+		// 	const factoryCode = value[0].text;
+		// 	const factory = _.find(this.plantList, ['factoryCode', factoryCode]);
+		// 	this.form.plantNb = factory.factoryCode;
 
-			const wareCode = value[1].text;
-			const ware = _.find(this.plantList, ['code', wareCode]);
-			this.form.wareCode = ware.code;
-		},
-		handleChangeCell(val) {
-			const {
-				detail: { value }
-			} = val;
-			this.form.cell = value[0].text;
-		},
-		handleAreaChange(val) {
-			const {
-				detail: { value }
-			} = val;
-			this.form.areaCode = value[0].value;
-		},
+		// 	const wareCode = value[1].text;
+		// 	const ware = _.find(this.plantList, ['code', wareCode]);
+		// 	this.form.wareCode = ware.code;
+		// },
+		// handleChangeCell(val) {
+		// 	const {
+		// 		detail: { value }
+		// 	} = val;
+		// 	this.form.cell = value[0].text;
+		// },
+		// handleAreaChange(val) {
+		// 	const {
+		// 		detail: { value }
+		// 	} = val;
+		// 	this.form.areaCode = value[0].value;
+		// },
 		async lodaData() {
-			this.loadPlantList();
-			this.getCellList();
+			// this.loadPlantList();
+			// this.getCellList();
 		},
-		async loadPlantList() {
-			const data = await this.$store.dispatch('plant/getList');
-			this.plantList = data;
+		// async loadPlantList() {
+		// 	const data = await this.$store.dispatch('plant/getList');
+		// 	this.plantList = data;
 
-			const uniqList = _.uniqBy(data, 'factoryCode');
-			const list = [];
-			_.each(uniqList, (plant, index) => {
-				const plantIndex = index + 1;
-				const obj = { text: plant.factoryCode, children: [], value: `${plantIndex}-${index}` };
-				_.each(data, (item, itemIndex) => {
-					if (item.factoryCode === plant.factoryCode) {
-						const ware = { text: item.code, value: `${plantIndex}-${itemIndex + 1}`, code: item.code };
-						obj.children.push(ware);
-					}
-				});
-				list.push(obj);
-			});
+		// 	const uniqList = _.uniqBy(data, 'factoryCode');
+		// 	const list = [];
+		// 	_.each(uniqList, (plant, index) => {
+		// 		const plantIndex = index + 1;
+		// 		const obj = { text: plant.factoryCode, children: [], value: `${plantIndex}-${index}` };
+		// 		_.each(data, (item, itemIndex) => {
+		// 			if (item.factoryCode === plant.factoryCode) {
+		// 				const ware = { text: item.code, value: `${plantIndex}-${itemIndex + 1}`, code: item.code };
+		// 				obj.children.push(ware);
+		// 			}
+		// 		});
+		// 		list.push(obj);
+		// 	});
 
-			this.dataTree = list;
-		},
+		// 	this.dataTree = list;
+		// },
 		async handlePost() {
 			this.$refs.form
 				.validate()
@@ -229,7 +228,7 @@ export default {
 					...this.form,
 					mesBarCode: this.barCode
 				};
-				const data = await this.$store.dispatch('wareShift/addMaterialReturn', options);
+				await this.$store.dispatch('wareShift/addMaterialReturn', options);
 				this.$refs.message.success('提交成功');
 				this.handleGoBack();
 			} catch (e) {
