@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.product.mapper.ProductReceiveMapper">
+
+
+    <resultMap type="ProductReceiveVO" id="ProductReceiveVOResult">
+        <result property="id" column="id"/>
+        <result property="plantNb" column="plant_nb"/>
+        <result property="wareCode" column="ware_code"/>
+        <result property="ssccNumber" column="sscc_number"/>
+        <result property="batchNb" column="batch_nb"/>
+        <result property="materialNb" column="material_nb"/>
+        <result property="materialName" column="material_name"/>
+        <result property="expireDate" column="expire_date" />
+        <result property="unit" column="unit" />
+        <result property="quantity" column="quantity"/>
+        <result property="fromProdOrder" column="from_prod_order"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+
+    <select id="list" resultMap="ProductReceiveVOResult">
+        select pr.id,
+               pr.sscc_number,
+               pr.batch_nb,
+               str_to_date(pr.expire_date, '%d/%m/%y') as expire_date,
+               pr.material_nb,
+               p.product_name as material_name,
+               pr.unit,
+               pr.quantity,
+               pr.from_prod_order,
+               pr.create_by,
+               pr.create_time,
+               pr.update_by,
+               pr.update_time,
+               pr.status,
+               pr.plant_nb,
+               pr.ware_code,
+               pr.production_date
+
+        from  si_product_receive pr left join (select * from md_product_packaging where delete_flag=0 )p on pr.material_nb = p.product_no
+        where pr.delete_flag=0
+    </select>
+
+
+
+
+
+</mapper>

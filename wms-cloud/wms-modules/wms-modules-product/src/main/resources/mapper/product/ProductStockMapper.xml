@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.product.mapper.ProductStockMapper">
+
+
+    <resultMap type="ProductStockVO" id="StockVOResult">
+        <result property="id" column="id"/>
+        <result property="ssccNumber" column="sscc_number"/>
+        <result property="plantNb" column="plant_nb"/>
+        <result property="fromProdrder" column="from_prod_order"/>
+        <result property="wareCode" column="ware_code"/>
+        <result property="areaCode" column="area_code"/>
+        <result property="frameCode" column="frame_code"/>
+        <result property="binCode" column="bin_code"/>
+        <result property="materialNb" column="material_nb"/>
+        <result property="materialName" column="material_name"/>
+        <result property="batchNb" column="batch_nb"/>
+        <result property="expireDate" column="expire_date"/>
+        <result property="totalStock" column="total_stock"/>
+        <result property="freezeStock" column="freeze_stock"/>
+        <result property="availableStock" column="available_stock"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="qualityStatus" column="quality_status"/>
+        <result property="wholeFlag" column="whole_flag"/>
+        <result property="changeStatus" column="change_status"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="unit" column="unit"/>
+        <result property="cell" column="cell"/>
+        <result property="productionDate" column="production_date"/>
+    </resultMap>
+    <select id="list" resultMap="StockVOResult">
+        select ps.id              as id,
+               ps.sscc_number     as sscc_number,
+               ps.plant_nb        as plant_nb,
+               ps.from_prod_order as from_prod_order,
+               ps.ware_code       as ware_code,
+               ps.frame_code      as frame_code,
+               ps.bin_code        as bin_code,
+               ps.material_nb     as material_nb,
+               pp.product_name            as material_name,
+               ps.batch_nb        as batch_nb,
+               ps.expire_date     as expire_date,
+               ps.total_stock     as total_stock,
+               ps.freeze_stock    as freeze_stock,
+               ps.available_stock as available_stock,
+               ps.bin_in_id       as bin_in_id,
+               ps.create_by       as create_by,
+               ps.create_time     as create_time,
+               ps.quality_status  as quality_status,
+               ps.area_code       as area_code,
+               ps.pallet_code     as pallet_code,
+               ps.whole_flag      as whole_flag,
+               ps.change_status   as change_status,
+               ps.unit            as unit,
+               ps.production_date as production_date,
+               pp.cell            as cell
+        from product_stock ps
+                 left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
+        where ps.delete_flag = 0
+
+    </select>
+
+
+</mapper>

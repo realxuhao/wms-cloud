@@ -1,10 +1,8 @@
 package com.bosch.masterdata.mapper;
 
-import com.bosch.masterdata.api.domain.MdProductPackaging;
+import com.bosch.masterdata.api.domain.ProductPackaging;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.bosch.masterdata.api.domain.dto.EcnDTO;
 import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
-import com.bosch.masterdata.api.domain.vo.EcnVO;
 import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 
 import java.util.List;
@@ -15,7 +13,7 @@ import java.util.List;
 * @createDate 2023-03-09 14:22:29
 * @Entity com.bosch.masterdata.api.domain.MdProductPackaging
 */
-public interface MdProductPackagingMapper extends BaseMapper<MdProductPackaging> {
+public interface MdProductPackagingMapper extends BaseMapper<ProductPackaging> {
 
     /**
      * 查询list

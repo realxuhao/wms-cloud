@@ -18,9 +18,7 @@ import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.service.IWareShiftService;
-import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.RemoteMaterialService;
-import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
@@ -478,14 +476,14 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
                 || samplePlan.getStatus().equals(IQCStatusEnum.WAITING_BIN_DOWN.code()))) {
             throw new ServiceException("sscc:" + ssccNb + "对应任务状态为:" + IQCStatusEnum.getDesc(samplePlan.getStatus()) + ",不可修改");
         }
-        samplePlan.setQuantity(quantity);
+        samplePlan.setRecommendSampleQuantity(quantity);
         this.updateById(samplePlan);
     }
 
     @Override
-    public void issueJob(String[] ssccNumbers) {
+    public void issueJob(Long[] ids) {
         LambdaQueryWrapper<IQCSamplePlan> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.in(IQCSamplePlan::getSsccNb, ssccNumbers);
+        queryWrapper.in(IQCSamplePlan::getId, ids);
         queryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<IQCSamplePlan> samplePlanList = this.list(queryWrapper);
         if (!CollectionUtils.isEmpty(samplePlanList)) {
@@ -504,6 +502,9 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
                             .quantity(stock.getTotalStock())
                             .build();
                     wareShiftList.add(wareShift);
+
+                    item.setStatus(IQCStatusEnum.WARE_SHIFTING.code());
+
 
                 }
             });

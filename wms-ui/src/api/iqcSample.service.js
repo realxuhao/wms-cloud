@@ -5,10 +5,10 @@ import qs from 'qs'
 const baseUrl = `${config.apiHost}/binin/iqc`
 
 const exportExcel = async (options) => {
-  const url = `/sample/export`
+  const url = `/sampleExport`
   const { data } = await createAuthInstance(baseUrl).post(url, options, {
     responseType: 'blob',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    headers: { 'Content-Type': 'application/json' }
   })
   return data
 }

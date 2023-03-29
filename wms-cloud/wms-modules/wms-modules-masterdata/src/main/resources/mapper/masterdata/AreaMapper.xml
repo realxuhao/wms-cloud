@@ -75,14 +75,14 @@
     </select>
     <select id="selectAreaVOList" resultMap="AreaVOResult">
         <include refid="areaVOList"/>
-        <where>
+        where
+            a.status = 1
             <if test="code != null  and code != ''">and a.code = #{code}</if>
             <if test="name != null  and name != ''">and a.name like concat('%', #{name}, '%')</if>
             <if test="wareId != null ">and a.ware_id = #{wareId}</if>
             <if test="wareCode != null ">and w.code = #{wareCode}</if>
 
-            <if test="status != null ">and a.status = #{status}</if>
-        </where>
+
     </select>
     <select id="selectAreaById" parameterType="Integer" resultMap="AreaResult">
         <include refid="selectAreaVo"/>

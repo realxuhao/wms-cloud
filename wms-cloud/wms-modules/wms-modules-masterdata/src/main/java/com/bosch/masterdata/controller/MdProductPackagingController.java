@@ -2,13 +2,9 @@ package com.bosch.masterdata.controller;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
-import com.bosch.masterdata.api.domain.Ecn;
-import com.bosch.masterdata.api.domain.MdProductPackaging;
-import com.bosch.masterdata.api.domain.dto.EcnDTO;
+import com.bosch.masterdata.api.domain.ProductPackaging;
 import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
-import com.bosch.masterdata.api.domain.vo.EcnVO;
 import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
@@ -16,15 +12,12 @@ import com.bosch.masterdata.service.IMdProductPackagingService;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -113,7 +106,7 @@ public class MdProductPackagingController extends BaseController {
                     return R.fail(400, "存在重复数据");
                 } else {
                     //校验
-                    List<MdProductPackaging> dos = BeanConverUtil.converList(list, MdProductPackaging.class);
+                    List<ProductPackaging> dos = BeanConverUtil.converList(list, ProductPackaging.class);
                     mdProductPackagingService.saveBatch(dos);
                 }
             } else {

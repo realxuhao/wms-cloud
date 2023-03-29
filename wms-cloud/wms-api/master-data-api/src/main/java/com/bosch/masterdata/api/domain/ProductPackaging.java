@@ -16,7 +16,7 @@ import lombok.Data;
  */
 @TableName(value ="md_product_packaging")
 @Data
-public class MdProductPackaging extends BaseEntity {
+public class ProductPackaging extends BaseEntity {
     /**
      * id
      */
@@ -43,6 +43,8 @@ public class MdProductPackaging extends BaseEntity {
      * 成品料号
      */
     private String productNo;
+
+    private String productName;
 
     /**
      * Cell

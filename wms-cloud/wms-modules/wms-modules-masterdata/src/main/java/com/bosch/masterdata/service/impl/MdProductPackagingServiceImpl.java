@@ -2,9 +2,8 @@ package com.bosch.masterdata.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bosch.masterdata.api.domain.MdProductPackaging;
+import com.bosch.masterdata.api.domain.ProductPackaging;
 import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
-import com.bosch.masterdata.api.domain.vo.EcnVO;
 import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.masterdata.service.IMdProductPackagingService;
 import com.bosch.masterdata.mapper.MdProductPackagingMapper;
@@ -24,7 +23,7 @@ import java.util.List;
 * @createDate 2023-03-09 14:22:29
 */
 @Service
-public class MdProductPackagingServiceImpl extends ServiceImpl<MdProductPackagingMapper, MdProductPackaging>
+public class MdProductPackagingServiceImpl extends ServiceImpl<MdProductPackagingMapper, ProductPackaging>
         implements IMdProductPackagingService {
 
     @Autowired
@@ -38,7 +37,7 @@ public class MdProductPackagingServiceImpl extends ServiceImpl<MdProductPackagin
 
     @Override
     public MdProductPackagingVO selectMdProductPackagingById(Long id) {
-        MdProductPackaging packaging = mdProductPackagingMapper.selectById(id);
+        ProductPackaging packaging = mdProductPackagingMapper.selectById(id);
         MdProductPackagingVO vo = BeanConverUtil.conver(packaging, MdProductPackagingVO.class);
         return vo;
     }
@@ -51,7 +50,7 @@ public class MdProductPackagingServiceImpl extends ServiceImpl<MdProductPackagin
             throw new ServiceException("存在重复产品编号的数据");
         }
         ;
-        MdProductPackaging packaging = BeanConverUtil.conver(dto, MdProductPackaging.class);
+        ProductPackaging packaging = BeanConverUtil.conver(dto, ProductPackaging.class);
         int insert = mdProductPackagingMapper.insert(packaging);
         return insert;
     }
@@ -59,15 +58,15 @@ public class MdProductPackagingServiceImpl extends ServiceImpl<MdProductPackagin
     @Override
     public Integer updateMdProductPackaging(MdProductPackagingDTO dto) {
         // Check if the productNo is duplicated
-        LambdaQueryWrapper<MdProductPackaging> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(MdProductPackaging::getProductNo, dto.getProductNo());
-        queryWrapper.eq(MdProductPackaging::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        MdProductPackaging packaging = mdProductPackagingMapper.selectOne(queryWrapper);
+        LambdaQueryWrapper<ProductPackaging> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ProductPackaging::getProductNo, dto.getProductNo());
+        queryWrapper.eq(ProductPackaging::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        ProductPackaging packaging = mdProductPackagingMapper.selectOne(queryWrapper);
         if (packaging != null && !packaging.getId().equals(dto.getId())) {
             // If the productNo already exists and it's not the current object, throw an exception
             throw new ServiceException("存在重复产品编号的数据");
         }
-        MdProductPackaging conver = BeanConverUtil.conver(dto, MdProductPackaging.class);
+        ProductPackaging conver = BeanConverUtil.conver(dto, ProductPackaging.class);
         return mdProductPackagingMapper.updateById(conver);
     }
 

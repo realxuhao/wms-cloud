@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bosch.masterdata.mapper.MdProductPackagingMapper">
 
-    <resultMap id="BaseResultMap" type="com.bosch.masterdata.api.domain.MdProductPackaging">
+    <resultMap id="BaseResultMap" type="com.bosch.masterdata.api.domain.ProductPackaging">
             <id property="id" column="id" jdbcType="INTEGER"/>
             <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
             <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>

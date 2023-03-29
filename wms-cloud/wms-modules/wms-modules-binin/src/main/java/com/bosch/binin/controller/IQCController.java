@@ -60,11 +60,11 @@ public class IQCController extends BaseController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
-    @PutMapping(value = "/issueJob/{ssccNumbers}")
+    @PutMapping(value = "/issueJob/{ids}")
     @ApiOperation("批量下发任务接口")
     @Transactional(rollbackFor = Exception.class)
-    public R issueJob(@PathVariable String[] ssccNumbers) {
-        samplePlanService.issueJob(ssccNumbers);
+    public R issueJob(@PathVariable Long[] ids) {
+        samplePlanService.issueJob(ids);
         return R.ok("下发成功");
     }
 
@@ -88,7 +88,7 @@ public class IQCController extends BaseController {
         return R.ok();
     }
 
-    @PatchMapping(value = "/sample/modifyQuantity")
+    @PutMapping(value = "/sample/modifyQuantity")
     @ApiOperation("修改抽样数量")
     public R modifyQuantity(@RequestParam("ssccNb") String ssccNb, @RequestParam("quantity") Double quantity) {
         samplePlanService.modifyQuantity(ssccNb, quantity);

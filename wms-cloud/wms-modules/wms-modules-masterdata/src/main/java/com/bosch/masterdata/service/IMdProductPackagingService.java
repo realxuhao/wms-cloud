@@ -1,11 +1,8 @@
 package com.bosch.masterdata.service;
 
-import com.bosch.masterdata.api.domain.Ecn;
-import com.bosch.masterdata.api.domain.MdProductPackaging;
+import com.bosch.masterdata.api.domain.ProductPackaging;
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.bosch.masterdata.api.domain.dto.EcnDTO;
 import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
-import com.bosch.masterdata.api.domain.vo.EcnVO;
 import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 
 import java.util.List;
@@ -15,7 +12,7 @@ import java.util.List;
 * @description 针对表【md_product_packaging(成品包装量)】的数据库操作Service
 * @createDate 2023-03-09 14:22:29
 */
-public interface IMdProductPackagingService extends IService<MdProductPackaging> {
+public interface IMdProductPackagingService extends IService<ProductPackaging> {
     /**
      * 查询VOlist
      * @param dto

@@ -40,7 +40,7 @@ public class ReturnMaterialController extends BaseController {
     private IMaterialReturnService materialReturnService;
 
 
-    @PutMapping(value = "/confirm/{ssccNumbers}")
+    @PostMapping(value = "/confirm")
     @ApiOperation("批量确认退库任务接口")
     @Transactional(rollbackFor = Exception.class)
     public R confirmJob(@RequestBody MaterialReturnConfirmDTO confirmDTO) {
@@ -54,9 +54,9 @@ public class ReturnMaterialController extends BaseController {
         if (queryDTO == null) {
             queryDTO = new MaterialReturnQueryDTO();
         }
-        if (!StringUtils.isEmpty(SecurityUtils.getWareCode())) {
-            queryDTO.setWareCode(SecurityUtils.getWareCode());
-        }
+//        if (!StringUtils.isEmpty(SecurityUtils.getWareCode())) {
+//            queryDTO.setWareCode(SecurityUtils.getWareCode());
+//        }
         startPage();
 
         List<MaterialReturnVO> list = materialReturnService.list(queryDTO);

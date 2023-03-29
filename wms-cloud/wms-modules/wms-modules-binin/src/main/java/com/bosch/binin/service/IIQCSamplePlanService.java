@@ -2,7 +2,6 @@ package com.bosch.binin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.IQCSamplePlan;
-import com.bosch.binin.api.domain.ManualTransferOrder;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanDTO;
 import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
@@ -43,5 +42,5 @@ public interface IIQCSamplePlanService extends IService<IQCSamplePlan> {
 
     void modifyQuantity(String ssccNb, Double quantity);
 
-    void issueJob(String[] ssccNumbers);
+    void issueJob(Long[] ids);
 }
