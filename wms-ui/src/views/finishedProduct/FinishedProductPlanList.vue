@@ -55,6 +55,18 @@
                 <a-input v-model="queryForm.tr" placeholder="TR" allow-clear/>
               </a-form-item>
             </a-col>
+            <a-col :span="4">
+              <a-form-model-item label="状态">
+                <a-select
+                  allow-clear
+                  v-model="queryForm.status"
+                >
+                  <a-select-option v-for="item in status" :key="item.value" :value="item.value">
+                    {{ item.text }}
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </a-col>
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
@@ -108,6 +120,16 @@
             </a-tag>
             <a-tag color="#87d068" v-if="text===2">
               免检
+            </a-tag>
+          </div>
+        </template>
+        <template slot="status" slot-scope="text">
+          <div >
+            <a-tag color="orange" v-if="text===0">
+              未生成
+            </a-tag>
+            <a-tag color="#87d068" v-if="text===1">
+              已生成
             </a-tag>
           </div>
         </template>
@@ -201,6 +223,13 @@ const columns = [
     width: 80
   },
   {
+    title: '状态',
+    key: 'status',
+    dataIndex: 'status',
+    width: 120,
+    scopedSlots: { customRender: 'status' }
+  },
+  {
     title: 'SAP Code',
     key: 'sapCode',
     dataIndex: 'sapCode',
@@ -248,10 +277,20 @@ const queryFormAttr = () => {
     batchNb: '',
     areaCode: '',
     binCode: '',
-    palletCode: ''
+    palletCode: '',
+    status: ''
   }
 }
-
+const status = [
+  {
+    text: '未生成',
+    value: 0
+  },
+  {
+    text: '已生成',
+    value: 1
+  }
+]
 export default {
   name: 'Area',
   mixins: [mixinTableList],
@@ -268,6 +307,9 @@ export default {
       columns,
       list: []
     }
+  },
+  computed: {
+    status: () => status
   },
   methods: {
     handleResetQuery () {

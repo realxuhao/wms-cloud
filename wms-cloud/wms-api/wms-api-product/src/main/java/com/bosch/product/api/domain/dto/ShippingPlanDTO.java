@@ -50,6 +50,9 @@ public class ShippingPlanDTO extends PageDomain {
     @ExcelProperty("Qty")
     private Integer qty;
 
+    @ApiModelProperty(value = "status")
+    private Integer status;
+
     @ApiModelProperty(value = "是否拆托")
     @ExcelProperty("是否拆托")
     private String isDisassembled;

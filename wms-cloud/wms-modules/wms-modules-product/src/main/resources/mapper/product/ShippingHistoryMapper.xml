@@ -95,6 +95,14 @@
                 <if test="shippingMark != null and shippingMark != '' ">
                     AND st.shipping_mark like concat('%',#{shippingMark},'%')
                 </if>
+
+                <if test="shippingMark != null  ">
+                    AND sh.history_index = #{historyIndex}
+                </if>
+                <if test="shippingTaskId != null  ">
+                    AND sh.shipping_task_id = #{shippingTaskId}
+                </if>
+
                 <if test="etoPo != null and etoPo != ''  ">
                     AND st.eto_po like concat('%',#{etoPo},'%')
                 </if>

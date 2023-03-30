@@ -11,8 +11,8 @@
 					{{ etoPo }}
 				</view>
 				<view class="text-line m-b-8 ">
-					<view class="label">Prod-order：</view>
-					{{ prodOrder }}
+					<view class="label">需要拆托的</br>Prod-order：</view>
+					{{ prodOrderList }}
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">SAP Code：</view>
@@ -35,10 +35,11 @@
 						<text>/{{ afterPackingCount }}</text>
 					</view>
 				</view>
-				<uni-section class="mb-10" :title="`当前托${title}`" type="line">
-					<template v-slot:right>
+				<uni-section class="mb-10">
+					<!-- :title="`当前托${title}`" type="line" -->
+<!-- 					<template v-slot:right>
 						<uni-tag text="拆" :inverted="tagInverted" type="primary" @click="tagInverted = !tagInverted"></uni-tag>
-					</template>
+					</template> -->
 					<uni-list v-show="currentTaskBarCodeList.length">
 						<uni-list-item v-for="(item, index) in currentTaskBarCodeList" :key="item.value" ellipsis="1">
 							<template v-slot:body>
@@ -54,8 +55,9 @@
 					</uni-list>
 					<view v-show="!currentTaskBarCodeList.length" class="empty">请扫描成品标签二维码</view>
 					<view class="footer-box">
-						<o-btn size="sm" @click="handleClean">清空</o-btn>
-						<o-btn size="sm" type="primary" @click="handleNext" :loading="submitLoading">下一托</o-btn>
+						<o-btn size="sm" @click="handleClean">清空打包任务</o-btn>
+						<o-btn size="sm" v-if="afterPackingCount!=stepIndex" type="primary" @click="handleNext" :loading="submitLoading">下一托</o-btn>
+						<o-btn size="sm" v-else type="primary" @click="handleOk" :loading="submitLoading">完成</o-btn>
 					</view>
 				</uni-section>
 			</view>
@@ -75,26 +77,23 @@ export default {
 	},
 	data() {
 		return {
+			deleteData: undefined,
 			submitLoading: false,
 			materialInfo: {},
 			taskId: undefined,
-			
+			prodOrderList: [],
 			taskList: [],
 			taskIndex: 0,
 			allScanBarCodeList: [],
 			currentTaskBarCodeList: [
 				{
 					type: '拆',
-					value: '202403226690063911100247521031104222032911260000501'
-				},
-				{
-					type: '拆',
-					value: '2024032266900639111002475210311042220329112262000050'
+					value: '911260000501'
 				},
 				{
 					type: '',
-					value: '2024032266900639111030247521031104222032911260020050'
-				}
+					value: '911260000502'
+				},
 			],
 			takeDownTaskBarCodeList: [],
 			stepIndex: 1,
@@ -102,6 +101,16 @@ export default {
 		};
 	},
 	computed: {
+		getProdOrderList(){
+			let prodOrders = '';
+			this.taskList.forEach(data => {
+			  if (data.isDisassembled === '拆') {
+			    prodOrders += `${data.prodOrder},`;
+			  }
+			});			
+			this.prodOrderList = prodOrders.slice(0, -1); // 去掉最后一个逗号
+			console.log('list:'+this.prodOrderList);
+		},
 		allTaskCount() {
 			const count = _.sumBy(_.filter(this.taskList, x => x.isSplit !== '拆'), 'palletQuantity');
 			return count;
@@ -114,7 +123,7 @@ export default {
 			if (!taskList.length) {
 				return '';
 			}
-			return `${taskList[taskIndex].prodOrder}-${taskList[taskIndex].SAPCode}`;
+			return `${taskList[taskIndex].prodOrder}-${taskList[taskIndex].sapCode}`;
 		},
 		firstTaskInfo() {
 			if (this.taskList.length) {
@@ -132,11 +141,11 @@ export default {
 			return _.get(this.firstTaskInfo, 'etoPo');
 		},
 		palletQuantityCount() {
-			const count = _.sumBy(this.taskList, 'palletQuantity');
+			const count = _.sumBy(this.taskList, item => Number(item.palletQuantity));
 			return count;
 		},
 		afterPackingCount() {
-			const count = _.sumBy(this.taskList, 'afterPacking');
+			const count = _.sumBy(this.taskList, item => Number(item.afterPacking));
 			return count;
 		},
 		taskListCountMap() {
@@ -148,6 +157,7 @@ export default {
 	},
 	onLoad(options) {
 		this.taskId=options.id
+
 		this.initScanCode();
 	},
 	onLaunch() {
@@ -155,11 +165,11 @@ export default {
 	},
 	methods: {
 		onReset() {
-			this.currentTaskBarCodeList = [];
+			//this.currentTaskBarCodeList = [];
 		},
-		onCheck() {
-			const allScanBarCodeMap = _.map(this.allScanBarCodeList, x => x.substring(10, 7));
-
+		 onCheck() {
+			const allScanBarCodeMap = _.map(this.allScanBarCodeList, x => x.substring(-1, 11));
+			console.log(allScanBarCodeMap);
 			_.each(_.uniq(allScanBarCodeMap), item => {
 				const count = _.filter(allScanBarCodeMap, x => x === item).length;
 				if (count > this.taskListCountMap[item]) {
@@ -174,15 +184,24 @@ export default {
 			}
 			this.currentTaskBarCodeList.splice(index, 1);
 		},
-		handleClean() {
-			this.onReset();
+		async handleClean() {
+			try{
+			    const deleteParam = { id: this.taskId };
+				const data =  await this.$store.dispatch('finishedProduct/deleteMultiPackageHistory', deleteParam);
+				this.$refs.message.success('清空成功');
+				this.onReset();
+			}catch(e){
+				this.$refs.message.error(e.message);
+			}
+
 		},
 		async initScanCode() {
 			Bus.$on('scancodedate', data => {
-				const item = { type: '', value: data };
+				const batchNb = item.substring(-1,11)
+				const item = { type: '', value: batchNb };
 				if (!this.tagInverted) {
 					item.type = '拆';
-					this.takeDownTaskBarCodeList.push(data);
+					this.takeDownTaskBarCodeList.push(item);
 				}
 				this.currentTaskBarCodeList.push(item);
 			});
@@ -192,31 +211,67 @@ export default {
 				this.$refs.message.error('请扫描成品标签二维码');
 				return;
 			}
-
+			
+			
 			try {
-				this.submitLoading = true;
-				this.stepIndex += 1;
+				// this.onCheck()				
+				// uni.showLoading({
+				// 	title:'提交中'
+				// })
+				// this.submitLoading = true;
+				
 				const { afterPacking } = this.taskList[this.taskIndex]||{}
 				if (this.stepIndex > afterPacking) {
 					this.taskIndex += 1;
 				}
-
 				//请求 生成记录
+				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.value),',')
+				const lastOne = this.afterPackingCount===this.stepIndex?1:0
+				const options = {ssccNumbers,historyIndex:this.stepIndex,lastOne,shippingTaskId:this.taskId}
+				await this.$store.dispatch('finishedProduct/addPackageHistory', options);
+				
 				this.onReset();
+				this.stepIndex += 1;
 			} catch (e) {
-				//TODO handle the exception
+				this.$refs.message.error(e.message);
 			} finally {
 				this.submitLoading = false;
+				uni.hideLoading()
 			}
+		},
+		onReloadPage(){
+			this.stepIndex = 1
+			this.lodaData()
+		},
+		async handleOk(){
+			try{
+			
+				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.value),',')
+				const lastOne = 1
+				const options = {ssccNumbers,historyIndex:this.stepIndex,lastOne,shippingTaskId:this.taskId}
+				await this.$store.dispatch('finishedProduct/addPackageHistory', options);
+				//最后做校验
+				
+				//如果失败，页面应该有个弹窗  重新做：掉API删除所有记录，刷新整个页面，返回：返回上一页
+				
+			}catch(e){
+				//TODO handle the exception
+			}
+			
+			
 		},
 		async handleGoBack() {
 			uni.navigateBack({ delta: 1 });
 		},
-
+		deleteAll() {
+			const deleteParam = { id: this.taskId };
+			this.deleteData = this.$store.dispatch('finishedProduct/deleteMultiPackageHistory', deleteParam);
+		},
 		async lodaData() {
 			const options = { id: this.taskId };
-			const {data:{ rows, total }} = await this.$store.dispatch('finishedProduct/getTaskList', options);
-			this.taskList=rows;
+			const {data} = await this.$store.dispatch('finishedProduct/getTaskList', options);
+			this.taskList=data;		
+			this.getProdOrderList()
 		},
 
 		async onSubmit() { }

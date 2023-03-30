@@ -174,6 +174,7 @@ public class ProductPackagingController extends BaseController {
     @ApiOperation("根据打包任务id获取打包计划")
     public R<List<ShippingPlanVO>> planList(@PathVariable("id") Long id) {
         try {
+
             List<ShippingPlanVO> planList = shippingPlanService.getPlanList(id);
 
             return R.ok(planList);

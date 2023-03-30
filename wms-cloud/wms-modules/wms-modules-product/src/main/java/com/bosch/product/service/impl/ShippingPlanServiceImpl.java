@@ -41,8 +41,11 @@ public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, Shi
     @Override
     public List<ShippingPlan> getList(ShippingPlanDTO shippingPlanDTO) {
         LambdaQueryWrapper<ShippingPlan> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(ShippingPlan::getStatus, StatusEnums.FALSE);
+        //wrapper.eq(ShippingPlan::getStatus, StatusEnums.FALSE);
         wrapper.eq(ShippingPlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        if (shippingPlanDTO.getStatus()!=null) {
+            wrapper.eq(ShippingPlan::getStatus, shippingPlanDTO.getStatus());
+        }
         if (StringUtils.isNotBlank(shippingPlanDTO.getShippingMark())) {
             wrapper.eq(ShippingPlan::getShippingMark, shippingPlanDTO.getShippingMark());
         }

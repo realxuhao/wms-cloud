@@ -14,6 +14,10 @@ public class ShippingDTO {
     @ApiModelProperty(value = "序号")
     private String historyIndex;
 
+
+    @ApiModelProperty(value = "shippingTaskId")
+    private Long shippingTaskId;
+
     @ApiModelProperty(value = "打包运输标记")
     private String shippingMark;
 

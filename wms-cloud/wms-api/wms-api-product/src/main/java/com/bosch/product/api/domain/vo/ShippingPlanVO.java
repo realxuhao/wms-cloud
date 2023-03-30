@@ -63,5 +63,7 @@ public class ShippingPlanVO extends BaseEntity {
     @ApiModelProperty(value = "after packing")
     private String afterPacking;
 
+    @ApiModelProperty(value = "status")
+    private Integer status;
 }
 
