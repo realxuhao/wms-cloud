@@ -8,10 +8,9 @@ VOLUME /home/wms
 # 创建目录
 RUN mkdir -p /home/wms
 
-
 # 指定路径
 WORKDIR /home/wms
 # 复制jar文件到路径
-COPY ./jar/wms-modules-binin.jar /home/wms/wms-modules-binin.jar
+COPY ./jar/wms-modules-product.jar /home/wms/wms-modules-product.jar
 # 启动文件服务
-ENTRYPOINT ["java","-jar","wms-modules-binin.jar"]
+ENTRYPOINT ["java","-jar","wms-modules-product.jar"]

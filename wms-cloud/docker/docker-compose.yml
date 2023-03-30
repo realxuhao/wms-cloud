@@ -220,3 +220,20 @@ services:
       NACOS_HOST: wms-nacos
       TZ: Asia/Shanghai
 
+  product:
+    container_name: product
+    build:
+      context: ./wms/modules/product
+      dockerfile: dockerfile
+    ports:
+      - "8893:8893"
+    depends_on:
+      - wms-redis
+      - wms-mysql
+    links:
+      - wms-redis
+      - wms-mysql
+    environment:
+      NACOS_HOST: wms-nacos
+      TZ: Asia/Shanghai
+

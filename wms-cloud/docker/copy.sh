@@ -39,6 +39,9 @@ echo "begin copy reservation "
 cp ../wms-modules/wms-modules-reservation/target/wms-modules-reservation.jar ./wms/modules/reservation/jar
 
 
+echo "begin copy product "
+cp ../wms-modules/wms-modules-product/target/wms-modules-product.jar ./wms/modules/product/jar
+
 
 
 
