@@ -2,7 +2,6 @@
 	<my-page nav-title="成品打包">
 		<view class="content" slot="page-main">
 			<hr-pull-load
-				s
 				@refresh="handleRefresh"
 				@loadMore="handleLoadMore"
 				:height="-1"
@@ -17,7 +16,7 @@
 				<!-- 插入自己的数据-->
 				<view class="card" v-for="item in list" :key="item.id" @click="handleGoto(item)">
 					<view class="card-header">
-						<text class="material-name">移库日期：{{ item.materialName }}</text>
+						<text class="material-name">移库日期：{{ item.stockMovementDate }}</text>
 						<!-- <text class="status">已入库</text> -->
 					</view>
 					<view class="card-text m-b-4">Shipping Mark：{{ item.shippingMark }}</view>
@@ -58,7 +57,8 @@ export default {
 	methods: {
 		async getList() {
 			const options = { pageSize: this.pageSize, pageNum: this.pageNum };
-			const { rows, total } = await this.$store.dispatch('finishedProduct/getTaskList', options);
+			const {data:{ rows, total }} = await this.$store.dispatch('finishedProduct/getTaskList', options);
+			console.log(11,rows)
 			return { rows, total };
 		},
 		handleGoto(record) {
@@ -72,6 +72,8 @@ export default {
 				this.pageNum = 1;
 				const { rows, total } = await this.getList();
 				this.list = rows;
+				console.log('this.list1');
+				console.log(this.list);
 				this.total = total;
 			} catch (e) {
 				this.$refs.message.error(e.message);
@@ -88,7 +90,7 @@ export default {
 				if (length < this.total) {
 					this.bottomTips = 'loading';
 					this.pageNum += 1;
-					const { rows } = await this.getMaterialInHistoryList();
+					const { rows } = await this.getList();
 
 					this.list = this.list.concat(rows);
 				} else {

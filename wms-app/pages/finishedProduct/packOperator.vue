@@ -8,7 +8,7 @@
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">ETO PO：</view>
-					{{ ETOPO }}
+					{{ etoPo }}
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">Prod-order：</view>
@@ -16,7 +16,7 @@
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">SAP Code：</view>
-					{{ SAPCode }}
+					{{ sapCode }}
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">源托数：</view>
@@ -77,26 +77,9 @@ export default {
 		return {
 			submitLoading: false,
 			materialInfo: {},
-
-			taskList: [
-				{
-					palletQuantity: 10,
-					isSplit: '拆',
-					afterPacking: 0,
-					prodOrder: 1100247,
-					shippingMark: 'PMO22.311',
-					ETOPO: 'SH2022161',
-					SAPCode: '100103'
-				},
-				{
-					palletQuantity: 10,
-					isSplit: '',
-					afterPacking: 10,
-					prodOrder: 1100248,
-					shippingMark: 'PMO22.311',
-					SAPCode: '86460'
-				}
-			],
+			taskId: undefined,
+			
+			taskList: [],
 			taskIndex: 0,
 			allScanBarCodeList: [],
 			currentTaskBarCodeList: [
@@ -123,8 +106,8 @@ export default {
 			const count = _.sumBy(_.filter(this.taskList, x => x.isSplit !== '拆'), 'palletQuantity');
 			return count;
 		},
-		SAPCode() {
-			const str = _.join(_.map(this.taskList, 'SAPCode'), ',');
+		sapCode() {
+			const str = _.join(_.map(this.taskList, 'sapCode'), ',');
 			return str;
 		},
 		title({ taskList, taskIndex }) {
@@ -145,8 +128,8 @@ export default {
 		shippingMark() {
 			return _.get(this.firstTaskInfo, 'shippingMark');
 		},
-		ETOPO() {
-			return _.get(this.firstTaskInfo, 'ETOPO');
+		etoPo() {
+			return _.get(this.firstTaskInfo, 'etoPo');
 		},
 		palletQuantityCount() {
 			const count = _.sumBy(this.taskList, 'palletQuantity');
@@ -164,6 +147,7 @@ export default {
 		}
 	},
 	onLoad(options) {
+		this.taskId=options.id
 		this.initScanCode();
 	},
 	onLaunch() {
@@ -212,11 +196,12 @@ export default {
 			try {
 				this.submitLoading = true;
 				this.stepIndex += 1;
-				const { afterPacking } = this.taskList[this.taskIndex] && this.taskList[this.taskIndex];
+				const { afterPacking } = this.taskList[this.taskIndex]||{}
 				if (this.stepIndex > afterPacking) {
 					this.taskIndex += 1;
 				}
 
+				//请求 生成记录
 				this.onReset();
 			} catch (e) {
 				//TODO handle the exception
@@ -228,11 +213,16 @@ export default {
 			uni.navigateBack({ delta: 1 });
 		},
 
-		async lodaData() {},
+		async lodaData() {
+			const options = { id: this.taskId };
+			const {data:{ rows, total }} = await this.$store.dispatch('finishedProduct/getTaskList', options);
+			this.taskList=rows;
+		},
 
-		async onSubmit() {}
+		async onSubmit() { }
 	},
 	mounted() {
+		console.log(this.taskId);
 		this.lodaData();
 	},
 	watch: {}
