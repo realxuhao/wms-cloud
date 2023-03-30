@@ -101,7 +101,7 @@
         <if test="palletQuantity != null and palletQuantity !=''">AND shipping_task.pallet_quantity like concat('%',#{palletQuantity},'%')</if>
         <if test="afterPacking != null and afterPacking !=''">AND shipping_task.after_packing like concat('%',#{afterPacking},'%')</if>
 
-
+        <if test="status != null ">AND shipping_task.status = #{status}</if>
         GROUP BY shipping_task.id
 
     </select>
