@@ -35,11 +35,11 @@
 						<text>/{{ afterPackingCount }}</text>
 					</view>
 				</view>
-				<uni-section class="mb-10">
-					<!-- :title="`当前托${title}`" type="line" -->
-<!-- 					<template v-slot:right>
+				<uni-section class="mb-10" :title="`当前托${title}`" type="line">
+					
+					<template v-slot:right>
 						<uni-tag text="拆" :inverted="tagInverted" type="primary" @click="tagInverted = !tagInverted"></uni-tag>
-					</template> -->
+					</template>
 					<uni-list v-show="currentTaskBarCodeList.length">
 						<uni-list-item v-for="(item, index) in currentTaskBarCodeList" :key="item.value" ellipsis="1">
 							<template v-slot:body>

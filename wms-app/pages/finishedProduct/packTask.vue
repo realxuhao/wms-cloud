@@ -56,7 +56,7 @@ export default {
 	},
 	methods: {
 		async getList() {
-			const options = { pageSize: this.pageSize, pageNum: this.pageNum ,status:0};
+			const options = { pageSize: this.pageSize, pageNum: this.pageNum, status: 0 };
 			const {data:{ rows, total }} = await this.$store.dispatch('finishedProduct/getAllTaskList', options);
 			console.log(11,rows)
 			return { rows, total };
