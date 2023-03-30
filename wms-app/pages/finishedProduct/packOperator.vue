@@ -36,7 +36,7 @@
 					</view>
 				</view>
 				<uni-section class="mb-10" :title="`当前托${title}`" type="line">
-					
+					<!-- :title="`当前托${title}`" type="line" -->
 					<template v-slot:right>
 						<uni-tag text="拆" :inverted="tagInverted" type="primary" @click="tagInverted = !tagInverted"></uni-tag>
 					</template>
@@ -165,7 +165,7 @@ export default {
 	},
 	methods: {
 		onReset() {
-			//this.currentTaskBarCodeList = [];
+			this.currentTaskBarCodeList = [];
 		},
 		 onCheck() {
 			const allScanBarCodeMap = _.map(this.allScanBarCodeList, x => x.substring(-1, 11));
@@ -190,6 +190,7 @@ export default {
 				const data =  await this.$store.dispatch('finishedProduct/deleteMultiPackageHistory', deleteParam);
 				this.$refs.message.success('清空成功');
 				this.onReset();
+				this.onReloadPage();
 			}catch(e){
 				this.$refs.message.error(e.message);
 			}
@@ -197,13 +198,15 @@ export default {
 		},
 		async initScanCode() {
 			Bus.$on('scancodedate', data => {
-				const batchNb = item.substring(-1,11)
+				const batchNb = data.code.substring(-1,11)
 				const item = { type: '', value: batchNb };
 				if (!this.tagInverted) {
 					item.type = '拆';
 					this.takeDownTaskBarCodeList.push(item);
 				}
 				this.currentTaskBarCodeList.push(item);
+				this.currentTaskBarCodeList = Array.from(new Map(this.currentTaskBarCodeList.map(item => [item.value,item])).values());
+				console.log(this.currentTaskBarCodeList)
 			});
 		},
 		async handleNext() {
@@ -249,13 +252,24 @@ export default {
 				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.value),',')
 				const lastOne = 1
 				const options = {ssccNumbers,historyIndex:this.stepIndex,lastOne,shippingTaskId:this.taskId}
-				await this.$store.dispatch('finishedProduct/addPackageHistory', options);
+				const result = await this.$store.dispatch('finishedProduct/addPackageHistory', options);
+				if (result.code === 200){
+					this.$refs.message.success('清空成功');
+					uni.redirectTo({
+						url: `/pages/binIn/operation?barCode=${this.code}`
+					});
+				} else {
+					this.$refs.message.error(result.msg);
+				}
 				//最后做校验
 				
 				//如果失败，页面应该有个弹窗  重新做：掉API删除所有记录，刷新整个页面，返回：返回上一页
 				
 			}catch(e){
 				//TODO handle the exception
+				this.$refs.message.error(e.message);
+				
+				
 			}
 			
 			
