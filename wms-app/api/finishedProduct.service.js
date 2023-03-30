@@ -10,7 +10,16 @@ const getTaskList = async (options) => {
 		// data: options
 	})
 }
+const getAllTaskList = async (options) => {
+	const url = `/product/productPackaging/getDashboard`
+	const method = 'GET'
 
+	return request({
+		url, 
+		method,
+		data: options
+	})
+}
 const addPackageHistory = async (options) => {
 	const url = `/product/productPackaging/addPackageHistory`
 	const method = 'POST'
@@ -57,5 +66,6 @@ export const finishedProductService = {
 	addPackageHistory,
 	deleteMultiPackageHistory,
 	deletePackageHistory,
-	getHistoryRecord
+	getHistoryRecord,
+	getAllTaskList
 }

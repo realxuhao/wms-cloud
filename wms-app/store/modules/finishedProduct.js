@@ -35,7 +35,12 @@ const finishedProduc = {
 			const data = await finishedProductService.deletePackageHistory(options)
 			return data
 		},
-		
+		async getAllTaskList({
+									   commit
+								   }, options) {
+			const data = await finishedProductService.getAllTaskList(options)
+			return data
+		},
 	}
 }
 

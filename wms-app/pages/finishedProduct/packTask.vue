@@ -57,7 +57,7 @@ export default {
 	methods: {
 		async getList() {
 			const options = { pageSize: this.pageSize, pageNum: this.pageNum };
-			const {data:{ rows, total }} = await this.$store.dispatch('finishedProduct/getTaskList', options);
+			const {data:{ rows, total }} = await this.$store.dispatch('finishedProduct/getAllTaskList', options);
 			console.log(11,rows)
 			return { rows, total };
 		},
