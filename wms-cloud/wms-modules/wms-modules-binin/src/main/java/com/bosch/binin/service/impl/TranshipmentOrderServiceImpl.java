@@ -15,10 +15,13 @@ import com.bosch.binin.service.ITranshipmentOrderService;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.StatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TranshipmentOrderServiceImpl extends ServiceImpl<TranshipmentOrderMapper, TranshipmentOrder> implements ITranshipmentOrderService {
@@ -35,10 +38,10 @@ public class TranshipmentOrderServiceImpl extends ServiceImpl<TranshipmentOrderM
 
     @Override
     public List<TranshipmentOrder> getSSCCByOrder(String transhipmentOrder) {
-        LambdaQueryWrapper<TranshipmentOrder> qw =new LambdaQueryWrapper<>();
-        qw.eq(TranshipmentOrder::getOrderNumber,transhipmentOrder);
+        LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
+        qw.eq(TranshipmentOrder::getOrderNumber, transhipmentOrder);
         qw.eq(TranshipmentOrder::getStatus, StatusEnums.FALSE.getCode());
-        qw.eq(TranshipmentOrder::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        qw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<TranshipmentOrder> list = transhipmentOrderMapper.selectList(qw);
         return list;
     }
@@ -46,33 +49,33 @@ public class TranshipmentOrderServiceImpl extends ServiceImpl<TranshipmentOrderM
     @Override
     public String getOrderBySSCC(String sscc) {
 
-        LambdaQueryWrapper<TranshipmentOrder> qw =new LambdaQueryWrapper<>();
-        qw.eq(TranshipmentOrder::getSsccNumber,sscc);
-        qw.eq(TranshipmentOrder::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
+        qw.eq(TranshipmentOrder::getSsccNumber, sscc);
+        qw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         qw.last("limit 1");
         TranshipmentOrder transhipmentOrder = transhipmentOrderMapper.selectOne(qw);
-        if (transhipmentOrder==null){
-            throw  new ServiceException("根据ssccnumber未查询到运单号");
+        if (transhipmentOrder == null) {
+            throw new ServiceException("根据ssccnumber未查询到运单号");
         }
         return transhipmentOrder.getOrderNumber();
     }
 
     @Override
     public List<TranshipmentOrder> getInfoBySSCC(List<String> sscc) {
-        LambdaQueryWrapper<TranshipmentOrder> qw =new LambdaQueryWrapper<>();
-        qw.in(TranshipmentOrder::getSsccNumber,sscc);
+        LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
+        qw.in(TranshipmentOrder::getSsccNumber, sscc);
         qw.eq(TranshipmentOrder::getStatus, StatusEnums.FALSE.getCode());
-        qw.eq(TranshipmentOrder::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        qw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<TranshipmentOrder> list = transhipmentOrderMapper.selectList(qw);
         return list;
     }
 
     @Override
     public TranshipmentOrder getOneBySSCC(String sscc) {
-        LambdaQueryWrapper<TranshipmentOrder> qw =new LambdaQueryWrapper<>();
-        qw.eq(TranshipmentOrder::getSsccNumber,sscc);
+        LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
+        qw.eq(TranshipmentOrder::getSsccNumber, sscc);
         qw.eq(TranshipmentOrder::getStatus, StatusEnums.FALSE.getCode());
-        qw.eq(TranshipmentOrder::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        qw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         qw.last("limit 1");
         TranshipmentOrder transhipmentOrder = transhipmentOrderMapper.selectOne(qw);
         return transhipmentOrder;
@@ -80,13 +83,31 @@ public class TranshipmentOrderServiceImpl extends ServiceImpl<TranshipmentOrderM
 
     @Override
     public Integer updateBySSCCS(List<String> ssccs) {
-        TranshipmentOrder transhipmentOrder=new TranshipmentOrder();
+        TranshipmentOrder transhipmentOrder = new TranshipmentOrder();
         transhipmentOrder.setStatus(StatusEnums.TRUE.getCode());
-        LambdaUpdateWrapper<TranshipmentOrder> uw=new LambdaUpdateWrapper<>();
-        uw.in(TranshipmentOrder::getSsccNumber,ssccs);
-        uw.eq(TranshipmentOrder::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
-        uw.eq(TranshipmentOrder::getStatus,StatusEnums.FALSE.getCode());
+        LambdaUpdateWrapper<TranshipmentOrder> uw = new LambdaUpdateWrapper<>();
+        uw.in(TranshipmentOrder::getSsccNumber, ssccs);
+        uw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        uw.eq(TranshipmentOrder::getStatus, StatusEnums.FALSE.getCode());
 
-        return transhipmentOrderMapper.update(transhipmentOrder,uw);
+        return transhipmentOrderMapper.update(transhipmentOrder, uw);
+    }
+
+    @Override
+    public String getNextOrderNb() {
+        LambdaQueryWrapper<TranshipmentOrder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.orderByDesc(TranshipmentOrder::getOrderNumber);
+        queryWrapper.last("limit 1");
+        TranshipmentOrder transhipmentOrder = this.getOne(queryWrapper);
+        String currentDay = DateUtils.parseDateToStr("yyyyMMdd", new Date());
+
+        if (!Objects.isNull(transhipmentOrder)) {
+            String orderNumber = transhipmentOrder.getOrderNumber();
+            if (orderNumber.startsWith(currentDay)) {
+                return String.valueOf(Long.parseLong(orderNumber) + 1);
+            }
+        }
+        return currentDay + "001";
     }
 }

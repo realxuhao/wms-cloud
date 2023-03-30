@@ -1,6 +1,7 @@
 package com.bosch.product.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -111,8 +112,6 @@ public class ProductStock {
 
     private String recommendBinCode;
 
-    private String recommendFrameCode;
-
     /**
      * 生产批次号
      */
@@ -121,4 +120,10 @@ public class ProductStock {
 
 
     private String unit;
+
+
+    /**
+     * 上架标识，上架标识，0:不需要上架，1:待上架，2：已上架
+     */
+    private Integer binInFlag;
 }

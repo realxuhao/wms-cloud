@@ -161,4 +161,10 @@ public class ProductStockVO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date productionDate;
 
+    @ApiModelProperty(value = "上架标识，0:不需要上架，1:待上架，2：已上架")
+    private Integer binInFlag;
+
+    @ApiModelProperty(value = "推荐库位编码")
+    private String recommendBinCode;
+
 }

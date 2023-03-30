@@ -35,4 +35,6 @@ public class TranshipmentOrder extends BaseEntity {
     private Long wareShiftId;
 
     private String carNb;
+
+    private Long productWareShiftId;
 }

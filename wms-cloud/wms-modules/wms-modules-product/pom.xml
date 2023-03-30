@@ -102,6 +102,12 @@
             <groupId>com.bosch</groupId>
             <artifactId>wms-api-file</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.bosch</groupId>
+            <artifactId>wms-api-binIn</artifactId>
+            <version>3.6.0</version>
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>com.baomidou</groupId>

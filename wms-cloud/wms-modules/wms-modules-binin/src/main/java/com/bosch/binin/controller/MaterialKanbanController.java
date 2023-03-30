@@ -328,7 +328,8 @@ public class MaterialKanbanController {
             List<TranshipmentOrder> transhipmentOrders = new ArrayList<>();
             List<String> ssccs = new ArrayList<>();
             List<String> validSSSCCs = new ArrayList<>();
-            long l = System.currentTimeMillis();
+//            long l = System.currentTimeMillis();
+            String nextOrderNb = transhipmentOrderService.getNextOrderNb();
             if (CollectionUtils.isEmpty(mesbarCodes)) {
                 throw new ServiceException("请选择数据");
             }
@@ -355,7 +356,7 @@ public class MaterialKanbanController {
             }
             listBySSCC.forEach(w->{
                 TranshipmentOrder transhipmentOrder = new TranshipmentOrder();
-                transhipmentOrder.setOrderNumber(Long.toString(l));
+                transhipmentOrder.setOrderNumber(nextOrderNb);
                 transhipmentOrder.setSsccNumber(w.getSsccNb());
                 transhipmentOrder.setMaterialCode(w.getMaterialNb());
                 transhipmentOrder.setWareShiftId(w.getId());

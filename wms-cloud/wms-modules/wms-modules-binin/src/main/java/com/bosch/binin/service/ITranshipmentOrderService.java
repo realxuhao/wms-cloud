@@ -37,4 +37,7 @@ public interface ITranshipmentOrderService extends IService<TranshipmentOrder> {
     TranshipmentOrder getOneBySSCC(String sscc);
 
     Integer updateBySSCCS(List<String> ssccs);
+
+
+    String getNextOrderNb();
 }

@@ -1,4 +1,4 @@
-package com.bosch.binin.api;
+package com.bosch.binin.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;

@@ -1,9 +1,13 @@
 package com.bosch.product.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.ProductWareShift;
+import com.bosch.product.api.domain.vo.ProductWareShiftVO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * @program: wms-cloud
@@ -13,4 +17,5 @@ import org.apache.ibatis.annotations.Mapper;
  **/
 @Mapper
 public interface ProductWareShiftMapper extends BaseMapper<ProductWareShift> {
+    List<ProductWareShiftVO> list(WareShiftQueryDTO queryDTO);
 }
