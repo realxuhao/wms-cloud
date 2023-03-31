@@ -12,7 +12,7 @@
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">需要拆托的</br>Prod-order：</view>
-					{{ prodOrderList }}
+					{{ prodOrderStr }}
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">SAP Code：</view>
@@ -63,6 +63,17 @@
 			</view>
 		</view>
 		<Message ref="message"></Message>
+		<!-- <uni-popup ref="alertDialog" type="dialog">
+			<uni-popup-dialog
+				type="info"
+				cancelText="返回"
+				confirmText="确认"
+				title="通知"
+				content="校验失败,请重新打包!"
+				@confirm="onSubmitBinIn"
+				@
+			></uni-popup-dialog>
+		</uni-popup> -->
 	</my-page>
 </template>
 
@@ -81,19 +92,11 @@ export default {
 			submitLoading: false,
 			materialInfo: {},
 			taskId: undefined,
-			prodOrderList: [],
+			
 			taskList: [],
 			taskIndex: 0,
-			allScanBarCodeList: [],
+			allScanProdOrderList: [],
 			currentTaskBarCodeList: [
-				{
-					type: '拆',
-					value: '911260000501'
-				},
-				{
-					type: '',
-					value: '911260000502'
-				},
 			],
 			takeDownTaskBarCodeList: [],
 			stepIndex: 1,
@@ -101,18 +104,12 @@ export default {
 		};
 	},
 	computed: {
-		getProdOrderList(){
-			let prodOrders = '';
-			this.taskList.forEach(data => {
-			  if (data.isDisassembled === '拆') {
-			    prodOrders += `${data.prodOrder},`;
-			  }
-			});			
-			this.prodOrderList = prodOrders.slice(0, -1); // 去掉最后一个逗号
-			console.log('list:'+this.prodOrderList);
+		prodOrderStr(){
+			const prodOrderStr = _.join(_.map(_.filter(this.taskList,x=>x.isDisassembled === '拆'),x=>x.prodOrder),',')
+			return prodOrderStr
 		},
 		allTaskCount() {
-			const count = _.sumBy(_.filter(this.taskList, x => x.isSplit !== '拆'), 'palletQuantity');
+			const count = _.sumBy(_.filter(this.taskList, x => x.isDisassembled !== '拆'), 'palletQuantity');
 			return count;
 		},
 		sapCode() {
@@ -160,22 +157,40 @@ export default {
 
 		this.initScanCode();
 	},
-	onLaunch() {
+	onLaunch(options) {
+		console.log(options)
 		Bus.$off('scancodedate');
 	},
 	methods: {
 		onReset() {
 			this.currentTaskBarCodeList = [];
 		},
-		 onCheck() {
-			const allScanBarCodeMap = _.map(this.allScanBarCodeList, x => x.substring(-1, 11));
-			console.log(allScanBarCodeMap);
-			_.each(_.uniq(allScanBarCodeMap), item => {
+		 onSubmitCheck() {
+			 if (!this.currentTaskBarCodeList.length) {
+			 	throw '请扫描成品标签二维码';
+			 }
+			 
+			const normalAllScanProdOrderMap = _.map(_.filter(this.allScanProdOrderList,x=>x.type === '拆'), x => x.value);
+			
+			_.each(_.uniq(normalAllScanProdOrderMap), item => {
 				const count = _.filter(allScanBarCodeMap, x => x === item).length;
+				if (count < this.taskListCountMap[item]) {
+					throw `编号“${count}”扫描次数不一致`;
+				}
 				if (count > this.taskListCountMap[item]) {
 					throw `编号“${count}”扫描次数不一致`;
 				}
 			});
+		},
+		onNextCheck(){
+			if (!this.currentTaskBarCodeList.length) {
+				throw '请扫描成品标签二维码';
+			}
+			
+			const {prodOrder} = this.taskList[this.taskIndex]||{}
+			if(!_.filter(this.currentTaskBarCodeList,x=>x.prodOrder === prodOrder).length){
+				throw '请扫描当前托码';
+			}
 		},
 		handleDelete(index) {
 			if (this.submitLoading) {
@@ -198,30 +213,42 @@ export default {
 		},
 		async initScanCode() {
 			Bus.$on('scancodedate', data => {
-				const batchNb = data.code.substring(-1,11)
-				const item = { type: '', value: batchNb };
+				const prodOrder = data.code.substring(-1,11)
+				if(_.find(this.currentTaskBarCodeList,x=>x.prodOrder === prodOrder)){
+					this.$refs.message.error('当前托已存在')
+					return
+				}
+				
+				const splitProdOrder = _.split(this.prodOrderStr,',')
+				const {prodOrder:currentProdOrder} = this.taskList[this.taskIndex]||{}
+				const currentScanProdOrderList = [currentProdOrder,...splitProdOrder]
+				
+				if(!currentScanProdOrderList.includes(prodOrder)){
+					this.$refs.message.error('请扫描当前托码或拆托码')
+					return
+				}
+				
+				const item = { type: '', value: prodOrder };
 				if (!this.tagInverted) {
 					item.type = '拆';
 					this.takeDownTaskBarCodeList.push(item);
 				}
 				this.currentTaskBarCodeList.push(item);
-				this.currentTaskBarCodeList = Array.from(new Map(this.currentTaskBarCodeList.map(item => [item.value,item])).values());
-				console.log(this.currentTaskBarCodeList)
+				// this.currentTaskBarCodeList = _.uniqBy(this.currentTaskBarCodeList,'value')
+				this.allScanProdOrderList.push(item)
 			});
 		},
 		async handleNext() {
-			if (!this.currentTaskBarCodeList.length) {
-				this.$refs.message.error('请扫描成品标签二维码');
-				return;
-			}
 			
+		
 			
 			try {
-				// this.onCheck()				
-				// uni.showLoading({
-				// 	title:'提交中'
-				// })
-				// this.submitLoading = true;
+				this.onNextCheck()
+				
+				uni.showLoading({
+					title:'提交中'
+				})
+				this.submitLoading = true;
 				
 				const { afterPacking } = this.taskList[this.taskIndex]||{}
 				if (this.stepIndex > afterPacking) {
@@ -248,7 +275,13 @@ export default {
 		},
 		async handleOk(){
 			try{
-			
+				this.onSubmitCheck()
+				
+				uni.showLoading({
+					title:'提交中'
+				})
+				this.submitLoading = true;
+				
 				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.value),',')
 				const lastOne = 1
 				const options = {ssccNumbers,historyIndex:this.stepIndex,lastOne,shippingTaskId:this.taskId}
@@ -268,11 +301,10 @@ export default {
 			}catch(e){
 				//TODO handle the exception
 				this.$refs.message.error(e.message);
-				
-				
+			}finally{
+				this.submitLoading = false;
+				uni.hideLoading()
 			}
-			
-			
 		},
 		async handleGoBack() {
 			uni.navigateBack({ delta: 1 });
@@ -285,7 +317,6 @@ export default {
 			const options = { id: this.taskId };
 			const {data} = await this.$store.dispatch('finishedProduct/getTaskList', options);
 			this.taskList=data;		
-			this.getProdOrderList()
 		},
 
 		async onSubmit() { }
