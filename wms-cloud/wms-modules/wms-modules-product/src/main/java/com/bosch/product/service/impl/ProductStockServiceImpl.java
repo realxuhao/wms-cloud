@@ -3,6 +3,8 @@ package com.bosch.product.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.domain.dto.IQCChangeStatusDTO;
+import com.bosch.binin.api.domain.dto.IQCManagementQueryDTO;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
@@ -11,6 +13,7 @@ import com.bosch.product.api.domain.ProductReceive;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.ProductWareShift;
 import com.bosch.product.api.domain.dto.ProductBinInDTO;
+import com.bosch.product.api.domain.dto.ProductIQCManagementQueryDTO;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.enumeration.ProductStockBinInEnum;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
@@ -28,6 +31,7 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import org.ehcache.shadow.org.terracotta.statistics.derived.histogram.StripedHistogram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -128,6 +132,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ProductStock binIn(ProductBinInDTO binInDTO) {
         String qrCode = binInDTO.getQrCode();
         String sscc = ProductQRCodeUtil.getSSCC(qrCode);
@@ -164,10 +169,27 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         productStock.setBinCode(binCode);
         productStock.setAreaCode(binVO.getAreaCode());
         productStock.setFrameCode(binVO.getFrameCode());
+
         updateById(productStock);
 
         return productStock;
 
+    }
+
+    @Override
+    public List<ProductStockVO> selectIQCManagementList(ProductIQCManagementQueryDTO queryDTO) {
+        return stockMapper.selectIQCManagementList(queryDTO);
+    }
+
+    @Override
+    public boolean validateStatus(Long id) {
+        return stockMapper.validateStatus(id) == 1;
+    }
+
+    @Override
+    public Integer changeStatus(IQCChangeStatusDTO iqcChangeStatusDTO) {
+        Integer i = stockMapper.changeStatus(iqcChangeStatusDTO);
+        return i;
     }
 
     private BinVO getBinVOByBinCode(String binCode) {

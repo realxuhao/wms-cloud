@@ -75,7 +75,7 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
         //获取同批次 同物料号 已占用跨 、库位
         LambdaQueryWrapper<BinIn> binInWrapper = new LambdaQueryWrapper();
         binInWrapper.eq(BinIn::getBatchNb, batchNb);
-        binInWrapper.eq(BinIn::getSsccNumber, sscc);
+//        binInWrapper.eq(BinIn::getSsccNumber, sscc);
         binInWrapper.eq(BinIn::getMaterialNb, materialNb);
         binInWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 //        binInWrapper.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value()).or().eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
@@ -225,12 +225,10 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
             //list 要去重 排序
             for (int moveFlag = 0; moveFlag < framesByType.size(); moveFlag++) {
                 //取下一个
-                if (moveFlag < framesByType.size()) {
-                    FrameRemainVO frameRemainVO = validateBin(framesByType.get(moveFlag), material, pallet);
-                    //返回库位
-                    if (frameRemainVO != null) {
-                        return frameRemainVO.getRecommendBinCode();
-                    }
+                FrameRemainVO frameRemainVO = validateBin(framesByType.get(moveFlag), material, pallet);
+                //返回库位
+                if (frameRemainVO != null) {
+                    return frameRemainVO.getRecommendBinCode();
                 }
             }
         } else {

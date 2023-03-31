@@ -5,7 +5,7 @@
 <mapper namespace="com.bosch.product.mapper.ProductReceiveMapper">
 
 
-    <resultMap type="ProductReceiveVO" id="ProductReceiveVOResult">
+    <resultMap type="com.bosch.product.api.domain.vo.ProductReceiveVO" id="ProductReceiveVOResult">
         <result property="id" column="id"/>
         <result property="plantNb" column="plant_nb"/>
         <result property="wareCode" column="ware_code"/>
@@ -13,8 +13,8 @@
         <result property="batchNb" column="batch_nb"/>
         <result property="materialNb" column="material_nb"/>
         <result property="materialName" column="material_name"/>
-        <result property="expireDate" column="expire_date" />
-        <result property="unit" column="unit" />
+        <result property="expireDate" column="expire_date"/>
+        <result property="unit" column="unit"/>
         <result property="quantity" column="quantity"/>
         <result property="fromProdOrder" column="from_prod_order"/>
         <result property="createBy" column="create_by"/>
@@ -27,29 +27,42 @@
 
     <select id="list" resultMap="ProductReceiveVOResult">
         select pr.id,
-               pr.sscc_number,
-               pr.batch_nb,
-               str_to_date(pr.expire_date, '%d/%m/%y') as expire_date,
-               pr.material_nb,
-               p.product_name as material_name,
-               pr.unit,
-               pr.quantity,
-               pr.from_prod_order,
-               pr.create_by,
-               pr.create_time,
-               pr.update_by,
-               pr.update_time,
-               pr.status,
-               pr.plant_nb,
-               pr.ware_code,
-               pr.production_date
+        pr.sscc_number,
+        pr.batch_nb,
+        str_to_date(pr.expire_date, '%d/%m/%y') as expire_date,
+        pr.material_nb,
+        p.product_name as material_name,
+        pr.unit,
+        pr.quantity,
+        pr.from_prod_order,
+        pr.create_by,
+        pr.create_time,
+        pr.update_by,
+        pr.update_time,
+        pr.status,
+        pr.plant_nb,
+        pr.ware_code,
+        pr.production_date
 
-        from  si_product_receive pr left join (select * from md_product_packaging where delete_flag=0 )p on pr.material_nb = p.product_no
+        from product_receive pr left join (select * from md_product_packaging where delete_flag=0 )p on pr.material_nb =
+        p.product_no
         where pr.delete_flag=0
+        <if test="plantNb != null  and plantNb != ''">and pr.plant_nb like concat('%', #{plantNb}, '%')</if>
+        <if test="materialNb != null  and materialNb != ''">and pr.material_nb like concat('%', #{materialNb}, '%')</if>
+        <if test="batchNb != null  and batchNb != ''">and pr.batch_nb like concat('%', #{batchNb}, '%')</if>
+        <if test="ssccNumber != null  and ssccNumber != ''">and pr.sscc_number like concat('%', #{ssccNumber}, '%')</if>
+        <if test="fromProdOrder != null  and fromProdOrder != ''">and pr.from_prod_order like concat('%',
+            #{fromProdOrder}, '%')
+        </if>
+        <if test="status != null">and pr.status = #{status}</if>
+        <if test="createBy != null  and createBy != ''">and pr.create_by like concat('%', #{createBy}, '%')</if>
+        <if test="startCreateTime != null and endCreateTime != null">and str_to_date(pr.create_time, '%d/%m/%y') between
+            #{startCreateTime} and #{endCreateTime}
+        </if>
+        order by update_time desc,create_time desc
+
+
     </select>
-
-
-
 
 
 </mapper>

@@ -1,6 +1,5 @@
 package com.bosch.product.service.impl;
 
-import com.alibaba.fastjson2.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.product.api.domain.ShippingHistory;

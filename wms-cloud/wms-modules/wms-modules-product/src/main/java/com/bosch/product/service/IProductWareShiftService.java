@@ -2,8 +2,11 @@ package com.bosch.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
+import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.ProductWareShift;
 import com.bosch.product.api.domain.dto.ProductBinInDTO;
+import com.bosch.product.api.domain.dto.ProductWareShiftQueryDTO;
+import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.api.domain.vo.ProductWareShiftVO;
 
 import java.util.List;
@@ -21,9 +24,11 @@ public interface IProductWareShiftService extends IService<ProductWareShift> {
 
     void ship(List<String> ssccList,String carNb);
 
-    List<ProductWareShiftVO> list(WareShiftQueryDTO queryDTO);
+    List<ProductWareShiftVO> list(ProductWareShiftQueryDTO queryDTO);
 
     void receive(String qrCode);
 
     void wareShiftBinIn(ProductBinInDTO binInDTO);
+
+    ProductStockVO getBinInInfo(String qrCode);
 }

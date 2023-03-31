@@ -10,10 +10,14 @@ import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.ProductWareShift;
 import com.bosch.product.api.domain.dto.ProductBinInDTO;
+import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
+import com.bosch.product.api.domain.dto.ProductWareShiftQueryDTO;
+import com.bosch.product.api.domain.enumeration.ProductStockBinInEnum;
 import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
+import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.api.domain.vo.ProductWareShiftVO;
 import com.bosch.product.mapper.ProductWareShiftMapper;
-import com.bosch.product.mapper.TranshipmentOrderMapper;
+import com.bosch.product.service.IBinAssignmentService;
 import com.bosch.product.service.IProductStockService;
 import com.bosch.product.service.IProductWareShiftService;
 import com.bosch.product.service.ITranshipmentOrderService;
@@ -22,8 +26,8 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import com.sun.corba.se.spi.ior.IORTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +60,9 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
     @Autowired
     private ITranshipmentOrderService transhipmentOrderService;
+
+    @Autowired
+    private IBinAssignmentService binAssignmentService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -166,7 +173,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
     }
 
     @Override
-    public List<ProductWareShiftVO> list(WareShiftQueryDTO queryDTO) {
+    public List<ProductWareShiftVO> list(ProductWareShiftQueryDTO queryDTO) {
         return wareShiftMapper.list(queryDTO);
     }
 
@@ -236,8 +243,6 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
         //执行上架
         ProductStock productStock = stockService.binIn(binInDTO);
-
-
         productWareShift.setTargetPlant(productStock.getPlantNb());
         productWareShift.setTargetWareCode(productStock.getWareCode());
         productWareShift.setTargetAreaCode(productStock.getAreaCode());
@@ -247,5 +252,31 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         this.updateById(productWareShift);
 
 
+    }
+
+    @Override
+    public ProductStockVO getBinInInfo(String qrCode) {
+        String sscc = ProductQRCodeUtil.getSSCC(qrCode);
+        ProductStockQueryDTO queryDTO = new ProductStockQueryDTO();
+        queryDTO.setSsccNumber(sscc);
+        List<ProductStockVO> list = stockService.list(queryDTO);
+        if (CollectionUtils.isEmpty(list)){
+            throw new ServiceException("没有该sscc:"+sscc+"对应的库存信息。");
+        }
+        ProductStockVO productStockVO = list.get(0);
+
+
+        if (productStockVO.getBinInFlag().equals(ProductStockBinInEnum.FINISH.code())){
+            throw new ServiceException("该sscc:"+sscc+"已经上架，不可以重复上架。");
+        }
+        if (productStockVO.getBinInFlag().equals(ProductStockBinInEnum.NONE.code())){
+            throw new ServiceException("该sscc:"+sscc+"为主库收货，无需上架。");
+        }
+        String allocationBinCode = binAssignmentService.getBinAllocationVO(qrCode);
+        if (StringUtils.isEmpty(allocationBinCode)){
+            throw new ServiceException("未找到合适库位");
+        }
+        productStockVO.setRecommendBinCode(allocationBinCode);
+        return productStockVO;
     }
 }

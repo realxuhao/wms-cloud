@@ -3,6 +3,8 @@ package com.bosch.product.controller;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.product.api.domain.dto.ProductBinInDTO;
+import com.bosch.product.api.domain.dto.ProductWareShiftQueryDTO;
+import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.api.domain.vo.ProductWareShiftVO;
 import com.bosch.product.service.IProductStockService;
 import com.bosch.product.service.IProductWareShiftService;
@@ -38,9 +40,9 @@ public class ProductWareShiftController extends BaseController {
 
     @GetMapping(value = "/list")
     @ApiOperation("成品移库任务列表")
-    public R<PageVO<ProductWareShiftVO>> list(WareShiftQueryDTO queryDTO) {
+    public R<PageVO<ProductWareShiftVO>> list(ProductWareShiftQueryDTO queryDTO) {
         if (queryDTO == null) {
-            queryDTO = new WareShiftQueryDTO();
+            queryDTO = new ProductWareShiftQueryDTO();
         }
         if (!StringUtils.isEmpty(SecurityUtils.getWareCode())) {
             queryDTO.setSourceWareCode(SecurityUtils.getWareCode());
@@ -80,11 +82,17 @@ public class ProductWareShiftController extends BaseController {
         return R.ok();
     }
 
-    @PostMapping(value = "binIn")
+    @PostMapping(value = "/binIn")
     @ApiOperation("移库上架")
     public R binIn(@RequestBody ProductBinInDTO binInDTO){
         productWareShiftService.wareShiftBinIn(binInDTO);
         return R.ok();
+    }
+
+    @GetMapping(value = "/getBinInInfo/{qrCode}")
+    @ApiOperation("获取单个上架信息")
+    public R<ProductStockVO> getBinInInfo(@PathVariable("qrCode") String qrCode){
+        return R.ok(productWareShiftService.getBinInInfo(qrCode));
     }
 
 

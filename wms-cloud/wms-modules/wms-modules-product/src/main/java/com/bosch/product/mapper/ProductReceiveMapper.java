@@ -19,4 +19,6 @@ public interface ProductReceiveMapper extends BaseMapper<ProductReceive> {
 
     List<ProductReceiveVO> list(ProductReceiveQueryDTO queryDTO);
 
+
+
 }

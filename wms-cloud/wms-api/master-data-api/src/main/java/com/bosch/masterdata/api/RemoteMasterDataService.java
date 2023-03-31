@@ -1,6 +1,7 @@
 package com.bosch.masterdata.api;
 
 import com.bosch.masterdata.api.domain.Bin;
+import com.bosch.masterdata.api.domain.ProductFrame;
 import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.dto.BlackDriverDTO;
 import com.bosch.masterdata.api.domain.vo.*;
@@ -27,6 +28,11 @@ public interface RemoteMasterDataService {
     //根据code和仓库
     @GetMapping(value = "/materialBin/getListByMaterialAndWare")
     public R<List<MaterialBinVO>> getListByMaterialAndWare(@RequestParam("materialCode") String materialCode, @RequestParam("wareCode") String wareCode);
+
+    //根据code和仓库
+    @GetMapping(value = "/productFrame/getProductFrame")
+    public R<List<ProductFrameVO>> getProductFrame(@RequestParam("materialCode") String materialCode, @RequestParam("wareCode") String wareCode);
+
 
     @GetMapping(value = "/frame/getFrameInfo/{id}")
     public R<FrameVO> getFrameInfo(@PathVariable("id") Long id);

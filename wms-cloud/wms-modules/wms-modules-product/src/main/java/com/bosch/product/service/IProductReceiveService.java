@@ -21,4 +21,7 @@ public interface IProductReceiveService extends IService<ProductReceive> {
     void receive(String qrCode);
 
     void delete(Long id);
+
+
+    ProductReceive getProductReceiveVO(String sscc);
 }

@@ -1,11 +1,14 @@
 package com.bosch.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.binin.api.domain.dto.IQCChangeStatusDTO;
+import com.bosch.binin.api.domain.dto.IQCManagementQueryDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.product.api.domain.ProductReceive;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.ProductWareShift;
 import com.bosch.product.api.domain.dto.ProductBinInDTO;
+import com.bosch.product.api.domain.dto.ProductIQCManagementQueryDTO;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
@@ -43,4 +46,9 @@ public interface IProductStockService extends IService<ProductStock> {
 
     ProductStock binIn(ProductBinInDTO binInDTO);
 
+    List<ProductStockVO> selectIQCManagementList(ProductIQCManagementQueryDTO queryDTO);
+
+    boolean validateStatus(Long id);
+
+    Integer changeStatus(IQCChangeStatusDTO iqcChangeStatusDTO);
 }

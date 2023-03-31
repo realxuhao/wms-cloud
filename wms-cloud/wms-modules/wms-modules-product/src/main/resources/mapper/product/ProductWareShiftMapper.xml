@@ -10,18 +10,29 @@
         tr.order_number as order_nb,tr.car_nb as carNb
         from product_ware_shift ws
         left join (SELECT * from md_product_packaging where delete_flag = '0') mm on ws.material_nb = mm.product_no
-        left join transhipment_order tr on tr.product_ware_shift_id = ws.id and tr.delete_flag = 0 and tr.sscc_number = ws.sscc_nb
+        left join transhipment_order tr on tr.product_ware_shift_id = ws.id and tr.delete_flag = 0 and tr.sscc_number =
+        ws.sscc_nb
         where ws.delete_flag = 0
+        <if test="sourcePlantNb != null and sourcePlantNb != ''">
+            AND ws.source_plant_nb=#{sourcePlantNb}
+        </if>
         <if test="sourceWareCode != null and sourceWareCode != ''">
             AND ws.source_ware_code=#{sourceWareCode}
         </if>
-
+        <if test="orderNb != null and orderNb != ''">
+            AND tr.order_number=#{orderNb}
+        </if>
         <if test="targetWareCode != null and targetWareCode != ''">
             AND ws.target_ware_code=#{targetWareCode}
         </if>
-
         <if test="status != null ">
             AND (ws.status = #{status})
+        </if>
+        <if test="carNb != null and carNb != ''">
+            AND tr.car_Nb=#{carNb}
+        </if>
+        <if test="ssccNb != null and ssccNb != ''">
+            AND ws.sscc_nb=#{ssccNb}
         </if>
         <if test="createBy != null and createBy != ''">and ws.create_by like concat('%', #{createBy}, '%')</if>
         <if test="startCreateTime != null">and ws.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
@@ -29,7 +40,7 @@
         <if test="startUpdateTime != null">and ws.update_time <![CDATA[ >= ]]> #{startUpdateTime}</if>
         <if test="startUpdateTime != null">and ws.update_time <![CDATA[ <= ]]> #{endUpdateTime}</if>
 
-        order by create_time desc
+        order by update_time desc, create_time desc
     </select>
 
 </mapper>

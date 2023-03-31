@@ -85,4 +85,13 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
         receiveMapper.updateById(productReceive);
 
     }
+
+    @Override
+    public ProductReceive getProductReceiveVO(String sscc) {
+        LambdaQueryWrapper<ProductReceive> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ProductReceive::getSsccNumber,sscc);
+        queryWrapper.eq(ProductReceive::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.last("limit 1");
+        return this.getOne(queryWrapper);
+    }
 }
