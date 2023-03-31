@@ -33,9 +33,40 @@ Page({
     }
     //未预约
     if(Number(this.data.radio) == 0){
-      
+      this.getDriverData();
     }
   },
+  
+  /** 获取司机信息 */
+  async getDriverData(){
+    await networkAPI._get('masterdata/driver/black/' + app.globalData.openid).then(res => {
+      if(res.data){
+        if(res.data.length){
+          if(res.data[0].status == 1){
+            wx.showModal({
+              title: '提示',
+              showCancel: false,
+              content: '您已进入黑名单，请联系客户确认！',
+              success: function (res) {
+                var pages = getCurrentPages()
+                var num = pages.length
+                wx.navigateBack({
+                  delta: num
+                })
+              }
+            })
+            return;
+          }
+          this.setData({
+            driverName: res.data[0].driverName,
+            driverPhone: res.data[0].driverPhone,
+            carNum: res.data[0].carNum
+          })
+        }
+      }                 
+    })
+  },
+
   getList(){
     this.data.deliverList = [];
     networkAPI._get('vehiclereservation/driverDeliver/info/'+app.globalData.openid, null).then(res => {
@@ -161,8 +192,6 @@ Page({
         title: '提示',
         content: data.reserveNo + '预约单确认要签到吗？请确认已到厂，提前签到可以会进入黑名单，影响后续预约',
         showCancel: true,//是否显示取消按钮
-        cancelColor:'red',//取消文字的颜色
-        confirmColor: 'blue',//确定文字的颜色
         success: function (res) {
            if (res.cancel) {
               //点击取消,默认隐藏弹框

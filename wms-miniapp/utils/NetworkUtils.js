@@ -1,7 +1,7 @@
 // https://segmentfault.com/a/1190000014789969
 
-const baseUrl = 'http://localhost:8080/';
-// const baseUrl = 'http://121.37.188.213:8080/';
+// const baseUrl = 'http://localhost:8080/';
+const baseUrl = 'http://121.37.188.213:8080/';
 
 const http = ({
     url = '',

@@ -36,9 +36,40 @@ Page({
     }
     //未预约
     if(Number(this.data.radio) == 0){
-      
+      this.getDriverData()
     }
   },
+  
+  /** 获取司机信息 */
+  async getDriverData(){
+    await networkAPI._get('masterdata/driver/black/' + app.globalData.openid).then(res => {
+      if(res.data){
+        if(res.data.length){
+          if(res.data[0].status == 1){
+            wx.showModal({
+              title: '提示',
+              showCancel: false,
+              content: '您已进入黑名单，请联系客户确认！',
+              success: function (res) {
+                var pages = getCurrentPages()
+                var num = pages.length
+                wx.navigateBack({
+                  delta: num
+                })
+              }
+            })
+            return;
+          }
+          this.setData({
+            driverName: res.data[0].driverName,
+            driverPhone: res.data[0].driverPhone,
+            carNum: res.data[0].carNum
+          })
+        }
+      }                 
+    })
+  },
+
   getList(){
     this.data.pickupList = [];
     networkAPI._get('vehiclereservation/driverPickup/info/'+app.globalData.openid, null).then(res => {

@@ -49,7 +49,7 @@ Page({
                   app.globalData.openid = res.data.open_id          
                   wx.switchTab({
                     url: '../main-page/main-page'
-                  })         
+                  })        
                 }                 
               })
             } else {
@@ -60,6 +60,7 @@ Page({
       }
     })
   },
+
 
   /**
    * 生命周期函数--监听页面加载
