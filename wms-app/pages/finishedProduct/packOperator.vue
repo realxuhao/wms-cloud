@@ -231,7 +231,7 @@ export default {
 		async initScanCode() {
 			Bus.$on('scancodedate', data => {
 				const prodOrder = data.code.substring(10,9)
-				const sscc = data.code.substring(-1,18)
+				const sscc = data.code.substring(data.code.length - 18,18)
 				if(_.find(this.currentTaskBarCodeList,x=>x.sscc === sscc)){
 					this.$refs.message.error('当前托已存在')
 					return
