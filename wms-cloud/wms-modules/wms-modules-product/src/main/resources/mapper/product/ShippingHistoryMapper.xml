@@ -96,7 +96,7 @@
                     AND st.shipping_mark like concat('%',#{shippingMark},'%')
                 </if>
 
-                <if test="shippingMark != null  ">
+                <if test="historyIndex != null  ">
                     AND sh.history_index = #{historyIndex}
                 </if>
                 <if test="shippingTaskId != null  ">
