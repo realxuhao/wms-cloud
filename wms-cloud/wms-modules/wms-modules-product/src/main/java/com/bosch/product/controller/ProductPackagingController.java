@@ -27,6 +27,7 @@ import com.bosch.product.service.impl.ShippingPlanServiceImpl;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
@@ -138,8 +139,23 @@ public class ProductPackagingController extends BaseController {
     @Log(title = "根据TaskId删除多条打包记录", businessType = BusinessType.DELETE)
     @ApiOperation("根据TaskId删除多条打包记录")
     @DeleteMapping("/deleteMultiPackageHistory/{id}")
+    @Transactional(rollbackFor = Exception.class)
     public AjaxResult deleteMultiPackageHistory(@PathVariable Long id) {
-        return toAjax(shippingHistoryService.deleteHistoryByTaskId(id));
+        Integer a =0;
+        boolean b =false;
+        try {
+             a = shippingHistoryService.deleteHistoryByTaskId(id);
+            //修改任务为已完成
+             b = shippingTaskService.updateStatus(new Long[]{id},
+                    TaskStatusEnum.UNEXECUTED.getCode());
+             if (a==0){
+                 throw new ServiceException("无可清空记录");
+             }
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            return AjaxResult.error(e.getMessage());
+        }
+        return toAjax(a>0&&b);
     }
 
     @GetMapping(value = "/list")
@@ -267,6 +283,12 @@ public class ProductPackagingController extends BaseController {
             if (CollectionUtils.isNotEmpty(dtoList)) {
                 List<ShippingPlanDTO> filteredShippingPlans = dtoList.stream()
                         .filter(plan -> plan.getEtoPo() != null) // 过滤器：过滤掉etoPo字段为空的数据
+                        .map(plan -> {
+                            if ("#N/A".equals(plan.getPalletQuantity())) {
+                                plan.setPalletQuantity("1");
+                            }
+                            return plan;
+                        })//N/A替换为1
                         .collect(Collectors.toList()); // 收集器：将过滤后的结果收集到列表中
 
                 List<ShippingPlan> shippingPlans = BeanConverUtil.converList(filteredShippingPlans, ShippingPlan.class);

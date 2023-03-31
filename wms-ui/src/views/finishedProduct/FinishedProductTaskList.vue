@@ -45,12 +45,17 @@
           <a-tag :color="statusColorMap[text]"> {{ status[text] }}</a-tag>
         </template>
 
+        <template slot="rateOfProgress" slot-scope="text">
+          <a-progress :percent="text"/>
+        </template>
+
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a-popconfirm v-if="record.status!=2" title="确认要强制完成任务吗?" ok-text="确认" cancel-text="取消" @confirm="onSubmit(record)">
               <a class="warning-color"><a-icon class="m-r-4" type="complete" />完成</a>
             </a-popconfirm>
-              <a v-if="record.status==2" class="warning-color"><a-icon class="m-r-4" type="complete" />已完成</a>
+
+            <a v-if="record.status==2" class="warning-color"><a-icon class="m-r-4" type="complete" />已完成</a>
 
             <a-divider type="vertical" />
             <a-popconfirm title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
@@ -149,7 +154,8 @@ const columns = [
     title: '进度',
     key: 'rateOfProgress',
     dataIndex: 'rateOfProgress',
-    width: 120
+    scopedSlots: { customRender: 'rateOfProgress' },
+    width: 200
   },
   {
     title: '创建者',
