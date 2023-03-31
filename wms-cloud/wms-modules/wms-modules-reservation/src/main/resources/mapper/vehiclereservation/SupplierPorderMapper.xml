@@ -30,6 +30,7 @@
                  INNER JOIN vr_supplier_reserve t2 on t1.reserve_no = t2.reserve_no
                  LEFT JOIN vr_driver_deliver t3 on t2.reserve_no = t3.reserve_no
         WHERE t1.purchase_id = #{purchaseId}
+        order by surplus_quantity
     </select>
 
 </mapper>
