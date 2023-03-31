@@ -15,15 +15,19 @@
 					{{ prodOrderStr }}
 				</view>
 				<view class="text-line m-b-8 ">
-					<view class="label">SAP Code：</view>
+					<view class="label">需要拆托的</br>SAP Code：</view>
 					{{ sapCode }}
 				</view>
 				<view class="text-line m-b-8 ">
-					<view class="label">源托数：</view>
+					<view class="label">拆托数：</view>
+					{{ splitPalletCount }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">打包任务源托数：</view>
 					{{ palletQuantityCount }}
 				</view>
 				<view class="text-line m-b-8 ">
-					<view class="label">目标托数：</view>
+					<view class="label">打包任务目标托数：</view>
 					{{ afterPackingCount }}
 				</view>
 			</view>
@@ -41,11 +45,11 @@
 						<uni-tag text="拆" :inverted="tagInverted" type="primary" @click="tagInverted = !tagInverted"></uni-tag>
 					</template>
 					<uni-list v-show="currentTaskBarCodeList.length">
-						<uni-list-item v-for="(item, index) in currentTaskBarCodeList" :key="item.value" ellipsis="1">
+						<uni-list-item v-for="(item, index) in currentTaskBarCodeList" :key="item.sscc" ellipsis="1">
 							<template v-slot:body>
 								<view class="list-item">
 									<view class="tag-box"><uni-tag v-show="item.type === '拆'" text="拆" :inverted="true" type="primary"></uni-tag></view>
-									<view class="ellipsis">{{ item.value }}</view>
+									<view class="ellipsis">{{ item.sscc }}</view>
 								</view>
 							</template>
 							<template v-slot:footer>
@@ -63,17 +67,17 @@
 			</view>
 		</view>
 		<Message ref="message"></Message>
-		<!-- <uni-popup ref="alertDialog" type="dialog">
+		<uni-popup ref="alertDialog" type="dialog">
 			<uni-popup-dialog
-				type="info"
-				cancelText="返回"
-				confirmText="确认"
+				type="error"
+				cancelText="关闭"
+				confirmText="清空打包任务"
 				title="通知"
-				content="校验失败,请重新打包!"
-				@confirm="onSubmitBinIn"
-				@
+				content="扫描标签次数未满足要求,请检查!"
+				@confirm="handleClean"
+				@close="$refs.alertDialog.close()"
 			></uni-popup-dialog>
-		</uni-popup> -->
+		</uni-popup>
 	</my-page>
 </template>
 
@@ -105,15 +109,19 @@ export default {
 	},
 	computed: {
 		prodOrderStr(){
-			const prodOrderStr = _.join(_.map(_.filter(this.taskList,x=>x.isDisassembled === '拆'),x=>x.prodOrder),',')
+			const prodOrderStr = _.join(_.map(_.filter(this.taskList,x=>x.isDisassembled),x=>x.prodOrder),',')
 			return prodOrderStr
 		},
 		allTaskCount() {
-			const count = _.sumBy(_.filter(this.taskList, x => x.isDisassembled !== '拆'), 'palletQuantity');
+			const count = _.sumBy(_.filter(this.taskList, x => !x.isDisassembled), 'palletQuantity');
+			return count;
+		},
+		splitPalletCount() {
+			const count = _.sumBy(_.filter(this.taskList, x => !x.isDisassembled), 'palletQuantity');
 			return count;
 		},
 		sapCode() {
-			const str = _.join(_.map(this.taskList, 'sapCode'), ',');
+			const str = _.join(_.map(_.filter(this.taskList, x => x.isDisassembled), 'sapCode'), ',');
 			return str;
 		},
 		title({ taskList, taskIndex }) {
@@ -141,6 +149,7 @@ export default {
 			const count = _.sumBy(this.taskList, item => Number(item.palletQuantity));
 			return count;
 		},
+		
 		afterPackingCount() {
 			const count = _.sumBy(this.taskList, item => Number(item.afterPacking));
 			return count;
@@ -170,17 +179,25 @@ export default {
 			 	throw '请扫描成品标签二维码';
 			 }
 			 
-			const normalAllScanProdOrderMap = _.map(_.filter(this.allScanProdOrderList,x=>x.type === '拆'), x => x.value);
-			
+			const normalAllScanProdOrderMap = _.map(_.filter(this.allScanProdOrderList,x=>x.type !== '拆'), x => x.prodOrder);
 			_.each(_.uniq(normalAllScanProdOrderMap), item => {
-				const count = _.filter(allScanBarCodeMap, x => x === item).length;
-				if (count < this.taskListCountMap[item]) {
-					throw `编号“${count}”扫描次数不一致`;
+				const count = _.filter(allScanBarCodeMap, x => x === item & x.type !=='拆').length;
+				if (count < this.taskListCountMap[item] || count > this.taskListCountMap[item]) {
+					throw `扫描标签次数未满足要求,请检查`;
 				}
-				if (count > this.taskListCountMap[item]) {
-					throw `编号“${count}”扫描次数不一致`;
+				// if (count > this.taskListCountMap[item]) {
+				// 	throw `编号“${count}”扫描次数不一致`;
+				// }
+			});
+			
+			const splitAllScanProdOrderMap = _.map(_.filter(this.allScanProdOrderList,x=>x.type === '拆'), x => x.prodOrder);
+			_.each(_.uniq(splitAllScanProdOrderMap), item => {
+				const count = _.filter(allScanBarCodeMap, x => x === item & x.type ==='拆').length;
+				if (count < this.taskListCountMap[item]) {
+					throw `扫描标签次数未满足要求,请检查`;
 				}
 			});
+			
 		},
 		onNextCheck(){
 			if (!this.currentTaskBarCodeList.length) {
@@ -213,8 +230,9 @@ export default {
 		},
 		async initScanCode() {
 			Bus.$on('scancodedate', data => {
-				const prodOrder = data.code.substring(-1,11)
-				if(_.find(this.currentTaskBarCodeList,x=>x.prodOrder === prodOrder)){
+				const prodOrder = data.code.substring(10,9)
+				const sscc = data.code.substring(-1,18)
+				if(_.find(this.currentTaskBarCodeList,x=>x.sscc === sscc)){
 					this.$refs.message.error('当前托已存在')
 					return
 				}
@@ -228,7 +246,7 @@ export default {
 					return
 				}
 				
-				const item = { type: '', value: prodOrder };
+				const item = { type: '', prodOrder,sscc };
 				if (!this.tagInverted) {
 					item.type = '拆';
 					this.takeDownTaskBarCodeList.push(item);
@@ -255,7 +273,7 @@ export default {
 					this.taskIndex += 1;
 				}
 				//请求 生成记录
-				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.value),',')
+				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.prodOrder),',')
 				const lastOne = this.afterPackingCount===this.stepIndex?1:0
 				const options = {ssccNumbers,historyIndex:this.stepIndex,lastOne,shippingTaskId:this.taskId}
 				await this.$store.dispatch('finishedProduct/addPackageHistory', options);
@@ -282,7 +300,7 @@ export default {
 				})
 				this.submitLoading = true;
 				
-				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.value),',')
+				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.prodOrder),',')
 				const lastOne = 1
 				const options = {ssccNumbers,historyIndex:this.stepIndex,lastOne,shippingTaskId:this.taskId}
 				const result = await this.$store.dispatch('finishedProduct/addPackageHistory', options);
@@ -300,7 +318,8 @@ export default {
 				
 			}catch(e){
 				//TODO handle the exception
-				this.$refs.message.error(e.message);
+				// this.$refs.message.error(e.message);
+				this.$refs.alertDialog.open()
 			}finally{
 				this.submitLoading = false;
 				uni.hideLoading()
@@ -390,7 +409,7 @@ export default {
 
 /deep/.text-line {
 	.label {
-		width: 114px;
+		width: 128px;
 	}
 }
 
