@@ -3,30 +3,27 @@
     <div class="table-content">
       <a-tabs defaultActiveKey="1" @change="callback">
         <a-tab-pane key="1" tab="今日已签到列表">
-
-          <div class="action-content">
-            <a-form layout="inline" class="search-content">
-              <a-row :gutter="16">
-                <a-col :span="4">
-                  <a-form-model-item label="仓库编码">
-                    <a-select show-search allow-clear v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
-                      <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
-                        {{ item.code }}</a-select-option>
-                    </a-select>
-                  </a-form-model-item>
-                </a-col>
-                <a-col span="4">
-                  <span class="table-page-search-submitButtons">
-                    <a-button
-                      type="primary"
-                      @click="handleSearch"
-                      :loading="searchLoading"
-                    ><a-icon type="search" />查询</a-button>
-                  </span>
-                </a-col>
-              </a-row>
-            </a-form>
-          </div>
+          <a-form layout="inline" class="search-content">
+            <a-row :gutter="16">
+              <a-col :span="4">
+                <a-form-model-item label="仓库编码">
+                  <a-select show-search allow-clear v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
+                    <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
+                      {{ item.code }}</a-select-option>
+                  </a-select>
+                </a-form-model-item>
+              </a-col>
+              <a-col span="4">
+                <span class="table-page-search-submitButtons">
+                  <a-button
+                    type="primary"
+                    @click="handleSearch"
+                    :loading="searchLoading"
+                  ><a-icon type="search" />查询</a-button>
+                </span>
+              </a-col>
+            </a-row>
+          </a-form>
           <a-table
             class="sign"
             :columns="signColumns"
@@ -122,29 +119,27 @@
           </a-table>
         </a-tab-pane>
         <a-tab-pane key="2" tab="未签到列表">
-          <div class="action-content">
-            <a-form layout="inline" class="search-content">
-              <a-row :gutter="16">
-                <a-col span="4">
-                  <a-form-model-item label="预约时间" style="display: flex;">
-                    <a-date-picker
-                      v-model="searchNotSignDate"
-                      format="YYYY-MM-DD"
-                    />
-                  </a-form-model-item>
-                </a-col>
-                <a-col span="4">
-                  <span class="table-page-search-submitButtons">
-                    <a-button
-                      type="primary"
-                      @click="handleSearchNot"
-                      :loading="searchLoading"
-                    ><a-icon type="search" />查询</a-button>
-                  </span>
-                </a-col>
-              </a-row>
-            </a-form>
-          </div>
+          <a-form layout="inline" class="search-content">
+            <a-row :gutter="16">
+              <a-col span="4">
+                <a-form-model-item label="预约时间" style="display: flex;">
+                  <a-date-picker
+                    v-model="searchNotSignDate"
+                    format="YYYY-MM-DD"
+                  />
+                </a-form-model-item>
+              </a-col>
+              <a-col span="4">
+                <span class="table-page-search-submitButtons">
+                  <a-button
+                    type="primary"
+                    @click="handleSearchNot"
+                    :loading="searchLoading"
+                  ><a-icon type="search" />查询</a-button>
+                </span>
+              </a-col>
+            </a-row>
+          </a-form>
           <a-table
             :columns="notSignColumns"
             :data-source="notSignList"

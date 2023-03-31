@@ -1,61 +1,59 @@
 <template>
   <div class="wrapper">
     <div class="table-content">
-      <div class="action-content">
-        <a-form layout="inline" class="search-content">
-          <a-row :gutter="16">
-            <a-col :span="4">
-              <a-form-model-item label="仓库编码">
-                <a-select show-search v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
-                  <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
-                    {{ item.code }}</a-select-option>
-                </a-select>
-              </a-form-model-item>
-            </a-col>
+      <a-form layout="inline" class="search-content">
+        <a-row :gutter="16">
+          <a-col :span="4">
+            <a-form-model-item label="仓库编码">
+              <a-select show-search v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
+                <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
+                  {{ item.code }}</a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
 
-            <a-col span="4">
-              <span class="table-page-search-submitButtons">
-                <a-button
-                  type="primary"
-                  @click="handleSearch"
-                  :loading="searchLoading"
-                ><a-icon type="search" />查询</a-button>
-                <a-button
-                  style="margin-left: 8px"
-                  type="primary"
-                  @click="handleSave"
-                  :loading="saveLoading"
-                ><a-icon type="save" />保存</a-button>
-              </span>
-            </a-col>
+          <a-col span="4">
+            <span class="table-page-search-submitButtons">
+              <a-button
+                type="primary"
+                @click="handleSearch"
+                :loading="searchLoading"
+              ><a-icon type="search" />查询</a-button>
+              <a-button
+                style="margin-left: 8px"
+                type="primary"
+                @click="handleSave"
+                :loading="saveLoading"
+              ><a-icon type="save" />保存</a-button>
+            </span>
+          </a-col>
 
-            <a-col span="3" v-show="queryForm.wareId != null">
-              <a-tag class="docknum-tag" color="#1890ff">
-                该仓库总道口数：{{ queryForm.wareId == null ? null : wareOptionList.find(x => x.id == queryForm.wareId).dockNum }}
-              </a-tag>
-            </a-col>
-          </a-row>
-        </a-form>
+          <a-col span="3" v-show="queryForm.wareId != null">
+            <a-tag class="docknum-tag" color="#1890ff">
+              该仓库总道口数：{{ queryForm.wareId == null ? null : wareOptionList.find(x => x.id == queryForm.wareId).dockNum }}
+            </a-tag>
+          </a-col>
+        </a-row>
+      </a-form>
 
-        <router-link :to="{name:'fullscreenTimeWIndow'}" v-show="!isFullscreen">
-          <a-tooltip placement="bottom" title="切为全屏">
-            <a-icon class="fullscreen" type="fullscreen" @click="handleFullscreen" />
-          </a-tooltip>
-        </router-link>
-        <router-link v-show="isFullscreen" :to="{name:'timeWindow'}" >
-          <a-icon class="fullscreen" @click="handleExitFullscreen" type="fullscreen-exit" />
-        </router-link>
-      </div>
-
-      <TimeWindowTable
-        :visible="searchLoading"
-        :wareId="queryForm.wareId"
-        :allDockNum="queryForm.wareId == null ? null : wareOptionList.find(x => x.id == queryForm.wareId).dockNum"
-        :isSave="saveLoading"
-        @on-ok="childernSave"
-        centered
-      ></TimeWindowTable>
+      <router-link :to="{name:'fullscreenTimeWIndow'}" v-show="!isFullscreen">
+        <a-tooltip placement="bottom" title="切为全屏">
+          <a-icon class="fullscreen" type="fullscreen" @click="handleFullscreen" />
+        </a-tooltip>
+      </router-link>
+      <router-link v-show="isFullscreen" :to="{name:'timeWindow'}" >
+        <a-icon class="fullscreen" @click="handleExitFullscreen" type="fullscreen-exit" />
+      </router-link>
     </div>
+
+    <TimeWindowTable
+      :visible="searchLoading"
+      :wareId="queryForm.wareId"
+      :allDockNum="queryForm.wareId == null ? null : wareOptionList.find(x => x.id == queryForm.wareId).dockNum"
+      :isSave="saveLoading"
+      @on-ok="childernSave"
+      centered
+    ></TimeWindowTable>
   </div>
 </template>
 

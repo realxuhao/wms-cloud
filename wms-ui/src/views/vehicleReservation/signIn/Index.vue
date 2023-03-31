@@ -2,38 +2,36 @@
   <div class="wrapper">
     <div class="table-content">
 
-      <div class="action-content">
-        <a-form layout="inline" class="search-content">
-          <a-row :gutter="16">
-            <a-col :span="4">
-              <a-form-model-item label="仓库编码">
-                <a-select show-search allow-clear v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
-                  <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
-                    {{ item.code }}</a-select-option>
-                </a-select>
-              </a-form-model-item>
-            </a-col>
-            <a-col span="4">
-              <a-form-model-item label="签到日期" style="display: flex;">
-                <a-date-picker
-                  v-model="queryForm.signinDate"
-                  format="YYYY-MM-DD"
-                />
-              </a-form-model-item>
-            </a-col>
-            <a-col span="4">
-              <span class="table-page-search-submitButtons">
-                <a-button
-                  type="primary"
-                  @click="handleSearch"
-                  :loading="searchLoading"
-                ><a-icon type="search" />查询</a-button>
-                <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              </span>
-            </a-col>
-          </a-row>
-        </a-form>
-      </div>
+      <a-form layout="inline" class="search-content">
+        <a-row :gutter="16">
+          <a-col :span="4">
+            <a-form-model-item label="仓库编码">
+              <a-select show-search allow-clear v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
+                <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
+                  {{ item.code }}</a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col span="4">
+            <a-form-model-item label="签到日期" style="display: flex;">
+              <a-date-picker
+                v-model="queryForm.signinDate"
+                format="YYYY-MM-DD"
+              />
+            </a-form-model-item>
+          </a-col>
+          <a-col span="4">
+            <span class="table-page-search-submitButtons">
+              <a-button
+                type="primary"
+                @click="handleSearch"
+                :loading="searchLoading"
+              ><a-icon type="search" />查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+            </span>
+          </a-col>
+        </a-row>
+      </a-form>
       <a-table
         class="sign"
         :columns="signColumns"

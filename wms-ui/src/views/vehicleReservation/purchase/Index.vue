@@ -3,44 +3,41 @@
     <!-- table -->
     <div class="table-content">
 
-      <div class="action-content">
-        <a-form layout="inline" class="search-content">
-          <a-row :gutter="16">
-            <a-col :span="4">
-              <a-form-model-item label="订单PO号">
-                <a-input v-model="queryForm.poNo" placeholder="订单PO号" allow-clear/>
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-model-item label="订单行号">
-                <a-input v-model="queryForm.poItem" placeholder="订单行号" allow-clear/>
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-model-item label="供应商名称">
-                <a-input v-model="queryForm.supplier" placeholder="供应商名称" allow-clear/>
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-model-item label="料号">
-                <a-input v-model="queryForm.sapCode" placeholder="料号" allow-clear/>
-              </a-form-model-item>
-            </a-col>
-            <a-col span="4">
-              <span class="table-page-search-submitButtons" >
-                <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
-                <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-                <a @click="toggleAdvanced" style="margin-left: 8px">
-                  {{ advanced ? '收起' : '展开' }}
-                  <a-icon :type="advanced ? 'up' : 'down'"/>
-                </a>
-              </span>
-            </a-col>
-          </a-row>
-        </a-form>
-      </div>
-
-      <div class="action-content">
+      <a-form layout="inline" class="search-content">
+        <a-row :gutter="16">
+          <a-col :span="4">
+            <a-form-model-item label="订单PO号">
+              <a-input v-model="queryForm.poNo" placeholder="订单PO号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="订单行号">
+              <a-input v-model="queryForm.poItem" placeholder="订单行号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="供应商名称">
+              <a-input v-model="queryForm.supplier" placeholder="供应商名称" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="料号">
+              <a-input v-model="queryForm.sapCode" placeholder="料号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col span="4">
+            <span class="table-page-search-submitButtons" >
+              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+              <a @click="toggleAdvanced" style="margin-left: 8px">
+                {{ advanced ? '收起' : '展开' }}
+                <a-icon :type="advanced ? 'up' : 'down'"/>
+              </a>
+            </span>
+          </a-col>
+        </a-row>
+      </a-form>
+      <div class="sync-div">
         <a-button type="primary" class="m-r-8" @click="handleSync" :loading="syncLoading">
           <a-icon type="redo"></a-icon>
           同步数据
@@ -324,5 +321,8 @@ export default {
 <style lang="less" scoped>
 .not-danger-color{
   color: #aaa
+}
+.sync-div{
+  margin-bottom: 10px;
 }
 </style>

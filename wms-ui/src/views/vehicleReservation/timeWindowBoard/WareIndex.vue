@@ -1,48 +1,46 @@
 <template>
   <div class="wrapper">
     <div class="table-content">
-      <div class="action-content">
-        <a-form layout="inline" class="search-content">
-          <a-row :gutter="16">
-            <a-col :span="4">
-              <a-form-model-item label="仓库编码">
-                <a-select show-search v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
-                  <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
-                    {{ item.code }}</a-select-option>
-                </a-select>
-              </a-form-model-item>
-            </a-col>
-            <a-col span="4">
-              <span class="table-page-search-submitButtons">
-                <a-button
-                  type="primary"
-                  @click="handleSearch"
-                  :loading="searchLoading"
-                ><a-icon type="search" />查询</a-button>
-              </span>
-            </a-col>
-          </a-row>
-        </a-form>
-      </div>
-
-      <div class="content">
-        <a-row :gutter="[16,16]">
-          <a-col :key="index" v-for="(item, index) in dockList" :span="6">
-            <a-card
-              class="dock-card"
-              :title="item.dockName"
-              :headStyle="{ 'text-align': 'center','font-size': '20px',
-                            'font-weight': '800' }">
-              <div v-if="item.enable" class="stopPoint  dock-div">
-                {{ item.carNum }}
-              </div>
-              <div v-if="!item.enable" class="not-dock-div" :style="{'--background-color': item.enable ? '#ffe046c4' : '#8dd4b8b5'}">
-                {{ item.carNum }}
-              </div>
-            </a-card>
+      <a-form layout="inline" class="search-content">
+        <a-row :gutter="16">
+          <a-col :span="4">
+            <a-form-model-item label="仓库编码">
+              <a-select show-search v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
+                <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
+                  {{ item.code }}</a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col span="4">
+            <span class="table-page-search-submitButtons">
+              <a-button
+                type="primary"
+                @click="handleSearch"
+                :loading="searchLoading"
+              ><a-icon type="search" />查询</a-button>
+            </span>
           </a-col>
         </a-row>
-      </div>
+      </a-form>
+    </div>
+
+    <div class="content">
+      <a-row :gutter="[16,16]">
+        <a-col :key="index" v-for="(item, index) in dockList" :span="6">
+          <a-card
+            class="dock-card"
+            :title="item.dockName"
+            :headStyle="{ 'text-align': 'center','font-size': '20px',
+                          'font-weight': '800' }">
+            <div v-if="item.enable" class="stopPoint  dock-div">
+              {{ item.carNum }}
+            </div>
+            <div v-if="!item.enable" class="not-dock-div" :style="{'--background-color': item.enable ? '#ffe046c4' : '#8dd4b8b5'}">
+              {{ item.carNum }}
+            </div>
+          </a-card>
+        </a-col>
+      </a-row>
     </div>
   </div>
 </template>

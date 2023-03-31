@@ -1,68 +1,66 @@
 <template>
   <div class="wrapper">
     <div class="table-content">
-      <div class="action-content">
-        <a-form layout="inline" class="search-content">
-          <a-row :gutter="16">
-            <a-col :span="4">
-              <a-form-model-item label="仓库编码">
-                <a-select show-search allow-clear v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
-                  <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
-                    {{ item.code }}</a-select-option>
-                </a-select>
-              </a-form-model-item>
-            </a-col>
-            <a-col span="4">
-              <span class="table-page-search-submitButtons">
-                <a-button
-                  type="primary"
-                  @click="handleSearch"
-                  :loading="searchLoading"
-                ><a-icon type="search" />查询</a-button>
-              </span>
-            </a-col>
-          </a-row>
-        </a-form>
+      <a-form layout="inline" class="search-content">
+        <a-row :gutter="16">
+          <a-col :span="4">
+            <a-form-model-item label="仓库编码">
+              <a-select show-search allow-clear v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
+                <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
+                  {{ item.code }}</a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col span="4">
+            <span class="table-page-search-submitButtons">
+              <a-button
+                type="primary"
+                @click="handleSearch"
+                :loading="searchLoading"
+              ><a-icon type="search" />查询</a-button>
+            </span>
+          </a-col>
+        </a-row>
+      </a-form>
 
-        <a-table
-          :columns="columns"
-          :data-source="list"
-          :loading="tableLoading"
-          rowKey="dispatchId"
-          :pagination="false"
-          size="middle"
-        >
-          <template slot="dockCode" slot-scope="text">
-            <span v-if="text != null">道口 {{ text }}</span>
-          </template>
-          <template slot="reserveTypeDes" slot-scope="text, record">
-            <div>
-              <a-tag color="orange" v-if="record.reserveType===0">
-                {{ text }}
-              </a-tag>
-              <a-tag color="green" v-else-if="record.reserveType===1">
-                {{ text }}
-              </a-tag>
-              <a-tag color="blue" v-else>
-                {{ text }}
-              </a-tag>
-            </div>
-          </template>
-          <template slot="statusDes" slot-scope="text, record">
-            <div>
-              <a-tag color="orange" v-if="record.status===0">
-                {{ text }}
-              </a-tag>
-              <a-tag color="green" v-if="record.status===1">
-                {{ text }}
-              </a-tag>
-              <a-tag color="blue" v-if="record.status===2">
-                {{ text }}
-              </a-tag>
-            </div>
-          </template>
-        </a-table>
-      </div>
+      <a-table
+        :columns="columns"
+        :data-source="list"
+        :loading="tableLoading"
+        rowKey="dispatchId"
+        :pagination="false"
+        size="middle"
+      >
+        <template slot="dockCode" slot-scope="text">
+          <span v-if="text != null">道口 {{ text }}</span>
+        </template>
+        <template slot="reserveTypeDes" slot-scope="text, record">
+          <div>
+            <a-tag color="orange" v-if="record.reserveType===0">
+              {{ text }}
+            </a-tag>
+            <a-tag color="green" v-else-if="record.reserveType===1">
+              {{ text }}
+            </a-tag>
+            <a-tag color="blue" v-else>
+              {{ text }}
+            </a-tag>
+          </div>
+        </template>
+        <template slot="statusDes" slot-scope="text, record">
+          <div>
+            <a-tag color="orange" v-if="record.status===0">
+              {{ text }}
+            </a-tag>
+            <a-tag color="green" v-if="record.status===1">
+              {{ text }}
+            </a-tag>
+            <a-tag color="blue" v-if="record.status===2">
+              {{ text }}
+            </a-tag>
+          </div>
+        </template>
+      </a-table>
     </div>
   </div>
 </template>
