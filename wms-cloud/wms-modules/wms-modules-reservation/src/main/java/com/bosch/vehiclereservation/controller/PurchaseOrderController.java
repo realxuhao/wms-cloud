@@ -45,7 +45,7 @@ public class PurchaseOrderController extends BaseController {
     /**
      * 查询采购订单列表
      */
-    @RequiresPermissions("vehiclereservation:purchase:list")
+//    @RequiresPermissions("vehiclereservation:purchase:list")
     @GetMapping("/list")
     @ApiOperation("查询采购订单列表")
     public R<PageVO<PurchaseOrderVO>> list(PurchaseOrderDTO purchaseOrderDTO) {
