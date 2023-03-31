@@ -175,10 +175,12 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
                     wareMap.put(c.getWareId(), wareInfo);
                 }
             }
-            c.setWareName(wareMap.get(c.getWareId()).getName());
-            c.setWareLocation(wareMap.get(c.getWareId()).getLocation());
-            c.setWareUser(wareMap.get(c.getWareId()).getWareUser());
-            c.setWareUserPhone(wareMap.get(c.getWareId()).getWareUserPhone());
+            if (wareMap.get(c.getWareId()) != null) {
+                c.setWareName(wareMap.get(c.getWareId()).getName());
+                c.setWareLocation(wareMap.get(c.getWareId()).getLocation());
+                c.setWareUser(wareMap.get(c.getWareId()).getWareUser());
+                c.setWareUserPhone(wareMap.get(c.getWareId()).getWareUserPhone());
+            }
         });
         return supplierReserveVOS;
     }
