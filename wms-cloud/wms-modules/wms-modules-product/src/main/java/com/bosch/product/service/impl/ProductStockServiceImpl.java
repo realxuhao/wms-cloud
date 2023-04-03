@@ -1,10 +1,8 @@
 package com.bosch.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.dto.IQCChangeStatusDTO;
-import com.bosch.binin.api.domain.dto.IQCManagementQueryDTO;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
@@ -16,7 +14,6 @@ import com.bosch.product.api.domain.dto.ProductBinInDTO;
 import com.bosch.product.api.domain.dto.ProductIQCManagementQueryDTO;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.enumeration.ProductStockBinInEnum;
-import com.bosch.product.api.domain.vo.ProductReceiveVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.mapper.ProductStockMapper;
 import com.bosch.product.service.IProductStockService;
@@ -25,10 +22,8 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
-import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import org.ehcache.shadow.org.terracotta.statistics.derived.histogram.StripedHistogram;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -134,8 +129,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ProductStock binIn(ProductBinInDTO binInDTO) {
-        String qrCode = binInDTO.getQrCode();
-        String sscc = ProductQRCodeUtil.getSSCC(qrCode);
+        String sscc = binInDTO.getSscc();
         String binCode = binInDTO.getBinCode();
         String recommendBinCode = binInDTO.getRecommendBinCode();
         //校验状态是不是待上架

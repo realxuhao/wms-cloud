@@ -13,5 +13,5 @@ public class ProductBinInDTO {
 
     private String recommendBinCode;
     private String binCode;
-    private String qrCode;
+    private String sscc;
 }

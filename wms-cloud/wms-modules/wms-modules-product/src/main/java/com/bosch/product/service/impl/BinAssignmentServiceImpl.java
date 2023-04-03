@@ -105,7 +105,7 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
                 continue;
             }
             //获取所有跨编码
-            List<String> framesByType = framesVOByType.stream().map(FrameVO::getCode).collect(Collectors.toList());
+            List<String> framesByType = framesVOByType.stream().filter(item->item.getWareCode().equals(SecurityUtils.getWareCode())).map(FrameVO::getCode).collect(Collectors.toList());
             //查看list中 该物料是否有占用库位
             //根据跨类型获取所有库位
             R<List<BinVO>> listR = remoteMasterDataService.selectBinVOByFrameType(frameTypeCode);
@@ -118,7 +118,7 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
                 continue;
             }
             //筛选出存储区为成品的库位
-            binVOs = binVOs.stream().filter(item -> AreaTypeEnum.PRO.getCode().equals(item.getAreaType())).collect(Collectors.toList());
+            binVOs = binVOs.stream().filter(item -> item.getWareCode().equals(SecurityUtils.getWareCode()) && AreaTypeEnum.PRO.getCode().equals(item.getAreaType())).collect(Collectors.toList());
             //跨下所有库位编码
             List<String> allBins = binVOs.stream().map(BinVO::getCode).collect(Collectors.toList());
             //判断是否有占用库位 usedBins allBins
@@ -252,6 +252,9 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
             //R<BinVO> binResult = remoteMasterDataService.getBinInfoByCode(binCode);
             if (frameInfoByCode.isSuccess()) {
                 FrameVO frameData = frameInfoByCode.getData();
+                if (frameData != null && !frameData.getWareCode().equals(SecurityUtils.getWareCode())) {
+                    return null;
+                }
                 if (frameData != null) {
 
                     //获取跨上剩余承重，宽度

@@ -66,8 +66,6 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
         receiveMapper.updateById(productReceive);
         //上架到成品存储区
         stockService.generateStockByReceive(productReceive);
-
-
     }
 
     @Override

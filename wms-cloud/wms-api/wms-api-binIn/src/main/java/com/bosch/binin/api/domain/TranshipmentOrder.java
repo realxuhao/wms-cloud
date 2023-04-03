@@ -7,6 +7,9 @@ import lombok.Data;
 @Data
 @TableName("transhipment_order")
 public class TranshipmentOrder extends BaseEntity {
+
+    private Long id;
+
     /**
      * 转运单号
      */

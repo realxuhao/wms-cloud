@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.RemoteBinInService;
 import com.bosch.binin.api.domain.TranshipmentOrder;
-import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.product.api.domain.ProductStock;
@@ -134,8 +133,13 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
         LambdaQueryWrapper<ProductWareShift> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(ProductWareShift::getSsccNb, ssccList)
-                .eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+                .eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode())
+        .ne(ProductWareShift::getStatus,ProductWareShiftEnum.CANCEL.code());
         List<ProductWareShift> productWareShifts = this.list(queryWrapper);
+        if (CollectionUtils.isEmpty(productWareShifts)||productWareShifts.size()!=ssccList.size()){
+            throw new ServiceException("存在状态不为待发运的数据");
+
+        }
         List<TranshipmentOrder> transhipmentOrderList = new ArrayList<>();
         //获取next trans order
         R<String> nextOrderNbR = remoteBinInService.getNextOrderNb();
@@ -164,7 +168,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         this.updateBatchById(productWareShifts);
 
 
-        if (CollectionUtils.isEmpty(transhipmentOrderList)) {
+        if (!CollectionUtils.isEmpty(transhipmentOrderList)) {
             R saveR = remoteBinInService.saveBatch(transhipmentOrderList);
             if (saveR == null || !saveR.isSuccess()) {
                 throw new ServiceException("远程调用生成转运单失败，请重试");
@@ -185,6 +189,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         String sscc = ProductQRCodeUtil.getSSCC(qrCode);
         LambdaQueryWrapper<TranshipmentOrder> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TranshipmentOrder::getSsccNumber, sscc);
+        queryWrapper.eq(TranshipmentOrder::getStatus,0);
         queryWrapper.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.last("limit 1");
         TranshipmentOrder transhipmentOrder = transhipmentOrderService.getOne(queryWrapper);
@@ -223,28 +228,29 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void wareShiftBinIn(ProductBinInDTO binInDTO) {
-        String qrCode = binInDTO.getQrCode();
-        String sscc = ProductQRCodeUtil.getSSCC(qrCode);
-        String binCode = binInDTO.getBinCode();
-        String recommendBinCode = binInDTO.getRecommendBinCode();
+        String sscc = binInDTO.getSscc();
 
         //移库任务完成
         LambdaQueryWrapper<ProductWareShift> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ProductWareShift::getSsccNb, sscc);
         queryWrapper.eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.ne(ProductWareShift::getStatus, ProductWareShiftEnum.FINISH.code());
+        queryWrapper.ne(ProductWareShift::getStatus, ProductWareShiftEnum.CANCEL.code());
+
         queryWrapper.last("limit 1");
         ProductWareShift productWareShift = this.getOne(queryWrapper);
 
         if (productWareShift == null) {
             throw new ServiceException("没有该SSCC：" + sscc + "对应的任务");
         }
-        if (!productWareShift.getSsccNb().equals(ProductWareShiftEnum.WAITTING_BIN_IN.code())) {
+        if (!productWareShift.getStatus().equals(ProductWareShiftEnum.WAITTING_BIN_IN.code())) {
             throw new ServiceException("该SSCC：" + sscc + "对应的任务状态为:" + ProductWareShiftEnum.getDesc(productWareShift.getStatus()) + ",不可以上架");
         }
 
         //执行上架
         ProductStock productStock = stockService.binIn(binInDTO);
+
+
         productWareShift.setTargetPlant(productStock.getPlantNb());
         productWareShift.setTargetWareCode(productStock.getWareCode());
         productWareShift.setTargetAreaCode(productStock.getAreaCode());

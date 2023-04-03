@@ -31,15 +31,10 @@ public class TransShipController {
         return R.ok(transhipmentOrderService.getNextOrderNb());
     }
 
-    @PostMapping("/trans-ship/saveBatch")
+    @PostMapping("/saveBatch")
     public R saveBatch(@RequestBody List<TranshipmentOrder> transhipmentOrderList){
         transhipmentOrderService.saveBatch(transhipmentOrderList);
         return R.ok();
     }
-
-
-
-
-
 
 }

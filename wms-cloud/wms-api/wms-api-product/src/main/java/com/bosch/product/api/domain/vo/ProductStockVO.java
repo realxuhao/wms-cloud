@@ -35,9 +35,9 @@ public class ProductStockVO {
 
 
     /**
-     * PO号
+     * 生产订单号
      */
-    @ApiModelProperty(value = "PO号")
+    @ApiModelProperty(value = "生产订单号")
     private String fromProdOrder;
 
 
