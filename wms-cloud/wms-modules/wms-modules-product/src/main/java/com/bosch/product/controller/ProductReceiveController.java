@@ -1,6 +1,12 @@
 package com.bosch.product.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
+import com.bosch.masterdata.api.enumeration.ClassType;
+import com.bosch.product.api.domain.ProductReceive;
+import com.bosch.product.api.domain.dto.ProductReceiveDTO;
 import com.bosch.product.api.domain.dto.ProductReceiveQueryDTO;
 import com.bosch.product.api.domain.dto.ShippingPlanDTO;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
@@ -101,7 +107,7 @@ public class ProductReceiveController extends BaseController {
         if (result.isSuccess()) {
             Object data = result.getData();
             List<ProductReceiveDTO> dtoList = JSON.parseArray(JSON.toJSONString(data), ProductReceiveDTO.class);
-            if (CollectionUtils.isNotEmpty(dtoList)) {
+            if (!CollectionUtils.isEmpty(dtoList)) {
                 List<ProductReceiveDTO> dtos = dtoList.stream()
                         .filter(x ->!"ST".equals(x.getUnit()) ) // 过滤器：过滤掉unit字段为ST的数据
                         .collect(Collectors.toList()); // 收集器：将过滤后的结果收集到列表中
@@ -136,7 +142,7 @@ public class ProductReceiveController extends BaseController {
             if (result.isSuccess()) {
                 Object data = result.getData();
                 List<ProductReceiveDTO> dtoList = JSON.parseArray(JSON.toJSONString(data), ProductReceiveDTO.class);
-                if (CollectionUtils.isNotEmpty(dtoList)) {
+                if (!CollectionUtils.isEmpty(dtoList)) {
                     List<ProductReceiveDTO> dtos = dtoList.stream()
                             .filter(x ->!"ST".equals(x.getUnit()) ) // 过滤器：过滤掉unit字段为ST的数据
                             .collect(Collectors.toList()); // 收集器：将过滤后的结果收集到列表中
