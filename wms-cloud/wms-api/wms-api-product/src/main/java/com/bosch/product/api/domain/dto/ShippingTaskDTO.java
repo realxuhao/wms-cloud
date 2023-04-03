@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModel;
@@ -79,4 +80,13 @@ public class ShippingTaskDTO extends PageDomain {
      */
     @ApiModelProperty(value = "状态（2：已执行，1:执行中,0：未执行）")
     private Integer status;
+
+
+    @ApiModelProperty(value = "移库时间起")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date stockMovementDateStart;
+
+    @ApiModelProperty(value = "移库时间止")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date stockMovementDateEnd;
 }

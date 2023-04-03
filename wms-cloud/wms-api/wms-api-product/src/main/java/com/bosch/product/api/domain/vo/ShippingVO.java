@@ -91,4 +91,5 @@ public class ShippingVO {
     @ApiModelProperty(value = "打包更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date historyUpdateTime;
+
 }
