@@ -77,7 +77,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         stock.setFreezeStock((double) 0);
         stock.setAvailableStock(receive.getQuantity());
         stock.setFromProdOrder(receive.getFromProdOrder());
-        stock.setQualityStatus(QualityStatusEnums.USE.getCode());
+        stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
         stock.setProductionDate(receive.getProductionDate());
         stock.setUnit(receive.getUnit());
         stock.setBinInFlag(ProductStockBinInEnum.NONE.code());

@@ -53,7 +53,7 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
         queryWrapper.eq(ProductReceive::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.last("limit 1");
         ProductReceive productReceive = receiveMapper.selectOne(queryWrapper);
-        if (Objects.nonNull(productReceive)) {
+        if (Objects.isNull(productReceive)) {
             throw new ServiceException("该sscc码:" + sscc + "没有对应的入库任务");
         }
         if (!productReceive.getStatus().equals(ProductReceiveEnum.WAAITTING_RECEIVE.code())) {
@@ -62,6 +62,7 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
         productReceive.setWareCode(SecurityUtils.getWareCode());
         productReceive.setBatchNb(batchNb);
         productReceive.setProductionDate(productionDate);
+        productReceive.setStatus(ProductReceiveEnum.RECEIVED.code());
         receiveMapper.updateById(productReceive);
         //上架到成品存储区
         stockService.generateStockByReceive(productReceive);

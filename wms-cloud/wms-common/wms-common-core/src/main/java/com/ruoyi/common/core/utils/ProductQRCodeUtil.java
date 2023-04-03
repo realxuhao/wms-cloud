@@ -3,6 +3,7 @@ package com.ruoyi.common.core.utils;
 import com.ruoyi.common.core.exception.ServiceException;
 import io.jsonwebtoken.lang.Strings;
 import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.scheduling.support.SimpleTriggerContext;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
@@ -58,13 +59,32 @@ public class ProductQRCodeUtil {
     }
 
     public static String getSSCC(String qrCode){
-        return splitQRCode(qrCode)[2].substring(9);
+        return splitQRCode(qrCode)[2].substring(2);
     }
 
     public static void main(String[] args) {
-        System.out.println(getBatchNb("1122102510101235866\n" +
+        System.out.println(getSSCC("1122102510101235866\n" +
                 "02087169005687631725102337000096\n" +
                 "00369006391113419554\n"));
+
+        String productDate = "221025";
+        String batchNb = "101235866";
+        String s1="11"+productDate+"10"+batchNb;
+        String expireDate = "240709";
+        String quantity = "000992";
+        String s2 = "020871690056876317"+expireDate+"37"+quantity;
+        String sscc="369006391113669874";
+        String s3="00"+sscc;
+
+
+        System.out.println(s1+"\n"+s2+"\n"+s3);
+
+
+
+
+
+
+
     }
 
 
