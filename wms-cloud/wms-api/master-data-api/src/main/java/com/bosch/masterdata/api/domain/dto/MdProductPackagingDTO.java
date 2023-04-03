@@ -1,5 +1,6 @@
 package com.bosch.masterdata.api.domain.dto;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -16,6 +17,7 @@ public class MdProductPackagingDTO extends PageDomain {
     /**
      * id
      */
+    @ExcelIgnore
     @TableId(type = IdType.AUTO)
     private Integer id;
 
@@ -23,16 +25,19 @@ public class MdProductPackagingDTO extends PageDomain {
     /**
      * 状态（1：启用，0：停用）
      */
+    @ExcelIgnore
     private Integer status;
 
     /**
      * 备注
      */
+    @ExcelIgnore
     private String remark;
 
     /**
      * 删除标记1：删除，0:可用
      */
+    @ExcelIgnore
     private Integer deleteFlag;
 
     /**
@@ -59,5 +64,6 @@ public class MdProductPackagingDTO extends PageDomain {
     @ExcelProperty(value = "最小包装数量/托")
     private String minQuantity;
 
-
+    @ExcelProperty(value = "成品名称")
+    private String productName;
 }

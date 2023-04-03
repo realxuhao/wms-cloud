@@ -27,6 +27,11 @@ public class FileFallbackFactory implements FileService {
     }
 
     @Override
+    public <T> R<List<T>> productDataImport(MultipartFile file, String className) {
+        return R.fail("成品文件服务调用失败");
+    }
+
+    @Override
     public <T> R<List<T>> masterDataImport(MultipartFile file, String className) {
         return R.fail("主数据文件服务调用失败");
     }

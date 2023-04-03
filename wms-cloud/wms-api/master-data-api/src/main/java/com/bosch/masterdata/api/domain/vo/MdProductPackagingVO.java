@@ -55,5 +55,5 @@ public class MdProductPackagingVO extends BaseEntity {
      */
     private String minQuantity;
 
-
+    private String productName;
 }

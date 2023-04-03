@@ -1,7 +1,9 @@
 package com.bosch.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
 import com.bosch.product.api.domain.ProductReceive;
+import com.bosch.product.api.domain.dto.ProductReceiveDTO;
 import com.bosch.product.api.domain.dto.ProductReceiveQueryDTO;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
 
@@ -24,4 +26,12 @@ public interface IProductReceiveService extends IService<ProductReceive> {
 
 
     ProductReceive getProductReceiveVO(String sscc);
+
+    /**
+     * 查询信息是否重复
+     *
+     * @param dtos
+     * @return
+     */
+    boolean validList(List<ProductReceiveDTO> dtos);
 }
