@@ -1,3 +1,3 @@
 export default {
-  appName: process.env.VUE_APP_APP_NAME || 'WMS仓储管理'
+  appName: process.env.VUE_APP_APP_NAME || '仓库可视化管理平台'
 }

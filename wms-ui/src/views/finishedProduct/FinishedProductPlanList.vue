@@ -20,14 +20,13 @@
             </a-form-item>
           </a-col>
           <a-col :span="8">
-            <a-form-item label="stock movement 移库日期">
+            <a-form-item label="移库日期">
               <a-range-picker
                 format="YYYY-MM-DD"
 
                 v-model="queryForm.date"
               />
             </a-form-item>
-
           </a-col>
           <template v-if="advanced">
             <a-col :span="4">
@@ -97,7 +96,7 @@
             </a-button>
           </a-upload>
         </a-tooltip>
-        <a-button type="primary" icon="plus" @click="handleGenTask" :loading="genTaskLoading">
+        <a-button type="primary" icon="logout" @click="handleGenTask" :loading="genTaskLoading">
           生成打包计划
         </a-button>
       </div>
@@ -110,19 +109,7 @@
         size="middle"
         :scroll="tableScroll"
       >
-        <template slot="checkType" slot-scope="text">
-          <div >
-            <a-tag color="orange" v-if="text===0">
-              称重
-            </a-tag>
-            <a-tag color="blue" v-if="text===1">
-              数数
-            </a-tag>
-            <a-tag color="#87d068" v-if="text===2">
-              免检
-            </a-tag>
-          </div>
-        </template>
+
         <template slot="status" slot-scope="text">
           <div >
             <a-tag color="orange" v-if="text===0">
@@ -141,7 +128,7 @@
               cancel-text="取消"
               @confirm="handleDelete(record)"
             >
-              <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
+              <a :disabled="record.status ===1" class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
           </div>
         </template>
@@ -187,53 +174,10 @@ const columns = [
     width: 120
   },
   {
-    title: 'stock movement 移库日期',
+    title: '移库日期',
     key: 'stockMovementDate',
     dataIndex: 'stockMovementDate',
     width: 140
-  },
-  {
-    title: 'Country',
-    key: 'country',
-    dataIndex: 'country',
-    width: 140
-  },
-  {
-    title: 'Prod-order',
-    key: 'prodOrder',
-    dataIndex: 'prodOrder',
-    width: 140
-  },
-  {
-    title: 'Qty',
-    key: 'qty',
-    dataIndex: 'qty',
-    width: 120
-  },
-  {
-    title: '是否拆托',
-    key: 'isDisassembled',
-    dataIndex: 'isDisassembled',
-    width: 120
-  },
-  {
-    title: 'TR',
-    key: 'tr',
-    dataIndex: 'tr',
-    width: 80
-  },
-  {
-    title: '状态',
-    key: 'status',
-    dataIndex: 'status',
-    width: 120,
-    scopedSlots: { customRender: 'status' }
-  },
-  {
-    title: 'SAP Code',
-    key: 'sapCode',
-    dataIndex: 'sapCode',
-    width: 120
   },
   {
     title: 'Pallet Quantity',
@@ -245,8 +189,52 @@ const columns = [
     title: 'after packing',
     key: 'afterPacking',
     dataIndex: 'afterPacking',
-    width: 120
+    width: 100
   },
+  {
+    title: 'Country',
+    key: 'country',
+    dataIndex: 'country',
+    width: 80
+  },
+  {
+    title: 'Prod-order',
+    key: 'prodOrder',
+    dataIndex: 'prodOrder',
+    width: 100
+  },
+  {
+    title: 'Qty',
+    key: 'qty',
+    dataIndex: 'qty',
+    width: 70
+  },
+  {
+    title: '是否拆托',
+    key: 'isDisassembled',
+    dataIndex: 'isDisassembled',
+    width: 80
+  },
+  {
+    title: 'TR',
+    key: 'tr',
+    dataIndex: 'tr',
+    width: 80
+  },
+  {
+    title: '状态',
+    key: 'status',
+    dataIndex: 'status',
+    width: 80,
+    scopedSlots: { customRender: 'status' }
+  },
+  {
+    title: 'SAP Code',
+    key: 'sapCode',
+    dataIndex: 'sapCode',
+    width: 100
+  },
+
   {
     title: '创建人',
     key: 'createBy',
@@ -257,7 +245,7 @@ const columns = [
     title: '创建时间',
     key: 'createTime',
     dataIndex: 'createTime',
-    width: 200
+    width: 180
   },
   {
     title: '操作',

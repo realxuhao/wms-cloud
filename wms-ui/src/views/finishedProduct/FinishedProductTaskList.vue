@@ -14,6 +14,14 @@
               <a-input v-model="queryForm.etoPo" placeholder="ETO PO" allow-clear/>
             </a-form-model-item>
           </a-col>
+          <a-col :span="8">
+            <a-form-item label="移库日期">
+              <a-range-picker
+                format="YYYY-MM-DD"
+                v-model="queryForm.date"
+              />
+            </a-form-item>
+          </a-col>
           <template v-if="advanced">
 
           </template>
@@ -46,7 +54,10 @@
         </template>
 
         <template slot="rateOfProgress" slot-scope="text">
-          <a-progress :percent="text"/>
+          <div class="progress-box">
+            <a-progress :percent="text"/>
+          </div>
+
         </template>
 
         <template slot="action" slot-scope="text, record">
@@ -86,6 +97,7 @@
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
 import { colorMap } from '@/utils/color'
+import _ from 'lodash'
 
 const columns = [
   {
@@ -107,7 +119,7 @@ const columns = [
     width: 120
   },
   {
-    title: 'stock movement 移库日期',
+    title: '移库日期',
     key: 'stockMovementDate',
     dataIndex: 'stockMovementDate',
     width: 120
@@ -116,20 +128,19 @@ const columns = [
     title: 'Country',
     key: 'country',
     dataIndex: 'country',
-    width: 120
+    width: 80
   },
   {
     title: 'Prod-order',
     key: 'prodOrder',
     dataIndex: 'prodOrder',
-    width: 120
+    width: 100
   },
-
   {
     title: 'SAP Code',
     key: 'sapCode',
     dataIndex: 'sapCode',
-    width: 120
+    width: 100
   },
   {
     title: 'Pallet Quantity',
@@ -141,13 +152,13 @@ const columns = [
     title: 'after packing',
     key: 'afterPacking',
     dataIndex: 'afterPacking',
-    width: 120
+    width: 100
   },
   {
     title: '状态',
     key: 'status',
     dataIndex: 'status',
-    width: 120,
+    width: 80,
     scopedSlots: { customRender: 'status' }
   },
   {
@@ -191,7 +202,8 @@ const columns = [
 const queryFormAttr = () => {
   return {
     shippingMark: '',
-    etoPo: ''
+    etoPo: '',
+    date: []
   }
 }
 const status = {
@@ -237,9 +249,14 @@ export default {
       try {
         this.tableLoading = true
 
+        const { date = [] } = this.queryForm
+        const stockMovementDateStart = date.length > 0 ? date[0].format('YYYY-MM-DD 00:00:00') : undefined
+        const stockMovementDateEnd = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:59') : undefined
+        const options = { ..._.omit(this.queryForm, ['date']), stockMovementDateStart, stockMovementDateEnd }
+
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('finishedProduct/getDashboard', this.queryForm)
+        } = await this.$store.dispatch('finishedProduct/getDashboard', options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -284,4 +301,8 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.progress-box{
+  padding-right: 12px ;
+  box-sizing: border-box;
+}
 </style>
