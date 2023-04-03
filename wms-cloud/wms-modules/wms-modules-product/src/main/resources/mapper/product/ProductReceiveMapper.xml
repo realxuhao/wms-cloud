@@ -64,5 +64,11 @@
 
     </select>
 
-
+    <select id="validateRecord" resultType="integer" parameterType="ProductReceiveDTO">
+        SELECT COUNT(*) FROM product_receive
+        WHERE delete_flag='0' and (sscc_number) IN
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+            (#{item.ssccNumber})
+        </foreach>
+    </select>
 </mapper>

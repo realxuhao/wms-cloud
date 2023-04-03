@@ -23,6 +23,9 @@ public interface FileService {
     @PostMapping(value = "/file/packagingDataImport",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public <T> R<List<T>> packagingDataImport(@RequestPart(value = "file") MultipartFile file, @RequestParam(value = "className") String className);
 
+    @PostMapping(value = "/file/productDataImport",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public <T> R<List<T>> productDataImport(@RequestPart(value = "file") MultipartFile file, @RequestParam(value = "className") String className);
+
     @PostMapping(value = "/file/masterDataImport",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public <T> R<List<T>> masterDataImport(@RequestPart(value = "file") MultipartFile file, @RequestParam(value = "className") String className);
 

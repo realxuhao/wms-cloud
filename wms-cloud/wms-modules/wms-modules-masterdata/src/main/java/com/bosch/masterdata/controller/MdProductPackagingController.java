@@ -2,8 +2,11 @@ package com.bosch.masterdata.controller;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
+import com.bosch.masterdata.api.domain.Ecn;
 import com.bosch.masterdata.api.domain.ProductPackaging;
+import com.bosch.masterdata.api.domain.dto.EcnDTO;
 import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
 import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
@@ -12,12 +15,15 @@ import com.bosch.masterdata.service.IMdProductPackagingService;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -105,7 +111,7 @@ public class MdProductPackagingController extends BaseController {
                 if (valid) {
                     return R.fail(400, "存在重复数据");
                 } else {
-                    //校验
+
                     List<ProductPackaging> dos = BeanConverUtil.converList(list, ProductPackaging.class);
                     mdProductPackagingService.saveBatch(dos);
                 }
@@ -118,45 +124,45 @@ public class MdProductPackagingController extends BaseController {
         }
     }
 
-//    /**
-//     * 批量更新
-//     */
-//    @ApiOperation("批量更新")
-//    @PostMapping(value = "/saveBatch", headers = "content-type=multipart/form-data")
-//    @Transactional(rollbackFor = Exception.class)
-//    public R saveBatch(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
-//
-//        try {
-//            //解析文件服务
-//            R result = fileService.masterDataImport(file, ClassType.ECNDTO.getDesc());
-//            if (result.isSuccess()) {
-//                Object data = result.getData();
-//                List<EcnDTO> ecnDTOList = JSON.parseArray(JSON.toJSONString(data), EcnDTO.class);
-//                if (CollectionUtils.isNotEmpty(ecnDTOList)) {
-//                    //校验
-//                    mdProductPackagingService.validData(ecnDTOList);
-//                    //转换DO
-//                    List<Ecn> nmds = BeanConverUtil.converList(ecnDTOList, Ecn.class);
-//                    nmds.forEach(r -> {
-//                        LambdaUpdateWrapper<Ecn> wrapper = new LambdaUpdateWrapper<Ecn>();
-//                        wrapper.eq(Ecn::getMaterialCode, r.getMaterialCode());
-//                        wrapper.eq(Ecn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-//                        boolean update = mdProductPackagingService.update(r, wrapper);
-//                        if (!update) {
-////                            r.setCreateBy(SecurityUtils.getUsername());
-////                            r.setCreateTime(DateUtils.getNowDate());
-//                            mdProductPackagingService.save(r);
-//                        }
-//                    });
-//                }
-//                return R.ok("导入成功");
-//            } else {
-//                return R.fail(result.getMsg());
-//            }
-//        } catch (Exception e) {
-//            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
-//            return R.fail(e.getMessage());
-//        }
-//
-//    }
+    /**
+     * 批量更新
+     */
+    @ApiOperation("批量更新")
+    @PostMapping(value = "/saveBatch", headers = "content-type=multipart/form-data")
+    @Transactional(rollbackFor = Exception.class)
+    public R saveBatch(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
+
+        try {
+            //解析文件服务
+            R result = fileService.masterDataImport(file, ClassType.MdProductPackagingDTO.getDesc());
+            if (result.isSuccess()) {
+                Object data = result.getData();
+                List<MdProductPackagingDTO> list = JSON.parseArray(JSON.toJSONString(data), MdProductPackagingDTO.class);
+                if (CollectionUtils.isNotEmpty(list)) {
+                    //校验
+                    boolean valid = mdProductPackagingService.validMdProductPackagingList(list);
+                    //转换DO
+                    List<ProductPackaging> dos = BeanConverUtil.converList(list, ProductPackaging.class);
+                    dos.forEach(r -> {
+                        LambdaUpdateWrapper<ProductPackaging> wrapper = new LambdaUpdateWrapper<ProductPackaging>();
+                        wrapper.eq(ProductPackaging::getProductNo, r.getProductNo());
+                        wrapper.eq(ProductPackaging::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+                        boolean update = mdProductPackagingService.update(r, wrapper);
+                        if (!update) {
+//                            r.setCreateBy(SecurityUtils.getUsername());
+//                            r.setCreateTime(DateUtils.getNowDate());
+                            mdProductPackagingService.save(r);
+                        }
+                    });
+                }
+                return R.ok("导入成功");
+            } else {
+                return R.fail(result.getMsg());
+            }
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            return R.fail(e.getMessage());
+        }
+
+    }
 }

@@ -1,7 +1,9 @@
 package com.bosch.product.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
 import com.bosch.product.api.domain.ProductReceive;
+import com.bosch.product.api.domain.dto.ProductReceiveDTO;
 import com.bosch.product.api.domain.dto.ProductReceiveQueryDTO;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -19,6 +21,11 @@ public interface ProductReceiveMapper extends BaseMapper<ProductReceive> {
 
     List<ProductReceiveVO> list(ProductReceiveQueryDTO queryDTO);
 
-
+    /**
+     * 验证是否重复
+     * @param list
+     * @return
+     */
+    public Integer validateRecord(List<ProductReceiveDTO> list);
 
 }

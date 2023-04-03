@@ -15,6 +15,7 @@ import com.bosch.storagein.api.domain.MaterialReceive;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.ApiOperation;
+import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,7 +152,31 @@ public class SysFileController {
             }
             return R.fail("解析文件失败,文件类型不匹配");
         }
+    }
+    /**
+     * productDataImport
+     *
+     * @param file 文件信息
+     * @return 结果
+     */
+    @ApiOperation("productDataImport")
+    @PostMapping(value = "/productDataImport")
+    public <T> R<List<T>> productDataImport(@RequestPart(value = "file") MultipartFile file, @RequestParam(value =
+            "className") String className) throws Exception {
+        try {
 
+            Class<?> TClass = Class.forName("com.bosch.product.api.domain.dto." + className);
+            List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass,className);
+            if(CollectionUtils.isEmpty(read)){
+                return R.fail("excel中无数据");
+            }
+            return R.ok(read);
+        } catch (Exception e) {
+            if(e.getMessage()=="excel模板不正确"){
+                return R.fail(e.getMessage());
+            }
+            return R.fail("解析文件失败,文件类型不匹配");
+        }
     }
     /**
      * 入库解析csv文件

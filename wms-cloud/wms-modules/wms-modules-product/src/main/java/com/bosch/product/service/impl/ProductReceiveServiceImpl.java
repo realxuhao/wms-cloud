@@ -2,7 +2,9 @@ package com.bosch.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
 import com.bosch.product.api.domain.ProductReceive;
+import com.bosch.product.api.domain.dto.ProductReceiveDTO;
 import com.bosch.product.api.domain.dto.ProductReceiveQueryDTO;
 import com.bosch.product.api.domain.enumeration.ProductReceiveEnum;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
@@ -92,5 +94,9 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
         queryWrapper.eq(ProductReceive::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
         queryWrapper.last("limit 1");
         return this.getOne(queryWrapper);
+    }
+    @Override
+    public boolean validList(List<ProductReceiveDTO> dtos) {
+        return receiveMapper.validateRecord(dtos) > 0;
     }
 }
