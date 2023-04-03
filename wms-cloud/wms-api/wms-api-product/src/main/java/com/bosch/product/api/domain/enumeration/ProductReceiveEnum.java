@@ -11,7 +11,7 @@ public enum ProductReceiveEnum {
 
     WAAITTING_RECEIVE(0,"待入库"),
 
-    RECEIVED(0, "已入库");
+    RECEIVED(1, "已入库");
 
 
     private Integer code;

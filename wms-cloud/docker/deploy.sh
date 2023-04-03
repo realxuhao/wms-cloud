@@ -34,22 +34,22 @@ base(){
 
 # 启动程序模块（必须）
 modules-up(){
-	docker-compose up -d  wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation
+	docker-compose up -d  wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation product
 }
 
 # 关闭所有环境/模块
 modules-stop(){
-	docker-compose stop wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation
+	docker-compose stop wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation product
 }
 
 # 删除所有环境/模块
 modules-rm(){
-	docker-compose rm wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation
+	docker-compose rm wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation product
 }
 
 # 模块编译
 modules-build(){
-	docker-compose build wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation
+	docker-compose build wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation product
 }
 
 # 根据输入参数，选择执行对应方法，不输入则执行使用说明

@@ -111,6 +111,8 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
         wareShift.setStatus(ProductWareShiftEnum.CANCEL.code());
 
+        this.updateById(wareShift);
+
         //回滚库存
         LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ProductStock::getSsccNumber, wareShift.getSsccNb());

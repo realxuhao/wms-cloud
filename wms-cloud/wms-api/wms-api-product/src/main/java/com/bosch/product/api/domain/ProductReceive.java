@@ -18,7 +18,7 @@ import java.util.Date;
  **/
 
 @Data
-@TableName("bi_in_product")
+@TableName("product_receive")
 public class ProductReceive extends BaseEntity {
     /**
      * id

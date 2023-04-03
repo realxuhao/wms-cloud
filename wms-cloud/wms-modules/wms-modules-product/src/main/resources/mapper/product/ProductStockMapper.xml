@@ -5,11 +5,11 @@
 <mapper namespace="com.bosch.product.mapper.ProductStockMapper">
 
 
-    <resultMap type="ProductStockVO" id="StockVOResult">
+    <resultMap type="com.bosch.product.api.domain.vo.ProductStockVO" id="StockVOResult">
         <result property="id" column="id"/>
         <result property="ssccNumber" column="sscc_number"/>
         <result property="plantNb" column="plant_nb"/>
-        <result property="fromProdrder" column="from_prod_order"/>
+        <result property="fromProdOrder" column="from_prod_order"/>
         <result property="wareCode" column="ware_code"/>
         <result property="areaCode" column="area_code"/>
         <result property="frameCode" column="frame_code"/>
@@ -95,7 +95,7 @@
         <if test="startCreateTime != null and endCreateTime != null">and str_to_date(ps.create_time, '%d/%m/%y') between
             #{startCreateTime} and #{endCreateTime}
         </if>
-        order by update_time desc,create_time desc
+        order by ps.update_time desc,ps.create_time desc
 
     </select>
     <select id="selectIQCManagementList" resultType="com.bosch.product.api.domain.vo.ProductStockVO">

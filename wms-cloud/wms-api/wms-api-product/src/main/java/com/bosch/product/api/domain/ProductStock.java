@@ -1,6 +1,7 @@
 package com.bosch.product.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ruoyi.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,8 +14,8 @@ import java.util.Date;
  * @create: 2023-03-29 15:02
  **/
 @Data
-@TableName("stock_product")
-public class ProductStock {
+@TableName("product_stock")
+public class ProductStock extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
