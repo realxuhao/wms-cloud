@@ -393,6 +393,9 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
             iqcQueryWrapper.in(IQCSamplePlan::getSsccNb, ssccList);
             iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.FINISH.code());
+            iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.CANCEL.code());
+
             List<IQCSamplePlan> samplePlanList = samplePlanService.list(iqcQueryWrapper);
             if (!CollectionUtils.isEmpty(samplePlanList)) {
 
@@ -419,7 +422,11 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                 uwIQC.in(WareShift::getSsccNb, iqcSSCCList);
                 uwIQC.eq(WareShift::getStatus, queryStatus);
                 uwIQC.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-                uwIQC.eq(WareShift::getTargetWareCode, SecurityUtils.getWareCode());
+                uwIQC.ne(WareShift::getStatus,KanbanStatusEnum.FINISH.value());
+                uwIQC.ne(WareShift::getStatus,KanbanStatusEnum.CANCEL.value());
+                uwIQC.ne(WareShift::getStatus,KanbanStatusEnum.LINE_RECEIVED.value());
+
+//                uwIQC.eq(WareShift::getTargetWareCode, SecurityUtils.getWareCode());
                 wareShiftMapper.update(wareShiftIQC, uwIQC);
 
                 //  其余的更新为待上架

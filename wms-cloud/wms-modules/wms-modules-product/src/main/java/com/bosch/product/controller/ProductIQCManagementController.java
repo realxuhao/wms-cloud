@@ -24,7 +24,7 @@ import java.util.List;
  * @create: 2022-11-02 14:43
  **/
 @RestController
-@Api(tags = "质检管理")
+@Api(tags = "成品质检管理")
 @RequestMapping("/IQCManagement")
 public class ProductIQCManagementController extends BaseController {
 

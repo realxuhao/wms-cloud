@@ -51,4 +51,6 @@ public interface IProductStockService extends IService<ProductStock> {
     boolean validateStatus(Long id);
 
     Integer changeStatus(IQCChangeStatusDTO iqcChangeStatusDTO);
+
+    ProductStock binInToArea(ProductBinInDTO binInDTO);
 }

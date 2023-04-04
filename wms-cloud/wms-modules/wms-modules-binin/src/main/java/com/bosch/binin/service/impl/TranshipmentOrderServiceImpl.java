@@ -52,6 +52,7 @@ public class TranshipmentOrderServiceImpl extends ServiceImpl<TranshipmentOrderM
         LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
         qw.eq(TranshipmentOrder::getSsccNumber, sscc);
         qw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.orderByDesc(TranshipmentOrder::getOrderNumber);
         qw.last("limit 1");
         TranshipmentOrder transhipmentOrder = transhipmentOrderMapper.selectOne(qw);
         if (transhipmentOrder == null) {

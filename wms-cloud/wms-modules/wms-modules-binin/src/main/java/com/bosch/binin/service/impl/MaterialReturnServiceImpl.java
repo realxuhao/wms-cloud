@@ -30,6 +30,7 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
@@ -89,7 +90,7 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         }
         boolean finalUnquanlified = unquanlified;
         materialReturnList.stream().forEach(item -> {
-            item.setType(finalUnquanlified ? MaterialTransTypeEnum.NORMAL.code() : MaterialTransTypeEnum.AB_NORMAL.code());
+            item.setType(finalUnquanlified ? MaterialTransTypeEnum.AB_NORMAL.code() : MaterialTransTypeEnum.NORMAL.code());
             item.setStatus(MaterialReturnStatusEnum.WAITING_BIN_IN.value());
             item.setWareCode(confirmDTO.getWareCode());
             item.setAreaCode(confirmDTO.getAreaCode());
@@ -172,7 +173,8 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
     }
 
     @Override
-    public BinInVO performBinIn(ManualBinInDTO binInDTO) {
+    @Transactional(rollbackFor = Exception.class)
+    public void performBinIn(ManualBinInDTO binInDTO) {
         String mesBarCode = binInDTO.getMesBarCode();
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
@@ -248,7 +250,6 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         }
         materialReturn.setStatus(MaterialReturnStatusEnum.FINISH.value());
         this.updateById(materialReturn);
-        return binInService.getByMesBarCode(binInDTO.getMesBarCode());
     }
 }
 
