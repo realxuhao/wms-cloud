@@ -178,10 +178,6 @@ public class MaterialBinServiceImpl extends ServiceImpl<MaterialBinMapper, Mater
         Map<String, Long> materialsMap = getTypeMap(materials, 2);
         //绑定id
         dtos.forEach(x -> {
-//            if (framesMap.get(x.getFrameCode())==null){
-//                throw new ServiceException("包含不存在的跨编码");
-//            }
-//            x.setFrameId(framesMap.get(x.getFrameCode()));
             if (materialsMap.get(x.getMaterialCode()) == null) {
                 throw new ServiceException("包含不存在的物料代码");
             }
@@ -192,10 +188,7 @@ public class MaterialBinServiceImpl extends ServiceImpl<MaterialBinMapper, Mater
 
     @Override
     public List<MaterialBinVO> getListByMaterial(String materialCode) {
-//        LambdaQueryWrapper<MaterialBin> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-//        lambdaQueryWrapper.eq(MaterialBin::getMaterialCode, materialCode);
-//        List<MaterialBin> materialBins = materialBinMapper.selectList(lambdaQueryWrapper);
-//        List<MaterialBinVO> materialBinVOS = BeanConverUtil.converList(materialBins, MaterialBinVO.class);
+
         List<MaterialBinVO> materialBinVOS = materialBinMapper.selectByWareCode(materialCode,
                 SecurityUtils.getWareCode());
         return materialBinVOS;
@@ -203,10 +196,7 @@ public class MaterialBinServiceImpl extends ServiceImpl<MaterialBinMapper, Mater
 
     @Override
     public List<MaterialBinVO> getListByMaterial(String materialCode,String wareCode) {
-//        LambdaQueryWrapper<MaterialBin> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-//        lambdaQueryWrapper.eq(MaterialBin::getMaterialCode, materialCode);
-//        List<MaterialBin> materialBins = materialBinMapper.selectList(lambdaQueryWrapper);
-//        List<MaterialBinVO> materialBinVOS = BeanConverUtil.converList(materialBins, MaterialBinVO.class);
+
         List<MaterialBinVO> materialBinVOS = materialBinMapper.selectByWareCode(materialCode,
                 wareCode);
         return materialBinVOS;

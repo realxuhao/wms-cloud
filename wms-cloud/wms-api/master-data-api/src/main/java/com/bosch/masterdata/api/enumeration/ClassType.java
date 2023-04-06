@@ -24,7 +24,8 @@ public enum ClassType {
     IQCDTO("IQCDTO", new ArrayList<String>(Arrays.asList("PlantNb","SSCCNumber","FinalSAPStatus","SAPProcessStatus","Identification"))),
     MdProductPackagingDTO("MdProductPackagingDTO", new ArrayList<String>(Arrays.asList("成品料号","成品名称","Cell","总数量/托","最小包装数量/托"))),
     PRODUCTRECEIVEDTO("ProductReceiveDTO", new ArrayList<String>(Arrays.asList("PlantNb","SSCCNumber","MaterialNb","ExpiryDate","Quantity","Unit","FromProdOrder"))),
-    SHIPPINGPLANDTO("ShippingPlanImpDTO", new ArrayList<String>(Arrays.asList("Shipping  Mark","ETO PO","ETO PLANT","stock movement    移库日期","Country","Prod-order","Qty","是否拆托","TR","SAP Code","Pallet Quantity","after packing")));
+    SHIPPINGPLANDTO("ShippingPlanImpDTO", new ArrayList<String>(Arrays.asList("Shipping  Mark","ETO PO","ETO PLANT","stock movement    移库日期","Country","Prod-order","Qty","是否拆托","TR","SAP Code","Pallet Quantity","after packing"))),
+    PRODUCTFRAMEDTO("ProductFrameDTO", new ArrayList<String>(Arrays.asList("成品代码","优先级","可用跨编码","备注")));
     private String desc;
     private List<String> strings;
 

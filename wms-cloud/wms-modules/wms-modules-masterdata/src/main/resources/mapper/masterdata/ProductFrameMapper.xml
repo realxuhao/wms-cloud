@@ -27,4 +27,79 @@
         <if test="wareCode != null  and wareCode != ''">AND w.code LIKE   concat('%', #{wareCode}, '%')</if>
         )
     </select>
+
+    <insert id="insertProductFrame" parameterType="ProductFrame" useGeneratedKeys="true" keyProperty="id">
+        insert into md_product_frame
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="materialId != null and materialId != 0">material_id,</if>
+            <if test="frameTypeCode != null and frameTypeCode != ''">frame_type_code,</if>
+            <if test="priorityLevel != null and priorityLevel != ''">priority_level,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="updateBy != null and updateBy != ''">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
+            <if test="remark != null and remark != '' ">remark,</if>
+            <if test="materialCode != null and materialCode != ''">material_code,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="materialId != null and materialId != 0">#{materialId},</if>
+            <if test="frameTypeCode != null and frameTypeCode != ''">#{frameTypeCode},</if>
+            <if test="priorityLevel != null and priorityLevel != ''">#{priorityLevel},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="updateBy != null and updateBy != ''">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="remark != null and remark != ''">#{remark},</if>
+            <if test="materialCode != null and materialCode != ''">#{materialCode},</if>
+        </trim>
+    </insert>
+
+    <select id="selectProductFrameList" parameterType="ProductFrameDTO" resultType="com.bosch.masterdata.api.domain.vo.ProductFrameVO">
+        SELECT
+        mf.id AS id,
+        mf.frame_type_code AS frame_type_code,
+        mf.material_id AS material_id,
+        mf.priority_level AS priority_level,
+        mf.create_time AS create_time,
+        m.product_no as material_code,
+        m.product_name as material_name,
+        m.id as material_id
+        FROM
+        md_product_frame mf
+        LEFT JOIN md_product_packaging m ON mf.material_id = m.id
+        <where>
+            <if test="materialId != null and materialId != 0">and mf.material_id = #{materialId}</if>
+            <if test="priorityLevel != null and priorityLevel != ''">and mf.priority_level = #{priorityLevel}</if>
+            <if test="frameTypeCode != null and frameTypeCode != ''">and mf.frame_type_code = #{frameTypeCode}</if>
+            <if test="materialCode != null and materialCode != ''">and m.code = #{materialCode}</if>
+            <if test="id != null">and mf.id = #{id}</if>
+        </where>
+    </select>
+
+    <update id="updateProductFrame" parameterType="ProductFrame">
+        update md_product_frame
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="materialId != null and materialId != 0">material_id = #{materialId},</if>
+            <if test="frameTypeCode != null and frameTypeCode != ''">frame_type_code = #{frameTypeCode},</if>
+            <if test="priorityLevel != null and priorityLevel != '' ">priority_level = #{priorityLevel},</if>
+            <if test="createBy != null and createBy != '' ">create_by = #{createBy},</if>
+            <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="materialCode != null and materialCode != ''">material_code = #{materialCode},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteProductFrameByIds" parameterType="String">
+        delete from md_product_frame where id in
+        <foreach collection="array" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
 </mapper>
