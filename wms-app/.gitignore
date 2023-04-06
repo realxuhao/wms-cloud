@@ -4,3 +4,5 @@ unpackage/dist
 unpackage/release
 unpackage/resources
 node_modules/
+config.js
+package-lock.json

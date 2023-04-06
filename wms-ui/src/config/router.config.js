@@ -118,6 +118,13 @@ export const asyncRouterMap = [
             component: () => import('@/views/masterData/fsmp/FSMPRule.vue'),
             meta: { title: 'FSMP抽样', permission: [] },
             hideChildrenInMenu: true
+          },
+          {
+            path: '/product/dispatch-rule',
+            name: 'productDispatchRule',
+            component: () => import('@/views/masterData/product/DispatchRule'),
+            meta: { title: '成品上架规则', permission: [] },
+            hideChildrenInMenu: true
           }
         ]
       },

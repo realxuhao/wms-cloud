@@ -21,7 +21,7 @@ public class ProductPackaging extends BaseEntity {
      * id
      */
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
 
     /**

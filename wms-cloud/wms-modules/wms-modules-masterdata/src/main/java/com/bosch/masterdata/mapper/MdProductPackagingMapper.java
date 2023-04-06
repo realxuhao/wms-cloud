@@ -20,7 +20,7 @@ public interface MdProductPackagingMapper extends BaseMapper<ProductPackaging> {
      * @param
      * @return
      */
-    public List<MdProductPackagingVO> selectList(MdProductPackagingDTO dto );
+    public List<MdProductPackagingVO> selectListByDTO(MdProductPackagingDTO dto );
 
 
     /**

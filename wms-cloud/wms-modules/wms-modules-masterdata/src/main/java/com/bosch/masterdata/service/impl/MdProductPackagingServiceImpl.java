@@ -31,7 +31,7 @@ public class MdProductPackagingServiceImpl extends ServiceImpl<MdProductPackagin
 
     @Override
     public List<MdProductPackagingVO> selectList(MdProductPackagingDTO dto) {
-        List<MdProductPackagingVO> vos = mdProductPackagingMapper.selectList(dto);
+        List<MdProductPackagingVO> vos = mdProductPackagingMapper.selectListByDTO(dto);
         return vos;
     }
 
