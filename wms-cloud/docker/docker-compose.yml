@@ -169,6 +169,7 @@ services:
       - wms-mysql
     environment:
       NACOS_HOST: wms-nacos
+      TZ: Asia/Shanghai
   storage-in:
     container_name: storage-in
     build:
