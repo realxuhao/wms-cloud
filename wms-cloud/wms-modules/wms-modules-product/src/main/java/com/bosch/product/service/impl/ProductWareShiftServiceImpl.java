@@ -247,8 +247,14 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
             throw new ServiceException("该SSCC：" + sscc + "对应的任务状态为:" + ProductWareShiftEnum.getDesc(productWareShift.getStatus()) + ",不可以上架");
         }
 
-        //执行上架
-        ProductStock productStock = stockService.binIn(binInDTO);
+        ProductStock productStock;
+        // 上架到区域
+        if (StringUtils.isNotEmpty(binInDTO.getAreaCode())){
+            productStock = stockService.binInToArea(binInDTO);
+        }else {
+            //执行上架到库位
+            productStock = stockService.binIn(binInDTO);
+        }
 
 
         productWareShift.setTargetPlant(productStock.getPlantNb());

@@ -66,6 +66,7 @@ public class ProductReceiveController extends BaseController {
     }
 
     @GetMapping(value = "/getOne/{qrCode}")
+    @ApiOperation("获取单个收货信息")
     public R<ProductReceiveVO> getOne(@PathVariable("qrCode") String qrCode) {
         String sscc = ProductQRCodeUtil.getSSCC(qrCode);
         ProductReceiveQueryDTO queryDTO = new ProductReceiveQueryDTO();

@@ -158,6 +158,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void modifySscc(IQCSamplePlanDTO dto) {
         if (Objects.isNull(dto) || StringUtils.isNull(dto.getSourceSsccNb())) {
             throw new ServiceException("请选中数据后重试");
@@ -165,6 +166,9 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
         iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, dto.getSourceSsccNb());
         iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.FINISH.code());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.CANCEL.code());
+
         IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
         if (iqcSamplePlan == null) {
             throw new ServiceException("sscc:" + dto.getSourceSsccNb() + "对应的抽样信息不存在");
@@ -192,7 +196,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
             //老的移库任务取消
             LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
-            wareShiftQueryWrapper.eq(WareShift::getSsccNb, dto.getSourceSsccNb()).eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            wareShiftQueryWrapper.eq(WareShift::getSsccNb, dto.getSourceSsccNb()).eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode()).ne(WareShift::getStatus,KanbanStatusEnum.CANCEL.value()).ne(WareShift::getStatus,KanbanStatusEnum.FINISH.value()).ne(WareShift::getStatus,KanbanStatusEnum.LINE_RECEIVED.value() );
             WareShift shift = wareShiftService.getOne(wareShiftQueryWrapper);
             if (shift == null) {
                 return;
@@ -280,6 +284,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BinInVO getBinInInfo(String sscc) {
 
         LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
@@ -325,6 +330,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void cancel(Long id) {
         IQCSamplePlan samplePlan = getById(id);
         if (samplePlan == null || DeleteFlagStatus.TRUE.getCode().equals(samplePlan.getDeleteFlag())) {
@@ -381,6 +387,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void confirm(IQCSamplePlanDTO dto) {
 
         LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
@@ -405,6 +412,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addShift(IQCWareShiftDTO dto) {
         LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
         iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, dto.getSscc());
@@ -438,6 +446,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void cancelWareShift(String ssccNb) {
         LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
         wareShiftQueryWrapper.eq(WareShift::getSsccNb, ssccNb);
@@ -464,10 +473,14 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void modifyQuantity(String ssccNb, Double quantity) {
         LambdaQueryWrapper<IQCSamplePlan> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(IQCSamplePlan::getSsccNb, ssccNb);
         queryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.CANCEL.code());
+        queryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.FINISH.code());
+
         IQCSamplePlan samplePlan = this.getOne(queryWrapper);
         if (samplePlan == null) {
             throw new ServiceException("该sscc" + ssccNb + "没有对应的抽样任务");

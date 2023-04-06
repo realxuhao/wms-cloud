@@ -54,7 +54,7 @@ public class ProductWareShiftController extends BaseController {
 
 
     @PutMapping(value = "/generateShift/{stockId}")
-    @ApiOperation("生成移库任务")
+    @ApiOperation("根据库存id生成移库任务")
     public R add(@PathVariable("stockId") Long stockId) {
         productWareShiftService.addByStockId(stockId);
         return R.ok();
@@ -76,7 +76,7 @@ public class ProductWareShiftController extends BaseController {
     }
 
     @PutMapping(value = "/receive/{qrCode}")
-    @ApiOperation("收货")
+    @ApiOperation("移库收货")
     public R receive(@PathVariable("qrCode") String qrCode) {
         productWareShiftService.receive(qrCode);
         return R.ok();

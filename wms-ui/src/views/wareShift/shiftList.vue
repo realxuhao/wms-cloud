@@ -219,12 +219,12 @@ const columns = [
     dataIndex: 'expireDate',
     width: 120
   },
-  {
-    title: '目的工厂',
-    key: 'targetPlant',
-    dataIndex: 'targetPlant',
-    width: 120
-  },
+  // {
+  //   title: '目的工厂',
+  //   key: 'targetPlant',
+  //   dataIndex: 'targetPlant',
+  //   width: 120
+  // },
   {
     title: '目的仓库',
     key: 'targetWareCode',

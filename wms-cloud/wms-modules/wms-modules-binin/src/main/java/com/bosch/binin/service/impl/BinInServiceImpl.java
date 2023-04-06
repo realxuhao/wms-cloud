@@ -306,6 +306,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         LambdaQueryWrapper<BinIn> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(BinIn::getSsccNumber, sscc).eq(BinIn::getDeleteFlag, 0);
+        lambdaQueryWrapper.eq(BinIn::getStatus,BinInStatusEnum.PROCESSING.value());
         BinIn binIn = binInMapper.selectOne(lambdaQueryWrapper);
 
 
@@ -1325,7 +1326,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     @Transactional(rollbackFor = Exception.class)
     public BinInVO generateInTaskByOldStock(String ssccNumber, Double quantity, String wareCode) {
         BinInVO binInVO = binInMapper.selectBySsccNumber(ssccNumber);
-        if (binInVO != null) {
+        if (binInVO != null && !StringUtils.isEmpty(binInVO.getRecommendBinCode())) {
             return binInVO;
         }
         StockVO oldStock = stockService.getLastOneBySSCC(ssccNumber);

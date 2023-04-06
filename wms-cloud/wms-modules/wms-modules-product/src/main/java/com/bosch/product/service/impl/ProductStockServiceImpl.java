@@ -186,6 +186,27 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         return i;
     }
 
+    @Override
+    public ProductStock binInToArea(ProductBinInDTO binInDTO) {
+        //校验状态是不是待上架
+        LambdaQueryWrapper<ProductStock> stockWrapper = new LambdaQueryWrapper<>();
+        stockWrapper.eq(ProductStock::getSsccNumber, binInDTO.getSscc());
+        stockWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        stockWrapper.last("limit 1");
+        ProductStock productStock = this.getOne(stockWrapper);
+        if (Objects.isNull(productStock)) {
+            throw new ServiceException("该sscc" + binInDTO.getSscc() + "没有对应上架任务");
+        }
+        if (!productStock.getBinInFlag().equals(ProductStockBinInEnum.WAITTING_BIN_IN.code())) {
+            throw new ServiceException("该sscc" + binInDTO.getSscc() + "非待上架状态");
+        }
+        productStock.setBinInFlag(ProductStockBinInEnum.FINISH.code());
+        productStock.setRecommendBinCode(binInDTO.getRecommendBinCode());
+        productStock.setAreaCode(binInDTO.getAreaCode());
+        updateById(productStock);
+        return productStock;
+    }
+
     private BinVO getBinVOByBinCode(String binCode) {
         R<BinVO> binInfoByCodeResult = remoteMasterDataService.getBinInfoByCode(binCode);
         if (StringUtils.isNull(binInfoByCodeResult) || StringUtils.isNull(binInfoByCodeResult.getData())) {

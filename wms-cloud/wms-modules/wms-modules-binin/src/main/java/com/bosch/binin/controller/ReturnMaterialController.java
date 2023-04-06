@@ -86,9 +86,9 @@ public class ReturnMaterialController extends BaseController {
 
     @PostMapping(value = "/in")
     @ApiOperation("退库任务上架")
-    public R<BinInVO> in(@RequestBody ManualBinInDTO binInDTO) {
-
-        return R.ok(materialReturnService.performBinIn(binInDTO));
+    public R in(@RequestBody ManualBinInDTO binInDTO) {
+        materialReturnService.performBinIn(binInDTO);
+        return R.ok();
     }
 
 
