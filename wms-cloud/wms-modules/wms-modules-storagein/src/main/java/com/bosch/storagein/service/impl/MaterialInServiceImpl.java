@@ -262,6 +262,8 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
 
         //获取收货列表里面的总托数
         List<MaterialReceiveVO> sameBatchMaterials = materialRecevieMapper.selectSameBatchMaterialReceiveVO(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb());
+        sameBatchMaterials = sameBatchMaterials.stream().filter(item -> 0 == item.getStatus()).collect(Collectors.toList());
+
         if (!CollectionUtils.isEmpty(sameBatchMaterials)) {
             materialInCheckVO.setTotalPallet(sameBatchMaterials.size());
         }
@@ -294,6 +296,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         searchDTO.setMaterialNb(materialInCheckVO.getMaterialNb());
         searchDTO.setBatchNb(materialInCheckVO.getBatchNb());
         List<MaterialReceiveVO> list = materialRecevieMapper.selectMaterialReceiveVOList(searchDTO);
+        list = list.stream().filter(item -> 0 == item.getStatus()).collect(Collectors.toList());
 
         //获取该物料下的该批次的总数量
         Double total = list.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
