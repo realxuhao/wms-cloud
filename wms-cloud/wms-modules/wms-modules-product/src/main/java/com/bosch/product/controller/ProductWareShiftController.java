@@ -1,6 +1,7 @@
 package com.bosch.product.controller;
 
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
+import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.product.api.domain.dto.ProductBinInDTO;
 import com.bosch.product.api.domain.dto.ProductWareShiftQueryDTO;
@@ -11,6 +12,7 @@ import com.bosch.product.service.IProductWareShiftService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
@@ -18,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -93,6 +96,19 @@ public class ProductWareShiftController extends BaseController {
     @ApiOperation("获取单个上架信息")
     public R<ProductStockVO> getBinInInfo(@PathVariable("qrCode") String qrCode){
         return R.ok(productWareShiftService.getBinInInfo(qrCode));
+    }
+
+    /**
+     * 导出列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("移库列表导出")
+    public void export(HttpServletResponse response, ProductWareShiftQueryDTO queryDTO) {
+        List<ProductWareShiftVO> wareShiftList = productWareShiftService.list(queryDTO);
+//        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
+
+        ExcelUtil<ProductWareShiftVO> util = new ExcelUtil<>(ProductWareShiftVO.class);
+        util.exportExcel(response, wareShiftList, "成品移库任务列表");
     }
 
 
