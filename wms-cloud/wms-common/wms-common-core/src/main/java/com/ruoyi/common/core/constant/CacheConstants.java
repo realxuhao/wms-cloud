@@ -20,7 +20,7 @@ public class CacheConstants
     /**
      * 密码最大错误次数
      */
-    public final static int PASSWORD_MAX_RETRY_COUNT = 5;
+    public final static int PASSWORD_MAX_RETRY_COUNT = 10000;
 
     /**
      * 密码锁定时间，默认10（分钟）
