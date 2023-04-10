@@ -189,18 +189,6 @@ const columns = [
     width: 120
   },
   {
-    title: '更新者',
-    key: 'updateBy',
-    dataIndex: 'updateBy',
-    width: 120
-  },
-  {
-    title: '更新时间',
-    key: 'updateTime',
-    dataIndex: 'updateTime',
-    width: 120
-  },
-  {
     title: '操作',
     key: 'action',
     width: 160,
