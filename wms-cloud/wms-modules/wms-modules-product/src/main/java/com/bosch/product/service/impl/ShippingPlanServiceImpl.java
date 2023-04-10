@@ -47,13 +47,13 @@ public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, Shi
             wrapper.eq(ShippingPlan::getStatus, shippingPlanDTO.getStatus());
         }
         if (StringUtils.isNotBlank(shippingPlanDTO.getShippingMark())) {
-            wrapper.eq(ShippingPlan::getShippingMark, shippingPlanDTO.getShippingMark());
+            wrapper.like(ShippingPlan::getShippingMark, shippingPlanDTO.getShippingMark());
         }
         if (StringUtils.isNotBlank(shippingPlanDTO.getEtoPo())) {
-            wrapper.eq(ShippingPlan::getEtoPo, shippingPlanDTO.getEtoPo());
+            wrapper.like(ShippingPlan::getEtoPo, shippingPlanDTO.getEtoPo());
         }
         if (StringUtils.isNotBlank(shippingPlanDTO.getEtoPlant())) {
-            wrapper.eq(ShippingPlan::getEtoPlant, shippingPlanDTO.getEtoPlant());
+            wrapper.like(ShippingPlan::getEtoPlant, shippingPlanDTO.getEtoPlant());
         }
 
         // Handle StockMovementDate range query
@@ -76,11 +76,11 @@ public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, Shi
         }
 
         if (StringUtils.isNotBlank(shippingPlanDTO.getCountry())) {
-            wrapper.eq(ShippingPlan::getCountry, shippingPlanDTO.getCountry());
+            wrapper.like(ShippingPlan::getCountry, shippingPlanDTO.getCountry());
         }
 
         if (StringUtils.isNotBlank(shippingPlanDTO.getProdOrder())) {
-            wrapper.eq(ShippingPlan::getProdOrder, shippingPlanDTO.getProdOrder());
+            wrapper.like(ShippingPlan::getProdOrder, shippingPlanDTO.getProdOrder());
         }
 
         if (shippingPlanDTO.getQty() != null) {
@@ -88,23 +88,23 @@ public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, Shi
         }
 
         if (StringUtils.isNotBlank(shippingPlanDTO.getIsDisassembled())) {
-            wrapper.eq(ShippingPlan::getIsDisassembled, shippingPlanDTO.getIsDisassembled());
+            wrapper.like(ShippingPlan::getIsDisassembled, shippingPlanDTO.getIsDisassembled());
         }
 
         if (StringUtils.isNotBlank(shippingPlanDTO.getTr())) {
-            wrapper.eq(ShippingPlan::getTr, shippingPlanDTO.getTr());
+            wrapper.like(ShippingPlan::getTr, shippingPlanDTO.getTr());
         }
 
         if (StringUtils.isNotBlank(shippingPlanDTO.getSapCode())) {
-            wrapper.eq(ShippingPlan::getSapCode, shippingPlanDTO.getSapCode());
+            wrapper.like(ShippingPlan::getSapCode, shippingPlanDTO.getSapCode());
         }
 
         if (StringUtils.isNotBlank(shippingPlanDTO.getPalletQuantity())) {
-            wrapper.eq(ShippingPlan::getPalletQuantity, shippingPlanDTO.getPalletQuantity());
+            wrapper.like(ShippingPlan::getPalletQuantity, shippingPlanDTO.getPalletQuantity());
         }
 
         if (StringUtils.isNotBlank(shippingPlanDTO.getAfterPacking())) {
-            wrapper.eq(ShippingPlan::getAfterPacking, shippingPlanDTO.getAfterPacking());
+            wrapper.like(ShippingPlan::getAfterPacking, shippingPlanDTO.getAfterPacking());
         }
         return shippingPlanMapper.selectList(wrapper);
     }

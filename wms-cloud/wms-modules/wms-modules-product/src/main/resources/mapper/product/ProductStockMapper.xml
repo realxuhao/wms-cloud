@@ -38,10 +38,10 @@
         b.change_status =1 ,
         b.quality_status=#{qualityStatus}
         <if test=' type != "" and type=="0" '>
-            where b.id =#{id}
+            where b.id =#{id} and b.freeze_stock = 0
         </if>
         <if test='type != "" and type == "1"'>
-            where b.batch_nb =
+            where  b.freeze_stock = 0 and b.batch_nb =
             (SELECT a.batch_nb from
             (SELECT batch_nb from product_stock where id=#{id}) a )
             and b.quality_status in
@@ -85,7 +85,7 @@
         <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
         <if test="ssccNumber != null  and ssccNumber != ''">and ps.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="wareCode != null  and wareCode != ''">and ps.ware_code like concat('%', #{wareCode}, '%')</if>
-        <if test="areCode != null  and areCode != ''">and ps.area_code like concat('%', #{areCode}, '%')</if>
+        <if test="areaCode != null  and areaCode != ''">and ps.area_code like concat('%', #{areaCode}, '%')</if>
         <if test="binCode != null  and binCode != ''">and ps.bin_code like concat('%', #{binCode}, '%')</if>
         <if test="fromProdOrder != null  and fromProdOrder != ''">and ps.from_prod_order like concat('%',
             #{fromProdOrder}, '%')
@@ -131,7 +131,7 @@
         <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
         <if test="ssccNumber != null  and ssccNumber != ''">and ps.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="wareCode != null  and wareCode != ''">and ps.ware_code like concat('%', #{wareCode}, '%')</if>
-        <if test="areCode != null  and areCode != ''">and ps.area_code like concat('%', #{areCode}, '%')</if>
+        <if test="areaCode != null  and areaCode != ''">and ps.area_code like concat('%', #{areaCode}, '%')</if>
         <if test="binCode != null  and binCode != ''">and ps.bin_code like concat('%', #{binCode}, '%')</if>
         <if test="fromProdOrder != null  and fromProdOrder != ''">and ps.from_prod_order like concat('%',
             #{fromProdOrder}, '%')
@@ -142,7 +142,7 @@
         </if>
         <if test="qualityStatus != null and qualityStatus != ''">and ps.quality_status = #{qualityStatus}</if>
         <if test="changeStatus != null and changeStatus != ''">and ps.change_status = #{changeStatus}</if>
-        order by update_time desc,create_time desc
+        order by ps.create_time desc,ps.update_time desc
 
     </select>
     <select id="validateStatus" resultType="int">

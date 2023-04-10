@@ -18,4 +18,5 @@ public class ProductIQCManagementQueryDTO extends ProductStockQueryDTO {
     @ApiModelProperty(value = "已质检状态")
     private String changeStatus;
 
+
 }

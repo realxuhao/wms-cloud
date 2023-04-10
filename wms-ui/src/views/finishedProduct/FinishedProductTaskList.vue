@@ -189,18 +189,6 @@ const columns = [
     width: 120
   },
   {
-    title: '更新者',
-    key: 'updateBy',
-    dataIndex: 'updateBy',
-    width: 120
-  },
-  {
-    title: '更新时间',
-    key: 'updateTime',
-    dataIndex: 'updateTime',
-    width: 120
-  },
-  {
     title: '操作',
     key: 'action',
     width: 160,
@@ -264,7 +252,7 @@ export default {
       // 计时器为空，操作
       this.intervalId = setInterval(() => {
         this.loadTableList()
-      }, 5000)
+      }, 30000)
     },
     // 停止定时器
     clear () {
@@ -335,7 +323,7 @@ export default {
     this.dataRefreh()
   },
   mounted () {
-    // this.loadData()
+    this.loadData()
   },
   destroyed () {
     // 在页面销毁后，清除计时器

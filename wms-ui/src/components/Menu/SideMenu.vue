@@ -14,12 +14,12 @@
       @select="onSelect"
       style="padding: 16px 0px;"></s-menu>
 
-    <div class="logout">
-      <div class="content" @click="handleLogout">
-        <a-icon type="logout" />
-        <span>退出登录</span>
-      </div>
-    </div>
+<!--    <div class="logout">-->
+<!--      <div class="content" @click="handleLogout">-->
+<!--        <a-icon type="logout" />-->
+<!--        <span>退出登录</span>-->
+<!--      </div>-->
+<!--    </div>-->
   </a-layout-sider>
 
 </template>

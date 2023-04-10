@@ -24,7 +24,7 @@ public class ProductStockQueryDTO {
     private String wareCode;
 
     @ApiModelProperty(value = "区域编码")
-    private String areCode;
+    private String areaCode;
 
     @ApiModelProperty(value = "库位编码")
     private String binCode;
@@ -45,4 +45,7 @@ public class ProductStockQueryDTO {
      */
     @ApiModelProperty(value = "结束创建时间")
     private Date endCreateTime;
+
+    @ApiModelProperty(value = "质检状态")
+    private String qualityStatus;
 }

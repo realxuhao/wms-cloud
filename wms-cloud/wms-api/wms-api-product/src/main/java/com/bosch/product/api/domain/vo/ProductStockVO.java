@@ -155,6 +155,7 @@ public class ProductStockVO {
     @ApiModelProperty(value = "unit")
     private String unit;
 
+    @ApiModelProperty(value = "cell")
     private String cell;
 
     @ApiModelProperty(value = "成产批次号")
