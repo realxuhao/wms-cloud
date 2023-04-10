@@ -24,7 +24,7 @@ public class ProductStockQueryDTO {
     private String wareCode;
 
     @ApiModelProperty(value = "区域编码")
-    private String areCode;
+    private String areaCode;
 
     @ApiModelProperty(value = "库位编码")
     private String binCode;
