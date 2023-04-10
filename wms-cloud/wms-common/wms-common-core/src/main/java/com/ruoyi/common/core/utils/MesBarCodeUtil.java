@@ -20,8 +20,6 @@ public class MesBarCodeUtil {
         }
         String temp = StringUtils.reverse(reverse);
         return dateToStr + sscc + materialNb + batchNb + temp;
-
-
     }
 
     public static Date getExpireDate(String mesBarCode) {
@@ -98,7 +96,7 @@ public class MesBarCodeUtil {
         System.out.println(ceil1);
 
         String date = DateUtils.parseDateToStr("yyyyMMdd", new Date());
-        String barCode = generateMesBarCode(new Date(), "669006391113713509", "10302519", "2211092174", Double.valueOf(3000));
+        String barCode = generateMesBarCode(new Date(), "669006391113828975", "10096737", "2212261115", Double.valueOf(3000));
         System.out.println(barCode);
 
         System.out.println("669006391110024752".length());

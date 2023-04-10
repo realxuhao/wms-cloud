@@ -1,24 +1,31 @@
 package com.bosch.product.controller;
 
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
+import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.product.api.domain.dto.ProductBinInDTO;
 import com.bosch.product.api.domain.dto.ProductWareShiftQueryDTO;
+import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.api.domain.vo.ProductWareShiftVO;
 import com.bosch.product.service.IProductStockService;
 import com.bosch.product.service.IProductWareShiftService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @program: wms-cloud
@@ -75,6 +82,18 @@ public class ProductWareShiftController extends BaseController {
         return R.ok();
     }
 
+    @GetMapping(value = "/getOne/{qrCode}")
+    public R<ProductWareShiftVO> getOne(@PathVariable("qrCode") String qrCode){
+        ProductWareShiftQueryDTO queryDTO = new ProductWareShiftQueryDTO();
+        queryDTO.setSsccNb(ProductQRCodeUtil.getSSCC(qrCode));
+        List<ProductWareShiftVO> list = productWareShiftService.list(queryDTO);
+        list = list.stream().filter(item -> !item.getStatus().equals(ProductWareShiftEnum.CANCEL.code()) || !item.getStatus().equals(ProductWareShiftEnum.FINISH.code())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(list)){
+            return R.fail("没有该SSCC"+ProductQRCodeUtil.getSSCC(qrCode)+"对应的进行中移库信息");
+        }
+        return R.ok(list.get(0));
+    }
+
     @PutMapping(value = "/receive/{qrCode}")
     @ApiOperation("移库收货")
     public R receive(@PathVariable("qrCode") String qrCode) {
@@ -95,12 +114,18 @@ public class ProductWareShiftController extends BaseController {
         return R.ok(productWareShiftService.getBinInInfo(qrCode));
     }
 
+    /**
+     * 导出列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("移库列表导出")
+    public void export(HttpServletResponse response, ProductWareShiftQueryDTO queryDTO) {
+        List<ProductWareShiftVO> wareShiftList = productWareShiftService.list(queryDTO);
+//        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
 
-
-
-
-
-
+        ExcelUtil<ProductWareShiftVO> util = new ExcelUtil<>(ProductWareShiftVO.class);
+        util.exportExcel(response, wareShiftList, "成品移库任务列表");
+    }
 
 
 }

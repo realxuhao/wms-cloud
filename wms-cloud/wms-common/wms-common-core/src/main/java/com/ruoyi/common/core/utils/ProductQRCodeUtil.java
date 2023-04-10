@@ -1,13 +1,13 @@
 package com.ruoyi.common.core.utils;
 
+
 import com.ruoyi.common.core.exception.ServiceException;
-import io.jsonwebtoken.lang.Strings;
 import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.scheduling.support.SimpleTriggerContext;
-import org.springframework.util.CollectionUtils;
+
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @program: wms-cloud
@@ -18,28 +18,28 @@ import java.util.Date;
 public class ProductQRCodeUtil {
 
 
-    private static String[] splitQRCode(String qrCode){
-        String[] split = qrCode.split("\\r?\\n");
-        if (ArrayUtils.isEmpty(split)||split.length!=3){
-            throw new ServiceException("成品QR CODE 格式错误");
-        }
-        if (split[0].length()!=19){
-            throw new ServiceException("成品QR CODE 格式错误");
-        }
-        if (split[1].length()!=32){
-            throw new ServiceException("成品QR CODE 格式错误");
-        }
-        if (split[2].length()!=20){
-            throw new ServiceException("成品QR CODE 格式错误");
-        }
-        return split;
+    private static List<String> splitQRCode(String qrCode){
+//        String[] split = qrCode.split("\\r?\\n");
+//        if (ArrayUtils.isEmpty(split)||split.length!=3){
+//            throw new ServiceException("成品QR CODE 格式错误");
+//        }
+//        if (split[0].length()!=19){
+//            throw new ServiceException("成品QR CODE 格式错误");
+//        }
+//        if (split[1].length()!=32){
+//            throw new ServiceException("成品QR CODE 格式错误");
+//        }
+//        if (split[2].length()!=20){
+//            throw new ServiceException("成品QR CODE 格式错误");
+//        }
+        return Arrays.asList(qrCode.substring(0,19),qrCode.substring(19,51),qrCode.substring(51,71));
     }
     public static Date getProductionDate(String qrCode){
-        String[] strings = splitQRCode(qrCode);
+        List<String> strings = splitQRCode(qrCode);
 
         String date = "";
         try {
-            date =strings[0].substring(2,8);
+            date =strings.get(0).substring(2,8);
         } catch (Exception e) {
             throw new ServiceException("成品QR CODE 格式错误");
         }
@@ -55,25 +55,38 @@ public class ProductQRCodeUtil {
     }
 
     public static String getBatchNb(String qrCode){
-        return splitQRCode(qrCode)[0].substring(10);
+        return splitQRCode(qrCode).get(0).substring(10);
     }
 
     public static String getSSCC(String qrCode){
-        return splitQRCode(qrCode)[2].substring(2);
+        return splitQRCode(qrCode).get(2).substring(2);
     }
 
     public static void main(String[] args) {
         System.out.println(getSSCC("1122102510101235866\n" +
-                "02087169005687631725102337000096\n" +
-                "00369006391113419554\n"));
+                "02087169005687631724070937000060\n" +
+                "00369006391113669850"));
+        System.out.println(getProductionDate("1122102510101235866\n" +
+                "02087169005687631724070937000060\n" +
+                "00369006391113669850"));
+        System.out.println(getBatchNb("1122102510101235866\n" +
+                "02087169005687631724070937000060\n" +
+                "00369006391113669850"));
+
+
+        List<String> strings = splitQRCode("11221025101012358660208716900568763172407093700006000369006391113669850");
+        System.out.println(strings);
+
 
         String productDate = "221025";
         String batchNb = "101235866";
-        String s1="11"+productDate+"10"+batchNb;
         String expireDate = "240709";
         String quantity = "000992";
-        String s2 = "020871690056876317"+expireDate+"37"+quantity;
         String sscc="369006391113669874";
+
+
+        String s1="11"+productDate+"10"+batchNb;
+        String s2 = "020871690056876317"+expireDate+"37"+quantity;
         String s3="00"+sscc;
 
 

@@ -68,10 +68,9 @@ public class MaterialInController extends BaseController {
             return R.fail(null, "收货清单不存在此条数据：" + MesBarCodeUtil.getSSCC(mesBarCode));
         }
 
-
-        List<Integer> collect = materialReceiveVOs.stream().map(MaterialReceiveVO::getStatus).collect(Collectors.toList());
-        if (collect.contains(MaterialStatusEnum.IN.getCode())) {
-            return R.fail(null, ResponseConstants.BATCH_HAS_IN, "该物料"+MesBarCodeUtil.getSSCC(mesBarCode)+"已入库");
+        List<Integer> collect = materialReceiveVOs.stream().filter(item -> 0 == item.getStatus()).map(MaterialReceiveVO::getStatus).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(collect)){
+            return R.fail(null, ResponseConstants.BATCH_HAS_IN, "物料号:"+MesBarCodeUtil.getMaterialNb(mesBarCode)+",批次号:"+MesBarCodeUtil.getBatchNb(mesBarCode)+"，无待入库任务");
         }
         return R.ok(materialInService.getMaterialCheckInfo(mesBarCode));
     }

@@ -43,6 +43,7 @@ import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
@@ -133,7 +134,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         return "V-" + virtualPrefixCode + "-" + System.currentTimeMillis();
     }
-
+//    static String sscc;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -399,6 +400,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public BinInVO performBinInWithIQC(BinInDTO binInDTO) {
         String mesBarCode = binInDTO.getMesBarCode();
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
@@ -448,13 +450,12 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             if (!CollectionUtils.isEmpty(binInFinish)) {
                 throw new ServiceException("该库位" + binInDTO.getActualBinCode() + " 已经被占用");
             }
-
-            LambdaQueryWrapper<BinIn> processingQueryWrapper = new LambdaQueryWrapper<>();
-            processingQueryWrapper.eq(BinIn::getRecommendBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value()).eq(BinIn::getDeleteFlag, 0);
-            List<BinIn> binInProcessing = binInMapper.selectList(processingQueryWrapper);
-            if (!CollectionUtils.isEmpty(binInProcessing)) {
-                throw new ServiceException("该库位" + binInDTO.getActualBinCode() + " 已经被分配其他托");
-            }
+//            LambdaQueryWrapper<BinIn> processingQueryWrapper = new LambdaQueryWrapper<>();
+//            processingQueryWrapper.eq(BinIn::getRecommendBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value()).eq(BinIn::getDeleteFlag, 0);
+//            List<BinIn> binInProcessing = binInMapper.selectList(processingQueryWrapper);
+//            if (!CollectionUtils.isEmpty(binInProcessing)) {
+//                throw new ServiceException("该库位" + binInDTO.getActualBinCode() + " 已经被分配其他托");
+//            }
 
 
         }
@@ -502,6 +503,16 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 //        // 更新kanban和移库,转储单状态
 //        updateKanbanWareShiftStatus(stock, sscc);
 
+        dealIQC(mesBarCode,materialNb,binIn);
+
+
+
+        return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
+    }
+
+
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    private void  dealIQC(String mesBarCode,String materialNb,BinIn binIn){
         MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
 
@@ -527,6 +538,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             LambdaQueryWrapper<BinIn> binInQueryWrapper = new LambdaQueryWrapper<>();
             binInQueryWrapper.eq(BinIn::getMaterialNb, materialNb);
             binInQueryWrapper.eq(BinIn::getBatchNb, binIn.getBatchNb());
+            binInQueryWrapper.eq(BinIn::getStatus,BinInStatusEnum.FINISH.value());
             binInQueryWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
             List<BinIn> binInList = binInMapper.selectList(binInQueryWrapper);
             if (CollectionUtils.isEmpty(sameBatchList) || CollectionUtils.isEmpty(binInList) || binInList.size() != sameBatchList.size()) {
@@ -561,9 +573,6 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 //                }
 //            }
         }
-
-
-        return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
     }
 
     private List<IQCSamplePlan> dealFSMPIQCProces(MaterialVO materialVO, String batchNb, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
