@@ -264,7 +264,7 @@ export default {
       // 计时器为空，操作
       this.intervalId = setInterval(() => {
         this.loadTableList()
-      }, 5000)
+      }, 30000)
     },
     // 停止定时器
     clear () {
@@ -335,7 +335,7 @@ export default {
     this.dataRefreh()
   },
   mounted () {
-    // this.loadData()
+    this.loadData()
   },
   destroyed () {
     // 在页面销毁后，清除计时器
