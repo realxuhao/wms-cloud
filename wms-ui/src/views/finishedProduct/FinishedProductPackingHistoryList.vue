@@ -114,14 +114,14 @@ const columns = [
   },
   {
     title: '打包时间',
-    key: 'createTime',
-    dataIndex: 'createTime',
+    key: 'historyCreateTime',
+    dataIndex: 'historyCreateTime',
     width: 120
   },
   {
     title: '打包人',
-    key: 'createBy',
-    dataIndex: 'createBy',
+    key: 'historyCreateBy',
+    dataIndex: 'historyCreateBy',
     width: 120
   }
 
