@@ -25,11 +25,11 @@ export default {
 		Bus.$on('scancodedate', this.scanCodeCallback);
 	},
 	destroyed() {
-		Bus.$off('scancodedate');
+		Bus.$off('scancodedate', this.scanCodeCallback);
 	},
 	methods: {
 		async scanCodeCallback(data) {
-			Bus.$emit('stopScan');
+			// Bus.$emit('stopScan');
 			this.code = data.code;
 			this.handleGoto();
 		},
