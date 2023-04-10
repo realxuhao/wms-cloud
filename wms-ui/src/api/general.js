@@ -78,7 +78,7 @@ const errorParser = async (response) => {
     return Promise.reject(new Error('Unauthorized'))
   }
 
-  const errorMessage = (data && data.msg) ? data.msg : 'Unknown Network Error'
+  const errorMessage = (data && data.msg) ? data.msg : JSON.stringify(data)
   return Promise.reject(new Error(errorMessage))
 }
 
