@@ -38,7 +38,14 @@
         </a-row>
       </a-form>
       <div class="action-content">
-
+        <router-link :to="{name:'fullscreenPackingHistoryList'}" v-show="!isFullscreen">
+          <a-tooltip placement="bottom" title="切为全屏">
+            <a-icon class="fullscreen" type="fullscreen" @click="handleFullscreen" />
+          </a-tooltip>
+        </router-link>
+        <router-link v-show="isFullscreen" :to="{name:'finishedProductTaskList'}" >
+          <a-icon class="fullscreen" @click="handleExitFullscreen" type="fullscreen-exit" />
+        </router-link>
       </div>
       <a-table
         :columns="columns"
@@ -47,7 +54,7 @@
         rowKey="id"
         :pagination="false"
         size="middle"
-        :scroll="tableScroll"
+        :scroll="{ x: 1300, }"
       >
         <template slot="status" slot-scope="text">
           <a-tag :color="statusColorMap[text]"> {{ status[text] }}</a-tag>
@@ -98,6 +105,7 @@
 import { mixinTableList } from '@/utils/mixin/index'
 import { colorMap } from '@/utils/color'
 import _ from 'lodash'
+import { fullscreen, exitFullscreen } from '@/utils/util'
 
 const columns = [
   {
@@ -233,7 +241,14 @@ export default {
         ...queryFormAttr()
       },
       columns,
-      list: []
+      list: [],
+      intervalId: null
+    }
+  },
+  props: {
+    isFullscreen: {
+      type: Boolean,
+      default: () => false
     }
   },
   computed: {
@@ -241,6 +256,28 @@ export default {
     statusColorMap: () => statusColorMap
   },
   methods: {
+    dataRefreh () {
+      // 计时器正在进行中，退出函数
+      if (this.intervalId != null) {
+        return
+      }
+      // 计时器为空，操作
+      this.intervalId = setInterval(() => {
+        this.loadTableList()
+      }, 5000)
+    },
+    // 停止定时器
+    clear () {
+      clearInterval(this.intervalId) // 清除计时器
+      this.intervalId = null // 设置为null
+    },
+
+    handleFullscreen () {
+      fullscreen()
+    },
+    handleExitFullscreen () {
+      exitFullscreen()
+    },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
@@ -294,8 +331,15 @@ export default {
       }
     }
   },
+  created () {
+    this.dataRefreh()
+  },
   mounted () {
-    this.loadData()
+    // this.loadData()
+  },
+  destroyed () {
+    // 在页面销毁后，清除计时器
+    this.clear()
   }
 }
 </script>
@@ -305,4 +349,21 @@ export default {
   padding-right: 12px ;
   box-sizing: border-box;
 }
+
+.action-content{
+  position: relative;
+}
+.fullscreen{
+  position: absolute;
+  right: 16px;
+  top:-20px;
+  font-size: 24px;
+  transition: transform ease 0.2s;
+  cursor: pointer;
+  &:hover{
+    transform: scale(1.4);
+    transition: transform ease 0.2s;
+  }
+}
+
 </style>
