@@ -45,6 +45,10 @@ const finishedProduc = {
     async getHistoryRecord ({ commit }, options) {
       const data = await finishedProductService.getHistoryRecord(options)
       return data
+    },
+    async getStorageList ({ commit }, options) {
+      const data = await finishedProductService.getStorageList(options)
+      return data
     }
   }
 }

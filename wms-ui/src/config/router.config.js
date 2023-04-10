@@ -359,6 +359,34 @@ export const asyncRouterMap = [
             component: () => import('@/views/finishedProduct/FinishedProductIn.vue'),
             meta: { title: '成品入库', permission: [] },
             hideChildrenInMenu: true
+          },
+          {
+            path: '/finished-product/storage-list',
+            name: 'finishedProductStorageList',
+            component: () => import('@/views/finishedProduct/FinishedProductStorage.vue'),
+            meta: { title: '成品入库任务', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/finished-product/inventory-list',
+            name: 'finishedProductInventoryList',
+            component: () => import('@/views/finishedProduct/FinishedProductInventory.vue'),
+            meta: { title: '成品库存', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/finished-product/transfer-list',
+            name: 'finishedProductTransferList',
+            component: () => import('@/views/finishedProduct/FinishedProductTransfer.vue'),
+            meta: { title: '成品移库', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/finished-product/quality-manage',
+            name: 'finishedProductQualityManage',
+            component: () => import('@/views/finishedProduct/FinishedProductQualityManage.vue'),
+            meta: { title: '成品质检管理', permission: [] },
+            hideChildrenInMenu: true
           }
         ]
       }

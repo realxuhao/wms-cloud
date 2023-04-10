@@ -42,6 +42,11 @@ import driverDispatch from './modules/driverDispatch'
 import split from './modules/split'
 import finishedProduct from './modules/finishedProduct'
 import product from './modules/product'
+import finishedProductStorage from './modules/finishedProductStorage'
+import finishedProductInventory from './modules/finishedProductInventory'
+import finishedProductTransfer from './modules/finishedProductTransfer'
+import finishedProductQualityManage from './modules/finishedProductQualityManage'
+
 // dynamic router permission control (Experimental)
 // import permission from './modules/async-router'
 import getters from './getters'
@@ -87,7 +92,11 @@ export default new Vuex.Store({
     materialInList,
     binIn,
     finishedProduct,
-    product
+    product,
+    finishedProductStorage,
+    finishedProductInventory,
+    finishedProductTransfer,
+    finishedProductQualityManage
   },
   state: {
 

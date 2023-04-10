@@ -45,4 +45,7 @@ public class ProductStockQueryDTO {
      */
     @ApiModelProperty(value = "结束创建时间")
     private Date endCreateTime;
+
+    @ApiModelProperty(value = "质检状态")
+    private String qualityStatus;
 }
