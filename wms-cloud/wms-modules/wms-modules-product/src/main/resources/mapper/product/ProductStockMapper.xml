@@ -85,7 +85,7 @@
         <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
         <if test="ssccNumber != null  and ssccNumber != ''">and ps.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="wareCode != null  and wareCode != ''">and ps.ware_code like concat('%', #{wareCode}, '%')</if>
-        <if test="areCode != null  and areCode != ''">and ps.area_code like concat('%', #{areCode}, '%')</if>
+        <if test="areaCode != null  and areaCode != ''">and ps.area_code like concat('%', #{areaCode}, '%')</if>
         <if test="binCode != null  and binCode != ''">and ps.bin_code like concat('%', #{binCode}, '%')</if>
         <if test="fromProdOrder != null  and fromProdOrder != ''">and ps.from_prod_order like concat('%',
             #{fromProdOrder}, '%')
@@ -131,7 +131,7 @@
         <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
         <if test="ssccNumber != null  and ssccNumber != ''">and ps.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="wareCode != null  and wareCode != ''">and ps.ware_code like concat('%', #{wareCode}, '%')</if>
-        <if test="areCode != null  and areCode != ''">and ps.area_code like concat('%', #{areCode}, '%')</if>
+        <if test="areaCode != null  and areaCode != ''">and ps.area_code like concat('%', #{areaCode}, '%')</if>
         <if test="binCode != null  and binCode != ''">and ps.bin_code like concat('%', #{binCode}, '%')</if>
         <if test="fromProdOrder != null  and fromProdOrder != ''">and ps.from_prod_order like concat('%',
             #{fromProdOrder}, '%')
