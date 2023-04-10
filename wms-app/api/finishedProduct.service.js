@@ -15,7 +15,7 @@ const getAllTaskList = async (options) => {
 	const method = 'GET'
 
 	return request({
-		url, 
+		url,
 		method,
 		data: options
 	})
@@ -61,11 +61,84 @@ const getHistoryRecord = async (options) => {
 	})
 }
 
+/**------------成品入库--------------**/
+const getProductInList = async (data) => {
+	const url = `/product/product-receive/list`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+const getOneProductIn = async (barCode) => {
+	const url = `/product/product-receive/getOne/${barCode}`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+	})
+}
+
+const postProductIn = async (barCode) => {
+	const url = `/product/product-receive/receive/${barCode}`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+	})
+}
+
+/**------------成品移库--------------**/
+const getProductShiftList = async (data) => {
+	const url = `/product/product-shift/list`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+const postShift = async (data) => {
+	const url = `/product/product-shift/ship`
+	const method = 'PUT'
+
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+const productShiftGetBinInInfo = async (barCode) => {
+	const url = `/product/product-shift/getBinInInfo/${barCode}`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+	})
+}
+
+
+
 export const finishedProductService = {
 	getTaskList,
 	addPackageHistory,
 	deleteMultiPackageHistory,
 	deletePackageHistory,
 	getHistoryRecord,
-	getAllTaskList
+	getAllTaskList,
+	getProductInList,
+	postProductIn,
+	getOneProductIn,
+	getProductShiftList,
+	postShift,
+	productShiftGetBinInInfo
 }

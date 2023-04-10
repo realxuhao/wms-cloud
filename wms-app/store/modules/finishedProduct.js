@@ -36,11 +36,61 @@ const finishedProduc = {
 			return data
 		},
 		async getAllTaskList({
-									   commit
-								   }, options) {
+			commit
+		}, options) {
 			const data = await finishedProductService.getAllTaskList(options)
 			return data
 		},
+
+		async getProductInList({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.getProductInList(options)
+			return data
+		},
+		async getOneProductIn({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.getOneProductIn(options)
+			return data
+		},
+		async postProductIn({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.postProductIn(options)
+			return data
+		},
+		async getProductShiftList({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.getProductShiftList(options)
+			return data
+		},
+		async postShift({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.postShift(options)
+			return data
+		},
+		async productShiftGetBinInInfo({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.productShiftGetBinInInfo(options)
+			return data
+		},
+
 	}
 }
 

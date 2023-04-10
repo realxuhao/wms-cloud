@@ -106,11 +106,37 @@
 				</view>
 			</uni-section>
 
-			<uni-section title="成品管理" type="line">
+			<uni-section title="成品管理" type="line" class="m-b-12">
 				<view class="list header-box">
 					<view class="list-item" @click="handleGoto('/pages/finishedProduct/packTask')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" color="#00ADD4"></uni-icons>
 						<view class="text">成品打包</view>
+					</view>
+				</view>
+			</uni-section>
+
+			<uni-section title="成品" type="line" class="m-b-12">
+				<view class="list header-box">
+					<view class="list-item" @click="handleGoto('/pages/finishedProduct/productIn')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-ruku" type="icon-ruku"></uni-icons>
+						<view class="text">成品入库</view>
+					</view>
+				</view>
+			</uni-section>
+
+			<uni-section title="成品移库业务" type="line" class="m-b-12">
+				<view class="list header-box">
+					<view class="list-item" @click="handleGoto('/pages/finishedProductWareShift/shipment')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-wuliufahuo" type="icon-wuliufahuo" color="#009A9A"></uni-icons>
+						<view class="text">移库发运</view>
+					</view>
+					<view class="list-item" @click="handleGoto('/pages/finishedProductWareShift/receiving')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-discharge" color="#00ADD4"></uni-icons>
+						<view class="text">移库收货</view>
+					</view>
+					<view class="list-item" @click="handleGoto('/pages/finishedProductWareShift/binIn')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
+						<view class="text">移库上架</view>
 					</view>
 				</view>
 			</uni-section>

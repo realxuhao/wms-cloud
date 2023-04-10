@@ -352,69 +352,16 @@ export const asyncRouterMap = [
             component: () => import('@/views/finishedProduct/FinishedProductPackingHistoryList.vue'),
             meta: { title: '成品打包记录', permission: [] },
             hideChildrenInMenu: true
+          },
+          {
+            path: '/finished-product/in',
+            name: 'finishedProductIn',
+            component: () => import('@/views/finishedProduct/FinishedProductIn.vue'),
+            meta: { title: '成品入库', permission: [] },
+            hideChildrenInMenu: true
           }
         ]
       }
-      // {
-      //   path: '/manual-trans',
-      //   name: 'manualTrans',
-      //   component: RouteView,
-      //   redirect: '/manual-trans/list',
-      //   meta: { title: '库内管理', icon: 'hdd', permission: [] },
-      //   children: [
-      //     {
-      //       path: '/manual-trans/list',
-      //       name: 'transList',
-      //       component: () => import('@/views/manualTrans/transList'),
-      //       meta: { title: '转储任务列表', permission: [] },
-      //       hideChildrenInMenu: true
-      //     }
-      //   ]
-      // }
-      // account
-      // {
-      //   path: '/account',
-      //   component: RouteView,
-      //   redirect: '/account/settings',
-      //   name: 'account',
-      //   meta: { title: '个人页', icon: 'user', keepAlive: true, permission: [] },
-      //   children: [
-      //     {
-      //       path: '/account/settings',
-      //       name: 'settings',
-      //       component: () => import('@/views/account/settings/Index'),
-      //       meta: { title: '个人设置', hideHeader: true, permission: [] },
-      //       redirect: '/account/settings/base',
-      //       hideChildrenInMenu: true,
-      //       children: [
-      //         {
-      //           path: '/account/settings/base',
-      //           name: 'BaseSettings',
-      //           component: () => import('@/views/account/settings/BaseSetting'),
-      //           meta: { title: '基本设置', permission: [] }
-      //         },
-      //         {
-      //           path: '/account/settings/security',
-      //           name: 'SecuritySettings',
-      //           component: () => import('@/views/account/settings/Security'),
-      //           meta: { title: '安全设置', keepAlive: true, permission: [] }
-      //         },
-      //         {
-      //           path: '/account/settings/binding',
-      //           name: 'BindingSettings',
-      //           component: () => import('@/views/account/settings/Binding'),
-      //           meta: { title: '账户绑定', keepAlive: true, permission: [] }
-      //         },
-      //         {
-      //           path: '/account/settings/notification',
-      //           name: 'NotificationSettings',
-      //           component: () => import('@/views/account/settings/Notification'),
-      //           meta: { title: '新消息通知', keepAlive: true, permission: [] }
-      //         }
-      //       ]
-      //     }
-      //   ]
-      // }
 
     ]
   },
@@ -430,6 +377,17 @@ export const asyncRouterMap = [
         name: 'fullscreenTimeWIndow',
         meta: {},
         component: () => import('@/views/masterData/timeWindow/Index'),
+        props () {
+          return {
+            isFullscreen: true
+          }
+        }
+      },
+      {
+        path: '/fullscreen/packing-history-list',
+        name: 'fullscreenPackingHistoryList',
+        meta: {},
+        component: () => import('@/views/finishedProduct/FinishedProductTaskList'),
         props () {
           return {
             isFullscreen: true
