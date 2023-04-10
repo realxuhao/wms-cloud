@@ -67,6 +67,13 @@ public class ProductWareShiftController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping(value = "/batchGenerateShift")
+    @ApiOperation("根据库存ids批量生成移库任务")
+    public R add(@RequestBody List<Long> stockIds) {
+        productWareShiftService.addBatchByStockIds(stockIds);
+        return R.ok();
+    }
+
     @PutMapping(value = "/cancel/{id}")
     @ApiOperation("取消移库任务")
     public R cancel(@PathVariable("id") Long id){

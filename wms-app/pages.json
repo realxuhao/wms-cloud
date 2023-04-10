@@ -163,6 +163,33 @@
 		},
 		{
 			"path": "pages/finishedProduct/packTask"
+		},
+		{
+			"path": "pages/finishedProduct/productIn"
+		},
+		{
+			"path": "pages/finishedProduct/productInScan"
+		},
+		{
+			"path": "pages/finishedProductWareShift/receiving"
+		},
+		{
+			"path": "pages/finishedProductWareShift/receivingScan"
+		},
+		{
+			"path": "pages/finishedProductWareShift/binIn"
+		},
+		{
+			"path": "pages/finishedProductWareShift/binInScan"
+		},
+		{
+			"path": "pages/finishedProductWareShift/binInOperation"
+		},
+		{
+			"path": "pages/finishedProductWareShift/shipmentOperation"
+		},
+		{
+			"path": "pages/finishedProductWareShift/shipment"
 		}
 	],
 	"globalStyle": {

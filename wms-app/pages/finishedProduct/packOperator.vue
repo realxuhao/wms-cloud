@@ -98,6 +98,7 @@ export default {
 			taskId: undefined,
 			
 			taskList: [],
+			normalTaskList:[],
 			taskIndex: 0,
 			allScanProdOrderList: [],
 			currentTaskBarCodeList: [
@@ -117,18 +118,18 @@ export default {
 			return count;
 		},
 		splitPalletCount() {
-			const count = _.sumBy(_.filter(this.taskList, x => !x.isDisassembled), 'palletQuantity');
-			return count;
+			const count = _.sumBy(_.filter(this.taskList, x => x.isDisassembled), 'palletQuantity');
+			return _.ceil(count);
 		},
 		sapCode() {
 			const str = _.join(_.map(_.filter(this.taskList, x => x.isDisassembled), 'sapCode'), ',');
 			return str;
 		},
-		title({ taskList, taskIndex }) {
-			if (!taskList.length) {
+		title({ normalTaskList, taskIndex }) {
+			if (!normalTaskList.length) {
 				return '';
 			}
-			return `${taskList[taskIndex].prodOrder}-${taskList[taskIndex].sapCode}`;
+			return `${normalTaskList[taskIndex].prodOrder}-${normalTaskList[taskIndex].sapCode}`;
 		},
 		firstTaskInfo() {
 			if (this.taskList.length) {
@@ -147,7 +148,7 @@ export default {
 		},
 		palletQuantityCount() {
 			const count = _.sumBy(this.taskList, item => Number(item.palletQuantity));
-			return count;
+			return _.ceil(count);
 		},
 		
 		afterPackingCount() {
@@ -155,7 +156,7 @@ export default {
 			return count;
 		},
 		taskListCountMap() {
-			return _.reduce((dict, item) => {
+			return _.reduce(this.taskList,(dict, item) => {
 				dict[item.prodOrder] = item.palletQuantity;
 				return dict;
 			}, {});
@@ -173,40 +174,48 @@ export default {
 	methods: {
 		onReset() {
 			this.currentTaskBarCodeList = [];
+			this.allScanProdOrderList = []
 		},
 		 onSubmitCheck() {
 			 if (!this.currentTaskBarCodeList.length) {
-			 	throw '请扫描成品标签二维码';
+				throw ({message:`请扫描成品标签二维码`});
 			 }
 			 
-			const normalAllScanProdOrderMap = _.map(_.filter(this.allScanProdOrderList,x=>x.type !== '拆'), x => x.prodOrder);
-			_.each(_.uniq(normalAllScanProdOrderMap), item => {
-				const count = _.filter(allScanBarCodeMap, x => x === item & x.type !=='拆').length;
-				if (count < this.taskListCountMap[item] || count > this.taskListCountMap[item]) {
-					throw `扫描标签次数未满足要求,请检查`;
-				}
-				// if (count > this.taskListCountMap[item]) {
-				// 	throw `编号“${count}”扫描次数不一致`;
-				// }
-			});
+			 if(this.allScanProdOrderList>this.palletQuantityCount || this.allScanProdOrderList<this.palletQuantityCount){
+				 hrow ({message:`扫描标签次数未满足要求,请检查`});
+			 }
+			 
+			// console.log('this.taskListCountMap',this.taskListCountMap)
+			// const normalAllScanProdOrderMap = _.map(_.filter(this.allScanProdOrderList,x=>x.type !== '拆'), x => x.prodOrder);
+			// _.each(_.uniq(normalAllScanProdOrderMap), item => {
+			// 	const count = _.filter(normalAllScanProdOrderMap, x => x === item & x.type !=='拆').length;
+			// 	if (count < this.taskListCountMap[item] || count > this.taskListCountMap[item]) {
+			// 		throw ({message:`扫描标签次数未满足要求,请检查`});
+			// 	}
+			// 	// if (count > this.taskListCountMap[item]) {
+			// 	// 	throw `编号“${count}”扫描次数不一致`;
+			// 	// }
+			// });
 			
-			const splitAllScanProdOrderMap = _.map(_.filter(this.allScanProdOrderList,x=>x.type === '拆'), x => x.prodOrder);
-			_.each(_.uniq(splitAllScanProdOrderMap), item => {
-				const count = _.filter(allScanBarCodeMap, x => x === item & x.type ==='拆').length;
-				if (count < this.taskListCountMap[item]) {
-					throw `扫描标签次数未满足要求,请检查`;
-				}
-			});
+			// const splitAllScanProdOrderMap = _.map(_.filter(this.allScanProdOrderList,x=>x.type === '拆'), x => x.prodOrder);
+			// _.each(_.uniq(splitAllScanProdOrderMap), item => {
+			// 	const count = _.filter(splitAllScanProdOrderMap, x => x === item & x.type ==='拆').length;
+			// 	if (count < this.taskListCountMap[item]) {
+			// 		throw ({message:`扫描标签次数未满足要求,请检查`});
+			// 	}
+			// });
+			
+			
 			
 		},
 		onNextCheck(){
 			if (!this.currentTaskBarCodeList.length) {
-				throw '请扫描成品标签二维码';
+				throw ({message:'请扫描成品标签二维码'});
 			}
 			
-			const {prodOrder} = this.taskList[this.taskIndex]||{}
+			const {prodOrder} = this.normalTaskList[this.taskIndex]||{}
 			if(!_.filter(this.currentTaskBarCodeList,x=>x.prodOrder === prodOrder).length){
-				throw '请扫描当前托码';
+				throw ({message:'请扫描当前托码'});
 			}
 		},
 		handleDelete(index) {
@@ -219,7 +228,7 @@ export default {
 		async handleClean() {
 			try{
 			    const deleteParam = { id: this.taskId };
-				const data =  await this.$store.dispatch('finishedProduct/deleteMultiPackageHistory', deleteParam);
+				await this.$store.dispatch('finishedProduct/deleteMultiPackageHistory', deleteParam);
 				this.$refs.message.success('清空成功');
 				this.onReset();
 				this.onReloadPage();
@@ -230,19 +239,23 @@ export default {
 		},
 		async initScanCode() {
 			Bus.$on('scancodedate', data => {
-				const prodOrder = data.code.substring(10,9)
-				const sscc = data.code.substring(data.code.length - 18,18)
-				if(_.find(this.currentTaskBarCodeList,x=>x.sscc === sscc)){
+				data.code = data.code.replace(/\r|\n/ig,"");
+				console.log(data.code)
+				const prodOrder = data.code.substr(10,9)
+				const sscc = data.code.substr(data.code.length - 18,18)
+				if(_.find(this.allScanProdOrderList,x=>x.sscc === sscc)){
 					this.$refs.message.error('当前托已存在')
 					return
 				}
 				
 				const splitProdOrder = _.split(this.prodOrderStr,',')
-				const {prodOrder:currentProdOrder} = this.taskList[this.taskIndex]||{}
+				const {prodOrder:currentProdOrder} = this.normalTaskList[this.taskIndex]||{}
 				const currentScanProdOrderList = [currentProdOrder,...splitProdOrder]
-				
+				console.log(currentScanProdOrderList)
+				console.log(currentScanProdOrderList.includes(prodOrder))
+				console.log(prodOrder)
 				if(!currentScanProdOrderList.includes(prodOrder)){
-					this.$refs.message.error('请扫描当前托码或拆托码')
+					this.$refs.message.error('批次号校验错误')
 					return
 				}
 				
@@ -258,8 +271,6 @@ export default {
 		},
 		async handleNext() {
 			
-		
-			
 			try {
 				this.onNextCheck()
 				
@@ -268,12 +279,12 @@ export default {
 				})
 				this.submitLoading = true;
 				
-				const { afterPacking } = this.taskList[this.taskIndex]||{}
+				const { afterPacking } = this.normalTaskList[this.taskIndex]||{}
 				if (this.stepIndex > afterPacking) {
 					this.taskIndex += 1;
 				}
 				//请求 生成记录
-				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.prodOrder),',')
+				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.sscc),',')
 				const lastOne = this.afterPackingCount===this.stepIndex?1:0
 				const options = {ssccNumbers,historyIndex:this.stepIndex,lastOne,shippingTaskId:this.taskId}
 				await this.$store.dispatch('finishedProduct/addPackageHistory', options);
@@ -281,6 +292,7 @@ export default {
 				this.onReset();
 				this.stepIndex += 1;
 			} catch (e) {
+				console.log(e)
 				this.$refs.message.error(e.message);
 			} finally {
 				this.submitLoading = false;
@@ -300,15 +312,13 @@ export default {
 				})
 				this.submitLoading = true;
 				
-				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.prodOrder),',')
+				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.sscc),',')
 				const lastOne = 1
 				const options = {ssccNumbers,historyIndex:this.stepIndex,lastOne,shippingTaskId:this.taskId}
 				const result = await this.$store.dispatch('finishedProduct/addPackageHistory', options);
 				if (result.code === 200){
 					this.$refs.message.success('清空成功');
-					uni.redirectTo({
-						url: `/pages/binIn/operation?barCode=${this.code}`
-					});
+					this.handleGoBack()
 				} else {
 					this.$refs.message.error(result.msg);
 				}
@@ -317,6 +327,7 @@ export default {
 				//如果失败，页面应该有个弹窗  重新做：掉API删除所有记录，刷新整个页面，返回：返回上一页
 				
 			}catch(e){
+				console.log(e.message)
 				//TODO handle the exception
 				// this.$refs.message.error(e.message);
 				this.$refs.alertDialog.open()
@@ -335,7 +346,8 @@ export default {
 		async lodaData() {
 			const options = { id: this.taskId };
 			const {data} = await this.$store.dispatch('finishedProduct/getTaskList', options);
-			this.taskList=data;		
+			this.taskList=data;	
+			this.normalTaskList = _.filter(data,x=>!x.isDisassembled)
 		},
 
 		async onSubmit() { }

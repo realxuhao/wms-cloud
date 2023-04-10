@@ -31,4 +31,6 @@ public interface IProductWareShiftService extends IService<ProductWareShift> {
     void wareShiftBinIn(ProductBinInDTO binInDTO);
 
     ProductStockVO getBinInInfo(String qrCode);
+
+    void addBatchByStockIds(List<Long> stockIds);
 }

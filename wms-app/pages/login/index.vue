@@ -31,7 +31,7 @@ export default {
 		return {
 			formData: {
 				username: 'admin',
-				password: 'admin123'
+				password: 'nutricianlp123'
 			},
 			rules: {
 				username: {
