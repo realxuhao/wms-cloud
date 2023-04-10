@@ -134,9 +134,9 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         LambdaQueryWrapper<ProductWareShift> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(ProductWareShift::getSsccNb, ssccList)
                 .eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode())
-        .ne(ProductWareShift::getStatus,ProductWareShiftEnum.CANCEL.code());
+                .ne(ProductWareShift::getStatus, ProductWareShiftEnum.CANCEL.code());
         List<ProductWareShift> productWareShifts = this.list(queryWrapper);
-        if (CollectionUtils.isEmpty(productWareShifts)||productWareShifts.size()!=ssccList.size()){
+        if (CollectionUtils.isEmpty(productWareShifts) || productWareShifts.size() != ssccList.size()) {
             throw new ServiceException("存在状态不为待发运的数据");
 
         }
@@ -189,7 +189,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         String sscc = ProductQRCodeUtil.getSSCC(qrCode);
         LambdaQueryWrapper<TranshipmentOrder> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(TranshipmentOrder::getSsccNumber, sscc);
-        queryWrapper.eq(TranshipmentOrder::getStatus,0);
+        queryWrapper.eq(TranshipmentOrder::getStatus, 0);
         queryWrapper.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.last("limit 1");
         TranshipmentOrder transhipmentOrder = transhipmentOrderService.getOne(queryWrapper);
@@ -249,9 +249,9 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
         ProductStock productStock;
         // 上架到区域
-        if (StringUtils.isNotEmpty(binInDTO.getAreaCode())){
+        if (StringUtils.isNotEmpty(binInDTO.getAreaCode())) {
             productStock = stockService.binInToArea(binInDTO);
-        }else {
+        } else {
             //执行上架到库位
             productStock = stockService.binIn(binInDTO);
         }
@@ -274,23 +274,69 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         ProductStockQueryDTO queryDTO = new ProductStockQueryDTO();
         queryDTO.setSsccNumber(sscc);
         List<ProductStockVO> list = stockService.list(queryDTO);
-        if (CollectionUtils.isEmpty(list)){
-            throw new ServiceException("没有该sscc:"+sscc+"对应的库存信息。");
+        if (CollectionUtils.isEmpty(list)) {
+            throw new ServiceException("没有该sscc:" + sscc + "对应的库存信息。");
         }
         ProductStockVO productStockVO = list.get(0);
 
 
-        if (productStockVO.getBinInFlag().equals(ProductStockBinInEnum.FINISH.code())){
-            throw new ServiceException("该sscc:"+sscc+"已经上架，不可以重复上架。");
+        if (productStockVO.getBinInFlag().equals(ProductStockBinInEnum.FINISH.code())) {
+            throw new ServiceException("该sscc:" + sscc + "已经上架，不可以重复上架。");
         }
-        if (productStockVO.getBinInFlag().equals(ProductStockBinInEnum.NONE.code())){
-            throw new ServiceException("该sscc:"+sscc+"为主库收货，无需上架。");
+        if (productStockVO.getBinInFlag().equals(ProductStockBinInEnum.NONE.code())) {
+            throw new ServiceException("该sscc:" + sscc + "为主库收货，无需上架。");
         }
         String allocationBinCode = binAssignmentService.getBinAllocationVO(qrCode);
-        if (StringUtils.isEmpty(allocationBinCode)){
+        if (StringUtils.isEmpty(allocationBinCode)) {
             throw new ServiceException("未找到合适库位");
         }
         productStockVO.setRecommendBinCode(allocationBinCode);
         return productStockVO;
+    }
+
+    @Override
+    public void addBatchByStockIds(List<Long> stockIds) {
+        LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
+        List<ProductStock> stockList = stockService.list(queryWrapper.in(ProductStock::getId, stockIds).eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode()));
+        if (stockIds.size()!=stockList.size()){
+            throw new ServiceException("id有误，存在无库存的数据");
+        }
+
+        List<ProductWareShift> wareShifts=new ArrayList<>();
+
+        stockList.forEach(item->{
+            if(!item.getFreezeStock().equals((double) 0)){
+                throw new ServiceException("sscc码"+item.getSsccNumber()+"有冻结库存，不能生成移库任务");
+            }
+
+            item.setFreezeStock(item.getTotalStock());
+            item.setAvailableStock((double) 0);
+
+            //新增移库
+            ProductWareShift wareShift = ProductWareShift.builder().sourcePlantNb(item.getPlantNb())
+                    .sourceWareCode(item.getWareCode())
+                    .sourceAreaCode(item.getAreaCode())
+                    .sourceBinCode(item.getBinCode())
+                    .quantity(item.getTotalStock())
+                    .moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+                    .ssccNb(item.getSsccNumber())
+                    .materialNb(item.getMaterialNb())
+                    .batchNb(item.getBatchNb())
+                    .expireDate(item.getExpireDate())
+                    .productionDate(item.getProductionDate())
+                    .unit(item.getUnit())
+                    .status(ProductWareShiftEnum.WAITTING_SHIPPING.code())
+                    .build();
+            wareShifts.add(wareShift);
+
+        });
+
+        stockService.updateBatchById(stockList);
+
+        this.saveBatch(wareShifts);
+
+
+
+
     }
 }
