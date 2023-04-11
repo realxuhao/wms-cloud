@@ -261,6 +261,12 @@ const columns = [
     width: 120
   },
   {
+    title: '物料名称',
+    key: 'materialName',
+    dataIndex: 'materialName',
+    width: 200
+  },
+  {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',

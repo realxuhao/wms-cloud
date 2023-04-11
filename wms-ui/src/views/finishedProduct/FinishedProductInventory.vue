@@ -128,6 +128,18 @@ const columns = [
     width: 180
   },
   {
+    title: '物料编码',
+    key: 'materialNb',
+    dataIndex: 'materialNb',
+    width: 200
+  },
+  {
+    title: '物料名称',
+    key: 'materialName',
+    dataIndex: 'materialName',
+    width: 200
+  },
+  {
     title: '仓库',
     key: 'wareCode',
     dataIndex: 'wareCode',
