@@ -353,13 +353,13 @@ export const asyncRouterMap = [
             meta: { title: '成品打包记录', permission: [] },
             hideChildrenInMenu: true
           },
-          {
-            path: '/finished-product/in',
-            name: 'finishedProductIn',
-            component: () => import('@/views/finishedProduct/FinishedProductIn.vue'),
-            meta: { title: '成品入库', permission: [] },
-            hideChildrenInMenu: true
-          },
+          // {
+          //   path: '/finished-product/in',
+          //   name: 'finishedProductIn',
+          //   component: () => import('@/views/finishedProduct/FinishedProductIn.vue'),
+          //   meta: { title: '成品入库', permission: [] },
+          //   hideChildrenInMenu: true
+          // },
           {
             path: '/finished-product/storage-list',
             name: 'finishedProductStorageList',
