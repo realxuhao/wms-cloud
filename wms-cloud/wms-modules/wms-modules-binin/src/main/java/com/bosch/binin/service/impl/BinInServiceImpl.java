@@ -798,7 +798,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
                 iqcSamplePlan.setRecommendSampleQuantity(binIn.getQuantity());
             }
 //            iqcSamplePlan.setStatus(binIn.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
-            iqcSamplePlan.setStatus(IQCStatusEnum.WAITING_BIN_IN.code());
+            iqcSamplePlan.setStatus(IQCStatusEnum.WAAITTING_ISSUE.code());
             iqcSamplePlan.setBatchNb(binIn.getBatchNb());
             iqcSamplePlan.setWareCode(binIn.getWareCode());
             iqcSamplePlan.setQuantity(binIn.getQuantity());
