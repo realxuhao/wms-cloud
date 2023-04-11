@@ -2,7 +2,7 @@
 
 # 使用说明，用来提示输入参数
 usage() {
-	echo "Usage: sh 执行脚本.sh [port|base|modules-up|modules-stop|modules-rm|modules-build]"
+	echo "Usage: sh 执行脚本.sh [port|base|up|stop|rm|build]"
 	exit 1
 }
 
@@ -33,22 +33,22 @@ base(){
 }
 
 # 启动程序模块（必须）
-modules-up(){
+up(){
 	docker-compose up -d  wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation product
 }
 
 # 关闭所有环境/模块
-modules-stop(){
+stop(){
 	docker-compose stop wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation product
 }
 
 # 删除所有环境/模块
-modules-rm(){
+rm(){
 	docker-compose rm wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation product
 }
 
 # 模块编译
-modules-build(){
+build(){
 	docker-compose build wms-nginx wms-gateway wms-auth wms-modules-system wms-modules-file master-data storage-in bin-in reservation product
 }
 
@@ -60,16 +60,16 @@ case "$1" in
 "base")
 	base
 ;;
-"modules-up")
-	modules-up
+"up")
+	up
 ;;
-"modules-stop")
-	modules-stop
+"stop")
+	stop
 ;;
-"modules-rm")
-	modules-rm
+"rm")
+	rm
 ;;
-"modules-build")
+"build")
 	modules-build
 ;;
 *)
