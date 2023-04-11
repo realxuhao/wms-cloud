@@ -22,7 +22,7 @@ public enum ClassType {
     ECNDTO("EcnDTO", new ArrayList<String>(Arrays.asList("料号","分类","TTS取样规则"))),
     FSMPDTO("FsmpDTO", new ArrayList<String>(Arrays.asList("料号","取样方式"))),
     IQCDTO("IQCDTO", new ArrayList<String>(Arrays.asList("PlantNb","SSCCNumber","FinalSAPStatus","SAPProcessStatus","Identification"))),
-    MdProductPackagingDTO("MdProductPackagingDTO", new ArrayList<String>(Arrays.asList("成品料号","成品名称","Cell","总数量/托","最小包装数量/托"))),
+    MdProductPackagingDTO("MdProductPackagingDTO", new ArrayList<String>(Arrays.asList("成品料号","Cell","名称","运输单位(Tr)","箱 Tr 对应包装规格","标准 Tr/托","重量(Tr)","体积 (Tr)"))),
     PRODUCTRECEIVEDTO("ProductReceiveDTO", new ArrayList<String>(Arrays.asList("PlantNb","SSCCNumber","MaterialNb","ExpiryDate","Quantity","Unit","FromProdOrder"))),
     SHIPPINGPLANDTO("ShippingPlanImpDTO", new ArrayList<String>(Arrays.asList("Shipping  Mark","ETO PO","ETO PLANT","stock movement    移库日期","Country","Prod-order","Qty","是否拆托","TR","SAP Code","Pallet Quantity","after packing"))),
     PRODUCTFRAMEDTO("ProductFrameDTO", new ArrayList<String>(Arrays.asList("成品代码","优先级","可用跨编码","备注")));

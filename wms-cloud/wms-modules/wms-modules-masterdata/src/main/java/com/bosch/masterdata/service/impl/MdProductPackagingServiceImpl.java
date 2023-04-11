@@ -85,21 +85,37 @@ public class MdProductPackagingServiceImpl extends ServiceImpl<MdProductPackagin
         dtos.forEach(r -> {
             // Check cell
             if (StringUtils.isEmpty(r.getCell())) {
-                throw new ServiceException("产品Cell不能为空");
+                throw new ServiceException("Cell 不能为空");
             }
 
             // Check product No
             if (StringUtils.isEmpty(r.getProductNo())) {
-                throw new ServiceException("产品编号不能为空");
+                throw new ServiceException("成品料号 不能为空");
             }
 
-            // Check 最小包装数量/托
-            if (StringUtils.isEmpty(r.getMinQuantity())) {
-                throw new ServiceException("最小包装数量/托不能为空");
+            // Check 名称
+            if (StringUtils.isEmpty(r.getProductName())) {
+                throw new ServiceException("名称 不能为空");
             }
-            // Check 总数量/托
-            if (StringUtils.isEmpty(r.getTotalQuantity())) {
-                throw new ServiceException("总数量/托不能为空");
+            // Check 运输单位(Tr)
+            if (StringUtils.isEmpty(r.getTransportUnit())) {
+                throw new ServiceException("运输单位(Tr) 不能为空");
+            }
+            // Check 箱 Tr 对应包装规格
+            if (StringUtils.isEmpty(r.getBoxSpecification())) {
+                throw new ServiceException("箱 Tr 对应包装规格 不能为空");
+            }
+            // Check 标准 Tr/托
+            if (StringUtils.isEmpty(r.getStandardUnits())) {
+                throw new ServiceException("标准 Tr/托 不能为空");
+            }
+            // Check 重量(Tr)
+            if (StringUtils.isEmpty(r.getWeight())) {
+                throw new ServiceException("重量(Tr) 不能为空");
+            }
+            // Check 体积 (Tr)
+            if (StringUtils.isEmpty(r.getVolume())) {
+                throw new ServiceException("体积 (Tr) 不能为空");
             }
         });
 

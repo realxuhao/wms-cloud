@@ -52,15 +52,29 @@ public class ProductPackaging extends BaseEntity {
     private String cell;
 
     /**
-     * 总数量/托
+     * 运输单位(Tr)
      */
-    private String totalQuantity;
+    private String transportUnit;
 
     /**
-     * 最小包装数量/托
+     * 箱 Tr 对应包装规格
      */
-    private String minQuantity;
+    private String boxSpecification;
 
+    /**
+     * 标准 Tr/托
+     */
+    private String standardUnits;
+
+    /**
+     * 重量（Tr）
+     */
+    private String weight;
+
+    /**
+     * 体积 (Tr)
+     */
+    private String volume;
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 

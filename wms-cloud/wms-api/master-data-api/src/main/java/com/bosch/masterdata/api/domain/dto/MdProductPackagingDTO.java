@@ -46,6 +46,9 @@ public class MdProductPackagingDTO extends PageDomain {
     @ExcelProperty(value = "成品料号")
     private String productNo;
 
+    @ExcelProperty(value = "名称")
+    private String productName;
+
     /**
      * Cell
      */
@@ -53,17 +56,32 @@ public class MdProductPackagingDTO extends PageDomain {
     private String cell;
 
     /**
-     * 总数量/托
+     * 运输单位(Tr)
      */
-    @ExcelProperty(value = "总数量/托")
-    private String totalQuantity;
+    @ExcelProperty(value = "运输单位(Tr)")
+    private String transportUnit;
 
     /**
-     * 最小包装数量/托
+     * 箱 Tr 对应包装规格
      */
-    @ExcelProperty(value = "最小包装数量/托")
-    private String minQuantity;
+    @ExcelProperty(value = "箱 Tr 对应包装规格")
+    private String boxSpecification;
 
-    @ExcelProperty(value = "成品名称")
-    private String productName;
+    /**
+     * 标准 Tr/托
+     */
+    @ExcelProperty(value = "标准 Tr/托")
+    private String standardUnits;
+
+    /**
+     * 重量（Tr）
+     */
+    @ExcelProperty(value = "重量(Tr)")
+    private String weight;
+
+    /**
+     * 体积 (Tr)
+     */
+    @ExcelProperty(value = "体积 (Tr)")
+    private String volume;
 }
