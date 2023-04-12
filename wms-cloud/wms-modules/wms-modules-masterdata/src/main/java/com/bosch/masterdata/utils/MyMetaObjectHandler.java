@@ -14,14 +14,15 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         this.setFieldValByName("createTime", DateUtils.getNowDate(), metaObject);
-        this.setFieldValByName("createBy", SecurityUtils.getLoginUser().getUsername(), metaObject);
+        this.setFieldValByName("createBy", SecurityUtils.getUsername(), metaObject);
     }
 
     @Override
     public void updateFill(MetaObject metaObject) {
 
         this.setFieldValByName("updateTime", DateUtils.getNowDate(), metaObject);
-        this.setFieldValByName("updateBy", SecurityUtils.getLoginUser().getUsername(), metaObject);
+        System.out.println(SecurityUtils.getUsername());
+        this.setFieldValByName("updateBy", SecurityUtils.getUsername(), metaObject);
     }
 }
 
