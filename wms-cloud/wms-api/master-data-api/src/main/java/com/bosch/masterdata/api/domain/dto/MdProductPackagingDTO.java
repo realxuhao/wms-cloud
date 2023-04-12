@@ -19,7 +19,7 @@ public class MdProductPackagingDTO extends PageDomain {
      */
     @ExcelIgnore
     @TableId(type = IdType.AUTO)
-    private Integer id;
+    private Long id;
 
 
     /**

@@ -37,8 +37,8 @@
         <where>
             delete_flag='0'
             <if test="productNo != null and productNo != '' ">and product_no like concat('%', #{productNo},'%')</if>
-            <if test="cell != null and cell != '' ">and cell = #{cell}</if>
-            <if test="status != null ">and status = #{status}</if>
+            <if test="cell != null and cell != '' ">and cell like concat('%', #{cell},'%')</if>
+            <if test="productName != null and productName != '' ">and product_name like concat('%', #{productName},'%')</if>
         </where>
     </select>
 

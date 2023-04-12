@@ -60,11 +60,12 @@ public class MdProductPackagingServiceImpl extends ServiceImpl<MdProductPackagin
         // Check if the productNo is duplicated
         LambdaQueryWrapper<ProductPackaging> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ProductPackaging::getProductNo, dto.getProductNo());
+        queryWrapper.eq(ProductPackaging::getCell, dto.getCell());
         queryWrapper.eq(ProductPackaging::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         ProductPackaging packaging = mdProductPackagingMapper.selectOne(queryWrapper);
         if (packaging != null && !packaging.getId().equals(dto.getId())) {
             // If the productNo already exists and it's not the current object, throw an exception
-            throw new ServiceException("存在重复产品编号的数据");
+            throw new ServiceException("存在重复成品料号和cell的数据");
         }
         ProductPackaging conver = BeanConverUtil.conver(dto, ProductPackaging.class);
         return mdProductPackagingMapper.updateById(conver);
