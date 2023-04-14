@@ -125,6 +125,13 @@ export const asyncRouterMap = [
             component: () => import('@/views/masterData/product/DispatchRule'),
             meta: { title: '成品上架规则', permission: [] },
             hideChildrenInMenu: true
+          },
+          {
+            path: '/master-data/productPackaging',
+            name: 'productPackaging',
+            component: () => import('@/views/masterData/productPackaging/Index'),
+            meta: { title: '成品包装量', permission: [] },
+            hideChildrenInMenu: true
           }
         ]
       },

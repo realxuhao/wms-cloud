@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -69,8 +70,18 @@ public class MdProductPackagingController extends BaseController {
     @Log(title = "新增", businessType = BusinessType.INSERT)
     @PostMapping
     @ApiOperation("新增")
-    public AjaxResult add(@RequestBody MdProductPackagingDTO dto) {
-        return toAjax(mdProductPackagingService.insertMdProductPackaging(dto));
+    public R add(@RequestBody MdProductPackagingDTO dto) {
+        List<MdProductPackagingDTO> list = new ArrayList<>();
+        list.add(dto);
+        boolean b=false;
+        boolean valid = mdProductPackagingService.validMdProductPackagingList(list);
+        if (valid) {
+            return R.fail(400, "存在重复成品料号和cell的数据");
+        } else {
+            List<ProductPackaging> dos = BeanConverUtil.converList(list, ProductPackaging.class);
+            b = mdProductPackagingService.saveBatch(dos);
+        }
+        return b?R.ok(dto): R.fail("保存失败");
     }
 
     /**
@@ -109,7 +120,7 @@ public class MdProductPackagingController extends BaseController {
             if (CollectionUtils.isNotEmpty(list)) {
                 boolean valid = mdProductPackagingService.validMdProductPackagingList(list);
                 if (valid) {
-                    return R.fail(400, "存在重复数据");
+                    return R.fail(400, "存在重复成品料号和cell的数据");
                 } else {
 
                     List<ProductPackaging> dos = BeanConverUtil.converList(list, ProductPackaging.class);

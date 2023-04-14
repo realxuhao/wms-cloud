@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.product.mapper.StockTakePlanMapper">
+
+    <resultMap id="BaseResultMap" type="com.bosch.product.api.domain.StockTakePlan">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="code" column="code" jdbcType="VARCHAR"/>
+            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
+            <result property="cell" column="cell" jdbcType="VARCHAR"/>
+            <result property="wareCode" column="ware_code" jdbcType="VARCHAR"/>
+            <result property="areaCode" column="area_code" jdbcType="VARCHAR"/>
+            <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="method" column="method" jdbcType="VARCHAR"/>
+            <result property="createdMaterialQuantity" column="created_material_quantity" jdbcType="INTEGER"/>
+            <result property="firstIssueMaterialQuantity" column="first_issue_material_quantity" jdbcType="INTEGER"/>
+            <result property="secondIssueMaterialQuantity" column="second_issue_material_quantity" jdbcType="INTEGER"/>
+            <result property="thirdIssueMaterialQuantity" column="third_issue_material_quantity" jdbcType="INTEGER"/>
+            <result property="totalIssueQuantity" column="total_issue_quantity" jdbcType="INTEGER"/>
+            <result property="takeBinQuantity" column="take_bin_quantity" jdbcType="INTEGER"/>
+            <result property="diffBinQuantity" column="diff_bin_quantity" jdbcType="INTEGER"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="materialType" column="material_type" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,code,create_by,
+        update_by,create_time,update_time,
+        remark,delete_flag,cell,
+        ware_code,area_code,type,
+        method,created_material_quantity,first_issue_material_quantity,
+        second_issue_material_quantity,third_issue_material_quantity,total_issue_quantity,
+        take_bin_quantity,diff_bin_quantity,status,
+        material_type
+    </sql>
+</mapper>

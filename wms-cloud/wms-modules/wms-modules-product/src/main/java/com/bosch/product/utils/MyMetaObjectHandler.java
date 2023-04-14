@@ -12,7 +12,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
         this.setFieldValByName("createTime", DateUtils.getNowDate(), metaObject);
-        this.setFieldValByName("createBy", SecurityUtils.getUsername(), metaObject);
+        this.setFieldValByName("createBy", SecurityUtils.getLoginUser().getUsername(), metaObject);
     }
 
     @Override
@@ -20,7 +20,7 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
         this.setFieldValByName("updateTime", DateUtils.getNowDate(), metaObject);
         System.out.println(SecurityUtils.getUsername());
-        this.setFieldValByName("updateBy", SecurityUtils.getUsername(), metaObject);
+        this.setFieldValByName("updateBy", SecurityUtils.getLoginUser().getUsername(), metaObject);
     }
 }
 

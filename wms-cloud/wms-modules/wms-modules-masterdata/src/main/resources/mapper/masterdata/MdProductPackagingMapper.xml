@@ -15,16 +15,19 @@
             <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
             <result property="productNo" column="product_no" jdbcType="VARCHAR"/>
             <result property="cell" column="cell" jdbcType="VARCHAR"/>
-            <result property="totalQuantity" column="total_quantity" jdbcType="VARCHAR"/>
-            <result property="minQuantity" column="min_quantity" jdbcType="VARCHAR"/>
         <result property="productName" column="product_name" jdbcType="VARCHAR"/>
+        <result property="transportUnit" column="transport_unit" jdbcType="VARCHAR"/>
+        <result property="boxSpecification" column="box_specification" jdbcType="VARCHAR"/>
+            <result property="standardUnits" column="standard_units" jdbcType="VARCHAR"/>
+            <result property="weight" column="weight" jdbcType="VARCHAR"/>
+        <result property="volume" column="volume" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,create_by,update_by,
         create_time,update_time,status,
         remark,delete_flag,product_no,
-        cell,total_quantity,min_quantity,product_name
+        cell,product_name,transport_unit,box_specification,standard_units,weight,volume
     </sql>
 
     <select id="selectListByDTO" parameterType="MdProductPackagingDTO" resultMap="BaseResultMap">
@@ -34,19 +37,23 @@
         <where>
             delete_flag='0'
             <if test="productNo != null and productNo != '' ">and product_no like concat('%', #{productNo},'%')</if>
-            <if test="cell != null and cell != '' ">and cell = #{cell}</if>
-            <if test="status != null ">and status = #{status}</if>
+            <if test="cell != null and cell != '' ">and cell like concat('%', #{cell},'%')</if>
+            <if test="productName != null and productName != '' ">and product_name like concat('%', #{productName},'%')</if>
         </where>
     </select>
 
     <update id="updateMdProductPackaging" parameterType="MdProductPackagingDTO">
         update md_product_packaging
-        set update_by=#{updateBy},
-        update_time=#{updateTime},
-        total_quantity=#{totalQuantity},
-        min_quantity=#{minQuantity},
-        product_name=#{productName}
-        where id=#{id}
+        set
+        product_no=#{productNo},
+        cell=#{cell},
+        product_name=#{productName},
+        transport_unit=#{transportUnit},
+        box_specification=#{boxSpecification},
+        standard_units=#{standardUnits},
+        weight=#{weight},
+        volume=#{volume}
+        where id=#{id} and delete_flag='0'
     </update>
 
     <update id="deleteMdProductPackaging" parameterType="Long[]">
