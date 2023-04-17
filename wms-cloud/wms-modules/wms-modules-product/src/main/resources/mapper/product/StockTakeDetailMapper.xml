@@ -28,4 +28,33 @@
         status,stock_quantity,take_quantity,
         is_diff,task_no
     </sql>
+    <select id="list" resultType="com.bosch.product.api.domain.vo.StockTakeDetailVO">
+        select d.*,
+               p.cell,
+               p.type,
+               p.method,
+               p.take_material_type
+        from stock_take_detail d left join stock_take_plan p on d.plan_code = p.code and p.delete_flag = 0
+        <where>
+            <if test="cell != null  and cell != ''">and p.cell like concat('%', #{cell}, '%')</if>
+            <if test="wareCode != null  and wareCode != ''">and d.ware_code like concat('%', #{wareCode}, '%')</if>
+            <if test="areaCode != null  and areaCode != ''">and d.area_code like concat('%', #{areaCode}, '%')</if>
+            <if test="type != null">and p.type = #{type}</if>
+            <if test="method != null">and p.method = #{method}</if>
+            <if test="circleTakeMonth != null">and d.circle_take_month =#{circleTakeMonth}</if>
+            <if test="takeMaterialType != null">and p.take_material_type = #{takeMaterialType}</if>
+            <if test="status != null">and d.status =#{status}</if>
+            <if test="ids != null">
+                and d.id in
+                <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+        </where>
+
+
+
+
+    </select>
 </mapper>

@@ -94,6 +94,7 @@ public class MaterialBinServiceImpl extends ServiceImpl<MaterialBinMapper, Mater
     @Override
     public int updateMaterialBin(MaterialBin materialBin) {
         materialBin.setUpdateTime(DateUtils.getNowDate());
+        materialBin.setUpdateBy(SecurityUtils.getUsername());
         return materialBinMapper.updateMaterialBin(materialBin);
     }
 

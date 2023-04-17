@@ -2,6 +2,8 @@ package com.bosch.product.service;
 
 import com.bosch.product.api.domain.StockTakePlan;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.product.api.domain.dto.StockTakeAddDTO;
+import org.apache.ibatis.annotations.Param;
 
 /**
 * @author GUZ1CGD4
@@ -10,4 +12,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface IStockTakePlanService extends IService<StockTakePlan> {
 
+    void addStockTakePlan(StockTakeAddDTO dto);
+
+    void delete(@Param("id") Long id);
 }

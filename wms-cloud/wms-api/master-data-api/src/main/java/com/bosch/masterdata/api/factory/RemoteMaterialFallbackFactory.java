@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 /**
  * 用户服务降级处理
  *
@@ -33,6 +35,10 @@ public class RemoteMaterialFallbackFactory implements FallbackFactory<RemoteMate
             public R<PageVO<MaterialVO>> list(MaterialDTO materialDTO) {
                 return R.fail("物料查询失败");
             }
+
+            @Override
+            public R<List<MaterialVO>> getByCell(String cell) {
+                return R.fail("物料查询失败");            }
 
 
         };

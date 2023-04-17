@@ -91,6 +91,17 @@ public class MaterialController extends BaseController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
+    @ApiOperation("查询物料列表")
+    @GetMapping("/materialVOList")
+    public R<List<MaterialVO>> getByCell(@PathVariable("cell") String cell) {
+        MaterialDTO  materialDTO = new MaterialDTO();
+        if (materialDTO.getStatus() == null) {
+            materialDTO.setStatus(1L);
+        }
+        materialDTO.setCell(cell);
+        List<MaterialVO> list = materialService.selectMaterialVOList(materialDTO);
+        return R.ok(list);
+    }
     /**
      * 新增物料信息
      */

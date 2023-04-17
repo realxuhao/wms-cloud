@@ -13,8 +13,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 @FeignClient(contextId = "remoteMaterialService", configuration = FeignConfig.class,value = ServiceNameConstants.MASTER_DATA_SERVICE, fallbackFactory = RemoteMaterialFallbackFactory.class)
 public interface RemoteMaterialService {
@@ -25,6 +25,11 @@ public interface RemoteMaterialService {
 
     @GetMapping("/material/materialVOList")
     public R<PageVO<MaterialVO>> list(@SpringQueryMap MaterialDTO materialDTO);
+
+
+    @GetMapping("/material/getByCell/{cell}")
+    public R<List<MaterialVO>> getByCell(@PathVariable("cell") String cell);
+
 
 
 }

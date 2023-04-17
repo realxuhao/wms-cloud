@@ -2,6 +2,7 @@ package com.bosch.product.service;
 
 import com.bosch.product.api.domain.StockTakeDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.product.api.domain.dto.StockTakeDetailQueryDTO;
 
 /**
 * @author GUZ1CGD4
@@ -10,4 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface IStockTakeDetailService extends IService<StockTakeDetail> {
 
+    void issue(StockTakeDetailQueryDTO dto);
 }
