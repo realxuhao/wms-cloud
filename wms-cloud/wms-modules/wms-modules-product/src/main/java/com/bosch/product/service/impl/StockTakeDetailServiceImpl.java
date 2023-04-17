@@ -155,7 +155,7 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
                 stockTakeDetail.setWareCode(item.getWareCode());
                 stockTakeDetail.setAreaCode(item.getAreaCode());
                 stockTakeDetail.setBinCode(item.getBinCode());
-\stockTakeDetail.setStockQuantity(item.getTotalStock());
+                stockTakeDetail.setStockQuantity(item.getTotalStock());
                 stockTakeDetail.setCircleTakeMonth(month);
                 stockTakeDetail.setStatus(StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
                 stockTakeDetail.setTaskNo(taskNo);
