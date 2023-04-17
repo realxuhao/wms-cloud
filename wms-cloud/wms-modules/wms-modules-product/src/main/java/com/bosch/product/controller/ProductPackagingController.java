@@ -247,9 +247,9 @@ public class ProductPackagingController extends BaseController {
     @PostMapping(value = "/genTask")
     @ApiOperation("生成打包任务")
     @Transactional(rollbackFor = Exception.class)
-    public R<ShippingPlanDTO> genTask() {
+    public R<ShippingPlanDTO> genTask(ShippingPlanDTO dto) {
         try {
-            ShippingPlanDTO dto=new ShippingPlanDTO();
+
             List<ShippingPlan> list = shippingPlanService.getList(dto);
             List<ShippingPlanVO> vos = BeanConverUtil.converList(list, ShippingPlanVO.class);
             if (CollectionUtils.isEmpty(list)) {
@@ -262,6 +262,7 @@ public class ProductPackagingController extends BaseController {
             shippingPlanService.updateBatchById(listPair.shippingPlans);
             return R.ok();
         } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             logger.error(e.getMessage());
             return R.fail(e.getMessage());
         }
@@ -273,8 +274,6 @@ public class ProductPackagingController extends BaseController {
     @ApiOperation("批量上传")
     @PostMapping(value = "/planImport", headers = "content-type=multipart/form-data")
     public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws Exception {
-
-
         //解析文件服务
         R result = fileService.packagingDataImport(file, ClassType.SHIPPINGPLANDTO.getDesc());
         if (result.isSuccess()) {
@@ -291,6 +290,13 @@ public class ProductPackagingController extends BaseController {
                         })//N/A替换为1
                         .collect(Collectors.toList()); // 收集器：将过滤后的结果收集到列表中
 
+                //用validate校验filteredShippingPlans
+                boolean validate = shippingPlanService.validate(filteredShippingPlans);
+                //如果validate为true，说明excel中数据有重复,返回400和 错误信息“excel中数据有重复”
+                if (validate) {
+                    return R.fail(400, "excel中数据有重复");
+                }
+                //如果validate为false，说明excel中数据没有重复，将filteredShippingPlans转换为ShippingPlan对象，批量插入数据库
                 List<ShippingPlan> shippingPlans = BeanConverUtil.converList(filteredShippingPlans, ShippingPlan.class);
                 boolean b = shippingPlanService.saveBatch(shippingPlans);
             } else {
@@ -300,6 +306,52 @@ public class ProductPackagingController extends BaseController {
         } else {
             return R.fail(result.getMsg());
         }
+    }
+
+    /**
+     * 批量上传
+     */
+    @ApiOperation("批量更新")
+    @PostMapping(value = "/saveBatch", headers = "content-type=multipart/form-data")
+    @Transactional(rollbackFor = Exception.class)
+    public R saveBatch(@RequestPart(value = "file", required = true) MultipartFile file) throws Exception {
+        try {
+            //解析文件服务
+            R result = fileService.packagingDataImport(file, ClassType.SHIPPINGPLANDTO.getDesc());
+            if (result.isSuccess()) {
+                Object data = result.getData();
+                List<ShippingPlanDTO> dtoList = JSON.parseArray(JSON.toJSONString(data), ShippingPlanDTO.class);
+                if (CollectionUtils.isNotEmpty(dtoList)) {
+                    List<ShippingPlanDTO> filteredShippingPlans = dtoList.stream()
+                            .filter(plan -> plan.getEtoPo() != null) // 过滤器：过滤掉etoPo字段为空的数据
+                            .map(plan -> {
+                                if ("#N/A".equals(plan.getPalletQuantity())) {
+                                    plan.setPalletQuantity("1");
+                                }
+                                return plan;
+                            })//N/A替换为1
+                            .collect(Collectors.toList()); // 收集器：将过滤后的结果收集到列表中
+
+
+                    //删除excel中重复数据
+                    boolean b1 = shippingPlanService.deleteRepeatPlan(filteredShippingPlans);
+
+                    //如果validate为false，说明excel中数据没有重复，将filteredShippingPlans转换为ShippingPlan对象，批量插入数据库
+                    List<ShippingPlan> shippingPlans = BeanConverUtil.converList(filteredShippingPlans, ShippingPlan.class);
+                    boolean b = shippingPlanService.saveBatch(shippingPlans);
+
+                } else {
+                    return R.fail("excel中无数据");
+                }
+                return R.ok(dtoList);
+            } else {
+                return R.fail(result.getMsg());
+            }
+        }catch (Exception e){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            return R.fail(e.getMessage());
+        }
+
     }
 
     /**

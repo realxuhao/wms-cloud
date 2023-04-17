@@ -96,7 +96,7 @@
             </a-button>
           </a-upload>
         </a-tooltip>
-        <a-button type="primary" icon="logout" @click="handleGenTask" :loading="genTaskLoading">
+        <a-button type="primary" icon="logout" @click="visible = true" :loading="genTaskLoading">
           生成打包计划
         </a-button>
       </div>
@@ -147,11 +147,29 @@
       </div>
     </div>
 
+    <a-modal
+      title="Title"
+      :visible="visible"
+      :confirm-loading="genTaskLoading"
+      @ok="handleGenTask"
+      width="600px"
+      @cancel="visible = false"
+    >
+      <a-form layout="inline" class="search-content">
+          <a-form-item label="移库日期">
+            <a-range-picker
+              format="YYYY-MM-DD"
+              v-model="moveDate"
+            />
+          </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+
 import _ from 'lodash'
 
 const columns = [
@@ -293,7 +311,10 @@ export default {
         ...queryFormAttr()
       },
       columns,
-      list: []
+      list: [],
+
+      visible: false,
+      moveDate: []
     }
   },
   computed: {
@@ -303,6 +324,16 @@ export default {
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
+    },
+    async uploadBatchUpdate (formdata) {
+      try {
+        await this.$store.dispatch('finishedProduct/uploadBatchUpdate', formdata)
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.uploadLoading = false
+      }
     },
     async handleDelete (record) {
       try {
@@ -324,8 +355,12 @@ export default {
     },
     async handleGenTask () {
       try {
+        const date = this.moveDate
+        const stockMovementDateStart = date.length > 0 ? date[0].format('YYYY-MM-DD 00:00:00') : undefined
+        const stockMovementDateEnd = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:59') : undefined
+
         this.genTaskLoading = true
-        await this.$store.dispatch('finishedProduct/genTask')
+        await this.$store.dispatch('finishedProduct/genTask',{ stockMovementDateStart, stockMovementDateEnd })
 
         this.queryForm.pageNum = 1
         this.loadTableList()
@@ -353,9 +388,20 @@ export default {
 
         this.$message.success('导入成功！')
       } catch (error) {
-        this.$message.error(error.message)
-      } finally {
-        this.uploadLoading = false
+        if (error.code === 400) {
+          this.$confirm({
+            title: '是否更新？',
+            content: '存在重复数据',
+            onOk: () => {
+              this.uploadBatchUpdate(formdata)
+            },
+            onCancel () {
+            }
+          })
+        } else {
+          this.$message.error(error.message)
+          this.uploadLoading = false
+        }
       }
     },
     async loadTableList () {
