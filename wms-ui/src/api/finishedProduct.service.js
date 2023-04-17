@@ -32,7 +32,7 @@ const completeTask = async (ids) => {
   return data
 }
 const genTask = async (options) => {
-  const url = `/productPackaging/genTask`
+  const url = `/productPackaging/genTask?${qs.stringify(options)}`
   const { data } = await createAuthInstance(baseUrl).post(url, options)
   return data
 }
@@ -57,7 +57,11 @@ const getHistoryRecord = async (parameter) => {
   const { data } = await createAuthInstance(baseUrl).get(url, parameter)
   return data
 }
-
+const uploadBatchUpdate = async (formdata) => {
+  const url = `/productPackaging/saveBatch`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
 export const finishedProductService = {
   planImport,
   genTask,
@@ -67,5 +71,6 @@ export const finishedProductService = {
   destroyPlan,
   getDashboard,
   completeTask,
-  deleteTask
+  deleteTask,
+  uploadBatchUpdate
 }

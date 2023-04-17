@@ -1,6 +1,6 @@
 import { finishedProductService } from '@/api'
 
-const finishedProduc = {
+const finishedProduct = {
   namespaced: true,
   state: {
   },
@@ -49,8 +49,12 @@ const finishedProduc = {
     async getStorageList ({ commit }, options) {
       const data = await finishedProductService.getStorageList(options)
       return data
+    },
+    async uploadBatchUpdate ({ commit }, formdata) {
+      const data = await finishedProductService.uploadBatchUpdate(formdata)
+      return data
     }
   }
 }
 
-export default finishedProduc
+export default finishedProduct

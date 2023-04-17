@@ -43,4 +43,19 @@ public interface IShippingPlanService extends IService<ShippingPlan> {
      * @return
      */
     Integer deletePlan(Long[] ids);
+
+    /**
+     * 校验
+     * @param
+     * @return
+     */
+    boolean validate(List<ShippingPlanDTO> list);
+
+    /**
+     * 删除重复的plan
+     * @param
+     * @return
+     */
+    boolean deleteRepeatPlan(List<ShippingPlanDTO> list);
+
 }

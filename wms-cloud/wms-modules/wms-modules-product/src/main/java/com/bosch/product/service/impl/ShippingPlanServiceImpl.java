@@ -1,14 +1,18 @@
 package com.bosch.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
+import com.bosch.product.api.domain.ShippingHistory;
 import com.bosch.product.api.domain.ShippingPlan;
 import com.bosch.product.api.domain.ShippingTask;
 import com.bosch.product.api.domain.dto.ShippingPlanDTO;
 import com.bosch.product.api.domain.dto.ShippingPlanVO;
+import com.bosch.product.mapper.ShippingHistoryMapper;
 import com.bosch.product.mapper.ShippingTaskMapper;
 import com.bosch.product.service.IShippingPlanService;
 import com.bosch.product.mapper.ShippingPlanMapper;
@@ -18,10 +22,10 @@ import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -38,12 +42,15 @@ public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, Shi
     @Autowired
     private ShippingTaskMapper shippingTaskMapper;
 
+    @Autowired
+    private ShippingHistoryMapper shippingHistoryMapper;
+
     @Override
     public List<ShippingPlan> getList(ShippingPlanDTO shippingPlanDTO) {
         LambdaQueryWrapper<ShippingPlan> wrapper = new LambdaQueryWrapper<>();
         //wrapper.eq(ShippingPlan::getStatus, StatusEnums.FALSE);
         wrapper.eq(ShippingPlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        if (shippingPlanDTO.getStatus()!=null) {
+        if (shippingPlanDTO.getStatus() != null) {
             wrapper.eq(ShippingPlan::getStatus, shippingPlanDTO.getStatus());
         }
         if (StringUtils.isNotBlank(shippingPlanDTO.getShippingMark())) {
@@ -142,6 +149,62 @@ public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, Shi
     @Override
     public Integer deletePlan(Long[] ids) {
         return shippingPlanMapper.deletePlan(ids);
+    }
+
+    @Override
+    public boolean validate(List<ShippingPlanDTO> list) {
+
+        //将list的shippingMark，etoPo转换为一个新set
+        Set<String> set = new HashSet<>();
+        for (ShippingPlanDTO shippingPlanDTO : list) {
+            set.add(shippingPlanDTO.getShippingMark() + "+" + shippingPlanDTO.getEtoPo());
+        }
+        QueryWrapper<ShippingPlan> wrapper = new QueryWrapper<>();
+        wrapper.in("CONCAT(shipping_mark,'+', eto_po)", set);
+        //deleteflag为0
+        wrapper.eq("delete_flag", 0);
+        int count = shippingPlanMapper.selectCount(wrapper);
+        if (count > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteRepeatPlan(List<ShippingPlanDTO> list) {
+        //将list的shippingMark，etoPo转换为一个新set
+        Set<String> set = new HashSet<>();
+        for (ShippingPlanDTO shippingPlanDTO : list) {
+            set.add(shippingPlanDTO.getShippingMark() + "+" + shippingPlanDTO.getEtoPo());
+        }
+        QueryWrapper<ShippingPlan> wrapper = new QueryWrapper<>();
+        wrapper.in("CONCAT(shipping_mark,'+', eto_po)", set);
+        //deleteflag为0
+        wrapper.eq("delete_flag", 0);
+        //删除plan
+        int countPlan = shippingPlanMapper.delete(wrapper);
+        //删除task
+        QueryWrapper<ShippingTask> taskWrapper = new QueryWrapper<>();
+        taskWrapper.in("CONCAT(shipping_mark,'+', eto_po)", set);
+        taskWrapper.eq("delete_flag", 0);
+        //查询要删除的task的id
+        List<ShippingTask> shippingTasks = shippingTaskMapper.selectList(taskWrapper);
+        int countTask = shippingTaskMapper.delete(taskWrapper);
+        //获取要删除的task的id，用lambda表达式
+        //如果shippingTasks不为空，就返回shippingTasks的id
+        if(CollectionUtils.isNotEmpty(shippingTasks)){
+            List<Long> taskIds = shippingTasks.stream().map(ShippingTask::getId).collect(Collectors.toList());
+            //删除history，delete_flag为0
+            QueryWrapper<ShippingHistory> historyWrapper = new QueryWrapper<>();
+            historyWrapper.in("shipping_task_id", taskIds);
+            historyWrapper.eq("delete_flag", 0);
+            int countHistory = shippingHistoryMapper.delete(historyWrapper);
+        }
+        if (countPlan > 0 && countTask > 0) {
+            return true;
+        }
+        return false;
     }
 
 
