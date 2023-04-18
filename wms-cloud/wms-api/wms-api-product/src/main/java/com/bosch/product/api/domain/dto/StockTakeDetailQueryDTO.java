@@ -48,5 +48,7 @@ public class StockTakeDetailQueryDTO {
     private Date startIssueTime;
     @ApiModelProperty(value = "结束创建时间")
     private Date endIssueTime;
+    @ApiModelProperty(value = "ssccNb")
+    private String ssccNb;
 
 }

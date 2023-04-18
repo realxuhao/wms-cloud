@@ -2,6 +2,7 @@ package com.bosch.product.controller;
 
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.product.api.domain.StockTakeDetail;
+import com.bosch.product.api.domain.dto.PdaTakeOperateDTO;
 import com.bosch.product.api.domain.dto.ProductWareShiftQueryDTO;
 import com.bosch.product.api.domain.dto.StockTakeAddDTO;
 import com.bosch.product.api.domain.dto.StockTakeDetailQueryDTO;
@@ -11,6 +12,8 @@ import com.bosch.product.service.IStockTakeDetailService;
 import com.bosch.product.service.IStockTakePlanService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
+import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -37,7 +40,7 @@ public class StockTakePlanDetailController extends BaseController {
     private IStockTakeDetailService detailService;
 
     @PostMapping(value = "/issue")
-    @ApiOperation("新增盘点计划")
+    @ApiOperation("下发")
     public R issue(@RequestBody StockTakeDetailQueryDTO dto) {
         detailService.issue(dto);
         return R.ok();
@@ -48,12 +51,13 @@ public class StockTakePlanDetailController extends BaseController {
     @ApiOperation("任务列表")
     public R<List<StockTakeTaskVO>> taskList(@RequestBody StockTakeDetailQueryDTO dto) {
         List<StockTakeTaskVO> takeTaskVOS = detailService.getTaskList(dto);
-        return R.ok(null);
+        return R.ok(takeTaskVOS);
     }
 
 
     @GetMapping(value = "/list")
-    public R<PageVO<StockTakeDetailVO>> list(StockTakeDetailQueryDTO queryDTO){
+    @ApiOperation("detail列表")
+    public R<PageVO<StockTakeDetailVO>> list(StockTakeDetailQueryDTO queryDTO) {
         if (queryDTO == null) {
             queryDTO = new StockTakeDetailQueryDTO();
         }
@@ -63,8 +67,30 @@ public class StockTakePlanDetailController extends BaseController {
         startPage();
         List<StockTakeDetailVO> detailVOS = detailService.getDetailList(queryDTO);
         return R.ok(new PageVO<>(detailVOS, new PageInfo<>(detailVOS).getTotal()));
-
     }
+
+
+    @GetMapping(value = "/getByBarCode/{barCode}")
+    @ApiOperation("扫码获取单个")
+    public R<StockTakeDetailVO> getByBarCode(@PathVariable("barCode") String barCode) {
+        String sscc = "";
+        if (barCode.length() == 50) {
+            sscc = MesBarCodeUtil.getSSCC(barCode);
+        } else if (barCode.length() == 71) {
+            sscc = ProductQRCodeUtil.getSSCC(barCode);
+        }
+        return R.ok(detailService.getByBarCode(sscc));
+    }
+
+    @PostMapping(value = "/operate")
+    @ApiOperation("PDA盘点操作接口")
+    public R operate(@RequestBody PdaTakeOperateDTO pdaTakeOperateDTO){
+        detailService.operate(pdaTakeOperateDTO);
+        return R.ok();
+    }
+
+
+
 
 
 }

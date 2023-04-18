@@ -37,6 +37,8 @@
         from stock_take_detail d left join stock_take_plan p on d.plan_code = p.code and p.delete_flag = 0
         <where>
             <if test="cell != null  and cell != ''">and p.cell like concat('%', #{cell}, '%')</if>
+            <if test="ssccNb != null  and ssccNb != ''">and d.sscc_nb like concat('%', #{ssccNb}, '%')</if>
+
             <if test="wareCode != null  and wareCode != ''">and d.ware_code like concat('%', #{wareCode}, '%')</if>
             <if test="areaCode != null  and areaCode != ''">and d.area_code like concat('%', #{areaCode}, '%')</if>
             <if test="type != null">and p.type = #{type}</if>

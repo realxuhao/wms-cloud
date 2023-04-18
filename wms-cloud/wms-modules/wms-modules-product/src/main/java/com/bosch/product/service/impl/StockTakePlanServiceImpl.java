@@ -135,6 +135,15 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
 
     }
 
+    @Override
+    public StockTakePlan getByPlanCode(String planCode) {
+        LambdaQueryWrapper<StockTakePlan> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(StockTakePlan::getCode,planCode)
+                .eq(StockTakePlan::getDeleteFlag,DeleteFlagStatus.FALSE.getCode())
+                .last("limit 1");
+        return this.getOne(queryWrapper);
+    }
+
     private void setCircleMonth(List<StockTakeDetail> stockTakeDetailList, Integer circleTakeMonth) {
 
         List<String> materialTypeList = stockTakeDetailList.stream().map(StockTakeDetail::getMaterialCode).collect(Collectors.toList());
@@ -170,7 +179,6 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
 
         return nextMonth;
     }
-
 
 
     private List<StockTakeDetail> buildTakeDetailListByProducts(List<StockTakeDetail> stockTakeDetailList, List<ProductStock> productStockList, String planCode) {

@@ -8,6 +8,7 @@ import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.StockTakeDetail;
 import com.bosch.product.api.domain.StockTakePlan;
+import com.bosch.product.api.domain.dto.PdaTakeOperateDTO;
 import com.bosch.product.api.domain.dto.StockTakeDetailQueryDTO;
 import com.bosch.product.api.domain.vo.StockTakeDetailVO;
 import com.bosch.product.api.domain.vo.StockTakeTaskVO;
@@ -25,13 +26,12 @@ import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -47,6 +47,7 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
     private StockTakeDetailMapper detailMapper;
 
     @Autowired
+    @Lazy
     private IStockTakePlanService planService;
 
     @Autowired
@@ -80,6 +81,65 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
     @Override
     public List<StockTakeDetailVO> getDetailList(StockTakeDetailQueryDTO queryDTO) {
         return detailMapper.getDetailList(queryDTO);
+    }
+
+    @Override
+    public StockTakeDetailVO getByBarCode(String sscc) {
+        if (StringUtils.isEmpty(sscc)) {
+            throw new ServiceException("sscc不能为空");
+        }
+        StockTakeDetailQueryDTO queryDTO = new StockTakeDetailQueryDTO();
+        queryDTO.setSsccNb(sscc);
+        queryDTO.setStatus(StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
+        List<StockTakeDetailVO> detailList = this.getDetailList(queryDTO);
+        if (CollectionUtils.isEmpty(detailList)) {
+            throw new ServiceException("没有该sscc:" + sscc + " 对应的待盘点任务");
+        }
+        StockTakeDetailVO stockTakeDetailVO = detailList.get(0);
+        if (stockTakeDetailVO.getType() == 1) {//盲盘把数量设置为null
+            stockTakeDetailVO.setStockQuantity(null);
+        }
+        return stockTakeDetailVO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void operate(PdaTakeOperateDTO pdaTakeOperateDTO) {
+        StockTakeDetail takeDetail = this.getById(pdaTakeOperateDTO.getDetailId());
+        StockTakePlan takePlan = planService.getByPlanCode(takeDetail.getPlanCode());
+        if (takePlan.getType() == 1) {//盲盘
+            takeDetail.setTakeQuantity(pdaTakeOperateDTO.getPdaTakeQuantity());
+            if (takeDetail.getStockQuantity().equals(pdaTakeOperateDTO.getPdaTakeQuantity())) {
+                takeDetail.setIsDiff(0);
+            } else {
+                takeDetail.setIsDiff(1);
+                takePlan.setDiffBinQuantity(takePlan.getDiffBinQuantity() + 1);
+            }
+        } else {//明盘
+            if (pdaTakeOperateDTO.getIsDiff().equals(Boolean.FALSE)) {
+                takeDetail.setTakeQuantity(pdaTakeOperateDTO.getPdaTakeQuantity());
+                takeDetail.setIsDiff(1);
+                takePlan.setDiffBinQuantity(takePlan.getDiffBinQuantity() + 1);
+            } else {
+                takeDetail.setIsDiff(0);
+            }
+        }
+        takePlan.setTakeBinQuantity(takePlan.getTakeBinQuantity() + 1);
+        takeDetail.setStatus(StockTakePlanDetailStatusEnum.FINISH.getCode());
+
+        //判断所有plan下所有任务是否完成，如果完成，更新状态
+        LambdaQueryWrapper<StockTakeDetail> detailQueryWrapper = new LambdaQueryWrapper<>();
+        detailQueryWrapper.eq(StockTakeDetail::getPlanCode, takeDetail.getPlanCode());
+        detailQueryWrapper.eq(StockTakeDetail::getStatus, StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
+        List<StockTakeDetail> list = this.list(detailQueryWrapper);
+        if (!CollectionUtils.isEmpty(list) && list.size() == 1) {
+            takePlan.setStatus(StockTakePlanStatusEnum.FINISH.getCode());
+        }
+
+        this.updateById(takeDetail);
+        planService.updateById(takePlan);
+
+
     }
 
     private void issueCircle(StockTakeDetailQueryDTO dto) {
@@ -146,6 +206,19 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
             throw new ServiceException("无待下发的盘点明细");
         }
 
+
+        int count = (int) takeDetailListByMonth.stream().map(StockTakeDetail::getMaterialCode).distinct().count();
+        if (dto.getCircleTakeMonth() == stockTakePlan.getCircleTakeMonth()) {
+            stockTakePlan.setFirstIssueMaterialQuantity(count + diffCount);
+        } else if (dto.getCircleTakeMonth() - stockTakePlan.getCircleTakeMonth() == 1) {
+            stockTakePlan.setSecondIssueMaterialQuantity(count + diffCount);
+        } else if (dto.getCircleTakeMonth() - stockTakePlan.getCircleTakeMonth() == 2) {
+            stockTakePlan.setThirdIssueMaterialQuantity(count + diffCount);
+        }
+        stockTakePlan.setTotalIssueQuantity(stockTakePlan.getFirstIssueMaterialQuantity() + stockTakePlan.getSecondIssueMaterialQuantity() + stockTakePlan.getThirdIssueMaterialQuantity());
+        planService.updateById(stockTakePlan);
+
+        this.updateBatchById(takeDetailListByMonth);
     }
 
     private Integer dealDiffProduct(List<ProductStock> productStockList, List<String> codeList, String planCode, Integer month, String taskNo) {
@@ -176,7 +249,7 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
             });
             this.saveBatch(detailList);
         }
-        return detailList.size();
+        return (int) detailList.stream().map(StockTakeDetail::getMaterialCode).distinct().count();
     }
 
     private Integer dealDiffMaterial(List<Stock> materialStockList, List<String> codeList, String planCode, Integer month, String taskNo) {
@@ -207,7 +280,7 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
             });
             this.saveBatch(detailList);
         }
-        return detailList.size();
+        return (int) detailList.stream().map(StockTakeDetail::getMaterialCode).distinct().count();
     }
 
 
@@ -224,11 +297,18 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
             item.setIssueTime(new Date());
         });
         List<String> planCodes = takeDetailVOList.stream().map(StockTakeDetail::getPlanCode).collect(Collectors.toList());
+        Map<String, List<StockTakeDetailVO>> detailMap = takeDetailVOList.stream()
+                .collect(Collectors.groupingBy(StockTakeDetailVO::getPlanCode));
+
 
         LambdaQueryWrapper<StockTakePlan> planQueryWrapper = new LambdaQueryWrapper<>();
         planQueryWrapper.in(StockTakePlan::getCode, planCodes);
         List<StockTakePlan> planList = planService.list(planQueryWrapper);
         planList.forEach(item -> {
+            if (detailMap.containsKey(item.getCode())) {
+                long count = detailMap.get(item.getCode()).stream().map(StockTakeDetail::getMaterialCode).distinct().count();
+                item.setTotalIssueQuantity((int) count);
+            }
             item.setStatus(StockTakePlanStatusEnum.PROCESSING.getCode());
             item.setTotalIssueQuantity(takeDetailVOList.size());
         });

@@ -2,6 +2,7 @@ package com.bosch.product.service;
 
 import com.bosch.product.api.domain.StockTakeDetail;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.product.api.domain.dto.PdaTakeOperateDTO;
 import com.bosch.product.api.domain.dto.StockTakeDetailQueryDTO;
 import com.bosch.product.api.domain.vo.StockTakeDetailVO;
 import com.bosch.product.api.domain.vo.StockTakeTaskVO;
@@ -20,4 +21,8 @@ public interface IStockTakeDetailService extends IService<StockTakeDetail> {
     List<StockTakeTaskVO> getTaskList(StockTakeDetailQueryDTO dto);
 
     List<StockTakeDetailVO> getDetailList(StockTakeDetailQueryDTO queryDTO);
+
+    StockTakeDetailVO getByBarCode(String sscc);
+
+    void operate(PdaTakeOperateDTO pdaTakeOperateDTO);
 }
