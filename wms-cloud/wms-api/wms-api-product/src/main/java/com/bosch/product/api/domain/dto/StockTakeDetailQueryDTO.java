@@ -3,6 +3,7 @@ package com.bosch.product.api.domain.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,5 +38,15 @@ public class StockTakeDetailQueryDTO {
     private Integer status;
     @ApiModelProperty(value = "下发类型，0：普通盘点，1：循环盘点")
     private int issueType;
+    @ApiModelProperty(value = "任务号")
+    private String taskNo;
+    @ApiModelProperty(value = "开始创建时间")
+    private Date startCreateTime;
+    @ApiModelProperty(value = "结束创建时间")
+    private Date endCreateTime;
+    @ApiModelProperty(value = "开始创建时间")
+    private Date startIssueTime;
+    @ApiModelProperty(value = "结束创建时间")
+    private Date endIssueTime;
 
 }

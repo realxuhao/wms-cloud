@@ -10,6 +10,7 @@ import com.bosch.product.api.domain.StockTakeDetail;
 import com.bosch.product.api.domain.StockTakePlan;
 import com.bosch.product.api.domain.dto.StockTakeDetailQueryDTO;
 import com.bosch.product.api.domain.vo.StockTakeDetailVO;
+import com.bosch.product.api.domain.vo.StockTakeTaskVO;
 import com.bosch.product.api.enumeration.StockTakePlanDetailStatusEnum;
 import com.bosch.product.api.enumeration.StockTakePlanStatusEnum;
 import com.bosch.product.service.IMaterialStockService;
@@ -71,6 +72,16 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
         }
     }
 
+    @Override
+    public List<StockTakeTaskVO> getTaskList(StockTakeDetailQueryDTO dto) {
+        return detailMapper.getTaskList(dto);
+    }
+
+    @Override
+    public List<StockTakeDetailVO> getDetailList(StockTakeDetailQueryDTO queryDTO) {
+        return detailMapper.getDetailList(queryDTO);
+    }
+
     private void issueCircle(StockTakeDetailQueryDTO dto) {
         if (StringUtils.isEmpty(dto.getPlanCode()) || dto.getCircleTakeMonth() == null) {
             throw new ServiceException("下发循环盘点，计划号和月份不可以为空");
@@ -110,6 +121,7 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
         takeDetailListByMonth.forEach(item -> {
             item.setStatus(StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
             item.setTaskNo(taskNo);
+            item.setIssueTime(new Date());
         });
 
         int diffCount = 0;
@@ -159,7 +171,7 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
                 stockTakeDetail.setCircleTakeMonth(month);
                 stockTakeDetail.setStatus(StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
                 stockTakeDetail.setTaskNo(taskNo);
-
+                stockTakeDetail.setIssueTime(new Date());
                 detailList.add(stockTakeDetail);
             });
             this.saveBatch(detailList);
@@ -190,6 +202,7 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
                 stockTakeDetail.setStockQuantity(item.getTotalStock());
                 stockTakeDetail.setCircleTakeMonth(month);
                 stockTakeDetail.setTaskNo(taskNo);
+                stockTakeDetail.setIssueTime(new Date());
                 detailList.add(stockTakeDetail);
             });
             this.saveBatch(detailList);
@@ -199,7 +212,7 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
 
 
     private void issueNormal(StockTakeDetailQueryDTO dto) {
-        List<StockTakeDetailVO> takeDetailVOList = detailMapper.list(dto);
+        List<StockTakeDetailVO> takeDetailVOList = detailMapper.getDetailList(dto);
         if (CollectionUtils.isEmpty(takeDetailVOList)) {
             throw new ServiceException("查询detail为空。");
         }
@@ -208,6 +221,7 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
         takeDetailVOList.forEach(item -> {
             item.setStatus(StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
             item.setTaskNo(taskNo);
+            item.setIssueTime(new Date());
         });
         List<String> planCodes = takeDetailVOList.stream().map(StockTakeDetail::getPlanCode).collect(Collectors.toList());
 
