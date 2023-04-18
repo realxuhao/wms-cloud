@@ -14,5 +14,5 @@ public class StockTakeTaskVO {
     @ApiModelProperty(value = "任务号")
     private String taskNo;
     @ApiModelProperty(value = "下发时间")
-    private String issusDate;
+    private String issueTime;
 }

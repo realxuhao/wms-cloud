@@ -92,7 +92,7 @@ public class MaterialController extends BaseController {
     }
 
     @ApiOperation("查询物料列表")
-    @GetMapping("/getByCell")
+    @GetMapping("/getByCell/{cell}")
     public R<List<MaterialVO>> getByCell(@PathVariable("cell") String cell) {
         MaterialDTO  materialDTO = new MaterialDTO();
         if (materialDTO.getStatus() == null) {

@@ -47,11 +47,18 @@ public class StockTakePlanDetailController extends BaseController {
     }
 
 
-    @PostMapping(value = "/taskList")
+    @GetMapping(value = "/taskList")
     @ApiOperation("任务列表")
-    public R<List<StockTakeTaskVO>> taskList(@RequestBody StockTakeDetailQueryDTO dto) {
+    public R<PageVO<StockTakeTaskVO>> taskList(StockTakeDetailQueryDTO dto) {
+        if (dto == null) {
+            dto = new StockTakeDetailQueryDTO();
+        }
+        if (!StringUtils.isEmpty(SecurityUtils.getWareCode())) {
+            dto.setWareCode(SecurityUtils.getWareCode());
+        }
+        startPage();
         List<StockTakeTaskVO> takeTaskVOS = detailService.getTaskList(dto);
-        return R.ok(takeTaskVOS);
+        return R.ok(new PageVO<>(takeTaskVOS, new PageInfo<>(takeTaskVOS).getTotal()));
     }
 
 

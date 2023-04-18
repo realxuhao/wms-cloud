@@ -89,19 +89,33 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
             LambdaQueryWrapper<Stock> materialStockQueryWrapper = new LambdaQueryWrapper<>();
             materialStockQueryWrapper.eq(StringUtils.isNotEmpty(dto.getWareCode()), Stock::getWareCode, dto.getWareCode())
                     .eq(StringUtils.isNotEmpty(dto.getAreaCode()), Stock::getAreaCode, dto.getAreaCode())
-                    .ne(Stock::getFreezeStock, (double) 0)
+                    .eq(Stock::getFreezeStock, (double) 0)
                     .in(!CollectionUtils.isEmpty(materialCodeList), Stock::getMaterialNb, materialCodeList);
 
             List<Stock> materialStockList = materialStockService.list(materialStockQueryWrapper);
+            if (dto.getMethod() == 1) {
+                long count = materialStockList.stream().map(Stock::getMaterialNb).distinct().count();
+                if (count < 3) {
+                    throw new ServiceException("物料种数<3，不可创建循环盘点");
+                }
+            }
             buildTakeDetailListByMaterials(stockTakeDetailList, materialStockList, stockTakePlan.getCode());
         } else if (dto.getTakeMaterialType() == 1) {
             LambdaQueryWrapper<ProductStock> productStockQueryWrapper = new LambdaQueryWrapper<>();
             productStockQueryWrapper.eq(StringUtils.isNotEmpty(dto.getWareCode()), ProductStock::getWareCode, dto.getWareCode())
                     .eq(StringUtils.isNotEmpty(dto.getAreaCode()), ProductStock::getAreaCode, dto.getAreaCode())
-                    .ne(ProductStock::getFreezeStock, (double) 0)
+                    .eq(ProductStock::getFreezeStock, (double) 0)
                     .in(!CollectionUtils.isEmpty(materialCodeList), ProductStock::getMaterialNb, materialCodeList);
             List<ProductStock> productStockList = productStockService.list(productStockQueryWrapper);
+            long count = productStockList.stream().map(ProductStock::getMaterialNb).distinct().count();
+            if (count < 3) {
+                throw new ServiceException("物料种数<3，不可创建循环盘点");
+            }
             buildTakeDetailListByProducts(stockTakeDetailList, productStockList, stockTakePlan.getCode());
+        }
+
+        if (CollectionUtils.isEmpty(stockTakeDetailList)) {
+            throw new ServiceException("该条件下没有可以盘点的库存。");
         }
 
         //如果是循环盘点,设置循环盘点月份
@@ -110,8 +124,10 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
         }
 
         //plan设置物料类别数量和库位数量
-        long count = stockTakeDetailList.stream().map(StockTakeDetail::getMaterialCode).count();
+        long count = stockTakeDetailList.stream().map(StockTakeDetail::getMaterialCode).distinct().count();
+
         stockTakePlan.setCreatedMaterialQuantity((int) count);
+        stockTakePlan.setCreatedBinQuantity(stockTakeDetailList.size());
 
         this.save(stockTakePlan);
 
@@ -124,6 +140,9 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
     @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
         StockTakePlan stockTakePlan = this.getById(id);
+        if (stockTakePlan == null) {
+            throw new ServiceException("该条数据不存在！");
+        }
         if (!stockTakePlan.getStatus().equals(StockTakePlanStatusEnum.CREATED.getCode())) {
             throw new ServiceException("该计划当前状态为：" + StockTakePlanStatusEnum.getDescByCode(stockTakePlan.getStatus()) + ",不可以删除");
         }
@@ -138,8 +157,8 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
     @Override
     public StockTakePlan getByPlanCode(String planCode) {
         LambdaQueryWrapper<StockTakePlan> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(StockTakePlan::getCode,planCode)
-                .eq(StockTakePlan::getDeleteFlag,DeleteFlagStatus.FALSE.getCode())
+        queryWrapper.eq(StockTakePlan::getCode, planCode)
+                .eq(StockTakePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode())
                 .last("limit 1");
         return this.getOne(queryWrapper);
     }

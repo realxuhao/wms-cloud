@@ -13,6 +13,4 @@ public class PdaTakeOperateDTO {
     private Long detailId;
     private Double pdaTakeQuantity;
     private Boolean isDiff;
-
-
 }

@@ -20,6 +20,8 @@ public class StockTakeDetailVO extends StockTakeDetail {
     private int type;
     @ApiModelProperty(value = "盘点方式,0:普通盘点，1：循环判断(默认普通盘点)")
     private int method;
+    @ApiModelProperty(value = "物料名称")
+    private String materialName;
 
 
 }

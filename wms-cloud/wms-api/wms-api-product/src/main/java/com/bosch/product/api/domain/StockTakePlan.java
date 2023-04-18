@@ -74,6 +74,12 @@ public class StockTakePlan extends BaseEntity implements Serializable {
     private Integer createdMaterialQuantity;
 
     /**
+     * 创建时物料总数
+     */
+    @TableField(value = "created_bin_quantity")
+    private Integer createdBinQuantity;
+
+    /**
      * 第一次下发时物料总数
      */
     @TableField(value = "first_issue_material_quantity")

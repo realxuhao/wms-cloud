@@ -215,7 +215,11 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
         } else if (dto.getCircleTakeMonth() - stockTakePlan.getCircleTakeMonth() == 2) {
             stockTakePlan.setThirdIssueMaterialQuantity(count + diffCount);
         }
-        stockTakePlan.setTotalIssueQuantity(stockTakePlan.getFirstIssueMaterialQuantity() + stockTakePlan.getSecondIssueMaterialQuantity() + stockTakePlan.getThirdIssueMaterialQuantity());
+        int firstIssueQuantity = stockTakePlan.getFirstIssueMaterialQuantity() == null ? 0 : stockTakePlan.getFirstIssueMaterialQuantity();
+        int secondIssueQuantity = stockTakePlan.getSecondIssueMaterialQuantity() == null ? 0 : stockTakePlan.getSecondIssueMaterialQuantity();
+        int thirdIssueQuantity = stockTakePlan.getThirdIssueMaterialQuantity() == null ? 0 : stockTakePlan.getThirdIssueMaterialQuantity();
+
+        stockTakePlan.setTotalIssueQuantity(firstIssueQuantity + secondIssueQuantity + thirdIssueQuantity);
         planService.updateById(stockTakePlan);
 
         this.updateBatchById(takeDetailListByMonth);
@@ -287,7 +291,7 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
     private void issueNormal(StockTakeDetailQueryDTO dto) {
         List<StockTakeDetailVO> takeDetailVOList = detailMapper.getDetailList(dto);
         if (CollectionUtils.isEmpty(takeDetailVOList)) {
-            throw new ServiceException("查询detail为空。");
+            throw new ServiceException("该条件下没有待下发的detail");
         }
         //任务号
         String taskNo = "task_" + DateUtils.parseDateToStr("yyyyMMddHHmm", new Date());
