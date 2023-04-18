@@ -1,5 +1,6 @@
 package com.bosch.product.service;
 
+import com.bosch.binin.api.domain.Stock;
 import com.bosch.product.api.domain.StockTakePlan;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.product.api.domain.dto.StockTakeAddDTO;
@@ -19,6 +20,8 @@ public interface IStockTakePlanService extends IService<StockTakePlan> {
     void addStockTakePlan(StockTakeAddDTO dto);
 
     void delete(@Param("id") Long id);
+
+    StockTakePlan getByPlanCode(String planCode);
 
     /**
      * 盘点计划列表

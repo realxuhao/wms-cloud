@@ -4,6 +4,7 @@ import com.bosch.product.api.domain.StockTakeDetail;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.product.api.domain.dto.StockTakeDetailQueryDTO;
 import com.bosch.product.api.domain.vo.StockTakeDetailVO;
+import com.bosch.product.api.domain.vo.StockTakeTaskVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -17,7 +18,10 @@ import java.util.List;
 @Mapper
 public interface StockTakeDetailMapper extends BaseMapper<StockTakeDetail> {
 
-    List<StockTakeDetailVO> list(StockTakeDetailQueryDTO dto);
+    List<StockTakeDetailVO> getDetailList(StockTakeDetailQueryDTO dto);
+
+    List<StockTakeTaskVO> getTaskList(StockTakeDetailQueryDTO dto);
+
 
 }
 

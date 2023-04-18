@@ -23,7 +23,7 @@ public class StockTakeAddDTO {
     private int method;
     @ApiModelProperty(value = "循环盘点月份")
     private Integer circleTakeMonth;
-    @ApiModelProperty(value = "循环物料类型")
+    @ApiModelProperty(value = "盘点物料类型，0：原材料，1：成品")
     private int takeMaterialType;
 
 

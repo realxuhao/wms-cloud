@@ -5,20 +5,20 @@
 <mapper namespace="com.bosch.product.mapper.StockTakeDetailMapper">
 
     <resultMap id="BaseResultMap" type="com.bosch.product.api.domain.StockTakeDetail">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="planCode" column="plan_code" jdbcType="VARCHAR"/>
-            <result property="materialCode" column="material_code" jdbcType="VARCHAR"/>
-            <result property="ssccNb" column="sscc_nb" jdbcType="VARCHAR"/>
-            <result property="batchNb" column="batch_nb" jdbcType="VARCHAR"/>
-            <result property="wareCode" column="ware_code" jdbcType="VARCHAR"/>
-            <result property="areaCode" column="area_code" jdbcType="VARCHAR"/>
-            <result property="binCode" column="bin_code" jdbcType="VARCHAR"/>
-            <result property="circleTakeMonth" column="circle_take_month" jdbcType="VARCHAR"/>
-            <result property="status" column="status" jdbcType="INTEGER"/>
-            <result property="stockQuantity" column="stock_quantity" jdbcType="DECIMAL"/>
-            <result property="takeQuantity" column="take_quantity" jdbcType="DECIMAL"/>
-            <result property="isDiff" column="is_diff" jdbcType="INTEGER"/>
-            <result property="taskNo" column="task_no" jdbcType="VARCHAR"/>
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="planCode" column="plan_code" jdbcType="VARCHAR"/>
+        <result property="materialCode" column="material_code" jdbcType="VARCHAR"/>
+        <result property="ssccNb" column="sscc_nb" jdbcType="VARCHAR"/>
+        <result property="batchNb" column="batch_nb" jdbcType="VARCHAR"/>
+        <result property="wareCode" column="ware_code" jdbcType="VARCHAR"/>
+        <result property="areaCode" column="area_code" jdbcType="VARCHAR"/>
+        <result property="binCode" column="bin_code" jdbcType="VARCHAR"/>
+        <result property="circleTakeMonth" column="circle_take_month" jdbcType="VARCHAR"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="stockQuantity" column="stock_quantity" jdbcType="DECIMAL"/>
+        <result property="takeQuantity" column="take_quantity" jdbcType="DECIMAL"/>
+        <result property="isDiff" column="is_diff" jdbcType="INTEGER"/>
+        <result property="taskNo" column="task_no" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
@@ -28,15 +28,22 @@
         status,stock_quantity,take_quantity,
         is_diff,task_no
     </sql>
-    <select id="list" resultType="com.bosch.product.api.domain.vo.StockTakeDetailVO">
+    <select id="getDetailList" resultType="com.bosch.product.api.domain.vo.StockTakeDetailVO">
         select d.*,
-               p.cell,
-               p.type,
-               p.method,
-               p.take_material_type
+        m.material_name,
+        p.cell,
+        p.type,
+        p.method,
+        p.take_material_type
         from stock_take_detail d left join stock_take_plan p on d.plan_code = p.code and p.delete_flag = 0
+        left join (select code as material_code,name as material_name from md_material union all select product_no as
+        material_code,product_name as material_name from md_product_packaging)m
+        on m.material_code = d.material_code
         <where>
             <if test="cell != null  and cell != ''">and p.cell like concat('%', #{cell}, '%')</if>
+            <if test="ssccNb != null  and ssccNb != ''">and d.sscc_nb like concat('%', #{ssccNb}, '%')</if>
+            <if test="taskNo != null  and taskNo != ''">and d.task_no like concat('%', #{taskNo}, '%')</if>
+
             <if test="wareCode != null  and wareCode != ''">and d.ware_code like concat('%', #{wareCode}, '%')</if>
             <if test="areaCode != null  and areaCode != ''">and d.area_code like concat('%', #{areaCode}, '%')</if>
             <if test="type != null">and p.type = #{type}</if>
@@ -50,11 +57,31 @@
                     #{item}
                 </foreach>
             </if>
+            <if test="startCreateTime != null">and d.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
+            <if test="endCreateTime != null">and d.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+            <if test="startIssueTime != null">and d.issue_time <![CDATA[ >= ]]> #{startIssueTime}</if>
+            <if test="endIssueTime != null">and d.issue_time <![CDATA[ <= ]]> #{endIssueTime}</if>
+
 
         </where>
 
 
+    </select>
+    <select id="getTaskList" resultType="com.bosch.product.api.domain.vo.StockTakeTaskVO">
+        SELECT DISTINCT task_no, issue_time
+        FROM stock_take_detail d
+        <where>
+            <if test="wareCode != null  and wareCode != ''">and d.ware_code like concat('%', #{wareCode}, '%')</if>
+            <if test="areaCode != null  and areaCode != ''">and d.area_code like concat('%', #{areaCode}, '%')</if>
+            <if test="circleTakeMonth != null">and d.circle_take_month =#{circleTakeMonth}</if>
+            <if test="status != null">and d.status =#{status}</if>
+            <if test="startCreateTime != null">and d.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
+            <if test="endCreateTime != null">and d.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+            <if test="startIssueTime != null">and d.issue_time <![CDATA[ >= ]]> #{startIssueTime}</if>
+            <if test="endIssueTime != null">and d.issue_time <![CDATA[ <= ]]> #{endIssueTime}</if>
 
+
+        </where>
 
     </select>
 </mapper>

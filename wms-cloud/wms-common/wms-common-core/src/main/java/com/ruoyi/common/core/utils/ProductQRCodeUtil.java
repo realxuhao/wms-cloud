@@ -63,6 +63,7 @@ public class ProductQRCodeUtil {
     }
 
     public static void main(String[] args) {
+        System.out.println("11221025101012358660208716900568763172407093700006000369006391113669850".length());
         System.out.println(getSSCC("1122102510101235866\n" +
                 "02087169005687631724070937000060\n" +
                 "00369006391113669850"));

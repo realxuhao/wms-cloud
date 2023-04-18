@@ -8,8 +8,10 @@ import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.StockTakeDetail;
 import com.bosch.product.api.domain.StockTakePlan;
+import com.bosch.product.api.domain.dto.PdaTakeOperateDTO;
 import com.bosch.product.api.domain.dto.StockTakeDetailQueryDTO;
 import com.bosch.product.api.domain.vo.StockTakeDetailVO;
+import com.bosch.product.api.domain.vo.StockTakeTaskVO;
 import com.bosch.product.api.enumeration.StockTakePlanDetailStatusEnum;
 import com.bosch.product.api.enumeration.StockTakePlanStatusEnum;
 import com.bosch.product.service.IMaterialStockService;
@@ -29,9 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -73,6 +73,75 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
         }
     }
 
+    @Override
+    public List<StockTakeTaskVO> getTaskList(StockTakeDetailQueryDTO dto) {
+        return detailMapper.getTaskList(dto);
+    }
+
+    @Override
+    public List<StockTakeDetailVO> getDetailList(StockTakeDetailQueryDTO queryDTO) {
+        return detailMapper.getDetailList(queryDTO);
+    }
+
+    @Override
+    public StockTakeDetailVO getByBarCode(String sscc) {
+        if (StringUtils.isEmpty(sscc)) {
+            throw new ServiceException("sscc不能为空");
+        }
+        StockTakeDetailQueryDTO queryDTO = new StockTakeDetailQueryDTO();
+        queryDTO.setSsccNb(sscc);
+        queryDTO.setStatus(StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
+        List<StockTakeDetailVO> detailList = this.getDetailList(queryDTO);
+        if (CollectionUtils.isEmpty(detailList)) {
+            throw new ServiceException("没有该sscc:" + sscc + " 对应的待盘点任务");
+        }
+        StockTakeDetailVO stockTakeDetailVO = detailList.get(0);
+        if (stockTakeDetailVO.getType() == 1) {//盲盘把数量设置为null
+            stockTakeDetailVO.setStockQuantity(null);
+        }
+        return stockTakeDetailVO;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void operate(PdaTakeOperateDTO pdaTakeOperateDTO) {
+        StockTakeDetail takeDetail = this.getById(pdaTakeOperateDTO.getDetailId());
+        StockTakePlan takePlan = planService.getByPlanCode(takeDetail.getPlanCode());
+        if (takePlan.getType() == 1) {//盲盘
+            takeDetail.setTakeQuantity(pdaTakeOperateDTO.getPdaTakeQuantity());
+            if (takeDetail.getStockQuantity().equals(pdaTakeOperateDTO.getPdaTakeQuantity())) {
+                takeDetail.setIsDiff(0);
+            } else {
+                takeDetail.setIsDiff(1);
+                takePlan.setDiffBinQuantity(takePlan.getDiffBinQuantity() + 1);
+            }
+        } else {//明盘
+            if (pdaTakeOperateDTO.getIsDiff().equals(Boolean.FALSE)) {
+                takeDetail.setTakeQuantity(pdaTakeOperateDTO.getPdaTakeQuantity());
+                takeDetail.setIsDiff(1);
+                takePlan.setDiffBinQuantity(takePlan.getDiffBinQuantity() + 1);
+            } else {
+                takeDetail.setIsDiff(0);
+            }
+        }
+        takePlan.setTakeBinQuantity(takePlan.getTakeBinQuantity() + 1);
+        takeDetail.setStatus(StockTakePlanDetailStatusEnum.FINISH.getCode());
+
+        //判断所有plan下所有任务是否完成，如果完成，更新状态
+        LambdaQueryWrapper<StockTakeDetail> detailQueryWrapper = new LambdaQueryWrapper<>();
+        detailQueryWrapper.eq(StockTakeDetail::getPlanCode, takeDetail.getPlanCode());
+        detailQueryWrapper.eq(StockTakeDetail::getStatus, StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
+        List<StockTakeDetail> list = this.list(detailQueryWrapper);
+        if (!CollectionUtils.isEmpty(list) && list.size() == 1) {
+            takePlan.setStatus(StockTakePlanStatusEnum.FINISH.getCode());
+        }
+
+        this.updateById(takeDetail);
+        planService.updateById(takePlan);
+
+
+    }
+
     private void issueCircle(StockTakeDetailQueryDTO dto) {
         if (StringUtils.isEmpty(dto.getPlanCode()) || dto.getCircleTakeMonth() == null) {
             throw new ServiceException("下发循环盘点，计划号和月份不可以为空");
@@ -112,6 +181,7 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
         takeDetailListByMonth.forEach(item -> {
             item.setStatus(StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
             item.setTaskNo(taskNo);
+            item.setIssueTime(new Date());
         });
 
         int diffCount = 0;
@@ -136,6 +206,23 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
             throw new ServiceException("无待下发的盘点明细");
         }
 
+
+        int count = (int) takeDetailListByMonth.stream().map(StockTakeDetail::getMaterialCode).distinct().count();
+        if (dto.getCircleTakeMonth() == stockTakePlan.getCircleTakeMonth()) {
+            stockTakePlan.setFirstIssueMaterialQuantity(count + diffCount);
+        } else if (dto.getCircleTakeMonth() - stockTakePlan.getCircleTakeMonth() == 1) {
+            stockTakePlan.setSecondIssueMaterialQuantity(count + diffCount);
+        } else if (dto.getCircleTakeMonth() - stockTakePlan.getCircleTakeMonth() == 2) {
+            stockTakePlan.setThirdIssueMaterialQuantity(count + diffCount);
+        }
+        int firstIssueQuantity = stockTakePlan.getFirstIssueMaterialQuantity() == null ? 0 : stockTakePlan.getFirstIssueMaterialQuantity();
+        int secondIssueQuantity = stockTakePlan.getSecondIssueMaterialQuantity() == null ? 0 : stockTakePlan.getSecondIssueMaterialQuantity();
+        int thirdIssueQuantity = stockTakePlan.getThirdIssueMaterialQuantity() == null ? 0 : stockTakePlan.getThirdIssueMaterialQuantity();
+
+        stockTakePlan.setTotalIssueQuantity(firstIssueQuantity + secondIssueQuantity + thirdIssueQuantity);
+        planService.updateById(stockTakePlan);
+
+        this.updateBatchById(takeDetailListByMonth);
     }
 
     private Integer dealDiffProduct(List<ProductStock> productStockList, List<String> codeList, String planCode, Integer month, String taskNo) {
@@ -161,12 +248,12 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
                 stockTakeDetail.setCircleTakeMonth(month);
                 stockTakeDetail.setStatus(StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
                 stockTakeDetail.setTaskNo(taskNo);
-
+                stockTakeDetail.setIssueTime(new Date());
                 detailList.add(stockTakeDetail);
             });
             this.saveBatch(detailList);
         }
-        return detailList.size();
+        return (int) detailList.stream().map(StockTakeDetail::getMaterialCode).distinct().count();
     }
 
     private Integer dealDiffMaterial(List<Stock> materialStockList, List<String> codeList, String planCode, Integer month, String taskNo) {
@@ -192,31 +279,40 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
                 stockTakeDetail.setStockQuantity(item.getTotalStock());
                 stockTakeDetail.setCircleTakeMonth(month);
                 stockTakeDetail.setTaskNo(taskNo);
+                stockTakeDetail.setIssueTime(new Date());
                 detailList.add(stockTakeDetail);
             });
             this.saveBatch(detailList);
         }
-        return detailList.size();
+        return (int) detailList.stream().map(StockTakeDetail::getMaterialCode).distinct().count();
     }
 
 
     private void issueNormal(StockTakeDetailQueryDTO dto) {
-        List<StockTakeDetailVO> takeDetailVOList = detailMapper.list(dto);
+        List<StockTakeDetailVO> takeDetailVOList = detailMapper.getDetailList(dto);
         if (CollectionUtils.isEmpty(takeDetailVOList)) {
-            throw new ServiceException("查询detail为空。");
+            throw new ServiceException("该条件下没有待下发的detail");
         }
         //任务号
         String taskNo = "task_" + DateUtils.parseDateToStr("yyyyMMddHHmm", new Date());
         takeDetailVOList.forEach(item -> {
             item.setStatus(StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
             item.setTaskNo(taskNo);
+            item.setIssueTime(new Date());
         });
         List<String> planCodes = takeDetailVOList.stream().map(StockTakeDetail::getPlanCode).collect(Collectors.toList());
+        Map<String, List<StockTakeDetailVO>> detailMap = takeDetailVOList.stream()
+                .collect(Collectors.groupingBy(StockTakeDetailVO::getPlanCode));
+
 
         LambdaQueryWrapper<StockTakePlan> planQueryWrapper = new LambdaQueryWrapper<>();
         planQueryWrapper.in(StockTakePlan::getCode, planCodes);
         List<StockTakePlan> planList = planService.list(planQueryWrapper);
         planList.forEach(item -> {
+            if (detailMap.containsKey(item.getCode())) {
+                long count = detailMap.get(item.getCode()).stream().map(StockTakeDetail::getMaterialCode).distinct().count();
+                item.setTotalIssueQuantity((int) count);
+            }
             item.setStatus(StockTakePlanStatusEnum.PROCESSING.getCode());
             item.setTotalIssueQuantity(takeDetailVOList.size());
         });
