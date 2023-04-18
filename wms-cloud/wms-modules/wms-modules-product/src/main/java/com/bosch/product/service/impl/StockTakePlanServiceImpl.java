@@ -2,6 +2,7 @@ package com.bosch.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
@@ -9,6 +10,8 @@ import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.StockTakeDetail;
 import com.bosch.product.api.domain.StockTakePlan;
 import com.bosch.product.api.domain.dto.StockTakeAddDTO;
+import com.bosch.product.api.domain.dto.StockTakePlanDTO;
+import com.bosch.product.api.domain.vo.StockTakePlanVO;
 import com.bosch.product.api.enumeration.StockTakePlanDetailStatusEnum;
 import com.bosch.product.api.enumeration.StockTakePlanStatusEnum;
 import com.bosch.product.service.IMaterialStockService;
@@ -21,6 +24,7 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -133,6 +137,30 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
         detailQueryWrapper.eq(StockTakeDetail::getPlanCode, stockTakePlan.getCode());
         stockTakeDetailService.remove(detailQueryWrapper);
 
+    }
+
+    @Override
+    public List<StockTakePlan> list(StockTakePlanDTO dto) {
+        //判断dto每个字段，不为空和null则加入查询条件，做模糊查询
+        LambdaQueryWrapper<StockTakePlan> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.isNotEmpty(dto.getCode()), StockTakePlan::getCode, dto.getCode());
+        queryWrapper.like(StringUtils.isNotEmpty(dto.getWareCode()), StockTakePlan::getWareCode, dto.getWareCode());
+        queryWrapper.like(StringUtils.isNotEmpty(dto.getAreaCode()), StockTakePlan::getAreaCode, dto.getAreaCode());
+        queryWrapper.eq(dto.getStatus() != null, StockTakePlan::getStatus, dto.getStatus());
+        queryWrapper.eq(dto.getType() != null, StockTakePlan::getType, dto.getType());
+        queryWrapper.eq(dto.getMethod() != null, StockTakePlan::getMethod, dto.getMethod());
+        queryWrapper.eq(dto.getTakeMaterialType() != null, StockTakePlan::getTakeMaterialType, dto.getTakeMaterialType());
+        queryWrapper.eq(dto.getCircleTakeMonth() != null, StockTakePlan::getCircleTakeMonth, dto.getCircleTakeMonth());
+        queryWrapper.eq(dto.getCreatedMaterialQuantity() != null, StockTakePlan::getCreatedMaterialQuantity, dto.getCreatedMaterialQuantity());
+        queryWrapper.like(StringUtils.isNotEmpty(dto.getCreateBy()), StockTakePlan::getCreateBy, dto.getCreateBy());
+        queryWrapper.ge(dto.getCreateTimeStart() != null, StockTakePlan::getCreateTime,
+                dto.getCreateTimeStart());
+        queryWrapper.le(dto.getCreateTimeEnd() != null, StockTakePlan::getCreateTime, dto.getCreateTimeEnd());
+
+        queryWrapper.eq(StockTakePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<StockTakePlan> stockTakePlanList = this.list(queryWrapper);
+
+        return stockTakePlanList;
     }
 
     private void setCircleMonth(List<StockTakeDetail> stockTakeDetailList, Integer circleTakeMonth) {

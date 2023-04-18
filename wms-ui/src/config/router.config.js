@@ -396,8 +396,24 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           }
         ]
-      }
+      },
+      {
+        path: '/stock-take',
+        name: 'stockTake',
+        component: RouteView,
+        redirect: '/stock-take/list',
+        meta: { title: '盘点管理', icon: 'hdd', permission: [] },
+        children: [
+          {
+            path: '/stock-take/list',
+            name: 'stockTakeList',
+            component: () => import('@/views/stockTake/StockTakePlan.vue'),
+            meta: { title: '移库任务列表', permission: [] },
+            hideChildrenInMenu: true
+          }
 
+        ]
+      },
     ]
   },
 

@@ -249,7 +249,7 @@ public class ProductPackagingController extends BaseController {
     @Transactional(rollbackFor = Exception.class)
     public R<ShippingPlanDTO> genTask(ShippingPlanDTO dto) {
         try {
-
+            dto.setStatus(TaskStatusEnum.UNEXECUTED.getCode());
             List<ShippingPlan> list = shippingPlanService.getList(dto);
             List<ShippingPlanVO> vos = BeanConverUtil.converList(list, ShippingPlanVO.class);
             if (CollectionUtils.isEmpty(list)) {

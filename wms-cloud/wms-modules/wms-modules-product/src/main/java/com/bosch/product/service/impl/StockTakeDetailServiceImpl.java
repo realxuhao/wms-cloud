@@ -24,6 +24,7 @@ import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -46,6 +47,7 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
     private StockTakeDetailMapper detailMapper;
 
     @Autowired
+    @Lazy
     private IStockTakePlanService planService;
 
     @Autowired
