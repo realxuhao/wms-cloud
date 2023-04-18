@@ -360,7 +360,7 @@ export default {
         const stockMovementDateEnd = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:59') : undefined
 
         this.genTaskLoading = true
-        await this.$store.dispatch('finishedProduct/genTask',{ stockMovementDateStart, stockMovementDateEnd })
+        await this.$store.dispatch('finishedProduct/genTask', { stockMovementDateStart, stockMovementDateEnd })
 
         this.queryForm.pageNum = 1
         this.loadTableList()
