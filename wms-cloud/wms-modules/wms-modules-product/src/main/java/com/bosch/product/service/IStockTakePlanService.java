@@ -4,7 +4,11 @@ import com.bosch.binin.api.domain.Stock;
 import com.bosch.product.api.domain.StockTakePlan;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.product.api.domain.dto.StockTakeAddDTO;
+import com.bosch.product.api.domain.dto.StockTakePlanDTO;
+import com.bosch.product.api.domain.vo.StockTakePlanVO;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author GUZ1CGD4
@@ -18,4 +22,11 @@ public interface IStockTakePlanService extends IService<StockTakePlan> {
     void delete(@Param("id") Long id);
 
     StockTakePlan getByPlanCode(String planCode);
+
+    /**
+     * 盘点计划列表
+     * @param dto
+     * @return
+     */
+    List<StockTakePlan> list(StockTakePlanDTO dto);
 }

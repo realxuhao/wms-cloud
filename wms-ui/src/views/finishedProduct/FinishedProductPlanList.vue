@@ -148,7 +148,7 @@
     </div>
 
     <a-modal
-      title="Title"
+      title="请筛选移库日期范围"
       :visible="visible"
       :confirm-loading="genTaskLoading"
       @ok="handleGenTask"
@@ -366,6 +366,7 @@ export default {
         this.loadTableList()
 
         this.$message.success('打包任务生成成功')
+        this.visible = false
       } catch (error) {
         this.$message.error(error.message)
       } finally {
@@ -390,8 +391,8 @@ export default {
       } catch (error) {
         if (error.code === 400) {
           this.$confirm({
-            title: '是否更新？',
-            content: '存在重复数据',
+            title: '导入出错',
+            content: '已存在重复数据，是否全部删除',
             onOk: () => {
               this.uploadBatchUpdate(formdata)
             },
