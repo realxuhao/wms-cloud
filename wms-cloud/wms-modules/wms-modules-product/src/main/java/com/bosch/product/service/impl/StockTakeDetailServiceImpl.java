@@ -1,6 +1,9 @@
 package com.bosch.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.UpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.masterdata.api.RemoteMaterialService;
@@ -14,6 +17,7 @@ import com.bosch.product.api.domain.vo.StockTakeDetailVO;
 import com.bosch.product.api.domain.vo.StockTakeTaskVO;
 import com.bosch.product.api.enumeration.StockTakePlanDetailStatusEnum;
 import com.bosch.product.api.enumeration.StockTakePlanStatusEnum;
+import com.bosch.product.mapper.MaterialStockMapper;
 import com.bosch.product.service.IMaterialStockService;
 import com.bosch.product.service.IProductStockService;
 import com.bosch.product.service.IStockTakeDetailService;
@@ -32,7 +36,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author GUZ1CGD4
@@ -58,6 +64,9 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
 
     @Autowired
     private IProductStockService productStockService;
+
+    @Autowired
+    private MaterialStockMapper materialStockMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -125,7 +134,7 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
             }
         }
         takePlan.setTakeBinQuantity(takePlan.getTakeBinQuantity() + 1);
-        takeDetail.setStatus(StockTakePlanDetailStatusEnum.FINISH.getCode());
+        takeDetail.setStatus(StockTakePlanDetailStatusEnum.WAIT_CONFIRM.getCode());
 
         //判断所有plan下所有任务是否完成，如果完成，更新状态
         LambdaQueryWrapper<StockTakeDetail> detailQueryWrapper = new LambdaQueryWrapper<>();
@@ -140,6 +149,102 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
         planService.updateById(takePlan);
 
 
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void confirm(StockTakeDetailQueryDTO queryDTO) {
+        if (queryDTO == null) {
+            queryDTO = new StockTakeDetailQueryDTO();
+        }
+        queryDTO.setStatus(StockTakePlanDetailStatusEnum.WAIT_CONFIRM.getCode());
+        List<StockTakeDetailVO> detailList = this.getDetailList(queryDTO);
+        detailList.stream().forEach(item -> item.setStatus(StockTakePlanDetailStatusEnum.FINISH.getCode()));
+        //原材料
+        List<StockTakeDetailVO> materialTakeDetails = detailList.stream().filter(item -> item.getTakeMaterialType() == 0).collect(Collectors.toList());
+        //成品
+        List<StockTakeDetailVO> productTakeDetails = detailList.stream().filter(item -> item.getTakeMaterialType() == 1).collect(Collectors.toList());
+        updateMaterialStock(materialTakeDetails);
+        updateProductStock(productTakeDetails);
+
+        //更新detail为完成
+        List<Integer> idList = materialTakeDetails.stream().map(StockTakeDetailVO::getId).collect(Collectors.toList());
+        LambdaUpdateWrapper<StockTakeDetail> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.in(StockTakeDetail::getId, idList);
+        updateWrapper.eq(StockTakeDetail::getStatus, StockTakePlanDetailStatusEnum.WAIT_CONFIRM.getCode());
+        updateWrapper.set(StockTakeDetail::getStatus, StockTakePlanDetailStatusEnum.FINISH.getCode());
+        this.update(updateWrapper);
+
+        //如果所在的detial全部完成了，更新plan
+        List<String> planCodes = materialTakeDetails.stream().map(StockTakeDetail::getPlanCode).collect(Collectors.toList());
+        LambdaQueryWrapper<StockTakeDetail> detailQueryWrapper = new LambdaQueryWrapper<>();
+        detailQueryWrapper.in(StockTakeDetail::getPlanCode, planCodes);
+        List<StockTakeDetail> stockTakeDetails = this.list(detailQueryWrapper);
+        Map<String, List<StockTakeDetail>> planCodeMap = stockTakeDetails.stream().collect(Collectors.groupingBy(StockTakeDetail::getPlanCode));
+        List<String> completePlanCodsList = new ArrayList<>();
+        planCodeMap.forEach((key, value) -> {
+            List<StockTakeDetail> tempDetails = value.stream().filter(item -> item.getStatus().equals(StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode())).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(tempDetails) && tempDetails.size() == 1) {
+                completePlanCodsList.add(key);
+            }
+        });
+        if (!CollectionUtils.isEmpty(completePlanCodsList)) {
+            LambdaUpdateWrapper<StockTakePlan> planUpdateWrapper = new LambdaUpdateWrapper<>();
+            planUpdateWrapper.in(StockTakePlan::getCode, completePlanCodsList);
+            planUpdateWrapper.set(StockTakePlan::getStatus, StockTakePlanStatusEnum.FINISH.getCode());
+            planService.update(planUpdateWrapper);
+        }
+    }
+
+    @Override
+    public void editTakeQuantity(PdaTakeOperateDTO operateDTO) {
+        StockTakeDetail takeDetail = this.getById(operateDTO.getDetailId());
+        if (Objects.isNull(takeDetail)) {
+            throw new ServiceException("该条数据不存在");
+        }
+        if (!takeDetail.getStatus().equals(StockTakePlanDetailStatusEnum.WAIT_CONFIRM.getCode())) {
+            throw new ServiceException("该条数据状态为" + StockTakePlanDetailStatusEnum.getDescByCode(takeDetail.getStatus()) + "，不可以修改");
+        }
+        takeDetail.setTakeQuantity(operateDTO.getPdaTakeQuantity());
+        this.updateById(takeDetail);
+    }
+
+    private void updateMaterialStock(List<StockTakeDetailVO> materialTakeDetails) {
+
+        Map<String, StockTakeDetailVO> detailVOMap = materialTakeDetails.stream().collect(Collectors.toMap(StockTakeDetailVO::getSsccNb, Function.identity()));
+
+        List<String> ssccList = materialTakeDetails.stream().map(StockTakeDetailVO::getSsccNb).collect(Collectors.toList());
+        LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(Stock::getSsccNumber, ssccList)
+                .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<Stock> materialStockList = materialStockService.list(queryWrapper);
+        materialStockList.stream().forEach(item -> {
+            StockTakeDetailVO stockTakeDetailVO = detailVOMap.get(item.getSsccNumber());
+            if (stockTakeDetailVO != null) {
+                item.setTotalStock(stockTakeDetailVO.getTakeQuantity());
+                item.setAvailableStock(item.getTotalStock() - item.getFreezeStock());
+            }
+        });
+        materialStockService.updateBatchById(materialStockList);
+    }
+
+    private void updateProductStock(List<StockTakeDetailVO> materialTakeDetails) {
+
+        Map<String, StockTakeDetailVO> detailVOMap = materialTakeDetails.stream().collect(Collectors.toMap(StockTakeDetailVO::getSsccNb, Function.identity()));
+
+        List<String> ssccList = materialTakeDetails.stream().map(StockTakeDetailVO::getSsccNb).collect(Collectors.toList());
+        LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(ProductStock::getSsccNumber, ssccList)
+                .eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<ProductStock> productStockList = productStockService.list(queryWrapper);
+        productStockList.stream().forEach(item -> {
+            StockTakeDetailVO stockTakeDetailVO = detailVOMap.get(item.getSsccNumber());
+            if (stockTakeDetailVO != null) {
+                item.setTotalStock(stockTakeDetailVO.getTakeQuantity());
+                item.setAvailableStock(item.getTotalStock() - item.getFreezeStock());
+            }
+        });
+        productStockService.updateBatchById(productStockList);
     }
 
     private void issueCircle(StockTakeDetailQueryDTO dto) {
