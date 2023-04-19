@@ -173,7 +173,7 @@ public class MaterialBinController extends BaseController {
     @Log(title = "物料库位分配策略", businessType = BusinessType.DELETE)
     @ApiOperation("删除物料库位分配策略")
     @DeleteMapping("/{ids}")
-    public AjaxResult remove(@PathVariable Long[] ids) {
+    public AjaxResult remove(@PathVariable("ids") Long[] ids) {
         return toAjax(materialBinService.deleteMaterialBinByIds(ids));
     }
 

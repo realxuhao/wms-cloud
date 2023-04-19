@@ -274,8 +274,7 @@ const columns = [
     fixed: 'right',
     scopedSlots: { customRender: 'action' }
   }
-];
-
+]
 
 const queryFormAttr = () => {
   return {

@@ -413,7 +413,7 @@ export const asyncRouterMap = [
           }
 
         ]
-      },
+      }
     ]
   },
 

@@ -68,7 +68,7 @@ public interface MaterialBinMapper extends BaseMapper<MaterialBin>
      * @param ids 需要删除的数据主键集合
      * @return 结果
      */
-    public int deleteMaterialBinByIds(Long[] ids);
+    public int deleteMaterialBinByIds(@Param("ids")Long[] ids);
 
     /**
      * 根据登陆人仓库 选择可用物料跨关系
