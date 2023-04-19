@@ -145,7 +145,7 @@ export default {
           if (this.updateType === 'edit') {
             await this.$store.dispatch('product/edit', { id: this.id, updateEntity: values })
           } else {
-            await this.$store.dispatch('product/add', { ...values })
+            await this.$store.dispatch('product/addDispatchBin', { ...values })
           }
 
           this.$emit('on-ok')
