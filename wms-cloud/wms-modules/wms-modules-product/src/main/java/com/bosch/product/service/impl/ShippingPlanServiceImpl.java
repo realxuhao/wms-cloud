@@ -113,6 +113,10 @@ public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, Shi
         if (StringUtils.isNotBlank(shippingPlanDTO.getAfterPacking())) {
             wrapper.like(ShippingPlan::getAfterPacking, shippingPlanDTO.getAfterPacking());
         }
+        //根据STR_TO_DATE(stock_movement_date, '%Y/%m/%d %H:%i')正序
+        String orderBy = "STR_TO_DATE(" + "stock_movement_date" + ", '%Y/%c/%e %k:%i')";
+        wrapper.last("order by "+orderBy + " ASC");
+
         return shippingPlanMapper.selectList(wrapper);
     }
 
@@ -134,6 +138,7 @@ public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, Shi
         // 2. 构造一个Wrapper条件对象，使用in方法传入idList作为参数。
         LambdaQueryWrapper<ShippingPlan> wrapper = new LambdaQueryWrapper<>();
         wrapper.in(ShippingPlan::getId, idList);
+
 
         // 3. 调用shippingPlanMapper的selectList方法，获取符合条件的ShippingPlan列表。
         List<ShippingPlan> shippingPlanList = shippingPlanMapper.selectList(wrapper);

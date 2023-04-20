@@ -105,7 +105,7 @@
 
         <if test="stockMovementDateStart != null">and STR_TO_DATE(shipping_task.stock_movement_date, '%Y/%m/%d %H:%i') <![CDATA[ >= ]]> #{stockMovementDateStart}</if>
         <if test="stockMovementDateEnd != null">and STR_TO_DATE(shipping_task.stock_movement_date, '%Y/%m/%d %H:%i') <![CDATA[ <= ]]> #{stockMovementDateEnd}</if>
-        GROUP BY shipping_task.id ORDER BY stock_movement_date_order_by asc
+        GROUP BY shipping_task.id ORDER BY ROUND(COUNT(shipping_history.shipping_task_id) / shipping_task.after_packing * 100, 2) = 100 , ROUND(COUNT(shipping_history.shipping_task_id) / shipping_task.after_packing * 100, 2) DESC
 
     </select>
 

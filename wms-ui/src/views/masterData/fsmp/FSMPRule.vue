@@ -133,7 +133,7 @@ const columns = [
     dataIndex: 'materialCode'
   },
   {
-    title: '取样方式',
+    title: '取样方式(A:非连续三托;B:随机下架一托)',
     key: 'classification',
     dataIndex: 'classification'
   },

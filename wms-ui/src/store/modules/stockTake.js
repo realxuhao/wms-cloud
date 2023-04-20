@@ -18,7 +18,11 @@ const stockTake = {
       console.log('111')
       const data = await stockTakeService.getList(options)
       return data
-    }
+    },
+    async destroy ({ commit }, id) {
+      const data = await stockTakeService.destroy(id)
+      return data
+    },
   }
 }
 

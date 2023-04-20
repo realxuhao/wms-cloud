@@ -26,7 +26,7 @@
           </a-col>
           <a-col :span="4">
             <a-form-model-item label="盘点物料类型">
-              <a-input v-model="queryForm.takeMaterialType" placeholder="盘点物料类型" allow-clear/>
+              <a-input v-model="queryForm.batchNb" placeholder="盘点物料类型" allow-clear/>
             </a-form-model-item>
           </a-col>
 
@@ -131,24 +131,12 @@
 
           </div>
         </template>
-        <template slot="takeMaterialType" slot-scope="text">
-          <div >
-            <a-tag color="orange" v-if="text===0">
-              原材料
-            </a-tag>
-            <a-tag color="#87d068" v-if="text===1">
-              成品
-            </a-tag>
-
-          </div>
-        </template>
-
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-
+            <a class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
             <a-divider type="vertical" />
             <a-popconfirm title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
-              <a class="danger-color" :disabled="record.status!==0"><a-icon class="m-r-4" type="delete" />删除</a>
+              <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
           </div>
         </template>
@@ -167,21 +155,19 @@
       </div>
     </div>
 
-    <UpdateDrawer
-      v-model="visible"
-      :updateType="updateType"
-      :id="currentUpdateId"
-      @on-ok="loadTableList"
-    ></UpdateDrawer>
   </div>
 </template>
 
 <script>
-import UpdateDrawer from './UpdateDrawer'
 import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
-
+  {
+    title: '编号',
+    key: 'id',
+    dataIndex: 'id',
+    width: 80
+  },
   {
     title: '盘点计划编码',
     key: 'code',
@@ -273,8 +259,7 @@ const columns = [
     title: '物料类型',
     key: 'takeMaterialType',
     dataIndex: 'takeMaterialType',
-    width: 120,
-    scopedSlots: { customRender: 'takeMaterialType' }
+    width: 120
   },
   {
     title: '循环盘点月份',
@@ -294,14 +279,11 @@ const columns = [
 
 const queryFormAttr = () => {
   return {
-    code: '',
-    cell: '',
+    plantNb: '',
     wareCode: '',
-    areaCode: '',
-    takeMaterialType: '',
-    type: '',
-    method: '',
-    totalIssueQuantity: '',
+    ssccNumber: '',
+    materialNb: '',
+    batchNb: '',
     status: ''
   }
 }
@@ -339,30 +321,15 @@ const method = [
     value: 1
   }
 ]
-
-const takeMaterialType = [
-  {
-    text: '原材料',
-    value: 0
-  },
-  {
-    text: '成品',
-    value: 1
-  }
-]
 export default {
   name: 'StockTake',
   mixins: [mixinTableList],
-  components: {
-    UpdateDrawer
-  },
   data () {
     return {
       tableLoading: false,
       uploadLoading: false,
       columns,
       list: [],
-
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -373,14 +340,13 @@ export default {
   computed: {
     status: () => status,
     type: () => type,
-    method: () => method,
-    takeMaterialType: () => takeMaterialType
+    method: () => method
   },
 
   methods: {
     async handleDelete (row) {
       try {
-        await this.$store.dispatch('stockTake/delete', row.id)
+        // await this.$store.dispatch('binIn/delete', row.ssccNumber)
         this.$message.success('删除成功！')
 
         this.loadTableList()

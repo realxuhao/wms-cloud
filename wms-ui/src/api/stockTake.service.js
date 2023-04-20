@@ -10,7 +10,12 @@ const getList = async (parameter) => {
   const { data } = await createAuthInstance(baseUrl).get(url, parameter)
   return data
 }
-
+const destroy = async (id) => {
+  const url = `/stock-take/${id}`
+  const { data } = await createAuthInstance(baseUrl).delete(url)
+  return data
+}
 export const stockTakeService = {
-  getList
+  getList,
+  destroy
 }
