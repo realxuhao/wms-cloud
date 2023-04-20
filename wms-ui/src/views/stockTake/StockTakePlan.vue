@@ -213,31 +213,32 @@ const columns = [
     width: 150
   },
   {
-    title: '第一次下发时物料总数',
-    key: 'firstIssueMaterialQuantity',
-    dataIndex: 'firstIssueMaterialQuantity',
-    width: 180
-  },
-  {
-    title: '第二次下发时物料总数',
-    key: 'secondIssueMaterialQuantity',
-    dataIndex: 'secondIssueMaterialQuantity',
-    width: 180
-  },
-  {
-    title: '第三次下发时物料总数',
-    key: 'thirdIssueMaterialQuantity',
-    dataIndex: 'thirdIssueMaterialQuantity',
-    width: 180
-  },
-  {
     title: '总下发物料总数',
     key: 'totalIssueQuantity',
     dataIndex: 'totalIssueQuantity',
     width: 150
   },
   {
-    title: '判断库位总数',
+    title: '1st月下发时物料总数',
+    key: 'firstIssueMaterialQuantity',
+    dataIndex: 'firstIssueMaterialQuantity',
+    width: 180
+  },
+  {
+    title: '2nd月下发时物料总数',
+    key: 'secondIssueMaterialQuantity',
+    dataIndex: 'secondIssueMaterialQuantity',
+    width: 180
+  },
+  {
+    title: '3rd月下发时物料总数',
+    key: 'thirdIssueMaterialQuantity',
+    dataIndex: 'thirdIssueMaterialQuantity',
+    width: 180
+  },
+
+  {
+    title: '盘点库位总数',
     key: 'takeBinQuantity',
     dataIndex: 'takeBinQuantity',
     width: 120
