@@ -46,6 +46,10 @@ const product = {
     async uploadBatchUpdate ({ commit }, formdata) {
       const data = await productService.uploadBatchUpdate(formdata)
       return data
+    },
+    async addDispatchBin ({ commit }, formdata) {
+      const data = await productService.addDispatchBin(formdata)
+      return data
     }
 
   }

@@ -25,4 +25,8 @@ public interface IStockTakeDetailService extends IService<StockTakeDetail> {
     StockTakeDetailVO getByBarCode(String sscc);
 
     void operate(PdaTakeOperateDTO pdaTakeOperateDTO);
+
+    void confirm(StockTakeDetailQueryDTO queryDTO);
+
+    void editTakeQuantity(PdaTakeOperateDTO operateDTO);
 }

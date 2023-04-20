@@ -9,7 +9,8 @@ package com.bosch.product.api.enumeration;
 public enum StockTakePlanDetailStatusEnum {
     WAIT_ISSUE("待下发", 0),
     WAIT_TAKE("待盘点", 1),
-    FINISH("完成", 2);
+    WAIT_CONFIRM("待确认", 2),
+    FINISH("完成", 3);
 
 
     private String desc;

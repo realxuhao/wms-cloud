@@ -33,7 +33,7 @@ public class StockTakeDetailQueryDTO {
     @ApiModelProperty(value = "循环盘点,计划号，循环盘点时需要传")
     private String planCode;
     @ApiModelProperty(value = "循环物料类型")
-    private int takeMaterialType;
+    private Integer takeMaterialType;
     @ApiModelProperty(value = "详情状态")
     private Integer status;
     @ApiModelProperty(value = "下发类型，0：普通盘点，1：循环盘点")

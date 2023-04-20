@@ -54,6 +54,13 @@ public class MdProductPackagingController extends BaseController {
 
 
 
+    @GetMapping("/getByCell/{cell}")
+    public R<List<MdProductPackagingVO>> getByCell(@PathVariable("cell")String cell){
+        MdProductPackagingDTO dto = new MdProductPackagingDTO();
+        dto.setCell(cell);
+        return R.ok(mdProductPackagingService.selectList(dto));
+
+    }
 
 
     /**

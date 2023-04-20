@@ -26,7 +26,7 @@
             <result property="takeBinQuantity" column="take_bin_quantity" jdbcType="INTEGER"/>
             <result property="diffBinQuantity" column="diff_bin_quantity" jdbcType="INTEGER"/>
             <result property="status" column="status" jdbcType="INTEGER"/>
-            <result property="materialType" column="material_type" jdbcType="INTEGER"/>
+            <result property="takeMaterialType" column="take_material_type" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">

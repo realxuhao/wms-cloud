@@ -18,6 +18,7 @@ import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.convert.DtoInstantiatingConverter;
@@ -95,6 +96,23 @@ public class StockTakePlanDetailController extends BaseController {
         detailService.operate(pdaTakeOperateDTO);
         return R.ok();
     }
+
+
+    @PostMapping(value = "/confirm")
+    @ApiOperation("库存确认接口")
+    public R confirm(@RequestBody StockTakeDetailQueryDTO queryDTO){
+        detailService.confirm(queryDTO);
+        return R.ok();
+    }
+
+
+    @PostMapping(value = "/editTakeQuantity")
+    @ApiModelProperty("修改盘点数量")
+    public R editTakeQuantity(@RequestBody PdaTakeOperateDTO operateDTO){
+        detailService.editTakeQuantity(operateDTO);
+        return R.ok();
+    }
+
 
 
 
