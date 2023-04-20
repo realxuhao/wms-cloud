@@ -27,7 +27,7 @@ public class Send {
 //        DatagramSocket socket4 = new DatagramSocket(6669);
 
         send(socket1,7777);
-//        send(socket2,6667);
+        send(socket2,6667);
 
 //        new Thread(()->{
 //            try {
@@ -79,12 +79,12 @@ public class Send {
 
             // 2.创建一个数据包对象封装数据
             byte[] buffer = msg.getBytes();
-            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getByName("255.255.255.255"), 7777);
-//            DatagramPacket packet2 = new DatagramPacket(buffer, buffer.length, InetAddress.getLocalHost(), 7778);
+            DatagramPacket packet = new DatagramPacket(buffer, buffer.length, InetAddress.getLocalHost(), 7777);
+            DatagramPacket packet2 = new DatagramPacket(buffer, buffer.length, InetAddress.getLocalHost(), 7778);
 
             // 3.发送数据
             socket.send(packet);
-//            socket.send(packet2);
+            socket.send(packet2);
 
 
         }
