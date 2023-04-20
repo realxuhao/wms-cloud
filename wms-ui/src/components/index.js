@@ -17,6 +17,18 @@ import DescriptionList from '@/components/DescriptionList'
 import MultiTab from '@/components/MultiTab'
 import ExceptionPage from '@/components/Exception'
 
+import AvatarList from '@/components/AvatarList'
+import FooterToolbar from '@/components/FooterToolbar'
+import NumberInfo from '@/components/NumberInfo'
+import TableSetting from '@/components/TableSetting'
+import Tree from '@/components/Tree/Tree'
+import Trend from '@/components/Trend'
+import IconSelector from '@/components/IconSelector'
+import TagSelect from '@/components/TagSelect'
+import StandardFormRow from '@/components/StandardFormRow'
+import ArticleListContent from '@/components/ArticleListContent'
+import SettingDrawer from '@/components/SettingDrawer'
+
 export {
   Bar,
   ChartCard,
@@ -34,5 +46,18 @@ export {
   // 兼容写法，请勿继续使用
   DescriptionList as DetailList,
   MultiTab,
-  ExceptionPage
+  ExceptionPage,
+
+  // 从LCEM加过来的
+  AvatarList,
+  Trend,
+  FooterToolbar,
+  NumberInfo,
+  TableSetting,
+  Tree,
+  IconSelector,
+  TagSelect,
+  StandardFormRow,
+  ArticleListContent,
+  SettingDrawer
 }

@@ -10,16 +10,17 @@ const getters = {
   locale: state => state.app.locale,
 
   // user constants
-
-  // user dynamic
-  avatar: state => '',
-  nickname: state => 'nickname',
-  userAcl: state => state.user.acl,
+  token: state => state.user.token,
+  avatar: state => state.user.avatar,
+  nickname: state => state.user.name,
+  welcome: state => state.user.welcome,
+  roles: state => state.user.roles,
+  permissions: state => state.user.permissions,
   userInfo: state => state.user.info,
-  userLoaded: state => state.user.isLoaded,
-  userServices: state => state.user.services,
-
-  addRouters: state => state.permission.addRouters
+  menus: state => state.permission.menus,
+  routers: state => state.permission.routers,
+  multiTab: state => state.app.multiTab,
+  dict: state => state.dict.dict
 }
 
 export default getters

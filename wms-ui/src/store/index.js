@@ -5,7 +5,10 @@ import app from './modules/app'
 import user from './modules/user'
 
 // default router permission control
-import permission from './modules/permission'
+// import permission from './modules/permission'
+
+// dynamic router permission control (Experimental)
+import permission from './modules/async-router'
 
 // master data
 import material from './modules/material'
@@ -47,8 +50,7 @@ import finishedProductInventory from './modules/finishedProductInventory'
 import finishedProductTransfer from './modules/finishedProductTransfer'
 import finishedProductQualityManage from './modules/finishedProductQualityManage'
 import productPackaging from './modules/productPackaging'
-// dynamic router permission control (Experimental)
-// import permission from './modules/async-router'
+
 import getters from './getters'
 
 Vue.use(Vuex)

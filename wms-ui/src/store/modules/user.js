@@ -1,38 +1,34 @@
 import { authService } from '@/api'
-import _ from 'lodash'
 import { removeToken } from '@/utils/cookie'
 
 const user = {
   state: {
+    token: '',
     name: '',
-    info: {
-      accountDisplayName: ''
-    },
-    isLoaded: false,
-    services: [],
-
-    acl: {
-      direct: [ ],
-      indirect: [ ]
-    }
+    welcome: '',
+    avatar: '',
+    roles: [],
+    info: {}
   },
 
   mutations: {
-    setUser (state, { name }) {
+    SET_TOKEN: (state, token) => {
+      state.token = token
+    },
+    SET_NAME: (state, name) => {
       state.name = name
     },
-    setInfo (state, info) {
+    SET_AVATAR: (state, avatar) => {
+      state.avatar = avatar
+    },
+    SET_ROLES: (state, roles) => {
+      state.roles = roles
+    },
+    SET_INFO: (state, info) => {
       state.info = info
     },
-    setAcl (state, acl) {
-      state.acl = acl
-    },
-
-    setLoadingStatus (state, status) {
-      state.isLoaded = status
-    },
-    setServices (state, services) {
-      state.services = _.filter(services, service => service.isEnable === true)
+    SET_PERMISSIONS: (state, permissions) => {
+      state.permissions = permissions
     }
   },
 
@@ -44,15 +40,24 @@ const user = {
 
     async Login ({ commit }, parameter) {
       const data = await authService.login(parameter)
+      commit('SET_TOKEN', data.data.access_token)
       return data.data.access_token
     },
 
     // 获取用户信息
     async GetInfo ({ commit }) {
-      const userInfo = await authService.getInfo()
-      commit('setUser', { name: userInfo.accountDisplayName })
-      commit('setInfo', userInfo)
-      return userInfo
+      const res = await authService.getInfo()
+      const user = res.user
+      const avatar = user.avatar === '' ? require('@/assets/images/profile.png') : process.env.VUE_APP_BASE_API + user.avatar
+      if (res.roles && res.roles.length > 0) { // 验证返回的roles是否是一个非空数组
+        commit('SET_ROLES', res.roles)
+        commit('SET_PERMISSIONS', res.permissions)
+      } else {
+        commit('SET_ROLES', ['ROLE_DEFAULT'])
+      }
+      commit('SET_NAME', user.nickName)
+      commit('SET_AVATAR', avatar)
+      return res
     },
 
     async GetAcl ({ commit }, { serviceName }) {
@@ -71,6 +76,9 @@ const user = {
     // 登出
     async Logout ({ commit }) {
       return new Promise((resolve) => {
+        commit('SET_TOKEN', '')
+        commit('SET_ROLES', [])
+        commit('SET_PERMISSIONS', [])
         removeToken()
         resolve()
       })

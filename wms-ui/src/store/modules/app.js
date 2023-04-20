@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import i18n from '@/locale/index'
+import i18n from '@/locales/index'
 import moment from 'moment'
 
 import {

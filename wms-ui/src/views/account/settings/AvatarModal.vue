@@ -4,7 +4,7 @@
     title="修改头像"
     :visible="visible"
     :maskClosable="false"
-    :confirmLoading="confirmLoading"
+    :confirm-loading="submitLoading"
     :width="800"
     :footer="null"
     @cancel="cancelHandel">
@@ -48,27 +48,27 @@
         <a-button icon="redo" @click="rotateRight"/>
       </a-col>
       <a-col :lg="{span: 2, offset: 6}" :md="2">
-        <a-button type="primary" @click="finish('blob')">保存</a-button>
+        <a-button type="primary" :loading="uploading" @click="finish('blob')">保存</a-button>
       </a-col>
     </a-row>
   </a-modal>
 
 </template>
 <script>
-import { VueCropper } from 'vue-cropper'
+import store from '@/store'
+import { uploadAvatar } from '@/api/system/user'
+import { mapGetters } from 'vuex'
 
 export default {
-  components: {
-    VueCropper
-  },
   data () {
     return {
       visible: false,
       id: null,
-      confirmLoading: false,
+      submitLoading: false,
       fileList: [],
       uploading: false,
       options: {
+        // img: 'https://zos.alipayobjects.com/rmsportal/jkjgkEfvpUPVyRjUImniVslZfWPnJuuZ.png',
         img: '',
         autoCrop: true,
         autoCropWidth: 200,
@@ -78,10 +78,14 @@ export default {
       previews: {}
     }
   },
+  computed: {
+    ...mapGetters(['avatar'])
+  },
   methods: {
     edit (id) {
       this.visible = true
       this.id = id
+      this.options.img = this.avatar
       /* 获取原始头像 */
     },
     close () {
@@ -117,8 +121,8 @@ export default {
 
     // 上传图片（点击上传按钮）
     finish (type) {
-      console.log('finish')
       const _this = this
+      this.uploading = true
       const formData = new FormData()
       // 输出
       if (type === 'blob') {
@@ -126,27 +130,14 @@ export default {
           const img = window.URL.createObjectURL(data)
           this.model = true
           this.modelSrc = img
-          formData.append('file', data, this.fileName)
-          this.$http.post('https://www.mocky.io/v2/5cc8019d300000980a055e76', formData, { contentType: false, processData: false, headers: { 'Content-Type': 'application/x-www-form-urlencoded' } })
-            .then((response) => {
-              console.log('upload response:', response)
-              // var res = response.data
-              // if (response.status === 'done') {
-              //   _this.imgFile = ''
-              //   _this.headImg = res.realPathList[0] // 完整路径
-              //   _this.uploadImgRelaPath = res.relaPathList[0] // 非完整路径
-              //   _this.$message.success('上传成功')
-              //   this.visible = false
-              // }
-              _this.$message.success('上传成功')
-              _this.$emit('ok', response.url)
-            }, (error) => {
-              console.log('error: ', error)
-              _this.$message.error('上传失败')
-            })
-            .finally(() => {
-              _this.visible = false
-            })
+          formData.append('avatarfile', data, this.fileName)
+          uploadAvatar(formData).then(response => {
+            this.open = false
+            store.commit('SET_AVATAR', process.env.VUE_APP_BASE_API + response.imgUrl)
+            _this.$message.success('上传成功')
+            _this.$emit('ok', process.env.VUE_APP_BASE_API + response.imgUrl)
+            _this.visible = false
+          })
         })
       } else {
         this.$refs.cropper.getCropData((data) => {
@@ -154,13 +145,14 @@ export default {
           this.modelSrc = data
         })
       }
+      this.uploading = false
     },
     okHandel () {
       const vm = this
 
-      vm.confirmLoading = true
+      vm.submitLoading = true
       setTimeout(() => {
-        vm.confirmLoading = false
+        vm.submitLoading = false
         vm.close()
         vm.$message.success('上传头像成功')
       }, 2000)

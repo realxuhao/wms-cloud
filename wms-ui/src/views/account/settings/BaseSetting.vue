@@ -3,52 +3,44 @@
     <a-row :gutter="16">
       <a-col :md="24" :lg="16">
 
-        <a-form layout="vertical">
-          <a-form-item
+        <a-form-model
+          layout="vertical"
+          :rules="rules"
+          :model="user"
+          ref="form"
+        >
+          <a-form-model-item
             label="昵称"
+            ref="nickName"
+            prop="nickName"
           >
-            <a-input placeholder="给自己起个名字" />
-          </a-form-item>
-          <a-form-item
-            label="Bio"
+            <a-input v-model="user.nickName" placeholder="给自己起个名字" :maxLength="30" />
+          </a-form-model-item>
+          <a-form-model-item
+            label="手机"
+            prop="phonenumber"
           >
-            <a-textarea rows="4" placeholder="You are not alone."/>
-          </a-form-item>
-
-          <a-form-item
+            <a-input v-model="user.phonenumber" placeholder="请填写手机号"/>
+          </a-form-model-item>
+          <a-form-model-item
             label="电子邮件"
-            :required="false"
+            prop="email"
           >
-            <a-input placeholder="exp@admin.com"/>
-          </a-form-item>
-          <a-form-item
-            label="加密方式"
-            :required="false"
+            <a-input v-model="user.email" placeholder="请填写手机号邮箱"/>
+          </a-form-model-item>
+          <a-form-model-item
+            label="性别"
+            prop="sex"
           >
-            <a-select defaultValue="aes-256-cfb">
-              <a-select-option value="aes-256-cfb">aes-256-cfb</a-select-option>
-              <a-select-option value="aes-128-cfb">aes-128-cfb</a-select-option>
-              <a-select-option value="chacha20">chacha20</a-select-option>
-            </a-select>
-          </a-form-item>
-          <a-form-item
-            label="连接密码"
-            :required="false"
-          >
-            <a-input placeholder="h3gSbecd"/>
-          </a-form-item>
-          <a-form-item
-            label="登录密码"
-            :required="false"
-          >
-            <a-input placeholder="密码"/>
-          </a-form-item>
-
-          <a-form-item>
-            <a-button type="primary">提交</a-button>
-            <a-button style="margin-left: 8px">保存</a-button>
-          </a-form-item>
-        </a-form>
+            <a-radio-group v-model="user.sex">
+              <a-radio :value="sexValue.men">男</a-radio>
+              <a-radio :value="sexValue.women">女</a-radio>
+            </a-radio-group>
+          </a-form-model-item>
+          <a-form-model-item>
+            <a-button type="primary" :loading="submitLoading" @click="submit">保存</a-button>
+          </a-form-model-item>
+        </a-form-model>
 
       </a-col>
       <a-col :md="24" :lg="8" :style="{ minHeight: '180px' }">
@@ -57,7 +49,7 @@
           <div class="mask">
             <a-icon type="plus" />
           </div>
-          <img :src="option.img"/>
+          <img :src="avatar"/>
         </div>
       </a-col>
 
@@ -70,17 +62,26 @@
 
 <script>
 import AvatarModal from './AvatarModal'
+import { getUserProfile, updateUserProfile } from '@/api/system/user'
+import { mapGetters } from 'vuex'
 
 export default {
+  name: 'BaseSettings',
   components: {
     AvatarModal
   },
   data () {
     return {
+      submitLoading: false,
       // cropper
+      sexValue: {
+        men: '0',
+        women: '1'
+      },
+      user: {},
       preview: {},
       option: {
-        img: '/avatar2.jpg',
+        img: this.avatar,
         info: true,
         size: 1,
         outputType: 'jpeg',
@@ -93,12 +94,60 @@ export default {
         // 开启宽度和高度比例
         fixed: true,
         fixedNumber: [1, 1]
+      },
+      rules: {
+        nickName: [
+          { required: true, message: '请输入昵称', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: '邮箱不能为空', trigger: 'blur' },
+          {
+            type: 'email',
+            message: '请正确填写邮箱地址',
+            trigger: ['blur', 'change']
+          }
+        ],
+        phonenumber: [
+          { required: true, message: '手机号不能为空', trigger: 'blur' },
+          {
+            pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
+            message: '请正确填写手机号',
+            trigger: 'blur'
+          }
+        ]
       }
     }
   },
+  computed: {
+    ...mapGetters(['nickname', 'avatar'])
+  },
+  mounted () {
+    this.getUser()
+  },
   methods: {
+    getUser () {
+      getUserProfile().then(response => {
+        this.user = response.data
+        this.roleGroup = response.roleGroup
+        this.postGroup = response.postGroup
+      })
+    },
     setavatar (url) {
       this.option.img = url
+    },
+    submit () {
+      this.submitLoading = true
+      updateUserProfile(this.user).then(response => {
+        this.$notification.open({
+          message: '提示',
+          description:
+            '修改成功',
+          icon: <a-icon type="check" style="color: #1890FF" />,
+          duration: 3
+        })
+      }).finally(() => {
+        this.submitLoading = false
+      })
     }
   }
 }

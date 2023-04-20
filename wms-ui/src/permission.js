@@ -1,113 +1,67 @@
-import notification from 'ant-design-vue/es/notification'
-// import _ from 'lodash'
-import { getToken } from '@/utils/cookie'
-import NProgress from 'nprogress' // progress bar
-import 'nprogress/nprogress.css' // progress bar custom style
-// import { CustomError } from '@/utils/error'
-
-import config from '@/config/app.config'
-
 import router from './router'
 import store from './store'
+import storage from 'store'
+import NProgress from 'nprogress' // progress bar
+import '@/components/NProgress/nprogress.less' // progress bar custom style
+import { setDocumentTitle, domTitle } from '@/utils/domUtil'
+import { ACCESS_TOKEN } from '@/store/mutation-types'
+import { i18nRender } from '@/locales'
 
 NProgress.configure({ showSpinner: false }) // NProgress Configuration
 
-const whiteList = ['login'] // no redirect whitelist
+const allowList = ['login', 'register'] // no redirect allowList
+const loginRoutePath = '/user/login'
+const defaultRoutePath = '/index'
 
-function redirectToLogin (redirectPath) {
-  router.replace({ name: 'login', query: redirectPath })
-}
-
-async function loadGlobalData () {
-}
-
-function handleLoadError (error) {
-  console.error(error)
-  switch (error.type) {
-    case 'noService': {
-      window.location.href = config.homepageRootUrl
-      break
-    }
-    default: {
-      notification.error({
-        message: '错误',
-        description: '请求用户信息失败，请重试'
-      })
-      // setTimeout(() => { removeToken(); redirectToLogin() }, 5000)
-    }
-  }
-}
-
-function gotoNext (to, from, next, redirect) {
-  const { meta } = to
-  let permission = true
-
-  if (meta && meta.hook) {
-    // hook用于判断动态路由权限
-    permission = meta.hook(to.params, meta)
-  }
-
-  if (!permission) {
-    router.push({ path: '/404' })
-  } else if (redirect && to.path === redirect) {
-    // hack方法 确保addRoutes已完成 ,set the replace: true so the navigation will not leave a history record
-    next({ ...to, replace: true })
-  } else if (redirect) {
-    // 跳转到目的路由
-    next({ path: redirect })
-  } else {
-    next()
-  }
-}
-
-async function loginCallback (to, from, next) {
-  let redirect = null
-  if (store.getters.userLoaded === false) {
-    try {
-      const [userInfo] = await Promise.all([
-        store.dispatch('GetInfo')
-      ])
-
-      store.commit('setLoadingStatus', true)
-
-      const isAdmin = userInfo.isSuperTenant || userInfo.accountId === userInfo.tenantCreatorId
-      const addRouters = await store.dispatch('GenerateRoutes', isAdmin)
-
-      // 动态添加可访问路由表
-      router.addRoutes(addRouters)
-
-      await loadGlobalData()
-
-      redirect = decodeURIComponent(from.query.redirect || to.path)
-    } catch (error) {
-      handleLoadError(error)
-      return
-    }
-  }
-  gotoNext(to, from, next, redirect)
-}
-
-const checkAuthentication = async (to, from, next) => {
+router.beforeEach((to, from, next) => {
   NProgress.start() // start progress bar
-  // to.meta && (typeof to.meta.title !== 'undefined' && setDocumentTitle(`${to.meta.title} - ${domTitle}`))
-  const token = getToken()
-  if (token) {
-    /* has token */
-    NProgress.done()
-    await loginCallback(to, from, next)
+  to.meta && (typeof to.meta.title !== 'undefined' && setDocumentTitle(`${i18nRender(to.meta.title)} - ${domTitle}`))
+  /* has token */
+  if (storage.get(ACCESS_TOKEN)) {
+    if (to.path === loginRoutePath || to.path === '/') {
+      next({ path: defaultRoutePath })
+      NProgress.done()
+    } else {
+      // check login user.roles is null
+      if (store.getters.roles.length === 0) {
+        // request login userInfo
+        store
+          .dispatch('GetInfo')
+          .then(res => {
+            // const roles = res.result && res.result.role
+            const roles = res.roles
+            // generate dynamic router
+            store.dispatch('GenerateRoutes', { roles }).then(() => {
+              router.addRoutes(store.getters.routers)
+
+              // 请求带有 redirect 重定向时，登录自动重定向到该地址
+              next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
+            })
+          })
+          .catch(() => {
+            // notification.error({
+            //   message: '错误',
+            //   description: '请求用户信息失败，请重试'
+            // })
+            // // 失败时，获取用户信息失败时，调用登出，来清空历史保留信息
+            // store.dispatch('Logout').then(() => {
+            //   location.href = '/index'
+            // })
+          })
+      } else {
+        next()
+      }
+    }
   } else {
-    if (whiteList.includes(to.name)) {
-      // 在免登录白名单，直接进入
+    if (allowList.includes(to.name)) {
+      // 在免登录名单，直接进入
       next()
     } else {
-      const { path } = to
-      redirectToLogin({ redirectPath: path })
+      next({ path: loginRoutePath, query: { redirect: to.fullPath } })
       NProgress.done() // if current page is login will not trigger afterEach hook, so manually handle it
     }
   }
-}
-
-router.beforeEach(checkAuthentication)
+})
 
 router.afterEach(() => {
   NProgress.done() // finish progress bar

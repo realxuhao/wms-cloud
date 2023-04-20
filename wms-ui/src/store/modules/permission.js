@@ -62,6 +62,14 @@ function setRoutersHook (routerMap, hook) {
   return routersWithHook
 }
 
+// function hasRole(roles, route) {
+//   if (route.meta && route.meta.roles) {
+//     return route.meta.roles.includes(roles.id)
+//   } else {
+//     return true
+//   }
+// }
+
 const permission = {
   state: {
     routers: constantRouterMap,
