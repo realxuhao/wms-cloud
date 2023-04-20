@@ -91,7 +91,7 @@ public class ProductQRCodeUtil {
         String s3="00"+sscc;
 
 
-        System.out.println(s1+"\n"+s2+"\n"+s3);
+        System.out.println(s1+s2+s3);
 
 
 

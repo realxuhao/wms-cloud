@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.masterdata.api.RemoteMaterialService;
+import com.bosch.masterdata.api.RemoteProductService;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
+import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.StockTakeDetail;
 import com.bosch.product.api.domain.StockTakePlan;
@@ -53,6 +55,9 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
     private RemoteMaterialService materialService;
 
     @Autowired
+    private RemoteProductService productService;
+
+    @Autowired
     private IProductStockService productStockService;
 
     @Autowired
@@ -74,22 +79,21 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
         stockTakePlan.setCircleTakeMonth(dto.getCircleTakeMonth());
 
 
-        //根据cell获取物料
-        List<MaterialVO> materialVOList = new ArrayList<>();
-        if (dto.getCell() != null) {
-            R<List<MaterialVO>> materialListR = materialService.getByCell(dto.getCell());
-            if (materialListR == null || !materialListR.isSuccess()) {
-                throw new ServiceException("根据cell获取物料失败");
-            }
-            materialVOList = materialListR.getData();
-        }
-
-        List<String> materialCodeList = materialVOList.stream().map(MaterialVO::getCode).collect(Collectors.toList());
-
-
         List<StockTakeDetail> stockTakeDetailList = new ArrayList<>();
         //原材料
         if (dto.getTakeMaterialType() == 0) {
+            //根据cell获取原材料物料编码
+            List<MaterialVO> materialVOList = new ArrayList<>();
+            if (dto.getCell() != null) {
+                R<List<MaterialVO>> materialListR = materialService.getByCell(dto.getCell());
+                if (materialListR == null || !materialListR.isSuccess()) {
+                    throw new ServiceException("根据cell获取物料失败");
+                }
+                materialVOList = materialListR.getData();
+            }
+
+            List<String> materialCodeList = materialVOList.stream().map(MaterialVO::getCode).collect(Collectors.toList());
+
             LambdaQueryWrapper<Stock> materialStockQueryWrapper = new LambdaQueryWrapper<>();
             materialStockQueryWrapper.eq(StringUtils.isNotEmpty(dto.getWareCode()), Stock::getWareCode, dto.getWareCode())
                     .eq(StringUtils.isNotEmpty(dto.getAreaCode()), Stock::getAreaCode, dto.getAreaCode())
@@ -105,15 +109,30 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
             }
             buildTakeDetailListByMaterials(stockTakeDetailList, materialStockList, stockTakePlan.getCode());
         } else if (dto.getTakeMaterialType() == 1) {
+            //根据cell获取成品物料编码
+            List<MdProductPackagingVO> productPackagingVOS = new ArrayList<>();
+            if (dto.getCell() != null) {
+                R<List<MdProductPackagingVO>> productServiceByCellR = productService.getByCell(dto.getCell());
+                if (productServiceByCellR == null || !productServiceByCellR.isSuccess()) {
+                    throw new ServiceException("根据cell获取物料失败");
+                }
+                productPackagingVOS = productServiceByCellR.getData();
+            }
+
+            List<String> materialCodeList = productPackagingVOS.stream().map(MdProductPackagingVO::getProductNo).collect(Collectors.toList());
+
             LambdaQueryWrapper<ProductStock> productStockQueryWrapper = new LambdaQueryWrapper<>();
             productStockQueryWrapper.eq(StringUtils.isNotEmpty(dto.getWareCode()), ProductStock::getWareCode, dto.getWareCode())
                     .eq(StringUtils.isNotEmpty(dto.getAreaCode()), ProductStock::getAreaCode, dto.getAreaCode())
                     .eq(ProductStock::getFreezeStock, (double) 0)
                     .in(!CollectionUtils.isEmpty(materialCodeList), ProductStock::getMaterialNb, materialCodeList);
+
             List<ProductStock> productStockList = productStockService.list(productStockQueryWrapper);
-            long count = productStockList.stream().map(ProductStock::getMaterialNb).distinct().count();
-            if (count < 3) {
-                throw new ServiceException("物料种数<3，不可创建循环盘点");
+            if (dto.getMethod() == 1) {
+                long count = productStockList.stream().map(ProductStock::getMaterialNb).distinct().count();
+                if (count < 3) {
+                    throw new ServiceException("物料种数<3，不可创建循环盘点");
+                }
             }
             buildTakeDetailListByProducts(stockTakeDetailList, productStockList, stockTakePlan.getCode());
         }

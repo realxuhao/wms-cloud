@@ -137,16 +137,16 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
         takeDetail.setStatus(StockTakePlanDetailStatusEnum.WAIT_CONFIRM.getCode());
 
         //判断所有plan下所有任务是否完成，如果完成，更新状态
-        LambdaQueryWrapper<StockTakeDetail> detailQueryWrapper = new LambdaQueryWrapper<>();
-        detailQueryWrapper.eq(StockTakeDetail::getPlanCode, takeDetail.getPlanCode());
-        detailQueryWrapper.eq(StockTakeDetail::getStatus, StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
-        List<StockTakeDetail> list = this.list(detailQueryWrapper);
-        if (!CollectionUtils.isEmpty(list) && list.size() == 1) {
-            takePlan.setStatus(StockTakePlanStatusEnum.FINISH.getCode());
-        }
+//        LambdaQueryWrapper<StockTakeDetail> detailQueryWrapper = new LambdaQueryWrapper<>();
+//        detailQueryWrapper.eq(StockTakeDetail::getPlanCode, takeDetail.getPlanCode());
+//        detailQueryWrapper.eq(StockTakeDetail::getStatus, StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
+//        List<StockTakeDetail> list = this.list(detailQueryWrapper);
+//        if (!CollectionUtils.isEmpty(list) && list.size() == 1) {
+//            takePlan.setStatus(StockTakePlanStatusEnum.FINISH.getCode());
+//        }
 
         this.updateById(takeDetail);
-        planService.updateById(takePlan);
+//        planService.updateById(takePlan);
 
 
     }
@@ -159,16 +159,23 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
         }
         queryDTO.setStatus(StockTakePlanDetailStatusEnum.WAIT_CONFIRM.getCode());
         List<StockTakeDetailVO> detailList = this.getDetailList(queryDTO);
+        if (CollectionUtils.isEmpty(detailList)) {
+            throw new ServiceException("该条件下没有待确认的数据");
+        }
         detailList.stream().forEach(item -> item.setStatus(StockTakePlanDetailStatusEnum.FINISH.getCode()));
         //原材料
         List<StockTakeDetailVO> materialTakeDetails = detailList.stream().filter(item -> item.getTakeMaterialType() == 0).collect(Collectors.toList());
         //成品
         List<StockTakeDetailVO> productTakeDetails = detailList.stream().filter(item -> item.getTakeMaterialType() == 1).collect(Collectors.toList());
-        updateMaterialStock(materialTakeDetails);
-        updateProductStock(productTakeDetails);
+        if (!CollectionUtils.isEmpty(materialTakeDetails)) {
+            updateMaterialStock(materialTakeDetails);
+        }
+        if (!CollectionUtils.isEmpty(productTakeDetails)) {
+            updateProductStock(productTakeDetails);
+        }
 
         //更新detail为完成
-        List<Integer> idList = materialTakeDetails.stream().map(StockTakeDetailVO::getId).collect(Collectors.toList());
+        List<Integer> idList = detailList.stream().map(StockTakeDetailVO::getId).collect(Collectors.toList());
         LambdaUpdateWrapper<StockTakeDetail> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.in(StockTakeDetail::getId, idList);
         updateWrapper.eq(StockTakeDetail::getStatus, StockTakePlanDetailStatusEnum.WAIT_CONFIRM.getCode());
@@ -176,15 +183,15 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
         this.update(updateWrapper);
 
         //如果所在的detial全部完成了，更新plan
-        List<String> planCodes = materialTakeDetails.stream().map(StockTakeDetail::getPlanCode).collect(Collectors.toList());
+        List<String> planCodes = detailList.stream().map(StockTakeDetail::getPlanCode).collect(Collectors.toList());
         LambdaQueryWrapper<StockTakeDetail> detailQueryWrapper = new LambdaQueryWrapper<>();
         detailQueryWrapper.in(StockTakeDetail::getPlanCode, planCodes);
         List<StockTakeDetail> stockTakeDetails = this.list(detailQueryWrapper);
         Map<String, List<StockTakeDetail>> planCodeMap = stockTakeDetails.stream().collect(Collectors.groupingBy(StockTakeDetail::getPlanCode));
         List<String> completePlanCodsList = new ArrayList<>();
         planCodeMap.forEach((key, value) -> {
-            List<StockTakeDetail> tempDetails = value.stream().filter(item -> item.getStatus().equals(StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode())).collect(Collectors.toList());
-            if (!CollectionUtils.isEmpty(tempDetails) && tempDetails.size() == 1) {
+            List<StockTakeDetail> tempDetails = value.stream().filter(item -> !item.getStatus().equals(StockTakePlanDetailStatusEnum.FINISH.getCode())).collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(tempDetails)) {
                 completePlanCodsList.add(key);
             }
         });
