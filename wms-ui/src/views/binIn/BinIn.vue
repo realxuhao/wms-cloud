@@ -74,14 +74,14 @@
       >
         <template slot="status" slot-scope="text">
           <div >
-            <a-tag color="orange" v-if="text===0">
+            <a-tag color="#99CCFF" v-if="text===0">
               待上架
             </a-tag>
             <a-tag color="#87d068" v-if="text===1">
               已上架
             </a-tag>
-            <a-tag color="#666666" v-else>
-              入库待上架
+            <a-tag color="#FF9900" v-if="text === null">
+              已入库
             </a-tag>
           </div>
         </template>
