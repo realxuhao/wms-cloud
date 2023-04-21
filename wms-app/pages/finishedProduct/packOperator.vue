@@ -182,7 +182,7 @@ export default {
 			 }
 			 
 			 if(this.allScanProdOrderList>this.palletQuantityCount || this.allScanProdOrderList<this.palletQuantityCount){
-				 hrow ({message:`扫描标签次数未满足要求,请检查`});
+				 throw ({message:`扫描标签次数未满足要求,请检查`});
 			 }
 			 
 			// console.log('this.taskListCountMap',this.taskListCountMap)
