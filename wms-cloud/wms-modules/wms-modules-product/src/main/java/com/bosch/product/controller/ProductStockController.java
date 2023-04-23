@@ -1,19 +1,20 @@
 package com.bosch.product.controller;
 
 import com.bosch.masterdata.api.domain.vo.PageVO;
+import com.bosch.product.api.domain.dto.EditStockDTO;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
+import com.bosch.product.service.IMaterialStockService;
 import com.bosch.product.service.IProductStockService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
+import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,13 +30,16 @@ import java.util.List;
 public class ProductStockController extends BaseController {
 
     @Autowired
-    private IProductStockService stockService;
+    private IProductStockService productStockService;
+
+    @Autowired
+    private IMaterialStockService materialStockService;
 
     @GetMapping(value = "/list")
     @ApiOperation("库存列表")
     public R<PageVO<ProductStockVO>> list(ProductStockQueryDTO stockQueryDTO) {
         startPage();
-        List<ProductStockVO> list = stockService.list(stockQueryDTO);
+        List<ProductStockVO> list = productStockService.list(stockQueryDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
@@ -46,7 +50,19 @@ public class ProductStockController extends BaseController {
 //    }
 
 
+    @PostMapping(value = "editStock")
+    @ApiOperation("修改库存")
+    public R editStock(@RequestBody EditStockDTO dto) {
+        String barCode = dto.getBarCode();
+        String sscc = "";
+        if (barCode.length() == 50) {
+            productStockService.editStock(dto);
+        } else if (barCode.length() == 71) {
+            sscc = ProductQRCodeUtil.getSSCC(barCode);
+        }
 
+        return R.ok();
+    }
 
 
 }

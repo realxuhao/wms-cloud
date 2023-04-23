@@ -10,6 +10,7 @@ import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.product.api.domain.ProductReceive;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.ProductWareShift;
+import com.bosch.product.api.domain.dto.EditStockDTO;
 import com.bosch.product.api.domain.dto.ProductBinInDTO;
 import com.bosch.product.api.domain.dto.ProductIQCManagementQueryDTO;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
@@ -22,6 +23,7 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -205,6 +207,18 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         productStock.setAreaCode(binInDTO.getAreaCode());
         updateById(productStock);
         return productStock;
+    }
+
+    @Override
+    public void editStock(EditStockDTO dto) {
+        if (dto.getFreezeStock()< dto.getTotalStock()){
+            throw new ServiceException("冻结库存不可以大于总库存");
+        }
+        String sscc = ProductQRCodeUtil.getSSCC(dto.getBarCode());
+        LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ProductStock::getSsccNumber,sscc);
+        queryWrapper.eq(ProductStock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+
     }
 
     private BinVO getBinVOByBinCode(String binCode) {

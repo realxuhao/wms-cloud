@@ -7,6 +7,7 @@ import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.product.api.domain.ProductReceive;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.ProductWareShift;
+import com.bosch.product.api.domain.dto.EditStockDTO;
 import com.bosch.product.api.domain.dto.ProductBinInDTO;
 import com.bosch.product.api.domain.dto.ProductIQCManagementQueryDTO;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
@@ -53,4 +54,6 @@ public interface IProductStockService extends IService<ProductStock> {
     Integer changeStatus(IQCChangeStatusDTO iqcChangeStatusDTO);
 
     ProductStock binInToArea(ProductBinInDTO binInDTO);
+
+    void editStock(EditStockDTO dto);
 }
