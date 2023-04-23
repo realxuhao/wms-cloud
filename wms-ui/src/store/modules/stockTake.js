@@ -22,7 +22,7 @@ const stockTake = {
     async destroy ({ commit }, id) {
       const data = await stockTakeService.destroy(id)
       return data
-    },
+    }
   }
 }
 
