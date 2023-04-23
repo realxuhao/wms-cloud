@@ -36,4 +36,6 @@ public class ServiceNameConstants
      * 上架服务的serviceid
      */
     public static final String BIN_IN = "bin-in";
+
+    public static final String PRODUCT="product";
 }

@@ -1,12 +1,17 @@
 package com.bosch.binin.controller;
 
+import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.RemoteMesBarCodeService;
+import com.bosch.masterdata.api.RemoteProductService;
 import com.bosch.masterdata.api.domain.vo.MesBarCodeVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
+import com.bosch.product.api.RemoteProductStockService;
+import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
+import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
@@ -42,6 +47,10 @@ public class StockController extends BaseController {
     @Autowired
     private RemoteMesBarCodeService remoteMesBarCodeService;
 
+    @Autowired
+    private RemoteProductStockService remoteProductStockService;
+
+
     @GetMapping(value = "/list")
     @ApiOperation("库存列表")
     public R<PageVO<StockVO>> list(StockQueryDTO stockQuerySTO) {
@@ -53,22 +62,33 @@ public class StockController extends BaseController {
     @GetMapping(value = "/getByMesBarCode/{mesBarCode}")
     @ApiOperation("扫码查询某个物料的库存信息")
     public R<StockVO> getByMesBarCode(@PathVariable("mesBarCode") String mesBarCode) {
-        String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
-        R<StockVO> stockVOR = getBySscc(sscc);
-        if (!stockVOR.isSuccess() || stockVOR.getData() == null) {
-            R<MesBarCodeVO> mesBarCodeVOR = remoteMesBarCodeService.parseMesBarCode(mesBarCode);
-            if (mesBarCodeVOR.isSuccess()){
-                MesBarCodeVO mesBarCodeVO = mesBarCodeVOR.getData();
-                StockVO stockVO = new StockVO();
-                stockVO.setSsccNumber(mesBarCodeVO.getSsccNb());
-                stockVO.setMaterialNb(mesBarCodeVO.getMaterialNb());
-                stockVO.setMaterialName(mesBarCodeVO.getMaterialName());
-                stockVO.setExpireDate(mesBarCodeVO.getExpireDate());
-                stockVO.setBatchNb(mesBarCodeVO.getBatchNb());
-                stockVOR.setData(stockVO);
+        if (mesBarCode.length() == 50) {
+            String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+            R<StockVO> stockVOR = getBySscc(sscc);
+            if (!stockVOR.isSuccess() || stockVOR.getData() == null) {
+                R<MesBarCodeVO> mesBarCodeVOR = remoteMesBarCodeService.parseMesBarCode(mesBarCode);
+                if (mesBarCodeVOR.isSuccess()) {
+                    MesBarCodeVO mesBarCodeVO = mesBarCodeVOR.getData();
+                    StockVO stockVO = new StockVO();
+                    stockVO.setSsccNumber(mesBarCodeVO.getSsccNb());
+                    stockVO.setMaterialNb(mesBarCodeVO.getMaterialNb());
+                    stockVO.setMaterialName(mesBarCodeVO.getMaterialName());
+                    stockVO.setExpireDate(mesBarCodeVO.getExpireDate());
+                    stockVO.setBatchNb(mesBarCodeVO.getBatchNb());
+                    stockVOR.setData(stockVO);
+                }
+            }
+            return stockVOR;
+        } else if (mesBarCode.length() == 71) {
+            R<ProductStockVO> productStockVOR = remoteProductStockService.getByBarCode(mesBarCode);
+            if (productStockVOR.isSuccess() && productStockVOR.getData() != null) {
+                ProductStockVO productStockVO = productStockVOR.getData();
+                StockVO stockVO = BeanConverUtil.conver(productStockVO, StockVO.class);
+                return R.ok(stockVO);
             }
         }
-        return stockVOR;
+        return R.fail();
+
     }
 
     @GetMapping(value = "/getBySscc/{sscc}")
@@ -93,9 +113,22 @@ public class StockController extends BaseController {
         queryDTO.setBinCode(binCode);
 
         List<StockVO> list = stockService.selectStockVOList(queryDTO);
+        if (!CollectionUtils.isEmpty(list)) {
+            return R.ok(list);
+        } else {
+            R<List<ProductStockVO>> productStockVOR = remoteProductStockService.listByBinCode(binCode);
+            if (productStockVOR.isSuccess() && productStockVOR.getData() != null) {
+                List<ProductStockVO> stockVOList = productStockVOR.getData();
+                if (!CollectionUtils.isEmpty(stockVOList)) {
+                    List<StockVO> stockVOS = BeanConverUtil.converList(stockVOList, StockVO.class);
+                    return R.ok(stockVOS);
+                }
+            }
+        }
 
-        return R.ok(list);
+        return R.fail();
     }
+
     @GetMapping(value = "/getBinStockLog/{binCode}")
     @ApiOperation("查询某个库位的历史库存信息")
     public R<PageVO<StockVO>> getBinStockLog(@PathVariable("binCode") String binCode) {

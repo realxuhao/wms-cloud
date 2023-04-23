@@ -1,4 +1,1 @@
-com.bosch.masterdata.api.factory.RemoteMaterialFallbackFactory
-com.bosch.masterdata.api.factory.RemotePalletFallbackFactory
-com.bosch.masterdata.api.factory.RemoteMesBarCodeFallbackFactory
-com.bosch.masterdata.api.factory.RemoteIQCFallbackFactory
+com.bosch.product.api.factory.RemoteProductStockFallbackFactory

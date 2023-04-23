@@ -1,5 +1,8 @@
 package com.bosch.product.controller;
 
+import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.masterdata.api.RemoteMaterialService;
+import com.bosch.masterdata.api.RemoteProductService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.product.api.domain.dto.EditStockDTO;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
@@ -14,6 +17,7 @@ import com.ruoyi.common.core.web.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,6 +47,16 @@ public class ProductStockController extends BaseController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
+
+    @GetMapping(value = "/listByBinCode/{binCode}")
+    @ApiOperation("库存列表-根据库位")
+    public R<List<ProductStockVO>> listByBinCode(@PathVariable("binCode") String binCode) {
+        ProductStockQueryDTO queryDTO = new ProductStockQueryDTO();
+        queryDTO.setBinCode(binCode);
+        List<ProductStockVO> list = productStockService.list(queryDTO);
+        return R.ok(list);
+    }
+
 //    @GetMapping(value = "/allocateBin/{qrCode}")
 //    @ApiOperation("获取分配库位")
 //    public R<ProductStockVO> allocateBin(@PathVariable("qrCode")String qrCode){
@@ -50,7 +64,7 @@ public class ProductStockController extends BaseController {
 //    }
 
 
-    @PostMapping(value = "editStock")
+    @PostMapping(value = "/editStock")
     @ApiOperation("修改库存")
     public R editStock(@RequestBody EditStockDTO dto) {
         String barCode = dto.getBarCode();
@@ -61,6 +75,18 @@ public class ProductStockController extends BaseController {
         }
 
         return R.ok();
+    }
+
+    @GetMapping(value = "/getByBarCode/{barCode}")
+    public R<ProductStockVO> getByBarCode(@PathVariable("barCode") String barCode) {
+        String sscc = ProductQRCodeUtil.getSSCC(barCode);
+        ProductStockQueryDTO queryDTO = new ProductStockQueryDTO();
+        queryDTO.setSsccNumber(sscc);
+        List<ProductStockVO> list = productStockService.list(queryDTO);
+        if (!CollectionUtils.isEmpty(list)) {
+            return R.ok(list.get(0));
+        }
+        return R.fail("没有该SSCC" + sscc + "对应的库存");
     }
 
 
