@@ -26,6 +26,7 @@ import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import org.bouncycastle.util.io.pem.PemObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -148,13 +149,13 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         }
 
         stockWrapper.clear();
-        stockWrapper.eq(ProductStock::getBinCode,binCode);
-        stockWrapper.eq(ProductStock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
-        stockWrapper.eq(ProductStock::getBinInFlag,ProductStockBinInEnum.FINISH.code());
+        stockWrapper.eq(ProductStock::getBinCode, binCode);
+        stockWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        stockWrapper.eq(ProductStock::getBinInFlag, ProductStockBinInEnum.FINISH.code());
         stockWrapper.last("limit 1");
         ProductStock stock = this.getOne(stockWrapper);
-        if (!Objects.isNull(stock)){
-            throw new ServiceException("该库位"+binCode+"已经被占用！");
+        if (!Objects.isNull(stock)) {
+            throw new ServiceException("该库位" + binCode + "已经被占用！");
         }
 
         BinVO binVO = getBinVOByBinCode(binCode);
@@ -211,13 +212,20 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
     @Override
     public void editStock(EditStockDTO dto) {
-        if (dto.getFreezeStock()< dto.getTotalStock()){
+        if (dto.getFreezeStock() < dto.getTotalStock()) {
             throw new ServiceException("冻结库存不可以大于总库存");
         }
         String sscc = ProductQRCodeUtil.getSSCC(dto.getBarCode());
         LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProductStock::getSsccNumber,sscc);
-        queryWrapper.eq(ProductStock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.eq(ProductStock::getSsccNumber, sscc);
+        queryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.last("limit 1");
+        ProductStock productStock = this.getOne(queryWrapper);
+        productStock.setTotalStock(dto.getTotalStock());
+        productStock.setFreezeStock(dto.getFreezeStock());
+
+        this.updateById(productStock);
+
 
     }
 

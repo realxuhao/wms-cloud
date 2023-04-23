@@ -54,11 +54,10 @@ public class ProductStockController extends BaseController {
     @ApiOperation("修改库存")
     public R editStock(@RequestBody EditStockDTO dto) {
         String barCode = dto.getBarCode();
-        String sscc = "";
         if (barCode.length() == 50) {
-            productStockService.editStock(dto);
+            materialStockService.editStock(dto);
         } else if (barCode.length() == 71) {
-            sscc = ProductQRCodeUtil.getSSCC(barCode);
+            productStockService.editStock(dto);
         }
 
         return R.ok();
