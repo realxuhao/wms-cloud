@@ -4,7 +4,18 @@ import qs from 'qs'
 
 const baseUrl = `${config.apiHost}/product`
 
+const add = async (options) => {
+  const url = '/stock-take/add'
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
+  return data
+}
 const getList = async (parameter) => {
+  console.log(parameter)
+  const url = `/stock-take/list?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url, parameter)
+  return data
+}
+const getDetailList = async (parameter) => {
   console.log(parameter)
   const url = `/stock-take/list?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(baseUrl).get(url, parameter)
@@ -17,5 +28,6 @@ const destroy = async (id) => {
 }
 export const stockTakeService = {
   getList,
-  destroy
+  destroy,
+  add
 }

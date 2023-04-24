@@ -408,10 +408,16 @@ export const asyncRouterMap = [
             path: '/stock-take/list',
             name: 'stockTakeList',
             component: () => import('@/views/stockTake/StockTakePlan.vue'),
-            meta: { title: '盘点任务列表', permission: [] },
+            meta: { title: '盘点计划列表', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/stock-take/stockTakePlanDetail',
+            name: 'stockTakePlanDetail',
+            component: () => import('@/views/stockTake/StockTakePlanDetail.vue'),
+            meta: { title: '盘点明细列表', permission: [] },
             hideChildrenInMenu: true
           }
-
         ]
       }
     ]

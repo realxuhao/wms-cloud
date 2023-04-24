@@ -19,6 +19,10 @@ const stockTake = {
       const data = await stockTakeService.getList(options)
       return data
     },
+    async add ({ commit }, options) {
+      const data = await stockTakeService.add(options)
+      return data
+    },
     async destroy ({ commit }, id) {
       const data = await stockTakeService.destroy(id)
       return data
