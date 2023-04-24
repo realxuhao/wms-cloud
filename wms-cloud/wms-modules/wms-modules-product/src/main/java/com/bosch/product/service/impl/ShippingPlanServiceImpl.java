@@ -115,7 +115,7 @@ public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, Shi
         }
         //根据STR_TO_DATE(stock_movement_date, '%Y/%m/%d %H:%i')正序
         String orderBy = "STR_TO_DATE(" + "stock_movement_date" + ", '%Y/%c/%e %k:%i')";
-        wrapper.last("order by "+orderBy + " ASC");
+        wrapper.last("order by " + orderBy + " ASC");
 
         return shippingPlanMapper.selectList(wrapper);
     }
@@ -175,6 +175,27 @@ public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, Shi
         return false;
     }
 
+    //获取List<ShippingPlanDTO> list中的shippingMark，etoPo在数据库中存在的数据
+    @Override
+    public List<ShippingPlan> getRepeatPlan(List<ShippingPlanDTO> list) {
+        //循环list，获取shippingMark，etoPo，根据shippingMark，etoPo查询数据库，如果存在，将数据添加到list中
+        List<ShippingPlan> shippingPlanList = new ArrayList<>();
+        for (ShippingPlanDTO shippingPlanDTO : list) {
+            QueryWrapper<ShippingPlan> wrapper = new QueryWrapper<>();
+            wrapper.eq("shipping_mark", shippingPlanDTO.getShippingMark());
+            wrapper.eq("eto_po", shippingPlanDTO.getEtoPo());
+            wrapper.eq("delete_flag", 0);
+            List<ShippingPlan> shippingPlans = shippingPlanMapper.selectList(wrapper);
+            if (CollectionUtils.isNotEmpty(shippingPlans)) {
+                shippingPlanList.addAll(shippingPlans);
+            }
+        }
+        return shippingPlanList;
+
+
+    }
+
+    //删除List<ShippingPlanDTO> list中的shippingMark，etoPo在数据库中存在的数据
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteRepeatPlan(List<ShippingPlanDTO> list) {
@@ -198,7 +219,7 @@ public class ShippingPlanServiceImpl extends ServiceImpl<ShippingPlanMapper, Shi
         int countTask = shippingTaskMapper.delete(taskWrapper);
         //获取要删除的task的id，用lambda表达式
         //如果shippingTasks不为空，就返回shippingTasks的id
-        if(CollectionUtils.isNotEmpty(shippingTasks)){
+        if (CollectionUtils.isNotEmpty(shippingTasks)) {
             List<Long> taskIds = shippingTasks.stream().map(ShippingTask::getId).collect(Collectors.toList());
             //删除history，delete_flag为0
             QueryWrapper<ShippingHistory> historyWrapper = new QueryWrapper<>();
