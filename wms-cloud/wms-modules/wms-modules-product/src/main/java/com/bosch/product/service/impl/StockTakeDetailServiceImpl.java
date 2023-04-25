@@ -29,6 +29,7 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -135,6 +136,8 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
         }
         takePlan.setTakeBinQuantity(takePlan.getTakeBinQuantity() + 1);
         takeDetail.setStatus(StockTakePlanDetailStatusEnum.WAIT_CONFIRM.getCode());
+        takeDetail.setTakeBy(SecurityUtils.getUsername());
+        takeDetail.setTakeTime(new Date());
 
         //判断所有plan下所有任务是否完成，如果完成，更新状态
 //        LambdaQueryWrapper<StockTakeDetail> detailQueryWrapper = new LambdaQueryWrapper<>();
@@ -213,6 +216,8 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
             throw new ServiceException("该条数据状态为" + StockTakePlanDetailStatusEnum.getDescByCode(takeDetail.getStatus()) + "，不可以修改");
         }
         takeDetail.setTakeQuantity(operateDTO.getPdaTakeQuantity());
+        takeDetail.setEditBy(SecurityUtils.getUsername());
+        takeDetail.setEditTime(new Date());
         this.updateById(takeDetail);
     }
 

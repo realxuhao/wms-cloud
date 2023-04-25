@@ -106,10 +106,26 @@ public class StockTakeDetail extends BaseEntity implements Serializable {
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
-    /** 创建时间 */
-    @ApiModelProperty(value = "创建时间")
+    /** 下发时间 */
+    @ApiModelProperty(value = "下发时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date issueTime;
+
+
+    @ApiModelProperty(value = "盘点人")
+    private String takeBy;
+
+
+    @ApiModelProperty(value = "盘点时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date takeTime;
+
+    @ApiModelProperty(value = "调整人")
+    private String editBy;
+
+        @ApiModelProperty(value = "调整时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date editTime;
 
 
 
