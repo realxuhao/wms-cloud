@@ -98,7 +98,14 @@
         <a-button type="primary" class="m-r-8" icon="plus" @click="confirm"> 确认</a-button>
       </div>
       <a-table
-        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+        :row-selection="{
+        selectedRowKeys: selectedRowKeys,
+        onChange: onSelectChange ,
+        getCheckboxProps:record => ({
+            props: {
+              disabled: record.status !== 2
+            },
+          })}"
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
@@ -107,13 +114,17 @@
         size="middle"
         :scroll="tableScroll"
       >
+
         <template slot="status" slot-scope="text">
           <div>
             <a-tag color="orange" v-if="text===0">
-              已创建
+              待下发
             </a-tag>
             <a-tag color="#87d068" v-if="text===1">
-              进行中
+              待盘点
+            </a-tag>
+            <a-tag color="#87d068" v-if="text===2">
+              待确认
             </a-tag>
             <a-tag color="#666666" v-else>
               完成
@@ -154,7 +165,7 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a class="warning-color" @click="edit(record)">
+            <a :disabled="record.status !==2" class="warning-color" @click="edit(record)">
               <a-icon class="m-r-4" type="edit"/>
               修改盘点数量</a>
           </div>
@@ -169,7 +180,7 @@
             @ok="handleOk"
             @cancel="handleCancel"
           >
-           <a-input   style="width: 80px" v-model="pdaTakeQuantity" placeholder="盘点数量"></a-input>
+            <a-input style="width: 80px" v-model="pdaTakeQuantity" placeholder="盘点数量"></a-input>
           </a-modal>
         </div>
       </template>
@@ -273,18 +284,23 @@ const queryFormAttr = () => {
     status: ''
   }
 }
+
 const status = [
   {
-    text: '已创建',
+    text: '待下发',
     value: 0
   },
   {
-    text: '进行中',
+    text: '待盘点',
     value: 1
   },
   {
-    text: '完成',
+    text: '待确认',
     value: 2
+  },
+  {
+    text: '完成',
+    value: 3
   }
 ]
 const type = [
@@ -351,7 +367,7 @@ export default {
   methods: {
     async handleOk(e) {
       try {
-          this.confirmLoading = true;
+        this.confirmLoading = true;
         const options = {
           detailId: this.editId,
           pdaTakeQuantity: this.pdaTakeQuantity
@@ -360,9 +376,9 @@ export default {
         this.editvisible = false;
         this.loadTableList()
         this.$message.success('提交成功')
-      }catch (error){
+      } catch (error) {
         this.$message.error(error.message)
-      }finally {
+      } finally {
         this.editvisible = false;
         this.confirmLoading = false
       }
