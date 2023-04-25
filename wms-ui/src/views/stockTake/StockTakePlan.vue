@@ -26,7 +26,14 @@
           </a-col>
           <a-col :span="4">
             <a-form-model-item label="盘点物料类型">
-              <a-input v-model="queryForm.takeMaterialType" placeholder="盘点物料类型" allow-clear/>
+              <a-select
+                allow-clear
+                v-model="queryForm.takeMaterialType"
+              >
+                <a-select-option v-for="item in takeMaterialType" :key="item.value" :value="item.value">
+                  {{ item.text }}
+                </a-select-option>
+              </a-select>
             </a-form-model-item>
           </a-col>
 
@@ -387,6 +394,11 @@ export default {
       } catch (error) {
         this.$message.error(error.message)
       }
+    },
+    handleAdd () {
+      this.updateType = 'add'
+      this.visible = true
+      this.currentUpdateId = null
     },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }

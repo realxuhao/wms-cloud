@@ -1,5 +1,6 @@
 package com.bosch.product.api.domain.dto;
 
+import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -13,7 +14,7 @@ import java.util.List;
  * @create: 2023-04-17 14:12
  **/
 @Data
-public class StockTakeDetailQueryDTO {
+public class StockTakeDetailQueryDTO extends PageDomain {
 
     @ApiModelProperty(value = "ids")
     private List<Long> ids;

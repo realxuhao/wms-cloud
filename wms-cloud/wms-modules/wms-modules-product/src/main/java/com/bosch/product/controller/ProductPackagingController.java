@@ -290,12 +290,24 @@ public class ProductPackagingController extends BaseController {
                         })//N/A替换为1
                         .collect(Collectors.toList()); // 收集器：将过滤后的结果收集到列表中
 
-                //用validate校验filteredShippingPlans
-                boolean validate = shippingPlanService.validate(filteredShippingPlans);
-                //如果validate为true，说明excel中数据有重复,返回400和 错误信息“excel中数据有重复”
-                if (validate) {
-                    return R.fail(400, "excel中数据有重复");
+//                //用validate校验filteredShippingPlans
+//                boolean validate = shippingPlanService.validate(filteredShippingPlans);
+//                //如果validate为true，说明excel中数据有重复,返回400和 错误信息“excel中数据有重复”
+//                if (validate) {
+//                    return R.fail(400, "excel中数据有重复");
+//                }
+                List<ShippingPlan> repeatPlan = shippingPlanService.getRepeatPlan(filteredShippingPlans);
+                //如果repeatPlan不为空，说明excel中数据有重复,返回400和 错误信息“excel中数据有重复”
+                if (CollectionUtils.isNotEmpty(repeatPlan)) {
+                    //把repeatPlan的etoPo字段和shippingmark字段拼接成一个字符串：“etopo： shippingmark：”放到新的String list中
+                    List<String> repeatList = repeatPlan.stream().map(plan -> {
+                        return " shippingmark：" + plan.getShippingMark()+"etopo：" + plan.getEtoPo() +";";
+                    }).collect(Collectors.toList());
+                    //把repeatList中的字符串用逗号拼接成一个字符串
+                    String repeat = String.join(",", repeatList);
+                    return R.fail(400, "excel中数据有重复："+repeat);
                 }
+
                 //如果validate为false，说明excel中数据没有重复，将filteredShippingPlans转换为ShippingPlan对象，批量插入数据库
                 List<ShippingPlan> shippingPlans = BeanConverUtil.converList(filteredShippingPlans, ShippingPlan.class);
                 boolean b = shippingPlanService.saveBatch(shippingPlans);

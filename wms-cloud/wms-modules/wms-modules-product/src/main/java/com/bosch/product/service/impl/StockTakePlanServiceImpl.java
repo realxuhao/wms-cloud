@@ -191,6 +191,7 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
         //判断dto每个字段，不为空和null则加入查询条件，做模糊查询
         LambdaQueryWrapper<StockTakePlan> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.like(StringUtils.isNotEmpty(dto.getCode()), StockTakePlan::getCode, dto.getCode());
+        queryWrapper.like(StringUtils.isNotEmpty(dto.getCell()), StockTakePlan::getCell, dto.getCell());
         queryWrapper.like(StringUtils.isNotEmpty(dto.getWareCode()), StockTakePlan::getWareCode, dto.getWareCode());
         queryWrapper.like(StringUtils.isNotEmpty(dto.getAreaCode()), StockTakePlan::getAreaCode, dto.getAreaCode());
         queryWrapper.eq(dto.getStatus() != null, StockTakePlan::getStatus, dto.getStatus());

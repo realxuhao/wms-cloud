@@ -52,6 +52,12 @@ public interface IShippingPlanService extends IService<ShippingPlan> {
     boolean validate(List<ShippingPlanDTO> list);
 
     /**
+     * 获取重复的plan
+     * @param
+     * @return
+     */
+    List<ShippingPlan> getRepeatPlan(List<ShippingPlanDTO> list);
+    /**
      * 删除重复的plan
      * @param
      * @return

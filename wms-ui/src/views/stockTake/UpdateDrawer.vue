@@ -32,10 +32,16 @@
       </a-form-item>
 
       <a-form-item label="盘点区域">
-        <a-input placeholder="盘点区域" v-decorator="[
-    'areaCode',
-    { rules: [{ required: false, message: '请输入盘点区域!' }] }
-  ]" />
+        <a-select
+          @change="onWareChange"
+          v-decorator="[
+            'areaCode',
+            { rules: [{ required: false, message: '请选择盘点区域!' },] }
+          ]">
+          <a-select-option v-for="item in areaList" :key="item.id" :value="item.id">
+            {{ item.code }}
+          </a-select-option>
+        </a-select>
       </a-form-item>
 
       <a-form-item label="盘点类型">
@@ -63,7 +69,7 @@
       <a-form-item label="物料类型">
         <a-select
           v-decorator="[
-            'method',
+            'takeMaterialType',
             { rules: [{ required: true, message: '请选择物料类型!' },] }
           ]">
           <a-select-option v-for="(value, key) in takeMaterialType" :key="key" :value="key">{{ value }}</a-select-option>
@@ -150,6 +156,7 @@ export default {
       form: this.$form.createForm(this),
       submitLoading: false,
       wareOptionList: [],
+      areaList: [],
       wareList: []
     }
   },
@@ -176,15 +183,19 @@ export default {
   methods: {
     onWareChange (value) {
       console.log('value',value)
+     this.form.setFieldsValue({
+       areaCode:null
+     })
       this.getAreaList(value)
     },
     async getAreaList(wareId){
       try {
-        const data = await this.$store.dispatch('ware/getOptionList')
-        console.log('data',data)
-        this.areaList = data.data
+        const data = await this.$store.dispatch('area/getList', { wareId })
+        this.areaList = data
       } catch (error) {
-        this.$message.error(error.message)
+        this.$message.error('获取存储区数据失败！')
+      } finally {
+        this.areaLoading = false
       }
     },
     /** 获取仓库List */
@@ -226,9 +237,9 @@ export default {
           this.submitLoading = true
 
           if (this.updateType === 'edit') {
-            await this.$store.dispatch('area/edit', { id: this.id, updateEntity: values })
+            await this.$store.dispatch('stockTake/edit', { id: this.id, updateEntity: values })
           } else {
-            await this.$store.dispatch('area/add', values)
+            await this.$store.dispatch('stockTake/add', values)
           }
 
           this.$emit('on-ok')
@@ -237,6 +248,11 @@ export default {
           this.$message.error(error.message)
         } finally {
           this.submitLoading = false
+          this.form.setFieldsValue({
+            areaCode:null,
+            wareCode:null
+          })
+
         }
       })
     }
