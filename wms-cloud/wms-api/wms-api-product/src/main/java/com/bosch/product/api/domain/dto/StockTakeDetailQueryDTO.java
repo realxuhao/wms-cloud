@@ -18,7 +18,10 @@ public class StockTakeDetailQueryDTO extends PageDomain {
 
     @ApiModelProperty(value = "ids")
     private List<Long> ids;
-
+    @ApiModelProperty(value = "物料号")
+    private String materialCode;
+    @ApiModelProperty(value = "批次号")
+    private String batchNb;
     @ApiModelProperty(value = "cell")
     private String cell;
     @ApiModelProperty(value = "仓库编码")
@@ -31,7 +34,7 @@ public class StockTakeDetailQueryDTO extends PageDomain {
     private Integer method;
     @ApiModelProperty(value = "循环盘点月份,循环盘点时需要传")
     private Integer circleTakeMonth;
-    @ApiModelProperty(value = "循环盘点,计划号，循环盘点时需要传")
+    @ApiModelProperty(value = "计划号")
     private String planCode;
     @ApiModelProperty(value = "循环物料类型")
     private Integer takeMaterialType;

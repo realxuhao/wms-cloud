@@ -40,6 +40,9 @@
         material_code,product_name as material_name from md_product_packaging)m
         on m.material_code = d.material_code
         <where>
+            <if test="materialCode != null  and materialCode != ''">and d.material_code like concat('%', #{materialCode}, '%')</if>
+            <if test="batchNb != null  and batchNb != ''">and d.batch_nb like concat('%', #{batchNb}, '%')</if>
+
             <if test="cell != null  and cell != ''">and p.cell like concat('%', #{cell}, '%')</if>
             <if test="ssccNb != null  and ssccNb != ''">and d.sscc_nb like concat('%', #{ssccNb}, '%')</if>
             <if test="taskNo != null  and taskNo != ''">and d.task_no like concat('%', #{taskNo}, '%')</if>
