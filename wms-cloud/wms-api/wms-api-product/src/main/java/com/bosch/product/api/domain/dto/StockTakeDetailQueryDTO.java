@@ -54,5 +54,7 @@ public class StockTakeDetailQueryDTO extends PageDomain {
     private Date endIssueTime;
     @ApiModelProperty(value = "ssccNb")
     private String ssccNb;
+    @ApiModelProperty("盈亏状态，0：无，1：盈，2：亏")
+    private Integer lossGainType;
 
 }

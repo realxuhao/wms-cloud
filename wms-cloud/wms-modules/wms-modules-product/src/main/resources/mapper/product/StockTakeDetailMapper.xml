@@ -64,6 +64,9 @@
             <if test="endCreateTime != null">and d.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
             <if test="startIssueTime != null">and d.issue_time <![CDATA[ >= ]]> #{startIssueTime}</if>
             <if test="endIssueTime != null">and d.issue_time <![CDATA[ <= ]]> #{endIssueTime}</if>
+            <if test="lossGainType == 0">and d.stock_quantity = d.take_quantity</if>
+            <if test="lossGainType == 1">and d.stock_quantity <![CDATA[ < ]]> d.take_quantity</if>
+            <if test="lossGainType == 2">and d.stock_quantity <![CDATA[ > ]]> d.take_quantity</if>
 
 
         </where>
