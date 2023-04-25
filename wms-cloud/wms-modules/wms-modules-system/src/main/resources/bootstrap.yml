@@ -9,13 +9,15 @@ spring:
     name: wms-system
   profiles:
     # 环境配置
-    active: dev
+    active: @spring.profiles.active@
   cloud:
     nacos:
       discovery:
         # 服务注册地址
         server-addr: ${NACOS_HOST:localhost}:8848
+        namespace: @spring.profiles.active@
       config:
+        namespace: @spring.profiles.active@
         # 配置中心地址
         server-addr: ${NACOS_HOST:localhost}:8848
         # 配置文件格式

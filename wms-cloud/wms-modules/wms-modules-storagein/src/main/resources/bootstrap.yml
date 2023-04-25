@@ -17,13 +17,15 @@ spring:
     name: storage-in
   profiles:
     # 环境配置
-    active: dev
+    active: @spring.profiles.active@
   cloud:
     nacos:
       discovery:
+        namespace: @spring.profiles.active@
         # 服务注册地址
         server-addr: ${NACOS_HOST:localhost}:8848
       config:
+        namespace: @spring.profiles.active@
         # 配置中心地址
         server-addr: ${NACOS_HOST:localhost}:8848
         # 配置文件格式

@@ -23,4 +23,6 @@ public interface IShippingHistoryService extends IService<ShippingHistory> {
     List<ShippingHistory> searchAllFields(ShippingHistoryDTO dto);
 
     List<ShippingVO>selectShipping(ShippingDTO dto);
+
+    Integer deleteNewestByTaskId (Long id);
 }
