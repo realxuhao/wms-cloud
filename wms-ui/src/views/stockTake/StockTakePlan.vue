@@ -358,7 +358,7 @@ const takeMaterialType = [
   }
 ]
 export default {
-  name: 'StockTake',
+  name: 'StockTakePlan',
   mixins: [mixinTableList],
   components: {
     UpdateDrawer

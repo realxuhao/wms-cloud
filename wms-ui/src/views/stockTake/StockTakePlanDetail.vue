@@ -4,40 +4,51 @@
     <div class="table-content">
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
-          <a-col :span="4">
-            <a-form-model-item label="编号">
-              <a-input v-model="queryForm.code" placeholder="编号" allow-clear/>
+          <a-col :span="3">
+            <a-form-model-item label="计划编码">
+              <a-input v-model="queryForm.code" placeholder="计划编码" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
+          <a-col :span="3">
+            <a-form-model-item label="物料编码">
+              <a-input v-model="queryForm.materialCode" placeholder="物料编码" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="3">
+            <a-form-model-item label="批次号">
+              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="3">
             <a-form-model-item label="盘点cell">
               <a-input v-model="queryForm.cell" placeholder="盘点cell" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
+          <a-col :span="3">
             <a-form-item label="盘点仓库">
               <a-input v-model="queryForm.wareCode" placeholder="盘点仓库" allow-clear/>
             </a-form-item>
           </a-col>
-          <a-col :span="4">
+          <a-col :span="3">
             <a-form-model-item label="盘点存储区">
               <a-input v-model="queryForm.areaCode" placeholder="盘点存储区" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
-            <a-form-model-item label="盘点物料类型">
-              <a-select
-                allow-clear
-                v-model="queryForm.takeMaterialType"
-              >
-                <a-select-option v-for="item in takeMaterialType" :key="item.value" :value="item.value">
-                  {{ item.text }}
-                </a-select-option>
-              </a-select>
-            </a-form-model-item>
-          </a-col>
+
 
           <template v-if="advanced">
+            <a-col :span="4">
+              <a-form-model-item label="盘点物料类型">
+                <a-select
+                  allow-clear
+                  v-model="queryForm.takeMaterialType"
+                >
+                  <a-select-option v-for="item in takeMaterialType" :key="item.value" :value="item.value">
+                    {{ item.text }}
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </a-col>
             <a-col :span="4">
               <a-form-model-item label="盘点类型">
                 <a-select
@@ -60,11 +71,6 @@
                     {{ item.text }}
                   </a-select-option>
                 </a-select>
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-model-item label="总下发量">
-                <a-input v-model="queryForm.totalIssueQuantity" placeholder="总下发量" allow-clear/>
               </a-form-model-item>
             </a-col>
             <a-col :span="4">
@@ -206,6 +212,30 @@ import _ from "lodash";
 
 const columns = [
   {
+    title: '计划编码',
+    key: 'planCode',
+    dataIndex: 'planCode',
+    width: 80
+  },
+  {
+    title: '物料编码',
+    key: 'materialCode',
+    dataIndex: 'materialCode',
+    width: 80
+  },
+  {
+    title: 'sscc',
+    key: 'ssccNb',
+    dataIndex: 'ssccNb',
+    width: 80
+  },
+  {
+    title: '批次号',
+    key: 'batchNb',
+    dataIndex: 'batchNb',
+    width: 80
+  },
+  {
     title: 'cell',
     key: 'cell',
     dataIndex: 'cell',
@@ -278,10 +308,14 @@ const queryFormAttr = () => {
   return {
     plantNb: '',
     wareCode: '',
-    ssccNumber: '',
     materialNb: '',
     batchNb: '',
-    status: ''
+    status: '',
+    planCode: '',
+    materialCode: '',
+    method: '',
+    type: '',
+    areaCode: '',
   }
 }
 
@@ -334,7 +368,7 @@ const takeMaterialType = [
   }
 ]
 export default {
-  name: 'StockTake',
+  name: 'StockTakePlanDetail',
   mixins: [mixinTableList],
   data() {
     return {
