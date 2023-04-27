@@ -113,7 +113,8 @@ public class ProductPackagingController extends BaseController {
     @ApiOperation("删除单条打包记录")
     @DeleteMapping("/deletePackageHistory/{id}")
     public AjaxResult deletePackageHistory(@PathVariable Long id) {
-        return toAjax(shippingHistoryService.removeById(id));
+        //根据taskid删除history表的最新一条数据
+        return toAjax(shippingHistoryService.deleteNewestByTaskId(id));
     }
 
     /**
