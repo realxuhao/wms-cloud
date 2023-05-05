@@ -170,7 +170,7 @@ public class UDPListenerWindow {
                                     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                                     socket1.receive(packet);
                                     ReceiveUtil.listenPort(packet, buffer);
-                                    System.out.println("Received from port 1: " + new String(packet.getData()));
+//                                    System.out.println("Received from port 1: " + new String(packet.getData()));
                                 } catch (Exception e1) {
                                     e1.printStackTrace();
                                     JOptionPane.showMessageDialog(panel, e1.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
@@ -225,7 +225,7 @@ public class UDPListenerWindow {
                                     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                                     socket2.receive(packet);
                                     ReceiveUtil.listenPort(packet, buffer);
-                                    System.out.println("Received from port 2: " + new String(packet.getData()));
+//                                    System.out.println("Received from port 2: " + new String(packet.getData()));
                                 } catch (Exception e1) {
 //                                    e1.printStackTrace();
                                     logger.error(e1.getMessage());
@@ -284,7 +284,7 @@ public class UDPListenerWindow {
                                     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                                     socket3.receive(packet);
                                     ReceiveUtil.listenPort(packet, buffer);
-                                    System.out.println("Received from port 3: " + new String(packet.getData()));
+//                                    System.out.println("Received from port 3: " + new String(packet.getData()));
                                 } catch (Exception e1) {
 //                                    e1.printStackTrace();
                                     logger.error(e1.getMessage());
@@ -344,7 +344,7 @@ public class UDPListenerWindow {
                                     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                                     socket4.receive(packet);
                                     ReceiveUtil.listenPort(packet, buffer);
-                                    System.out.println("Received from port 4: " + new String(packet.getData()));
+//                                    System.out.println("Received from port 4: " + new String(packet.getData()));
                                 } catch (Exception e1) {
 //                                    e1.printStackTrace();
                                     logger.error(e1.getMessage());

@@ -43,7 +43,7 @@ public class ReceiveUtil {
 
 
         String rs = getBufHexStr(data);
-        System.out.println(rs);
+        logger.info("收到消息将16进制的byte数组转换成字符串：" + rs);
         task(rs, packet);
 
 //            FlexibleThreadPool.submitTask(() -> {
@@ -75,19 +75,16 @@ public class ReceiveUtil {
 
     private static void task(String rs, DatagramPacket packet) throws IOException {
 
-        System.out.println(rs);
-
 
         String[] s = rs.split(" ");
-        System.out.println(s.length);
-
-        System.out.println(validMsg(s));
 
         if (validMsg(s)) {
+            logger.info("校验成功");
+
             String hostAddress = packet.getAddress().getHostAddress();
             int port = packet.getPort();
             Double totalWeight = getTotalWeight(s, 48, 51);
-            WeightDTO weightDTO = new WeightDTO(hostAddress, port, totalWeight, new Date());
+            WeightDTO weightDTO = new WeightDTO(hostAddress, port, totalWeight);
             System.out.println(JSONUtil.toJsonStr(weightDTO));
             //称重>0的时候，进行请求
             if (weightDTO.getTotalWeight() > 0) {
@@ -107,11 +104,8 @@ public class ReceiveUtil {
                 }
             }
 
-//            String body = HttpUtil.createPost("http://localhost:8080/binin/weight/add")
-//                    .contentType("application/json")
-//                    .body(JSONUtil.toJsonStr(weightDTO)).execute().body();
-
-
+        } else {
+            logger.info("valid failed");
         }
 
     }
@@ -136,11 +130,11 @@ public class ReceiveUtil {
     }
 
     private static Boolean validMsg(String[] s) {
+        logger.info("start valid data :" + JSONUtil.toJsonStr(s));
         //长度校验
         if (s.length != 142) {
             return false;
         }
-
         String res = "0";
 
         //校验是否符合协议
