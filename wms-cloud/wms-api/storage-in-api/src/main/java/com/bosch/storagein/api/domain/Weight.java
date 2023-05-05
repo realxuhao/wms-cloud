@@ -1,5 +1,8 @@
 package com.bosch.storagein.api.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.util.Date;
@@ -12,7 +15,9 @@ import java.util.Date;
  **/
 
 @Data
+@TableName("si_weight")
 public class Weight {
+    @TableId(type = IdType.AUTO)
     private Long id;
     private String ip;
     private Integer port;
@@ -20,5 +25,6 @@ public class Weight {
     private Date uploadTime;
     private int status;
     private String ssccNb;
+    private Date useTime;
 
 }
