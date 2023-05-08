@@ -174,6 +174,41 @@
 
 
     </select>
+    <select id="selectStockVOListBySSCC" resultMap="StockVOResult">
+        select bs.id as id,
+        bs.sscc_number as sscc_number,
+        bs.plant_nb as plant_nb,
+        bs.from_purchase_order as from_purchase_order,
+        bs.ware_code as ware_code,
+        bs.frame_code as frame_code,
+        bs.bin_code as bin_code,
+        bs.material_nb as material_nb,
+        mm.name as material_name,
+        bs.batch_nb as batch_nb,
+        bs.expire_date as expire_date,
+        bs.total_stock as total_stock,
+        bs.freeze_stock as freeze_stock,
+        bs.available_stock as available_stock,
+        bs.bin_in_id as bin_in_id,
+        bs.create_by as create_by,
+        bs.create_time as create_time,
+        bs.quality_status as quality_status,
+        bs.area_code as area_code,
+        bs.pallet_code as pallet_code,
+        bs.whole_flag as whole_flag,
+        bs.change_status as change_status,
+        md.code as cell
+        from bi_stock bs
+        left join md_material mm on bs.material_nb = mm.code and mm.delete_flag = 0
+        LEFT JOIN md_material_type mt ON mm.material_type_id = mt.id
+        left join md_department md on mt.department_id = md.id
+        where bs.delete_flag=0 and bs.sscc_number in
+
+        <foreach collection="ssccList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </select>
     <select id="selectStockVOListBySSCCList" resultMap="StockVOResult">
         select bs.id as id,
         bs.sscc_number as sscc_number,

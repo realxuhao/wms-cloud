@@ -29,6 +29,7 @@ public interface StockMapper extends BaseMapper<Stock> {
 
     List<StockVO> selectStockVOList(StockQueryDTO stockQueryDTO);
 
+    List<StockVO> selectStockVOListBySSCC(@Param("ssccList") List<String> ssccs);
     int validateStatus(Long id);
 
     Integer changeStatus(IQCChangeStatusDTO iqcChangeStatusDTO);

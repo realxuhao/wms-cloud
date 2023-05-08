@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.product.mapper.RmComparisonMapper">
+
+    <resultMap id="BaseResultMap" type="com.bosch.product.api.domain.RmComparison">
+        <result property="plantNb" column="plant_nb" jdbcType="VARCHAR"/>
+        <result property="ssccNumber" column="sscc_number" jdbcType="VARCHAR"/>
+        <result property="sapMaterialCode" column="sap_material_code" jdbcType="VARCHAR"/>
+        <result property="sapBatchNumber" column="sap_batch_number" jdbcType="VARCHAR"/>
+        <result property="remainingQty" column="remaining_qty" jdbcType="VARCHAR"/>
+        <result property="unitOfMeasure" column="unit_of_measure" jdbcType="VARCHAR"/>
+        <result property="r3StockStatus" column="r3_stock_status" jdbcType="VARCHAR"/>
+        <result property="stockSapMaterialCode" column="stock_sap_material_code" jdbcType="VARCHAR"/>
+        <result property="stockSapBatchNumber" column="stock_sap_batch_number" jdbcType="VARCHAR"/>
+        <result property="stockRemainingQty" column="stock_remaining_qty" jdbcType="VARCHAR"/>
+        <result property="stockUnitOfMeasure" column="stock_unit_of_measure" jdbcType="VARCHAR"/>
+        <result property="stockR3StockStatus" column="stock_r3_stock_status" jdbcType="VARCHAR"/>
+
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        plant_nb
+        ,sscc_number,sap_material_code,
+        sap_batch_number,remaining_qty,unit_of_measure,
+        r3_stock_status,stock_sap_material_code,
+        stock_sap_batch_number,stock_remaining_qty,stock_unit_of_measure,
+        stock_r3_stock_status,create_by,update_by,
+        create_time,update_time,status,
+        delete_flag,remark
+    </sql>
+</mapper>
