@@ -2,6 +2,7 @@ package com.bosch.binin.api;
 
 
 import com.bosch.binin.api.domain.TranshipmentOrder;
+import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.factory.RemoteBinInFallbackFactory;
 
 import com.ruoyi.common.core.constant.ServiceNameConstants;
@@ -26,5 +27,5 @@ public interface RemoteBinInService {
     public R saveBatch(@RequestBody List<TranshipmentOrder> transhipmentOrderList);
 
     @PostMapping("/stock/listBySSCC")
-    public R listBySSCC(@RequestBody List<String> ssccList);
+    public R<List<StockVO>> listBySSCC(@RequestBody List<String> ssccList);
 }

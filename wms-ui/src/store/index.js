@@ -49,6 +49,7 @@ import finishedProductQualityManage from './modules/finishedProductQualityManage
 import productPackaging from './modules/productPackaging'
 import stockTake from './modules/stockTake'
 import stockTakeDetail from './modules/stockTakeDetail'
+import comparison from './modules/comparison'
 // dynamic router permission control (Experimental)
 // import permission from './modules/async-router'
 import getters from './getters'
@@ -101,7 +102,8 @@ export default new Vuex.Store({
     finishedProductQualityManage,
     productPackaging,
     stockTake,
-    stockTakeDetail
+    stockTakeDetail,
+    comparison
   },
   state: {
 
