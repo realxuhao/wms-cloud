@@ -25,4 +25,6 @@ public interface RemoteBinInService {
     @PostMapping("/trans-ship/saveBatch")
     public R saveBatch(@RequestBody List<TranshipmentOrder> transhipmentOrderList);
 
+    @PostMapping("/stock/listBySSCC")
+    public R listBySSCC(@RequestBody List<String> ssccList);
 }

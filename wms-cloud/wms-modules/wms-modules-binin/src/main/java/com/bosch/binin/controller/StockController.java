@@ -58,7 +58,13 @@ public class StockController extends BaseController {
         List<StockVO> list = stockService.selectStockVOList(stockQuerySTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
+    @PostMapping(value = "/listBySSCC")
+    @ApiOperation("库存列表")
+    public R<List<StockVO>> listBySSCC(@RequestBody List<String> ssccList) {
 
+        List<StockVO> list = stockService.selectStockVOListBySSCC(ssccList);
+        return R.ok(list);
+    }
     @GetMapping(value = "/getByMesBarCode/{mesBarCode}")
     @ApiOperation("扫码查询某个物料的库存信息")
     public R<StockVO> getByMesBarCode(@PathVariable("mesBarCode") String mesBarCode) {

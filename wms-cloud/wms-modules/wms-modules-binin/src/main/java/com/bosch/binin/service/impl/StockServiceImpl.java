@@ -50,6 +50,11 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     }
 
     @Override
+    public List<StockVO> selectStockVOListBySSCC(List<String> ssccs) {
+        return stockMapper.selectStockVOListBySSCC(ssccs);
+    }
+
+    @Override
     public List<StockVO> selectIQCManagementList(IQCManagementQueryDTO iqcManagementQueryDTO) {
 
         return stockMapper.selectIQCManagementList(iqcManagementQueryDTO);

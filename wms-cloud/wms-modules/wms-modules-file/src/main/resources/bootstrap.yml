@@ -4,10 +4,6 @@ server:
 
 # Spring
 spring:
-  servlet:
-    multipart:
-      max-file-size: 10MB     #单个文件最大限制
-      max-request-size: 50MB  #多个文件最大限制
   application:
     # 应用名称
     name: wms-file

@@ -21,6 +21,7 @@ public interface IStockService extends IService<Stock> {
 
     List<StockVO> selectStockVOList(StockQueryDTO stockQuerySTO);
 
+    List<StockVO> selectStockVOListBySSCC(List<String> ssccs);
     List<StockVO> selectIQCManagementList(IQCManagementQueryDTO iqcManagementQueryDTO);
 
     boolean validateStatus(Long id);
