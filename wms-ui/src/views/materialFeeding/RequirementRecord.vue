@@ -6,10 +6,7 @@
         <a-row :gutter="16">
           <a-col :span="4">
             <a-form-model-item label="Cell">
-              <a-select
-                allow-clear
-                v-model="queryForm.cell"
-              >
+              <a-select allow-clear v-model="queryForm.cell">
                 <a-select-option v-for="item in departmentList" :key="item.id" :value="item.code">
                   {{ item.code }}
                 </a-select-option>
@@ -18,112 +15,105 @@
           </a-col>
           <a-col :span="4">
             <a-form-model-item label="生产需求号">
-              <a-input v-model="queryForm.orderNb" placeholder="生产需求号" allow-clear/>
+              <a-input v-model="queryForm.orderNb" placeholder="生产需求号" allow-clear />
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
             <a-form-model-item label="物料编码">
-              <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
+              <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear />
             </a-form-model-item>
           </a-col>
-          <!-- <a-col :span="4">
+          <a-col :span="4">
             <a-form-model-item label="状态">
-              <a-select
-                allow-clear
-                v-model="queryForm.status"
-              >
+              <a-select allow-clear v-model="queryForm.status">
                 <a-select-option v-for="item in status" :key="item.value" :value="item.value">
                   {{ item.text }}
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-          </a-col> -->
+          </a-col>
           <template v-if="advanced">
             <a-col :span="4">
               <a-form-item label="创建人">
-                <a-input v-model="queryForm.createBy" placeholder="创建人" allow-clear/>
+                <a-input v-model="queryForm.createBy" placeholder="创建人" allow-clear />
               </a-form-item>
             </a-col>
             <a-col :span="8">
-              <a-form-item label="创建时间" >
-                <a-range-picker
-                  format="YYYY-MM-DD HH:mm"
-                  :show-time="{ format: 'HH:mm' }"
-                  v-model="queryForm.date"
-                />
+              <a-form-item label="创建时间">
+                <a-range-picker format="YYYY-MM-DD HH:mm" :show-time="{ format: 'HH:mm' }" v-model="queryForm.date" />
               </a-form-item>
             </a-col>
             <a-col :span="8">
-              <a-form-item label="修改时间" >
+              <a-form-item label="修改时间">
                 <a-range-picker
                   format="YYYY-MM-DD HH:mm"
                   :show-time="{ format: 'HH:mm' }"
-                  v-model="queryForm.updateDate"
-                />
+                  v-model="queryForm.updateDate" />
               </a-form-item>
             </a-col>
           </template>
           <a-col span="4">
-            <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+            <span class="table-page-search-submitButtons">
+              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon
+                type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
+              <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon
+                type="download" />导出结果</a-button>
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'"/>
+                <a-icon :type="advanced ? 'up' : 'down'" />
               </a>
             </span>
           </a-col>
         </a-row>
       </a-form>
       <div class="action-content">
-        <!-- <a-button
-          type="primary"
-          icon="upload"
-          style="margin-right:8px"
-          @click="handleOpenUpload">
+        <a-button type="primary" icon="upload" style="margin-right:8px" @click="handleOpenUpload">
           创建物料需求
-        </a-button> -->
+        </a-button>
         <a-button
           style="margin-right:8px"
           type="primary"
           :loading="submitLoading"
-          :disabled="!hasSelected "
-          @click="handleCheckCreateReductionTask">系统创建拣配任务</a-button>
-
+          :disabled="!hasSelected"
+          @click="handleRunRequirement">跑需求</a-button>
+        <a-button
+          style="margin-right:8px"
+          type="primary"
+          @click="handleCreateRequirement">手动创建需求</a-button>
       </div>
       <a-table
-        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+        :row-selection="{
+          selectedRowKeys: selectedRowKeys, onChange: onSelectChange ,
+          getCheckboxProps:record => ({
+            props: {
+              disabled: !([0,1].includes(record.status))
+            },
+          }),}"
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
         rowKey="id"
         :pagination="false"
         :scroll="tableScroll"
-        size="middle"
-      >
+        size="middle">
         <template slot="status" slot-scope="text">
           <a-tag :color="statusColorMap[text]">{{ statusMap[text] }}</a-tag>
         </template>
         <template slot="quantity" slot-scope="text,record">
-          <EditTableCell v-if="record.status === 0" :text="text" @change="(val)=>handleQuantityChange(record,val)" />
+          <EditTableCell v-if="record.status === 0" :text="text" @change="(val) => handleQuantityChange(record, val)" />
           <span v-else>{{ text }}</span>
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a-popconfirm
-              title="确认要取消该条任务吗?"
-              ok-text="确认"
-              cancel-text="取消"
-              @confirm="handleCancel(record)"
-            >
-              <a class="danger-color" :disabled="[-1,1,2].includes(record.status)">取消</a>
+            <a-popconfirm title="确认要取消该条任务吗?" ok-text="确认" cancel-text="取消" @confirm="handleCancel(record)">
+              <a class="danger-color" :disabled="!([0,1].includes(record.status))">取消</a>
             </a-popconfirm>
-            <a-divider type="vertical" />
+            <!-- <a-divider type="vertical" />
             <a
               class="primary-color"
               :disabled="[2].includes(record.status)"
-              @click="handleCreateReductionTask(record)"><a-icon class="m-r-4" type="add" />人工创建拣配任务</a>
+              @click="handleCreateReductionTask(record)"><a-icon class="m-r-4" type="add" />人工创建拣配任务</a> -->
           </div>
 
         </template>
@@ -137,23 +127,16 @@
           :page-size.sync="queryForm.pageSize"
           :total="paginationTotal"
           @showSizeChange="loadTableList"
-          @change="changePagination"
-        />
+          @change="changePagination" />
       </div>
 
-      <MaterialFeedingUpload
-        v-model="visible"
-        @on-ok="loadTableList"
-      ></MaterialFeedingUpload>
+      <RequirementRecordUpload v-model="visible" @on-ok="loadTableList"></RequirementRecordUpload>
 
-      <CreateReductionTask
-        v-model="createReductionTaskVisible"
-        :orderNb="currentOrderNb"
-        :cell="currentCell"
-        :materialNb="currentMaterialNb"
-        :notQuantity="notQuantity"
-        @on-ok="loadTableList"
-      ></CreateReductionTask>
+      <RequirementRecordConfirm
+        @successCallback="runRequirementCallback"
+        ref="requirementRecordConfirm"
+      ></RequirementRecordConfirm>
+      <RequirementRecordManualCreate @on-ok="loadTableList" ref="requirementRecordManualCreate"></RequirementRecordManualCreate>
     </div>
 
   </div>
@@ -162,7 +145,10 @@
 <script>
 import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
-import MaterialFeedingUpload from './MaterialFeedingUpload'
+import RequirementRecordConfirm from './RequirementRecordConfirm'
+import RequirementRecordUpload from './RequirementRecordUpload'
+import RequirementRecordManualCreate from './RequirementRecordManualCreate'
+
 import CreateReductionTask from './CreateReductionTask'
 import EditTableCell from '@/components/EditTableCell'
 import { download } from '@/utils/file'
@@ -254,7 +240,7 @@ const columns = [
     title: '操作',
     key: 'action',
     fixed: 'right',
-    width: 180,
+    width: 100,
     scopedSlots: { customRender: 'action' }
   }
 ]
@@ -272,24 +258,24 @@ const status = [
     value: -1
   },
   {
-    text: '未下发',
+    text: '未跑',
     value: 0
   },
   {
-    text: '部分下发',
+    text: '已跑',
     value: 1
   },
   {
-    text: '已全部下发',
+    text: '已下发',
     value: 2
   }
 ]
 
 const statusMap = {
   '-1': '已取消',
-  0: '未下发',
-  1: '部分下发',
-  2: '已全部下发'
+  0: '未跑',
+  1: '已跑',
+  2: '已下发'
 }
 
 const queryFormAttr = () => {
@@ -308,9 +294,11 @@ export default {
   name: 'Area',
   mixins: [mixinTableList],
   components: {
-    MaterialFeedingUpload,
+    RequirementRecordUpload,
     CreateReductionTask,
-    EditTableCell
+    EditTableCell,
+    RequirementRecordConfirm,
+    RequirementRecordManualCreate
   },
   data () {
     return {
@@ -331,7 +319,7 @@ export default {
       currentOrderNb: '',
       currentCell: '',
       currentMaterialNb: '',
-      createReductionTaskVisible: false,
+      // createReductionTaskVisible: false,
       notQuantity: 0
     }
   },
@@ -344,6 +332,9 @@ export default {
     }
   },
   methods: {
+    handleCreateRequirement () {
+      this.$refs.requirementRecordManualCreate.onOpen()
+    },
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
     },
@@ -374,51 +365,24 @@ export default {
         this.$message.error(error.message)
       }
     },
-    async submitCreateReductionTask (ids) {
-      await this.$store.dispatch('materialFeeding/generateJobByCall', ids)
+    async submitCreateReductionTask (options) {
+      await this.$store.dispatch('materialFeeding/callSystemStock', options)
     },
-    async handleCheckCreateReductionTask () {
+    async runRequirementCallback () {
+      this.selectedRowKeys = []
+      this.loadTableList()
+    },
+    async handleRunRequirement () {
       try {
         this.submitLoading = true
-        // const options = { callIds: this.selectedRowKeys }
-        // const { data: checkResult } = await this.$store.dispatch('materialFeeding/checkStock', options)
-        // if (!checkResult.checkFlag) {
-        //   this.$confirm({
-        //     title: '以下物料可用库存不足，是否进行部分拣配？',
-        //     content: h => {
-        //       return (
-        //         _.map(checkResult.notEnoughStockList, item => {
-        //           return <p>物料号：{item.materialNb}, 可用库存量：{item.avaliableQuantity}</p>
-        //         })
-        //       )
-        //     },
-        //     onOk: () => this.submitCreateReductionTask(options),
-        //     onCancel: () => {
-        //       this.selectedRowKeys = []
-        //     }
-        //   })
-        //   return
-        // }
-        await this.submitCreateReductionTask(_.join(this.selectedRowKeys, ','))
-        // this.$confirm({
-        //     title: '以下物料可用库存不足，是否进行部分拣配？',
-        //     content: h => {
-        //       return (
-        //         _.map(checkResult.notEnoughStockList, item => {
-        //           return <p>物料号：{item.materialNb}, 可用库存量：{item.avaliableQuantity}</p>
-        //         })
-        //       )
-        //     },
-        //     onOk: () => this.submitCreateReductionTask(options),
-        //     onCancel: () => {
-        //       this.selectedRowKeys = []
-        //     }
-        //   })
+        // const options = { ids:  }
+        const { data } = await this.$store.dispatch('materialFeeding/runCall', _.join(this.selectedRowKeys, ','))
+        this.$refs.requirementRecordConfirm.onOpen(data)
 
-        this.selectedRowKeys = []
-        this.loadTableList()
+        // this.selectedRowKeys = []
+        // this.loadTableList()
 
-        this.$message.success('提交成功')
+        // this.$message.success('提交成功')
       } catch (error) {
         this.$message.error(error.message)
       } finally {
@@ -439,7 +403,7 @@ export default {
         const startUpdateTime = updateDate.length > 0 ? updateDate[0].format(this.startDateFormat) : undefined
         const endUpdateTime = updateDate.length > 0 ? updateDate[1].format(this.endDateFormat) : undefined
 
-        const options = { ..._.omit(this.queryForm, ['date', 'updateDate']), startCreateTime, endCreateTimeEnd, startUpdateTime, endUpdateTime, status: 2 }
+        const options = { ..._.omit(this.queryForm, ['date', 'updateDate']), startCreateTime, endCreateTimeEnd, startUpdateTime, endUpdateTime }
 
         const {
           data: { rows, total }
@@ -468,16 +432,8 @@ export default {
       } catch (error) {
         this.$message.error(error.message)
       }
-    },
-    handleCreateReductionTask (record) {
-      this.currentMaterialNb = record.materialNb
-      this.currentOrderNb = record.orderNb
-      this.currentCell = record.cell
-      const notQuantity = Number(record.quantity) - Number(record.issuedQuantity)
-      this.notQuantity = notQuantity
-
-      this.createReductionTaskVisible = true
     }
+
   },
   mounted () {
     this.loadData()
@@ -485,5 +441,4 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
-</style>
+<style lang="less" scoped></style>

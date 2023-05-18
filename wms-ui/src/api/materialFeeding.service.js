@@ -114,6 +114,30 @@ const cancelFeeding = async (options) => {
   return data
 }
 
+const runCall = async (ids) => {
+  const url = `binin/material-feeding/runCall/${ids}`
+  const { data } = await createAuthInstance(config.apiHost).get(url)
+  return data
+}
+
+const issueCall = async (ids) => {
+  const url = `binin/material-feeding/issueCall/${ids}`
+  const { data } = await createAuthInstance(config.apiHost).get(url)
+  return data
+}
+
+const generateJobByCall = async (ids) => {
+  const url = `binin/material-feeding/generateJobByCall/${ids}`
+  const { data } = await createAuthInstance(config.apiHost).put(url)
+  return data
+}
+
+const callAdd = async (options) => {
+  const url = `binin/material-feeding/call/add`
+  const { data } = await createAuthInstance(config.apiHost).post(url, options)
+  return data
+}
+
 export const materialFeedingService = {
   getList,
   upload,
@@ -131,5 +155,9 @@ export const materialFeedingService = {
   addShiftTask,
   confirmMaterial,
   cancelFeeding,
-  exportCallExcel
+  exportCallExcel,
+  runCall,
+  issueCall,
+  generateJobByCall,
+  callAdd
 }

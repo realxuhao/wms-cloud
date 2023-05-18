@@ -226,6 +226,13 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           },
           {
+            path: '/feeding/requirement-record',
+            name: 'feedingRequirementRecord',
+            component: () => import('@/views/materialFeeding/RequirementRecord'),
+            meta: { title: '需求记录', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
             path: '/picking-order/list',
             name: 'pickingOrderList',
             component: () => import('@/views/materialFeeding/PickingOrder'),

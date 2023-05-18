@@ -1,0 +1,222 @@
+.page-wrapper {
+  height: 100vh;
+  width: 100vw;
+  padding-top: 90rpx;
+  overflow: hidden;
+  background: #f8f8f8;
+  display: flex;
+  flex-direction: column;
+  -webkit-overflow-scrolling: touch;
+  .city-name {
+    /*  #ifdef  MP-ALIPAY  */
+    width: 140rpx;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    /*  #endif  */
+    margin-right: 36rpx;
+  }
+  .ali-map-icon {
+    width: 60rpx;
+    height: 60rpx;
+    line-height: 60rpx;
+    text-align: center;
+    background: #fff;
+    position: absolute;
+    right: 20rpx;
+    top: 120rpx;
+    font-size: 46rpx;
+    box-shadow: 0rpx 0rpx 10rpx rgba(0, 0, 0, 0.07);
+    border-radius: 20rpx;
+    .pos-icon {
+      width: 40rpx;
+      height: 40rpx;
+      margin: 10rpx;
+    }
+  }
+}
+/*选择城市*/
+.diy-store {
+  padding: 0 30rpx;
+  height: 90rpx;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  background: #fff;
+
+  .storeName {
+    font-size: 30rpx;
+    font-weight: 500;
+    color: #333333;
+    display: flex;
+    align-items: center;
+    height: 82rpx;
+    line-height: 82rpx;
+    position: relative;
+    .search-bar {
+      flex: 1;
+    }
+    text {
+      display: inline-block;
+    }
+
+    .diy-icon {
+      font-size: 30rpx;
+      margin-right: 12rpx;
+    }
+    .jiantou {
+      color: #404040;
+      font-size: 32rpx;
+      width: 32rpx;
+      height: 32rpx;
+      margin-left: 8rpx;
+    }
+    .location-icon {
+      width: 40rpx;
+      height: 40rpx;
+      background-size: 100%;
+      position: absolute;
+      right: 0;
+      top: 20rpx;
+    }
+  }
+}
+
+.mapArea {
+  width: 100%;
+  min-height: 550rpx;
+  flex: 1;
+  position: relative;
+  /*  #ifdef  MP-WEIXIN  */
+  margin-bottom: -20rpx;
+  /*  #endif  */
+  .pos-icon {
+    width: 40rpx;
+    height: 40rpx;
+    margin: 10rpx;
+  }
+  .diy-icon {
+    width: 60rpx;
+    height: 60rpx;
+    line-height: 60rpx;
+    text-align: center;
+    background: #fff;
+    position: absolute;
+    right: 20rpx;
+    bottom: 60rpx;
+    font-size: 46rpx;
+    box-shadow: 0rpx 0rpx 10rpx rgba(0, 0, 0, 0.07);
+    border-radius: 20rpx;
+  }
+}
+
+.upmap {
+  position: absolute;
+  opacity: 0;
+  left: 0;
+  top: 0;
+}
+
+.list {
+  width: 100%;
+  min-height: 350rpx;
+  max-height: 858rpx;
+  padding: 0rpx 24rpx;
+  box-sizing: border-box;
+  border-radius: 40rpx 40rpx 0 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #f8f8f8;
+  .scroll-list {
+    flex: 1;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    .scroll-list-view {
+      height: 100%;
+      overflow-y: scroll;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+  .list-bottom {
+    height: 10rpx;
+  }
+  .click-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60rpx;
+    min-height: 60rpx;
+    .up-icon {
+      transform: rotate(270deg);
+      width: 14rpx;
+      height: 48rpx;
+      margin-left: 24rpx;
+    }
+    .down-icon {
+      width: 14rpx;
+      height: 48rpx;
+      margin-left: 24rpx;
+      transform: rotate(90deg);
+    }
+  }
+}
+
+.uplist {
+  flex: 1;
+  width: 100%;
+  height: calc(100vh - 150rpx);
+  padding: 0rpx 30rpx 60rpx 30rpx;
+  box-sizing: border-box;
+  border-radius: 40rpx 40rpx 0 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  .scroll-list {
+    flex: 1;
+    // overflow: hidden;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+    .scroll-list-view {
+      height: 100%;
+      overflow-y: scroll;
+      -webkit-overflow-scrolling: touch;
+    }
+  }
+  .list-bottom {
+    height: 10rpx;
+  }
+  .click-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60rpx;
+    min-height: 60rpx;
+    .up-icon {
+      transform: rotate(270deg);
+      width: 14rpx;
+      height: 48rpx;
+      margin-left: 24rpx;
+    }
+    .down-icon {
+      width: 14rpx;
+      height: 48rpx;
+      margin-left: 24rpx;
+      transform: rotate(90deg);
+    }
+  }
+}
+
+.toggleCityBtn {
+  width: 180rpx;
+  height: 60rpx;
+  border-radius: 60rpx;
+  font-size: 32rpx;
+  text-align: center;
+  line-height: 60rpx;
+  background: var(--themeColor);
+  color: #ffffff;
+  margin-top: 24rpx;
+}

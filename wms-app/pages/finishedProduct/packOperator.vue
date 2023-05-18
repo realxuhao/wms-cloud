@@ -10,12 +10,18 @@
 					<view class="label">ETO PO：</view>
 					{{ etoPo }}
 				</view>
-				<view class="text-line m-b-8 ">
-					<view class="label">需要拆托的</br>Prod-order：</view>
+				<view class="text-line m-b-8 " v-show="prodOrderStr">
+					<view class="label">
+						需要拆托的
+						<view>Prod-order：</view>
+					</view>
 					{{ prodOrderStr }}
 				</view>
-				<view class="text-line m-b-8 ">
-					<view class="label">需要拆托的</br>SAP Code：</view>
+				<view class="text-line m-b-8 " v-show="sapCode">
+					<view class="label">
+						需要拆托的
+						<view>SAP Code：</view>
+					</view>
 					{{ sapCode }}
 				</view>
 				<view class="text-line m-b-8 ">
@@ -59,8 +65,8 @@
 					</uni-list>
 					<view v-show="!currentTaskBarCodeList.length" class="empty">请扫描成品标签二维码</view>
 					<view class="footer-box">
-						<o-btn size="sm" @click="handleClean">清空打包任务</o-btn>
-						<o-btn size="sm" v-if="afterPackingCount!=stepIndex" type="primary" @click="handleNext" :loading="submitLoading">下一托</o-btn>
+						<o-btn size="sm" @click="$refs.cleanDialog.open()">清空打包任务</o-btn>
+						<o-btn size="sm" v-if="afterPackingCount != stepIndex" type="primary" @click="handleNext" :loading="submitLoading">下一托</o-btn>
 						<o-btn size="sm" v-else type="primary" @click="handleOk" :loading="submitLoading">完成</o-btn>
 					</view>
 				</uni-section>
@@ -76,6 +82,18 @@
 				content="扫描标签次数未满足要求,请检查!"
 				@confirm="handleClean"
 				@close="$refs.alertDialog.close()"
+			></uni-popup-dialog>
+		</uni-popup>
+
+		<uni-popup ref="cleanDialog" type="dialog">
+			<uni-popup-dialog
+				type="info"
+				cancelText="取消"
+				confirmText="确认"
+				title="通知"
+				content="请确认清空打包任务?"
+				@confirm="handleClean"
+				@close="$refs.cleanDialog.close()"
 			></uni-popup-dialog>
 		</uni-popup>
 	</my-page>
@@ -96,22 +114,21 @@ export default {
 			submitLoading: false,
 			materialInfo: {},
 			taskId: undefined,
-			
+
 			taskList: [],
-			normalTaskList:[],
+			normalTaskList: [],
 			taskIndex: 0,
 			allScanProdOrderList: [],
-			currentTaskBarCodeList: [
-			],
+			currentTaskBarCodeList: [],
 			takeDownTaskBarCodeList: [],
 			stepIndex: 1,
 			tagInverted: true
 		};
 	},
 	computed: {
-		prodOrderStr(){
-			const prodOrderStr = _.join(_.map(_.filter(this.taskList,x=>x.isDisassembled),x=>x.prodOrder),',')
-			return prodOrderStr
+		prodOrderStr() {
+			const prodOrderStr = _.join(_.map(_.filter(this.taskList, x => x.isDisassembled), x => x.prodOrder), ',');
+			return prodOrderStr;
 		},
 		allTaskCount() {
 			const count = _.sumBy(_.filter(this.taskList, x => !x.isDisassembled), 'palletQuantity');
@@ -150,31 +167,35 @@ export default {
 			const count = _.sumBy(this.taskList, item => Number(item.palletQuantity));
 			return _.ceil(count);
 		},
-		
+
 		afterPackingCount() {
 			const count = _.sumBy(this.taskList, item => Number(item.afterPacking));
 			return count;
 		},
 		taskListCountMap() {
-			return _.reduce(this.taskList,(dict, item) => {
-				dict[item.prodOrder] = item.palletQuantity;
-				return dict;
-			}, {});
+			return _.reduce(
+				this.taskList,
+				(dict, item) => {
+					dict[item.prodOrder] = item.palletQuantity;
+					return dict;
+				},
+				{}
+			);
 		}
 	},
 	onLoad(options) {
-		this.taskId=options.id
+		this.taskId = options.id;
 
 		this.initScanCode();
 	},
 	onLaunch(options) {
-		console.log(options)
+		console.log(options);
 		Bus.$off('scancodedate');
 	},
 	methods: {
 		onReset() {
 			this.currentTaskBarCodeList = [];
-			this.allScanProdOrderList = []
+			this.allScanProdOrderList = [];
 		},
 		 onSubmitCheck() {
 			 if (!this.currentTaskBarCodeList.length) {
@@ -196,7 +217,7 @@ export default {
 			// 	// 	throw `编号“${count}”扫描次数不一致`;
 			// 	// }
 			// });
-			
+
 			// const splitAllScanProdOrderMap = _.map(_.filter(this.allScanProdOrderList,x=>x.type === '拆'), x => x.prodOrder);
 			// _.each(_.uniq(splitAllScanProdOrderMap), item => {
 			// 	const count = _.filter(splitAllScanProdOrderMap, x => x === item & x.type ==='拆').length;
@@ -204,18 +225,15 @@ export default {
 			// 		throw ({message:`扫描标签次数未满足要求,请检查`});
 			// 	}
 			// });
-			
-			
-			
 		},
-		onNextCheck(){
+		onNextCheck() {
 			if (!this.currentTaskBarCodeList.length) {
-				throw ({message:'请扫描成品标签二维码'});
+				throw { message: '请扫描成品标签二维码' };
 			}
-			
-			const {prodOrder} = this.normalTaskList[this.taskIndex]||{}
-			if(!_.filter(this.currentTaskBarCodeList,x=>x.prodOrder === prodOrder).length){
-				throw ({message:'请扫描当前托码'});
+
+			const { prodOrder } = this.normalTaskList[this.taskIndex] || {};
+			if (!_.filter(this.currentTaskBarCodeList, x => x.prodOrder === prodOrder).length) {
+				throw { message: '请扫描当前托码' };
 			}
 		},
 		handleDelete(index) {
@@ -226,114 +244,111 @@ export default {
 			this.currentTaskBarCodeList.splice(index, 1);
 		},
 		async handleClean() {
-			try{
-			    const deleteParam = { id: this.taskId };
+			try {
+				const deleteParam = { id: this.taskId };
 				await this.$store.dispatch('finishedProduct/deleteMultiPackageHistory', deleteParam);
 				this.$refs.message.success('清空成功');
 				this.onReset();
 				this.onReloadPage();
-			}catch(e){
+			} catch (e) {
 				this.$refs.message.error(e.message);
 			}
-
 		},
 		async initScanCode() {
 			Bus.$on('scancodedate', data => {
-				data.code = data.code.replace(/\r|\n/ig,"");
-				console.log(data.code)
-				const prodOrder = data.code.substr(10,9)
-				const sscc = data.code.substr(data.code.length - 18,18)
-				if(_.find(this.allScanProdOrderList,x=>x.sscc === sscc)){
-					this.$refs.message.error('当前托已存在')
-					return
+				data.code = data.code.replace(/\r|\n/gi, '');
+				console.log(data.code);
+				const prodOrder = data.code.substr(10, 9);
+				const sscc = data.code.substr(data.code.length - 18, 18);
+				if (_.find(this.allScanProdOrderList, x => x.sscc === sscc)) {
+					this.$refs.message.error('当前托已存在');
+					return;
 				}
-				
-				const splitProdOrder = _.split(this.prodOrderStr,',')
-				const {prodOrder:currentProdOrder} = this.normalTaskList[this.taskIndex]||{}
-				const currentScanProdOrderList = [currentProdOrder,...splitProdOrder]
-				console.log(currentScanProdOrderList)
-				console.log(currentScanProdOrderList.includes(prodOrder))
-				console.log(prodOrder)
-				if(!currentScanProdOrderList.includes(prodOrder)){
-					this.$refs.message.error('批次号校验错误')
-					return
+
+				const splitProdOrder = _.split(this.prodOrderStr, ',');
+				const { prodOrder: currentProdOrder } = this.normalTaskList[this.taskIndex] || {};
+				const currentScanProdOrderList = [currentProdOrder, ...splitProdOrder];
+				console.log(currentScanProdOrderList);
+				console.log(currentScanProdOrderList.includes(prodOrder));
+				console.log(prodOrder);
+				if (!currentScanProdOrderList.includes(prodOrder)) {
+					this.$refs.message.error('批次号校验错误');
+					return;
 				}
-				
-				const item = { type: '', prodOrder,sscc };
+
+				const item = { type: '', prodOrder, sscc };
 				if (!this.tagInverted) {
 					item.type = '拆';
 					this.takeDownTaskBarCodeList.push(item);
 				}
 				this.currentTaskBarCodeList.push(item);
 				// this.currentTaskBarCodeList = _.uniqBy(this.currentTaskBarCodeList,'value')
-				this.allScanProdOrderList.push(item)
+				this.allScanProdOrderList.push(item);
 			});
 		},
 		async handleNext() {
-			
 			try {
-				this.onNextCheck()
-				
+				this.onNextCheck();
+
 				uni.showLoading({
-					title:'提交中'
-				})
+					title: '提交中'
+				});
 				this.submitLoading = true;
-				
-				const { afterPacking } = this.normalTaskList[this.taskIndex]||{}
+
+				const { afterPacking } = this.normalTaskList[this.taskIndex] || {};
 				if (this.stepIndex > afterPacking) {
 					this.taskIndex += 1;
 				}
 				//请求 生成记录
-				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.sscc),',')
-				const lastOne = this.afterPackingCount===this.stepIndex?1:0
-				const options = {ssccNumbers,historyIndex:this.stepIndex,lastOne,shippingTaskId:this.taskId}
+				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList, x => x.sscc), ',');
+				const lastOne = this.afterPackingCount === this.stepIndex ? 1 : 0;
+				const options = { ssccNumbers, historyIndex: this.stepIndex, lastOne, shippingTaskId: this.taskId };
 				await this.$store.dispatch('finishedProduct/addPackageHistory', options);
-				
+
 				this.onReset();
 				this.stepIndex += 1;
 			} catch (e) {
-				console.log(e)
+				console.log(e);
 				this.$refs.message.error(e.message);
 			} finally {
 				this.submitLoading = false;
-				uni.hideLoading()
+				uni.hideLoading();
 			}
 		},
-		onReloadPage(){
-			this.stepIndex = 1
-			this.lodaData()
+		onReloadPage() {
+			this.stepIndex = 1;
+			this.lodaData();
 		},
-		async handleOk(){
-			try{
-				this.onSubmitCheck()
-				
+		async handleOk() {
+			try {
+				this.onSubmitCheck();
+
 				uni.showLoading({
-					title:'提交中'
-				})
+					title: '提交中'
+				});
 				this.submitLoading = true;
-				
-				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList,x=>x.sscc),',')
-				const lastOne = 1
-				const options = {ssccNumbers,historyIndex:this.stepIndex,lastOne,shippingTaskId:this.taskId}
+
+				const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList, x => x.sscc), ',');
+				const lastOne = 1;
+				const options = { ssccNumbers, historyIndex: this.stepIndex, lastOne, shippingTaskId: this.taskId };
 				const result = await this.$store.dispatch('finishedProduct/addPackageHistory', options);
-				if (result.code === 200){
+				if (result.code === 200) {
 					this.$refs.message.success('清空成功');
-					this.handleGoBack()
+					this.handleGoBack();
 				} else {
 					this.$refs.message.error(result.msg);
 				}
 				//最后做校验
-				
+
 				//如果失败，页面应该有个弹窗  重新做：掉API删除所有记录，刷新整个页面，返回：返回上一页
-				
-			}catch(e){
-				console.log(e.message)
+			} catch (e) {
+				console.log(e.message);
 				//TODO handle the exception
 				// this.$refs.message.error(e.message);
-				this.$refs.alertDialog.open()
-			}finally{
+				this.$refs.alertDialog.open();
+			} finally {
 				this.submitLoading = false;
-				uni.hideLoading()
+				uni.hideLoading();
 			}
 		},
 		async handleGoBack() {
@@ -345,12 +360,12 @@ export default {
 		},
 		async lodaData() {
 			const options = { id: this.taskId };
-			const {data} = await this.$store.dispatch('finishedProduct/getTaskList', options);
-			this.taskList=data;	
-			this.normalTaskList = _.filter(data,x=>!x.isDisassembled)
+			const { data } = await this.$store.dispatch('finishedProduct/getTaskList', options);
+			this.taskList = data;
+			this.normalTaskList = _.filter(data, x => !x.isDisassembled);
 		},
 
-		async onSubmit() { }
+		async onSubmit() {}
 	},
 	mounted() {
 		console.log(this.taskId);
