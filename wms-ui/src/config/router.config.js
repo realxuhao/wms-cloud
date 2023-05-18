@@ -419,6 +419,23 @@ export const asyncRouterMap = [
             hideChildrenInMenu: true
           }
         ]
+      },
+      {
+        path: '/comparison',
+        name: 'comparison',
+        redirect: '/comparison/list',
+        component: RouteView,
+        meta: { title: '库存对比', icon: 'hdd', permission: [] },
+        children: [
+          {
+            path: '/comparison/list',
+            name: 'comparisonList',
+            component: () => import('@/views/comparison/Comparison.vue'),
+            meta: { title: '库存对比列表', permission: [] },
+            hideChildrenInMenu: true
+          }
+
+        ]
       }
     ]
   },

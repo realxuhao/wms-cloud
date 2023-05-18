@@ -197,7 +197,8 @@
         bs.pallet_code as pallet_code,
         bs.whole_flag as whole_flag,
         bs.change_status as change_status,
-        md.code as cell
+        md.code as cell,
+        mm.unit as unit
         from bi_stock bs
         left join md_material mm on bs.material_nb = mm.code and mm.delete_flag = 0
         LEFT JOIN md_material_type mt ON mm.material_type_id = mt.id
