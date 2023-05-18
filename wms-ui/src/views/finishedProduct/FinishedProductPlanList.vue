@@ -392,7 +392,7 @@ export default {
         if (error.code === 400) {
           this.$confirm({
             title: '导入出错',
-            content: error.message+'，是否全部删除',
+            content: error.message + '，是否全部删除',
             onOk: () => {
               this.uploadBatchUpdate(formdata)
             },
@@ -403,7 +403,7 @@ export default {
           this.$message.error(error.message)
           this.uploadLoading = false
         }
-      }finally {
+      } finally {
         this.uploadLoading = false
       }
     },

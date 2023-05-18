@@ -35,7 +35,6 @@
             </a-form-model-item>
           </a-col>
 
-
           <template v-if="advanced">
             <a-col :span="4">
               <a-form-model-item label="盘点物料类型">
@@ -105,9 +104,9 @@
       </div>
       <a-table
         :row-selection="{
-        selectedRowKeys: selectedRowKeys,
-        onChange: onSelectChange ,
-        getCheckboxProps:record => ({
+          selectedRowKeys: selectedRowKeys,
+          onChange: onSelectChange ,
+          getCheckboxProps:record => ({
             props: {
               disabled: record.status !== 2
             },
@@ -207,8 +206,7 @@
 </template>
 
 <script>
-import {mixinTableList} from '@/utils/mixin/index'
-import _ from "lodash";
+import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
   {
@@ -246,7 +244,7 @@ const columns = [
     key: 'takeMaterialType',
     dataIndex: 'takeMaterialType',
     width: 80,
-    scopedSlots: {customRender: 'takeMaterialType'}
+    scopedSlots: { customRender: 'takeMaterialType' }
   },
   {
     title: '物料名称',
@@ -271,14 +269,14 @@ const columns = [
     key: 'type',
     dataIndex: 'type',
     width: 100,
-    scopedSlots: {customRender: 'type'}
+    scopedSlots: { customRender: 'type' }
   },
   {
     title: '盘点方式',
     key: 'method',
     dataIndex: 'method',
     width: 100,
-    scopedSlots: {customRender: 'method'}
+    scopedSlots: { customRender: 'method' }
   },
 
   {
@@ -286,7 +284,7 @@ const columns = [
     key: 'status',
     dataIndex: 'status',
     width: 80,
-    scopedSlots: {customRender: 'status'}
+    scopedSlots: { customRender: 'status' }
   },
   {
     title: '循环盘点月份',
@@ -299,10 +297,9 @@ const columns = [
     key: 'action',
     width: 130,
     fixed: 'right',
-    scopedSlots: {customRender: 'action'}
+    scopedSlots: { customRender: 'action' }
   }
-];
-
+]
 
 const queryFormAttr = () => {
   return {
@@ -315,7 +312,7 @@ const queryFormAttr = () => {
     materialCode: '',
     method: '',
     type: '',
-    areaCode: '',
+    areaCode: ''
   }
 }
 
@@ -370,7 +367,7 @@ const takeMaterialType = [
 export default {
   name: 'StockTakePlanDetail',
   mixins: [mixinTableList],
-  data() {
+  data () {
     return {
       editvisible: false,
       tableLoading: false,
@@ -393,57 +390,53 @@ export default {
     type: () => type,
     method: () => method,
     takeMaterialType: () => takeMaterialType,
-    hasSelected() {
+    hasSelected () {
       return this.selectedRowKeys.length > 0
     }
   },
 
   methods: {
-    async handleOk(e) {
+    async handleOk (e) {
       try {
-        this.confirmLoading = true;
+        this.confirmLoading = true
         const options = {
           detailId: this.editId,
           pdaTakeQuantity: this.pdaTakeQuantity
         }
-        const {data: checkResult} = await this.$store.dispatch('stockTakeDetail/editTakeQuantity', options)
-        this.editvisible = false;
+        await this.$store.dispatch('stockTakeDetail/editTakeQuantity', options)
+        this.editvisible = false
         this.loadTableList()
         this.$message.success('提交成功')
       } catch (error) {
         this.$message.error(error.message)
       } finally {
-        this.editvisible = false;
+        this.editvisible = false
         this.confirmLoading = false
       }
-
-
     },
-    handleCancel(e) {
-      console.log('Clicked cancel button');
-      this.editvisible = false;
+    handleCancel (e) {
+      console.log('Clicked cancel button')
+      this.editvisible = false
     },
-    async edit(record) {
+    async edit (record) {
       try {
-        this.editvisible = true;
-        this.editId = record.id;
+        this.editvisible = true
+        this.editId = record.id
         console.log(record)
-
       } catch (error) {
         this.$message.error(error.message)
       }
     },
 
-    onSelectChange(selectedRowKeys) {
+    onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
     },
-    async issue() {
+    async issue () {
       try {
         this.submitLoading = true
-        const options = {ids: this.selectedRowKeys}
+        const options = { ids: this.selectedRowKeys }
 
-        console.log(options)
-        const {data: checkResult} = await this.$store.dispatch('stockTakeDetail/issue', options)
+        await this.$store.dispatch('stockTakeDetail/issue', options)
 
         this.selectedRowKeys = []
         this.loadTableList()
@@ -455,7 +448,7 @@ export default {
         this.submitLoading = false
       }
     },
-    async confirm() {
+    async confirm () {
       try {
         this.submitLoading = true
         const options = {
@@ -463,8 +456,7 @@ export default {
 
         }
 
-        console.log(options)
-        const {data: checkResult} = await this.$store.dispatch('stockTakeDetail/confirm', options)
+        await this.$store.dispatch('stockTakeDetail/confirm', options)
 
         this.selectedRowKeys = []
         this.loadTableList()
@@ -476,16 +468,16 @@ export default {
         this.submitLoading = false
       }
     },
-    handleResetQuery() {
-      this.queryForm = {...this.queryForm, ...queryFormAttr()}
+    handleResetQuery () {
+      this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
     },
-    async loadTableList() {
+    async loadTableList () {
       try {
         this.tableLoading = true
 
         const {
-          data: {rows, total}
+          data: { rows, total }
         } = await this.$store.dispatch('stockTakeDetail/getList', this.queryForm)
         this.list = rows
         this.paginationTotal = total
@@ -496,11 +488,11 @@ export default {
       }
     },
 
-    async loadData() {
+    async loadData () {
       this.loadTableList()
     }
   },
-  mounted() {
+  mounted () {
     this.loadData()
   }
 }

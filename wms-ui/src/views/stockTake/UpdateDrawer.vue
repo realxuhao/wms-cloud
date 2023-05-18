@@ -64,8 +64,6 @@
         </a-select>
       </a-form-item>
 
-
-
       <a-form-item label="物料类型">
         <a-select
           v-decorator="[
@@ -79,11 +77,10 @@
       <a-form-item label="循环盘点月份">
         <a-input
           placeholder="循环盘点月份"
-          v-decorator="[      'circleTakeMonth',      { rules: [{ required: false, message: '请输入循环盘点月份!' }] }
-    ]"
+          v-decorator="[ 'circleTakeMonth', { rules: [{ required: false, message: '请输入循环盘点月份!' }] }
+          ]"
         />
       </a-form-item>
-
 
     </a-form>
 
@@ -127,7 +124,7 @@ const cell =
   {
     ECN: 'ECN',
     NMD: 'NMD',
-    FSMP: 'FSMP',
+    FSMP: 'FSMP'
   }
 
 export default {
@@ -182,13 +179,13 @@ export default {
   },
   methods: {
     onWareChange (value) {
-      console.log('value',value)
-     this.form.setFieldsValue({
-       areaCode:null
-     })
+      console.log('value', value)
+      this.form.setFieldsValue({
+        areaCode: null
+      })
       this.getAreaList(value)
     },
-    async getAreaList(wareId){
+    async getAreaList (wareId) {
       try {
         const data = await this.$store.dispatch('area/getList', { wareId })
         this.areaList = data
@@ -202,7 +199,7 @@ export default {
     async getWareOptionList () {
       try {
         const data = await this.$store.dispatch('ware/getOptionList')
-        console.log('data',data)
+        console.log('data', data)
         this.wareOptionList = data.data
       } catch (error) {
         this.$message.error(error.message)
@@ -222,7 +219,7 @@ export default {
       this.wareList = list
     },
     async loadData () {
-      //await this.getWareList()
+      // await this.getWareList()
       await this.getWareOptionList()
     },
     handleSubmit (e) {
@@ -249,22 +246,19 @@ export default {
         } finally {
           this.submitLoading = false
           this.form.setFieldsValue({
-            areaCode:null,
-            wareCode:null
+            areaCode: null,
+            wareCode: null
           })
-
         }
       })
     }
   },
-  created(){
-    console.log(2222)
+  created () {
     this.loadData()
   },
   watch: {
     visible (val) {
       if (val) {
-
         if (this.updateType === 'edit') {
           this.getAndUpdateForm()
         }

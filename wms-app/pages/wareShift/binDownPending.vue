@@ -13,7 +13,7 @@
 			ref="hrPullLoad"
 		>
 			<!-- 插入自己的数据-->
-			<view class="card" v-for="item in list" :key="item.id">
+			<view class="card" v-for="item in list" :key="item.id" @click="$emit('on-click', item)">
 				<view class="card-header">
 					<text class="material-name">{{ item.materialName }}</text>
 					<text class="status">待下架</text>

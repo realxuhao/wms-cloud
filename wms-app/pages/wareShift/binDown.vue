@@ -1,7 +1,7 @@
 <template>
 	<my-page nav-title="移库下架">
 		<AloysTab slot="page-main" class="flex flex-column" :tabs="tabs" @change="onTabChange">
-			<Pending slot="content0"></Pending>
+			<Pending @on-click="handleItemClick" slot="content0"></Pending>
 			<Completed slot="content1"></Completed>
 		</AloysTab>
 		<view class="action" @click="handleGotoScan"><uni-icons type="scan" size="28" color="#fff"></uni-icons></view>
@@ -29,6 +29,14 @@ export default {
 	methods: {
 		onTabChange(id) {
 			console.log(id);
+		},
+		handleItemClick(item) {
+			if (item.splitType === 1) {
+				uni.navigateTo({
+					url: `/pages/wareShift/splitPallet?ssccNumber=${item.ssccNb}&quantity=${item.splitQuality}`
+				});
+				return;
+			}
 		},
 		handleGotoScan() {
 			uni.navigateTo({

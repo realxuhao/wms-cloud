@@ -15,12 +15,7 @@ const getList = async (parameter) => {
   const { data } = await createAuthInstance(baseUrl).get(url, parameter)
   return data
 }
-const getDetailList = async (parameter) => {
-  console.log(parameter)
-  const url = `/stock-take/list?${qs.stringify(parameter)}`
-  const { data } = await createAuthInstance(baseUrl).get(url, parameter)
-  return data
-}
+
 const destroy = async (id) => {
   const url = `/stock-take/${id}`
   const { data } = await createAuthInstance(baseUrl).delete(url)

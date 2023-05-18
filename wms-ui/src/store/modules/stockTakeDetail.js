@@ -11,7 +11,7 @@ const stockTake = {
 
   actions: {
     async getList ({ commit }, options) {
-      const data = await stockTakeDetailService.getList( options)
+      const data = await stockTakeDetailService.getList(options)
       return data
     },
     async confirm ({ commit }, options) {
@@ -19,13 +19,13 @@ const stockTake = {
       return data
     },
     async editTakeQuantity ({ commit }, options) {
-      const data = await stockTakeDetailService.editTakeQuantity( options)
+      const data = await stockTakeDetailService.editTakeQuantity(options)
       return data
     },
     async issue ({ commit }, options) {
-      const data = await stockTakeDetailService.issue( options)
+      const data = await stockTakeDetailService.issue(options)
       return data
-    },
+    }
   }
 }
 
