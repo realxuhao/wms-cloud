@@ -31,7 +31,9 @@ export default {
 	components: {
 		Message
 	},
+	onLoad() {},
 	onShow() {
+		// this.scanCodeCallback({ code: '20230518669006391113713486103110422302211448000600' });
 		Bus.$on('scancodedate', this.scanCodeCallback);
 	},
 	destroyed() {
@@ -50,12 +52,21 @@ export default {
 
 			this.code = data.code;
 			await this.parsedBarCode(data.code);
-			this.$refs.submitPopup.open();
 		},
 		async parsedBarCode(barCode) {
 			try {
 				const data = await this.$store.dispatch('kanban/parsedBarCode', barCode);
+
+				const splitData = await this.$store.dispatch('wareShift/getOneBinDown', data.ssccNb);
+
+				if (splitData.splitType === 1) {
+					uni.navigateTo({
+						url: `/pages/wareShift/splitPallet?ssccNumber=${data.ssccNb}&quantity=${splitData.splitQuality}`
+					});
+					return;
+				}
 				this.info = data;
+				this.$refs.submitPopup.open();
 			} catch (e) {
 				this.$refs.message.error(e.message);
 			} finally {

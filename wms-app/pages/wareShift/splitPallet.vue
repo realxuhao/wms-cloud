@@ -16,23 +16,21 @@
 				<uni-forms :label-width="110" ref="form" :rules="rules" :modelValue="form" label-position="left">
 					<uni-forms-item label="拆托SSCC码" name="ssccNumber" required>
 						<view class="custom-input focus">
-							<text :class="!form.ssccNumber ? 'placeholder-text' : ''">{{ form.ssccNumber || '请扫描拆托SSCC码' }}</text>
+							<text :class="!form.newMesBarCode ? 'placeholder-text' : ''">{{ form.newMesBarCode || '请扫描拆托SSCC码' }}</text>
 						</view>
 					</uni-forms-item>
 					<uni-forms-item label="实际拆托数量" name="splitQuantity" required>
-						<view class="custom-input">
-							<text>{{ form.splitQuantity }}</text>
-						</view>
+						<uni-easyinput v-model="form.splitQuantity" placeholder="请输入实际拆托数量"></uni-easyinput>
 					</uni-forms-item>
 					<o-btn block class="submit-btn primary-button" :loading="submitLoading" @click="handlePost">提交</o-btn>
 				</uni-forms>
 			</view>
 
-			<uni-popup ref="popup" :is-mask-click="false">
+			<!-- <uni-popup ref="popup" :is-mask-click="false">
 				<uni-popup-dialog before-close type="info" cancelText="返回" confirmText="原托上架" title="拆托完成!" @confirm="handleGotoBinInOperation" @close="handleGoBack">
-					<view>请将拆托配送产线。</view>
-				</uni-popup-dialog>
-			</uni-popup>
+					<!-- <view>请将拆托配送产线。</view> -->
+			<!-- 	</uni-popup-dialog>
+			</uni-popup> -->
 		</view>
 		<Message ref="message"></Message>
 	</my-page>
@@ -53,7 +51,7 @@ export default {
 			code: '',
 			submitLoading: false,
 			rules: {
-				ssccNumber: {
+				newMesBarCode: {
 					rules: [
 						{
 							required: true,
@@ -80,6 +78,7 @@ export default {
 	},
 	onLoad(options) {
 		this.params = options;
+		this.form.splitQuantity = options.quantity || 0;
 	},
 	onShow() {
 		Bus.$on('scancodedate', this.scanCodeCallback);
@@ -88,25 +87,25 @@ export default {
 		Bus.$off('scancodedate', this.scanCodeCallback);
 	},
 	methods: {
-		async getMesBarCodeInfo(code) {
-			try {
-				uni.showLoading({
-					title: '识别中'
-				});
-				const data = await this.$store.dispatch('kanban/parsedBarCode', code);
-				this.form.ssccNumber = data.ssccNb;
-				this.form.splitQuantity = data.quantity;
-				this.form.newMesBarCode = code;
-			} catch (e) {
-				this.$refs.message.error(e.message);
-			} finally {
-				uni.hideLoading();
-				Bus.on('startScan');
-			}
-		},
+		// async getMesBarCodeInfo(code) {
+		// 	try {
+		// 		uni.showLoading({
+		// 			title: '识别中'
+		// 		});
+		// 		const data = await this.$store.dispatch('kanban/parsedBarCode', code);
+		// 		this.form.ssccNumber = data.ssccNb;
+		// 		this.form.splitQuantity = data.quantity;
+		// 		this.form.newMesBarCode = code;
+		// 	} catch (e) {
+		// 		this.$refs.message.error(e.message);
+		// 	} finally {
+		// 		uni.hideLoading();
+		// 		Bus.on('startScan');
+		// 	}
+		// },
 		async scanCodeCallback(data) {
 			const code = data.code.trim();
-			this.getMesBarCodeInfo(code);
+			this.form.newMesBarCode = code;
 		},
 		async handleGoBack() {
 			uni.navigateBack({ delta: 1 });
@@ -135,8 +134,12 @@ export default {
 					...this.form,
 					sourceSsccNb: this.params.ssccNumber
 				};
-				const data = await this.$store.dispatch('wareShift/splitPallet', options);
-				this.$refs.popup.open();
+				await this.$store.dispatch('wareShift/splitPallet', options);
+				this.$refs.message.success('拆托完成！');
+				setTimeout(() => {
+					uni.navigateBack({ delta: 1 });
+				}, 150);
+				// this.$refs.popup.open();
 			} catch (e) {
 				this.$refs.message.error(e.message);
 			} finally {

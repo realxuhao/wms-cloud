@@ -131,33 +131,33 @@ const columns = [
         title: 'MaterialCode',
         dataIndex: 'sapMaterialCode',
         key: 'sapMaterialCode',
-        width: 85,
+        width: 85
       },
       {
         title: 'BatchNumber',
         dataIndex: 'sapBatchNumber',
         key: 'sapBatchNumber',
-        width: 87,
+        width: 87
       },
       {
         title: 'Unit',
         dataIndex: 'unitOfMeasure',
         key: 'unitOfMeasure',
-        width: 80,
+        width: 80
       },
       {
         title: '质检状态',
         dataIndex: 'r3StockStatus',
         key: 'r3StockStatus',
-        width: 80,
+        width: 80
       },
       {
         title: '可用库存',
         dataIndex: 'remainingQty',
         key: 'remainingQty',
-        width: 80,
-      },
-    ],
+        width: 80
+      }
+    ]
   },
   {
     title: 'WMS',
@@ -166,33 +166,33 @@ const columns = [
         title: 'MaterialCode',
         dataIndex: 'stockSapMaterialCode',
         key: 'stockSapMaterialCode',
-        width: 85,
+        width: 85
       },
       {
         title: 'BatchNumber',
         dataIndex: 'stockSapBatchNumber',
         key: 'stockSapBatchNumber',
-        width: 87,
+        width: 87
       },
       {
         title: 'Unit',
         dataIndex: 'stockUnitOfMeasure',
         key: 'stockUnitOfMeasure',
-        width: 80,
+        width: 80
       },
       {
         title: '质检状态',
         dataIndex: 'stockR3StockStatus',
         key: 'stockR3StockStatus',
-        width: 80,
+        width: 80
       },
       {
         title: '可用库存',
         dataIndex: 'stockRemainingQty',
         key: 'stockRemainingQty',
-        width: 80,
-      },
-    ],
+        width: 80
+      }
+    ]
   },
   {
     title: '创建时间',
@@ -206,7 +206,7 @@ const columns = [
     dataIndex: 'status',
     width: 80,
     scopedSlots: { customRender: 'status' }
-  },
+  }
 ]
 
 const queryFormAttr = () => {
@@ -215,7 +215,7 @@ const queryFormAttr = () => {
     ssccNumber: '',
     sapMaterialCode: '',
     sapBatchNumber: '',
-    status: '',
+    status: ''
   }
 }
 const status = [
@@ -250,7 +250,7 @@ export default {
   },
 
   methods: {
-    handleDownloadTemplate(){
+    handleDownloadTemplate () {
 
     },
     async handleUpload (e) {
@@ -283,9 +283,8 @@ export default {
           })
         } else {
           this.$message.error(error.message)
-
         }
-      }finally {
+      } finally {
         this.uploadLoading = false
       }
     },

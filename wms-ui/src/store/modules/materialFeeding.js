@@ -78,7 +78,24 @@ const materialFeeding = {
     async cancelFeeding ({ commit }, options) {
       const data = await materialFeedingService.cancelFeeding(options)
       return data
+    },
+    async runCall ({ commit }, ids) {
+      const data = await materialFeedingService.runCall(ids)
+      return data
+    },
+    async issueCall ({ commit }, ids) {
+      const data = await materialFeedingService.issueCall(ids)
+      return data
+    },
+    async generateJobByCall ({ commit }, ids) {
+      const data = await materialFeedingService.generateJobByCall(ids)
+      return data
+    },
+    async callAdd ({ commit }, options) {
+      const data = await materialFeedingService.callAdd(options)
+      return data
     }
+
   }
 }
 

@@ -100,7 +100,7 @@
           class="m-r-8"
           type="primary"
           :loading="submitLoading"
-          :disabled="!hasSelected || ![0].includes(record.status)"
+          :disabled="!hasSelected"
           @click="handleBatchAddJob">批量下发任务</a-button>
 
         <a-button

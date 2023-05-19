@@ -141,6 +141,29 @@ const shiftBinIn = async (data) => {
 	})
 }
 
+const getOneBinDown = async (sscc) => {
+	const url = `/binin/ware-shift/getOneBinDown/${sscc}`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+	})
+}
+
+const splitPallet = async (options) => {
+	const url = `/binin/ware-shift/splitPallet`
+	const method = 'POST'
+
+	return request({
+		url,
+		method,
+		data: options
+	})
+}
+
+
+
 export const wareShiftService = {
 	getList,
 	binDown,
@@ -154,5 +177,7 @@ export const wareShiftService = {
 	getAllocateBin,
 	postBinIn,
 	shiftBinIn,
-	innerReceivingList
+	innerReceivingList,
+	getOneBinDown,
+	splitPallet
 }

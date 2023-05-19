@@ -190,6 +190,9 @@
 		},
 		{
 			"path": "pages/finishedProductWareShift/shipment"
+		},
+		{
+			"path": "pages/wareShift/splitPallet"
 		}
 	],
 	"globalStyle": {

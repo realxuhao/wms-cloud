@@ -22,7 +22,7 @@ const comparison = {
     async upload ({ commit }, formdata) {
       const data = await comparisonService.upload(formdata)
       return data
-    },
+    }
   }
 }
 

@@ -28,9 +28,16 @@ const cancel = async (options) => {
   return data
 }
 
+const generateWareShiftByCall = async (options) => {
+  const url = `/ware-shift/generateWareShiftByCall`
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
+  return data
+}
+
 export const wareShiftService = {
   getList,
   addWareShift,
   getReturnMaterialList,
-  cancel
+  cancel,
+  generateWareShiftByCall
 }
