@@ -15,14 +15,16 @@
 			<view class="content">
 				<uni-forms :label-width="110" ref="form" :rules="rules" :modelValue="form" label-position="left">
 					<uni-forms-item label="拆托SSCC码" name="ssccNumber" required>
-						<view class="custom-input focus">
+						<!-- <view class="custom-input focus">
 							<text :class="!form.ssccNumber ? 'placeholder-text' : ''">{{ form.ssccNumber || '请扫描拆托SSCC码' }}</text>
-						</view>
+						</view> -->
+						<uni-easyinput v-model="form.ssccNumber" placeholder="请扫描拆托SSCC码"></uni-easyinput>
 					</uni-forms-item>
 					<uni-forms-item label="实际拆托数量" name="splitQuantity" required>
-						<view class="custom-input">
+						<!-- 	<view class="custom-input">
 							<text>{{ form.splitQuantity }}</text>
-						</view>
+						</view> -->
+						<uni-easyinput type="number" v-model="form.splitQuantity" placeholder="实际拆托数量" />
 					</uni-forms-item>
 					<o-btn block class="submit-btn primary-button" :loading="submitLoading" @click="handlePost">提交</o-btn>
 				</uni-forms>
