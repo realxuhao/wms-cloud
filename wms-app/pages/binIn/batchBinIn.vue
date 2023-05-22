@@ -1,8 +1,8 @@
 <template>
-	<my-page nav-title="扫描库位码" :shadow="false" :border="false">
+	<my-page nav-title="扫描SSCC码" :shadow="false" :border="false">
 		<view class="content" slot="page-main">
 			<image src="/static/sku-phone.png" class="m-b-8"></image>
-			<text>请将激光扫描头对准库位码区域</text>
+			<text>请将激光扫描头对准SSCC码区域</text>
 		</view>
 		<Message ref="message"></Message>
 	</my-page>
@@ -29,12 +29,11 @@ export default {
 	},
 	methods: {
 		async scanCodeCallback(data) {
-			this.code = data.code;
-			this.handleGoto();
+			this.handleGotoOperation(data.code);
 		},
-		handleGoto() {
+		handleGotoOperation(code) {
 			uni.navigateTo({
-				url: `/pages/location/dashboard?code=${this.code}`
+				url: `/pages/binIn/batchBinInOperation?barCode=${code}`
 			});
 		}
 	}

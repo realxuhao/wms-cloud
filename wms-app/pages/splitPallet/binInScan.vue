@@ -28,7 +28,7 @@ export default {
 		Bus.$off('scancodedate');
 	},
 	// mounted() {
-	// 	this.checkBinIn('20230213669006391113695972103025192112271124000800')
+	// 	this.checkBinIn('20230522669006391113713357103025192005201270000600');
 	// },
 	methods: {
 		async scanCodeCallback(data) {
@@ -39,7 +39,8 @@ export default {
 		async checkBinIn(barCode) {
 			try {
 				uni.showLoading();
-				const data = await this.$store.dispatch('splitInfo/getInfo', barCode);
+				const data = await this.$store.dispatch('splitPallet/getInfo', barCode);
+				console.log(data);
 				if (!data && data.status !== 0) {
 					throw Error('此托已上架或非拆托待上架托，请确认');
 				}

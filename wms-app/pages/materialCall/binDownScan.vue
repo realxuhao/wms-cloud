@@ -42,6 +42,9 @@ export default {
 	computed: {
 		moveTypeMap: () => moveTypeMap
 	},
+	// mounted() {
+	// 	this.checkTask('20230522669006391113713559103109672005201270000600');
+	// },
 	methods: {
 		async scanCodeCallback(data) {
 			Bus.$emit('stopScan');

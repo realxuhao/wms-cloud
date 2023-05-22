@@ -13,7 +13,7 @@
 			ref="hrPullLoad"
 		>
 			<!-- 插入自己的数据-->
-			<view class="card" v-for="item in list" :key="item.id">
+			<view class="card" v-for="item in list" :key="item.id" @click="handleClick(item)">
 				<view class="card-header">
 					<text class="material-name">{{ item.materialName }}</text>
 					<text class="status"><uni-tag size="small" :text="typeMap[item.type]" :type="typeColorMap[item.type]" /></text>
@@ -74,6 +74,11 @@ export default {
 		this.loadData();
 	},
 	methods: {
+		handleClick(item) {
+			if (item.type === 1) {
+				this.$emit('item-click', item);
+			}
+		},
 		async getList() {
 			const options = { pageSize: this.pageSize, pageNum: this.pageNum };
 			const { rows, total } = await this.$store.dispatch('materialCall/waitingBinDownList', options);

@@ -21,6 +21,10 @@
 						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" type="icon-jiechubangding"></uni-icons>
 						<view class="text">原材料上架</view>
 					</view>
+					<view class="list-item" @click="handleGoto('/pages/binIn/batchBinIn')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" type="icon-jiechubangding"></uni-icons>
+						<view class="text">按批上架</view>
+					</view>
 				</view>
 			</uni-section>
 			<uni-section title="生产叫料" type="line" class="m-b-12">

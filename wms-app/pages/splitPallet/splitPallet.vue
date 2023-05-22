@@ -28,14 +28,20 @@
 				</uni-forms>
 			</view>
 
-			<uni-popup ref="popup" :is-mask-click="false">
-				<!-- <uni-popup-dialog before-close type="info" cancelText="返回" confirmText="原托上架" title="拆托完成!" @confirm="handleGotoBinInOperation" @close="handleGoBack">
-					<view>请将拆托配送产线。</view>
-				</uni-popup-dialog> -->
-				<uni-popup-dialog before-close type="info" cancelText="返回" confirmText="确认" title="拆托完成!"  @close="handleGoBack">
+			<!-- 	<uni-popup ref="popup" :is-mask-click="false">
+				<uni-popup-dialog before-close type="info" cancelText="返回" confirmText="原托上架" title="拆托完成!" @confirm="handleGotoBinInOperation" @close="handleGoBack">
 					<view>请将拆托配送产线。</view>
 				</uni-popup-dialog>
-				
+			</uni-popup> -->
+
+			<uni-popup ref="popup" :is-mask-click="false">
+				<view class="result-content">
+					<view class="result-status">
+						<uni-icons custom-prefix="iconfont" class="success-color" type="icon-chenggong" size="32"></uni-icons>
+						<text class=" text success-color">拆托完成，请将拆托配送产线。</text>
+					</view>
+					<o-btn block class="primary-button" @click="handleGoBack">返回</o-btn>
+				</view>
 			</uni-popup>
 		</view>
 		<Message ref="message"></Message>
@@ -214,6 +220,32 @@ export default {
 .flex {
 	.custom-input {
 		flex: 1;
+	}
+}
+
+.result-content {
+	width: 324px;
+	padding: 12px;
+	box-sizing: border-box;
+	background: #fff;
+	border-radius: 4px;
+	.result-status {
+		color: $uni-color-success;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin-bottom: 16px;
+		.text {
+			margin-left: 8px;
+			font-size: 14px;
+		}
+	}
+	.label {
+		width: 100px;
+	}
+	.data-box {
+		margin-bottom: 16px;
+		padding: 0px 8px;
 	}
 }
 </style>

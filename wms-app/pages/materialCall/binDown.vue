@@ -1,7 +1,7 @@
 <template>
 	<my-page nav-title="拣配下架">
 		<AloysTab slot="page-main" class="flex flex-column" :tabs="tabs" @change="onTabChange">
-			<Pending slot="content0"></Pending>
+			<Pending slot="content0" @item-click="handleClick"></Pending>
 			<Completed slot="content1"></Completed>
 		</AloysTab>
 		<view class="action" @click="handleGotoScan"><uni-icons type="scan" size="28" color="#fff"></uni-icons></view>
@@ -33,6 +33,11 @@ export default {
 		handleGotoScan() {
 			uni.navigateTo({
 				url: '/pages/materialCall/binDownScan'
+			});
+		},
+		handleClick(item) {
+			uni.navigateTo({
+				url: `/pages/splitPallet/splitPallet?ssccNumber=${item.ssccNumber}&quantity=${item.quantity}`
 			});
 		}
 	}

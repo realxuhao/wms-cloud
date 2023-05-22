@@ -1,5 +1,6 @@
 {
-	"pages": [{
+	"pages": [
+		{
 			"path": "pages/login/index"
 		},
 		{
@@ -193,6 +194,12 @@
 		},
 		{
 			"path": "pages/wareShift/splitPallet"
+		},
+		{
+			"path": "pages/binIn/batchBinIn"
+		},
+		{
+			"path": "pages/binIn/batchBinInOperation"
 		}
 	],
 	"globalStyle": {

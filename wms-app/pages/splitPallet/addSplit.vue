@@ -170,11 +170,11 @@ export default {
 					...this.form,
 					sourceSsccNb: this.stockInfo.ssccNumber
 				};
-				const data = await this.$store.dispatch('stock/addSplit', options);
+				await this.$store.dispatch('stock/addSplit', options);
 				this.$refs.message.success('拆托完成');
 				setTimeout(() => {
 					uni.navigateBack(-1);
-				}, 100);
+				}, 1000);
 			} catch (e) {
 				this.$refs.message.error(e.message);
 			} finally {
