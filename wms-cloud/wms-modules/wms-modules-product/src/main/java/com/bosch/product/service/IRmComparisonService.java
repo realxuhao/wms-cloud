@@ -1,11 +1,13 @@
 package com.bosch.product.service;
 
 import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.product.api.domain.ProComparison;
 import com.bosch.product.api.domain.RmComparison;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.product.api.domain.dto.RmComparisonDTO;
 import com.bosch.product.api.domain.vo.RmComparisonVO;
 
+import java.text.ParseException;
 import java.util.List;
 
 /**
@@ -18,4 +20,8 @@ public interface IRmComparisonService extends IService<RmComparison> {
     List<RmComparison> getRmComparisonVOList(RmComparisonDTO rmComparisonDTO);
 
     List<RmComparison>  insertRmComparison(List<RmComparison> rmComparisons);
+
+    boolean updateBySsccList(List<String> ssccList);
+
+    List<ProComparison>  insertProComparison (List<ProComparison> proComparisons) ;
 }

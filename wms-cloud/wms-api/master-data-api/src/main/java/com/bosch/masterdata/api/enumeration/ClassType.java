@@ -26,7 +26,8 @@ public enum ClassType {
     PRODUCTRECEIVEDTO("ProductReceiveDTO", new ArrayList<String>(Arrays.asList("PlantNb","SSCCNumber","MaterialNb","ExpiryDate","Quantity","Unit","FromProdOrder"))),
     SHIPPINGPLANDTO("ShippingPlanImpDTO", new ArrayList<String>(Arrays.asList("Shipping  Mark","ETO PO","ETO PLANT","stock movement    移库日期","Country","Prod-order","Qty","是否拆托","TR","SAP Code","Pallet Quantity","after packing"))),
     PRODUCTFRAMEDTO("ProductFrameDTO", new ArrayList<String>(Arrays.asList("成品代码","优先级","可用跨编码","备注"))),
-    RMCOMPARISONEXCELDTO("RmComparisonExcelDTO", new ArrayList<String>(Arrays.asList("PlantNb","SSCCNumber","SAPMaterialCode","SAPBatchNumber","RemainingQty","UnitOfMeasure","R3StockStatus")));
+    RMCOMPARISONEXCELDTO("RmComparisonExcelDTO", new ArrayList<String>(Arrays.asList("PlantNb","SSCCNumber","SAPMaterialCode","SAPBatchNumber","RemainingQty","UnitOfMeasure","R3StockStatus"))),
+    PROCOMPARISONDTO("ProComparisonDTO", new ArrayList<String>(Arrays.asList("Plant","Material Description","Material","Unrestricted","Base Unit of Measure","Storage Location","Batch","In Quality Insp.","Restricted-Use Stock","Blocked","Returns","Stock in Transit","In transfer (plant)"))),;
     private String desc;
     private List<String> strings;
 
