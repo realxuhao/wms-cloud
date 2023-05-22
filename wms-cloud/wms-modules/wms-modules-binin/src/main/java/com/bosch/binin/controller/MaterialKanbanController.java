@@ -1,5 +1,6 @@
 package com.bosch.binin.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.*;
 
@@ -14,6 +15,7 @@ import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
@@ -392,7 +394,7 @@ public class MaterialKanbanController {
 
     @GetMapping(value = "/getTranshipmentOrder")
     @ApiOperation("转运单查询")
-    public R<List<StockVO>> getTranshipmentOrder(@RequestParam(value = "mesbarCode") String mesbarCode) {
+    public R<List<WareShift>> getTranshipmentOrder(@RequestParam(value = "mesbarCode") String mesbarCode) {
 
         try {
             String sscc = MesBarCodeUtil.getSSCC(mesbarCode);
@@ -407,15 +409,21 @@ public class MaterialKanbanController {
                     ssccByOrder.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
             //*根据sscc获取kanban信息
             //根据sscc获取stock信息
-            collect.stream().forEach(r -> {
-                StockVO oneBySSCC = stockService.getLastOneBySSCC(r);
-                if (oneBySSCC == null) {
-                    throw new ServiceException("根据sscc" + r + "未获取到库存信息");
-                }
-                vos.add(oneBySSCC);
-            });
+            LambdaQueryWrapper<WareShift> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.in(WareShift::getSsccNb,collect);
+            queryWrapper.eq(WareShift::getStatus,KanbanStatusEnum.INNER_RECEIVING.value());
+            queryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            wareShiftService.list(queryWrapper);
+            return R.ok(wareShiftService.list(queryWrapper));
+//            collect.stream().forEach(r -> {
+//                StockVO oneBySSCC = stockService.getLastOneBySSCC(r);
+//                if (oneBySSCC == null) {
+//                    throw new ServiceException("根据sscc" + r + "未获取到库存信息");
+//                }
+//                vos.add(oneBySSCC);
+//            });
 
-            return R.ok(vos);
+//            return R.ok(vos);
         } catch (Exception ex) {
             ex.printStackTrace();
             return R.fail(ex.getMessage());

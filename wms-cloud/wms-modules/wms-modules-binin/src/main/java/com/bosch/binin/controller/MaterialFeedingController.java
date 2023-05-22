@@ -9,9 +9,11 @@ import com.bosch.binin.api.domain.vo.MaterialCallCheckResultVO;
 import com.bosch.binin.api.domain.vo.MaterialCallVO;
 
 import com.bosch.binin.api.domain.vo.RequirementResultVO;
+import com.bosch.binin.api.domain.vo.RunCallVO;
 import com.bosch.binin.service.IMaterialCallService;
 import com.bosch.file.api.FileFeignService;
 import com.bosch.file.api.FileService;
+import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
 import com.github.pagehelper.PageInfo;
@@ -139,6 +141,14 @@ public class MaterialFeedingController extends BaseController {
         return R.ok(requirementResultVO);
     }
 
+    @PostMapping(value = "/call/add")
+    @ApiOperation("新增叫料需求")
+    @Transactional(rollbackFor = Exception.class)
+    public R add(@RequestBody MaterialCall call) {
+         materialCallService.add(call);
+        return R.ok();
+    }
+
 
     @PutMapping(value = "/call/{id}")
     @ApiOperation("更新需求量")
@@ -202,4 +212,50 @@ public class MaterialFeedingController extends BaseController {
         materialCallService.cancelCall(id);
         return R.ok();
     }
+
+    @ApiOperation("跑需求")
+    @GetMapping("/runCall/{ids}")
+    @Transactional(rollbackFor = Exception.class)
+    public R<List<RunCallVO>> runCall(@PathVariable Long[] ids) {
+        if (ids == null || ids.length == 0) {
+            throw new ServiceException("ids不能为空");
+        }
+        return R.ok(materialCallService.runCall(Arrays.asList(ids)));
+    }
+
+    @ApiOperation("下发需求")
+    @GetMapping("/issueCall/{ids}")
+    @Transactional(rollbackFor = Exception.class)
+    public R issueCall(@PathVariable Long[] ids) {
+        if (ids == null || ids.length == 0) {
+            throw new ServiceException("ids不能为空");
+        }
+        materialCallService.issueCall(Arrays.asList(ids));
+        return R.ok();
+    }
+
+    @ApiOperation("删除需求")
+    @DeleteMapping("/deleteCall/{ids}")
+    @Transactional(rollbackFor = Exception.class)
+    public R deleteCall(@PathVariable Long[] ids) {
+        if (ids == null || ids.length == 0) {
+            throw new ServiceException("ids不能为空");
+        }
+        materialCallService.deleteCall(Arrays.asList(ids));
+        return R.ok();
+    }
+
+    @ApiOperation("生成简配任务")
+    @PutMapping("/generateJobByCall/{ids}")
+    @Transactional(rollbackFor = Exception.class)
+    public R generateJobByCall(@PathVariable Long[] ids) {
+        if (ids == null || ids.length == 0) {
+            throw new ServiceException("ids不能为空");
+        }
+        materialCallService.generateJobByCall(Arrays.asList(ids));
+        return R.ok();
+    }
+
+    
+
 }

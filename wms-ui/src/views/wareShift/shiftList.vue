@@ -84,6 +84,11 @@
             {{ moveTypeMap[text] }}
           </div>
         </template>
+        <template slot="splitType" slot-scope="text">
+          <div >
+            <a-tag :color="typeColorMap[text]">{{ splitTypeMap[text] }}</a-tag>
+          </div>
+        </template>
         <template slot="status" slot-scope="text">
           <a-tag :color="statusColorMap[text]"> {{ statusMap[text] }}</a-tag>
         </template>
@@ -162,6 +167,13 @@ const columns = [
     key: 'sourceBinCode',
     dataIndex: 'sourceBinCode',
     width: 120
+  },
+  {
+    title: '动作类型',
+    key: 'splitType',
+    dataIndex: 'splitType',
+    scopedSlots: { customRender: 'splitType' },
+    width: 140
   },
   {
     title: '状态',
@@ -270,7 +282,10 @@ const columns = [
     scopedSlots: { customRender: 'action' }
   }
 ]
-
+const typeColorMap = {
+  0: '#18bc37',
+  1: '#f3a73f'
+}
 const moveTypeMap = {
   0: '收货',
   1: '入库',
@@ -289,6 +304,11 @@ const statusMap = {
   5: '待上架',
   6: '产线已收货',
   7: '完成'
+}
+
+const splitTypeMap = {
+  0: '整托下架',
+  1: '拆托下架'
 }
 
 const statusColorMap = {
@@ -337,6 +357,8 @@ export default {
   computed: {
     moveTypeMap: () => moveTypeMap,
     statusMap: () => statusMap,
+    splitTypeMap: () => splitTypeMap,
+    typeColorMap: () => typeColorMap,
     statusColorMap: () => statusColorMap
   },
   methods: {

@@ -3,10 +3,7 @@ package com.bosch.binin.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.WareShift;
-import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
-import com.bosch.binin.api.domain.dto.BinInDTO;
-import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
-import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
+import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
@@ -16,6 +13,7 @@ import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
@@ -28,6 +26,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -71,12 +70,52 @@ public class WareShiftController extends BaseController {
         return R.ok(mesBarCode + "下架成功");
     }
 
+    @PostMapping(value = "splitPallet")
+    @ApiOperation("移库任务拆托")
+    @Transactional(rollbackFor = Exception.class)
+    public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
+        shiftService.splitPallet(splitPallet);
+        return R.ok();
+    }
+
 //    @GetMapping(value = "/{mesBarCode}")
 //    @ApiOperation("获取移库任务详情")
 //    public R<WareShiftVO> info(@PathVariable String mesBarCode) {
 //        WareShiftVO wareShiftVO = shiftService.info(mesBarCode);
 //        return R.ok(mesBarCode + "下架成功");
 //    }
+
+    @PostMapping(value = "generateWareShiftByCall")
+    @ApiOperation("根据call生成移库任务")
+    @Transactional(rollbackFor = Exception.class)
+    public R generateWareShiftByCall(@RequestBody List<CallWareShiftDTO> dtos){
+        shiftService.generateWareShiftByCall(dtos);
+        return R.ok();
+    }
+
+
+    @GetMapping(value = "/getOneBinDown/{sscc}")
+    @ApiOperation("获取单个待下架")
+    public R<WareShift> getOne(@PathVariable("sscc") String sscc){
+        WareShiftQueryDTO queryDTO = new WareShiftQueryDTO();
+        queryDTO.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
+        queryDTO.setSsccNb(sscc);
+        List<WareShiftVO> list = shiftService.getWareShiftList(queryDTO);
+        if (CollectionUtils.isEmpty(list)){
+
+        }
+        LambdaQueryWrapper<WareShift> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WareShift::getSsccNb,sscc)
+                .eq(WareShift::getDeleteFlag,DeleteFlagStatus.FALSE)
+                .eq(WareShift::getStatus,KanbanStatusEnum.WAITING_BIN_DOWN.value());
+        queryWrapper.last("limit 1");
+        WareShift one = shiftService.getOne(queryWrapper);
+        if (one==null){
+            throw new ServiceException("无该sscc对应的待下架信息");
+        }
+        return R.ok(shiftService.getOne(queryWrapper));
+    }
+
 
 
 

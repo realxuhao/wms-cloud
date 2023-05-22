@@ -107,7 +107,7 @@ public class AreaController extends BaseController {
         return R.ok(list);
     }
 
-    @ApiOperation("查询某个仓库下的所有区域")
+    @ApiOperation("查询某个区域的详细信息")
     @GetMapping("/getByCode/{areaCode}")
     public R<AreaVO> getByCode(@PathVariable("areaCode") String areaCode) {
         AreaDTO areaDTO = new AreaDTO();

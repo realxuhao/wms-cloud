@@ -88,7 +88,7 @@
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a-popconfirm title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
-              <a class="danger-color" :disabled="!record.status||record.status===1"><a-icon class="m-r-4" type="delete" />删除</a>
+              <a class="danger-color" :disabled="!(record.status!==null&&record.status===0)"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
           </div>
         </template>
@@ -130,7 +130,7 @@ const columns = [
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
-    width: 160
+    width: 178
   },
   {
     title: '物料编码',

@@ -29,9 +29,13 @@
 			</view>
 
 			<uni-popup ref="popup" :is-mask-click="false">
-				<uni-popup-dialog before-close type="info" cancelText="返回" confirmText="原托上架" title="拆托完成!" @confirm="handleGotoBinInOperation" @close="handleGoBack">
+				<!-- <uni-popup-dialog before-close type="info" cancelText="返回" confirmText="原托上架" title="拆托完成!" @confirm="handleGotoBinInOperation" @close="handleGoBack">
+					<view>请将拆托配送产线。</view>
+				</uni-popup-dialog> -->
+				<uni-popup-dialog before-close type="info" cancelText="返回" confirmText="确认" title="拆托完成!"  @close="handleGoBack">
 					<view>请将拆托配送产线。</view>
 				</uni-popup-dialog>
+				
 			</uni-popup>
 		</view>
 		<Message ref="message"></Message>
@@ -135,7 +139,7 @@ export default {
 					...this.form,
 					sourceSsccNb: this.params.ssccNumber
 				};
-				const data = await this.$store.dispatch('wareShift/splitPallet', options);
+				const data = await this.$store.dispatch('kanban/splitPallet', options);
 				this.$refs.popup.open();
 			} catch (e) {
 				this.$refs.message.error(e.message);

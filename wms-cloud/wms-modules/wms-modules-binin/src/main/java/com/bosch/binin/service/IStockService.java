@@ -46,4 +46,19 @@ public interface IStockService extends IService<Stock> {
     Stock getOneStock(String sscc);
 
     List<StockVO> getBinStockLog(String binCode);
+
+    /**
+     * 主库库存量
+     * @param materialNb
+     * @return
+     */
+    Double getMainStockCount(String materialNb);
+
+    /**
+     * 外库库存量
+     */
+    Double getOutStockCount(String materialNb);
+
+
+
 }

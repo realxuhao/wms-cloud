@@ -1,6 +1,7 @@
 package com.bosch.binin.controller;
 
 
+import com.bosch.binin.api.domain.dto.BatchBinInDTO;
 import com.bosch.binin.api.domain.dto.BinAllocationDTO;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.BinInQueryDTO;
@@ -19,6 +20,7 @@ import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -126,12 +128,11 @@ public class BinInController extends BaseController {
 
     @GetMapping(value = "/getByMesBarCode/{mesBarCode}")
     @ApiOperation("扫码查询上架信息")
+    @Synchronized
     public R<BinInVO> getByMesBarCode(@PathVariable("mesBarCode") String mesBarCode) {
         BinInVO binInVO = binInService.getByMesBarCode(mesBarCode);
         return R.ok(binInVO);
     }
-
-
 
 
     @GetMapping(value = "/virtualPalletCode/{palletType}")
@@ -147,6 +148,14 @@ public class BinInController extends BaseController {
     @DeleteMapping("/{ssccNumber}")
     public AjaxResult remove(@PathVariable String ssccNumber) {
         return toAjax(binInService.deleteBinInBySscc(ssccNumber));
+    }
+
+    @ApiOperation("按照批次批量上架")
+    @PutMapping("/batchBinIn")
+    public R batchBinIn(@RequestParam("mesBarCode") String mesBarCode,
+                        @RequestParam("areaCode") String areaCode) {
+        binInService.batchBinIn(mesBarCode,areaCode);
+        return R.ok();
     }
 
 

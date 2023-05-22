@@ -68,6 +68,9 @@ public class Material extends BaseEntity
     @Excel(name = "托盘重量")
     private Long palletWeight;
 
+    /** 整托移库标记 */
+    @Excel(name = "整托移库标记")
+    private String wholeShiftFlag;
 
     /** iqc */
     @Excel(name = "IQC")
@@ -115,4 +118,6 @@ public class Material extends BaseEntity
      */
     @ApiModelProperty(value = "deleteFlag")
     private Integer deleteFlag;
+
+
 }

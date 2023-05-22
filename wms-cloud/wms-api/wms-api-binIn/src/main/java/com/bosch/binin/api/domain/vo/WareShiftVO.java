@@ -184,4 +184,10 @@ public class WareShiftVO  {
     @Excel(name = "备注")
     private String remark;
 
+    @ApiModelProperty(value = "拆托标记，0：整托，1：拆托")
+    private Integer splitType;
+
+    @ApiModelProperty(value = "拆托数量")
+    private Double splitQuality;
+
 }

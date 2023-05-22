@@ -116,5 +116,10 @@ public class MaterialVO {
     @ApiModelProperty(value = "IQC")
     private String iqc;
 
+    @ApiModelProperty(value = "cell")
     private String cell;
+
+    /** 整托移库标记 */
+    @ApiModelProperty(value = "整托移库标记")
+    private String wholeShiftFlag;
 }

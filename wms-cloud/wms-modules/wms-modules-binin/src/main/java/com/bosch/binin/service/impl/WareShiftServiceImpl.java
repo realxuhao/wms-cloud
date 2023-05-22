@@ -3,23 +3,26 @@ package com.bosch.binin.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bosch.binin.api.domain.IQCSamplePlan;
-import com.bosch.binin.api.domain.MaterialKanban;
-import com.bosch.binin.api.domain.Stock;
-import com.bosch.binin.api.domain.WareShift;
-import com.bosch.binin.api.domain.dto.AddShiftTaskDTO;
-import com.bosch.binin.api.domain.dto.BinInDTO;
-import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
+import com.bosch.binin.api.domain.*;
+import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
+import com.bosch.binin.api.domain.vo.RequirementResultVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
+import com.bosch.binin.api.enumeration.CallStatusEnum;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
+import com.bosch.binin.api.enumeration.MaterialCallStatusEnum;
 import com.bosch.binin.mapper.IQCSamplePlanMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
 import com.bosch.binin.service.*;
+import com.bosch.binin.utils.BeanConverUtil;
+import com.bosch.masterdata.api.RemoteMaterialService;
+import com.bosch.masterdata.api.domain.Ware;
+import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
@@ -67,6 +70,12 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     @Autowired
     @Lazy
     private IIQCSamplePlanService samplePlanService;
+
+    @Autowired
+    private IMaterialCallService callService;
+
+    @Autowired
+    private RemoteMaterialService remoteMaterialService;
 
     @Override
     public Boolean addShiftRequirement(AddShiftTaskDTO dto) {
@@ -126,17 +135,17 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
         }
 
-        //在kanban任务中查询
-        LambdaQueryWrapper<MaterialKanban> kanbanQueryWrapper = new LambdaQueryWrapper<>();
-        kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
-        kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        kanbanQueryWrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.WAITING_BIN_DOWN.value());
-        MaterialKanban materialKanban = kanbanMapper.selectOne(kanbanQueryWrapper);
-        //kanban任务修改状态
-        if (materialKanban != null) {
-            materialKanban.setStatus(KanbanStatusEnum.OUT_DOWN.value());
-            kanbanMapper.updateById(materialKanban);
-        }
+//        //在kanban任务中查询
+//        LambdaQueryWrapper<MaterialKanban> kanbanQueryWrapper = new LambdaQueryWrapper<>();
+//        kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
+//        kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+//        kanbanQueryWrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.WAITING_BIN_DOWN.value());
+//        MaterialKanban materialKanban = kanbanMapper.selectOne(kanbanQueryWrapper);
+//        //kanban任务修改状态
+//        if (materialKanban != null) {
+//            materialKanban.setStatus(KanbanStatusEnum.OUT_DOWN.value());
+//            kanbanMapper.updateById(materialKanban);
+//        }
 
         //状态修改为外库已下架
         wareShift.setStatus(KanbanStatusEnum.OUT_DOWN.value());
@@ -198,32 +207,28 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             throw new ServiceException("当前状态为： " + KanbanStatusEnum.getDesc(wareShift.getStatus().toString()) + " 不可以取消");
         }
         //待下架状态，需要判断是主库待下架还是外库待下架
-        MaterialKanban kanban = kanbanService.getOneBySCAndStatus(wareShift.getSsccNb(), KanbanStatusEnum.WAITING_ISSUE.value());
+//        MaterialKanban kanban = kanbanService.getOneBySCAndStatus(wareShift.getSsccNb(), KanbanStatusEnum.WAITING_ISSUE.value());
 
         if (KanbanStatusEnum.WAITING_BIN_DOWN.value().equals(wareShift.getStatus())) {
-            //如果不是空，走主库上架,且kanban里有值
-            if (StringUtils.isNotEmpty(wareShift.getTargetWareCode()) && Objects.nonNull(kanban)) {
-                binInService.generateInTaskByOldStock(wareShift.getSsccNb(), Double.valueOf(0), wareShift.getTargetWareCode());
 
-            } else {
-                Stock stock = stockService.getAvailablesStockBySscc(wareShift.getSsccNb());
-                if (stock != null) {
-                    stock.setAvailableStock(stock.getTotalStock());
-                    stock.setFreezeStock(Double.valueOf(0));
-                    stockService.updateById(stock);
+            Stock stock = stockService.getAvailablesStockBySscc(wareShift.getSsccNb());
+            if (stock != null) {
+                stock.setAvailableStock(stock.getTotalStock());
+                stock.setFreezeStock(Double.valueOf(0));
+                stockService.updateById(stock);
 
-                    //看IQC里面有没有。
-                    LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
-                    iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, stock.getSsccNumber());
-                    iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-                    iqcQueryWrapper.eq(IQCSamplePlan::getStatus, IQCStatusEnum.WARE_SHIFTING.code());
-                    iqcQueryWrapper.last("limit 1");
-                    IQCSamplePlan samplePlan = samplePlanService.getOne(iqcQueryWrapper);
-                    if (Objects.nonNull(samplePlan)) {
-                        samplePlan.setStatus(IQCStatusEnum.CANCEL.code());
-                        samplePlanService.updateById(samplePlan);
-                    }
+                //看IQC里面有没有。
+                LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+                iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, stock.getSsccNumber());
+                iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+                iqcQueryWrapper.eq(IQCSamplePlan::getStatus, IQCStatusEnum.WARE_SHIFTING.code());
+                iqcQueryWrapper.last("limit 1");
+                IQCSamplePlan samplePlan = samplePlanService.getOne(iqcQueryWrapper);
+                if (Objects.nonNull(samplePlan)) {
+                    samplePlan.setStatus(IQCStatusEnum.CANCEL.code());
+                    samplePlanService.updateById(samplePlan);
                 }
+
 
             }
         }
@@ -231,16 +236,6 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         if (KanbanStatusEnum.OUT_DOWN.value().equals(wareShift.getStatus())) {
             binInService.generateInTaskByOldStock(wareShift.getSsccNb(), Double.valueOf(0), wareShift.getSourceWareCode());
 
-        }
-        //待上架状态，直接在收货仓库上架
-//        if (KanbanStatusEnum.INNER_BIN_IN.value().equals(wareShift.getStatus())) {
-//            binInService.generateInTaskByOldStock(wareShift.getSsccNb(), Double.valueOf(0), wareShift.getTargetWareCode());
-//        }
-
-        //如果kanban有，需要对应更新为取消
-        if (kanban != null) {
-            kanban.setStatus(KanbanStatusEnum.CANCEL.value());
-            kanbanService.updateById(kanban);
         }
 
         wareShift.setStatus(KanbanStatusEnum.CANCEL.value());
@@ -335,36 +330,36 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         wareShift.setTargetBinCode(binInVO.getActualBinCode());
         wareShiftMapper.updateById(wareShift);
 
-        //如果是看板所产生的移库任务，看板任务也要随之更新
-        //如果是kanban任务
-        LambdaQueryWrapper<MaterialKanban> kanbanQueryWrapper = new LambdaQueryWrapper<>();
-        //待下架任务,该kanban状态，待下架
-        kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
-        kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
-        kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
-
-        kanbanQueryWrapper.last("limit 1");
-        kanbanQueryWrapper.last("for update");
-        MaterialKanban materialKanban = kanbanMapper.selectOne(kanbanQueryWrapper);
-        if (!Objects.isNull(materialKanban)) {
-            materialKanban.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
-            materialKanban.setFactoryCode(binInVO.getPlantNb());
-            materialKanban.setWareCode(binInVO.getWareCode());
-            materialKanban.setAreaCode(binInVO.getAreaCode());
-            materialKanban.setBinCode(binInVO.getActualBinCode());
-            kanbanMapper.updateById(materialKanban);
-            //需要冻结库存
-            LambdaQueryWrapper<Stock> stockQw = new LambdaQueryWrapper<>();
-            stockQw.eq(Stock::getSsccNumber, sscc);
-            stockQw.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-            Stock stock = stockService.getOne(stockQw);
-
-            stock.setFreezeStock(materialKanban.getQuantity());
-            stock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(stock.getTotalStock(), stock.getFreezeStock(), "-"));
-            stockService.updateById(stock);
-
-        }
+//        //如果是看板所产生的移库任务，看板任务也要随之更新
+//        //如果是kanban任务
+//        LambdaQueryWrapper<MaterialKanban> kanbanQueryWrapper = new LambdaQueryWrapper<>();
+//        //待下架任务,该kanban状态，待下架
+//        kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
+//        kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+//        kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+//        kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+//
+//        kanbanQueryWrapper.last("limit 1");
+//        kanbanQueryWrapper.last("for update");
+//        MaterialKanban materialKanban = kanbanMapper.selectOne(kanbanQueryWrapper);
+//        if (!Objects.isNull(materialKanban)) {
+//            materialKanban.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
+//            materialKanban.setFactoryCode(binInVO.getPlantNb());
+//            materialKanban.setWareCode(binInVO.getWareCode());
+//            materialKanban.setAreaCode(binInVO.getAreaCode());
+//            materialKanban.setBinCode(binInVO.getActualBinCode());
+//            kanbanMapper.updateById(materialKanban);
+//            //需要冻结库存
+//            LambdaQueryWrapper<Stock> stockQw = new LambdaQueryWrapper<>();
+//            stockQw.eq(Stock::getSsccNumber, sscc);
+//            stockQw.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+//            Stock stock = stockService.getOne(stockQw);
+//
+//            stock.setFreezeStock(materialKanban.getQuantity());
+//            stock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(stock.getTotalStock(), stock.getFreezeStock(), "-"));
+//            stockService.updateById(stock);
+//
+//        }
 
 //        //移库上架完后，看是不是IQC任务，如果是IQC任务，把IQC任务状态修改为待抽样
 //        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
@@ -383,6 +378,163 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     }
 
     @Override
+    public Double getInTransitCount(String materialNb) {
+        LambdaQueryWrapper<WareShift> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WareShift::getMaterialNb, materialNb);
+        queryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
+        queryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.FINISH.value());
+        List<WareShift> list = this.list(queryWrapper);
+        list.stream().forEach(item->{
+            if (item.getSplitType()==1){
+                item.setQuantity(item.getSplitQuality());
+            }
+        });
+        double sum = list.stream().mapToDouble(WareShift::getQuantity).sum();
+
+        return sum;
+    }
+
+    @Override
+    public void generateWareShiftByCall(List<CallWareShiftDTO> dtos) {
+        if (CollectionUtils.isEmpty(dtos)) {
+            return;
+        }
+        dtos.forEach(item->{
+            if (item.getShiftQuality()<=0){
+                throw new ServiceException("移库数量必须大于0");
+            }
+        });
+        List<Long> callIds = dtos.stream().map(CallWareShiftDTO::getCallId).collect(Collectors.toList());
+        LambdaQueryWrapper<MaterialCall> callQueryWrapper = new LambdaQueryWrapper<>();
+        callQueryWrapper.in(MaterialCall::getId, callIds);
+        callQueryWrapper.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<MaterialCall> callList = callService.list(callQueryWrapper);
+        Map<Long, Double> callQuantityMap =
+                dtos.stream().collect(Collectors.groupingBy(CallWareShiftDTO::getCallId,
+                        Collectors.summingDouble(CallWareShiftDTO::getShiftQuality)));
+        List<WareShift> wareShiftList = new ArrayList<>();
+        callList.stream().forEach(call -> {
+            wareShiftList.addAll(getWareShiftByCall(call.getId(), call.getMaterialNb(), callQuantityMap.get(call.getId())));
+        });
+        this.saveBatch(wareShiftList);
+        callService.updateBatchById(callList);
+
+    }
+
+    @Override
+    public void splitPallet(SplitPalletDTO splitPallet) {
+        String sourceSsccNb = splitPallet.getSourceSsccNb();
+        LambdaQueryWrapper<WareShift> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(WareShift::getSsccNb, sourceSsccNb);
+        queryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.FINISH.value());
+        queryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
+        queryWrapper.last("limit 1");
+        WareShift wareShift = this.getOne(queryWrapper);
+        if (wareShift.getQuantity() < splitPallet.getSplitQuantity()) {
+            throw new ServiceException("拆托数量不能大于总数量");
+        }
+        //老的拆托任务结束。解冻库存
+        wareShift.setStatus(KanbanStatusEnum.FINISH.value());
+        this.updateById(wareShift);
+        LambdaQueryWrapper<Stock> stockWrapper = new LambdaQueryWrapper<>();
+        stockWrapper.eq(Stock::getSsccNumber, sourceSsccNb);
+        stockWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        Stock stock = stockService.getOne(stockWrapper);
+        stock.setTotalStock(stock.getTotalStock() - splitPallet.getSplitQuantity());
+        stock.setFreezeStock(stock.getFreezeStock() - splitPallet.getSplitQuantity());
+        if (stock.getTotalStock().equals(Double.valueOf(0))) {
+            stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
+        }
+        stockService.updateById(stock);
+
+        //新任务开始，待撞车发运
+        WareShift newWareShift = BeanConverUtil.conver(wareShift, WareShift.class);
+        newWareShift.setSsccNb(MesBarCodeUtil.getSSCC(splitPallet.getNewMesBarCode()));
+        newWareShift.setStatus(KanbanStatusEnum.OUT_DOWN.value());
+        this.save(newWareShift);
+
+        //对新的sscc生成一个删除掉的库存
+        Stock conver = BeanConverUtil.conver(stock, Stock.class);
+        conver.setSsccNumber(MesBarCodeUtil.getSSCC(splitPallet.getNewMesBarCode()));
+        conver.setTotalStock(splitPallet.getSplitQuantity());
+        conver.setUpdateTime(new Date());
+        conver.setUpdateBy(SecurityUtils.getUsername());
+        conver.setId(null);
+        conver.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
+        stockService.save(conver);
+    }
+
+    private List<WareShift> getWareShiftByCall(Long callId, String materialNb, Double shiftQuality) {
+        LambdaQueryWrapper<Stock> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Stock::getMaterialNb, materialNb);
+        lambdaQueryWrapper.eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode());
+        lambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        lambdaQueryWrapper.eq(Stock::getFreezeStock, Double.valueOf(0));
+        lambdaQueryWrapper.le(Stock::getExpireDate, new Date());
+        lambdaQueryWrapper.eq(Stock::getPlantNb,"7752");
+        List<Stock> stockList = stockService.list(lambdaQueryWrapper);
+        if (CollectionUtils.isEmpty(stockList)) {
+            throw new ServiceException("没有该物料" + materialNb + "对应的外库库存");
+        }
+        List<Stock> sortedStockList = new ArrayList<>();
+        sortedStockList =
+                stockList.stream().filter(item -> item.getAvailableStock() != 0).
+                        sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder())).collect(Collectors.toList());
+        double count = 0;
+        List<Stock> useMaterialStockList = new ArrayList<>();
+
+        for (Stock stock : sortedStockList) {
+            count = DoubleMathUtil.doubleMathCalculation(count, stock.getAvailableStock(), "+");
+            useMaterialStockList.add(stock);
+            if (count >= shiftQuality) {
+                break;
+            }
+        }
+        boolean splitFlag = false;
+        if (count > shiftQuality) {
+            //查询物料主数据，看是不是要整托移库的
+
+            splitFlag = true;
+
+        }
+        R<MaterialVO> materialVORes = remoteMaterialService.getInfoByMaterialCode(materialNb);
+        if (StringUtils.isNull(materialVORes) || Objects.isNull(materialVORes.getData())) {
+            throw new ServiceException("该物料：" + materialNb + " 不存在");
+        }
+
+        if (R.FAIL == materialVORes.getCode()) {
+            throw new ServiceException(materialVORes.getMsg());
+        }
+        MaterialVO materialVO = materialVORes.getData();
+        if ("Y".equals(materialVO.getWholeShiftFlag())) {
+            splitFlag = false;
+        }
+
+        List<WareShift> wareShiftList = new ArrayList<>();
+        useMaterialStockList.stream().forEach(item -> {
+            item.setFreezeStock(item.getTotalStock());
+            WareShift wareShift = WareShift.builder().sourcePlantNb(item.getPlantNb()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
+                    .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialNb()).expireDate(item.getExpireDate()).batchNb(item.getBatchNb())
+                    .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+                    .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                    .quantity(item.getTotalStock())
+                    .callId(callId)
+                    .build();
+            wareShiftList.add(wareShift);
+        });
+        //如果最后一托是拆托
+        if (splitFlag) {
+            WareShift wareShift = wareShiftList.get(wareShiftList.size() - 1);
+            wareShift.setSplitType(1);
+            wareShift.setSplitQuality(wareShift.getQuantity() - (count - shiftQuality));
+        }
+        stockService.updateBatchById(useMaterialStockList);
+
+        return CollectionUtils.isEmpty(wareShiftList) ? Collections.emptyList() : wareShiftList;
+    }
+
+
+    @Override
     public int updateStatusByStatus(List<String> ssccs, Integer queryStatus, Integer status) {
         ArrayList<Object> ssccList = new ArrayList<>();
         ssccList.addAll(ssccs);
@@ -393,8 +545,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
             iqcQueryWrapper.in(IQCSamplePlan::getSsccNb, ssccList);
             iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-            iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.FINISH.code());
-            iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.CANCEL.code());
+            iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.FINISH.code());
+            iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.CANCEL.code());
 
             List<IQCSamplePlan> samplePlanList = samplePlanService.list(iqcQueryWrapper);
             if (!CollectionUtils.isEmpty(samplePlanList)) {
@@ -422,9 +574,9 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                 uwIQC.in(WareShift::getSsccNb, iqcSSCCList);
                 uwIQC.eq(WareShift::getStatus, queryStatus);
                 uwIQC.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-                uwIQC.ne(WareShift::getStatus,KanbanStatusEnum.FINISH.value());
-                uwIQC.ne(WareShift::getStatus,KanbanStatusEnum.CANCEL.value());
-                uwIQC.ne(WareShift::getStatus,KanbanStatusEnum.LINE_RECEIVED.value());
+                uwIQC.ne(WareShift::getStatus, KanbanStatusEnum.FINISH.value());
+                uwIQC.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
+                uwIQC.ne(WareShift::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
 
 //                uwIQC.eq(WareShift::getTargetWareCode, SecurityUtils.getWareCode());
                 wareShiftMapper.update(wareShiftIQC, uwIQC);

@@ -28,6 +28,9 @@
         <if test="sourceWareCode != null and sourceWareCode != ''">
             AND ws.source_ware_code=#{sourceWareCode}
         </if>
+        <if test="ssccNb != null and ssccNb != ''">
+            AND ws.sscc_nb=#{ssccNb}
+        </if>
 
         <if test="targetWareCode != null and targetWareCode != ''">
             AND ws.target_ware_code=#{targetWareCode}

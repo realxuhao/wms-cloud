@@ -25,7 +25,7 @@
 										<text>物料编码:{{ item.materialNb }}</text>
 									</view>
 									<view class="desc">
-										<text>SSCC码:{{ item.ssccNumber }}</text>
+										<text>SSCC码:{{ item.ssccNb }}</text>
 									</view>
 								</view>
 							</MyRadio>
@@ -82,7 +82,7 @@ export default {
 					title: '正在提交'
 				});
 				this.submitLoading = true;
-				const sscc = _.map(_.filter(this.orderList, x => x.checked), x => x.ssccNumber);
+				const sscc = _.map(_.filter(this.orderList, x => x.checked), x => x.ssccNb);
 				await this.$store.dispatch('kanban/confirmOrder', { sscc });
 				this.$refs.message.success('提交成功');
 				this.$refs.popup.close();

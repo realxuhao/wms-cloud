@@ -219,19 +219,20 @@ export const asyncRouterMap = [
         meta: { title: '生产叫料管理', icon: 'hdd', permission: [] },
         children: [
           {
-            path: '/feeding/list',
-            name: 'feedingList',
-            component: () => import('@/views/materialFeeding/MaterialFeeding'),
-            meta: { title: '叫料记录', permission: [] },
-            hideChildrenInMenu: true
-          },
-          {
             path: '/feeding/requirement-record',
             name: 'feedingRequirementRecord',
             component: () => import('@/views/materialFeeding/RequirementRecord'),
             meta: { title: '需求记录', permission: [] },
             hideChildrenInMenu: true
           },
+          {
+            path: '/feeding/list',
+            name: 'feedingList',
+            component: () => import('@/views/materialFeeding/MaterialFeeding'),
+            meta: { title: '叫料记录', permission: [] },
+            hideChildrenInMenu: true
+          },
+
           {
             path: '/picking-order/list',
             name: 'pickingOrderList',

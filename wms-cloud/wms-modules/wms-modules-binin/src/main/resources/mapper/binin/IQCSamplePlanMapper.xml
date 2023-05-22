@@ -8,7 +8,7 @@
     <select id="getSamplePlanList" resultType="com.bosch.binin.api.domain.vo.IQCSamplePlanVO">
         select isp.*,mm.name as materialName
         from iqc_sample_plan isp
-        left join md_material mm on mm.code = isp.material_nb
+        left join md_material mm on mm.code = isp.material_nb and mm.delete_flag = 0
         where isp.delete_flag = 0
         <if test="ssccNb != null and ssccNb != ''">and isp.sscc_nb like concat('%', #{ssccNb},
             '%')

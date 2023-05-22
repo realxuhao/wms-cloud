@@ -56,7 +56,7 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
     private RemoteMasterDataService remoteMasterDataService;
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
+//    @Transactional(rollbackFor = Exception.class)
     public BinAllocationVO getBinAllocationVO(BinAllocationDTO binAllocationDTO) {
 
 

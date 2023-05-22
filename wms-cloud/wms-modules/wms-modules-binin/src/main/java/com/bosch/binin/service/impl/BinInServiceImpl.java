@@ -1,6 +1,7 @@
 package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.StockLog;
 import com.bosch.binin.api.domain.*;
@@ -38,8 +39,10 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import lombok.Synchronized;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -49,6 +52,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author: UWH4SZH
@@ -56,6 +60,7 @@ import java.util.stream.Collectors;
  * @description:
  */
 @Service
+@Slf4j
 public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements IBinInService {
 
 
@@ -153,14 +158,14 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
         if (binInVO == null) {
-            R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
-            if (StringUtils.isNull(materialBinVOResullt) || CollectionUtils.isEmpty(materialBinVOResullt.getData())) {
-                throw new ServiceException("该物料：" + materialNb + " 分配规则有误");
-            }
-
-            if (R.FAIL == materialBinVOResullt.getCode()) {
-                throw new ServiceException(materialBinVOResullt.getMsg());
-            }
+//            R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
+//            if (StringUtils.isNull(materialBinVOResullt) || CollectionUtils.isEmpty(materialBinVOResullt.getData())) {
+//                throw new ServiceException("该物料：" + materialNb + " 分配规则有误");
+//            }
+//
+//            if (R.FAIL == materialBinVOResullt.getCode()) {
+//                throw new ServiceException(materialBinVOResullt.getMsg());
+//            }
 
             BinAllocationDTO allocationDTO = new BinAllocationDTO();
             allocationDTO.setMesBarCode(mesBarCode);
@@ -178,10 +183,15 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
                 throw new ServiceException("未获取到托盘数据");
             }
 
+            BinVO binVO = new BinVO();
+            BinAllocationVO binAllocationVO = new BinAllocationVO();
+            try {
+                binAllocationVO = binAssignmentService.getBinAllocationVO(allocationDTO);
+                binVO = getBinVOByBinCode(binAllocationVO.getRecommendBinCode());
 
-            BinAllocationVO binAllocationVO = binAssignmentService.getBinAllocationVO(allocationDTO);
-
-            BinVO binVO = getBinVOByBinCode(binAllocationVO.getRecommendBinCode());
+            } catch (Exception e) {
+                log.error("获取推荐库位失败" + e.getMessage());
+            }
 
 
             BinIn binIn = new BinIn();
@@ -247,11 +257,15 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             if (pallet == null) {
                 throw new ServiceException("未获取到托盘数据");
             }
+            BinAllocationVO binAllocationVO = new BinAllocationVO();
+            BinVO binVO = new BinVO();
+            try {
+                binAllocationVO = binAssignmentService.getBinAllocationVO(allocationDTO);
 
-
-            BinAllocationVO binAllocationVO = binAssignmentService.getBinAllocationVO(allocationDTO);
-
-            BinVO binVO = getBinVOByBinCode(binAllocationVO.getRecommendBinCode());
+                binVO = getBinVOByBinCode(binAllocationVO.getRecommendBinCode());
+            } catch (Exception e) {
+                log.error("获取推荐库位失败" + e.getMessage());
+            }
 
 
             BinIn binIn = new BinIn();
@@ -292,6 +306,100 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     }
 
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchBinIn(String mesBarCode, String areaCode) {
+        String materialCode = MesBarCodeUtil.getMaterialNb(mesBarCode);
+        String batchNb = MesBarCodeUtil.getBatchNb(mesBarCode);
+        R<List<MaterialReceiveVO>> sameBatchListR = remoteMaterialInService.getSameBatchList(materialCode, batchNb);
+        if (StringUtils.isNull(sameBatchListR) || StringUtils.isNull(sameBatchListR.getData())) {
+            throw new ServiceException("不存在该批次信息");
+        }
+
+
+        if (R.FAIL == sameBatchListR.getCode()) {
+            throw new ServiceException(sameBatchListR.getMsg());
+        }
+        List<MaterialReceiveVO> sameBatchList = sameBatchListR.getData();
+        List<String> ssccList = sameBatchList.stream().map(MaterialReceiveVO::getSsccNumber).collect(Collectors.toList());
+        LambdaQueryWrapper<BinIn> bininQueryWrapper = new LambdaQueryWrapper<>();
+        bininQueryWrapper.in(BinIn::getSsccNumber, ssccList);
+        bininQueryWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<BinIn> binInList = this.list(bininQueryWrapper);
+        List<BinIn> processingBinInList = binInList.stream().filter(item -> item.getStatus() == BinInStatusEnum.PROCESSING.value()).collect(Collectors.toList());
+        List<String> processingSscc = processingBinInList.stream().map(BinIn::getSsccNumber).collect(Collectors.toList());
+
+        List<BinIn> finishedBinInList = binInList.stream().filter(item -> item.getStatus() == BinInStatusEnum.FINISH.value()).collect(Collectors.toList());
+        List<String> finishedSscc = finishedBinInList.stream().map(BinIn::getSsccNumber).collect(Collectors.toList());
+
+
+        if (!CollectionUtils.isEmpty(finishedSscc)) {
+            sameBatchList = sameBatchList.stream().filter(item -> !finishedSscc.contains(item.getSsccNumber())).collect(Collectors.toList());
+        }
+        // 先删除待上架的
+        if (!CollectionUtils.isEmpty(processingBinInList)) {
+            processingBinInList.stream().forEach(item -> {
+                item.setStatus(DeleteFlagStatus.TRUE.getCode());
+            });
+            this.updateBatchById(processingBinInList);
+        }
+        List<BinIn> binIns = new ArrayList<>();
+        MaterialVO materialVO = getMaterialVOByCode(materialCode);
+
+        sameBatchList.stream().forEach(item -> {
+            BinIn binIn = new BinIn();
+            binIn.setSsccNumber(item.getSsccNumber());
+            binIn.setQuantity(item.getQuantity());
+            binIn.setMaterialNb(item.getMaterialNb());
+            binIn.setBatchNb(batchNb);
+            binIn.setExpireDate(item.getExpireDate());
+            binIn.setPalletType(materialVO.getPalletType());
+            binIn.setAreaCode(areaCode);
+
+            binIn.setStatus(BinInStatusEnum.FINISH.value());
+
+            binIn.setWareCode(SecurityUtils.getWareCode());
+
+            binIn.setMoveType(MoveTypeEnums.BININ.getCode());
+            binIn.setFromPurchaseOrder(item.getFromPurchaseOrder());
+            binIn.setPlantNb(item.getPlantNb());
+            binIns.add(binIn);
+        });
+
+        this.saveBatch(binIns);
+
+        //库存
+        List<Stock> stockList = new ArrayList<>();
+        binIns.stream().forEach(binIn -> {
+            Stock stock = new Stock();
+            stock.setPlantNb(binIn.getPlantNb());
+            stock.setWareCode(SecurityUtils.getWareCode());
+            stock.setSsccNumber(binIn.getSsccNumber());
+            stock.setWareCode(binIn.getWareCode());
+            stock.setBinCode(binIn.getActualBinCode());
+            stock.setFrameCode(binIn.getActualFrameCode());
+            stock.setMaterialNb(binIn.getMaterialNb());
+            stock.setBatchNb(binIn.getBatchNb());
+            stock.setExpireDate(binIn.getExpireDate());
+            stock.setTotalStock(binIn.getQuantity());
+            stock.setFreezeStock(Double.valueOf(0));
+            stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
+            stock.setBinInId(binIn.getId());
+
+            stock.setCreateBy(SecurityUtils.getUsername());
+            stock.setCreateTime(new Date());
+            stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+            stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
+            stock.setAreaCode(binIn.getAreaCode());
+            stock.setPalletCode(binIn.getPalletCode());
+            stockList.add(stock);
+        });
+        stockService.saveBatch(stockList);
+
+
+    }
+
     @Override
     public List<BinInVO> currentUserData(BinInQueryDTO queryDTO) {
         return binInMapper.currentUserData(queryDTO);
@@ -307,7 +415,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         LambdaQueryWrapper<BinIn> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(BinIn::getSsccNumber, sscc).eq(BinIn::getDeleteFlag, 0);
-        lambdaQueryWrapper.eq(BinIn::getStatus,BinInStatusEnum.PROCESSING.value());
+        lambdaQueryWrapper.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value());
         BinIn binIn = binInMapper.selectOne(lambdaQueryWrapper);
 
 
@@ -503,8 +611,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 //        // 更新kanban和移库,转储单状态
 //        updateKanbanWareShiftStatus(stock, sscc);
 
-        dealIQC(mesBarCode,materialNb,binIn);
-
+        dealIQC(mesBarCode, materialNb, binIn);
 
 
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
@@ -512,7 +619,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    private void  dealIQC(String mesBarCode,String materialNb,BinIn binIn){
+    private void dealIQC(String mesBarCode, String materialNb, BinIn binIn) {
         MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
 
@@ -538,7 +645,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             LambdaQueryWrapper<BinIn> binInQueryWrapper = new LambdaQueryWrapper<>();
             binInQueryWrapper.eq(BinIn::getMaterialNb, materialNb);
             binInQueryWrapper.eq(BinIn::getBatchNb, binIn.getBatchNb());
-            binInQueryWrapper.eq(BinIn::getStatus,BinInStatusEnum.FINISH.value());
+            binInQueryWrapper.eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
             binInQueryWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
             List<BinIn> binInList = binInMapper.selectList(binInQueryWrapper);
             if (CollectionUtils.isEmpty(sameBatchList) || CollectionUtils.isEmpty(binInList) || binInList.size() != sameBatchList.size()) {
@@ -583,12 +690,12 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         Fsmp fsmp = fsmpR.getData();
         List<IQCSamplePlan> samplePlanList = new ArrayList<>();
 
-        if (fsmp.getClassification().equals(FsmpClassificationEnum.A.getDesc())&&sameBatchList.size() > 3) {//如果是A且大于三托，取非连续的三托
+        if (fsmp.getClassification().equals(FsmpClassificationEnum.A.getDesc()) && sameBatchList.size() > 3) {//如果是A且大于三托，取非连续的三托
             List<String> ssccList = sameBatchList.stream().map(MaterialReceiveVO::getSsccNumber).collect(Collectors.toList());
             List<String> randomSscc = getRandomNonConsecutive(ssccList);
             List<BinIn> binIns = binInList.stream().filter(item -> randomSscc.contains(item.getSsccNumber())).collect(Collectors.toList());
             samplePlanList = convertToSamplePlans(binIns, materialVO, null);
-        } else if (fsmp.getClassification().equals(FsmpClassificationEnum.B.getDesc())||sameBatchList.size() <= 3){//随机下架一托
+        } else if (fsmp.getClassification().equals(FsmpClassificationEnum.B.getDesc()) || sameBatchList.size() <= 3) {//随机下架一托
             Collections.shuffle(binInList);
             IQCSamplePlan samplePlan = convertToSamplePlan(binInList.get(0), null, materialVO);
             samplePlanList.add(samplePlan);
@@ -670,7 +777,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
                 || EcnClassificationEnum.SMS.getDesc().equals(ecn.getClassification())) {//说明书&标签
             samplePlanList = dealSameBatchQuantity(materialVO, ecn, binInList, sameBatchList);
             //修改单位为"件中取量"
-            samplePlanList.forEach(item->item.setUnit("件中取量"));
+            samplePlanList.forEach(item -> item.setUnit("件中取量"));
         } else if (EcnClassificationEnum.ZX.getDesc().equals(ecn.getClassification())) {//国内产品纸箱
             Collections.shuffle(binInList);
             BinIn binIn = binInList.get(0);
@@ -744,7 +851,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         } else if (EcnPlanEnum.B.getDesc().equals(ecn.getPlan())) {
             samplePlanList = dealSameBatchQuantity(materialVO, ecn, binInList, sameBatchList);
             //单位修改为件中取量
-            samplePlanList.forEach(item->item.setUnit("件中取量"));
+            samplePlanList.forEach(item -> item.setUnit("件中取量"));
 
         }
         return samplePlanList;
@@ -981,8 +1088,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     @Override
     public int deleteBinInBySscc(String ssccNnumber) {
         LambdaQueryWrapper<BinIn> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(BinIn::getSsccNumber,ssccNnumber);
-        queryWrapper.eq(BinIn::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.eq(BinIn::getSsccNumber, ssccNnumber);
+        queryWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         BinIn binIn = binInMapper.selectOne(queryWrapper);
         if (binIn.getStatus().equals(BinInStatusEnum.FINISH.value())) {
             throw new ServiceException("该任务已完成上架，不可删除");
@@ -1349,14 +1456,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         if (Objects.isNull(oldStock)) {
             throw new ServiceException("历史库存为空");
         }
-        R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
-        if (StringUtils.isNull(materialBinVOResullt) || CollectionUtils.isEmpty(materialBinVOResullt.getData())) {
-            throw new ServiceException("该物料：" + materialNb + " 分配规则有误");
-        }
 
-        if (R.FAIL == materialBinVOResullt.getCode()) {
-            throw new ServiceException(materialBinVOResullt.getMsg());
-        }
 
         BinAllocationDTO allocationDTO = new BinAllocationDTO();
         allocationDTO.setMesBarCode(mesBarCode);
@@ -1373,11 +1473,15 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         if (pallet == null) {
             throw new ServiceException("未获取到托盘数据");
         }
+        BinAllocationVO binAllocationVO = new BinAllocationVO();
+        BinVO binVO = new BinVO();
+        try {
+            binAllocationVO = binAssignmentService.getBinAllocationVO(allocationDTO);
 
-
-        BinAllocationVO binAllocationVO = binAssignmentService.getBinAllocationVO(allocationDTO);
-
-        BinVO binVO = getBinVOByBinCode(binAllocationVO.getRecommendBinCode());
+            binVO = getBinVOByBinCode(binAllocationVO.getRecommendBinCode());
+        } catch (Exception e) {
+            log.error("获取推荐库位失败" + e.getMessage());
+        }
 
 
         BinIn binIn = new BinIn();

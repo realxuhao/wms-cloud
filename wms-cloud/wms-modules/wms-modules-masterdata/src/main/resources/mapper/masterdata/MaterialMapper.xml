@@ -58,6 +58,8 @@
         <result property="palletType" column="pallet_type"/>
         <result property="iqc" column="iqc"/>
         <result property="cell" column="cell"/>
+        <result property="wholeShiftFlag" column="whole_shift_flag"/>
+
     </resultMap>
     <sql id="selectMaterialVo">
         select id,
@@ -259,37 +261,37 @@
         FROM
         md_material m
         LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
-                                             left join md_department md on mt.department_id = md.id
+        left join md_department md on mt.department_id = md.id
 
         where
-            m.delete_flag = 0
+        m.delete_flag = 0
 
-            <if test="code != null  and code != ''">and m.code = #{code}</if>
-            <if test="name != null  and name != ''">and m.name like concat('%', #{name}, '%')</if>
-            <if test="minPackageNumber != null ">and m.min_package_number = #{minPackageNumber}</if>
-            <if test="materialTypeId != null ">and m.material_type_id = #{materialTypeId}</if>
-            <if test="unit != null  and unit != ''">and m.unit = #{unit}</if>
-            <if test="errorProofingMethod != null  and errorProofingMethod != ''">and error_proofing_method =
-                #{errorProofingMethod}
-            </if>
-            <if test="hasPallet != null ">and m.has_pallet = #{hasPallet}</if>
-            <if test="bindPallet != null ">and m.bind_pallet = #{bindPallet}</if>
-            <if test="packageWeight != null ">and m.package_weight = #{packageWeight}</if>
-            <if test="palletWeight != null ">and m.pallet_weight = #{palletWeight}</if>
-            <if test="totalWeight != null ">and m.total_weight = #{totalWeight}</if>
-            <if test="minPackageNetWeight != null ">and m.min_package_net_weight = #{minPackageNetWeight}</if>
-            <if test="lessDeviationRatio != null ">and m.less_deviation_ratio = #{lessDeviationRatio}</if>
-            <if test="moreDeviationRatio != null ">and m.more_deviation_ratio = #{moreDeviationRatio}</if>
-            <if test="status != null ">and m.status = #{status}</if>
-            <if test="palletId != null ">and m.pallet_id = #{palletId}</if>
-            <if test="palletType != null ">and m.pallet_type = #{palletType}</if>
-            <if test="materialNbList!= null and materialNbList.size()>0">
-               and  m.code in
-                <foreach item="item" collection="materialNbList" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
-            <if test="iqc != null ">and m.iqc = #{iqc}</if>
+        <if test="code != null  and code != ''">and m.code = #{code}</if>
+        <if test="name != null  and name != ''">and m.name like concat('%', #{name}, '%')</if>
+        <if test="minPackageNumber != null ">and m.min_package_number = #{minPackageNumber}</if>
+        <if test="materialTypeId != null ">and m.material_type_id = #{materialTypeId}</if>
+        <if test="unit != null  and unit != ''">and m.unit = #{unit}</if>
+        <if test="errorProofingMethod != null  and errorProofingMethod != ''">and error_proofing_method =
+            #{errorProofingMethod}
+        </if>
+        <if test="hasPallet != null ">and m.has_pallet = #{hasPallet}</if>
+        <if test="bindPallet != null ">and m.bind_pallet = #{bindPallet}</if>
+        <if test="packageWeight != null ">and m.package_weight = #{packageWeight}</if>
+        <if test="palletWeight != null ">and m.pallet_weight = #{palletWeight}</if>
+        <if test="totalWeight != null ">and m.total_weight = #{totalWeight}</if>
+        <if test="minPackageNetWeight != null ">and m.min_package_net_weight = #{minPackageNetWeight}</if>
+        <if test="lessDeviationRatio != null ">and m.less_deviation_ratio = #{lessDeviationRatio}</if>
+        <if test="moreDeviationRatio != null ">and m.more_deviation_ratio = #{moreDeviationRatio}</if>
+        <if test="status != null ">and m.status = #{status}</if>
+        <if test="palletId != null ">and m.pallet_id = #{palletId}</if>
+        <if test="palletType != null ">and m.pallet_type = #{palletType}</if>
+        <if test="materialNbList!= null and materialNbList.size()>0">
+            and m.code in
+            <foreach item="item" collection="materialNbList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="iqc != null ">and m.iqc = #{iqc}</if>
         <if test="cell != null  and cell != ''">and md.code = #{cell}</if>
 
     </select>
@@ -353,16 +355,17 @@
                m.pallet_id,
                m.pallet_type,
                m.iqc,
+               m.whole_shift_flag,
                md.code as cell
         FROM md_material m
                  LEFT JOIN md_material_type mt ON m.material_type_id = mt.id
-        left join md_department md on md.id = mt.department_id
-        where m.CODE = #{materialCode}
+                 left join md_department md on md.id = mt.department_id
+        where m.CODE = #{materialCode} and m.delete_flag = 0
     </select>
 
     <select id="validateRecord" resultType="integer" parameterType="MaterialDTO">
         SELECT COUNT(*) FROM md_material
-        WHERE delete_flag = 0 and code  IN
+        WHERE delete_flag = 0 and code IN
         <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
             (#{item.code})
         </foreach>

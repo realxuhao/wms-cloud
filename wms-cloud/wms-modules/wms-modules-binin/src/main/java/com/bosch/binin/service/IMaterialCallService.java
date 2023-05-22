@@ -9,11 +9,9 @@ import com.bosch.binin.api.domain.dto.MaterialCalJobRequestDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallQueryDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
-import com.bosch.binin.api.domain.vo.MaterialCallCheckResultVO;
-import com.bosch.binin.api.domain.vo.MaterialCallVO;
-import com.bosch.binin.api.domain.vo.RequirementResultVO;
-import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.binin.api.domain.vo.*;
 import com.bosch.masterdata.api.domain.Frame;
+import com.bosch.masterdata.api.domain.Material;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -55,4 +53,20 @@ public interface IMaterialCallService extends IService<MaterialCall> {
     int updateCallQuantity(MaterialKanban materialKanban);
 
     void cancelCall(Long id);
+
+    /**
+     * 跑需求的接口
+     * @param callIds
+     * @return
+     */
+    List<RunCallVO> runCall(List<Long> callIds);
+
+
+    void issueCall(List<Long> asList);
+
+    void deleteCall(List<Long> asList);
+
+    void generateJobByCall(List<Long> asList);
+
+    void add(MaterialCall call);
 }

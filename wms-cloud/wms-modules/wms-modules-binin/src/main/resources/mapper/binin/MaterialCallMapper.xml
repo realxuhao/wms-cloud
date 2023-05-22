@@ -34,7 +34,11 @@
         <if test="endCreateTime != null">and mc.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
         <if test="startUpdateTime != null">and mc.update_time <![CDATA[ >= ]]> #{startUpdateTime}</if>
         <if test="startUpdateTime != null">and mc.update_time <![CDATA[ <= ]]> #{endUpdateTime}</if>
-
+        <if test="ids !=null">and mc.id in
+            <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         order by mc.status desc,mc.create_time desc
 
     </select>

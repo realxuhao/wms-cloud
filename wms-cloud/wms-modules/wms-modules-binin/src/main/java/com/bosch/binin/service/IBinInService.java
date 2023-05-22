@@ -2,10 +2,7 @@ package com.bosch.binin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.BinIn;
-import com.bosch.binin.api.domain.dto.BinAllocationDTO;
-import com.bosch.binin.api.domain.dto.BinInDTO;
-import com.bosch.binin.api.domain.dto.BinInQueryDTO;
-import com.bosch.binin.api.domain.dto.BinInTaskDTO;
+import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
@@ -77,4 +74,6 @@ public interface IBinInService extends IService<BinIn> {
 
 
     public MaterialVO getMaterialVOByCode(String materialNb);
+
+    void batchBinIn(String mesBarCode, String areaCode);
 }

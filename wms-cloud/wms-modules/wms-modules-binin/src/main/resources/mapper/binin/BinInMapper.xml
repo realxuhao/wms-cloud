@@ -44,9 +44,9 @@
         mm.pallet_type,
         bi.status,
         bi.create_by,bi.create_time,sm.plant_nb,bi.move_type,bi.update_by,bi.update_time,smr.update_user as receive_by
-        from si_material_in sm left join bi_in bi on bi.sscc_number=sm.sscc_number and sm.delete_flag = 0
+        from si_material_in sm left join bi_in bi on bi.sscc_number=sm.sscc_number and sm.delete_flag = 0 and bi.delete_flag = 0
         left join si_material_receive smr on smr.sscc_number = sm.sscc_number and smr.delete_flag = 0
-        left join md_material mm on sm.material_nb = mm.code
+        left join md_material mm on sm.material_nb = mm.code and mm.delete_flag = 0
         where sm.delete_flag = 0 and sm.sscc_number not in (select sscc_number from bi_in where bi.delete_flag =1)
         <if test="materialNb != null and materialNb != ''">and sm.material_nb like concat('%', #{materialNb}, '%')</if>
         <if test="ssccNumber != null and ssccNumber != ''">and sm.sscc_number like concat('%', #{ssccNumber}, '%')</if>

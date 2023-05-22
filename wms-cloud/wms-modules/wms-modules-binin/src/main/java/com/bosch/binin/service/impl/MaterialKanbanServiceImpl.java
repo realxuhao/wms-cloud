@@ -378,17 +378,17 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             throw new ServiceException("任务状态过期，请刷新后重试");
         }
 
-        //在移库任务中查询
-        LambdaQueryWrapper<WareShift> wareShiftLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        wareShiftLambdaQueryWrapper.eq(WareShift::getSsccNb, ssccNb);
-        wareShiftLambdaQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE);
-        wareShiftLambdaQueryWrapper.eq(WareShift::getStatus, KanbanStatusEnum.WAITING_BIN_DOWN);
-        WareShift wareShift = wareShiftMapper.selectOne(wareShiftLambdaQueryWrapper);
-        //移库任务修改状态
-        if (wareShift != null) {
-            wareShift.setStatus(KanbanStatusEnum.INNER_RECEIVING.value());
-            wareShiftMapper.updateById(wareShift);
-        }
+//        //在移库任务中查询
+//        LambdaQueryWrapper<WareShift> wareShiftLambdaQueryWrapper = new LambdaQueryWrapper<>();
+//        wareShiftLambdaQueryWrapper.eq(WareShift::getSsccNb, ssccNb);
+//        wareShiftLambdaQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE);
+//        wareShiftLambdaQueryWrapper.eq(WareShift::getStatus, KanbanStatusEnum.WAITING_BIN_DOWN);
+//        WareShift wareShift = wareShiftMapper.selectOne(wareShiftLambdaQueryWrapper);
+//        //移库任务修改状态
+//        if (wareShift != null) {
+//            wareShift.setStatus(KanbanStatusEnum.INNER_RECEIVING.value());
+//            wareShiftMapper.updateById(wareShift);
+//        }
 
         //状态修改为产线待接受
         kanban.setStatus(KanbanStatusEnum.INNER_DOWN.value());

@@ -110,7 +110,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                     IQCVO conver = BeanConverUtil.conver(iqcdto, IQCVO.class);
                     conver.setStatus(update ? 0 : 1);
                     //result.add(conver);
-                    synchronized(result) { // 确保线程安全
+                    synchronized (result) { // 确保线程安全
                         result.add(conver); // 添加到结果列表
                     }
                 }
@@ -190,5 +190,29 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     @Override
     public List<StockVO> getBinStockLog(String binCode) {
         return stockMapper.getBinStockLog(binCode);
+    }
+
+    @Override
+    public Double getMainStockCount(String materialNb) {
+        LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Stock::getMaterialNb, materialNb)
+                .eq(Stock::getFreezeStock,Double.valueOf(0))
+                .eq(Stock::getQualityStatus,QualityStatusEnums.USE.getCode())
+                .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<Stock> list = this.list(queryWrapper);
+        double sum = list.stream().filter(item -> "7751".equals(item.getPlantNb())).mapToDouble(Stock::getAvailableStock).sum();
+        return sum;
+    }
+
+    @Override
+    public Double getOutStockCount(String materialNb) {
+        LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Stock::getMaterialNb, materialNb)
+                .eq(Stock::getFreezeStock,Double.valueOf(0))
+                .eq(Stock::getQualityStatus,QualityStatusEnums.USE.getCode())
+                .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<Stock> list = this.list(queryWrapper);
+        double sum = list.stream().filter(item -> "7752".equals(item.getPlantNb())).mapToDouble(Stock::getAvailableStock).sum();
+        return sum;
     }
 }
