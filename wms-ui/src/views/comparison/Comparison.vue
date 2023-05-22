@@ -293,7 +293,11 @@ export default {
       this.selectedRowKeys = selectedRowKeys
     },
     handleDownloadTemplate(){
-
+      try {
+        this.$store.dispatch('file/downloadByFilename', 'RPSSCCList.xlsx')
+      } catch (error) {
+        this.$message.error(error.message)
+      }
     },
     async handleUpload (e) {
       const { file } = e

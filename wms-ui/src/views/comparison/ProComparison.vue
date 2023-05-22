@@ -313,7 +313,11 @@ export default {
       this.selectedRowKeys = selectedRowKeys
     },
     handleDownloadTemplate(){
-
+      try {
+        this.$store.dispatch('file/downloadByFilename', 'FG_SAP 库存对比模板.xlsx')
+      } catch (error) {
+        this.$message.error(error.message)
+      }
     },
     async handleUpload (e) {
       const { file } = e
