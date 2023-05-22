@@ -10,13 +10,14 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-item label="SSCC码">
-              <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
-            </a-form-item>
+            <a-form-model-item label="物料号">
+              <a-input v-model="queryForm.materialNb" placeholder="物料号" allow-clear/>
+            </a-form-model-item>
           </a-col>
+
           <a-col :span="4">
             <a-form-model-item label="批次号">
-              <a-input v-model="queryForm.sapBatchNumber" placeholder="批次号" allow-clear/>
+              <a-input v-model="queryForm.batch" placeholder="批次号" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
@@ -83,7 +84,7 @@
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
-        rowKey="ssccNumber"
+        rowKey="id"
         :pagination="false"
         size="middle"
         :scroll="tableScroll"
@@ -131,9 +132,75 @@ const columns = [
     width: 80
   },
   {
-    title: 'ssccNumber',
-    key: 'ssccNumber',
-    dataIndex: 'ssccNumber',
+    title: 'materialDescription',
+    key: 'materialDescription',
+    dataIndex: 'materialDescription',
+    width: 80
+  },
+  {
+    title: 'material',
+    key: 'materialNb',
+    dataIndex: 'materialNb',
+    width: 80
+  },
+  {
+    title: 'Unrestricted',
+    key: 'unrestricted',
+    dataIndex: 'unrestricted',
+    width: 80
+  },
+  {
+    title: 'Base Unit of Measure',
+    key: 'unit',
+    dataIndex: 'unit',
+    width: 80
+  },
+  {
+    title: 'Storage Location',
+    key: 'storageLocation',
+    dataIndex: 'storageLocation',
+    width: 80
+  },
+  {
+    title: 'Batch',
+    key: 'batch',
+    dataIndex: 'batch',
+    width: 80
+  },
+  {
+    title: 'In Quality Insp.',
+    key: 'inQualityInsp',
+    dataIndex: 'inQualityInsp',
+    width: 80
+  },
+  {
+    title: 'Restricted-Use Stock',
+    key: 'restrictedUseStock',
+    dataIndex: 'restrictedUseStock',
+    width: 80
+  },
+  {
+    title: 'Blocked',
+    key: 'blocked',
+    dataIndex: 'blocked',
+    width: 80
+  },
+  {
+    title: 'Returns',
+    key: 'returns',
+    dataIndex: 'returns',
+    width: 80
+  },
+  {
+    title: 'Stock in Transit',
+    key: 'stockInTransit',
+    dataIndex: 'stockInTransit',
+    width: 80
+  },
+  {
+    title: 'In transfer (plant)',
+    key: 'inTransfer',
+    dataIndex: 'inTransfer',
     width: 80
   },
   {
@@ -145,65 +212,18 @@ const columns = [
         key: 'sapMaterialCode',
         width: 85,
       },
-      {
-        title: 'BatchNumber',
-        dataIndex: 'sapBatchNumber',
-        key: 'sapBatchNumber',
-        width: 87,
-      },
-      {
-        title: 'Unit',
-        dataIndex: 'unitOfMeasure',
-        key: 'unitOfMeasure',
-        width: 80,
-      },
-      {
-        title: '质检状态',
-        dataIndex: 'r3StockStatus',
-        key: 'r3StockStatus',
-        width: 80,
-      },
-      {
-        title: '可用库存',
-        dataIndex: 'remainingQty',
-        key: 'remainingQty',
-        width: 80,
-      },
+
     ],
   },
   {
     title: 'WMS',
     children: [
       {
-        title: 'MaterialCode',
-        dataIndex: 'stockSapMaterialCode',
-        key: 'stockSapMaterialCode',
+        title: 'stockQuantity',
+        dataIndex: 'stockQuantity',
+        key: 'stockQuantity',
         width: 85,
-      },
-      {
-        title: 'BatchNumber',
-        dataIndex: 'stockSapBatchNumber',
-        key: 'stockSapBatchNumber',
-        width: 87,
-      },
-      {
-        title: 'Unit',
-        dataIndex: 'stockUnitOfMeasure',
-        key: 'stockUnitOfMeasure',
-        width: 80,
-      },
-      {
-        title: '质检状态',
-        dataIndex: 'stockR3StockStatus',
-        key: 'stockR3StockStatus',
-        width: 80,
-      },
-      {
-        title: '可用库存',
-        dataIndex: 'stockRemainingQty',
-        key: 'stockRemainingQty',
-        width: 80,
-      },
+      }
     ],
   },
   {
@@ -224,9 +244,9 @@ const columns = [
 const queryFormAttr = () => {
   return {
     plantNb: '',
-    ssccNumber: '',
+    id: '',
     sapMaterialCode: '',
-    sapBatchNumber: '',
+    batch: '',
     status: '',
   }
 }
@@ -294,7 +314,7 @@ export default {
     },
     handleDownloadTemplate(){
       try {
-        this.$store.dispatch('file/downloadByFilename', 'RPSSCCList.xlsx')
+        this.$store.dispatch('file/downloadByFilename', 'FG_SAP 库存对比模板.xlsx')
       } catch (error) {
         this.$message.error(error.message)
       }
@@ -308,7 +328,7 @@ export default {
         formdata.append('file', file)
 
         this.uploadLoading = true
-        await this.$store.dispatch('comparison/upload', formdata)
+        await this.$store.dispatch('comparison/uploadPro', formdata)
 
         this.queryForm.pageNum = 1
         this.loadTableList()
@@ -345,7 +365,7 @@ export default {
 
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('comparison/getPaginationList', this.queryForm)
+        } = await this.$store.dispatch('comparison/getPaginationProList', this.queryForm)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {

@@ -3,7 +3,10 @@ package com.bosch.product.api.domain.enumeration;
 public enum ComparisonEnum {
     DIFF(0,"不同"),
 
-    SAME(1, "相同");
+    SAME(1, "相同"),
+
+    CHANGED(2, "已调整")
+    ;
 
 
     private Integer code;

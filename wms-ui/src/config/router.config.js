@@ -435,10 +435,17 @@ export const asyncRouterMap = [
         meta: { title: '库存对比', icon: 'hdd', permission: [] },
         children: [
           {
-            path: '/comparison/list',
+            path: '/comparison/materialcomparison',
             name: 'comparisonList',
             component: () => import('@/views/comparison/Comparison.vue'),
-            meta: { title: '库存对比列表', permission: [] },
+            meta: { title: '原材料库存对比', permission: [] },
+            hideChildrenInMenu: true
+          },
+          {
+            path: '/comparison/procomparison',
+            name: 'ProComparisonList',
+            component: () => import('@/views/comparison/ProComparison.vue'),
+            meta: { title: '成品库存对比', permission: [] },
             hideChildrenInMenu: true
           }
 

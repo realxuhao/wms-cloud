@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.product.mapper.ProComparisonMapper">
+
+    <resultMap id="BaseResultMap" type="com.bosch.product.api.domain.ProComparison">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="plantNb" column="plant_nb" jdbcType="VARCHAR"/>
+            <result property="stockPlantNb" column="stock_plant_nb" jdbcType="VARCHAR"/>
+            <result property="materialDescription" column="material_description" jdbcType="VARCHAR"/>
+            <result property="materialNb" column="material_nb" jdbcType="VARCHAR"/>
+            <result property="stockMaterialNb" column="stock_material_nb" jdbcType="VARCHAR"/>
+            <result property="unrestricted" column="unrestricted" jdbcType="VARCHAR"/>
+            <result property="unit" column="unit" jdbcType="VARCHAR"/>
+            <result property="storageLocation" column="storage_location" jdbcType="VARCHAR"/>
+            <result property="batch" column="batch" jdbcType="VARCHAR"/>
+            <result property="stockExpireDate" column="stock_expire_date" jdbcType="VARCHAR"/>
+            <result property="inQualityInsp" column="in_quality_insp" jdbcType="VARCHAR"/>
+            <result property="restrictedUseStock" column="restricted_use_stock" jdbcType="VARCHAR"/>
+            <result property="stockQuantity" column="stock_quantity" jdbcType="VARCHAR"/>
+            <result property="blocked" column="blocked" jdbcType="VARCHAR"/>
+            <result property="returns" column="returns" jdbcType="VARCHAR"/>
+            <result property="stockInTransit" column="stock_in_transit" jdbcType="VARCHAR"/>
+            <result property="inTransfer" column="in_transfer" jdbcType="VARCHAR"/>
+            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,plant_nb,stock_plant_nb,
+        material_description,material_nb,stock_material_nb,
+        unrestricted,unit,storage_location,
+        batch,stock_expire_date,in_quality_insp,
+        restricted_use_stock,stock_quantity,blocked,
+        returns,stock_in_transit,in_transfer,
+        create_by,update_by,create_time,
+        update_time,status,delete_flag,
+        remark
+    </sql>
+</mapper>

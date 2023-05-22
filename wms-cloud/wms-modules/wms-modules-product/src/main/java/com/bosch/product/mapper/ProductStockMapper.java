@@ -8,8 +8,10 @@ import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.controller.ProductIQCManagementController;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @program: wms-cloud
@@ -25,4 +27,6 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
     int validateStatus(Long id);
 
     Integer changeStatus(IQCChangeStatusDTO iqcChangeStatusDTO);
+
+    List<ProductStockVO> listByMaterials(@Param("list") List<Map<String, String>> list);
 }

@@ -15,14 +15,27 @@ const comparison = {
       return rows
     },
     async getPaginationList ({ commit }, options) {
-      console.log('111')
       const data = await comparisonService.getList(options)
+      return data
+    },
+    async getPaginationProList ({ commit }, options) {
+      const data = await comparisonService.getProList(options)
       return data
     },
     async upload ({ commit }, formdata) {
       const data = await comparisonService.upload(formdata)
       return data
-    }
+    },
+    async uploadPro ({ commit }, formdata) {
+      const data = await comparisonService.uploadPro(formdata)
+      return data
+    },
+    async updateBySsccList ({ commit }, formdata) {
+      const data = await comparisonService.updateBySsccList(formdata)
+      return data
+    },
+
+
   }
 }
 
