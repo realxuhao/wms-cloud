@@ -26,7 +26,7 @@ import java.util.Map;
 public interface IMaterialCallService extends IService<MaterialCall> {
 
 
-    List<MaterialCallVO> getMaterialCallList(MaterialCallQueryDTO queryDTO);
+    List<MaterialCallVO> getList(MaterialCallQueryDTO queryDTO);
 
     public boolean validList(List<MaterialCallDTO> dtos);
 
@@ -69,4 +69,6 @@ public interface IMaterialCallService extends IService<MaterialCall> {
     void generateJobByCall(List<Long> asList);
 
     void add(MaterialCall call);
+
+    List<MaterialCallVO> getCallList(MaterialCallQueryDTO queryDTO);
 }

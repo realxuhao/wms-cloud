@@ -10,6 +10,12 @@ const getList = async (parameter) => {
   return data
 }
 
+const getCallList = async (parameter) => {
+  const url = `/material-feeding/call/callList?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url, parameter)
+  return data
+}
+
 const upload = async (formdata) => {
   const url = `/material-feeding/call`
   const { data } = await createAuthInstance(baseUrl).post(url, formdata)
@@ -103,7 +109,7 @@ const addShiftTask = async (options) => {
 }
 
 const confirmMaterial = async (options) => {
-  const url = `binin/materialKanban/confirmMaterialBySSCCs?ssccs=${options}`
+  const url = `binin/materialKanban/confirmMaterialBySSCCs?ids=${options}`
   const { data } = await createAuthInstance(config.apiHost).get(url, options)
   return data
 }
@@ -159,5 +165,6 @@ export const materialFeedingService = {
   runCall,
   issueCall,
   generateJobByCall,
-  callAdd
+  callAdd,
+  getCallList
 }

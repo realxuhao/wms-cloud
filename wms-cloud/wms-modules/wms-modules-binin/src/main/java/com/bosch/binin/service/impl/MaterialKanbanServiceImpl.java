@@ -235,19 +235,19 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
-    public void issueJob(String[] ssccNumbers) {
-        List<String> ssccNumberList = Arrays.asList(ssccNumbers);
-        if (CollectionUtils.isEmpty(ssccNumberList)) {
+    public void issueJob(Long[] ids) {
+        List<Long> idList = Arrays.asList(ids);
+        if (CollectionUtils.isEmpty(idList)) {
             throw new ServiceException("任务为空，请选择任务后重试");
         }
         LambdaQueryWrapper<MaterialKanban> kanbanLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        kanbanLambdaQueryWrapper.in(MaterialKanban::getSsccNumber, ssccNumberList);
+        kanbanLambdaQueryWrapper.in(MaterialKanban::getId, idList);
         kanbanLambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         kanbanLambdaQueryWrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.WAITING_ISSUE.value());
 
         List<MaterialKanban> kanbanList = materialKanbanMapper.selectList(kanbanLambdaQueryWrapper);
 
-        if (CollectionUtils.isEmpty(kanbanList) || kanbanList.size() != ssccNumberList.size()) {
+        if (CollectionUtils.isEmpty(kanbanList) || kanbanList.size() != idList.size()) {
             throw new ServiceException("数据已过期，请重新选择");
         }
         kanbanList.stream().forEach(item -> {
@@ -446,6 +446,18 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
+    public int updateKanbanByIdStatus(List<Long> ids, Integer queryStatus, Integer status) {
+        MaterialKanban materialKanban = new MaterialKanban();
+        materialKanban.setStatus(status);
+        LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
+        uw.in(MaterialKanban::getId, ids);
+        uw.eq(MaterialKanban::getStatus, queryStatus);
+        uw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+
+        return materialKanbanMapper.update(materialKanban, uw);
+    }
+
+    @Override
     public int updateKanbanBySSCC(List<String> ssccs, Integer status) {
         MaterialKanban materialKanban = new MaterialKanban();
         materialKanban.setStatus(status);
@@ -466,6 +478,16 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     public List<MaterialKanban> getListBySCAndStatus(List<String> sscc, Integer status) {
         LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(MaterialKanban::getSsccNumber, sscc);
+        queryWrapper.eq(MaterialKanban::getStatus, status);
+        queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<MaterialKanban> materialKanbans = materialKanbanMapper.selectList(queryWrapper);
+        return materialKanbans;
+    }
+
+    @Override
+    public List<MaterialKanban> getListByIdAndStatus(List<Long> ids, Integer status) {
+        LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(MaterialKanban::getId, ids);
         queryWrapper.eq(MaterialKanban::getStatus, status);
         queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<MaterialKanban> materialKanbans = materialKanbanMapper.selectList(queryWrapper);
@@ -506,7 +528,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         if (Objects.isNull(stock)) {
             stockVO = stockService.getLastOneBySSCC(splitPallet.getSourceSsccNb());
         }
-        if (stockVO.getTotalStock() < Double.valueOf(MesBarCodeUtil.getQuantity(splitPallet.getNewMesBarCode()))) {
+        if (stockVO.getTotalStock() < splitPallet.getSplitQuantity()) {
             throw new ServiceException("拆托数量不能超过源库存量");
         }
 
@@ -540,10 +562,10 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         newKanban.setAreaCode(materialKanban.getAreaCode());
         newKanban.setBinCode(materialKanban.getBinCode());
         newKanban.setMaterialCode(materialKanban.getMaterialCode());
-        newKanban.setSsccNumber(MesBarCodeUtil.getSSCC(splitPallet.getNewMesBarCode()));
+        newKanban.setSsccNumber(splitPallet.getNewMesBarCode().length()==18?splitPallet.getNewMesBarCode():MesBarCodeUtil.getSSCC(splitPallet.getNewMesBarCode()));
         newKanban.setCell(materialKanban.getCell());
         newKanban.setType(KanbanActionTypeEnum.FULL_BIN_DOWN.value());
-        newKanban.setQuantity(Double.valueOf(MesBarCodeUtil.getQuantity(splitPallet.getNewMesBarCode())));
+        newKanban.setQuantity(splitPallet.getSplitQuantity());
         newKanban.setStatus(KanbanStatusEnum.INNER_DOWN.value());
         newKanban.setCreateBy(SecurityUtils.getUsername());
         newKanban.setCreateTime(new Date());
@@ -575,6 +597,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         } else {
             Stock conver = BeanConverUtil.conver(stockVO, Stock.class);
             conver.setTotalStock(conver.getTotalStock() - newKanban.getQuantity());
+            conver.setAvailableStock(conver.getAvailableStock() - newKanban.getQuantity());
             conver.setFreezeStock(conver.getTotalStock() - conver.getAvailableStock());
             conver.setWholeFlag(StockWholeFlagEnum.NOT_WHOLE.code());
 
@@ -609,10 +632,10 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             }
         }
 
-        WareShift wareShift = wareShiftService.getWareShiftBySsccAndStatus(materialKanban.getSsccNumber());
-        if (wareShift != null) {
-            wareShiftService.cancelWareShift(wareShift.getId());
-        }
+//        WareShift wareShift = wareShiftService.getWareShiftBySsccAndStatus(materialKanban.getSsccNumber());
+//        if (wareShift != null) {
+//            wareShiftService.cancelWareShift(wareShift.getId());
+//        }
 
         if (materialKanban.getStatus().equals(KanbanStatusEnum.LINE_RECEIVED.value())) {
             if (materialKanban.getParentId() == null) {//说明不是子任务,拆托而来的子任务

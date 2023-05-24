@@ -312,6 +312,7 @@
                 #{item}
             </foreach>)
         </if>
+        order by mk.update_time desc, mk.create_time desc
 
     </select>
 </mapper>

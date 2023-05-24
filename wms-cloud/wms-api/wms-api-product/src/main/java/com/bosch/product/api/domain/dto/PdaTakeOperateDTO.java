@@ -17,6 +17,7 @@ public class PdaTakeOperateDTO {
     private Double pdaTakeQuantity;
     @ApiModelProperty("是否一致")
     private Boolean isDiff;
+    private String remark;
 
 
 

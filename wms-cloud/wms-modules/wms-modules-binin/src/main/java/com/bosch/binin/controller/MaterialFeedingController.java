@@ -13,7 +13,6 @@ import com.bosch.binin.api.domain.vo.RunCallVO;
 import com.bosch.binin.service.IMaterialCallService;
 import com.bosch.file.api.FileFeignService;
 import com.bosch.file.api.FileService;
-import com.bosch.masterdata.api.domain.Material;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
 import com.github.pagehelper.PageInfo;
@@ -175,7 +174,7 @@ public class MaterialFeedingController extends BaseController {
     @ApiOperation("叫料需求列表查询")
     public R<PageVO<MaterialCallVO>> list(MaterialCallQueryDTO queryDTO) {
         startPage();
-        List<MaterialCallVO> list = materialCallService.getMaterialCallList(queryDTO);
+        List<MaterialCallVO> list = materialCallService.getList(queryDTO);
 //        PageInfo pageInfo = new PageInfo<>(list);
 //
 //        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
@@ -188,6 +187,27 @@ public class MaterialFeedingController extends BaseController {
 
     }
 
+
+    @GetMapping(value = "/call/callList")
+    @ApiOperation("叫料记录列表查询")
+    public R<PageVO<MaterialCallVO>> callList(MaterialCallQueryDTO queryDTO) {
+        startPage();
+        List<MaterialCallVO> list = materialCallService.getCallList(queryDTO);
+//        PageInfo pageInfo = new PageInfo<>(list);
+//
+//        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
+//        pageInfo.setList(materialCallVOS);
+//        List<String> materialNbs = materialCallVOS.stream().map(MaterialCallVO::getMaterialNb).collect(Collectors.toList());
+//        //获取物料名称
+
+
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+
+    }
+
+
+
+
     /**
      * 导出叫料需求列表
      */
@@ -195,7 +215,7 @@ public class MaterialFeedingController extends BaseController {
     @PostMapping("/export")
     @ApiOperation("叫料需求列表导出")
     public void export(HttpServletResponse response, @RequestBody MaterialCallQueryDTO queryDTO) {
-        List<MaterialCallVO> materialCallVOS = materialCallService.getMaterialCallList(queryDTO);
+        List<MaterialCallVO> materialCallVOS = materialCallService.getList(queryDTO);
 //        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
 
         ExcelUtil<MaterialCallVO> util = new ExcelUtil<MaterialCallVO>(MaterialCallVO.class);

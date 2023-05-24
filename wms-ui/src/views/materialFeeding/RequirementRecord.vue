@@ -187,7 +187,7 @@ const columns = [
     width: 120
   },
   {
-    title: '已下发量',
+    title: '已下发捡配量',
     key: 'issuedQuantity',
     dataIndex: 'issuedQuantity',
     width: 120
@@ -268,6 +268,14 @@ const status = [
   {
     text: '已下发',
     value: 2
+  },
+  {
+    text: '完全捡配',
+    value: 3
+  },
+  {
+    text: '部分捡配',
+    value: 4
   }
 ]
 
@@ -275,7 +283,9 @@ const statusMap = {
   '-1': '已取消',
   0: '未跑',
   1: '已跑',
-  2: '已下发'
+  2: '已下发',
+  3: '完全捡配',
+  4: '部分捡配'
 }
 
 const queryFormAttr = () => {

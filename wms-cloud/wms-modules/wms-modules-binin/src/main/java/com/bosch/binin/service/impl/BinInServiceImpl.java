@@ -1187,14 +1187,14 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             return binInVO;
         }
 
-        R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
-        if (StringUtils.isNull(materialBinVOResullt) || CollectionUtils.isEmpty(materialBinVOResullt.getData())) {
-            throw new ServiceException("该物料：" + materialNb + " 分配规则有误");
-        }
-
-        if (R.FAIL == materialBinVOResullt.getCode()) {
-            throw new ServiceException(materialBinVOResullt.getMsg());
-        }
+//        R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
+//        if (StringUtils.isNull(materialBinVOResullt) || CollectionUtils.isEmpty(materialBinVOResullt.getData())) {
+//            throw new ServiceException("该物料：" + materialNb + " 分配规则有误");
+//        }
+//
+//        if (R.FAIL == materialBinVOResullt.getCode()) {
+//            throw new ServiceException(materialBinVOResullt.getMsg());
+//        }
         MaterialVO materialVO = getMaterialVOByCode(materialNb);
 
         BinAllocationDTO allocationDTO = new BinAllocationDTO();
@@ -1212,11 +1212,17 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         if (pallet == null) {
             throw new ServiceException("未获取到托盘数据");
         }
+        BinAllocationVO binAllocationVO = new BinAllocationVO();
+        BinVO binVO = new BinVO();
+        try {
 
 
-        BinAllocationVO binAllocationVO = binAssignmentService.getBinAllocationVO(allocationDTO);
+            binAllocationVO = binAssignmentService.getBinAllocationVO(allocationDTO);
 
-        BinVO binVO = getBinVOByBinCode(binAllocationVO.getRecommendBinCode());
+            binVO = getBinVOByBinCode(binAllocationVO.getRecommendBinCode());
+        }catch(Exception e){
+            log.error("分配库位有误"+e.getMessage());
+        }
 
 
         BinIn binIn = new BinIn();

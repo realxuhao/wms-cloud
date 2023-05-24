@@ -81,7 +81,7 @@ const columns = [
     width: 80
   },
   {
-    title: '已下发量',
+    title: '已下发捡配量',
     key: 'issuedQuantity',
     dataIndex: 'issuedQuantity',
     width: 80

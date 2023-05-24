@@ -25,4 +25,5 @@ public interface MaterialCallMapper extends BaseMapper<MaterialCall> {
     public List<MaterialCallVO> getMaterialCallVOs(MaterialCallQueryDTO queryDTO);
 
 
+    List<MaterialCallVO> getCallList(MaterialCallQueryDTO queryDTO);
 }

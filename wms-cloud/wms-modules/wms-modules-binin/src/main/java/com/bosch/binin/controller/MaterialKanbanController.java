@@ -105,11 +105,11 @@ public class MaterialKanbanController {
     }
 
 
-    @PutMapping(value = "/issueJob/{ssccNumbers}")
+    @PutMapping(value = "/issueJob/{ids}")
     @ApiOperation("批量下发任务接口")
     @Transactional(rollbackFor = Exception.class)
-    public R issueJob(@PathVariable String[] ssccNumbers) {
-        materialKanbanService.issueJob(ssccNumbers);
+    public R issueJob(@PathVariable Long[] ids) {
+        materialKanbanService.issueJob(ids);
         return R.ok("下发成功");
     }
 
@@ -495,7 +495,11 @@ public class MaterialKanbanController {
     @ApiOperation("根据barcode的sscc获取kanban数据 注：若返回600为移库任务")
     public R getKanbanBySSCC(@RequestParam(value = "mesBarCode") String mesBarCode) {
         try {
-            String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+            String sscc = mesBarCode;
+            if (sscc.length() > 18) {
+                sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+            }
+
             if (StringUtils.isEmpty(sscc)) {
                 throw new ServiceException("请选择数据");
             }
@@ -579,23 +583,23 @@ public class MaterialKanbanController {
     @GetMapping(value = "/confirmMaterialBySSCCs")
     @ApiOperation("多个sscc收货确认")
     @Transactional(rollbackFor = Exception.class)
-    public R confirmMaterialBySSCCs(@RequestParam(value = "ssccs") List<String> ssccs) {
+    public R confirmMaterialBySSCCs(@RequestParam(value = "ids") List<Long> ids) {
         try {
             //String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
-            if (CollectionUtils.isEmpty(ssccs)) {
+            if (CollectionUtils.isEmpty(ids)) {
                 throw new ServiceException("请选择数据");
             }
 
 //            List<String> ssccs = new ArrayList<>();
 //            ssccs.add(sscc);
             //判断sscc在不在kanban中
-            List<MaterialKanban> listBySCAndStatus = materialKanbanService.getListBySCAndStatus(ssccs,
+            List<MaterialKanban> listBySCAndStatus = materialKanbanService.getListByIdAndStatus(ids,
                     KanbanStatusEnum.INNER_DOWN.value());
             if (CollectionUtils.isEmpty(listBySCAndStatus)) {
                 throw new ServiceException("包含暂不能收货的数据");
             }
             //更新kanban状态从 产线待收货  到 产线已收货
-            int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs, KanbanStatusEnum.INNER_DOWN.value(), KanbanStatusEnum.LINE_RECEIVED.value());
+            int updateKanban = materialKanbanService.updateKanbanByIdStatus(ids, KanbanStatusEnum.INNER_DOWN.value(), KanbanStatusEnum.LINE_RECEIVED.value());
 
             if (updateKanban <= 0) {
                 return R.fail("确认收货失败，请刷新重试");

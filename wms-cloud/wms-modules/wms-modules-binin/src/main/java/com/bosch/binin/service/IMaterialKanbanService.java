@@ -50,7 +50,7 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
      */
     int updateKanban(Long id);
 
-    void issueJob(String[] ssccNumbers);
+    void issueJob(Long[] ids);
 
     MaterialKanbanVO getWaitingJob(String mesbarCode);
 
@@ -96,6 +96,10 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
      * @return
      */
     int updateKanbanByStatus(List<String> ssccs,Integer queryStatus,Integer status);
+
+
+    int updateKanbanByIdStatus(List<Long> ids,Integer queryStatus,Integer status);
+
     /**
      * 根据sscclist获取看板list
      * @param sscc
@@ -108,6 +112,9 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     List<MaterialKanbanVO> binDownList(PageDomain pageDomain, String wareCode);
 
     List<MaterialKanban> getListBySCAndStatus(List<String> sscc, Integer status);
+
+    List<MaterialKanban> getListByIdAndStatus(List<Long> ids, Integer status);
+
 
     MaterialKanban getOneBySCAndStatus(String sscc, Integer status);
 

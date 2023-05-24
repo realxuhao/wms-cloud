@@ -122,7 +122,7 @@
             <a-divider type="vertical" />
             <a
               class="primary-color"
-              :disabled="[2].includes(record.status)"
+              :disabled="!2===record.status"
               @click="handleCreateReductionTask(record)"><a-icon class="m-r-4" type="add" />人工创建拣配任务</a>
           </div>
 
@@ -201,7 +201,7 @@ const columns = [
     width: 120
   },
   {
-    title: '已下发量',
+    title: '已下发捡配量',
     key: 'issuedQuantity',
     dataIndex: 'issuedQuantity',
     width: 120
@@ -263,7 +263,9 @@ const statusColorMap = {
   '-1': colorMap['cancel'],
   0: colorMap['error'],
   1: colorMap['warning'],
-  2: colorMap['success']
+  2: colorMap['warning'],
+  3: colorMap['success'],
+  4: colorMap['warning']
 }
 
 const status = [
@@ -280,8 +282,16 @@ const status = [
     value: 1
   },
   {
-    text: '已全部下发',
+    text: '待生成捡配任务',
     value: 2
+  },
+  {
+    text: '完全捡配',
+    value: 3
+  },
+  {
+    text: '部分捡配',
+    value: 4
   }
 ]
 
@@ -289,7 +299,9 @@ const statusMap = {
   '-1': '已取消',
   0: '未下发',
   1: '部分下发',
-  2: '已全部下发'
+  2: '待生成捡配任务',
+  3: '完全捡配',
+  4: '部分捡配'
 }
 
 const queryFormAttr = () => {
@@ -443,7 +455,7 @@ export default {
 
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('materialFeeding/getPaginationList', options)
+        } = await this.$store.dispatch('materialFeeding/getCallList', options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {

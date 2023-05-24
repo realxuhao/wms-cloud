@@ -16,7 +16,11 @@ public enum CallStatusEnum {
     RUNNED(1, "已跑"),
 
     //已下发
-    ISSUED(2, "已下发");
+    ISSUED(2, "已下发"),
+
+    ALl(3, "已全部生成"),
+
+    NOT_ALL(4, "部分生成");
 
     private Integer code;
 

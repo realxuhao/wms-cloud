@@ -128,5 +128,4 @@ public class StockTakeDetail extends BaseEntity implements Serializable {
     private Date editTime;
 
 
-
 }

@@ -36,11 +36,13 @@
         p.method,
         p.take_material_type
         from stock_take_detail d left join stock_take_plan p on d.plan_code = p.code and p.delete_flag = 0
-        left join (select code as material_code,name as material_name from md_material union all select product_no as
-        material_code,product_name as material_name from md_product_packaging)m
+        left join (select code as material_code,name as material_name from md_material where delete_flag = 0 union all select product_no as
+        material_code,product_name as material_name from md_product_packaging where delete_flag = 0)m
         on m.material_code = d.material_code
         <where>
-            <if test="materialCode != null  and materialCode != ''">and d.material_code like concat('%', #{materialCode}, '%')</if>
+            <if test="materialCode != null  and materialCode != ''">and d.material_code like concat('%',
+                #{materialCode}, '%')
+            </if>
             <if test="batchNb != null  and batchNb != ''">and d.batch_nb like concat('%', #{batchNb}, '%')</if>
 
             <if test="cell != null  and cell != ''">and p.cell like concat('%', #{cell}, '%')</if>
@@ -54,7 +56,7 @@
             <if test="circleTakeMonth != null">and d.circle_take_month =#{circleTakeMonth}</if>
             <if test="takeMaterialType != null">and p.take_material_type = #{takeMaterialType}</if>
             <if test="status != null">and d.status =#{status}</if>
-            <if test="ids != null">
+            <if test="ids != null and ids.size()>0">
                 and d.id in
                 <foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
                     #{item}
@@ -74,20 +76,33 @@
 
     </select>
     <select id="getTaskList" resultType="com.bosch.product.api.domain.vo.StockTakeTaskVO">
-        SELECT DISTINCT task_no, issue_time
-        FROM stock_take_detail d
+        SELECT task_no,issue_time
+        FROM stock_take_detail AS t1
         <where>
-            <if test="wareCode != null  and wareCode != ''">and d.ware_code like concat('%', #{wareCode}, '%')</if>
-            <if test="areaCode != null  and areaCode != ''">and d.area_code like concat('%', #{areaCode}, '%')</if>
-            <if test="circleTakeMonth != null">and d.circle_take_month =#{circleTakeMonth}</if>
             <if test="status != null">and d.status =#{status}</if>
-            <if test="startCreateTime != null">and d.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
-            <if test="endCreateTime != null">and d.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
-            <if test="startIssueTime != null">and d.issue_time <![CDATA[ >= ]]> #{startIssueTime}</if>
-            <if test="endIssueTime != null">and d.issue_time <![CDATA[ <= ]]> #{endIssueTime}</if>
-
-
         </where>
+        GROUP BY task_no
+        HAVING COUNT(*) = (
+        SELECT COUNT(*)
+        FROM stock_take_detail AS t2
+        WHERE t2.task_no = t1.task_no
+        )
+
+        <!--        SELECT DISTINCT task_no, issue_time-->
+        <!--        FROM stock_take_detail d-->
+        <!--        <where>-->
+        <!--            <if test="wareCode != null  and wareCode != ''">and d.ware_code like concat('%', #{wareCode}, '%')</if>-->
+        <!--            <if test="areaCode != null  and areaCode != ''">and d.area_code like concat('%', #{areaCode}, '%')</if>-->
+        <!--            <if test="circleTakeMonth != null">and d.circle_take_month =#{circleTakeMonth}</if>-->
+        <!--            <if test="status != null">and d.status =#{status}</if>-->
+        <!--            <if test="startCreateTime != null">and d.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>-->
+        <!--            <if test="endCreateTime != null">and d.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>-->
+        <!--            <if test="startIssueTime != null">and d.issue_time <![CDATA[ >= ]]> #{startIssueTime}</if>-->
+        <!--            <if test="endIssueTime != null">and d.issue_time <![CDATA[ <= ]]> #{endIssueTime}</if>-->
+        <!--            and d.status >=1-->
+
+
+        <!--        </where>-->
 
     </select>
 </mapper>
