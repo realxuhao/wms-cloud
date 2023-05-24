@@ -73,9 +73,9 @@
       </div>
       <a-table
         :row-selection="{
-        selectedRowKeys: selectedRowKeys,
-        onChange: onSelectChange ,
-        getCheckboxProps:record => ({
+          selectedRowKeys: selectedRowKeys,
+          onChange: onSelectChange ,
+          getCheckboxProps:record => ({
             props: {
               disabled: record.status !== 0
             },
@@ -143,33 +143,33 @@ const columns = [
         title: 'MaterialCode',
         dataIndex: 'sapMaterialCode',
         key: 'sapMaterialCode',
-        width: 85,
+        width: 85
       },
       {
         title: 'BatchNumber',
         dataIndex: 'sapBatchNumber',
         key: 'sapBatchNumber',
-        width: 87,
+        width: 87
       },
       {
         title: 'Unit',
         dataIndex: 'unitOfMeasure',
         key: 'unitOfMeasure',
-        width: 80,
+        width: 80
       },
       {
         title: '质检状态',
         dataIndex: 'r3StockStatus',
         key: 'r3StockStatus',
-        width: 80,
+        width: 80
       },
       {
         title: '可用库存',
         dataIndex: 'remainingQty',
         key: 'remainingQty',
-        width: 80,
-      },
-    ],
+        width: 80
+      }
+    ]
   },
   {
     title: 'WMS',
@@ -178,33 +178,33 @@ const columns = [
         title: 'MaterialCode',
         dataIndex: 'stockSapMaterialCode',
         key: 'stockSapMaterialCode',
-        width: 85,
+        width: 85
       },
       {
         title: 'BatchNumber',
         dataIndex: 'stockSapBatchNumber',
         key: 'stockSapBatchNumber',
-        width: 87,
+        width: 87
       },
       {
         title: 'Unit',
         dataIndex: 'stockUnitOfMeasure',
         key: 'stockUnitOfMeasure',
-        width: 80,
+        width: 80
       },
       {
         title: '质检状态',
         dataIndex: 'stockR3StockStatus',
         key: 'stockR3StockStatus',
-        width: 80,
+        width: 80
       },
       {
         title: '可用库存',
         dataIndex: 'stockRemainingQty',
         key: 'stockRemainingQty',
-        width: 80,
-      },
-    ],
+        width: 80
+      }
+    ]
   },
   {
     title: '创建时间',
@@ -218,7 +218,7 @@ const columns = [
     dataIndex: 'status',
     width: 80,
     scopedSlots: { customRender: 'status' }
-  },
+  }
 ]
 
 const queryFormAttr = () => {
@@ -227,7 +227,7 @@ const queryFormAttr = () => {
     ssccNumber: '',
     sapMaterialCode: '',
     sapBatchNumber: '',
-    status: '',
+    status: ''
   }
 }
 const status = [
@@ -238,8 +238,7 @@ const status = [
   {
     text: '相同',
     value: 1
-  }
-  ,
+  },
   {
     text: '已调整',
     value: 2
@@ -265,19 +264,18 @@ export default {
   },
   computed: {
     status: () => status,
-    hasSelected() {
+    hasSelected () {
       return this.selectedRowKeys.length > 0
     }
   },
 
   methods: {
-    async changeStatus() {
+    async changeStatus () {
       try {
         this.submitLoading = true
-        const options = {ssccList: this.selectedRowKeys}
+        const options = { ssccList: this.selectedRowKeys }
 
-        console.log(options)
-        const {data: checkResult} = await this.$store.dispatch('comparison/updateBySsccList', options)
+        await this.$store.dispatch('comparison/updateBySsccList', options)
 
         this.selectedRowKeys = []
         this.loadTableList()
@@ -289,10 +287,10 @@ export default {
         this.submitLoading = false
       }
     },
-    onSelectChange(selectedRowKeys) {
+    onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
     },
-    handleDownloadTemplate(){
+    handleDownloadTemplate () {
       try {
         this.$store.dispatch('file/downloadByFilename', 'RPSSCCList.xlsx')
       } catch (error) {
@@ -329,9 +327,8 @@ export default {
           })
         } else {
           this.$message.error(error.message)
-
         }
-      }finally {
+      } finally {
         this.uploadLoading = false
       }
     },

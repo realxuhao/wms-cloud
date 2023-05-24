@@ -33,8 +33,7 @@ const comparison = {
     async updateBySsccList ({ commit }, formdata) {
       const data = await comparisonService.updateBySsccList(formdata)
       return data
-    },
-
+    }
 
   }
 }

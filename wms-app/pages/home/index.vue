@@ -107,6 +107,10 @@
 						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" color="#00ADD4"></uni-icons>
 						<view class="text">上架</view>
 					</view>
+					<view class="list-item" @click="handleGoto('/pages/stockTake/stockTake')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" color="#00ADD4"></uni-icons>
+						<view class="text">盘点</view>
+					</view>
 				</view>
 			</uni-section>
 

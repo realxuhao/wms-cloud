@@ -1,6 +1,5 @@
 {
-	"pages": [
-		{
+	"pages": [{
 			"path": "pages/login/index"
 		},
 		{
@@ -200,7 +199,19 @@
 		},
 		{
 			"path": "pages/binIn/batchBinInOperation"
+		},
+		{
+			"path": "pages/stockTake/stockTake"
+		},
+		{
+			"path": "pages/stockTake/stockTakeTaskScan"
+		}, {
+			"path": "pages/stockTake/stockTakeTask"
+		},
+		{
+			"path": "pages/stockTake/stockTakeTaskOperation"
 		}
+
 	],
 	"globalStyle": {
 		"navigationStyle": "custom"
