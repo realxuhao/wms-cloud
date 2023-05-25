@@ -189,6 +189,7 @@ export default {
   },
   data () {
     return {
+      uploadLoading:false,
       queryForm: {
         pageSize: 20,
         pageNum: 1,

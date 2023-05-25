@@ -19,7 +19,7 @@
     <!-- layout content -->
     <!-- 2021.01.15 默认固定页头，去掉样式paddingTop: fixedHeader ? '64' : '0'  -->
     <a-layout-content :style="{ height: '100%', margin: '0 0 0px 0'}">
-      <multi-tab v-if="settings.multiTab"></multi-tab>
+      
       <transition name="page-transition">
       </transition>
     </a-layout-content>
@@ -35,6 +35,7 @@
 
     <!-- <setting-drawer v-if="isProPreviewSite" :settings="settings" @change="handleSettingChange" /> -->
     <template v-slot:rightContentRender>
+      <multi-tab ></multi-tab>
       <right-content :top-menu="settings.layout === 'topmenu'" :is-mobile="isMobile" :theme="settings.theme" />
     </template>
     <template v-slot:footerRender v-if="!hideFooter">

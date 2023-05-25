@@ -21,6 +21,8 @@ import DictData from '@/components/DictData'
 import DictTag from '@/components/DictTag'
 import './components/global.less'
 
+import './utils/modalDrag'
+
 import bootstrap from './core/bootstrap'
 import './core/lazy_use' // use lazy load components
 import './permission' // permission control

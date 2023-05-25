@@ -4,6 +4,11 @@
 @sider-menu-prefix-cls: ~'@{ant-prefix}-pro-sider-menu';
 @nav-header-height: @layout-header-height;
 
+.ant-pro-global-header {
+  display: flex;
+  align-items: center;
+}
+
 .@{basicLayout-prefix-cls} {
 
   &:not('.ant-pro-basicLayout-mobile') {
@@ -11,11 +16,13 @@
       width: 6px;
       height: 6px;
     }
+
     ::-webkit-scrollbar-track {
       background: rgba(0, 0, 0, 0.06);
       border-radius: 3px;
       -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.08);
     }
+
     /* 滚动条滑块 */
     ::-webkit-scrollbar-thumb {
       background: rgba(0, 0, 0, 0.12);
@@ -45,16 +52,20 @@
     position: relative;
     margin: 24px;
     transition: all 0.2s;
+
     .@{ant-prefix}-pro-page-header-wrap {
       margin: -24px -24px 0;
     }
+
     &-disable-margin {
       margin: 0;
-      > div > .@{ant-prefix}-pro-page-header-wrap {
+
+      >div>.@{ant-prefix}-pro-page-header-wrap {
         margin: 0;
       }
     }
-    > .ant-layout {
+
+    >.ant-layout {
       max-height: 100%;
     }
   }
@@ -81,21 +92,61 @@
     position: relative;
     margin: 24px;
     transition: all 0.2s;
+
     .@{ant-prefix}-pro-page-header-wrap {
       margin: -24px -24px 0;
     }
+
     &-disable-margin {
       margin: 0;
-      > div > .@{ant-prefix}-pro-page-header-wrap {
+
+      >div>.@{ant-prefix}-pro-page-header-wrap {
         margin: 0;
       }
     }
-    > .ant-layout {
+
+    >.ant-layout {
       max-height: 100%;
     }
   }
 
   .color-picker {
     margin: 10px 0;
+  }
+}
+
+.ant-pro-multi-tab {
+  margin: 0;
+  height: 32px;
+  overflow-y: auto;
+
+  .ant-tabs-bar {
+    border-bottom: none !important;
+  }
+
+  /deep/.ant-tabs-tab-active {
+    border-bottom: 1px solid #e8e8e8 !important;
+  }
+
+  .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-nav-container {
+    height: 31px !important;
+  }
+
+  .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab-active {
+    background: @primary-color !important;
+    color: #fff !important;
+    height: 30px !important;
+
+    // border: none !important;
+    .ant-tabs-close-x {
+      color: #fff !important;
+    }
+
+  }
+
+  .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab {
+    line-height: 26px !important;
+    border-radius: 4px !important;
+    height: 30px !important;
   }
 }

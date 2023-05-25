@@ -23,20 +23,20 @@ export const indexRouterMap = [
     component: 'Index',
     meta: { title: '首页', noCache: false, hidden: true, icon: 'dashboard', hiddenHeaderContent: true }
   },
-  // {
-  //   path: '/account/center',
-  //   name: 'Center',
-  //   component: 'AccountCenter',
-  //   meta: { title: '个人中心', noCache: true },
-  //   hidden: true
-  // },
-  // {
-  //   path: '/account/settings',
-  //   name: 'Settings',
-  //   component: 'AccountSettings',
-  //   meta: { title: '个人设置', noCache: true },
-  //   hidden: true
-  // },
+  {
+    path: '/account/center',
+    name: 'Center',
+    component: 'AccountCenter',
+    meta: { title: '个人中心', noCache: true },
+    hidden: true
+  },
+  {
+    path: '/account/settings',
+    name: 'Settings',
+    component: 'AccountSettings',
+    meta: { title: '个人设置', noCache: true },
+    hidden: true
+  },
   // {
   //   path: '/monitor/job/log',
   //   name: 'JobLog',
