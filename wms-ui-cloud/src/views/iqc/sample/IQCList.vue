@@ -90,11 +90,26 @@
           </a-row>
         </a-form>
         <div class="action-content">
-          <a-button :loading="exportLoading" class="m-r-8" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
-          <a-button type="primary" class="m-r-8" icon="plus" @click="handleAddIqcSample">
+          <a-button
+            :loading="exportLoading"
+            class="m-r-8"
+            @click="handleDownload" 
+            v-hasPermi="['iqc:list:export']"><a-icon type="download" />导出结果</a-button>
+          <a-button
+            v-hasPermi="['iqc:list:add']"
+            type="primary"
+            class="m-r-8"
+            icon="plus"
+            @click="handleAddIqcSample">
             新建抽样计划
           </a-button>
-          <a-button type="primary" icon="plus" :loading="batchIssueLoading" @click="handleBatchIssue" :disabled="!selectedRowKeys.length">
+          <a-button
+            type="primary" 
+            v-hasPermi="['iqc:list:batchIssue']"
+            icon="plus"
+            :loading="batchIssueLoading"
+            @click="handleBatchIssue"
+            :disabled="!selectedRowKeys.length">
             批量下发
           </a-button>
         </div>
@@ -116,6 +131,7 @@
           <template slot="action" slot-scope="text, record">
             <div class="action-con">
               <a
+                v-hasPermi="['iqc:list:edit']"
                 :disabled="![0,5].includes(record.status)"
                 class="warning-color"
                 @click="$refs.editSample.onOpen(record)">
@@ -124,6 +140,7 @@
               <a-divider type="vertical" />
 
               <a
+                v-hasPermi="['iqc:list:editSampleQuantity']"
                 :disabled="![0,5].includes(record.status)"
                 class="warning-color"
                 @click="handleEditRecommendSampleQuantity(record)">
@@ -136,7 +153,10 @@
                 cancel-text="取消"
                 @confirm="handleDelete(record)"
               >
-                <a :disabled="![0,5].includes(record.status)" class="danger-color">
+                <a 
+                  v-hasPermi="['iqc:list:delete']"
+                  :disabled="![0,5].includes(record.status)"
+                  class="danger-color">
                   <a-icon class="m-r-4" type="delete" />取消
                 </a>
               </a-popconfirm>
