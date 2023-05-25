@@ -14,7 +14,10 @@ const materialFeeding = {
       const data = await materialFeedingService.getList(options)
       return data
     },
-
+    async getCallList ({ commit }, options) {
+      const data = await materialFeedingService.getCallList(options)
+      return data
+    },
     async upload ({ commit }, formdata) {
       const data = await materialFeedingService.upload(formdata)
       return data

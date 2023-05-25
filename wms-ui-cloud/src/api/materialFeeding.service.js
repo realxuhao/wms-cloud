@@ -10,6 +10,12 @@ const getList = async (parameter) => {
   return data
 }
 
+const getCallList = async (parameter) => {
+  const url = `/material-feeding/call/callList?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url, parameter)
+  return data
+}
+
 const upload = async (formdata) => {
   const url = `/material-feeding/call`
   const { data } = await createAuthInstance(baseUrl).post(url, formdata)
@@ -159,5 +165,6 @@ export const materialFeedingService = {
   runCall,
   issueCall,
   generateJobByCall,
-  callAdd
+  callAdd,
+  getCallList
 }

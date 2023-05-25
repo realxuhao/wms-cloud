@@ -96,7 +96,8 @@ import { mixinTableList } from '@/utils/mixin/index'
 
 const queryFormAttr = () => {
   return {
-    'batchNb': ''
+    'batchNb': '',
+    'plantNb': '7751'
   }
 }
 

@@ -124,7 +124,7 @@
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
-        rowKey="ssccNumber"
+        rowKey="id"
         :pagination="false"
         :scroll="tableScroll"
         size="middle"
