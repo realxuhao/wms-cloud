@@ -124,6 +124,8 @@ public class BinIn extends BaseEntity {
      */
     private Integer deleteFlag;
 
+    private String qualityStatus;
+
 
 
 }

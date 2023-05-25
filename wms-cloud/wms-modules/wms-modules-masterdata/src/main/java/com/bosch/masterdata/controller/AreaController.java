@@ -66,7 +66,7 @@ public class AreaController extends BaseController {
      * 获取区域详细信息
      */
     //@RequiresPermissions("masterdata:area:query")
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/getById/{id}")
     public AjaxResult getInfo(@PathVariable("id") Integer id) {
         return AjaxResult.success(areaService.selectAreaById(id));
     }

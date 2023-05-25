@@ -2,9 +2,7 @@ package com.bosch.binin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.Stock;
-import com.bosch.binin.api.domain.dto.IQCChangeStatusDTO;
-import com.bosch.binin.api.domain.dto.IQCManagementQueryDTO;
-import com.bosch.binin.api.domain.dto.StockQueryDTO;
+import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.masterdata.api.domain.dto.IQCDTO;
@@ -60,5 +58,7 @@ public interface IStockService extends IService<Stock> {
     Double getOutStockCount(String materialNb);
 
 
+    void initStock(List<InitStockDTO> list);
 
+    void editStock(StockEditDTO stockEditDTO);
 }

@@ -61,5 +61,10 @@ public class FileFallbackFactory implements FileService {
         return R.fail("叫料excel导入失败");
     }
 
+    @Override
+    public <T> R<List<T>> InitStockImport(MultipartFile file, String className) {
+        return R.fail("初始化库存服务调用失败");
+    }
+
 
 }

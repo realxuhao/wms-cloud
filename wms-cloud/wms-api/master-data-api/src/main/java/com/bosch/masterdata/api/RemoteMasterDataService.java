@@ -6,6 +6,7 @@ import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.dto.BlackDriverDTO;
 import com.bosch.masterdata.api.domain.vo.*;
 import com.bosch.masterdata.api.factory.RemoteMaterialFallbackFactory;
+import com.ruoyi.common.core.config.FeignConfig;
 import com.ruoyi.common.core.constant.ServiceNameConstants;
 import com.ruoyi.common.core.domain.R;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(contextId = "remoteMasterDataService", value = ServiceNameConstants.MASTER_DATA_SERVICE)
+@FeignClient(contextId = "remoteMasterDataService", configuration = FeignConfig.class,value = ServiceNameConstants.MASTER_DATA_SERVICE)
 public interface RemoteMasterDataService {
 
     @GetMapping(value = "/bin/{id}")

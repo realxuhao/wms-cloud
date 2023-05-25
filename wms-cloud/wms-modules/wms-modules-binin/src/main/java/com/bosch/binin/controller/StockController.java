@@ -1,14 +1,20 @@
 package com.bosch.binin.controller;
 
+import com.alibaba.fastjson2.JSON;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.dto.InitStockDTO;
+import com.bosch.binin.api.domain.dto.StockEditDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.utils.BeanConverUtil;
+import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.RemoteMesBarCodeService;
 import com.bosch.masterdata.api.RemoteProductService;
+import com.bosch.masterdata.api.domain.dto.IQCDTO;
 import com.bosch.masterdata.api.domain.vo.MesBarCodeVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
+import com.bosch.masterdata.api.enumeration.ClassType;
 import com.bosch.product.api.RemoteProductStockService;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
@@ -23,12 +29,12 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.swing.plaf.ProgressBarUI;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @program: wms-cloud
@@ -49,6 +55,9 @@ public class StockController extends BaseController {
 
     @Autowired
     private RemoteProductStockService remoteProductStockService;
+
+    @Autowired
+    private FileService fileService;
 
 
     @GetMapping(value = "/list")
@@ -165,6 +174,43 @@ public class StockController extends BaseController {
         map.put("count", count);
         return R.ok(map);
     }
+
+
+    /**
+     * 批量上传
+     */
+    @ApiOperation("批量上传")
+    @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
+    public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
+        //解析文件服务
+        R result = fileService.InitStockImport(file, ClassType.INITSTOCKDTO.getDesc());
+        List<InitStockDTO> resultList = new ArrayList<>();
+        if (result.isSuccess()) {
+            Object data = result.getData();
+            List<InitStockDTO> list = JSON.parseArray(JSON.toJSONString(data), InitStockDTO.class);
+            if (com.alibaba.nacos.common.utils.CollectionUtils.isNotEmpty(list)) {
+                stockService.initStock(list);
+                return R.ok();
+
+            } else {
+                return R.fail("excel中无数据");
+            }
+        } else {
+            return R.fail(result.getMsg());
+        }
+    }
+
+    @PostMapping(value = "/editStock")
+    @ApiOperation("修改库存")
+    public R editStock(@RequestBody StockEditDTO stockEditDTO) {
+        stockService.editStock(stockEditDTO);
+
+        return R.ok();
+    }
+
+
+
+
 
 
 }
