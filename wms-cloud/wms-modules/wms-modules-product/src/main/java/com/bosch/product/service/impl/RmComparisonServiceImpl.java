@@ -1,6 +1,7 @@
 package com.bosch.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -22,6 +23,7 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.CompareUtils;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -204,6 +206,15 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
             return proComparisons;
         }
         return null;
+    }
+
+    @Override
+    public boolean deleteRmComparisonByCreat() {
+        String username = SecurityUtils.getUsername();
+        QueryWrapper<RmComparison> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("create_by",username);
+        int delete = rmComparisonMapper.delete(queryWrapper);
+        return delete>=0;
     }
 
 }
