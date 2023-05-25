@@ -9,8 +9,11 @@ Vue.config.productionTip = false;
 
 App.mpType = "app";
 
+import './directive/permission/index'
+
+
 const app = new Vue({
-  store,
-  ...App,
+	store,
+	...App,
 });
 app.$mount();
