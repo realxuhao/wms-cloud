@@ -26,7 +26,9 @@ const constantRouterComponents = {
   // 公告新增修改
   'NoticeForm': () => import('@/views/system/notice/CreateForm'),
   // 修改生成配置
-  'GenEdit': () => import('@/views/tool/gen/modules/GenEdit')
+  'GenEdit': () => import('@/views/tool/gen/modules/GenEdit'),
+  'FinishedProductTaskList':() => import('@/views/finishedProduct/FinishedProductTaskList'),
+  'TimeWIndow':() => import('@/views/masterData/timeWindow/Index'),
 }
 
 // 前端未找到页面路由（固定不用改）

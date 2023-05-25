@@ -38,13 +38,15 @@
         </a-row>
       </a-form>
       <div class="action-content">
-        <router-link :to="{name:'fullscreenPackingHistoryList'}" v-show="!isFullscreen">
+        <router-link :to="{path:'/fullscreen/packing-history-list'}" v-show="!isFullscreen">
           <a-tooltip placement="bottom" title="切为全屏">
             <a-icon class="fullscreen" type="fullscreen" @click="handleFullscreen" />
           </a-tooltip>
         </router-link>
-        <router-link v-show="isFullscreen" :to="{name:'finishedProductTaskList'}" >
-          <a-icon class="fullscreen" @click="handleExitFullscreen" type="fullscreen-exit" />
+        <router-link v-show="isFullscreen" :to="{path:'/finished-product/task-list'}" >
+          <a-tooltip placement="bottom" title="退出全屏">
+            <a-icon class="fullscreen" @click="handleExitFullscreen" type="fullscreen-exit" />
+          </a-tooltip>
         </router-link>
       </div>
       <a-table

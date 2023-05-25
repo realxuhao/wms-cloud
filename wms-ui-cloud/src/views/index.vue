@@ -1,17 +1,6 @@
 <template>
   <div class="wrapper zx">
-    <h3 class="title">
-
-    </h3>
-    <div class="content">
-      <!-- <img src="@/assets/images/home.png" alt="">
-      <div class="border">
-
-      </div>
-      <div class="desc">
-        供应商管理平台
-      </div> -->
-    </div>
+    报表
   </div>
 </template>
 
