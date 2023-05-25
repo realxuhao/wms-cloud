@@ -41,7 +41,7 @@
           <a-icon class="fullscreen" type="fullscreen" @click="handleFullscreen" />
         </a-tooltip>
       </router-link>
-      <router-link v-show="isFullscreen" :to="{name:'timeWindow'}" >
+      <router-link v-show="isFullscreen" :to="{path:'/master-data/time-window'}" >
         <a-icon class="fullscreen" @click="handleExitFullscreen" type="fullscreen-exit" />
       </router-link>
     </div>

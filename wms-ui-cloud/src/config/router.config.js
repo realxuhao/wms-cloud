@@ -21,7 +21,7 @@ export const indexRouterMap = [
     path: '/index',
     name: 'Index',
     component: 'Index',
-    meta: { title: '首页', noCache: false, hidden: true, icon: 'dashboard', hiddenHeaderContent: true }
+    meta: { title: '报表', noCache: false, hidden: true, icon: 'dashboard', hiddenHeaderContent: true }
   },
   {
     path: '/account/center',
@@ -37,6 +37,7 @@ export const indexRouterMap = [
     meta: { title: '个人设置', noCache: true },
     hidden: true
   },
+
   // {
   //   path: '/monitor/job/log',
   //   name: 'JobLog',
@@ -92,6 +93,37 @@ export const constantRouterMap = [
       //   name: 'register',
       //   component: () => import(/* webpackChunkName: "user" */ '@/views/user/Register')
       // }
+    ]
+  },
+  {
+    path: '/fullscreen',
+    name: 'fullscreen',
+    meta: {},
+    hidden: true,
+    component: BlankLayout,
+    children: [
+      {
+        path: '/fullscreen/time-window',
+        name: 'fullscreenTimeWIndow',
+        meta: {},
+        component: () => import('@/views/masterData/timeWindow/Index'),
+        props () {
+          return {
+            isFullscreen: true
+          }
+        }
+      },
+      {
+        path: '/fullscreen/packing-history-list',
+        name: 'finishedProductTaskList',
+        meta: {},
+        component: () => import('@/views/finishedProduct/FinishedProductTaskList'),
+        props () {
+          return {
+            isFullscreen: true
+          }
+        }
+      }
     ]
   },
 
