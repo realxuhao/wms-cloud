@@ -63,6 +63,8 @@ public interface RemoteMasterDataService {
     @GetMapping(value = "/supplierInfo/info/{code}")
     public R<SupplierInfoVO> getSupplierInfoByCode(@PathVariable("code") String code);
 
+    @GetMapping(value = "/supplierInfo/infoname/{name}")
+    public R<SupplierInfoVO> getSupplierInfoByName(@PathVariable("name") String name);
 
     @GetMapping("/area/getByWareCode/{wareCode}")
     public R<List<AreaVO>> getByWareCode(@PathVariable("wareCode") String wareCode);

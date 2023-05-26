@@ -3,6 +3,8 @@ package com.bosch.vehiclereservation.api.domain.vo;
 import com.bosch.vehiclereservation.api.enumeration.SignStatusEnum;
 import com.bosch.vehiclereservation.api.enumeration.LateEnum;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -15,6 +17,7 @@ public class DriverDeliverVO {
      * 主键id
      */
     @ApiModelProperty(value = "主键id")
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long deliverId;
 
     /**

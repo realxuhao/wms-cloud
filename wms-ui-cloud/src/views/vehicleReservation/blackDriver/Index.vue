@@ -44,7 +44,7 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
+            <a v-hasPermi="['driver:list:edit']" class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
             <a-divider type="vertical" />
             <a-popconfirm
               title="确认要删除吗?"
@@ -52,7 +52,7 @@
               cancel-text="取消"
               @confirm="handleDelete(record)"
             >
-              <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
+              <a v-hasPermi="['driver:list:delete']" class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
           </div>
         </template>
