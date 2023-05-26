@@ -45,7 +45,7 @@ public class PurchaseOrderController extends BaseController {
     /**
      * 查询采购订单列表
      */
-//    @RequiresPermissions("vehiclereservation:purchase:list")
+    //@RequiresPermissions("purchase:order:list")
     @GetMapping("/list")
     @ApiOperation("查询采购订单列表")
     public R<PageVO<PurchaseOrderVO>> list(PurchaseOrderDTO purchaseOrderDTO) {
@@ -73,7 +73,7 @@ public class PurchaseOrderController extends BaseController {
      * @param id 采购单id
      * @return
      */
-    @RequiresPermissions("vehiclereservation:purchase:close")
+    @RequiresPermissions("purchase:order:complete")
     @GetMapping("/close/{id}")
     @ApiOperation("关闭采购单")
     public AjaxResult close(@PathVariable("id") Long id) {
@@ -83,6 +83,7 @@ public class PurchaseOrderController extends BaseController {
     /**
      * 根据采购单id查看该采购单被预约的明细信息
      */
+    @RequiresPermissions("purchase:order:details")
     @GetMapping(value = "/detail/{purchaseId}")
     @ApiOperation("根据采购单id查看该采购单被预约的明细信息")
     public R<List<SupplierReserveDetailVO>> getSupplierReserveList(@PathVariable("purchaseId") Long purchaseId) {
@@ -94,7 +95,7 @@ public class PurchaseOrderController extends BaseController {
     /**
      * 同步采购单
      */
-    @RequiresPermissions("vehiclereservation:purchase:syncdata")
+    @RequiresPermissions("purchase:order:sync")
     @GetMapping("/syncdata")
     @ApiOperation("同步采购单")
     public AjaxResult syncData() {
