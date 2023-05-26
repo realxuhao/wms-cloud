@@ -79,6 +79,10 @@
 						<uni-icons custom-prefix="iconfont" class="icon " type="icon-kuwei" color="#2664CB"></uni-icons>
 						<view class="text">库位查询</view>
 					</view>
+					<view class="list-item" v-if="$hasPermi(['app:location:adjust'])" @click="handleGoto('/pages/adjust/adjustScan')">
+						<uni-icons custom-prefix="iconfont" class="icon " type="icon-kuwei" color="#2664CB"></uni-icons>
+						<view class="text">库存调整</view>
+					</view>
 				</view>
 			</uni-section>
 

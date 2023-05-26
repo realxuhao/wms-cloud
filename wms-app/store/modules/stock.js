@@ -82,6 +82,15 @@ const stock = {
 			} = await stockService.operate(options)
 			return data
 		},
+		async editStock({
+			commit
+		}, options) {
+			const {
+				data
+			} = await stockService.editStock(options)
+			return data
+		},
+
 	}
 }
 

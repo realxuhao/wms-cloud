@@ -26,7 +26,15 @@ const stockTake = {
     async destroy ({ commit }, id) {
       const data = await stockTakeService.destroy(id)
       return data
-    }
+    },
+    async exportList ({ commit }, options) {
+      const data = await stockTakeService.exportList(options)
+      return data
+    },
+    async exportDetailList ({ commit }, options) {
+      const data = await stockTakeService.exportDetailList(options)
+      return data
+    },
   }
 }
 

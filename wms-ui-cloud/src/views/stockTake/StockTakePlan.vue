@@ -88,12 +88,14 @@
                 {{ advanced ? '收起' : '展开' }}
                 <a-icon :type="advanced ? 'up' : 'down'"/>
               </a>
+             
             </span>
           </a-col>
         </a-row>
       </a-form>
       <div class="action-content">
         <a-button type="primary" class="m-r-8" icon="plus" @click="handleAdd"> 新建 </a-button>
+        <a-button :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
       </div>
       <a-table
         :columns="columns"
@@ -186,6 +188,7 @@
 <script>
 import UpdateDrawer from './UpdateDrawer'
 import { mixinTableList } from '@/utils/mixin/index'
+import { download } from '@/utils/file'
 
 const columns = [
 
@@ -369,7 +372,7 @@ export default {
       uploadLoading: false,
       columns,
       list: [],
-
+      exportLoading:false,
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -385,6 +388,19 @@ export default {
   },
 
   methods: {
+    async handleDownload () {
+      try {
+        this.exportLoading = true
+        const blobData = await this.$store.dispatch('stockTake/exportList', this.queryForm)
+        console.log(blobData)
+        download(blobData, '盘点计划')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
+      }
+    },
     async handleDelete (row) {
       try {
         await this.$store.dispatch('stockTake/delete', row.id)
