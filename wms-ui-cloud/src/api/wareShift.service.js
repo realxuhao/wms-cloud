@@ -34,10 +34,20 @@ const generateWareShiftByCall = async (options) => {
   return data
 }
 
+const exportExcel = async (options) => {
+  const url = `/ware-shift/exportExcel`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
 export const wareShiftService = {
   getList,
   addWareShift,
   getReturnMaterialList,
   cancel,
-  generateWareShiftByCall
+  generateWareShiftByCall,
+  exportExcel
 }

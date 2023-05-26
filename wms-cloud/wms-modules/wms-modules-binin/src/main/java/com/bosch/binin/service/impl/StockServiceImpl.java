@@ -2,8 +2,6 @@ package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.Stock;
@@ -18,7 +16,6 @@ import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.dto.IQCDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.IQCVO;
-import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
@@ -33,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.security.PrivateKey;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -298,14 +294,14 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     @Override
     public void editStock(StockEditDTO stockEditDTO) {
-        if (stockEditDTO.getSsccNnmber() == null || stockEditDTO.getAvailableStock() == null || stockEditDTO.getFreezeStock() == null || stockEditDTO.getTotalStock() == null) {
+        if (stockEditDTO.getSsccNumber() == null || stockEditDTO.getAvailableStock() == null || stockEditDTO.getFreezeStock() == null || stockEditDTO.getTotalStock() == null) {
             throw new ServiceException("所有参数都不能为空");
         }
         if (!stockEditDTO.getTotalStock().equals(stockEditDTO.getFreezeStock()+stockEditDTO.getAvailableStock())){
             throw new ServiceException("总库存必须等于冻结库存+可用库存");
         }
         LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Stock::getSsccNumber, stockEditDTO.getSsccNnmber());
+        queryWrapper.eq(Stock::getSsccNumber, stockEditDTO.getSsccNumber());
         queryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.last("limit 1");
         Stock stock = this.getOne(queryWrapper);

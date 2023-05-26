@@ -69,9 +69,8 @@
             <if test="lossGainType == 0">and d.stock_quantity = d.take_quantity</if>
             <if test="lossGainType == 1">and d.stock_quantity <![CDATA[ < ]]> d.take_quantity</if>
             <if test="lossGainType == 2">and d.stock_quantity <![CDATA[ > ]]> d.take_quantity</if>
-
-
         </where>
+order by d.create_time desc,d.update_time desc
 
 
     </select>

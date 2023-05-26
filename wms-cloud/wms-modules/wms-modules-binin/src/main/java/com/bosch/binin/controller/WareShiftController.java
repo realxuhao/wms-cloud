@@ -191,7 +191,7 @@ public class WareShiftController extends BaseController {
     /**
      * 导出列表
      */
-    @PostMapping("/sample/export")
+    @PostMapping("/exportExcel")
     @ApiOperation("移库列表导出")
     public void export(HttpServletResponse response, WareShiftQueryDTO queryDTO) {
         List<WareShiftVO> wareShiftList = shiftService.getWareShiftList(queryDTO);

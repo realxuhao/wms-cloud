@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class StockEditDTO {
     @ApiModelProperty("ssccNb")
-    private String ssccNnmber;
+    private String ssccNumber;
     @ApiModelProperty("总库存totalStock")
     private Double totalStock;
     @ApiModelProperty("可用库存")
