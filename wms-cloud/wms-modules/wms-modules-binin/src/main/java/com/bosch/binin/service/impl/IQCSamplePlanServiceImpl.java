@@ -2,6 +2,7 @@ package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.IQCSamplePlan;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.WareShift;
@@ -319,6 +320,27 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         if (iqcSamplePlan.getStatus() != IQCStatusEnum.WAITING_BIN_IN.code()) {
             throw new ServiceException("sscc:" + sscc + "对应任务状态为:" + IQCStatusEnum.getDesc(iqcSamplePlan.getStatus()) + ",不可上架");
         }
+        //先把库存表之前的数据删除掉
+        LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.eq(Stock::getSsccNumber,sscc);
+        stockQueryWrapper.eq(Stock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        List<Stock> stockList = stockService.list(stockQueryWrapper);
+        if(!CollectionUtils.isEmpty(stockList)) {
+            stockList.stream().forEach(item -> item.setDeleteFlag(DeleteFlagStatus.TRUE.getCode()));
+            stockService.updateBatchById(stockList);
+        }
+
+        //删除上架表的历史数据
+        LambdaQueryWrapper<BinIn> binInQueryWrapper = new LambdaQueryWrapper<>();
+        binInQueryWrapper.eq(BinIn::getSsccNumber,sscc);
+        binInQueryWrapper.eq(BinIn::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        List<BinIn> binInList = binInService.list(binInQueryWrapper);
+        if(!CollectionUtils.isEmpty(binInList)) {
+            binInList.stream().forEach(item -> item.setDeleteFlag(DeleteFlagStatus.TRUE.getCode()));
+            binInService.updateBatchById(binInList);
+        }
+
+        //再去执行上架
         BinInVO binInVO = binInService.performBinIn(binInDTO);
 
         iqcSamplePlan.setBinInCode(binInVO.getActualBinCode());

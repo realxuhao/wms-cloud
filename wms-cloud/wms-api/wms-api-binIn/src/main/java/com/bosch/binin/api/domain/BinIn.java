@@ -1,5 +1,6 @@
 package com.bosch.binin.api.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
@@ -124,6 +125,7 @@ public class BinIn extends BaseEntity {
      */
     private Integer deleteFlag;
 
+    @TableField(exist = false)
     private String qualityStatus;
 
 
