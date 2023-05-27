@@ -150,7 +150,7 @@
         si.operate_time,
         si.original_pallet_quantity,
         si.from_purchase_order
-        from si_material_in si left join md_material mm on si.material_nb = mm.code
+        from si_material_in si left join md_material mm on si.material_nb = mm.code and mm.delete_flag = 0
         where si.delete_flag=0 and mm.delete_flag=0
         <if test="ssccNumber != null  and ssccNumber != ''">and si.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="materialNb != null  and materialNb != ''">and si.material_nb like concat('%', #{materialNb}, '%')</if>
