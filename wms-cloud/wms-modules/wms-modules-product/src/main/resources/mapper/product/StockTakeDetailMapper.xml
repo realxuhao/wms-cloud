@@ -69,40 +69,24 @@
             <if test="lossGainType == 0">and d.stock_quantity = d.take_quantity</if>
             <if test="lossGainType == 1">and d.stock_quantity <![CDATA[ < ]]> d.take_quantity</if>
             <if test="lossGainType == 2">and d.stock_quantity <![CDATA[ > ]]> d.take_quantity</if>
-
-
         </where>
+order by d.create_time desc,d.update_time desc
 
 
     </select>
     <select id="getTaskList" resultType="com.bosch.product.api.domain.vo.StockTakeTaskVO">
-        SELECT task_no,issue_time
+        SELECT t1.task_no,t1.issue_time
         FROM stock_take_detail AS t1
         <where>
-            <if test="status != null">and d.status =#{status}</if>
+            <if test="status != null">and t1.status =#{status}</if>
         </where>
-        GROUP BY task_no
+        GROUP BY  t1.task_no,t1.issue_time
         HAVING COUNT(*) = (
         SELECT COUNT(*)
         FROM stock_take_detail AS t2
         WHERE t2.task_no = t1.task_no
         )
 
-        <!--        SELECT DISTINCT task_no, issue_time-->
-        <!--        FROM stock_take_detail d-->
-        <!--        <where>-->
-        <!--            <if test="wareCode != null  and wareCode != ''">and d.ware_code like concat('%', #{wareCode}, '%')</if>-->
-        <!--            <if test="areaCode != null  and areaCode != ''">and d.area_code like concat('%', #{areaCode}, '%')</if>-->
-        <!--            <if test="circleTakeMonth != null">and d.circle_take_month =#{circleTakeMonth}</if>-->
-        <!--            <if test="status != null">and d.status =#{status}</if>-->
-        <!--            <if test="startCreateTime != null">and d.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>-->
-        <!--            <if test="endCreateTime != null">and d.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>-->
-        <!--            <if test="startIssueTime != null">and d.issue_time <![CDATA[ >= ]]> #{startIssueTime}</if>-->
-        <!--            <if test="endIssueTime != null">and d.issue_time <![CDATA[ <= ]]> #{endIssueTime}</if>-->
-        <!--            and d.status >=1-->
-
-
-        <!--        </where>-->
 
     </select>
 </mapper>

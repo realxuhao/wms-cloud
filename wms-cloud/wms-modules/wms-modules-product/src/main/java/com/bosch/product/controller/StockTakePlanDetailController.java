@@ -1,20 +1,16 @@
 package com.bosch.product.controller;
 
 import com.bosch.masterdata.api.domain.vo.PageVO;
-import com.bosch.product.api.domain.StockTakeDetail;
-import com.bosch.product.api.domain.dto.PdaTakeOperateDTO;
-import com.bosch.product.api.domain.dto.ProductWareShiftQueryDTO;
-import com.bosch.product.api.domain.dto.StockTakeAddDTO;
-import com.bosch.product.api.domain.dto.StockTakeDetailQueryDTO;
+import com.bosch.product.api.domain.dto.*;
 import com.bosch.product.api.domain.vo.StockTakeDetailVO;
 import com.bosch.product.api.domain.vo.StockTakeTaskVO;
 import com.bosch.product.service.IStockTakeDetailService;
-import com.bosch.product.service.IStockTakePlanService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
@@ -24,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.convert.DtoInstantiatingConverter;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -113,9 +110,11 @@ public class StockTakePlanDetailController extends BaseController {
         return R.ok();
     }
 
-
-
-
-
-
+    @PostMapping("/export")
+    @ApiOperation("导出盘点明细")
+    public void export(HttpServletResponse response, StockTakeDetailQueryDTO dto) {
+        List<StockTakeDetailVO> detailVOS = detailService.getDetailList(dto);
+        ExcelUtil<StockTakeDetailVO> util = new ExcelUtil<>(StockTakeDetailVO.class);
+        util.exportExcel(response, detailVOS, "盘点明细列表");
+    }
 }

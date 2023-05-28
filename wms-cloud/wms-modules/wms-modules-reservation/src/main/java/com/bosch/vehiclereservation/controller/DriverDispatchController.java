@@ -42,7 +42,7 @@ public class DriverDispatchController extends BaseController {
      * @param driverDispatchDTO 查询条件
      * @return 车辆调度信息列表
      */
-    @RequiresPermissions("vehiclereservation:driverdispatch:pagelist")
+    //@RequiresPermissions("vehiclereservation:driverdispatch:pagelist")
     @PostMapping("/pagelist")
     @ApiOperation("获取签到车辆数据")
     public R<PageVO<DriverDispatchVO>> getSignDataPageList(@RequestBody DriverDispatchDTO driverDispatchDTO, PageDomain pageDomain) {
@@ -58,7 +58,7 @@ public class DriverDispatchController extends BaseController {
      * @param driverDispatchDTO 查询条件
      * @return 车辆调度信息列表
      */
-    @RequiresPermissions("vehiclereservation:driverdispatch:signlist")
+    //@RequiresPermissions("vehiclereservation:driverdispatch:signlist")
     @PostMapping("/signlist")
     @ApiOperation("获取今天签到车辆数据")
     public R<List<DriverDispatchVO>> getTodaySignData(@RequestBody DriverDispatchDTO driverDispatchDTO) {
@@ -72,7 +72,7 @@ public class DriverDispatchController extends BaseController {
      *
      * @return 车辆预约信息列表
      */
-    @RequiresPermissions("vehiclereservation:driverdispatch:nosignlist")
+    //@RequiresPermissions("vehiclereservation:driverdispatch:nosignlist")
     @PostMapping("/nosignlist")
     @ApiOperation("获取今天未签到车辆数据")
     public R<List<DriverDispatchVO>> getTodayNoSignData(@RequestBody DriverDispatchDTO driverDispatchDTO) {
@@ -85,7 +85,7 @@ public class DriverDispatchController extends BaseController {
      *
      * @return
      */
-    @RequiresPermissions("vehiclereservation:driverdispatch:dock")
+    @RequiresPermissions("warehouse:dispatch:setdock")
     @PostMapping("/dock")
     @ApiOperation("分配道口")
     public AjaxResult dispatchDock(@RequestBody DriverDispatchDTO driverDispatchDTO) {
@@ -98,7 +98,7 @@ public class DriverDispatchController extends BaseController {
      * @param dispatchId 主键id
      * @return
      */
-    @RequiresPermissions("vehiclereservation:driverdispatch:enter")
+    @RequiresPermissions("warehouse:dispatch:enter")
     @GetMapping("/enter/{id}")
     @ApiOperation("进厂")
     public AjaxResult dispatchEnter(@PathVariable("id") Long dispatchId) {
@@ -111,7 +111,7 @@ public class DriverDispatchController extends BaseController {
      * @param dispatchId 主键id
      * @return
      */
-    @RequiresPermissions("vehiclereservation:driverdispatch:complete")
+    @RequiresPermissions("warehouse:dispatch:complete")
     @GetMapping("/complete/{id}")
     @ApiOperation("完成")
     public AjaxResult dispatchComplete(@PathVariable("id") Long dispatchId) {
@@ -124,7 +124,7 @@ public class DriverDispatchController extends BaseController {
      * @param driverDispatchDTO
      * @return
      */
-    @RequiresPermissions("vehiclereservation:driverdispatch:sort")
+    //@RequiresPermissions("vehiclereservation:driverdispatch:sort")
     @PostMapping("/sort")
     @ApiOperation("车辆进厂排序")
     public AjaxResult dispatchSortNO(@RequestBody DriverSortDTO driverDispatchDTO) {

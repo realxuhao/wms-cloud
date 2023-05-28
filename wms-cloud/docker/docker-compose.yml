@@ -240,3 +240,13 @@ services:
       NACOS_HOST: wms-nacos
       TZ: Asia/Shanghai
 
+  bigScreen:
+    container_name: bin-screen
+    build:
+      context: ./wms/modules/bigScreen
+      dockerfile: dockerfile
+    ports:
+      - "8101:8101"
+    environment:
+      TZ: Asia/Shanghai
+

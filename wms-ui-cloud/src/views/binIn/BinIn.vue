@@ -169,6 +169,12 @@ const columns = [
     width: 80
   },
   {
+    title: '区域',
+    key: 'areaCode',
+    dataIndex: 'areaCode',
+    width: 80
+  },
+  {
     title: '推荐库位编码',
     key: 'recommendBinCode',
     dataIndex: 'recommendBinCode',

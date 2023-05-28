@@ -177,6 +177,12 @@ public class MaterialDTO extends PageDomain {
 
     @ApiModelProperty(value = "cell")
     private String cell;
+
+
+    private String wholeShiftFlag;
+
+
+
 }
 
 

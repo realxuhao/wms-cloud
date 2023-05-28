@@ -6,14 +6,16 @@ import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.dto.BlackDriverDTO;
 import com.bosch.masterdata.api.domain.vo.*;
 import com.bosch.masterdata.api.factory.RemoteMaterialFallbackFactory;
+import com.ruoyi.common.core.config.FeignConfig;
 import com.ruoyi.common.core.constant.ServiceNameConstants;
 import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@FeignClient(contextId = "remoteMasterDataService", value = ServiceNameConstants.MASTER_DATA_SERVICE)
+@FeignClient(contextId = "remoteMasterDataService", configuration = FeignConfig.class,value = ServiceNameConstants.MASTER_DATA_SERVICE)
 public interface RemoteMasterDataService {
 
     @GetMapping(value = "/bin/{id}")
@@ -53,6 +55,9 @@ public interface RemoteMasterDataService {
     @GetMapping(value = "/ware/{id}")
     public R<Ware> getWareInfo(@PathVariable("id") String id);
 
+    @GetMapping("/ware/getWareByCode/{wareCode}")
+    public R<Ware> getWareByCode(@PathVariable("wareCode") String wareCode);
+
     @GetMapping(value = "/driver/black/{wechatId}")
     public R<List<BlackDriverVO>> getBlackDriverByWechatId(@PathVariable("wechatId") String wechatId, @RequestParam(required = false, value = "isBlack") boolean isBlack);
 
@@ -62,6 +67,8 @@ public interface RemoteMasterDataService {
     @GetMapping(value = "/supplierInfo/info/{code}")
     public R<SupplierInfoVO> getSupplierInfoByCode(@PathVariable("code") String code);
 
+    @GetMapping(value = "/supplierInfo/infoname/{name}")
+    public R<SupplierInfoVO> getSupplierInfoByName(@PathVariable("name") String name);
 
     @GetMapping("/area/getByWareCode/{wareCode}")
     public R<List<AreaVO>> getByWareCode(@PathVariable("wareCode") String wareCode);

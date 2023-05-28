@@ -58,3 +58,4 @@ nbdist/
 /docker/wms/modules/masterdata/jar/wms-modules-masterdata.jar
 /docker/wms/modules/storagein/jar/wms-modules-storagein.jar
 /docker/wms/modules/system/jar/wms-modules-system.jar
+/docker/wms/modules/bigScreen/

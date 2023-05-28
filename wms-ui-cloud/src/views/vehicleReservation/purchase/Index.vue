@@ -38,7 +38,7 @@
         </a-row>
       </a-form>
       <div class="sync-div">
-        <a-button type="primary" class="m-r-8" @click="handleSync" :loading="syncLoading">
+        <a-button type="primary" class="m-r-8" @click="handleSync" :loading="syncLoading" v-hasPermi="['purchase:order:sync']">
           <a-icon type="redo"></a-icon>
           同步数据
         </a-button>
@@ -70,7 +70,7 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a class="primary-color" @click="handleDetails(record.purchaseId)"><a-icon class="m-r-4" type="table" />跟踪</a>
+            <a v-hasPermi="['purchase:order:details']" class="primary-color" @click="handleDetails(record.purchaseId)"><a-icon class="m-r-4" type="table" />跟踪</a>
             <a-divider type="vertical" />
             <a-popconfirm
               v-if="record.status == 0"
@@ -79,9 +79,9 @@
               cancel-text="取消"
               @confirm="record.status == 0 && handleComplete(record)"
             >
-              <a style="color: green"><a-icon class="m-r-4" type="check-circle" />完成</a>
+              <a v-hasPermi="['purchase:order:complete']" style="color: green"><a-icon class="m-r-4" type="check-circle" />完成</a>
             </a-popconfirm>
-            <a v-else class="not-danger-color" ><a-icon class="m-r-4" type="check-circle" />完成</a>
+            <a v-hasPermi="['purchase:order:complete']" v-else class="not-danger-color" ><a-icon class="m-r-4" type="check-circle" />完成</a>
           </div>
         </template>
       </a-table>

@@ -244,6 +244,22 @@
         </a-select>
       </a-form-item>
 
+      <a-form-item label="整托移库标记">
+        <a-select
+          v-decorator="[
+            'wholeShiftFlag',
+            { rules: [{ required: true, message: '请选择整托移库标记' }] }
+          ]"
+          placeholder="整托移库标记">
+          <a-select-option value="Y">
+            Y
+          </a-select-option>
+          <a-select-option value="N">
+            N
+          </a-select-option>
+        </a-select>
+      </a-form-item>
+
       <a-form-item label="备注">
         <a-input
           placeholder="备注"
@@ -338,7 +354,7 @@ export default {
       const columns = ['name', 'code', 'materialTypeId', 'packageWeight', 'palletWeight',
         'bindPallet', 'hasPallet', 'totalWeight', 'errorProofingMethod', 'lessDeviationRatio',
         'minPackageNetWeight', 'minPackageNumber', 'unit', 'remark', 'palletId', 'lessDeviationRatio',
-        'moreDeviationRatio', 'transferWeightRatio', 'minPackageNetWeight', 'iqc']
+        'moreDeviationRatio', 'transferWeightRatio', 'minPackageNetWeight', 'iqc', 'wholeShiftFlag']
       this.form.setFieldsValue(_.pick(data, columns))
     },
     async loadMaterialTypeList () {

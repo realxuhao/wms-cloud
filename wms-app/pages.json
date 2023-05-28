@@ -209,9 +209,14 @@
 			"path": "pages/stockTake/stockTakeTask"
 		},
 		{
-			"path": "pages/stockTake/stockTakeTaskOperation"
+			"path": "pages/adjust/adjustOperation"
+		},
+		{
+			"path": "pages/adjust/adjustScan"
+		},
+		{
+			"path": "pages/adjust/adjustList"
 		}
-
 	],
 	"globalStyle": {
 		"navigationStyle": "custom"

@@ -41,8 +41,8 @@ import Message from '@/components/Message';
 import hrPullLoad from '@/components/hr-pull-load/hr-pull-load';
 
 const typeMap = {
-	0: '整托',
-	1: '拆托'
+	0: '正常',
+	1: '异常'
 };
 
 const typeColorMap = {

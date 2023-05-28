@@ -58,7 +58,7 @@
         m.id as material_id
         FROM
         md_material_frame mb
-        LEFT JOIN md_material m ON mb.material_id = m.id
+        LEFT JOIN md_material m ON mb.material_id = m.id and m.delete_flag = 0
 <!--        where mb.material_id = m.id-->
 <!--        <if test="materialId != null ">and mb.material_id = #{materialId}</if>-->
                 <where>
@@ -82,7 +82,7 @@
         m.id as material_id
         FROM
             md_material_frame mb
-             LEFT JOIN md_material m ON mb.material_id = m.id
+             LEFT JOIN md_material m ON mb.material_id = m.id and m.delete_flag = 0
         where  mb.id = #{id}
     </select>
 
@@ -156,7 +156,7 @@
         m.id as material_id
         FROM
         md_material_frame mf
-        LEFT JOIN md_material m ON mf.material_id = m.id
+        LEFT JOIN md_material m ON mf.material_id = m.id and m.delete_flag = 0
         WHERE mf.material_code =#{materialCode} and mf.frame_type_code IN (
 		  SELECT type_code FROM md_frame f
 		  LEFT JOIN md_area a ON f.area_id=a.id

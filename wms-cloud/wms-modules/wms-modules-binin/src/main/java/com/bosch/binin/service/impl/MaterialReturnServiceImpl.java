@@ -246,7 +246,7 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
             dto.setActualBinCode(binInDTO.getActualCode());
             dto.setPalletCode(binInDTO.getPalletCode());
             dto.setMesBarCode(binInDTO.getMesBarCode());
-            BinInVO binInVO = binInService.performBinIn(dto);
+            BinInVO binInVO = binInService.performBinIn(dto,null);
         }
         materialReturn.setStatus(MaterialReturnStatusEnum.FINISH.value());
         this.updateById(materialReturn);

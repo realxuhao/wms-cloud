@@ -306,14 +306,14 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
 
         int diffCount = 0;
         //原材料
-        if (dto.getTakeMaterialType() == 0) {
+        if (stockTakePlan.getTakeMaterialType() == 0) {
             LambdaQueryWrapper<Stock> materialStockQueryWrapper = new LambdaQueryWrapper<>();
             materialStockQueryWrapper.eq(StringUtils.isNotEmpty(stockTakePlan.getWareCode()), Stock::getWareCode, stockTakePlan.getWareCode())
                     .eq(StringUtils.isNotEmpty(stockTakePlan.getAreaCode()), Stock::getAreaCode, stockTakePlan.getAreaCode())
                     .in(!CollectionUtils.isEmpty(materialCodeList), Stock::getMaterialNb, materialCodeList);
             List<Stock> materialStockList = materialStockService.list(materialStockQueryWrapper);
             diffCount = dealDiffMaterial(materialStockList, codeList, dto.getPlanCode(), dto.getCircleTakeMonth(), taskNo);
-        } else if (dto.getTakeMaterialType() == 1) {
+        } else if (stockTakePlan.getTakeMaterialType() == 1) {
             LambdaQueryWrapper<ProductStock> productStockQueryWrapper = new LambdaQueryWrapper<>();
             productStockQueryWrapper.eq(StringUtils.isNotEmpty(stockTakePlan.getWareCode()), ProductStock::getWareCode, stockTakePlan.getWareCode())
                     .eq(StringUtils.isNotEmpty(stockTakePlan.getAreaCode()), ProductStock::getAreaCode, stockTakePlan.getAreaCode())

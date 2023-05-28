@@ -16,17 +16,11 @@ import com.bosch.binin.service.*;
 import com.bosch.masterdata.api.RemoteIQCService;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.RemoteMaterialService;
-import com.bosch.masterdata.api.domain.Ecn;
-import com.bosch.masterdata.api.domain.Fsmp;
-import com.bosch.masterdata.api.domain.Nmd;
-import com.bosch.masterdata.api.domain.vo.AreaVO;
-import com.bosch.masterdata.api.domain.vo.BinVO;
-import com.bosch.masterdata.api.domain.vo.MaterialBinVO;
-import com.bosch.masterdata.api.domain.vo.MaterialVO;
+import com.bosch.masterdata.api.domain.*;
+import com.bosch.masterdata.api.domain.vo.*;
 import com.bosch.masterdata.api.enumeration.*;
 import com.bosch.storagein.api.RemoteMaterialInService;
 import com.bosch.binin.api.domain.vo.BinInVO;
-import com.bosch.masterdata.api.domain.Pallet;
 import com.bosch.masterdata.api.RemotePalletService;
 import com.bosch.storagein.api.domain.vo.MaterialInVO;
 import com.bosch.storagein.api.domain.vo.MaterialReceiveVO;
@@ -233,14 +227,14 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
         if (binInVO == null) {
-            R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
-            if (StringUtils.isNull(materialBinVOResullt) || CollectionUtils.isEmpty(materialBinVOResullt.getData())) {
-                throw new ServiceException("该物料：" + materialNb + " 分配规则有误");
-            }
-
-            if (R.FAIL == materialBinVOResullt.getCode()) {
-                throw new ServiceException(materialBinVOResullt.getMsg());
-            }
+//            R<List<MaterialBinVO>> materialBinVOResullt = remoteMasterDataService.getListByMaterial(materialNb);
+//            if (StringUtils.isNull(materialBinVOResullt) || CollectionUtils.isEmpty(materialBinVOResullt.getData())) {
+//                throw new ServiceException("该物料：" + materialNb + " 分配规则有误");
+//            }
+//
+//            if (R.FAIL == materialBinVOResullt.getCode()) {
+//                throw new ServiceException(materialBinVOResullt.getMsg());
+//            }
 
             BinAllocationDTO allocationDTO = new BinAllocationDTO();
             allocationDTO.setMesBarCode(mesBarCode);
@@ -285,7 +279,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
             binIn.setMoveType(MoveTypeEnums.BININ.getCode());
 //            binIn.setFromPurchaseOrder(materialInVO.getFromPurchaseOrder());
-            binIn.setPlantNb(binVO.getPlantNb());
+            binIn.setPlantNb(getWareInfo(SecurityUtils.getWareCode()).getFactoryCode());
             binInMapper.insert(binIn);
         }
 
@@ -408,15 +402,20 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public BinInVO performBinIn(BinInDTO binInDTO) {
+    public BinInVO performBinIn(BinInDTO binInDTO,String quanityStatus) {
         String mesBarCode = binInDTO.getMesBarCode();
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
 
+
+
+
+        BinInVO binInVO = binInMapper.selectBySsccNumber(sscc);
+
         LambdaQueryWrapper<BinIn> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(BinIn::getSsccNumber, sscc).eq(BinIn::getDeleteFlag, 0);
-        lambdaQueryWrapper.eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value());
-        BinIn binIn = binInMapper.selectOne(lambdaQueryWrapper);
+        BinIn binIn = this.getOne(lambdaQueryWrapper);
+
 
 
         if (binIn == null) {
@@ -494,7 +493,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         stock.setCreateBy(SecurityUtils.getUsername());
         stock.setCreateTime(new Date());
-        stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+        stock.setQualityStatus(StringUtils.isEmpty(quanityStatus)?QualityStatusEnums.WAITING_QUALITY.getCode():quanityStatus);
         stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
         stock.setAreaCode(binIn.getAreaCode());
         stock.setPalletCode(binIn.getPalletCode());
@@ -1448,7 +1447,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     @Transactional(rollbackFor = Exception.class)
     public BinInVO generateInTaskByOldStock(String ssccNumber, Double quantity, String wareCode) {
         BinInVO binInVO = binInMapper.selectBySsccNumber(ssccNumber);
-        if (binInVO != null && !StringUtils.isEmpty(binInVO.getRecommendBinCode())) {
+        if (binInVO != null) {
             return binInVO;
         }
         StockVO oldStock = stockService.getLastOneBySSCC(ssccNumber);
@@ -1507,10 +1506,20 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         binIn.setMoveType(MoveTypeEnums.SPLIT_IN.getCode());
         binIn.setFromPurchaseOrder(oldStock.getFromPurchaseOrder());
-        binIn.setPlantNb(oldStock.getPlantNb());
-        binInMapper.insert(binIn);
+        binIn.setPlantNb(getWareInfo(SecurityUtils.getWareCode()).getFactoryCode());
+        this.saveOrUpdate(binIn);
         return binInMapper.selectBySsccNumber(sscc);
 
+    }
+
+
+
+    private Ware getWareInfo(String wareCode){
+        R<Ware> wareR = remoteMasterDataService.getWareByCode(SecurityUtils.getWareCode());
+        if (wareR==null||!wareR.isSuccess()){
+            throw new ServiceException("没有该"+wareCode+"对应的仓库信息");
+        }
+        return wareR.getData();
     }
 
 

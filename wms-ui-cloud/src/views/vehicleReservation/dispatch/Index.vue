@@ -88,8 +88,8 @@
             </template>
             <template slot="action" slot-scope="text, record">
               <div class="action-con">
-                <a v-if="record.status < 1" class="warning-color" @click="record.status < 1 && handleSetDock(record)"><a-icon class="m-r-4" type="edit" />分配道口</a>
-                <a v-else class="not-danger-color" ><a-icon class="m-r-4" type="edit" />分配道口</a>
+                <a v-hasPermi="['warehouse:dispatch:setdock']" v-if="record.status < 1" class="warning-color" @click="record.status < 1 && handleSetDock(record)"><a-icon class="m-r-4" type="edit" />分配道口</a>
+                <a v-hasPermi="['warehouse:dispatch:setdock']" v-else class="not-danger-color" ><a-icon class="m-r-4" type="edit" />分配道口</a>
 
                 <a-divider type="vertical" />
                 <a-popconfirm
@@ -99,9 +99,9 @@
                   cancel-text="取消"
                   @confirm="record.status < 1 && handleEnter(record)"
                 >
-                  <a style="color: green"><a-icon class="m-r-4" type="login" />入厂</a>
+                  <a v-hasPermi="['warehouse:dispatch:enter']" style="color: green"><a-icon class="m-r-4" type="login" />入厂</a>
                 </a-popconfirm>
-                <a v-else class="not-danger-color" ><a-icon class="m-r-4" type="login" />入厂</a>
+                <a v-hasPermi="['warehouse:dispatch:enter']" v-else class="not-danger-color" ><a-icon class="m-r-4" type="login" />入厂</a>
                 <a-divider type="vertical" />
 
                 <a-popconfirm
@@ -111,9 +111,9 @@
                   cancel-text="取消"
                   @confirm="record.status == 1 && handleComplete(record)"
                 >
-                  <a class="primary-color"><a-icon class="m-r-4" type="check-circle" />完成</a>
+                  <a v-hasPermi="['warehouse:dispatch:complete']" class="primary-color"><a-icon class="m-r-4" type="check-circle" />完成</a>
                 </a-popconfirm>
-                <a v-else class="not-danger-color" ><a-icon class="m-r-4" type="check-circle" />完成</a>
+                <a v-hasPermi="['warehouse:dispatch:complete']" v-else class="not-danger-color" ><a-icon class="m-r-4" type="check-circle" />完成</a>
               </div>
             </template>
           </a-table>

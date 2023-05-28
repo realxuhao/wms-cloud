@@ -2,29 +2,37 @@ package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.Stock;
-import com.bosch.binin.api.domain.dto.IQCChangeStatusDTO;
-import com.bosch.binin.api.domain.dto.IQCManagementQueryDTO;
-import com.bosch.binin.api.domain.dto.StockQueryDTO;
+import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.mapper.StockMapper;
+import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.utils.BeanConverUtil;
+import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.dto.IQCDTO;
+import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.IQCVO;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -42,6 +50,13 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     @Autowired
     private StockMapper stockMapper;
+
+    @Autowired
+    private RemoteMasterDataService remoteMasterDataService;
+
+    @Autowired
+    @Lazy
+    private IBinInService binInService;
 
     @Override
     public List<StockVO> selectStockVOList(StockQueryDTO stockQueryDTO) {
@@ -196,8 +211,8 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     public Double getMainStockCount(String materialNb) {
         LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Stock::getMaterialNb, materialNb)
-                .eq(Stock::getFreezeStock,Double.valueOf(0))
-                .eq(Stock::getQualityStatus,QualityStatusEnums.USE.getCode())
+                .eq(Stock::getFreezeStock, Double.valueOf(0))
+                .eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode())
                 .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<Stock> list = this.list(queryWrapper);
         double sum = list.stream().filter(item -> "7751".equals(item.getPlantNb())).mapToDouble(Stock::getAvailableStock).sum();
@@ -208,11 +223,106 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     public Double getOutStockCount(String materialNb) {
         LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Stock::getMaterialNb, materialNb)
-                .eq(Stock::getFreezeStock,Double.valueOf(0))
-                .eq(Stock::getQualityStatus,QualityStatusEnums.USE.getCode())
+                .eq(Stock::getFreezeStock, Double.valueOf(0))
+                .eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode())
                 .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<Stock> list = this.list(queryWrapper);
         double sum = list.stream().filter(item -> "7752".equals(item.getPlantNb())).mapToDouble(Stock::getAvailableStock).sum();
         return sum;
+    }
+
+    @Override
+    public void initStock(List<InitStockDTO> list) {
+        List<BinIn> binIns = new ArrayList<>();
+
+        list.stream().forEach(item -> {
+            BinIn binIn = new BinIn();
+            binIn.setSsccNumber(item.getSSCCNumber());
+            binIn.setQuantity(Double.valueOf(item.getRemainingQty()));
+            binIn.setMaterialNb(item.getSAPMaterialCode());
+            binIn.setBatchNb(item.getSAPBatchNumber());
+            try {
+                binIn.setExpireDate(DateUtils.parseStringDate(item.getDluo()));
+            } catch (ParseException e) {
+                e.getMessage();
+            }
+//            binIn.setPalletType(materialVO.getPalletType());
+            binIn.setAreaCode(item.getSAPStorageLocation());
+            binIn.setActualBinCode(item.getBin());
+
+            binIn.setStatus(BinInStatusEnum.FINISH.value());
+
+            binIn.setWareCode(getAreaVo(item.getSAPStorageLocation()).getWareCode());
+
+            binIn.setMoveType(MoveTypeEnums.BININ.getCode());
+            binIn.setFromPurchaseOrder(item.getPONumber());
+            binIn.setPlantNb(item.getPlantNb());
+            binIn.setQualityStatus(item.getR3StockStatus());
+            binIns.add(binIn);
+        });
+
+        binInService.saveBatch(binIns);
+
+        //库存
+        List<Stock> stockList = new ArrayList<>();
+        binIns.stream().forEach(binIn -> {
+            Stock stock = new Stock();
+            stock.setPlantNb(binIn.getPlantNb());
+            stock.setWareCode(binIn.getWareCode());
+            stock.setSsccNumber(binIn.getSsccNumber());
+            stock.setWareCode(binIn.getWareCode());
+            stock.setBinCode(binIn.getActualBinCode());
+            stock.setFrameCode(binIn.getActualFrameCode());
+            stock.setMaterialNb(binIn.getMaterialNb());
+            stock.setBatchNb(binIn.getBatchNb());
+            stock.setExpireDate(binIn.getExpireDate());
+            stock.setTotalStock(binIn.getQuantity());
+            stock.setFreezeStock(Double.valueOf(0));
+            stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
+            stock.setBinInId(binIn.getId());
+
+            stock.setCreateBy(SecurityUtils.getUsername());
+            stock.setCreateTime(new Date());
+            stock.setQualityStatus(binIn.getQualityStatus());
+            stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
+            stock.setAreaCode(binIn.getAreaCode());
+            stock.setPalletCode(binIn.getPalletCode());
+            stockList.add(stock);
+        });
+        this.saveBatch(stockList);
+    }
+
+    @Override
+    public void editStock(StockEditDTO stockEditDTO) {
+        if (stockEditDTO.getSsccNumber() == null || stockEditDTO.getAvailableStock() == null || stockEditDTO.getFreezeStock() == null || stockEditDTO.getTotalStock() == null) {
+            throw new ServiceException("所有参数都不能为空");
+        }
+        if (!stockEditDTO.getTotalStock().equals(stockEditDTO.getFreezeStock()+stockEditDTO.getAvailableStock())){
+            throw new ServiceException("总库存必须等于冻结库存+可用库存");
+        }
+        LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Stock::getSsccNumber, stockEditDTO.getSsccNumber());
+        queryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.last("limit 1");
+        Stock stock = this.getOne(queryWrapper);
+        stock.setAvailableStock(stockEditDTO.getAvailableStock());
+        stock.setFreezeStock(stockEditDTO.getFreezeStock());
+        stock.setTotalStock(stockEditDTO.getTotalStock());
+        this.updateById(stock);
+
+
+    }
+
+
+    private AreaVO getAreaVo(String areaCode) {
+        R<AreaVO> byCode = remoteMasterDataService.getByCode(areaCode);
+        if (byCode == null || !byCode.isSuccess()) {
+            throw new ServiceException("获取区域详情失败");
+        }
+        AreaVO areaVO = byCode.getData();
+        if (areaVO == null) {
+            throw new ServiceException("不存在编码为:" + areaCode + "的区域");
+        }
+        return areaVO;
     }
 }

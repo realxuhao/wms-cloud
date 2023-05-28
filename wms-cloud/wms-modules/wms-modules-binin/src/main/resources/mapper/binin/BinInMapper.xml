@@ -99,7 +99,7 @@
         material_name,bi.batch_nb,bi.expire_date,bi.ware_code,bi.recommend_bin_code,
         bi.actual_bin_code,bi.quantity,bi.pallet_code,bi.pallet_type,bi.status,
         bi.create_by,bi.create_time
-        from bi_in bi left join md_material mm on bi.material_nb = mm.code
+        from bi_in bi left join md_material mm on bi.material_nb = mm.code and mm.delete_flag = 0
         where bi.delete_flag=0
         <if test="materialNb != null and materialNb != ''">and bi.material_nb = #{materialNb}</if>
         <if test="materialName != null  and materialName != ''">and mm.name like concat('%', #{name}, '%')</if>

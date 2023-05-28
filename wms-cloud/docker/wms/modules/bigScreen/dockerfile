@@ -1,0 +1,17 @@
+# 基础镜像
+FROM adoptopenjdk/openjdk8-openj9 AS build
+# author
+MAINTAINER wms
+
+# 挂载目录
+VOLUME /home/wms
+# 创建目录
+RUN mkdir -p /home/wms
+
+
+# 指定路径
+WORKDIR /home/wms
+# 复制jar文件到路径
+COPY ./jar/mybatisplus-spring-boot-1.0.jar /home/wms/mybatisplus-spring-boot-1.0.jar
+# 启动文件服务
+ENTRYPOINT ["java","-jar","mybatisplus-spring-boot-1.0.jar"]

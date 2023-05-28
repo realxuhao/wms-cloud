@@ -7,6 +7,14 @@
     @close="onClose"
   >
     <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form-item label="生产需求号">
+        <a-input
+          placeholder="生产需求号"
+          v-decorator="[
+            'orderNb',
+            { rules: [{ required: true, message: '请输入生产需求号!' }] }
+          ]" />
+      </a-form-item>
       <a-form-item label="Cell">
         <a-select
           allow-clear

@@ -85,6 +85,19 @@ const operate = async (data) => {
 	})
 }
 
+const editStock = async (data) => {
+	const url = `/binin/stock/editStock`
+	const method = 'POST'
+
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+
+
 
 export const stockService = {
 	getStockInfoByMesBarCode,
@@ -95,5 +108,6 @@ export const stockService = {
 	getStockTakeList,
 	getStockTakeDetailList,
 	getStockTakeDetail,
-	operate
+	operate,
+	editStock
 }

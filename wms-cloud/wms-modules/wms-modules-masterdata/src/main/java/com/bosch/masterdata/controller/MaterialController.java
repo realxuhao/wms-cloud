@@ -157,6 +157,7 @@ public class MaterialController extends BaseController {
         if (result.isSuccess()) {
             Object data = result.getData();
             List<MaterialDTO> materialDTOList = JSON.parseArray(JSON.toJSONString(data), MaterialDTO.class);
+
             if (CollectionUtils.isNotEmpty(materialDTOList)) {
                 boolean valid = materialService.validMaterialList(materialDTOList);
                 if (valid) {

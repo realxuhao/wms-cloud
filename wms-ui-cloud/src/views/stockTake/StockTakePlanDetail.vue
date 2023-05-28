@@ -9,14 +9,21 @@
               <a-input v-model="queryForm.code" placeholder="计划编码" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="3">
-            <a-form-model-item label="物料编码">
-              <a-input v-model="queryForm.materialCode" placeholder="物料编码" allow-clear/>
-            </a-form-model-item>
-          </a-col>
+        
           <a-col :span="3">
             <a-form-model-item label="批次号">
               <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="盘点方式">
+              <a-select
+                v-model="queryForm.method"
+              >
+                <a-select-option v-for="item in method" :key="item.value" :value="item.value">
+                  {{ item.text }}
+                </a-select-option>
+              </a-select>
             </a-form-model-item>
           </a-col>
           <a-col :span="3">
@@ -34,8 +41,13 @@
               <a-input v-model="queryForm.areaCode" placeholder="盘点存储区" allow-clear/>
             </a-form-model-item>
           </a-col>
-
           <template v-if="advanced">
+            <a-col :span="3">
+              <a-form-model-item label="物料编码">
+                <a-input v-model="queryForm.materialCode" placeholder="物料编码" allow-clear/>
+              </a-form-model-item>
+            </a-col>
+            
             <a-col :span="4">
               <a-form-model-item label="盘点物料类型">
                 <a-select
@@ -60,17 +72,7 @@
                 </a-select>
               </a-form-model-item>
             </a-col>
-            <a-col :span="4">
-              <a-form-model-item label="盘点方式">
-                <a-select
-                  v-model="queryForm.method"
-                >
-                  <a-select-option v-for="item in method" :key="item.value" :value="item.value">
-                    {{ item.text }}
-                  </a-select-option>
-                </a-select>
-              </a-form-model-item>
-            </a-col>
+     
             <a-col :span="4">
               <a-form-model-item label="状态">
                 <a-select
@@ -98,8 +100,9 @@
         </a-row>
       </a-form>
       <div class="action-content">
-        <a-button type="primary" class="m-r-8" @click="issue"> 下发</a-button>
+        <a-button type="primary" class="m-r-8" @click="issue" v-if="queryForm.method===0"> 下发</a-button>
         <a-button type="primary" class="m-r-8" @click="confirm"> 确认</a-button>
+        <a-button :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
       </div>
       <a-table
         :row-selection="{
@@ -172,6 +175,19 @@
             <a :disabled="record.status !==2" class="warning-color" @click="edit(record)">
               <a-icon class="m-r-4" type="edit"/>
               修改盘点数量</a>
+           
+            <span v-show="record.method ===1&&record.status ===0">
+              <a-divider type="vertical" />
+              <a
+                class="warning-color"
+                @click="issue({
+                  planCode:record.planCode,
+                  issueType:1,
+                  circleTakeMonth:record.circleTakeMonth
+                })">
+                下发</a>
+            </span>
+            
           </div>
         </template>
       </a-table>
@@ -206,6 +222,7 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+import { download } from '@/utils/file'
 
 const columns = [
   {
@@ -213,6 +230,12 @@ const columns = [
     key: 'planCode',
     dataIndex: 'planCode',
     width: 80
+  },
+    {
+    title: '任务编码',
+    key: 'taskNo',
+    dataIndex: 'taskNo',
+    width: 160
   },
   {
     title: '物料编码',
@@ -249,7 +272,7 @@ const columns = [
     title: '物料名称',
     key: 'materialName',
     dataIndex: 'materialName',
-    width: 80
+    width: 140
   },
   {
     title: '盘点仓库',
@@ -294,7 +317,7 @@ const columns = [
   {
     title: '操作',
     key: 'action',
-    width: 130,
+    width: 200,
     fixed: 'right',
     scopedSlots: { customRender: 'action' }
   }
@@ -381,7 +404,8 @@ export default {
         pageSize: 20,
         pageNum: 1,
         ...queryFormAttr()
-      }
+      },
+      exportLoading:false
     }
   },
   computed: {
@@ -395,6 +419,19 @@ export default {
   },
 
   methods: {
+    async handleDownload () {
+      try {
+        this.exportLoading = true
+        const blobData = await this.$store.dispatch('stockTake/exportList', this.queryForm)
+        console.log(blobData)
+        download(blobData, '盘点明细')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
+      }
+    },
     async handleOk (e) {
       try {
         this.confirmLoading = true
@@ -430,10 +467,10 @@ export default {
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
     },
-    async issue () {
+    async issue (form) {
       try {
         this.submitLoading = true
-        const options = { ids: this.selectedRowKeys, ...this.queryForm }
+        const options = { ids: this.selectedRowKeys, ...this.queryForm,...form }
 
         await this.$store.dispatch('stockTakeDetail/issue', options)
 

@@ -102,6 +102,7 @@
             type="primary"
             :loading="uploadLoading"
             icon="upload"
+            v-hasPermi="['iqc:list:batchEdit']"
           >批量修改质检状态</a-button>
         </a-upload>
       </div>
@@ -126,9 +127,9 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a :disabled="record.freezeStock > 0" @click="handleUpdate('同批次', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />同批次</a>
+            <a v-hasPermi="['iqc:list:updateBatch']" :disabled="record.freezeStock > 0" @click="handleUpdate('同批次', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />同批次</a>
             <a-divider type="vertical" />
-            <a :disabled="record.freezeStock > 0" @click="handleUpdate('此托', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />此托</a>
+            <a v-hasPermi="['iqc:list:updatePallet']" :disabled="record.freezeStock > 0" @click="handleUpdate('此托', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />此托</a>
           </div>
         </template>
       </a-table>

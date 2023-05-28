@@ -12,6 +12,7 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
@@ -19,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -57,6 +59,18 @@ public class StockTakePlanController extends BaseController {
         List<StockTakePlan> list = stockTakePlanService.list(dto);
         List<StockTakePlanVO> stockTakePlanVOList = BeanConverUtil.converList(list, StockTakePlanVO.class);
         return R.ok(new PageVO<>(stockTakePlanVOList, new PageInfo<>(list).getTotal()));
+    }
+
+    @PostMapping("/export")
+    @ApiOperation("导出盘点计划")
+    public void export(HttpServletResponse response, StockTakePlanDTO dto) {
+        List<StockTakePlan> list = stockTakePlanService.list(dto);
+        List<StockTakePlanVO> stockTakePlanVOList = BeanConverUtil.converList(list, StockTakePlanVO.class);
+
+//        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
+
+        ExcelUtil<StockTakePlanVO> util = new ExcelUtil<>(StockTakePlanVO.class);
+        util.exportExcel(response, stockTakePlanVOList, "盘点计划列表");
     }
 
 

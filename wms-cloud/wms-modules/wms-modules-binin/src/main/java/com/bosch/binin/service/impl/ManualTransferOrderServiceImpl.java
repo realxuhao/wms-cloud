@@ -254,7 +254,6 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
         queryWrapper.ne(ManualTransferOrder::getStatus, ManuTransStatusEnum.CANCEL.code());
         queryWrapper.last("for update");
         ManualTransferOrder manualTransferOrder = manualTransferOrderMapper.selectOne(queryWrapper);
-        BinVO actualBinVO = binInService.getBinVOByBinCode(binInDTO.getActualCode());
 
 
         if (manualTransferOrder.getType() == MaterialTransTypeEnum.AB_NORMAL.code()) {
@@ -272,6 +271,8 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
             // 正常入库
 //            BinVO actualBinVO = binInService.getBinVOByBinCode(binInDTO.getActualCode());
             //校验库位是否是存取区的
+            BinVO actualBinVO = binInService.getBinVOByBinCode(binInDTO.getActualCode());
+
             if (!binIn.getAreaCode().equals(actualBinVO.getAreaCode())) {
                 throw new ServiceException("当前库位：" + binInDTO.getActualCode() + " 不属于" + binIn.getAreaCode() + "存储区");
             }
@@ -293,7 +294,7 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
         //插入库存
         Stock stock = new Stock();
         stock.setPlantNb(binIn.getPlantNb());
-        stock.setWareCode(actualBinVO.getWareCode());
+        stock.setWareCode(SecurityUtils.getWareCode());
         stock.setSsccNumber(binIn.getSsccNumber());
         stock.setWareCode(binIn.getWareCode());
         stock.setBinCode(binIn.getActualBinCode());

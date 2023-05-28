@@ -108,25 +108,43 @@ const columns = [
     title: '名称',
     key: 'name',
     dataIndex: 'name',
-    width: 200
+    width: 150
   },
   {
     title: '跨',
     key: 'frameName',
     dataIndex: 'frameName',
-    width: 200
+    width: 150
+  },
+  {
+    title: '跨类型',
+    key: 'frameTypeCode',
+    dataIndex: 'frameTypeCode',
+    width: 150
+  },
+  {
+    title: '存储区编码',
+    key: 'areaCode',
+    dataIndex: 'areaCode',
+    width: 150
   },
   {
     title: '存储区名称',
     key: 'areaName',
     dataIndex: 'areaName',
-    width: 200
+    width: 150
+  },
+  {
+    title: '仓库名称',
+    key: 'wareCode',
+    dataIndex: 'wareCode',
+    width: 150
   },
   {
     title: '仓库名称',
     key: 'wareName',
     dataIndex: 'wareName',
-    width: 200
+    width: 150
   },
   {
     title: '创建时间',

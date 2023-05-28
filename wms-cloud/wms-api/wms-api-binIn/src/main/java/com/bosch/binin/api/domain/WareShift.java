@@ -1,5 +1,6 @@
 package com.bosch.binin.api.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.AllArgsConstructor;
@@ -115,5 +116,7 @@ public class WareShift extends BaseEntity {
     private int splitType;
 
     private Double splitQuality;
+
+    private String sourceSscc;
 
 }
