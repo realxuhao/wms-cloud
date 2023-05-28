@@ -38,7 +38,7 @@ public class Material extends BaseEntity
 
     /** 最小包装数量 */
     @Excel(name = "最小包装数量")
-    private Long minPackageNumber;
+    private Double minPackageNumber;
 
     /** 物料类型id */
     @Excel(name = "物料类型id")
@@ -62,11 +62,11 @@ public class Material extends BaseEntity
 
     /** 包装重量 */
     @Excel(name = "包装重量")
-    private Long packageWeight;
+    private Double packageWeight;
 
     /** 托盘重量 */
     @Excel(name = "托盘重量")
-    private Long palletWeight;
+    private Double palletWeight;
 
     /** 整托移库标记 */
     @Excel(name = "整托移库标记")
@@ -78,7 +78,7 @@ public class Material extends BaseEntity
 
     /** 来料总重量（每托） */
     @Excel(name = "来料总重量", readConverterExp = "每=托")
-    private Long totalWeight;
+    private Double totalWeight;
 
     /** 最小包装重量(净重) */
     @Excel(name = "最小包装重量(净重)")

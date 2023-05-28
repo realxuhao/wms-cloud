@@ -9,9 +9,13 @@ public enum ClassType {
             ,"IQC Plan\n[Y/N]",
             "物料防错方式\n[点数,称重,免检]","最小包装毛重\n[只针对称重物料]","最小包装数量","单位\n[KG,M,L,㎡]","最小包装净重\n[只针对称重物料]","最小包装量\n允许最小值",
             "最小包装量\n允许最大值","标准计数单位[L,Kg,m,㎡]对应的重量值[只针对称重物料]"))),
+    MATERIALEXCELDTO("MaterialDTO", new ArrayList<String>(Arrays.asList("物料代码","物料名称","物料类型","托盘类型","来料总重量（每托）","托盘重量\n[只针对称重物料]"
+            ,"IQC Plan\n[Y/N]",
+            "物料防错方式\n[点数,称重,免检]","最小包装毛重\n[只针对称重物料]","最小包装数量","单位\n[KG,M,L,㎡]","最小包装净重\n[只针对称重物料]","最小包装量\n允许最小值",
+            "最小包装量\n允许最大值","标准计数单位[L,Kg,m,㎡]对应的重量值[只针对称重物料]"))),
     MATERIALBINDTO("MaterialBinDTO", new ArrayList<String>(Arrays.asList("物料代码","优先级","可用跨编码","备注"))),
     SUPPLIERINFODTO("SupplierInfoDTO", new ArrayList<String>(Arrays.asList("供应商编码","供应商名称","供应商时间窗口"))),
-    AREADTO("AreaDTO",new ArrayList<String>(Arrays.asList("仓库编码","仓库描述","存储区编码","存储区名称","存储区类型"))),
+    AREADTO("AreaDTO",new ArrayList<String>(Arrays.asList("工厂编码","工厂描述","仓库编码","仓库描述","存储区编码","存储区名称"))),
     FRAMEDTO("FrameDTO",new ArrayList<String>(Arrays.asList("存储区编码","跨编码","跨类型编码","跨名称","宽度[CM]","承重[KG]","高度[CM]","跨类型编码（暂定）"))),
     BINDTO("BinDTO",new ArrayList<String>(Arrays.asList("跨Code","库位编码","库位描述[选填]"))),
     MATERIALRECEIVE("MaterialReceive",new ArrayList<String>(Arrays.asList(
