@@ -14,6 +14,7 @@ import com.ruoyi.common.core.domain.R;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -56,6 +57,22 @@ public class WareController extends BaseController {
         List<WareVO> wareVOS = BeanConverUtil.converList(list, WareVO.class);
         return R.ok(new PageVO<>(wareVOS, new PageInfo<>(wareVOS).getTotal()));
 
+    }
+
+
+    /**
+     * 获取所有仓库
+     */
+    @GetMapping("/getWareByCode/{wareCode}")
+    @ApiOperation("根据code查询仓库")
+    public R<Ware> getWareByCode(@PathVariable("wareCode") String wareCode) {
+        WareDTO wareDTO = new WareDTO();
+        wareDTO.setCode(wareCode);
+        List<Ware> list = wareService.selectWareList(BeanConverUtil.conver(wareDTO, Ware.class));
+        if (!CollectionUtils.isEmpty(list)) {
+            return R.ok(list.get(0));
+        }
+        return R.fail("没有该" + wareCode + "对应的仓库信息");
     }
 
     /**

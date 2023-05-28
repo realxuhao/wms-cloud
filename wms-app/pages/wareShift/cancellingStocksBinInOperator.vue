@@ -28,14 +28,14 @@
 						{{ materialInfo.recommendBinCode }}
 					</view>
 				</view>
-				<view class="text-line m-b-8 " v-show="type === 1">
+				<view class="text-line m-b-8" >
 					<view class="label">目标区域：</view>
 					{{ materialInfo.areaCode }}
 				</view>
-				<view class="text-line m-b-8 ">
+				<!-- <view class="text-line m-b-8 ">
 					<view class="label">托盘编码：</view>
 					<uni-tag :text="typeMap[type].text" :type="typeMap[type].color" size="mini" />
-				</view>
+				</view> -->
 			</view>
 
 			<view class="content">

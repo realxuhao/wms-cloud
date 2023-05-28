@@ -19,7 +19,7 @@
           </a-select-option>
         </a-select>
       </a-form-item>
-      <a-form-item label="库存检索规则" required>
+      <!-- <a-form-item label="库存检索规则" required>
         <a-radio-group
           v-decorator="[
             'sortType',
@@ -31,7 +31,7 @@
             基于先主库后外库
           </a-radio>
         </a-radio-group>
-      </a-form-item>
+      </a-form-item> -->
       <a-form-item label="Excel文件">
         <div class="dropbox">
           <a-upload-dragger

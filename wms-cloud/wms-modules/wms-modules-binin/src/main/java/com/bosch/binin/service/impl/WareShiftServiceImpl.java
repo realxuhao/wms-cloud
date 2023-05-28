@@ -321,7 +321,17 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         if (wareShift.getStatus() != KanbanStatusEnum.INNER_BIN_IN.value()) {
             throw new ServiceException("sscc:" + sscc + "对应任务状态为:" + KanbanStatusEnum.getDesc(String.valueOf(wareShift.getStatus())) + ",不可上架");
         }
-        BinInVO binInVO = binInService.performBinIn(binInDTO);
+
+        Stock lastOneBySSCC = new Stock();
+        if(wareShift.getSplitType() == 1) {
+             lastOneBySSCC = stockService.getOneStock(wareShift.getSourceSscc());
+        }else {
+            StockVO oneBySSCC = stockService.getLastOneBySSCC(sscc);
+            lastOneBySSCC = BeanConverUtil.conver(oneBySSCC,Stock.class);
+        }
+
+
+        BinInVO binInVO = binInService.performBinIn(binInDTO,lastOneBySSCC.getQualityStatus());
         //更新移库任务
         wareShift.setStatus(KanbanStatusEnum.FINISH.value());
         wareShift.setTargetPlant(binInVO.getPlantNb());
@@ -451,6 +461,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         WareShift newWareShift = BeanConverUtil.conver(wareShift, WareShift.class);
         newWareShift.setSsccNb(MesBarCodeUtil.getSSCC(splitPallet.getNewMesBarCode()));
         newWareShift.setStatus(KanbanStatusEnum.OUT_DOWN.value());
+        newWareShift.setSourceSscc(splitPallet.getSourceSsccNb());
         this.save(newWareShift);
 
         //对新的sscc生成一个删除掉的库存

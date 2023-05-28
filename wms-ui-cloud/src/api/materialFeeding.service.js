@@ -109,7 +109,7 @@ const addShiftTask = async (options) => {
 }
 
 const confirmMaterial = async (options) => {
-  const url = `binin/materialKanban/confirmMaterialBySSCCs?ssccs=${options}`
+  const url = `binin/materialKanban/confirmMaterialBySSCCs?ids=${options}`
   const { data } = await createAuthInstance(config.apiHost).get(url, options)
   return data
 }

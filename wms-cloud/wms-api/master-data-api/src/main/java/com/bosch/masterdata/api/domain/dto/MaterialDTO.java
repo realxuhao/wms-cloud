@@ -90,7 +90,7 @@ public class MaterialDTO extends PageDomain {
     @ExcelProperty(value = "最小包装毛重\n" +
             "[只针对称重物料]")
     @ApiModelProperty(value = "包装重量")
-    private Long packageWeight;
+    private Double packageWeight;
 
     /**
      * 托盘重量
@@ -98,7 +98,7 @@ public class MaterialDTO extends PageDomain {
     @ExcelProperty(value = "托盘重量\n" +
             "[只针对称重物料]")
     @ApiModelProperty(value = "托盘重量[只针对称重物料]")
-    private Long palletWeight;
+    private Double palletWeight;
 
     /**
      * iqc
@@ -112,7 +112,7 @@ public class MaterialDTO extends PageDomain {
      */
     @ExcelProperty(value = "来料总重量（每托）")
     @ApiModelProperty(value = "来料总重量（每托）")
-    private Long totalWeight;
+    private Double totalWeight;
 
     /**
      * 最小包装重量(净重)
@@ -177,4 +177,10 @@ public class MaterialDTO extends PageDomain {
 
     @ApiModelProperty(value = "cell")
     private String cell;
+
+
+    private String wholeShiftFlag;
+
+
+
 }

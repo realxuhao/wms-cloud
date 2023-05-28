@@ -55,7 +55,7 @@ public interface IBinInService extends IService<BinIn> {
      */
     BinInVO generateInTaskByOldStock(String ssccNumber, Double quantity, String wareCode);
 
-    BinInVO performBinIn(BinInDTO binInDTO);
+    BinInVO performBinIn(BinInDTO binInDTO,String quantityStatus);
 
     /**
      * 原材料上架 ，走IQC

@@ -114,7 +114,7 @@
             <a-tag color="#87d068" v-if="text===1">
               进行中
             </a-tag>
-            <a-tag color="#666666" v-else>
+            <a-tag color="#666666" v-if="text===2">
               完成
             </a-tag>
           </div>

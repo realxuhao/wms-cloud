@@ -231,6 +231,12 @@ const columns = [
     dataIndex: 'planCode',
     width: 80
   },
+    {
+    title: '任务编码',
+    key: 'taskNo',
+    dataIndex: 'taskNo',
+    width: 160
+  },
   {
     title: '物料编码',
     key: 'materialCode',

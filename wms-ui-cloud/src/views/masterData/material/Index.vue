@@ -280,6 +280,12 @@ const columns = [
     width: 120
   },
   {
+    title: '整托移库标记',
+    key: 'wholeShiftFlag',
+    dataIndex: 'wholeShiftFlag',
+    width: 120
+  },
+  {
     title: '备注',
     key: 'remark',
     dataIndex: 'remark',

@@ -261,9 +261,9 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
 
         //更新叫料表
         if (materialCallDB.getQuantity() <= newQuantity) {
-            materialCallDB.setStatus(MaterialCallStatusEnum.FULL_ISSUED.code());
+            materialCallDB.setStatus(CallStatusEnum.ALl.code());
         } else {
-            materialCallDB.setStatus(MaterialCallStatusEnum.PART_ISSUED.code());
+            materialCallDB.setStatus(CallStatusEnum.NOT_ALL.code());
         }
         materialCallDB.setIssuedQuantity(newQuantity);
         return materialCallMapper.updateById(materialCallDB);

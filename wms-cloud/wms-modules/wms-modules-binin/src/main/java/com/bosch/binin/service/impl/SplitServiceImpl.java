@@ -153,7 +153,7 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
         if (splitRecord.getStatus() != SplitStatusEnum.WAIT_BIN_IN.code()) {
             throw new ServiceException("sscc:" + sscc + "对应任务状态为:" + IQCStatusEnum.getDesc(splitRecord.getStatus()) + ",不可上架");
         }
-        BinInVO binInVO = binInService.performBinIn(binInDTO);
+        BinInVO binInVO = binInService.performBinIn(binInDTO,null);
         splitRecord.setStatus(SplitStatusEnum.FINISH.code());
         splitMapper.updateById(splitRecord);
     }

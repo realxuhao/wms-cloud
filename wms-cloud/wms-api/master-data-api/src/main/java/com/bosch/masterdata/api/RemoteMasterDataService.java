@@ -9,6 +9,7 @@ import com.bosch.masterdata.api.factory.RemoteMaterialFallbackFactory;
 import com.ruoyi.common.core.config.FeignConfig;
 import com.ruoyi.common.core.constant.ServiceNameConstants;
 import com.ruoyi.common.core.domain.R;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +54,9 @@ public interface RemoteMasterDataService {
 
     @GetMapping(value = "/ware/{id}")
     public R<Ware> getWareInfo(@PathVariable("id") String id);
+
+    @GetMapping("/ware/getWareByCode/{wareCode}")
+    public R<Ware> getWareByCode(@PathVariable("wareCode") String wareCode);
 
     @GetMapping(value = "/driver/black/{wechatId}")
     public R<List<BlackDriverVO>> getBlackDriverByWechatId(@PathVariable("wechatId") String wechatId, @RequestParam(required = false, value = "isBlack") boolean isBlack);

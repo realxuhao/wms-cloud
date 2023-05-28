@@ -11,7 +11,7 @@ const getList = async (parameter) => {
 }
 
 const getOne = async (id) => {
-  const url = `/area/${id}`
+  const url = `/area/getById/${id}`
   const { data } = await createAuthInstance(baseUrl).get(url)
   return data
 }

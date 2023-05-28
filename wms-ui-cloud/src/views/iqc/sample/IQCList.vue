@@ -171,7 +171,7 @@
                 <template slot="title">
                   <p>确认提交吗？</p>
                 </template>
-                <a :disabled="!(record.status ===0 && record.plantNb === '7752')" ><a-icon class="m-r-4" type="to-top" />此库抽样</a>
+                <a :disabled="!(record.status ===4 && record.plantNb === '7752')" ><a-icon class="m-r-4" type="to-top" />此库抽样</a>
               </a-popconfirm>
             </div>
           </template>
