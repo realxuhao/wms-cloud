@@ -35,8 +35,8 @@ public class AreaDTO extends PageDomain {
 
 
     /** 存储区类型 */
-    @ApiModelProperty(value = "存储区类型")
     @ExcelIgnore
+    @ApiModelProperty(value = "存储区类型")
     private Integer areaType;
 
 

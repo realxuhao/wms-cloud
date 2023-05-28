@@ -13,6 +13,7 @@ import com.bosch.masterdata.service.IEcnService;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -99,10 +100,12 @@ public class EcnServiceImpl extends ServiceImpl<EcnMapper, Ecn>
             if(r.getClassification().equals(EcnClassificationEnum.TTS.getDesc())&& r.getPlan()==null){
                 throw  new ServiceException("类别为TTS时TTS取样规则不能为空");
             }
-            boolean checkPlan = EcnPlanEnum.contain(r.getPlan().toString());
-            if (!checkPlan){
-                throw  new ServiceException("TTS取样规则不规范");
-            }
+            if(StringUtils.isNotEmpty(r.getPlan())){
+                boolean checkPlan = EcnPlanEnum.contain(r.getPlan().toString());
+                if (!checkPlan){
+                    throw  new ServiceException("TTS取样规则不规范");
+                }}
+
         });
 
         return true;
