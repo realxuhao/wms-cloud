@@ -101,7 +101,7 @@ public class FsmpServiceImpl extends ServiceImpl<FsmpMapper, Fsmp>
         fsmpDTOS.forEach(r->{
             //校验类别
             if(r.getClassification()==null){
-                throw  new ServiceException("校验类别为空");
+                throw  new ServiceException("未填写校验类别");
             }
             boolean checkClass = FsmpClassificationEnum.contain(r.getClassification());
             if (!checkClass){
