@@ -597,8 +597,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         } else {
             Stock conver = BeanConverUtil.conver(stockVO, Stock.class);
             conver.setTotalStock(conver.getTotalStock() - newKanban.getQuantity());
-            conver.setAvailableStock(conver.getAvailableStock() - newKanban.getQuantity());
-            conver.setFreezeStock(conver.getTotalStock() - conver.getAvailableStock());
+            conver.setFreezeStock(conver.getFreezeStock() - newKanban.getQuantity());
+            conver.setAvailableStock(conver.getTotalStock() - conver.getFreezeStock());
             conver.setWholeFlag(StockWholeFlagEnum.NOT_WHOLE.code());
 
             stockMapper.updateById(conver);

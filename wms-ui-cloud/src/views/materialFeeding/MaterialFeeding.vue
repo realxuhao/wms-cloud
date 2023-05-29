@@ -111,18 +111,18 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a-popconfirm
+            <!-- <a-popconfirm
               title="确认要取消该条任务吗?"
               ok-text="确认"
               cancel-text="取消"
               @confirm="handleCancel(record)"
             >
-              <a class="danger-color" :disabled="[-1,1,2].includes(record.status)">取消</a>
-            </a-popconfirm>
+              <a class="danger-color" :disabled="2 != record.status">取消</a>
+            </a-popconfirm> -->
             <a-divider type="vertical" />
             <a
               class="primary-color"
-              :disabled="!2===record.status"
+              :disabled="2!=record.status"
               @click="handleCreateReductionTask(record)"><a-icon class="m-r-4" type="add" />人工创建拣配任务</a>
           </div>
 

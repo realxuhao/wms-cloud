@@ -18,25 +18,25 @@ const request = axios.create({
   // API 请求的默认前缀
   baseURL: process.env.VUE_APP_BASE_API,
   // baseURL: 'https://ruoyi.setworld.net',
-  timeout: 6000 // 请求超时时间
+  timeout: 60000 // 请求超时时间
 })
 
 // 异常拦截处理器
 const errorHandler = (error) => {
   console.log('err' + error)
-    let { message } = error
-    if (message === 'Network Error') {
-      message = '后端接口连接异常'
-    } else if (message.includes('timeout')) {
-      message = '系统接口请求超时'
-    } else if (message.includes('Request failed with status code')) {
-      message = '系统接口' + message.substr(message.length - 3) + '异常'
-    }
-    notification.error({
-      message: message,
-      duration: 5 * 1000
-    })
-    return Promise.reject(error)
+  let { message } = error
+  if (message === 'Network Error') {
+    message = '后端接口连接异常'
+  } else if (message.includes('timeout')) {
+    message = '系统接口请求超时'
+  } else if (message.includes('Request failed with status code')) {
+    message = '系统接口' + message.substr(message.length - 3) + '异常'
+  }
+  notification.error({
+    message: message,
+    duration: 5 * 1000
+  })
+  return Promise.reject(error)
 }
 
 // request interceptor
@@ -141,7 +141,7 @@ export function download (url, params, filename) {
           }
         }
       )
-      }
+    }
   })
   return request.post(url, params, {
     transformRequest: [(params) => { return qs.stringify(params, { indices: false }) }],

@@ -21,6 +21,7 @@
 				<view class="card-text m-b-4">物料编码：{{ item.materialCode }}</view>
 				<view class="card-text sscc">
 					<text class="card-text m-b-4">Cell：{{ item.cell }}</text>
+					<text class="card-text m-b-4">源存储区：{{ item.areaCode }}</text>
 					<text class="card-text m-b-4">源库位：{{ item.binCode }}</text>
 				</view>
 				<!-- <view class="card-text m-b-4">源跨位：{{item.frameCode}}</view> -->

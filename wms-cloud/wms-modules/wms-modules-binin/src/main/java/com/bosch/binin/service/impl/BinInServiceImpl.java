@@ -1241,7 +1241,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         binIn.setMoveType(MoveTypeEnums.BININ.getCode());
 //        binIn.setFromPurchaseOrder(materialInVO.getFromPurchaseOrder());
-//        binIn.setPlantNb(materialInVO.getPlantNb());
+        binIn.setPlantNb(getWareInfo(SecurityUtils.getWareCode()).getFactoryCode());
         binInMapper.insert(binIn);
         return binInMapper.selectBySsccNumber(sscc);
 

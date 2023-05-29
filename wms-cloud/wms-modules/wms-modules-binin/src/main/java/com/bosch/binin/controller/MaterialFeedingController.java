@@ -75,7 +75,6 @@ public class MaterialFeedingController extends BaseController {
     })
     @Transactional(rollbackFor = Exception.class)
     public R call(@RequestParam(value = "file") MultipartFile file,
-                  @RequestParam("sortType") Integer sortType,
                   @RequestParam("cell") String cell) {
         try {
             //解析文件服务
@@ -92,7 +91,7 @@ public class MaterialFeedingController extends BaseController {
                             if (r.getQuantity() == null || r.getQuantity() < 0) {
                                 throw new ServiceException("数量输入有误", 400);
                             }
-                            r.setSortType(sortType);
+                            r.setSortType(0);
                             r.setCell(cell);
                         });
 

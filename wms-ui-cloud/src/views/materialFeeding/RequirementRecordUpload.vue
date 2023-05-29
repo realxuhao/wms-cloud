@@ -149,7 +149,6 @@ export default {
           const formData = new FormData()
           formData.append('file', values.file.file)
           formData.append('cell', values.cell)
-          formData.append('sortType', values.sortType)
 
           await this.$store.dispatch('materialFeeding/upload', formData)
           this.$emit('on-ok')
