@@ -53,7 +53,7 @@
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button v-hasPermi="['ware:shift:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
@@ -65,6 +65,7 @@
       </a-form>
       <div class="action-content">
         <a-button
+          v-hasPermi="['ware:shift:add']"
           type="primary"
           @click="handleAddWareShift"
         >新增移库单</a-button>
@@ -100,7 +101,7 @@
               cancel-text="取消"
               @confirm="handleCancel(record)"
             >
-              <a class="danger-color" :disabled="[-1,7,4,5].includes(record.status)"><a-icon class="m-r-4" type="delete" />取消</a>
+              <a v-hasPermi="['ware:shift:cancel']" class="danger-color" :disabled="[-1,7,4,5].includes(record.status)"><a-icon class="m-r-4" type="delete" />取消</a>
             </a-popconfirm>
             <!-- <a-divider type="vertical" /> -->
             <!-- <a

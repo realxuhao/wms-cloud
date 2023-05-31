@@ -79,7 +79,7 @@
             </template>
             <a-col span="4">
               <span class="table-page-search-submitButtons" >
-                <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+                <a-button v-hasPermi="['iqc:sample:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
                 <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
                 <a @click="toggleAdvanced" style="margin-left: 8px">
                   {{ advanced ? '收起' : '展开' }}
@@ -93,7 +93,7 @@
           <a-button
             :loading="exportLoading"
             class="m-r-8"
-            @click="handleDownload" 
+            @click="handleDownload"
             v-hasPermi="['iqc:list:export']"><a-icon type="download" />导出结果</a-button>
           <a-button
             v-hasPermi="['iqc:list:add']"
@@ -104,7 +104,7 @@
             新建抽样计划
           </a-button>
           <a-button
-            type="primary" 
+            type="primary"
             v-hasPermi="['iqc:list:batchIssue']"
             icon="plus"
             :loading="batchIssueLoading"
@@ -153,7 +153,7 @@
                 cancel-text="取消"
                 @confirm="handleDelete(record)"
               >
-                <a 
+                <a
                   v-hasPermi="['iqc:list:delete']"
                   :disabled="![0,5].includes(record.status)"
                   class="danger-color">

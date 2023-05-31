@@ -41,7 +41,7 @@
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button v-hasPermi="['material:stock:compare:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
@@ -52,11 +52,11 @@
         </a-row>
       </a-form>
       <div class="action-content">
-        <a-button type="primary" :disabled="!hasSelected" class="m-r-8" icon="plus" @click="changeStatus"> 调整</a-button>
+        <a-button v-hasPermi="['material:stock:compare:adjust']" type="primary" :disabled="!hasSelected" class="m-r-8" icon="plus" @click="changeStatus"> 调整</a-button>
         <a-tooltip placement="right">
 
           <template slot="title">
-            <a style="color:#fff" @click="handleDownloadTemplate"><a-icon type="arrow-down" />下载模板</a>
+            <a v-hasPermi="['material:stock:compare:download']" style="color:#fff" @click="handleDownloadTemplate"><a-icon type="arrow-down" />下载模板</a>
           </template>
           <a-upload
             :file-list="[]"
@@ -65,7 +65,7 @@
             :before-upload="()=>false"
             @change="handleUpload"
           >
-            <a-button :loading="uploadLoading" type="primary" icon="upload" >
+            <a-button v-hasPermi="['material:stock:compare:import']" :loading="uploadLoading" type="primary" icon="upload" >
               导入
             </a-button>
           </a-upload>
