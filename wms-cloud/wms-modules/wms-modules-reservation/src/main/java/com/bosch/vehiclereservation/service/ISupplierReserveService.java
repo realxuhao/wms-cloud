@@ -57,5 +57,8 @@ public interface ISupplierReserveService extends IService<SupplierReserve> {
     public List<PurchaseOrderVO> selectPurchaseOrderList(String reserveNo);
 
     public SupplierReserveVO selectDataByReserveNo(String reserveNo);
+
     public SupplierReserveVO selectDataByReserveNoForWx(String reserveNo);
+
+    public List<String> selectErrorDataByName(String name);
 }

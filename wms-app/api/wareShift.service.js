@@ -162,7 +162,26 @@ const splitPallet = async (options) => {
 	})
 }
 
+const getTransInfo = async (barCode) => {
+	const url = `/binin/trans-ship/getTransInfo/${barCode}`
+	const method = 'GET'
 
+	return request({
+		url,
+		method,
+	})
+}
+
+const batchBinIn = async (options) => {
+	const url = `/binin/ware-shift/batchBinIn`
+	const method = 'POST'
+
+	return request({
+		url,
+		method,
+		data: options
+	})
+}
 
 export const wareShiftService = {
 	getList,
@@ -179,5 +198,7 @@ export const wareShiftService = {
 	shiftBinIn,
 	innerReceivingList,
 	getOneBinDown,
-	splitPallet
+	splitPallet,
+	getTransInfo,
+	batchBinIn
 }

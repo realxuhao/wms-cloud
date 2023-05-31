@@ -130,7 +130,7 @@
                 and DATE_FORMAT(t2.reserve_date, '%Y-%m-%d') = DATE_FORMAT(#{signinDate}, '%Y-%m-%d')
             </when>
             <otherwise>
-                and DATE_FORMAT(t2.reserve_date, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
+               -- and DATE_FORMAT(t2.reserve_date, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
             </otherwise>
         </choose>
         UNION
@@ -151,7 +151,7 @@
                 and DATE_FORMAT(t1.pickup_date, '%Y-%m-%d') = DATE_FORMAT(#{signinDate}, '%Y-%m-%d')
             </when>
             <otherwise>
-                and DATE_FORMAT(t1.pickup_date, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
+               -- and DATE_FORMAT(t1.pickup_date, '%Y-%m-%d') = DATE_FORMAT(now(), '%Y-%m-%d')
             </otherwise>
         </choose>
         ) t

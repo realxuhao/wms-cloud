@@ -19,10 +19,15 @@
 					<view class="label">批次号：</view>
 					{{ info.batchNb }}
 				</view>
+				<!-- <view class="text-line m-b-8 ">
+					<view class="label">库存数量：</view>
+					{{ info.expireDate }}
+				</view> -->
 				<view class="text-line m-b-8 ">
 					<view class="label">有效期：</view>
 					{{ info.expireDate }}
 				</view>
+
 				<view>
 					<view class="text-line m-b-8 ">
 						<view class="label">托盘编码：</view>

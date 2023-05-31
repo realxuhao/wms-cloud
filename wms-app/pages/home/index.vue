@@ -7,6 +7,7 @@
 					<text class="nav-title-name">{{ plantName || '请选择工厂/仓库' }}</text>
 					<uni-icons class="icon" type="bottom" size="16"></uni-icons>
 				</view>
+				<o-btn size="sm" block class="download-btn" @click="downWgt" :loading="downloadLoading">更新APP</o-btn>
 			</uni-nav-bar>
 		</view>
 
@@ -22,7 +23,7 @@
 						<view class="text">原材料上架</view>
 					</view>
 					<view class="list-item" v-if="$hasPermi(['app:material:batchBinIn'])" @click="handleGoto('/pages/binIn/batchBinIn')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" type="icon-jiechubangding"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="icon icon-fenpishangjia" type="icon-fenpishangjia"></uni-icons>
 						<view class="text">按批上架</view>
 					</view>
 				</view>
@@ -79,8 +80,8 @@
 						<uni-icons custom-prefix="iconfont" class="icon " type="icon-kuwei" color="#2664CB"></uni-icons>
 						<view class="text">库位查询</view>
 					</view>
-					<view class="list-item" v-if="$hasPermi(['app:location:adjust'])" @click="handleGoto('/pages/adjust/adjustScan')">
-						<uni-icons custom-prefix="iconfont" class="icon " type="icon-kuwei" color="#2664CB"></uni-icons>
+					<view class="list-item" v-if="$hasPermi(['app:location:adjust'])" @click="handleGoto('/pages/adjust/adjustList')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-kucuntiaozheng" type="icon-kucuntiaozheng" color="#2664CB"></uni-icons>
 						<view class="text">库存调整</view>
 					</view>
 				</view>
@@ -127,7 +128,7 @@
 						<view class="text">上架</view>
 					</view>
 					<view class="list-item" v-if="$hasPermi(['app:iqc:stockTake'])" @click="handleGoto('/pages/stockTake/stockTake')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" color="#00ADD4"></uni-icons>
+						<uni-icons size="24" custom-prefix="iconfont" class="icon icon-kucunpandian" color="rgb(46,151,222)"></uni-icons>
 						<view class="text">盘点</view>
 					</view>
 				</view>
@@ -136,7 +137,7 @@
 			<uni-section title="成品管理" v-if="$hasPermi(['app:finishedProduct:packTask'])" type="line" class="m-b-12">
 				<view class="list header-box">
 					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:packTask'])" @click="handleGoto('/pages/finishedProduct/packTask')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" color="#00ADD4"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="icon icon-dabao" color="#00ADD4"></uni-icons>
 						<view class="text">成品打包</view>
 					</view>
 				</view>
@@ -188,25 +189,100 @@
 		</view>
 
 		<ScanCode></ScanCode>
+		<AppVersion></AppVersion>
 	</view>
 </template>
 
 <script>
 import ScanCode from '@/components/ScanCode';
+import { fileService } from '@/api/file.service';
+import AppVersion from '@/components/app-version/app-version';
 import _ from 'lodash';
 
 export default {
 	components: {
-		ScanCode
+		ScanCode,
+		AppVersion
 	},
+	onLoad() {},
 	data() {
 		return {
 			dataTree: [],
-			plantName: ''
+			plantName: '',
+			downloadLoading: false,
+			downloadUrl: 'https://www.nutricia-home.com/api/file/download/wms/apk/wmsnew.apk',
+			isForceUpdate: false,
+			downloadNum: ''
 		};
 	},
 	computed: {},
 	methods: {
+		async downWgt() {
+			let that = this;
+
+			if (this.downloadLoading) {
+				return;
+			}
+			this.downloadLoading = true;
+
+			uni.showLoading({
+				title: '更新中……'
+			});
+
+			const { data: downloadUrl } = await fileService.getFileUrl('wmsnew.apk');
+
+			const downloadTask = uni.downloadFile({
+				//执行下载
+				url: downloadUrl, //下载地址
+				timeout: 1000 * 30, //30秒超时时间
+				success: downloadResult => {
+					//下载成功
+					that.showdownLine = false;
+					uni.hideLoading();
+					console.log('downloadResult.statusCode' + downloadResult.statusCode);
+					if (downloadResult.statusCode == 200) {
+						console.log('更新中');
+						uni.showModal({
+							title: '',
+							content: '更新成功，确定现在重启吗？',
+							confirmText: '重启',
+							confirmColor: '#541b86',
+							showCancel: false,
+							success: function(res) {
+								if (res.confirm == true) {
+									plus.runtime.install(
+										//安装
+										downloadResult.tempFilePath,
+										{
+											force: true
+										},
+										function(res) {
+											utils.showToast('更新成功，重启中');
+											plus.runtime.restart();
+										}
+									);
+								}
+							}
+						});
+					}
+				},
+				fail: err => {
+					uni.hideLoading();
+					that.showdownLine = false;
+					that.$u.toast(err.errMsg);
+					console.log(err);
+				},
+				complete: com => {
+					this.downloadLoading = false;
+					console.log(com);
+				}
+			});
+
+			// 下载进度
+			downloadTask.onProgressUpdate(res => {
+				that.downloadNum = res.progress;
+			});
+		},
 		async loadPlantList() {
 			const data = await this.$store.dispatch('plant/getList');
 			const plantList = _.uniqBy(data, 'factoryCode');
@@ -228,6 +304,10 @@ export default {
 		},
 
 		handleGoto(url) {
+			if (this.downloadLoading) {
+				return;
+			}
+
 			if (!this.plantName) {
 				uni.showToast({
 					title: '请选择工厂/仓库',
@@ -279,6 +359,7 @@ export default {
 	background: $primary-color;
 	display: flex;
 	justify-content: center;
+	position: relative;
 }
 
 .main {
@@ -317,6 +398,16 @@ export default {
 			&.icon-shangjia {
 				color: rgb(90, 238, 216) !important;
 			}
+			&.icon-kucuntiaozheng {
+				font-size: 26px !important;
+			}
+			&.icon-kucunpandian {
+				font-size: 28px !important;
+			}
+			&.icon-fenpishangjia {
+				color: rgb(13, 143, 233) !important;
+				font-size: 34px !important;
+			}
 		}
 		.icon-img {
 			width: 32px;
@@ -344,6 +435,10 @@ export default {
 			color: #fff !important;
 			margin-left: 8px;
 		}
+	}
+	.download-btn {
+		position: absolute;
+		right: -16px;
 	}
 }
 

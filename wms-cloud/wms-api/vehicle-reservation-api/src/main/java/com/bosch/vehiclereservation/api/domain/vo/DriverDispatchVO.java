@@ -248,6 +248,9 @@ public class DriverDispatchVO {
                 case 2:
                     this.statusDes = DispatchStatusEnum.COMPLETE.getDesc();
                     break;
+                case 3:
+                    this.statusDes = DispatchStatusEnum.ERROR.getDesc();
+                    break;
             }
         }
     }

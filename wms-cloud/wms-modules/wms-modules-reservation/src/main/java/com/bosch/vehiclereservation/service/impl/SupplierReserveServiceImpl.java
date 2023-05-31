@@ -277,6 +277,16 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
         }
     }
 
+    @Override
+    public List<String> selectErrorDataByName(String name) {
+        QueryWrapper<SupplierReserve> supplierReserveQueryWrapper = new QueryWrapper<>();
+        supplierReserveQueryWrapper.eq("supplier_code", name);
+        supplierReserveQueryWrapper.eq("status", ReserveStatusEnum.ERROR.getCode());
+        List<String> collect = supplierReserveMapper.selectList(supplierReserveQueryWrapper).stream().map(c -> c.getReserveNo())
+                .collect(Collectors.toList());
+        return collect;
+    }
+
     private void changePurchaseOrderStatus(List<SupplierPorder> supplierPorderList) {
         supplierPorderList.forEach(c -> {
             BigDecimal sum = supplierPorderService.getArriveQuantityByPurchaseId(c.getPurchaseId());

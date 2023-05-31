@@ -37,6 +37,7 @@ export default {
 			uni.navigateTo({
 				url: `/pages/adjust/adjustOperation?code=${code}`
 			});
+			Bus.$emit('startScan');
 		}
 	}
 };
