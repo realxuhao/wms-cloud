@@ -1,16 +1,36 @@
 <template>
-  <a-modal title="需求计算" :visible="visible" :confirm-loading="submitLoading" width="70%" :footer="false" @cancel="onClose">
+  <a-modal
+    title="需求计算"
+    :visible="visible"
+    :confirm-loading="submitLoading"
+    width="70%"
+    :footer="false"
+    @cancel="onClose">
     <div class="action-content">
-      <a-button type="primary" :loading="createMoveTaskLoading" :disabled="!hasSelected" style="margin-right:8px"
+      <a-button
+        type="primary"
+        :loading="createMoveTaskLoading"
+        :disabled="!hasSelected"
+        style="margin-right:8px"
         @click="handleCreateMoveTask">
         创建移库
       </a-button>
-      <a-button style="margin-right:8px" type="primary" :loading="runRequirementLoading" :disabled="!hasSelected"
+      <a-button
+        style="margin-right:8px"
+        type="primary"
+        :loading="runRequirementLoading"
+        :disabled="!hasSelected"
         @click="handleIssue">下发</a-button>
     </div>
-    <a-table :row-selection="{
-      selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
-    }" :columns="columns" :data-source="tableList" rowKey="callId" :pagination="false" size="middle">
+    <a-table
+      :row-selection="{
+        selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
+      }"
+      :columns="columns"
+      :data-source="tableList"
+      rowKey="callId"
+      :pagination="false"
+      size="middle">
       <template slot="recommendShiftQuantity" slot-scope="text,record">
         <a-input v-model="record.recommendShiftQuantity"></a-input>
       </template>

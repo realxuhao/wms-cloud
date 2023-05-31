@@ -45,7 +45,9 @@
             </a-col>
             <a-col :span="8">
               <a-form-item label="修改时间">
-                <a-range-picker format="YYYY-MM-DD HH:mm" :show-time="{ format: 'HH:mm' }"
+                <a-range-picker
+                  format="YYYY-MM-DD HH:mm"
+                  :show-time="{ format: 'HH:mm' }"
                   v-model="queryForm.updateDate" />
               </a-form-item>
             </a-col>
@@ -69,19 +71,31 @@
         <a-button v-hasPermi="['requirement:list:add']" type="primary" icon="upload" style="margin-right:8px" @click="handleOpenUpload">
           创建物料需求
         </a-button>
-        <a-button v-hasPermi="['requirement:list:run']" style="margin-right:8px" type="primary" :loading="submitLoading" :disabled="!hasSelected"
+        <a-button
+          v-hasPermi="['requirement:list:run']"
+          style="margin-right:8px"
+          type="primary"
+          :loading="submitLoading"
+          :disabled="!hasSelected"
           @click="handleRunRequirement">需求计算</a-button>
         <a-button style="margin-right:8px" type="primary" @click="handleCreateRequirement">手动创建需求</a-button>
       </div>
-      <a-table :row-selection="{
-        selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
-        getCheckboxProps: record => ({
-          props: {
-            disabled: !([0, 1].includes(record.status))
-          },
-        }),
-      }" :columns="columns" :data-source="list" :loading="tableLoading" rowKey="id" :pagination="false"
-        :scroll="tableScroll" size="middle">
+      <a-table
+        :row-selection="{
+            selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
+            getCheckboxProps: record => ({
+              props: {
+                disabled: !([0, 1].includes(record.status))
+              },
+            }),
+          }"
+        :columns="columns"
+        :data-source="list"
+        :loading="tableLoading"
+        rowKey="id"
+        :pagination="false"
+        :scroll="tableScroll"
+        size="middle">
         <template slot="status" slot-scope="text">
           <a-tag :color="statusColorMap[text]">{{ statusMap[text] }}</a-tag>
         </template>
@@ -105,8 +119,14 @@
       </a-table>
 
       <div class="pagination-con">
-        <a-pagination show-size-changer show-less-items :current="queryForm.pageNum" :page-size.sync="queryForm.pageSize"
-          :total="paginationTotal" @showSizeChange="loadTableList" @change="changePagination" />
+        <a-pagination
+          show-size-changer
+          show-less-items
+          :current="queryForm.pageNum"
+          :page-size.sync="queryForm.pageSize"
+          :total="paginationTotal"
+          @showSizeChange="loadTableList"
+          @change="changePagination" />
       </div>
 
       <RequirementRecordUpload v-model="visible" @on-ok="loadTableList"></RequirementRecordUpload>

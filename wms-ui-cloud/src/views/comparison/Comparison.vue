@@ -52,7 +52,13 @@
         </a-row>
       </a-form>
       <div class="action-content">
-        <a-button v-hasPermi="['material:stock:compare:adjust']" type="primary" :disabled="!hasSelected" class="m-r-8" icon="plus" @click="changeStatus"> 调整</a-button>
+        <a-button
+          v-hasPermi="['material:stock:compare:adjust']"
+          type="primary"
+          :disabled="!hasSelected"
+          class="m-r-8"
+          icon="plus"
+          @click="changeStatus"> 调整</a-button>
         <a-tooltip placement="right">
 
           <template slot="title">
