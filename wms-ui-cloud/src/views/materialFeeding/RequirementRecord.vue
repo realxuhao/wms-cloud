@@ -45,9 +45,7 @@
             </a-col>
             <a-col :span="8">
               <a-form-item label="修改时间">
-                <a-range-picker
-                  format="YYYY-MM-DD HH:mm"
-                  :show-time="{ format: 'HH:mm' }"
+                <a-range-picker format="YYYY-MM-DD HH:mm" :show-time="{ format: 'HH:mm' }"
                   v-model="queryForm.updateDate" />
               </a-form-item>
             </a-col>
@@ -55,10 +53,10 @@
           <a-col span="4">
             <span class="table-page-search-submitButtons">
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon
-                type="search" />查询</a-button>
+                  type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
               <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon
-                type="download" />导出结果</a-button>
+                  type="download" />导出结果</a-button>
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
                 <a-icon :type="advanced ? 'up' : 'down'" />
@@ -71,32 +69,19 @@
         <a-button type="primary" icon="upload" style="margin-right:8px" @click="handleOpenUpload">
           创建物料需求
         </a-button>
-        <a-button
-          style="margin-right:8px"
-          type="primary"
-          :loading="submitLoading"
-          :disabled="!hasSelected"
-          @click="handleRunRequirement">跑需求</a-button>
-        <a-button
-          style="margin-right:8px"
-          type="primary"
-          @click="handleCreateRequirement">手动创建需求</a-button>
+        <a-button style="margin-right:8px" type="primary" :loading="submitLoading" :disabled="!hasSelected"
+          @click="handleRunRequirement">需求计算</a-button>
+        <a-button style="margin-right:8px" type="primary" @click="handleCreateRequirement">手动创建需求</a-button>
       </div>
-      <a-table
-        :row-selection="{
-          selectedRowKeys: selectedRowKeys, onChange: onSelectChange ,
-          getCheckboxProps:record => ({
-            props: {
-              disabled: !([0,1].includes(record.status))
-            },
-          }),}"
-        :columns="columns"
-        :data-source="list"
-        :loading="tableLoading"
-        rowKey="id"
-        :pagination="false"
-        :scroll="tableScroll"
-        size="middle">
+      <a-table :row-selection="{
+        selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
+        getCheckboxProps: record => ({
+          props: {
+            disabled: !([0, 1].includes(record.status))
+          },
+        }),
+      }" :columns="columns" :data-source="list" :loading="tableLoading" rowKey="id" :pagination="false"
+        :scroll="tableScroll" size="middle">
         <template slot="status" slot-scope="text">
           <a-tag :color="statusColorMap[text]">{{ statusMap[text] }}</a-tag>
         </template>
@@ -107,7 +92,7 @@
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a-popconfirm title="确认要取消该条任务吗?" ok-text="确认" cancel-text="取消" @confirm="handleCancel(record)">
-              <a class="danger-color" :disabled="!([0,1].includes(record.status))">取消</a>
+              <a class="danger-color" :disabled="!([0, 1].includes(record.status))">取消</a>
             </a-popconfirm>
             <!-- <a-divider type="vertical" />
             <a
@@ -120,23 +105,16 @@
       </a-table>
 
       <div class="pagination-con">
-        <a-pagination
-          show-size-changer
-          show-less-items
-          :current="queryForm.pageNum"
-          :page-size.sync="queryForm.pageSize"
-          :total="paginationTotal"
-          @showSizeChange="loadTableList"
-          @change="changePagination" />
+        <a-pagination show-size-changer show-less-items :current="queryForm.pageNum" :page-size.sync="queryForm.pageSize"
+          :total="paginationTotal" @showSizeChange="loadTableList" @change="changePagination" />
       </div>
 
       <RequirementRecordUpload v-model="visible" @on-ok="loadTableList"></RequirementRecordUpload>
 
-      <RequirementRecordConfirm
-        @successCallback="runRequirementCallback"
-        ref="requirementRecordConfirm"
-      ></RequirementRecordConfirm>
-      <RequirementRecordManualCreate @on-ok="loadTableList" ref="requirementRecordManualCreate"></RequirementRecordManualCreate>
+      <RequirementRecordConfirm @successCallback="runRequirementCallback" ref="requirementRecordConfirm">
+      </RequirementRecordConfirm>
+      <RequirementRecordManualCreate @on-ok="loadTableList" ref="requirementRecordManualCreate">
+      </RequirementRecordManualCreate>
     </div>
 
   </div>

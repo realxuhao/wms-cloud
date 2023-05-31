@@ -216,6 +216,15 @@
 		},
 		{
 			"path": "pages/adjust/adjustList"
+		},
+		{
+			"path": "pages/stockTake/stockTakeTaskOperation"
+		},
+		{
+			"path": "pages/wareShift/binInBatchScan"
+		},
+		{
+			"path": "pages/wareShift/binInBatchOperation"
 		}
 	],
 	"globalStyle": {

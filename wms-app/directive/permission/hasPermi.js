@@ -5,10 +5,8 @@
 import store from '@/store'
 
 export function hasPermi(value) {
-	console.log(22222)
 	const allPermission = '*:*:*'
 	const permissions = store.getters && store.getters.permissions
-	console.log(permissions, 'permissions')
 	if (value && value instanceof Array && value.length > 0) {
 		const permissionFlag = value
 
