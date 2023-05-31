@@ -25,6 +25,9 @@
             <a-tag color="green" v-if="record.status===3">
               {{ text }}
             </a-tag>
+            <a-tag color="red" v-if="record.status===4">
+              {{ text }}
+            </a-tag>
           </div>
         </template>
         <template slot="reserveDate" slot-scope="text, record">

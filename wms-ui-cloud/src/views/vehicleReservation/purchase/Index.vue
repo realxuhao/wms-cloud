@@ -5,17 +5,17 @@
 
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
-          <a-col :span="4">
+          <a-col :span="5">
             <a-form-model-item label="订单PO号">
               <a-input v-model="queryForm.poNo" placeholder="订单PO号" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
+          <a-col :span="5">
             <a-form-model-item label="订单行号">
               <a-input v-model="queryForm.poItem" placeholder="订单行号" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
+          <a-col :span="5">
             <a-form-model-item label="供应商名称">
               <a-input v-model="queryForm.supplier" placeholder="供应商名称" allow-clear/>
             </a-form-model-item>
@@ -24,7 +24,17 @@
             <a-form-model-item label="料号">
               <a-input v-model="queryForm.sapCode" placeholder="料号" allow-clear/>
             </a-form-model-item>
-          </a-col>
+          </a-col>          
+          <template v-if="advanced">
+            <a-col :span="8">
+              <a-form-item label="预计到货日期" >
+                <a-range-picker
+                  format="YYYY-MM-DD"
+                  v-model="queryForm.date"
+                />
+              </a-form-item>
+            </a-col>
+          </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
@@ -37,13 +47,22 @@
           </a-col>
         </a-row>
       </a-form>
-      <div class="sync-div">
-        <a-button type="primary" class="m-r-8" @click="handleSync" :loading="syncLoading" v-hasPermi="['purchase:order:sync']">
-          <a-icon type="redo"></a-icon>
-          同步数据
-        </a-button>
-        <span>共 {{ paginationTotal }} 条</span>
-      </div>
+      
+      <a-row :gutter="24">        
+        <a-col span="4">
+          <div class="sync-div">
+            <a-button type="primary" class="m-r-8" @click="handleSync" :loading="syncLoading" v-hasPermi="['purchase:order:sync']">
+              <a-icon type="redo"></a-icon>
+              同步数据
+            </a-button>
+            <span>共 {{ paginationTotal }} 条</span>
+            
+          </div>
+        </a-col>
+        <a-col span="4" offset="16">
+          <a-button style="float: right;" :type="errorBtbType" @click="handleSearchErrorNo">异常PO单查询</a-button>
+        </a-col>
+      </a-row>    
       <a-table
         :columns="columns"
         :data-source="list"
@@ -111,6 +130,19 @@
       />
       <template slot="footer">
         <a-button @click="closeDetails">关闭</a-button>
+      </template>
+    </a-modal>
+
+    <a-modal v-model="errorListVisible" title="异常PO单列表">
+      <a-list :grid="{ gutter: 16, column: 4 }" :data-source="errorList">
+        <a-list-item slot="renderItem" slot-scope="item">
+          {{ item }}
+        </a-list-item>
+      </a-list>
+      <template slot="footer">
+        <a-button key="back" @click="handleErrorCancel">
+          关闭
+        </a-button>
       </template>
     </a-modal>
   </div>
@@ -229,7 +261,8 @@ const queryFormAttr = () => {
     poNo: '',
     poItem: '',
     supplier: '',
-    sapCode: ''
+    sapCode: '',
+    date: [],
   }
 }
 
@@ -253,7 +286,10 @@ export default {
       /** 预约单详情弹窗是否显示 */
       isVisibleDetails: false,
       syncLoading: false,
-      purchaseId: 0
+      purchaseId: 0,
+      errorList: [],
+      errorListVisible: false,
+      errorBtbType: 'dashed'
 
     }
   },
@@ -294,12 +330,34 @@ export default {
       }
       this.syncLoading = false
     },
+    async handleSearchErrorNo(){
+      await this.getErrorList()
+      this.errorListVisible = true
+    },
+    handleErrorCancel(){
+      this.errorListVisible = false
+    },
+    async getErrorList(){
+      const { data } = await this.$store.dispatch('purchase/getErrorPoCode')
+      this.errorList = data == undefined ? [] : data
+      if(this.errorList.length > 0){
+        this.errorBtbType = 'danger'
+      }else{
+        this.errorBtbType = 'dashed'
+      }
+    },
     /** 查询采购订单列表 */
     async loadTableList () {
       try {
         this.tableLoading = true
 
-        const { data: { rows, total } } = await this.$store.dispatch('purchase/getList', this.queryForm)
+
+        const { date = [] } = this.queryForm
+        const startDate = date.length > 0 ? date[0].format('yyyy-MM-DD') : undefined
+        const endDate = date.length > 0 ? date[1].format('yyyy-MM-DD') : undefined
+
+        const options = { ..._.omit(this.queryForm, ['date']), startDate, endDate }
+        const { data: { rows, total } } = await this.$store.dispatch('purchase/getList',options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -310,6 +368,7 @@ export default {
     },
     async loadData () {
       this.loadTableList()
+      this.getErrorList()
     }
   },
   mounted () {

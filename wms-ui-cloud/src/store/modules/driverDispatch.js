@@ -10,8 +10,8 @@ const driverDispatch = {
   },
 
   actions: {
-    async getList ({ commit }, parameter, options) {
-      const data = await driverDispatchService.getList(parameter, options)
+    async getList ({ commit }, options) {
+      const data = await driverDispatchService.getList(options.parameter, options.param)
       return data
     },
     async getTodaySignlist ({ commit }, options) {

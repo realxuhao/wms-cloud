@@ -81,6 +81,9 @@
                 <a-tag color="blue" v-if="record.status===2">
                   {{ text }}
                 </a-tag>
+                <a-tag color="red" v-if="record.status===3">
+                  {{ text }}
+                </a-tag>
               </div>
             </template>
             <template slot="dockCode" slot-scope="text">
