@@ -58,6 +58,12 @@
             <if test="supplier != null  and supplier != ''">and supplier_name like concat('%', #{supplier}, '%')</if>
             <if test="sapCode != null  and sapCode != ''">and material_code like concat('%', #{sapCode}, '%')</if>
             <if test="status != null ">and status = #{status}</if>
+            <if test="startDate != null">
+               and delivery_date <![CDATA[ >= ]]> #{startDate}
+            </if>
+            <if test="endDate != null">
+               and delivery_date <![CDATA[ <= ]]> #{endDate}
+            </if>
         </where>
     </select>
 

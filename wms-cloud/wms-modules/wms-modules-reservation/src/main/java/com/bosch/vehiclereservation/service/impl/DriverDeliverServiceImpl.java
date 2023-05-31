@@ -86,15 +86,37 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
         if (driverDeliver == null) {
             throw new ServiceException("预约单不存在！");
         }
-        if (driverDeliver.getStatus() != SignStatusEnum.NOT_SIGN.getCode()) {
+        /*if (driverDeliver.getStatus() != SignStatusEnum.NOT_SIGN.getCode()) {
             throw new ServiceException("订单已到货，不允许删除！");
-        }
-        boolean res = super.removeById(deliverId);
+        }*/
+       /* boolean res = super.removeById(deliverId);
         if (res) {
             QueryWrapper<SupplierReserve> wrapper = new QueryWrapper<>();
             wrapper.eq("reserve_no", driverDeliver.getReserveNo());
             Optional<SupplierReserve> supplierReserve = supplierReserveMapper.selectList(wrapper).stream().findFirst();
             if (supplierReserve.isPresent() && supplierReserve.get().getStatus() == ReserveStatusEnum.ON_ORDER.getCode()) {
+                supplierReserve.get().setStatus(ReserveStatusEnum.RESERVED.getCode());
+                supplierReserveMapper.updateById(supplierReserve.get());
+            }
+        }*/
+        QueryWrapper<SupplierReserve> wrapper = new QueryWrapper<>();
+        wrapper.eq("reserve_no", driverDeliver.getReserveNo());
+        Optional<SupplierReserve> supplierReserve = supplierReserveMapper.selectList(wrapper).stream().findFirst();
+        if (supplierReserve.isPresent() && supplierReserve.get().getStatus() == ReserveStatusEnum.COMPLETE.getCode()) {
+            throw new ServiceException("订单已完成，不允许删除！");
+        }
+        boolean res = super.removeById(deliverId);
+        if (res) {
+            if (supplierReserve.isPresent()) {
+                //已签到删除排队信息
+                if (supplierReserve.get().getStatus() == ReserveStatusEnum.ARRIVAL.getCode()) {
+                    QueryWrapper<DriverDispatch> wrapper1 = new QueryWrapper<>();
+                    wrapper1.eq("driver_id", driverDeliver.getDeliverId());
+                    Optional<DriverDispatch> driverDispatch = driverDispatchMapper.selectList(wrapper1).stream().findFirst();
+                    if (driverDispatch.isPresent()) {
+                        int i = driverDispatchMapper.deleteById(driverDispatch.get().getDispatchId());
+                    }
+                }
                 supplierReserve.get().setStatus(ReserveStatusEnum.RESERVED.getCode());
                 supplierReserveMapper.updateById(supplierReserve.get());
             }

@@ -145,7 +145,7 @@ export default {
           { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
         ],
         email: [
-          { required: true, message: '邮箱不能为空', trigger: 'blur' },
+          // { required: true, message: '邮箱不能为空', trigger: 'blur' },
           {
             type: 'email',
             message: '请正确填写邮箱地址',
@@ -153,7 +153,7 @@ export default {
           }
         ],
         phonenumber: [
-          { required: true, message: '手机号不能为空', trigger: 'blur' },
+          // { required: true, message: '手机号不能为空', trigger: 'blur' },
           {
             pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
             message: '请正确填写手机号',
