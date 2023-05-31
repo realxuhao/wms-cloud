@@ -97,7 +97,7 @@ public class ReturnMaterialController extends BaseController {
      */
     @Log(title = "叫料需求", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
-    @ApiOperation("叫料需求列表导出")
+    @ApiOperation("退库记录导出")
     public void export(HttpServletResponse response, @RequestBody MaterialReturnQueryDTO queryDTO) {
         List<MaterialReturnVO> materialReturnVOS = materialReturnService.list(queryDTO);
         ExcelUtil<MaterialReturnVO> util = new ExcelUtil<>(MaterialReturnVO.class);
