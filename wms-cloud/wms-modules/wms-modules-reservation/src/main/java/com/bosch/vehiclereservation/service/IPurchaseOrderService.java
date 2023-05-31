@@ -40,4 +40,10 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      * @return
      */
     public List<SupplierReserveDetailVO> getSupplierReserveList(Long purchaseId);
+
+    /**
+     * 获取错误状态的采购单PO号
+     * @return
+     */
+    public List<String> getAllErrorPoCode();
 }

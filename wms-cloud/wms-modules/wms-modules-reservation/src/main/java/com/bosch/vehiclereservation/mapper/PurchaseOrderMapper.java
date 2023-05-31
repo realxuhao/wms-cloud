@@ -31,4 +31,5 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
      */
     public List<PurchaseOrder> selectSupplierPurchaseOrder(PurchaseOrder purchaseOrder);
 
+    public List<String> selectAllErrorPoCode();
 }
