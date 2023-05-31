@@ -62,16 +62,15 @@
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a-popconfirm
-              v-if="record.status == 0"
               title="确认要取消吗?"
               ok-text="确认"
               cancel-text="取消"
-              @confirm="record.status == 0 && handleDelete(record)"
+              @confirm="handleDelete(record)"
             >
               <a class="danger-color"><a-icon class="m-r-4" type="delete" />取消</a>
             </a-popconfirm>
             <!-- 状态不为0(即该供应商预约单未被司机预约或签到)时，不能删除，按钮灰化 -->
-            <a v-if="record.status != 0" class="not-danger-color"><a-icon class="m-r-4" type="delete" />取消</a>
+            <!-- <a class="not-danger-color"><a-icon class="m-r-4" type="delete" />取消</a> -->
           </div>
         </template>
       </a-table>

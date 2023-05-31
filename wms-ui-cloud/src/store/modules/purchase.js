@@ -29,6 +29,10 @@ const purchase = {
     async syncdata ({ commit }) {
       const data = await purchaseService.syncdata()
       return data
+    },
+    async getErrorPoCode ({ commit }) {
+      const data = await purchaseService.getErrorPoCode()
+      return data
     }
   }
 }

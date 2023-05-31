@@ -1,6 +1,11 @@
 <template>
   <div class="wrapper">
     <div class="table-content">
+      <a-row :gutter="24">        
+        <a-col span="4" offset="20">
+          <a-button style="float: right;" :type="errorBtbType" @click="handleSearchErrorNo">异常预约单查询</a-button>
+        </a-col>
+      </a-row>    
       <a-tabs defaultActiveKey="1" @change="callback" v-show="!isVisibleSupplierName">
         <a-tab-pane key="1" tab="可预约订单列表">
           <PurchaseTable
@@ -25,7 +30,19 @@
         </a-tab-pane>
       </a-tabs>
 
-      <a-modal
+      <a-modal v-model="errorListVisible" title="异常预约单列表">
+        <a-list :grid="{ gutter: 16, column: 4 }" :data-source="errorList">
+          <a-list-item slot="renderItem" slot-scope="item">
+            {{ item }}
+          </a-list-item>
+        </a-list>
+        <template slot="footer">
+          <a-button key="back" @click="handleErrorCancel">
+            关闭
+          </a-button>
+        </template>
+      </a-modal>
+      <!-- <a-modal
         v-drag-modal
         v-model="isVisibleSupplierName"
         title="提示"
@@ -38,7 +55,7 @@
         <a-input
           placeholder="请输入供应商名称"
           v-model="supplierName"/>
-      </a-modal>
+      </a-modal> -->
     </div>
   </div>
 </template>
@@ -61,7 +78,7 @@ export default {
       /** 选中标签页 */
       activeKey: 1,
       /** 输入供应商名称弹窗是否显示 */
-      isVisibleSupplierName: true,
+      isVisibleSupplierName: false,
       /** 输入的供应商名称，后续需要做精确查询 */
       supplierName: '',
       /** 重新加载可预约订单列表参数 */
@@ -69,15 +86,22 @@ export default {
       /** 重新加载已预约参数 */
       reloadReserve: false,
       /** 重新加载司机预约信息参数 */
-      reloadDeliver: false
+      reloadDeliver: false,      
+      errorList: [],
+      errorListVisible: false,
+      errorBtbType: 'dashed'
+
     }
   },
   model: {},
   computed: {},
+  mounted () {
+    this.supplierName = this.$store.getters.nickname
+    this.getErrorList()
+  },
   methods: {
     handleClose () {
       this.isVisibleSupplierName = false
-      this.supplierName = ''
     },
     handleSubmitSupplierName () {
       if (this.supplierName === '') {
@@ -86,6 +110,22 @@ export default {
       }
       this.isVisibleSupplierName = false
     },
+    async handleSearchErrorNo(){
+      await this.getErrorList()
+      this.errorListVisible = true
+    },
+    handleErrorCancel(){
+      this.errorListVisible = false
+    },
+    async getErrorList(){
+      const { data } = await this.$store.dispatch('supplierReserve/getErrorData', this.supplierName)
+      this.errorList = data == undefined ? [] : data
+      if(this.errorList.length > 0){
+        this.errorBtbType = 'danger'
+      }else{
+        this.errorBtbType = 'dashed'
+      }
+    },
     callback (key) {
       if (key === '1') {
         this.reloadPurchase = !this.reloadPurchase
@@ -93,7 +133,7 @@ export default {
       if (key === '2') {
         this.reloadReserve = !this.reloadReserve
       }
-      if (key === '2') {
+      if (key === '3') {
         this.reloadDeliver = !this.reloadDeliver
       }
     }

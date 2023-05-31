@@ -470,10 +470,8 @@ export default {
     this.preOptionList()
   },
   watch: {
-    isVisible (val) {
-      if (val && this.supplierName) {
-        this.loadData()
-      }
+    supplierName (val) {
+      this.loadData()
     },
     reloadPurchase (val) {
       if (this.supplierName) {

@@ -34,10 +34,17 @@ const syncdata = async () => {
   return data
 }
 
+const getErrorPoCode = async () => {
+  const url = `/purchase/getErrorPoCode`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
 export const purchaseService = {
   getList,
   getListBySupplierName,
   close,
   detail,
-  syncdata
+  syncdata,
+  getErrorPoCode
 }

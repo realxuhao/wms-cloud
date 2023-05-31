@@ -35,10 +35,17 @@ const getDetailsList = async (reserveNo) => {
   return data
 }
 
+const getErrorData = async (name) => {
+  const url = `/supplierReserve/selectErrorData/${name}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
 export const supplierReserveService = {
   getList,
   addList,
   getListByParam,
   destroy,
-  getDetailsList
+  getDetailsList,
+  getErrorData
 }
