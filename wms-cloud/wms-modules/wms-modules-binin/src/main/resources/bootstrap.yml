@@ -40,6 +40,12 @@ spring:
         # 控制台地址
         dashboard: 127.0.0.1:8718
 
+
 feign:
   sentinel:
     enabled: true
+  client:
+    config:
+      default:
+        connect-timeout: 50000
+        read-timeout: 50000

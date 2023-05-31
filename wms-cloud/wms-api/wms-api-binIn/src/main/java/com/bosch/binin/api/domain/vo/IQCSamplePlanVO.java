@@ -41,6 +41,9 @@ public class IQCSamplePlanVO {
     @ApiModelProperty(value = "仓库编码")
     @Excel(name = "仓库编码")
     private String wareCode;
+    @ApiModelProperty(value = "区域编码")
+    @Excel(name = "区域编码")
+    private String areaCode;
     @ApiModelProperty(value = "数量")
     @Excel(name = "数量")
     private Double quantity;

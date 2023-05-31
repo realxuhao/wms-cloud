@@ -16,6 +16,7 @@ import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.dto.IQCDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.IQCVO;
+import com.ruoyi.common.core.constant.AreaListConstants;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
@@ -31,10 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -47,6 +45,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements IStockService {
+
+    private static Map<String, AreaVO> areaMap = new HashMap();
 
     @Autowired
     private StockMapper stockMapper;
@@ -227,7 +227,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                 .eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode())
                 .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<Stock> list = this.list(queryWrapper);
-        double sum = list.stream().filter(item -> "7752".equals(item.getPlantNb())).mapToDouble(Stock::getAvailableStock).sum();
+        double sum = list.stream().filter(item -> AreaListConstants.mainAreaList.contains(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
         return sum;
     }
 
@@ -237,25 +237,26 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
         list.stream().forEach(item -> {
             BinIn binIn = new BinIn();
-            binIn.setSsccNumber(item.getSSCCNumber());
+            binIn.setSsccNumber(item.getSsccNumber());
             binIn.setQuantity(Double.valueOf(item.getRemainingQty()));
-            binIn.setMaterialNb(item.getSAPMaterialCode());
-            binIn.setBatchNb(item.getSAPBatchNumber());
+            binIn.setMaterialNb(item.getSapMaterialCode());
+            binIn.setBatchNb(item.getSapBatchNumber());
             try {
                 binIn.setExpireDate(DateUtils.parseStringDate(item.getDluo()));
             } catch (ParseException e) {
                 e.getMessage();
             }
 //            binIn.setPalletType(materialVO.getPalletType());
-            binIn.setAreaCode(item.getSAPStorageLocation());
+            binIn.setAreaCode(item.getSapStorageLocation());
             binIn.setActualBinCode(item.getBin());
 
             binIn.setStatus(BinInStatusEnum.FINISH.value());
+            binIn.setExpireDate(DateUtils.parseDate(item.getDluo()));
 
-            binIn.setWareCode(getAreaVo(item.getSAPStorageLocation()).getWareCode());
+            binIn.setWareCode(getAreaVo(item.getSapStorageLocation()).getWareCode());
 
             binIn.setMoveType(MoveTypeEnums.BININ.getCode());
-            binIn.setFromPurchaseOrder(item.getPONumber());
+            binIn.setFromPurchaseOrder(item.getPoNumber());
             binIn.setPlantNb(item.getPlantNb());
             binIn.setQualityStatus(item.getR3StockStatus());
             binIns.add(binIn);
@@ -290,6 +291,8 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             stockList.add(stock);
         });
         this.saveBatch(stockList);
+
+        areaMap.clear();
     }
 
     @Override
@@ -315,14 +318,19 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
 
     private AreaVO getAreaVo(String areaCode) {
-        R<AreaVO> byCode = remoteMasterDataService.getByCode(areaCode);
-        if (byCode == null || !byCode.isSuccess()) {
-            throw new ServiceException("获取区域详情失败");
+        if (areaMap.containsKey(areaCode)){
+            return areaMap.get(areaCode);
+        }else {
+            R<AreaVO> byCode = remoteMasterDataService.getByCode(areaCode);
+            if (byCode == null || !byCode.isSuccess()) {
+                throw new ServiceException("获取区域详情失败");
+            }
+            AreaVO areaVO = byCode.getData();
+            if (areaVO == null) {
+                throw new ServiceException("不存在编码为:" + areaCode + "的区域");
+            }
+            areaMap.put(areaCode,areaVO);
+            return areaVO;
         }
-        AreaVO areaVO = byCode.getData();
-        if (areaVO == null) {
-            throw new ServiceException("不存在编码为:" + areaCode + "的区域");
-        }
-        return areaVO;
     }
 }

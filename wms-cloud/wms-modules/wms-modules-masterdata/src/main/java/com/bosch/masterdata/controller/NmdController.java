@@ -15,6 +15,7 @@ import com.bosch.masterdata.api.domain.vo.NmdVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.domain.vo.TimeWindowVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
+import com.bosch.masterdata.api.enumeration.NmdClassificationEnum;
 import com.bosch.masterdata.service.IMoveTypeService;
 import com.bosch.masterdata.service.INmdService;
 import com.bosch.masterdata.service.ITimeWindowService;
@@ -23,7 +24,9 @@ import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
@@ -33,6 +36,7 @@ import com.ruoyi.common.security.annotation.RequiresPermissions;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -42,6 +46,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 道口时间窗口Controller
@@ -96,6 +101,11 @@ public class NmdController extends BaseController {
     @PostMapping
     @ApiOperation("新增")
     public AjaxResult add(@RequestBody NmdDTO nmdDTO) {
+        if(nmdDTO.getClassification()== NmdClassificationEnum.A.getCode()){
+            if(StringUtils.isEmpty(nmdDTO.getLevel())|| Objects.isNull(nmdDTO.getPlan())){
+                throw new ServiceException("类型为Components时，其他选项不可为空。");
+            }
+        }
         return toAjax(nmdService.insertNmd(nmdDTO));
     }
 

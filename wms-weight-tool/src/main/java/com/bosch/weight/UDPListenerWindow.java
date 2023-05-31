@@ -2,9 +2,12 @@ package com.bosch.weight;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.template.engine.freemarker.FreemarkerEngine;
-import com.bosch.weight.util.PropertiesConstants;
-import com.bosch.weight.util.PropertiesUtils;
-import com.bosch.weight.util.ReceiveUtil;
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
+import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONUtil;
+import com.bosch.weight.dto.WeightDTO;
+import com.bosch.weight.util.*;
 import org.apache.log4j.Logger;
 
 import java.awt.*;
@@ -15,6 +18,8 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.*;
 
@@ -128,7 +133,6 @@ public class UDPListenerWindow {
     }
 
 
-
     private void initialize() {
 
 
@@ -170,7 +174,7 @@ public class UDPListenerWindow {
                                     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                                     socket1.receive(packet);
                                     ReceiveUtil.listenPort(packet, buffer);
-//                                    System.out.println("Received from port 1: " + new String(packet.getData()));
+                                    System.out.println("Received from port 1: " + "长度为:" + new String(packet.getData()).length());
                                 } catch (Exception e1) {
                                     e1.printStackTrace();
                                     JOptionPane.showMessageDialog(panel, e1.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
@@ -189,6 +193,8 @@ public class UDPListenerWindow {
                 isSocket1Connected = false;
                 socket1.close();
                 button1.setText("Start");
+
+
             }
         });
 

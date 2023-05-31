@@ -1,10 +1,13 @@
 package com.bosch.weight.util;
 
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpResponse;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONUtil;
 import com.bosch.weight.dto.WeightDTO;
 import org.apache.log4j.Logger;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.DatagramPacket;
@@ -22,19 +25,53 @@ import java.util.*;
 public class ReceiveUtil {
 
     private static Logger logger = Logger.getLogger(ReceiveUtil.class);
+    private static Map headerMap = new HashMap<>();
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
 
-//        // 1.创建接受对象
-        DatagramSocket socket1 = new DatagramSocket(6666);
 
-//        listenPort(socket1);
+////        // 1.创建接受对象
+//        DatagramSocket socket1 = new DatagramSocket(6666);
+//
+////        listenPort(socket1);
+//
+//        String[] s = new String[]{"53", "54", "41", "54", "45", "3A", "20", "32", "33", "2D", "30", "35", "2D", "30", "38", "20", "31", "36", "3A", "34", "31", "3A", "30", "33", "00", "8E", "04", "01", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "24", "00", "00", "00", "8D", "7B", "34", "44", "D2", "02", "00", "00", "00", "00", "00", "00", "D2", "02", "00", "00", "02", "66", "96", "5F", "45", "02", "00", "D8", "97", "45", "02", "00", "80", "18", "45", "02", "00", "10", "E1", "44", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "00", "0E", "77"};
+//        while (true) {
+//            if (validMsg(s)) {
+//                logger.info("校验成功");
+//
+//                Double totalWeight = getTotalWeight(s, 48, 51);
+//                WeightDTO weightDTO = new WeightDTO("localhost", 8888, totalWeight);
+//                System.out.println(JSONUtil.toJsonStr(weightDTO));
+//                //称重>0的时候，进行请求
+////            if (weightDTO.getTotalWeight() > 0) {
+//                logger.info("收到有效称重数据:" + JSONUtil.toJsonStr(weightDTO));
+//                //查看缓存，如果两分钟内，如果实现相同数据则不进行上传
+//                if (!Objects.isNull(CacheUtil.get(weightDTO.getIp() + ":" + weightDTO.getPort()))
+//                        && CacheUtil.get(weightDTO.getIp() + ":" + weightDTO.getPort()).equals(weightDTO.getTotalWeight())) {
+//                    return;
+//                } else {
+//                    //不存在缓存，那么就上传数据。
+//                    FlexibleThreadPool.submitTask(() -> {
+//                        String body = HttpUtil.createPost(Constants.uploadUrl)
+//                                .contentType("application/json")
+//                                .body(JSONUtil.toJsonStr(weightDTO)).execute().body();
+//                        System.out.println(body);
+//                    });
+//                    //数据放到缓存
+//                    CacheUtil.put(weightDTO.getIp() + ":" + weightDTO.getPort(), weightDTO.getTotalWeight());
+//                }
+////            }
+//
+//            }
+//            Thread.sleep(1000);
+//        }
 
 
     }
 
-    public static void listenPort(DatagramPacket packet, byte[] buffer) throws IOException {
+    public static void listenPort(DatagramPacket packet, byte[] buffer) throws IOException, InterruptedException {
 
 
         // 4.取出数据
@@ -73,7 +110,9 @@ public class ReceiveUtil {
         return hex.toString();
     }
 
-    private static void task(String rs, DatagramPacket packet) throws IOException {
+
+    private static void task(String rs, DatagramPacket packet) throws IOException, InterruptedException {
+        headerMap.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
 
 
         String[] s = rs.split(" ");
@@ -85,24 +124,52 @@ public class ReceiveUtil {
             int port = packet.getPort();
             Double totalWeight = getTotalWeight(s, 48, 51);
             WeightDTO weightDTO = new WeightDTO(hostAddress, port, totalWeight);
-            System.out.println(JSONUtil.toJsonStr(weightDTO));
             //称重>0的时候，进行请求
-            if (weightDTO.getTotalWeight() > 0) {
-                logger.info("收到有效称重数据:" + JSONUtil.toJsonStr(weightDTO));
-                //查看缓存，如果两分钟内，如果实现相同数据则不进行上传
-                if (!Objects.isNull(CacheUtil.get(weightDTO.getIp() + ":" + weightDTO.getPort()))) {
-                    return;
-                } else {
-                    //不存在缓存，那么就上传数据。
-                    FlexibleThreadPool.submitTask(() -> {
-                        HttpUtil.createPost(Constants.uploadUrl)
-                                .contentType("application/json")
-                                .body(JSONUtil.toJsonStr(weightDTO)).execute().body();
-                    });
-                    //数据放到缓存
-                    CacheUtil.put(weightDTO.getIp() + ":" + weightDTO.getPort(), JSONUtil.toJsonStr(weightDTO));
+//            if (weightDTO.getTotalWeight() > 0) {
+            logger.info("收到有效称重数据:" + JSONUtil.toJsonStr(weightDTO));
+            //查看缓存，如果两分钟内，如果实现相同数据则不进行上传
+            if (!Objects.isNull(CacheUtil.get(weightDTO.getIp() + ":" + weightDTO.getPort())) &&
+                    CacheUtil.get(weightDTO.getIp() + ":" + weightDTO.getPort()).equals(weightDTO.getTotalWeight())) {
+                return;
+            } else {
+                //不存在缓存，那么就上传数据。
+                int maxRetries = 3; // 最大重试次数
+                int retryCount = 0; // 当前重试次数
+                boolean success = false; // 是否请求成功
+                Map headerMap = new HashMap<>();
+                headerMap.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
+
+                while (retryCount < maxRetries && !success) {
+                    try {
+                        // 发送请求
+                        HttpResponse response = HttpRequest.post(Constants.uploadUrl).body(JSONUtil.toJsonStr(weightDTO)).addHeaders(headerMap).execute();
+
+                        // 检查响应状态码
+                        int statusCode = response.getStatus();
+                        if (statusCode == 200) {
+                            success = true; // 请求成功
+                            String result = response.body();
+                            logger.info(result);
+                        } else {
+                            // 请求失败，进行重试
+                            retryCount++;
+                            logger.info("Request failed. Retrying... Retry Count: " + retryCount);
+                        }
+                    } catch (Exception e) {
+                        // 请求异常，进行重试
+                        retryCount++;
+                        logger.error("Request failed with exception. Retrying... Retry Count: " + retryCount);
+                    }
                 }
+
+                if (!success) {
+                    logger.error("Request failed after maximum retries.");
+                }
+
+                //数据放到缓存
+                CacheUtil.put(weightDTO.getIp() + ":" + weightDTO.getPort(), weightDTO.getTotalWeight());
             }
+//            }
 
         } else {
             logger.info("valid failed");
@@ -130,7 +197,7 @@ public class ReceiveUtil {
     }
 
     private static Boolean validMsg(String[] s) {
-        logger.info("start valid data :" + JSONUtil.toJsonStr(s));
+        logger.info("start valid data :" + s.length);
         //长度校验
         if (s.length != 142) {
             return false;

@@ -2,6 +2,7 @@ package com.bosch.binin.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bosch.binin.api.domain.MaterialKanban;
+import com.bosch.binin.api.domain.TranshipmentOrder;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
@@ -172,9 +173,7 @@ public class WareShiftController extends BaseController {
     @PutMapping(value = "/cancel/{id}")
     @Transactional(rollbackFor = Exception.class)
     public R cancelWareShift(@PathVariable("id") Long id) {
-
         shiftService.cancelWareShift(id);
-
         return R.ok();
     }
 
@@ -186,6 +185,14 @@ public class WareShiftController extends BaseController {
         shiftService.performBinIn(binInDTO);
         return R.ok();
     }
+
+    @PostMapping(value = "/batchBinIn")
+    @ApiOperation("批量上架到区域")
+    public R batchPerformBinIn(@RequestBody WareShiftBatchBinInDTO dto) {
+        shiftService.batchPerformBinIn(dto);
+        return R.ok();
+    }
+
 
 
     /**
@@ -200,6 +207,17 @@ public class WareShiftController extends BaseController {
         ExcelUtil<WareShiftVO> util = new ExcelUtil<>(WareShiftVO.class);
         util.exportExcel(response, wareShiftList, "移库任务列表");
     }
+
+
+
+
+
+
+
+
+
+
+
 
 
 }
