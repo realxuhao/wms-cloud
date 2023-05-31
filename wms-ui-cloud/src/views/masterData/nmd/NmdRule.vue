@@ -158,20 +158,20 @@ const category = [
 
 const checkLevel = [
   {
-    text: 'S-1',
-    value: 'S-1'
+    text: 's-1',
+    value: 's-1'
   },
   {
-    text: 'S-2',
-    value: 'S-2'
+    text: 's-2',
+    value: 's-2'
   },
   {
-    text: 'S-3',
-    value: 'S-3'
+    text: 's-3',
+    value: 's-3'
   },
   {
-    text: 'S-4',
-    value: 'S-4'
+    text: 's-4',
+    value: 's-4'
   },
   {
     text: 'Ⅰ',

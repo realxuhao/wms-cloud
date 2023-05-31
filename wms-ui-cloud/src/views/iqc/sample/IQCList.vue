@@ -245,12 +245,12 @@ const statusTextMap = {
 
 const statusColorMap = {
   '-1': '#ccc',
-  0: 'orange',
+  0: '#f1c232',
   1: 'orange',
   2: 'orange',
   3: 'green',
   4: 'orange',
-  5: 'orange'
+  5: '#00ffff'
 }
 
 const columns = [

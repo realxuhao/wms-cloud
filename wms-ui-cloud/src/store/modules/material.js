@@ -60,7 +60,7 @@ const material = {
       return data
     },
     async uploadMaterialBinBatchUpdate ({ commit }, formdata) {
-      const data = await materialService.uploadBatchUpdate(formdata)
+      const data = await materialService.uploadMaterialBinBatchUpdate(formdata)
       return data
     },
     async upload ({ commit }, formdata) {
