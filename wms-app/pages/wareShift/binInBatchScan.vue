@@ -9,12 +9,17 @@
 </template>
 
 <script>
-import Message from '@/components/Message';
 import Bus from '@/utils/bus';
+import Message from '@/components/Message';
 
 export default {
 	components: {
 		Message
+	},
+	data() {
+		return {
+			code: ''
+		};
 	},
 	onShow() {
 		Bus.$on('scancodedate', this.scanCodeCallback);
@@ -22,21 +27,15 @@ export default {
 	destroyed() {
 		Bus.$off('scancodedate');
 	},
-	data() {
-		return {
-			code: ''
-		};
-	},
 	methods: {
 		async scanCodeCallback(data) {
 			Bus.$emit('stopScan');
-			this.code = data.code;
-			this.handleGoto();
+			this.handleGoto(data.code);
 		},
-		handleGoto() {
-			// Bus.$off('scancodedate', this.scanCodeCallback);
-			uni.redirectTo({
-				url: `/pages/wareShift/cancellingStocksOperation?barCode=${this.code}`
+
+		handleGoto(code) {
+			uni.navigateTo({
+				url: `/pages/wareShift/binInBatchOperation?barCode=${code}`
 			});
 			Bus.$emit('startScan');
 		}
@@ -48,12 +47,6 @@ export default {
 .wrapper {
 	display: flex;
 	flex-direction: column;
-}
-/deep/.uni-navbar--shadow {
-	box-shadow: none;
-}
-/deep/.uni-navbar--border {
-	border: none;
 }
 
 .content {

@@ -37,6 +37,7 @@ export default {
 			uni.navigateTo({
 				url: `/pages/stockTake/stockTakeTaskOperation?barCode=${code}`
 			});
+			Bus.$emit('startScan');
 		}
 	}
 };

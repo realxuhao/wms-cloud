@@ -1,5 +1,5 @@
 <template>
-	<my-page nav-title="执行盘点">
+	<my-page nav-title="库存调整">
 		<view class="main" slot="page-main">
 			<view class="content">
 				<uni-forms :label-width="80" ref="binInForm" :rules="formRules" :modelValue="form" label-position="left">
