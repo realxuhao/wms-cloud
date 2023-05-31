@@ -73,4 +73,10 @@ public interface IDriverDispatchService extends IService<DriverDispatch> {
      * @return
      */
     boolean sendMsgToWx(DispatchSendWxDTO dispatchSendWxDTO);
+
+    /**
+     * 处理异常超时数据
+     * @return
+     */
+    public void syncErrorData();
 }

@@ -92,6 +92,9 @@ public class SupplierReserveDetailVO {
             case 3:
                 this.statusDes = ReserveStatusEnum.COMPLETE.getDesc();
                 break;
+            case 4:
+                this.statusDes = ReserveStatusEnum.ERROR.getDesc();
+                break;
         }
     }
 }

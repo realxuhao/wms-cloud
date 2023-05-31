@@ -18,6 +18,7 @@ import com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO;
 import com.bosch.vehiclereservation.api.enumeration.DispatchStatusEnum;
 import com.bosch.vehiclereservation.api.enumeration.DispatchTypeEnum;
 import com.bosch.vehiclereservation.api.enumeration.ReserveStatusEnum;
+import com.bosch.vehiclereservation.api.enumeration.ReserveTypeEnum;
 import com.bosch.vehiclereservation.mapper.DriverDeliverMapper;
 import com.bosch.vehiclereservation.mapper.DriverDispatchMapper;
 import com.bosch.vehiclereservation.mapper.SupplierReserveMapper;
@@ -33,6 +34,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static javax.xml.transform.OutputKeys.MEDIA_TYPE;
 
@@ -236,6 +239,44 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
         } catch (IOException e) {
             throw new ServiceException("推送微信消息失败！");
         }
+    }
+
+    @Override
+    public void syncErrorData() {
+        // 查询所有创建时间超过当天24点的未完成的vr_driver_dispatch
+        QueryWrapper<DriverDispatch> wrapper = new QueryWrapper<>();
+        wrapper.and(q -> q.eq("status", DispatchStatusEnum.WAITE.getCode()).or().eq("status", DispatchStatusEnum.ENTER.getCode()))
+                .le("create_time", DateUtils.parseDate(DateUtils.getDate() + " 00:00:00"));
+        List<DriverDispatch> driverDispatches = driverDispatchMapper.selectList(wrapper);
+        driverDispatches.forEach(c -> {
+            c.setStatus(DispatchStatusEnum.ERROR.getCode());
+        });
+        if (driverDispatches.size() == 0) {
+            return;
+        }
+        super.saveOrUpdateBatch(driverDispatches);
+        // 司机预约单id
+        List<Long> driverIdList = driverDispatches.stream().filter(c -> c.getDriverType().equals(DispatchTypeEnum.DELIVER.getCode()))
+                .map(c -> c.getDriverId()).collect(Collectors.toList());
+
+        if (driverIdList.size() == 0) {
+            return;
+        }
+        QueryWrapper<DriverDeliver> deliverQueryWrapper = new QueryWrapper<>();
+        deliverQueryWrapper.in("deliver_id", driverIdList);
+        deliverQueryWrapper.eq("reserve_type", ReserveTypeEnum.RESERVED.getCode());
+        List<String> reserveNoList = driverDeliverMapper.selectList(deliverQueryWrapper).stream().map(c -> c.getReserveNo()).collect(Collectors.toList());
+        if (reserveNoList.size() == 0) {
+            return;
+        }
+        QueryWrapper<SupplierReserve> supplierReserveQueryWrapper = new QueryWrapper<>();
+        supplierReserveQueryWrapper.in("reserve_no", reserveNoList);
+        supplierReserveQueryWrapper.ne("status", ReserveStatusEnum.ERROR.getCode());
+        List<SupplierReserve> supplierReserves = supplierReserveMapper.selectList(supplierReserveQueryWrapper);
+        supplierReserves.forEach(c -> {
+            c.setStatus(ReserveStatusEnum.ERROR.getCode());
+            supplierReserveMapper.updateById(c);
+        });
     }
 
 }
