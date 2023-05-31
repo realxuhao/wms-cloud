@@ -1,44 +1,28 @@
 <template>
-  <a-modal
-    title="跑需求"
-    :visible="visible"
-    :confirm-loading="submitLoading"
-    width="70%"
-    :footer="false"
-    @cancel="onClose"
-  >
+  <a-modal title="需求计算" :visible="visible" :confirm-loading="submitLoading" width="70%" :footer="false" @cancel="onClose">
     <div class="action-content">
-      <a-button type="primary" :loading="createMoveTaskLoading" :disabled="!hasSelected" style="margin-right:8px" @click="handleCreateMoveTask">
+      <a-button type="primary" :loading="createMoveTaskLoading" :disabled="!hasSelected" style="margin-right:8px"
+        @click="handleCreateMoveTask">
         创建移库
       </a-button>
-      <a-button
-        style="margin-right:8px"
-        type="primary"
-        :loading="runRequirementLoading"
-        :disabled="!hasSelected"
+      <a-button style="margin-right:8px" type="primary" :loading="runRequirementLoading" :disabled="!hasSelected"
         @click="handleIssue">下发</a-button>
     </div>
-    <a-table
-      :row-selection="{
-        selectedRowKeys: selectedRowKeys, onChange: onSelectChange ,
-      }"
-      :columns="columns"
-      :data-source="tableList"
-      rowKey="callId"
-      :pagination="false"
-      size="middle">
+    <a-table :row-selection="{
+      selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
+    }" :columns="columns" :data-source="tableList" rowKey="callId" :pagination="false" size="middle">
       <template slot="recommendShiftQuantity" slot-scope="text,record">
         <a-input v-model="record.recommendShiftQuantity"></a-input>
       </template>
       <template slot="enough" slot-scope="text">
-        {{ text?'满足':'不满足' }}
+        {{ text ? '满足' : '不满足' }}
       </template>
       <template slot="action" slot-scope="text, record">
         <div class="action-con">
           <a-popconfirm title="确认要取消该条任务吗?" ok-text="确认" cancel-text="取消" @confirm="handleCancel(record)">
-            <a class="danger-color" :disabled="record.status!==0">取消</a>
+            <a class="danger-color" :disabled="record.status !== 0">取消</a>
           </a-popconfirm>
-        <!-- <a-divider type="vertical" />
+          <!-- <a-divider type="vertical" />
             <a
               class="primary-color"
               :disabled="[2].includes(record.status)"
@@ -48,7 +32,6 @@
       </template>
     </a-table>
   </a-modal>
-
 </template>
 
 <script>

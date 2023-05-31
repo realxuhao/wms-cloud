@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -95,5 +96,15 @@ public class PurchaseOrder extends BaseEntity {
      * 状态 0：正常 1：关闭
      */
     private Integer status;
+
+    /**
+     * 预计到货开始日期
+     */
+    private Date startDate;
+
+    /**
+     * 预计到货结束日期
+     */
+    private Date endDate;
 
 }

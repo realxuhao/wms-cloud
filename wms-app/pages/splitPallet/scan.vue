@@ -30,15 +30,16 @@ export default {
 	},
 	methods: {
 		async scanCodeCallback(data) {
-			// Bus.$emit('stopScan')
+			Bus.$emit('stopScan');
 			this.code = data.code;
 			this.handleGoto();
 		},
 		handleGoto() {
-			Bus.$off('scancodedate', this.scanCodeCallback);
+			// Bus.$off('scancodedate', this.scanCodeCallback);
 			uni.redirectTo({
 				url: `/pages/splitPallet/addSplit?barCode=${this.code}`
 			});
+			Bus.$emit('startScan');
 		}
 	}
 };

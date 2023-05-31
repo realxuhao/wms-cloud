@@ -71,6 +71,10 @@ public class IQCSamplePlan extends BaseEntity {
     @ApiModelProperty(value = "单位")
     private String unit;
 
+    @ApiModelProperty(value = "仓库编码")
+    private String areaCode;
+
+
 
     private Integer deleteFlag;
 

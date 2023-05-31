@@ -4,7 +4,9 @@ public enum DispatchStatusEnum {
 
     WAITE("等待", 0),
     ENTER("进厂", 1),
-    COMPLETE("完成", 2);
+    COMPLETE("完成", 2),
+    ERROR("异常", 3);
+
 
 
     private String desc;

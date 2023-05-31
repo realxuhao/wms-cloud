@@ -54,4 +54,6 @@ public interface IWareShiftService extends IService<WareShift> {
     void generateWareShiftByCall(List<CallWareShiftDTO> dtos);
 
     void splitPallet(SplitPalletDTO splitPallet);
+
+    void batchPerformBinIn(WareShiftBatchBinInDTO dto);
 }

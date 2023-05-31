@@ -12,13 +12,16 @@ import com.bosch.masterdata.api.domain.vo.EcnVO;
 import com.bosch.masterdata.api.domain.vo.NmdVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
+import com.bosch.masterdata.api.enumeration.EcnClassificationEnum;
 import com.bosch.masterdata.service.IEcnService;
 import com.bosch.masterdata.service.INmdService;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
@@ -89,6 +92,11 @@ public class EcnController extends BaseController {
     @PostMapping
     @ApiOperation("新增")
     public AjaxResult add(@RequestBody EcnDTO ecnDTO) {
+        if (ecnDTO.getClassification().equals(EcnClassificationEnum.TTS.getDesc())){
+            if (StringUtils.isEmpty(ecnDTO.getPlan())){
+                throw new ServiceException("当类别为TTS时，取样规则不可以为空");
+            }
+        }
         return toAjax(ecnService.insertEcn(ecnDTO));
     }
 

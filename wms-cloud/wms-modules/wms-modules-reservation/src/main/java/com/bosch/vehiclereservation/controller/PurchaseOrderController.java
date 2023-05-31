@@ -102,5 +102,15 @@ public class PurchaseOrderController extends BaseController {
         return toAjax(syncDataService.syncData());
     }
 
+    /**
+     * 获取错误状态的采购单PO号
+     *
+     * @return
+     */
+    @GetMapping(value = "/getErrorPoCode")
+    @ApiOperation("获取错误状态的采购单PO号")
+    public R<List<String>> getAllErrorPoCode() {
+        return R.ok(purchaseOrderService.getAllErrorPoCode());
+    }
 
 }

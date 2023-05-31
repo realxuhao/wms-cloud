@@ -39,8 +39,7 @@
           :filter-option="filterOption"
           option-filter-prop="children"
           v-decorator="[
-            'level',
-            { rules: [{ required: true, message: '请选择检验水平级别！' }] }
+            'level'
           ]"
           placeholder="检验水平级别">
           <a-select-option :value="item.value" v-for="item in checkLevel" :key="item.value">
@@ -54,8 +53,7 @@
           show-search
           :filter-option="filterOption"
           v-decorator="[
-            'plan',
-            { rules: [{ required: true, message: '请选严格程度！' }] }
+            'plan'
           ]"
           placeholder="严格程度">
           <a-select-option :value="item.value" v-for="item in strictLevel" :key="item.value">

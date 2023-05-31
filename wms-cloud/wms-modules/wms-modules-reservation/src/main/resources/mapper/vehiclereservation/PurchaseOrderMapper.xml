@@ -58,6 +58,12 @@
             <if test="supplier != null  and supplier != ''">and supplier_name like concat('%', #{supplier}, '%')</if>
             <if test="sapCode != null  and sapCode != ''">and material_code like concat('%', #{sapCode}, '%')</if>
             <if test="status != null ">and status = #{status}</if>
+            <if test="startDate != null">
+               and delivery_date <![CDATA[ >= ]]> #{startDate}
+            </if>
+            <if test="endDate != null">
+               and delivery_date <![CDATA[ <= ]]> #{endDate}
+            </if>
         </where>
     </select>
 
@@ -72,5 +78,13 @@
             </if>
             and status=0 and supplier_name = #{supplier}
         </where>
+    </select>
+
+    <select id="selectAllErrorPoCode" resultType="java.lang.String">
+        SELECT DISTINCT t1.po_code
+        from vr_purchase_order t1
+                 INNER JOIN vr_supplier_porder t2 on t2.purchase_id = t1.purchase_id
+                 INNER JOIN vr_supplier_reserve t3 on t3.reserve_no = t2.reserve_no
+        WHERE t3.`status` = 4
     </select>
 </mapper>

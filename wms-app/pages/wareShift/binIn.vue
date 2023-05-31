@@ -4,7 +4,14 @@
 			<Pending slot="content0"></Pending>
 			<Completed slot="content1"></Completed>
 		</AloysTab>
-		<view class="action" @click="handleGotoScan"><uni-icons type="scan" size="28" color="#fff"></uni-icons></view>
+		<view class="action1" @click="handleGotoScan('/pages/wareShift/binInScan')">
+			<span>逐托</span>
+			<span>上架</span>
+		</view>
+		<view class="action" @click="handleGotoScan('/pages/wareShift/binInBatchScan')">
+			<span>整车</span>
+			<span>上架</span>
+		</view>
 	</my-page>
 </template>
 
@@ -30,9 +37,9 @@ export default {
 		onTabChange(id) {
 			console.log(id);
 		},
-		handleGotoScan() {
+		handleGotoScan(url) {
 			uni.navigateTo({
-				url: '/pages/wareShift/binInScan'
+				url
 			});
 		}
 	}
@@ -58,10 +65,28 @@ export default {
 	display: flex;
 	justify-content: center;
 	align-items: center;
+	flex-direction: column;
 	border-radius: 50%;
 	color: #fff;
 	position: fixed;
 	bottom: 60px;
+	right: 40px;
+	background: rgba(84, 27, 134, 0.7);
+	box-shadow: 0 1px 3px 2px rgba(0, 0, 0, 0.5);
+}
+
+.action1 {
+	border: 1px solid $uni-border-color;
+	width: 60px;
+	height: 60px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex-direction: column;
+	border-radius: 50%;
+	color: #fff;
+	position: fixed;
+	bottom: 150px;
 	right: 40px;
 	background: rgba(84, 27, 134, 0.7);
 	box-shadow: 0 1px 3px 2px rgba(0, 0, 0, 0.5);

@@ -16,6 +16,7 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.StatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -110,5 +111,20 @@ public class TranshipmentOrderServiceImpl extends ServiceImpl<TranshipmentOrderM
             }
         }
         return currentDay + "001";
+    }
+
+    @Override
+    public TranshipmentOrder getTransInfo(String mesBarCode) {
+        LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
+        qw.eq(TranshipmentOrder::getSsccNumber, MesBarCodeUtil.getSSCC(mesBarCode));
+        qw.eq(TranshipmentOrder::getStatus, StatusEnums.TRUE.getCode());
+        qw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.last("limit 1");
+        TranshipmentOrder transhipmentOrder = transhipmentOrderMapper.selectOne(qw);
+        if (transhipmentOrder == null){
+            throw new ServiceException("该条码下不存在转运");
+        }
+
+        return transhipmentOrder;
     }
 }

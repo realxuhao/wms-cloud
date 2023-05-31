@@ -5,6 +5,7 @@ import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.BinInVO;
+import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 
@@ -76,4 +77,7 @@ public interface IBinInService extends IService<BinIn> {
     public MaterialVO getMaterialVOByCode(String materialNb);
 
     void batchBinIn(String mesBarCode, String areaCode);
+
+
+    public Ware getWareInfo(String wareCode);
 }

@@ -30,11 +30,18 @@ public class StaticScheduleTask {
     @Autowired
     private ISyncDataService syncDataService;
 
+    @Autowired
+    private IDriverDispatchService driverDispatchService;
+
     @Scheduled(cron = "0 1 0 * * ?")
     private void syncPurchaseOrderTasks() {
-        System.out.println("执行定时任务时间: " + LocalDateTime.now());
+        System.out.println("执行定时任务(同步采购单)时间: " + LocalDateTime.now());
         syncDataService.syncData();
     }
 
-
+    @Scheduled(cron = "0 15 0 * * ?") // 0/30 * * * * ?
+    private void syncDispatchTasks() {
+        System.out.println("执行定时任务(异常订单)时间: " + LocalDateTime.now());
+        driverDispatchService.syncErrorData();
+    }
 }

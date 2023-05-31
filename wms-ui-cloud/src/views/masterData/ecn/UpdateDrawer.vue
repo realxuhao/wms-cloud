@@ -40,8 +40,7 @@
           :filter-option="filterOption"
           option-filter-prop="children"
           v-decorator="[
-            'plan',
-            { rules: [{ required: true, message: '请选择检取样规则！' }] }
+            'plan'
           ]"
           placeholder="取样规则">
           <a-select-option :value="item.text" v-for="item in planSelect" :key="item.value">

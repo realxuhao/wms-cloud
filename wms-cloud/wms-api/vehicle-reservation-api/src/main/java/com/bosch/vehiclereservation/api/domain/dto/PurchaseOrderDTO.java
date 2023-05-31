@@ -101,4 +101,18 @@ public class PurchaseOrderDTO extends PageDomain {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+    /**
+     * 预计到货开始日期
+     */
+    @ApiModelProperty(value = "预计到货开始日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date startDate;
+
+    /**
+     * 预计到货结束日期
+     */
+    @ApiModelProperty(value = "预计到货结束日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date endDate;
+
 }

@@ -335,7 +335,7 @@ export default {
       try {
         this.exportLoading = true
         this.queryForm.pageSize = 0
-        const blobData = await this.$store.dispatch('wareShift/exportExcel', this.queryForm)
+        const blobData = await this.$store.dispatch('wareShift/exportReturnExcel', this.queryForm)
         download(blobData, '退库列表')
       } catch (error) {
         console.log(error)

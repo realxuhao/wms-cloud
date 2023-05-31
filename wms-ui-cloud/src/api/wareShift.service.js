@@ -43,11 +43,22 @@ const exportExcel = async (options) => {
   return data
 }
 
+
+const exportReturnExcel = async (options) => {
+  const url = `/returnMaterial/export`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
 export const wareShiftService = {
   getList,
   addWareShift,
   getReturnMaterialList,
   cancel,
   generateWareShiftByCall,
-  exportExcel
+  exportExcel,
+  exportReturnExcel
 }
