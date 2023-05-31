@@ -80,10 +80,15 @@ public class FrameServiceImpl extends ServiceImpl<FrameMapper, Frame>  implement
         return frameMapper.insertFrame(frame);
     }
 
+    @Override
+    public int saveOrUp(List<Frame> dos) {
+        return frameMapper.saveOrUp(dos);
+    }
+
     /**
      * 修改跨
      *
-     * @param frame 跨
+     * @param
      * @return 结果
      */
     @Override
@@ -144,7 +149,7 @@ public class FrameServiceImpl extends ServiceImpl<FrameMapper, Frame>  implement
         //绑定id
         dtos.forEach(x->{
             if (typeMap.get(x.getAreaCode())==null){
-                throw new ServiceException("包含不存在的区域Code");
+                throw new ServiceException("包含不存在的区域Code："+x.getAreaCode());
             }
             x.setAreaId(typeMap.get(x.getAreaCode()));
         });

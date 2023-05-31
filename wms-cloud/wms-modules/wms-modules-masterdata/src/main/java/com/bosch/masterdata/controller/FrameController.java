@@ -228,16 +228,36 @@ public class FrameController extends BaseController {
                     List<FrameDTO> areaDTOS = frameService.setValue(dtos);
                     //转换DO
                     List<Frame> dos = BeanConverUtil.converList(areaDTOS, Frame.class);
-                    dos.forEach(r->{
-                        LambdaUpdateWrapper<Frame> wrapper=new LambdaUpdateWrapper<Frame>();
-                        wrapper.eq(Frame::getCode,r.getCode());
-                        boolean update = frameService.update(r, wrapper);
-                        if (!update){
-                            r.setCreateBy(SecurityUtils.getUsername());
-                            r.setCreateTime(DateUtils.getNowDate());
-                            frameService.save(r);
+                    List<Frame> doUpate=new ArrayList<>();
+                    List<Frame> doNew=new ArrayList<>();
+                    List<Frame> listAll = frameService.list();
+
+                    for (Frame frame : dos) {
+                        boolean flag = false;
+                        Long id=null;
+                        String code = frame.getCode();
+
+                        for(Frame frame2 :listAll){
+                            if (frame2.getCode().equals(code)){
+                                flag=true;
+                                id= frame2.getId();
+                                break;
+
+                            }else {
+
+                            }
                         }
-                    });
+                        if (flag){
+                            frame.setId(id);
+                              doUpate.add(frame);
+                        }else {
+                            doNew.add(frame);
+                        }
+                    }
+                    boolean b1 = frameService.saveBatch(doNew);
+                    boolean b = frameService.updateBatchById(doUpate);
+
+
                 }
                 return R.ok("导入成功");
             }else {

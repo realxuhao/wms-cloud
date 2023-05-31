@@ -1,6 +1,7 @@
 package com.bosch.masterdata.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
@@ -11,6 +12,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.bosch.file.api.FileService;
+import com.bosch.masterdata.api.domain.Frame;
 import com.bosch.masterdata.api.domain.dto.BinDTO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
@@ -250,16 +252,42 @@ public class BinController extends BaseController
                     List<BinDTO> binDTOS = binService.setValue(dtos);
                     //转换DO
                     List<Bin> dos = BeanConverUtil.converList(binDTOS, Bin.class);
-                    dos.forEach(r->{
-                        LambdaUpdateWrapper<Bin> wrapper=new LambdaUpdateWrapper<Bin>();
-                        wrapper.eq(Bin::getCode,r.getCode());
-                        boolean update = binService.update(r, wrapper);
-                        if (!update){
-                            r.setCreateBy(SecurityUtils.getUsername());
-                            r.setCreateTime(DateUtils.getNowDate());
-                            binService.save(r);
+                    List<Bin> doUpate=new ArrayList<>();
+                    List<Bin> doNew=new ArrayList<>();
+                    List<Bin> listAll = binService.list();
+
+                    for (Bin frame : dos) {
+                        boolean flag = false;
+                        Long id=null;
+                        String code = frame.getCode();
+                        for(Bin frame2 :listAll){
+                            if (frame2.getCode().equals(code)){
+                                flag=true;
+                                id= frame2.getId();
+                                break;
+                            }else {
+
+                            }
                         }
-                    });
+                        if (flag){
+                            frame.setId(id);
+                            doUpate.add(frame);
+                        }else {
+                            doNew.add(frame);
+                        }
+                    }
+                    boolean b1 = binService.saveBatch(doNew);
+                    boolean b = binService.updateBatchById(doUpate);
+//                    dos.forEach(r->{
+//                        LambdaUpdateWrapper<Bin> wrapper=new LambdaUpdateWrapper<Bin>();
+//                        wrapper.eq(Bin::getCode,r.getCode());
+//                        boolean update = binService.update(r, wrapper);
+//                        if (!update){
+//                            r.setCreateBy(SecurityUtils.getUsername());
+//                            r.setCreateTime(DateUtils.getNowDate());
+//                            binService.save(r);
+//                        }
+//                    });
                 }
                 return R.ok("导入成功");
             }else {

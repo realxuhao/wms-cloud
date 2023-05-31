@@ -159,7 +159,7 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements IA
         //绑定id
         dtos.forEach(x -> {
             if (typeMap.get(x.getWareCode()) == null) {
-                throw new ServiceException("包含不存在的仓库Code");
+                throw new ServiceException("包含不存在的仓库Code:"+x.getWareCode());
             }
             x.setWareId(typeMap.get(x.getWareCode()));
             //areaType desc 转 areaType

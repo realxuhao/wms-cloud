@@ -46,6 +46,7 @@ public interface FrameMapper extends BaseMapper<Frame>
      */
     public int insertFrame(Frame frame);
 
+    public int saveOrUp(List<Frame> list);
     /**
      * 修改跨
      * 

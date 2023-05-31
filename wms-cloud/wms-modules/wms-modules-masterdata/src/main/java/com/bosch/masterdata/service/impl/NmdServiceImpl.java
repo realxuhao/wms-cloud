@@ -93,7 +93,7 @@ public class NmdServiceImpl extends ServiceImpl<NmdMapper, Nmd>
             }
             boolean checkClass = NmdClassificationEnum.contain(r.getClassification());
             if (!checkClass){
-                throw  new ServiceException("校验类别不规范");
+                throw  new ServiceException("校验类别不规范:"+r.getClassification());
             }
 
             //校验检验水平级别

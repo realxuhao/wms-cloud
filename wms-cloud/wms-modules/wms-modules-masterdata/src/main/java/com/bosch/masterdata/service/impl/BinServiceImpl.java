@@ -185,7 +185,7 @@ public class BinServiceImpl extends ServiceImpl<BinMapper, Bin> implements IBinS
         //绑定id
         dtos.forEach(x->{
             if (typeMap.get(x.getFrameCode())==null){
-                throw new ServiceException("包含不存在的仓库Code");
+                throw new ServiceException("包含不存在的跨Code:"+x.getFrameCode());
             }
             x.setFrameId(typeMap.get(x.getFrameCode()));
         });

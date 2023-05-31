@@ -52,6 +52,7 @@ public interface IFrameService extends IService<Frame>
      */
     public int insertFrame(FrameDTO frameDTO);
 
+    public int saveOrUp(List<Frame> dos);
     /**
      * 修改跨
      * 

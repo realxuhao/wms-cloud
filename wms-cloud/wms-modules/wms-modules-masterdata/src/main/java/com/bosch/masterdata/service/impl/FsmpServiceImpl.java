@@ -105,7 +105,7 @@ public class FsmpServiceImpl extends ServiceImpl<FsmpMapper, Fsmp>
             }
             boolean checkClass = FsmpClassificationEnum.contain(r.getClassification());
             if (!checkClass){
-                throw  new ServiceException("校验类别不规范");
+                throw  new ServiceException("校验类别不规范:"+r.getClassification());
             }
         });
 

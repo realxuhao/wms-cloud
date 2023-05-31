@@ -115,6 +115,61 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
          </trim>
     </insert>
 
+    <insert id="saveOrUp">
+
+        <foreach collection="list" item="item"  separator=";">
+        insert into md_frame
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="item.areaId != null">area_id,</if>
+        <if test="item.name != null">name,</if>
+        <if test="item.code != null and item.code != ''">code,</if>
+        <if test="item.width != null">width,</if>
+        <if test="item.bearWeight != null">bear_weight,</if>
+        <if test="item.height != null">height,</if>
+        <if test="item.typeCode != null">type_code,</if>
+        <if test="item.createBy != null">create_by,</if>
+        <if test="item.updateBy != null">update_by,</if>
+        <if test="item.createTime != null">create_time,</if>
+        <if test="item.updateTime != null">update_time,</if>
+        <if test="item.status != null">status,</if>
+        <if test="item.remark != null">remark,</if>
+        </trim>
+        values
+            (
+            <if test="item.areaId != null">#{item.areaId},</if>
+            <if test="item.name != null">#{item.name},</if>
+            <if test="item.code != null and item.code != ''">#{item.code},</if>
+            <if test="item.width != null">#{item.width},</if>
+            <if test="item.bearWeight != null">#{item.bearWeight},</if>
+            <if test="item.height != null">#{item.height},</if>
+            <if test="item.typeCode != null">#{item.typeCode},</if>
+            <if test="item.createBy != null">#{item.createBy},</if>
+            <if test="item.updateBy != null">#{item.updateBy},</if>
+            <if test="item.createTime != null">#{item.createTime},</if>
+            <if test="item.updateTime != null">#{item.updateTime},</if>
+            <if test="item.status != null">#{item.status},</if>
+            <if test="item.remark != null">#{item.remark},</if>
+            )
+         on DUPLICATE key
+        update
+        <trim   suffixOverrides=",">
+        <if test="item.areaId != null">area_id =values(area_id),</if>
+        <if test="item.name != null">name = values(name),</if>
+        <if test="item.code != null and item.code != ''">code = values(code),</if>
+        <if test="item.width != null">width = values(width),</if>
+        <if test="item.height != null">height = values(height),</if>
+        <if test="item.typeCode != null">type_code = values(type_code),</if>
+        <if test="item.bearWeight != null">bear_weight = values(bear_weight),</if>
+        <if test="item.createBy != null">create_by = values(create_by),</if>
+        <if test="item.updateBy != null">update_by = values(update_by),</if>
+        <if test="item.createTime != null">create_time = values(create_time),</if>
+        <if test="item.updateTime != null">update_time = values(update_time),</if>
+        <if test="item.status != null">status = values(status),</if>
+        <if test="item.remark != null">remark = values(remark),</if>
+    </trim>
+        </foreach>
+    </insert>
+
     <update id="updateFrame" parameterType="Frame">
         update md_frame
         <trim prefix="SET" suffixOverrides=",">

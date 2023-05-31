@@ -93,7 +93,7 @@ public class EcnServiceImpl extends ServiceImpl<EcnMapper, Ecn>
             }
             boolean checkClass = EcnClassificationEnum.contain(r.getClassification());
             if (!checkClass){
-                throw  new ServiceException("校验类别不规范");
+                throw  new ServiceException("校验类别不规范:"+r.getClassification());
             }
 
             //校验TTS取样规则
