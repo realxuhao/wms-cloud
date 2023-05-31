@@ -81,11 +81,11 @@
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button v-hasPermi="['kanban:list:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
 
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
 
-              <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
+              <a-button v-hasPermi="['kanban:list:export']" style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
 
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
@@ -97,6 +97,7 @@
       </a-form>
       <div class="action-content">
         <a-button
+          v-hasPermi="['kanban:list:task']"
           class="m-r-8"
           type="primary"
           :loading="submitLoading"
@@ -104,6 +105,7 @@
           @click="handleBatchAddJob">批量下发任务</a-button>
 
         <a-button
+          v-hasPermi="['kanban:list:confirm']"
           type="primary"
           :loading="confirmMaterialLoading"
           :disabled="!hasSelected"
@@ -147,7 +149,7 @@
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a-popconfirm v-show="record.status===0" title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
-              <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
+              <a v-hasPermi="['kanban:list:delete']" class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
           </div>
         </template>
@@ -159,7 +161,7 @@
               cancel-text="取消"
               @confirm="handleCancel(record)"
             >
-              <a class="danger-color" :disabled="[-1,6,7].includes(record.status)">取消</a>
+              <a v-hasPermi="['kanban:list:cancel']" class="danger-color" :disabled="[-1,6,7].includes(record.status)">取消</a>
             </a-popconfirm>
             <!-- <a-divider type="vertical" /> -->
             <!-- <a

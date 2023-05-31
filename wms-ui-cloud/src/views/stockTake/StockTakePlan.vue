@@ -82,20 +82,20 @@
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button v-hasPermi="['take:plan:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
                 <a-icon :type="advanced ? 'up' : 'down'"/>
               </a>
-             
+
             </span>
           </a-col>
         </a-row>
       </a-form>
       <div class="action-content">
-        <a-button type="primary" class="m-r-8" icon="plus" @click="handleAdd"> 新建 </a-button>
-        <a-button :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
+        <a-button v-hasPermi="['take:plan:add']" type="primary" class="m-r-8" icon="plus" @click="handleAdd"> 新建 </a-button>
+        <a-button v-hasPermi="['take:plan:export']" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
       </div>
       <a-table
         :columns="columns"
@@ -157,7 +157,7 @@
 
             <a-divider type="vertical" />
             <a-popconfirm title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
-              <a class="danger-color" :disabled="record.status!==0"><a-icon class="m-r-4" type="delete" />删除</a>
+              <a v-hasPermi="['take:plan:delete']" class="danger-color" :disabled="record.status!==0"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
           </div>
         </template>

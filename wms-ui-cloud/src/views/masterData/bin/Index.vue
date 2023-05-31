@@ -21,7 +21,7 @@
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button v-hasPermi="['bin:info:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
@@ -33,10 +33,10 @@
       </a-form>
 
       <div class="action-content">
-        <a-button type="primary" class="m-r-8" icon="plus" @click="handleAdd"> 新建 </a-button>
+        <a-button v-hasPermi="['bin:info:add']" type="primary" class="m-r-8" icon="plus" @click="handleAdd"> 新建 </a-button>
         <a-tooltip placement="right">
           <template slot="title">
-            <a style="color:#fff" @click="handleDownloadTemplate"><a-icon type="arrow-down" />下载模板</a>
+            <a v-hasPermi="['bin:info:download']" style="color:#fff" @click="handleDownloadTemplate"><a-icon type="arrow-down" />下载模板</a>
           </template>
           <a-upload
             :file-list="[]"
@@ -45,7 +45,7 @@
             :before-upload="()=>false"
             @change="handleUpload"
           >
-            <a-button :loading="uploadLoading" type="primary" icon="upload" >
+            <a-button v-hasPermi="['bin:info:import']" :loading="uploadLoading" type="primary" icon="upload" >
               导入
             </a-button>
           </a-upload>
@@ -62,10 +62,10 @@
       >
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
+            <a v-hasPermi="['bin:info:edit']" class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
             <a-divider type="vertical" />
             <a-popconfirm title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
-              <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
+              <a v-hasPermi="['bin:info:delete']" class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
           </div>
         </template>

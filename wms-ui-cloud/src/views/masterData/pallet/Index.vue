@@ -14,7 +14,7 @@
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button v-hasPermi="['pallet:type:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
@@ -26,7 +26,7 @@
       </a-form>
 
       <div class="action-content">
-        <a-button type="primary" icon="plus" @click="handleAdd">
+        <a-button v-hasPermi="['pallet:type:add']" type="primary" icon="plus" @click="handleAdd">
           新建
         </a-button>
       </div>
@@ -41,7 +41,7 @@
       >
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
+            <a v-hasPermi="['pallet:type:edit']" class="warning-color" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
             <a-divider type="vertical" />
             <a-popconfirm
               title="确认要删除吗?"
@@ -49,7 +49,7 @@
               cancel-text="取消"
               @confirm="handleDelete(record)"
             >
-              <a class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
+              <a v-hasPermi="['pallet:type:delete']" class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
             </a-popconfirm>
           </div>
         </template>

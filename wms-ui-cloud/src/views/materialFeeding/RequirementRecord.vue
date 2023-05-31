@@ -52,10 +52,10 @@
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons">
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon
+              <a-button v-hasPermi="['requirement:list:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon
                   type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon
+              <a-button v-hasPermi="['requirement:list:export']" style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon
                   type="download" />导出结果</a-button>
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
@@ -66,10 +66,10 @@
         </a-row>
       </a-form>
       <div class="action-content">
-        <a-button type="primary" icon="upload" style="margin-right:8px" @click="handleOpenUpload">
+        <a-button v-hasPermi="['requirement:list:add']" type="primary" icon="upload" style="margin-right:8px" @click="handleOpenUpload">
           创建物料需求
         </a-button>
-        <a-button style="margin-right:8px" type="primary" :loading="submitLoading" :disabled="!hasSelected"
+        <a-button v-hasPermi="['requirement:list:run']" style="margin-right:8px" type="primary" :loading="submitLoading" :disabled="!hasSelected"
           @click="handleRunRequirement">需求计算</a-button>
         <a-button style="margin-right:8px" type="primary" @click="handleCreateRequirement">手动创建需求</a-button>
       </div>
@@ -92,7 +92,7 @@
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a-popconfirm title="确认要取消该条任务吗?" ok-text="确认" cancel-text="取消" @confirm="handleCancel(record)">
-              <a class="danger-color" :disabled="!([0, 1].includes(record.status))">取消</a>
+              <a v-hasPermi="['requirement:list:cancel']" class="danger-color" :disabled="!([0, 1].includes(record.status))">取消</a>
             </a-popconfirm>
             <!-- <a-divider type="vertical" />
             <a

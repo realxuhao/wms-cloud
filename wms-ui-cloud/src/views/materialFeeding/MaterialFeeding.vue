@@ -65,9 +65,9 @@
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button v-hasPermi="['call:list:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
+              <a-button v-hasPermi="['call:list:export']" style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
                 <a-icon :type="advanced ? 'up' : 'down'"/>
@@ -85,6 +85,7 @@
           创建物料需求
         </a-button> -->
         <a-button
+          v-hasPermi="['call:list:reduction']"
           style="margin-right:8px"
           type="primary"
           :loading="submitLoading"
@@ -106,7 +107,7 @@
           <a-tag :color="statusColorMap[text]">{{ statusMap[text] }}</a-tag>
         </template>
         <template slot="quantity" slot-scope="text,record">
-          <EditTableCell v-if="record.status === 0" :text="text" @change="(val)=>handleQuantityChange(record,val)" />
+          <EditTableCell v-hasPermi="['call:list:edit']" v-if="record.status === 0" :text="text" @change="(val)=>handleQuantityChange(record,val)" />
           <span v-else>{{ text }}</span>
         </template>
         <template slot="action" slot-scope="text, record">
@@ -121,6 +122,7 @@
             </a-popconfirm> -->
             <a-divider type="vertical" />
             <a
+              v-hasPermi="['call:list:create']"
               class="primary-color"
               :disabled="2!=record.status"
               @click="handleCreateReductionTask(record)"><a-icon class="m-r-4" type="add" />人工创建拣配任务</a>
