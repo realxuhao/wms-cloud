@@ -140,6 +140,16 @@
           </div>
         </template>
       </a-table>
+      <div class="pagination-con">
+        <a-pagination
+          show-size-changer
+          show-less-items
+          :current="queryForm.pageNum"
+          :page-size.sync="queryForm.pageSize"
+          :total="paginationTotal"
+          @showSizeChange="onShowSizeChange"
+          @change="changePagination" />
+      </div>
     </div>
 
     <UpdateDrawer
@@ -311,8 +321,9 @@ export default {
       try {
         this.tableLoading = true
 
-        const { data: { rows } } = await this.$store.dispatch('material/getDispatchFrameTypeList', this.queryForm)
+        const { data: { rows, total } } = await this.$store.dispatch('material/getDispatchFrameTypeList', this.queryForm)
         this.list = rows
+        this.paginationTotal = total
       } catch (error) {
         this.$message.error(error.message)
       } finally {
