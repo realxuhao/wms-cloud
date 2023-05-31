@@ -50,7 +50,7 @@ public class DriverDeliverController extends BaseController {
 
 
     /**
-     * 删除司机的预约信息（只能删状态是0的数据）
+     * 删除司机的预约信息（预约单完成状态不能删）
      */
     //@RequiresPermissions("vehiclereservation:driverdeliver:remove")
     @Log(title = "删除司机的预约信息", businessType = BusinessType.DELETE)
