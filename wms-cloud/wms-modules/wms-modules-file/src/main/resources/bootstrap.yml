@@ -25,3 +25,14 @@ spring:
         # 共享配置
         shared-configs:
           - application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
+
+
+
+feign:
+  sentinel:
+    enabled: true
+  client:
+    config:
+      default:
+        connect-timeout: 50000
+        read-timeout: 50000

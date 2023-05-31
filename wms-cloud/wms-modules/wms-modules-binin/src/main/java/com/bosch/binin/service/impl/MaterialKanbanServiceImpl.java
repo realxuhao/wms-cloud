@@ -24,6 +24,7 @@ import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
 import com.bosch.binin.service.*;
 import com.bosch.binin.utils.BeanConverUtil;
+import com.ruoyi.common.core.constant.AreaListConstants;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.exception.ServiceException;
@@ -261,7 +262,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
         List<WareShift> wareShiftList = new ArrayList<>();
 
-        List<String> outWareSsccList = kanbanList.stream().filter(item -> "7752".equals(item.getFactoryCode())).map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
+        List<String> outWareSsccList = kanbanList.stream().filter(item -> AreaListConstants.mainAreaList.contains(item.getAreaCode())).map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
 
         //查询外库的库存
         Map<String, List<Stock>> stockMap = new HashMap<>();
@@ -281,7 +282,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             //修改任务状态
             item.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
             //如果是7752的，需要生成一个移库任务，移库任务是  生成
-            if ("7752".equals(item.getFactoryCode())) {
+            if (AreaListConstants.mainAreaList.contains(item.getAreaCode())) {
                 String ssccNumber = item.getSsccNumber();
                 Stock stock = finalStockMap.get(ssccNumber).get(0);
                 WareShift wareShift = WareShift.builder().sourcePlantNb(item.getFactoryCode()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())

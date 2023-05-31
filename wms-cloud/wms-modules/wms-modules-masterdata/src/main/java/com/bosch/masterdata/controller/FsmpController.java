@@ -146,7 +146,7 @@ public class FsmpController extends BaseController {
 
         try {
             //解析文件服务
-            R result = fileService.masterDataImport(file, ClassType.ECNDTO.getDesc());
+            R result = fileService.masterDataImport(file, ClassType.FSMPDTO.getDesc());
             if (result.isSuccess()) {
                 Object data = result.getData();
                 List<FsmpDTO> dtoList = JSON.parseArray(JSON.toJSONString(data), FsmpDTO.class);

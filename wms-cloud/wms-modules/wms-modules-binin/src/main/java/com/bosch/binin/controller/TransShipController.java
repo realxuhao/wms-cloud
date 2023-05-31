@@ -37,4 +37,11 @@ public class TransShipController {
         return R.ok();
     }
 
+
+    @GetMapping("/getTransInfo/{mesBarCode}")
+    @ApiOperation("扫码查询当前车次信息")
+    public R<TranshipmentOrder> getTransInfo(@PathVariable String mesBarCode){
+        return R.ok(transhipmentOrderService.getTransInfo(mesBarCode));
+    }
+
 }

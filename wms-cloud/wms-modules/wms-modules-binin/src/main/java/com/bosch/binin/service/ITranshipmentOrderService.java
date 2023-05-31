@@ -40,4 +40,6 @@ public interface ITranshipmentOrderService extends IService<TranshipmentOrder> {
 
 
     String getNextOrderNb();
+
+    TranshipmentOrder getTransInfo(String mesBarCode);
 }

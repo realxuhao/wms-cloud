@@ -7,11 +7,11 @@ import java.util.concurrent.TimeUnit;
 
 public class CacheUtil {
     private static final int MAXIMUM_SIZE = 1000;
-    private static final long EXPIRE_AFTER_ACCESS_MINUTES = 2;
+    private static final long EXPIRE_AFTER_ACCESS_MINUTES = 1;
 
     private static Cache<Object, Object> cache = Caffeine.newBuilder()
             .maximumSize(MAXIMUM_SIZE)
-            .expireAfterAccess(EXPIRE_AFTER_ACCESS_MINUTES, TimeUnit.MINUTES)
+            .expireAfterWrite(EXPIRE_AFTER_ACCESS_MINUTES, TimeUnit.MINUTES)
             .build();
 
     public static void put(Object key, Object value) {

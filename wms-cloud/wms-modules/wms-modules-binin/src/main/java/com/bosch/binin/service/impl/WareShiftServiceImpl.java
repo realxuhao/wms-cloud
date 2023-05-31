@@ -9,10 +9,7 @@ import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.RequirementResultVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
-import com.bosch.binin.api.enumeration.CallStatusEnum;
-import com.bosch.binin.api.enumeration.IQCStatusEnum;
-import com.bosch.binin.api.enumeration.KanbanStatusEnum;
-import com.bosch.binin.api.enumeration.MaterialCallStatusEnum;
+import com.bosch.binin.api.enumeration.*;
 import com.bosch.binin.mapper.IQCSamplePlanMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
@@ -20,12 +17,15 @@ import com.bosch.binin.service.*;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.Ware;
+import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
+import com.ruoyi.common.core.constant.AreaListConstants;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
+import com.ruoyi.common.core.enums.StatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
@@ -76,6 +76,9 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
     @Autowired
     private RemoteMaterialService remoteMaterialService;
+
+    @Autowired
+    private ITranshipmentOrderService transhipmentOrderService;
 
     @Override
     public Boolean addShiftRequirement(AddShiftTaskDTO dto) {
@@ -323,15 +326,15 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         }
 
         Stock lastOneBySSCC = new Stock();
-        if(wareShift.getSplitType() == 1) {
-             lastOneBySSCC = stockService.getOneStock(wareShift.getSourceSscc());
-        }else {
+        if (wareShift.getSplitType() == 1) {
+            lastOneBySSCC = stockService.getOneStock(wareShift.getSourceSscc());
+        } else {
             StockVO oneBySSCC = stockService.getLastOneBySSCC(sscc);
-            lastOneBySSCC = BeanConverUtil.conver(oneBySSCC,Stock.class);
+            lastOneBySSCC = BeanConverUtil.conver(oneBySSCC, Stock.class);
         }
 
 
-        BinInVO binInVO = binInService.performBinIn(binInDTO,lastOneBySSCC.getQualityStatus());
+        BinInVO binInVO = binInService.performBinIn(binInDTO, lastOneBySSCC.getQualityStatus());
         //更新移库任务
         wareShift.setStatus(KanbanStatusEnum.FINISH.value());
         wareShift.setTargetPlant(binInVO.getPlantNb());
@@ -394,8 +397,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         queryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
         queryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.FINISH.value());
         List<WareShift> list = this.list(queryWrapper);
-        list.stream().forEach(item->{
-            if (item.getSplitType()==1){
+        list.stream().forEach(item -> {
+            if (item.getSplitType() == 1) {
                 item.setQuantity(item.getSplitQuality());
             }
         });
@@ -409,8 +412,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         if (CollectionUtils.isEmpty(dtos)) {
             return;
         }
-        dtos.forEach(item->{
-            if (item.getShiftQuality()<=0){
+        dtos.forEach(item -> {
+            if (item.getShiftQuality() <= 0) {
                 throw new ServiceException("移库数量必须大于0");
             }
         });
@@ -475,6 +478,100 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         stockService.save(conver);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchPerformBinIn(WareShiftBatchBinInDTO dto) {
+        LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
+        qw.eq(TranshipmentOrder::getSsccNumber, MesBarCodeUtil.getSSCC(dto.getMesBarCode()));
+        qw.eq(TranshipmentOrder::getStatus, StatusEnums.TRUE.getCode());
+        qw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.last("limit 1");
+        TranshipmentOrder transhipmentOrder = transhipmentOrderService.getOne(qw);
+        if (transhipmentOrder.getStatus() == 0) {
+            throw new ServiceException("当前车次货物还没有收货");
+        }
+        LambdaQueryWrapper<TranshipmentOrder> tqw = new LambdaQueryWrapper<>();
+        tqw.eq(TranshipmentOrder::getOrderNumber, transhipmentOrder.getOrderNumber());
+        tqw.eq(TranshipmentOrder::getStatus, StatusEnums.TRUE.getCode());
+        tqw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<TranshipmentOrder> ssccByOrder = transhipmentOrderService.list(tqw);
+        if (CollectionUtils.isEmpty(ssccByOrder)) {
+            throw new ServiceException("当前车次没有待上架的信息");
+        }
+        List<String> ssccList = ssccByOrder.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
+
+        LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
+        wareShiftQueryWrapper.in(WareShift::getSsccNb, ssccList);
+        wareShiftQueryWrapper.eq(WareShift::getStatus, KanbanStatusEnum.INNER_BIN_IN.value());
+        wareShiftQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<WareShift> wareShiftList = this.list(wareShiftQueryWrapper);
+        List<BinIn> binInsInsertList = new ArrayList<>();
+
+
+        LambdaQueryWrapper<BinIn> binInQueryWrapper = new LambdaQueryWrapper<>();
+        binInQueryWrapper.in(BinIn::getSsccNumber,ssccList);
+        binInQueryWrapper.eq(BinIn::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        List<BinIn> list = binInService.list(binInQueryWrapper);
+        if (!CollectionUtils.isEmpty(list)){
+            list.stream().forEach(item->item.setDeleteFlag(DeleteFlagStatus.TRUE.getCode()));
+            binInService.updateBatchById(list);
+        }
+
+
+        List<Stock> stockList = new ArrayList<>();
+        wareShiftList.stream().forEach(item -> {
+            BinIn binIn = new BinIn();
+            binIn.setSsccNumber(item.getSsccNb());
+            binIn.setQuantity(item.getQuantity());
+            binIn.setMaterialNb(item.getMaterialNb());
+            binIn.setBatchNb(item.getBatchNb());
+            binIn.setExpireDate(item.getExpireDate());
+            binIn.setAreaCode(dto.getAreaCode());
+            binIn.setWareCode(SecurityUtils.getWareCode());
+            binIn.setStatus(BinInStatusEnum.FINISH.value());
+            binIn.setMoveType(MoveTypeEnums.SPLIT_IN.getCode());
+            binIn.setPlantNb(binInService.getWareInfo(SecurityUtils.getWareCode()).getFactoryCode());
+            binInsInsertList.add(binIn);
+
+
+            //插入库存
+            Stock stock = new Stock();
+            stock.setPlantNb(binIn.getPlantNb());
+            stock.setWareCode(SecurityUtils.getWareCode());
+            stock.setSsccNumber(binIn.getSsccNumber());
+            stock.setWareCode(binIn.getWareCode());
+            stock.setBinCode(binIn.getActualBinCode());
+            stock.setFrameCode(binIn.getActualFrameCode());
+            stock.setMaterialNb(binIn.getMaterialNb());
+            stock.setBatchNb(binIn.getBatchNb());
+            stock.setExpireDate(binIn.getExpireDate());
+            stock.setTotalStock(binIn.getQuantity());
+            stock.setFreezeStock(Double.valueOf(0));
+            stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
+            stock.setBinInId(binIn.getId());
+
+            stock.setCreateBy(SecurityUtils.getUsername());
+            stock.setCreateTime(new Date());
+            stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+            stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
+            stock.setAreaCode(binIn.getAreaCode());
+            stock.setPalletCode(binIn.getPalletCode());
+
+            stockList.add(stock);
+
+            item.setStatus(KanbanStatusEnum.FINISH.value());
+
+        });
+
+
+        binInService.saveBatch(binInsInsertList);
+
+        stockService.saveBatch(stockList);
+
+        this.updateBatchById(wareShiftList);
+
+    }
+
     private List<WareShift> getWareShiftByCall(Long callId, String materialNb, Double shiftQuality) {
         LambdaQueryWrapper<Stock> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(Stock::getMaterialNb, materialNb);
@@ -482,7 +579,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         lambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         lambdaQueryWrapper.eq(Stock::getFreezeStock, Double.valueOf(0));
         lambdaQueryWrapper.le(Stock::getExpireDate, new Date());
-        lambdaQueryWrapper.eq(Stock::getPlantNb,"7752");
+        lambdaQueryWrapper.in(Stock::getAreaCode, AreaListConstants.mainAreaList);
         List<Stock> stockList = stockService.list(lambdaQueryWrapper);
         if (CollectionUtils.isEmpty(stockList)) {
             throw new ServiceException("没有该物料" + materialNb + "对应的外库库存");

@@ -447,19 +447,19 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 //            if (StringUtils.isEmpty(frameCodeList) || !frameCodeList.contains(actualBinVO.getFrameTypeCode())) {
 //                throw new ServiceException("该物料" + materialNb + " 不能分配到" + binInDTO.getActualBinCode());
 //            }
-            LambdaQueryWrapper<BinIn> finishQueryWrapper = new LambdaQueryWrapper<>();
-            finishQueryWrapper.eq(BinIn::getActualBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.FINISH.value()).eq(BinIn::getDeleteFlag, 0);
-            List<BinIn> binInFinish = binInMapper.selectList(finishQueryWrapper);
-            if (!CollectionUtils.isEmpty(binInFinish)) {
-                throw new ServiceException("该库位" + binInDTO.getActualBinCode() + " 已经被占用");
-            }
+//            LambdaQueryWrapper<BinIn> finishQueryWrapper = new LambdaQueryWrapper<>();
+//            finishQueryWrapper.eq(BinIn::getActualBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.FINISH.value()).eq(BinIn::getDeleteFlag, 0);
+//            List<BinIn> binInFinish = binInMapper.selectList(finishQueryWrapper);
+//            if (!CollectionUtils.isEmpty(binInFinish)) {
+//                throw new ServiceException("该库位" + binInDTO.getActualBinCode() + " 已经被占用");
+//            }
 
-            LambdaQueryWrapper<BinIn> processingQueryWrapper = new LambdaQueryWrapper<>();
-            processingQueryWrapper.eq(BinIn::getRecommendBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value()).eq(BinIn::getDeleteFlag, 0);
-            List<BinIn> binInProcessing = binInMapper.selectList(processingQueryWrapper);
-            if (!CollectionUtils.isEmpty(binInProcessing)) {
-                throw new ServiceException("该库位" + binInDTO.getActualBinCode() + " 已经被分配其他托");
-            }
+//            LambdaQueryWrapper<BinIn> processingQueryWrapper = new LambdaQueryWrapper<>();
+//            processingQueryWrapper.eq(BinIn::getRecommendBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value()).eq(BinIn::getDeleteFlag, 0);
+//            List<BinIn> binInProcessing = binInMapper.selectList(processingQueryWrapper);
+//            if (!CollectionUtils.isEmpty(binInProcessing)) {
+//                throw new ServiceException("该库位" + binInDTO.getActualBinCode() + " 已经被分配其他托");
+//            }
 
 
         }
@@ -551,12 +551,12 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 //                throw new ServiceException("该物料" + materialNb + " 不能分配到" + binInDTO.getActualBinCode());
 //            }
 
-            LambdaQueryWrapper<BinIn> finishQueryWrapper = new LambdaQueryWrapper<>();
-            finishQueryWrapper.eq(BinIn::getActualBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.FINISH.value()).eq(BinIn::getDeleteFlag, 0);
-            List<BinIn> binInFinish = binInMapper.selectList(finishQueryWrapper);
-            if (!CollectionUtils.isEmpty(binInFinish)) {
-                throw new ServiceException("该库位" + binInDTO.getActualBinCode() + " 已经被占用");
-            }
+//            LambdaQueryWrapper<BinIn> finishQueryWrapper = new LambdaQueryWrapper<>();
+//            finishQueryWrapper.eq(BinIn::getActualBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.FINISH.value()).eq(BinIn::getDeleteFlag, 0);
+//            List<BinIn> binInFinish = binInMapper.selectList(finishQueryWrapper);
+//            if (!CollectionUtils.isEmpty(binInFinish)) {
+//                throw new ServiceException("该库位" + binInDTO.getActualBinCode() + " 已经被占用");
+//            }
 //            LambdaQueryWrapper<BinIn> processingQueryWrapper = new LambdaQueryWrapper<>();
 //            processingQueryWrapper.eq(BinIn::getRecommendBinCode, binInDTO.getActualBinCode()).eq(BinIn::getStatus, BinInStatusEnum.PROCESSING.value()).eq(BinIn::getDeleteFlag, 0);
 //            List<BinIn> binInProcessing = binInMapper.selectList(processingQueryWrapper);
@@ -894,6 +894,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             iqcSamplePlan.setMaterialNb(binIn.getMaterialNb());
             iqcSamplePlan.setBinDownCode(binIn.getActualBinCode());
             iqcSamplePlan.setBinDownTime(new Date());
+            iqcSamplePlan.setAreaCode(binIn.getAreaCode());
             if (abs > 0) {
                 if (i != list.size() - 1) {
                     iqcSamplePlan.setRecommendSampleQuantity(binIn.getQuantity());
@@ -934,6 +935,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         iqcSamplePlan.setExpireDate(binIn.getExpireDate());
         iqcSamplePlan.setPlantNb(binIn.getPlantNb());
         iqcSamplePlan.setUnit(materialVO.getUnit());
+        iqcSamplePlan.setAreaCode(binIn.getAreaCode());
 
         return iqcSamplePlan;
     }
@@ -957,6 +959,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             iqcSamplePlan.setExpireDate(binIn.getExpireDate());
             iqcSamplePlan.setPlantNb(binIn.getPlantNb());
             iqcSamplePlan.setUnit(materialVO.getUnit());
+            iqcSamplePlan.setAreaCode(binIn.getAreaCode());
             list.add(iqcSamplePlan);
 
         });
@@ -1007,6 +1010,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         iqcSamplePlan.setExpireDate(binIn.getExpireDate());
         iqcSamplePlan.setPlantNb(binIn.getPlantNb());
         iqcSamplePlan.setUnit(materialVO.getUnit());
+        iqcSamplePlan.setAreaCode(binIn.getAreaCode());
 
 
         samplePlanMapper.insert(iqcSamplePlan);
@@ -1431,7 +1435,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setStatus(BinInStatusEnum.PROCESSING.value());
         binIn.setMoveType(MoveTypeEnums.SPLIT_IN.getCode());
 //        binIn.setFromPurchaseOrder(oldStock.getFromPurchaseOrder());
-//        binIn.setPlantNb(oldStock.getPlantNb());
+        binIn.setPlantNb(getWareInfo(SecurityUtils.getWareCode()).getFactoryCode());
         binInMapper.insert(binIn);
         return binInMapper.selectBySsccNumber(ssccNb);
     }
@@ -1514,7 +1518,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
 
 
-    private Ware getWareInfo(String wareCode){
+    public Ware getWareInfo(String wareCode){
         R<Ware> wareR = remoteMasterDataService.getWareByCode(SecurityUtils.getWareCode());
         if (wareR==null||!wareR.isSuccess()){
             throw new ServiceException("没有该"+wareCode+"对应的仓库信息");

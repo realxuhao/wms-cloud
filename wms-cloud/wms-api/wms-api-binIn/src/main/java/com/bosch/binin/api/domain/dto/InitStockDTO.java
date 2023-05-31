@@ -14,38 +14,38 @@ import lombok.Data;
 public class InitStockDTO {
 
     @ExcelProperty(value = "PlantNb")
-    private String PlantNb;
+    private String plantNb;
 
     @ExcelProperty(value = "SSCCNumber")
-    private String SSCCNumber;
+    private String ssccNumber;
 
     @ExcelProperty(value = "SAPMaterialCode")
-    private String SAPMaterialCode;
+    private String sapMaterialCode;
 
     @ExcelProperty(value = "SAPBatchNumber")
-    private String SAPBatchNumber;
+    private String sapBatchNumber;
 
     @ExcelProperty(value = "DefaultQty")
-    private String DefaultQty;
+    private String defaultQty;
 
     @ExcelProperty(value = "RemainingQty")
-    private String RemainingQty;
+    private String remainingQty;
 
     @ExcelProperty(value = "Dluo")
-    private String Dluo;
+    private String dluo;
 
     @ExcelProperty(value = "SAPStorageLocation")
-    private String SAPStorageLocation;
+    private String sapStorageLocation;
 
     @ExcelProperty(value = "Area")
-    private String Area;
+    private String area;
 
     @ExcelProperty(value = "Bin")
-    private String Bin;
+    private String bin;
 
     @ExcelProperty(value = "PONumber")
-    private String PONumber;
+    private String poNumber;
 
     @ExcelProperty(value = "R3StockStatus")
-    private String R3StockStatus;
+    private String r3StockStatus;
 }
