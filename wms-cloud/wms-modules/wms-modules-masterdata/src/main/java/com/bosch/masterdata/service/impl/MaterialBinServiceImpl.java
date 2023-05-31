@@ -180,7 +180,7 @@ public class MaterialBinServiceImpl extends ServiceImpl<MaterialBinMapper, Mater
         //绑定id
         dtos.forEach(x -> {
             if (materialsMap.get(x.getMaterialCode()) == null) {
-                throw new ServiceException("包含不存在的物料代码");
+                throw new ServiceException("包含不存在的物料代码:"+x.getMaterialCode());
             }
             x.setMaterialId(materialsMap.get(x.getMaterialCode()));
         });
