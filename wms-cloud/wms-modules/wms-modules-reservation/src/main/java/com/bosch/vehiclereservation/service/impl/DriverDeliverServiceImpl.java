@@ -114,7 +114,7 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
                     wrapper1.eq("driver_id", driverDeliver.getDeliverId());
                     Optional<DriverDispatch> driverDispatch = driverDispatchMapper.selectList(wrapper1).stream().findFirst();
                     if (driverDispatch.isPresent()) {
-                        int i = driverDispatchMapper.deleteById(driverDispatch.get().getDriverId());
+                        int i = driverDispatchMapper.deleteById(driverDispatch.get().getDispatchId());
                     }
                 }
                 supplierReserve.get().setStatus(ReserveStatusEnum.RESERVED.getCode());
