@@ -2,6 +2,9 @@ package com.ruoyi.common.security.interceptor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.AsyncHandlerInterceptor;
 import com.ruoyi.common.core.constant.SecurityConstants;
@@ -20,6 +23,7 @@ import com.bosch.system.api.model.LoginUser;
  */
 public class HeaderInterceptor implements AsyncHandlerInterceptor
 {
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception
     {
@@ -33,6 +37,10 @@ public class HeaderInterceptor implements AsyncHandlerInterceptor
         SecurityContextHolder.setUserKey(ServletUtils.getHeader(request, SecurityConstants.USER_KEY));
         SecurityContextHolder.setWareCode(ServletUtils.getHeader(request, SecurityConstants.WARE_CODE));
 
+        logger.info("UserId: "+SecurityContextHolder.getUserId().toString()
+                +".UserName: "+SecurityContextHolder.getUserName()
+                        +".UserKey: "+SecurityContextHolder.getUserKey()
+                +".WareCode: "+SecurityContextHolder.getWareCode());
         String token = SecurityUtils.getToken();
         if (StringUtils.isNotEmpty(token))
         {
