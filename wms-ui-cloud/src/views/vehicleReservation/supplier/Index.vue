@@ -96,7 +96,7 @@ export default {
   model: {},
   computed: {},
   mounted () {
-    this.supplierName = this.$store.getters.nickname
+    this.supplierName = this.$store.getters.nickname.replace(/(^\s*)|(\s*$)/g,'')
     this.getErrorList()
   },
   methods: {
