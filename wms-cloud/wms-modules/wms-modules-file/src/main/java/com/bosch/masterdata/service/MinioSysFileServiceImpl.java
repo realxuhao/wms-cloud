@@ -67,7 +67,11 @@ public class MinioSysFileServiceImpl implements ISysFileService
                                 .expiry(60 * 60 * 24)
                                 .build());
 
-        return url;
+        String replacement = "https://www.nutricia-home.com/templateExcel/wms";
+
+        String replacedString = url.replaceFirst(".*/wms", replacement);
+
+        return replacedString;
     }
 
 }
