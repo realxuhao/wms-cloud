@@ -21,4 +21,10 @@ public class StockEditDTO {
     private Double freezeStock;
     @ApiModelProperty("调整类型,0:领料，1：报废，2：其他")
     private Integer type;
+
+    @ApiModelProperty("领料数量")
+    private Double stockUse;
+
+
+
 }

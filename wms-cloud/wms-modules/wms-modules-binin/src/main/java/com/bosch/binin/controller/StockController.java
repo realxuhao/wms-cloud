@@ -204,16 +204,7 @@ public class StockController extends BaseController {
     @ApiOperation("修改库存")
     public R editStock(@RequestBody StockEditDTO stockEditDTO) {
         stockService.editStock(stockEditDTO);
-
         return R.ok();
     }
-
-
-
-
-
-
-
-
 
 }

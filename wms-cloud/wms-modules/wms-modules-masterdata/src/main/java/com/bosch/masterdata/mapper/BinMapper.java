@@ -8,6 +8,7 @@ import com.bosch.masterdata.api.domain.Bin;
 import com.bosch.masterdata.api.domain.dto.BinDTO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -34,7 +35,7 @@ public interface BinMapper extends BaseMapper<Bin>
 
     public List<BinVO> selectBinVOByFrameType(String code);
 
-    public List<BinVO> selectBinVOByFrameTypeAndWare(String code,String ware);
+    public List<BinVO> selectBinVOByFrameTypeAndWare(@Param("code") String code, @Param("ware") String ware);
     /**
      * 查询库位列表
      * 

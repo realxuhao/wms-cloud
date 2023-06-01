@@ -34,4 +34,6 @@ public interface IManualTransferOrderService extends IService<ManualTransferOrde
     BinInVO performBinIn(ManualBinInDTO binInDTO);
 
     ManualTransferOrder info(String mesBarCode);
+
+    void trans(ManualBinInDTO binInDTO);
 }

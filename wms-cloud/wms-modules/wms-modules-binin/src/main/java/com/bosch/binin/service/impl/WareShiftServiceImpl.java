@@ -579,7 +579,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         lambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         lambdaQueryWrapper.eq(Stock::getFreezeStock, Double.valueOf(0));
         lambdaQueryWrapper.le(Stock::getExpireDate, new Date());
-        lambdaQueryWrapper.in(Stock::getAreaCode, AreaListConstants.mainAreaList);
+        lambdaQueryWrapper.notIn(Stock::getAreaCode, AreaListConstants.mainAreaList);
         List<Stock> stockList = stockService.list(lambdaQueryWrapper);
         if (CollectionUtils.isEmpty(stockList)) {
             throw new ServiceException("没有该物料" + materialNb + "对应的外库库存");

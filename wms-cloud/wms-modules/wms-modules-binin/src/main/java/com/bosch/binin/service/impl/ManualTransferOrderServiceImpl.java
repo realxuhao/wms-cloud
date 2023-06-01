@@ -28,6 +28,7 @@ import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -336,5 +337,46 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
         qw.last("for update");
         manualTransferOrderMapper.selectOne(qw);
         return manualTransferOrderMapper.selectOne(qw);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void trans(ManualBinInDTO binInDTO) {
+        String mesBarCode = binInDTO.getMesBarCode();
+        String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+        LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Stock::getSsccNumber, sscc);
+        queryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        Stock stock = stockService.getOne(queryWrapper);
+
+
+        ManualTransferOrder manualTransferOrder = new ManualTransferOrder();
+        manualTransferOrder.setSourcePlantNb(stock.getPlantNb());
+        manualTransferOrder.setSourceWareCode(stock.getWareCode());
+        manualTransferOrder.setSourceAreaCode(stock.getAreaCode());
+        manualTransferOrder.setSourceBinCode(stock.getBinCode());
+//        manualTransferOrder.setTargetAreaCode(targetAreaCode);
+        manualTransferOrder.setSsccNb(stock.getSsccNumber());
+        manualTransferOrder.setMaterialNb(stock.getMaterialNb());
+//        manualTransferOrder.setType(dto.getNormalType());
+        manualTransferOrder.setMoveType(MoveTypeEnums.IN_TRANSFER.getCode());
+        manualTransferOrder.setStatus(ManuTransStatusEnum.FINISH.code());
+
+        if (binInDTO.getType() == 1) {
+            manualTransferOrder.setTargetAreaCode(binInDTO.getActualCode());
+            stock.setAreaCode(binInDTO.getActualCode());
+            stock.setBinCode(null);
+        } else {
+            BinVO binVO = binInService.getBinVOByBinCode(binInDTO.getActualCode());
+            manualTransferOrder.setTargetBinCode(binVO.getCode());
+            manualTransferOrder.setTargetAreaCode(binVO.getAreaCode());
+            stock.setAreaCode(binVO.getAreaCode());
+            stock.setBinCode(binVO.getCode());
+        }
+
+        this.save(manualTransferOrder);
+
+        stockService.updateById(stock);
+
     }
 }

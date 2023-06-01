@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.binin.api.domain.StockAdjust;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.service.IBinInService;
+import com.bosch.binin.service.IStockAdjustService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.RemoteMasterDataService;
@@ -57,6 +59,10 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     @Autowired
     @Lazy
     private IBinInService binInService;
+
+
+    @Autowired
+    private IStockAdjustService stockAdjustService;
 
     @Override
     public List<StockVO> selectStockVOList(StockQueryDTO stockQueryDTO) {
@@ -215,7 +221,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                 .eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode())
                 .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<Stock> list = this.list(queryWrapper);
-        double sum = list.stream().filter(item -> "7751".equals(item.getPlantNb())).mapToDouble(Stock::getAvailableStock).sum();
+        double sum = list.stream().filter(item -> AreaListConstants.mainAreaList.contains(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
         return sum;
     }
 
@@ -227,7 +233,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                 .eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode())
                 .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<Stock> list = this.list(queryWrapper);
-        double sum = list.stream().filter(item -> AreaListConstants.mainAreaList.contains(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
+        double sum = list.stream().filter(item -> !AreaListConstants.mainAreaList.contains(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
         return sum;
     }
 
@@ -295,31 +301,76 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void editStock(StockEditDTO stockEditDTO) {
-        if (stockEditDTO.getSsccNumber() == null || stockEditDTO.getAvailableStock() == null || stockEditDTO.getFreezeStock() == null || stockEditDTO.getTotalStock() == null) {
-            throw new ServiceException("所有参数都不能为空");
-        }
-        if (!stockEditDTO.getTotalStock().equals(stockEditDTO.getFreezeStock()+stockEditDTO.getAvailableStock())){
-            throw new ServiceException("总库存必须等于冻结库存+可用库存");
-        }
+//        if (stockEditDTO.getSsccNumber() == null || stockEditDTO.getAvailableStock() == null || stockEditDTO.getFreezeStock() == null || stockEditDTO.getTotalStock() == null) {
+//            throw new ServiceException("所有参数都不能为空");
+//        }
+//        if (!stockEditDTO.getTotalStock().equals(stockEditDTO.getFreezeStock()+stockEditDTO.getAvailableStock())){
+//            throw new ServiceException("总库存必须等于冻结库存+可用库存");
+//        }
         LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Stock::getSsccNumber, stockEditDTO.getSsccNumber());
         queryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.last("limit 1");
         Stock stock = this.getOne(queryWrapper);
-        stock.setAvailableStock(stockEditDTO.getAvailableStock());
-        stock.setFreezeStock(stockEditDTO.getFreezeStock());
-        stock.setTotalStock(stockEditDTO.getTotalStock());
-        this.updateById(stock);
+        if (stock == null) {
+            throw new ServiceException("无此库存信息");
+        }
+        StockAdjust stockAdjust = BeanConverUtil.conver(stock, StockAdjust.class);
+
+        if (stockEditDTO.getType() == 0) {//领料
+
+            if (stockEditDTO.getStockUse() > stock.getAvailableStock()) {
+                throw new ServiceException("领用数量不能大于可用数量");
+            }
+            stock.setAvailableStock(stock.getAvailableStock() - stockEditDTO.getStockUse());
+            stock.setTotalStock(stock.getTotalStock() - stockEditDTO.getStockUse());
+            stock.setFreezeStock(stock.getTotalStock() - stock.getAvailableStock());
+            if (stock.getAvailableStock()==Double.valueOf(0)) {
+                binInService.binDown(stock.getSsccNumber());
+            }
+            this.updateById(stock);
+
+
+
+        } else if (stockEditDTO.getType() == 1) {//报废
+            if (stock.getFreezeStock() > 0) {
+                throw new ServiceException("该库存存在执行任务，暂时不可以报废");
+            }
+            binInService.binDown(stock.getSsccNumber());
+
+        }else {
+            if (stockEditDTO.getSsccNumber() == null || stockEditDTO.getAvailableStock() == null || stockEditDTO.getFreezeStock() == null || stockEditDTO.getTotalStock() == null) {
+                throw new ServiceException("所有参数都不能为空");
+            }
+            if (!stockEditDTO.getTotalStock().equals(stockEditDTO.getFreezeStock() + stockEditDTO.getAvailableStock())) {
+                throw new ServiceException("总库存必须等于冻结库存+可用库存");
+            }
+            stock.setAvailableStock(stockEditDTO.getAvailableStock());
+            stock.setFreezeStock(stockEditDTO.getFreezeStock());
+            stock.setTotalStock(stockEditDTO.getTotalStock());
+            this.updateById(stock);
+
+        }
+
+
+        stockAdjust.setType(stockEditDTO.getType());
+        stockAdjust.setId(null);
+        stockAdjust.setAdjustFreezeStock(stock.getFreezeStock());
+        stockAdjust.setAdjustTotalStock(stock.getTotalStock());
+        stockAdjust.setAdjustAvailableStock(stock.getAvailableStock());
+
+        stockAdjustService.save(stockAdjust);
 
 
     }
 
 
     private AreaVO getAreaVo(String areaCode) {
-        if (areaMap.containsKey(areaCode)){
+        if (areaMap.containsKey(areaCode)) {
             return areaMap.get(areaCode);
-        }else {
+        } else {
             R<AreaVO> byCode = remoteMasterDataService.getByCode(areaCode);
             if (byCode == null || !byCode.isSuccess()) {
                 throw new ServiceException("获取区域详情失败");
@@ -328,7 +379,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             if (areaVO == null) {
                 throw new ServiceException("不存在编码为:" + areaCode + "的区域");
             }
-            areaMap.put(areaCode,areaVO);
+            areaMap.put(areaCode, areaVO);
             return areaVO;
         }
     }

@@ -16,6 +16,7 @@ import com.bosch.binin.api.enumeration.*;
 import com.bosch.binin.mapper.MaterialCallMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.service.*;
+import com.ruoyi.common.core.constant.AreaListConstants;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
@@ -439,7 +440,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             List<Stock> stockList = stockService.list(lambdaQueryWrapper);
             List<Stock> sortedStockList = new ArrayList<>();
             sortedStockList =
-                    stockList.stream().filter(item -> item.getAvailableStock() != 0 && "7751".equals(item.getPlantNb())).
+                    stockList.stream().filter(item -> item.getAvailableStock() != 0 && AreaListConstants.mainAreaList.contains(item.getAreaCode())).
                             sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder())).collect(Collectors.toList());
             double sum = sortedStockList.stream().mapToDouble(Stock::getAvailableStock).sum();
 //            if (sum < call.getUnIssuedQuantity()) {
