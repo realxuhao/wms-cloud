@@ -17,9 +17,7 @@ export default {
 		Message
 	},
 	data() {
-		return {
-			code: ''
-		};
+		return {};
 	},
 	onShow() {
 		Bus.$on('scancodedate', this.scanCodeCallback);
@@ -30,14 +28,26 @@ export default {
 	methods: {
 		async scanCodeCallback(data) {
 			Bus.$emit('stopScan');
-			this.handleGoto(data.code);
+			this.getInfo(data.code);
 		},
+		async getInfo(barCode) {
+			try {
+				uni.showLoading();
+				const data = await this.$store.dispatch('stock/getInfoByMesBarCode', barCode);
 
-		handleGoto(code) {
+				this.handleGotoOperation(data);
+			} catch (e) {
+				this.$refs.message.error(e.message);
+			} finally {
+				uni.hideLoading();
+				Bus.$emit('startScan');
+			}
+		},
+		handleGotoOperation(data) {
+			Bus.$off('scancodedate', this.scanCodeCallback);
 			uni.navigateTo({
-				url: `/pages/adjust/adjustOperation?code=${code}`
+				url: `/pages/adjust/adjustOperation?info=${JSON.stringify(data)}`
 			});
-			Bus.$emit('startScan');
 		}
 	}
 };
@@ -57,12 +67,14 @@ export default {
 	align-items: center;
 	// justify-content: center;
 	flex-direction: column;
+
 	image {
 		width: 180px;
 		// height: 160px;
 		margin-top: 120px;
 		margin-bottom: 32px;
 	}
+
 	text {
 		color: #fff;
 		font-size: 16px;

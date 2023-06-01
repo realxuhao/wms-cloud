@@ -1,20 +1,63 @@
 <template>
 	<my-page nav-title="库存调整">
 		<view class="main" slot="page-main">
+			<view class="header m-b-8">
+				<view class="text-line m-b-8 ">
+					<view class="label">库位：</view>
+					{{ materialInfo.binCode }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">物料名称：</view>
+					{{ materialInfo.materialName }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">物料编码</view>
+					{{ materialInfo.materialNb }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">SSCC</view>
+					{{ materialInfo.ssccNumber }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">批次：</view>
+					{{ materialInfo.batchNb }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">总库存：</view>
+					{{ materialInfo.totalStock }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">冻结库存：</view>
+					{{ materialInfo.freezeStock }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">可用库存：</view>
+					{{ materialInfo.availableStock }}
+				</view>
+			</view>
+
 			<view class="content">
 				<uni-forms :label-width="80" ref="binInForm" :rules="formRules" :modelValue="form" label-position="left">
-					<uni-forms-item label="库位">{{ materialInfo.binCode }}</uni-forms-item>
-					<uni-forms-item label="物料名称">{{ materialInfo.materialName }}</uni-forms-item>
-					<uni-forms-item label="物料编码">{{ materialInfo.materialNb }}</uni-forms-item>
-					<uni-forms-item label="SSCC">{{ materialInfo.ssccNumber }}</uni-forms-item>
-					<uni-forms-item label="批次">{{ materialInfo.batchNb }}</uni-forms-item>
-					<uni-forms-item label="总库存" name="totalStock" required><uni-easyinput v-model="form.totalStock" placeholder="请输入总库存"></uni-easyinput></uni-forms-item>
-					<uni-forms-item label="冻结库存" name="freezeStock" required>
-						<uni-easyinput v-model="form.freezeStock" placeholder="请输入冻结库存"></uni-easyinput>
-					</uni-forms-item>
-					<uni-forms-item label="可用库存" name="availableStock" required>
-						<uni-easyinput v-model="form.availableStock" placeholder="请输入可用库存"></uni-easyinput>
-					</uni-forms-item>
+					<uni-forms-item label="调整类型" required><uni-data-checkbox v-model="form.type" :localdata="typeList" /></uni-forms-item>
+
+					<template v-if="form.type === 0">
+						<uni-forms-item label="领用数量" name="totalStock" required>
+							<uni-easyinput v-model="form.stockUse" placeholder="请输入总库存"></uni-easyinput>
+						</uni-forms-item>
+					</template>
+
+					<template v-if="form.type === 2">
+						<uni-forms-item label="总库存" name="totalStock" required>
+							<uni-easyinput v-model="form.totalStock" placeholder="请输入总库存"></uni-easyinput>
+						</uni-forms-item>
+						<uni-forms-item label="冻结库存" name="freezeStock" required>
+							<uni-easyinput v-model="form.freezeStock" placeholder="请输入冻结库存"></uni-easyinput>
+						</uni-forms-item>
+						<uni-forms-item label="可用库存" name="availableStock" required>
+							<uni-easyinput v-model="form.availableStock" placeholder="请输入可用库存"></uni-easyinput>
+						</uni-forms-item>
+					</template>
+
 					<o-btn block class="submit-btn primary-button" :loading="submitLoading" @click="handlePost">提交</o-btn>
 				</uni-forms>
 			</view>
@@ -44,14 +87,18 @@ export default {
 	},
 	data() {
 		return {
-			diffList: [
+			typeList: [
 				{
-					text: '是',
+					text: '领用',
+					value: 0
+				},
+				{
+					text: '报废',
 					value: 1
 				},
 				{
-					text: '否',
-					value: 0
+					text: '其它',
+					value: 2
 				}
 			],
 			submitLoading: false,
@@ -85,7 +132,8 @@ export default {
 			form: {
 				freezeStock: 0,
 				availableStock: 0,
-				totalStock: 0
+				totalStock: 0,
+				type: 0
 			},
 			list: []
 		};
