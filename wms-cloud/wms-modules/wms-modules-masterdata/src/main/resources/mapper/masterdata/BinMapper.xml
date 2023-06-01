@@ -108,7 +108,11 @@
         <include refid="binVOList"/>
         where f.type_code = #{code}
     </select>
-
+    <select id="selectBinVOByFrameTypeAndWare"  resultMap="BinVOResult">
+        <include refid="binVOList"/>
+        where f.type_code = #{code}
+        AND w.CODE =#{ware}
+    </select>
     <insert id="insertBin" parameterType="Bin">
         insert into md_bin
         <trim prefix="(" suffix=")" suffixOverrides=",">
