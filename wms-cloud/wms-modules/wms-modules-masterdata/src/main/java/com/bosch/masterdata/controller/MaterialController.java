@@ -53,7 +53,7 @@ public class MaterialController extends BaseController {
     /**
      * 导出物料信息列表
      */
-    @RequiresPermissions("masterdata:material:export")
+    //@RequiresPermissions("masterdata:material:export")
     @Log(title = "物料信息", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Material material) {
@@ -66,7 +66,7 @@ public class MaterialController extends BaseController {
     /**
      * 删除物料信息
      */
-    @RequiresPermissions("masterdata:material:remove")
+    //@RequiresPermissions("masterdata:material:remove")
     @Log(title = "物料信息", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
@@ -105,7 +105,7 @@ public class MaterialController extends BaseController {
     /**
      * 新增物料信息
      */
-    //@RequiresPermissions("masterdata:material:add")
+    ////@RequiresPermissions("masterdata:material:add")
     @ApiOperation("新增物料")
     @Log(title = "物料信息", businessType = BusinessType.INSERT)
     @PostMapping("/addMaterial")
@@ -116,7 +116,7 @@ public class MaterialController extends BaseController {
     /**
      * 修改物料信息
      */
-    //@RequiresPermissions("masterdata:material:edit")
+    ////@RequiresPermissions("masterdata:material:edit")
     @ApiOperation("修改物料")
     @Log(title = "物料信息", businessType = BusinessType.UPDATE)
     @PutMapping("/{id}")
@@ -128,7 +128,7 @@ public class MaterialController extends BaseController {
     /**
      * 获取物料信息详细信息
      */
-    //@RequiresPermissions("masterdata:material:query")
+    ////@RequiresPermissions("masterdata:material:query")
     @GetMapping(value = "/{id}")
     @ApiOperation("获取物料详情")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
@@ -138,7 +138,7 @@ public class MaterialController extends BaseController {
     /**
      * 获取物料信息详细信息
      */
-    //@RequiresPermissions("masterdata:material:query")
+    ////@RequiresPermissions("masterdata:material:query")
     @GetMapping(value = "/getByMaterialCode/{materialCode}")
     @ApiOperation("根据物料编码获取获取物料详情")
     public R<MaterialVO> getInfoByMaterialCode(@PathVariable("materialCode") String materialCode) {

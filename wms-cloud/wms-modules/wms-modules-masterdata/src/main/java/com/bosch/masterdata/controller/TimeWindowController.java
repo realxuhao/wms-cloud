@@ -45,7 +45,7 @@ public class TimeWindowController extends BaseController {
     /**
      * 查询道口时间窗口列表
      */
-    @RequiresPermissions("masterdata:window:list")
+    //@RequiresPermissions("masterdata:window:list")
     @ApiOperation("查询时间窗口列表")
     @GetMapping("/list")
     public R<PageVO<TimeWindowVO>> list(TimeWindowDTO timeWindowDTO) {
@@ -57,7 +57,7 @@ public class TimeWindowController extends BaseController {
     /**
      * 导出道口时间窗口列表
      */
-    @RequiresPermissions("masterdata:window:export")
+    //@RequiresPermissions("masterdata:window:export")
     @Log(title = "道口时间窗口", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, TimeWindowDTO timeWindowDTO) {
@@ -69,7 +69,7 @@ public class TimeWindowController extends BaseController {
     /**
      * 获取道口时间窗口详细信息
      */
-    @RequiresPermissions("masterdata:window:query")
+    //@RequiresPermissions("masterdata:window:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(timeWindowService.selectTimeWindowById(id));
@@ -81,7 +81,7 @@ public class TimeWindowController extends BaseController {
      * @param wareId 仓库id
      * @return
      */
-//    @RequiresPermissions("masterdata:window:getlist")
+//    //@RequiresPermissions("masterdata:window:getlist")
     @GetMapping(value = "/ware/{wareId}")
     @ApiOperation("根据仓库id获取时间窗口列表")
     public R<List<TimeWindowVO>> getListByWareId(@PathVariable("wareId") Long wareId) {
@@ -91,7 +91,7 @@ public class TimeWindowController extends BaseController {
     /**
      * 新增道口时间窗口
      */
-    @RequiresPermissions("masterdata:window:add")
+    //@RequiresPermissions("masterdata:window:add")
     @Log(title = "道口时间窗口", businessType = BusinessType.INSERT)
     @PostMapping
     @ApiOperation("新增时间窗口")
@@ -102,7 +102,7 @@ public class TimeWindowController extends BaseController {
     /**
      * 修改道口时间窗口
      */
-    @RequiresPermissions("masterdata:window:edit")
+    //@RequiresPermissions("masterdata:window:edit")
     @Log(title = "道口时间窗口", businessType = BusinessType.UPDATE)
     @ApiOperation("修改时间窗口")
     @PutMapping
@@ -113,7 +113,7 @@ public class TimeWindowController extends BaseController {
     /**
      * 删除道口时间窗口
      */
-    @RequiresPermissions("masterdata:window:remove")
+    //@RequiresPermissions("masterdata:window:remove")
     @Log(title = "道口时间窗口", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids) {
@@ -126,7 +126,7 @@ public class TimeWindowController extends BaseController {
      * @param timeWindowDTOList 保存数据
      * @return
      */
-    @RequiresPermissions("masterdata:window:save")
+    //@RequiresPermissions("masterdata:window:save")
     @ApiOperation("保存某个仓库的时间窗口")
     @PostMapping("/save")
     public AjaxResult saveList(@RequestBody List<TimeWindowDTO> timeWindowDTOList) {

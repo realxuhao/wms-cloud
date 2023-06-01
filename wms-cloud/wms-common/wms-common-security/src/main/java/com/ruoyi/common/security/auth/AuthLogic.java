@@ -129,7 +129,7 @@ public class AuthLogic
     }
 
     /**
-     * 根据注解(@RequiresPermissions)鉴权, 如果验证未通过，则抛出异常: NotPermissionException
+     * 根据注解(//@RequiresPermissions)鉴权, 如果验证未通过，则抛出异常: NotPermissionException
      * 
      * @param requiresPermissions 注解对象
      */
@@ -292,7 +292,7 @@ public class AuthLogic
     }
 
     /**
-     * 根据注解(@RequiresPermissions)鉴权
+     * 根据注解(//@RequiresPermissions)鉴权
      * 
      * @param at 注解对象
      */

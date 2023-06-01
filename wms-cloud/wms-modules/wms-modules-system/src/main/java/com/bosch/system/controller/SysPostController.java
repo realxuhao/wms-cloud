@@ -39,7 +39,7 @@ public class SysPostController extends BaseController
     /**
      * 获取岗位列表
      */
-    @RequiresPermissions("system:post:list")
+    //@RequiresPermissions("system:post:list")
     @GetMapping("/list")
     public TableDataInfo list(SysPost post)
     {
@@ -49,7 +49,7 @@ public class SysPostController extends BaseController
     }
 
     @Log(title = "岗位管理", businessType = BusinessType.EXPORT)
-    @RequiresPermissions("system:post:export")
+    //@RequiresPermissions("system:post:export")
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysPost post)
     {
@@ -61,7 +61,7 @@ public class SysPostController extends BaseController
     /**
      * 根据岗位编号获取详细信息
      */
-    @RequiresPermissions("system:post:query")
+    //@RequiresPermissions("system:post:query")
     @GetMapping(value = "/{postId}")
     public AjaxResult getInfo(@PathVariable Long postId)
     {
@@ -71,7 +71,7 @@ public class SysPostController extends BaseController
     /**
      * 新增岗位
      */
-    @RequiresPermissions("system:post:add")
+    //@RequiresPermissions("system:post:add")
     @Log(title = "岗位管理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysPost post)
@@ -91,7 +91,7 @@ public class SysPostController extends BaseController
     /**
      * 修改岗位
      */
-    @RequiresPermissions("system:post:edit")
+    //@RequiresPermissions("system:post:edit")
     @Log(title = "岗位管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody SysPost post)
@@ -111,7 +111,7 @@ public class SysPostController extends BaseController
     /**
      * 删除岗位
      */
-    @RequiresPermissions("system:post:remove")
+    //@RequiresPermissions("system:post:remove")
     @Log(title = "岗位管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{postIds}")
     public AjaxResult remove(@PathVariable Long[] postIds)

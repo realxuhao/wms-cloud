@@ -33,7 +33,7 @@ public class SysOperlogController extends BaseController
     @Autowired
     private ISysOperLogService operLogService;
 
-    @RequiresPermissions("system:operlog:list")
+    //@RequiresPermissions("system:operlog:list")
     @GetMapping("/list")
     public TableDataInfo list(SysOperLog operLog)
     {
@@ -43,7 +43,7 @@ public class SysOperlogController extends BaseController
     }
 
     @Log(title = "操作日志", businessType = BusinessType.EXPORT)
-    @RequiresPermissions("system:operlog:export")
+    //@RequiresPermissions("system:operlog:export")
     @PostMapping("/export")
     public void export(HttpServletResponse response, SysOperLog operLog)
     {
@@ -53,14 +53,14 @@ public class SysOperlogController extends BaseController
     }
 
     @Log(title = "操作日志", businessType = BusinessType.DELETE)
-    @RequiresPermissions("system:operlog:remove")
+    //@RequiresPermissions("system:operlog:remove")
     @DeleteMapping("/{operIds}")
     public AjaxResult remove(@PathVariable Long[] operIds)
     {
         return toAjax(operLogService.deleteOperLogByIds(operIds));
     }
 
-    @RequiresPermissions("system:operlog:remove")
+    //@RequiresPermissions("system:operlog:remove")
     @Log(title = "操作日志", businessType = BusinessType.CLEAN)
     @DeleteMapping("/clean")
     public AjaxResult clean()

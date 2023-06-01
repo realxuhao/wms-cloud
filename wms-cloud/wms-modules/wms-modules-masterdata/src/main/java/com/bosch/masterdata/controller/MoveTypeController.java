@@ -45,7 +45,7 @@ public class MoveTypeController extends BaseController {
     /**
      * 查询移动类型配置列表
      */
-    @RequiresPermissions("masterdata:type:list")
+    //@RequiresPermissions("masterdata:type:list")
     @ApiOperation("查询移动类型列表")
     @GetMapping("/list")
     public R<PageVO<MoveTypeVO>> list(MoveTypeDTO moveTypeDTO) {
@@ -57,7 +57,7 @@ public class MoveTypeController extends BaseController {
     /**
      * 导出移动类型配置列表
      */
-    @RequiresPermissions("masterdata:type:export")
+    //@RequiresPermissions("masterdata:type:export")
     @Log(title = "移动类型配置", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, MoveTypeDTO moveType) {
@@ -69,7 +69,7 @@ public class MoveTypeController extends BaseController {
     /**
      * 获取移动类型配置详细信息
      */
-    @RequiresPermissions("masterdata:type:query")
+    //@RequiresPermissions("masterdata:type:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(moveTypeService.selectMoveTypeById(id));
@@ -78,7 +78,7 @@ public class MoveTypeController extends BaseController {
     /**
      * 新增移动类型配置
      */
-//    @RequiresPermissions("masterdata:type:add")
+//    //@RequiresPermissions("masterdata:type:add")
     @ApiOperation("增加移动类型")
     @Log(title = "移动类型配置", businessType = BusinessType.INSERT)
     @PostMapping
@@ -89,7 +89,7 @@ public class MoveTypeController extends BaseController {
     /**
      * 修改移动类型配置
      */
-    @RequiresPermissions("masterdata:type:edit")
+    //@RequiresPermissions("masterdata:type:edit")
     @Log(title = "移动类型配置", businessType = BusinessType.UPDATE)
     @ApiOperation("修改移动类型")
     @PutMapping
@@ -100,7 +100,7 @@ public class MoveTypeController extends BaseController {
     /**
      * 删除移动类型配置
      */
-    @RequiresPermissions("masterdata:type:remove")
+    //@RequiresPermissions("masterdata:type:remove")
     @Log(title = "移动类型配置", businessType = BusinessType.DELETE)
     @ApiOperation("删除移动类型")
     @DeleteMapping("/{ids}")

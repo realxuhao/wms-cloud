@@ -44,7 +44,7 @@ public class MaterialTypeController extends BaseController
     /**
      * 查询物料类型列表
      */
-    @RequiresPermissions("masterdata:type:list")
+    //@RequiresPermissions("masterdata:type:list")
     @GetMapping("/list")
     public TableDataInfo list(MaterialType materialType)
     {
@@ -64,7 +64,7 @@ public class MaterialTypeController extends BaseController
     /**
      * 导出物料类型列表
      */
-    @RequiresPermissions("masterdata:type:export")
+    //@RequiresPermissions("masterdata:type:export")
     @Log(title = "物料类型", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, MaterialType materialType)
@@ -77,7 +77,7 @@ public class MaterialTypeController extends BaseController
     /**
      * 获取物料类型详细信息
      */
-    @RequiresPermissions("masterdata:type:query")
+    //@RequiresPermissions("masterdata:type:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -87,7 +87,7 @@ public class MaterialTypeController extends BaseController
     /**
      * 新增物料类型
      */
-    @RequiresPermissions("masterdata:type:add")
+    //@RequiresPermissions("masterdata:type:add")
     @Log(title = "物料类型", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody MaterialType materialType)
@@ -98,7 +98,7 @@ public class MaterialTypeController extends BaseController
     /**
      * 修改物料类型
      */
-    @RequiresPermissions("masterdata:type:edit")
+    //@RequiresPermissions("masterdata:type:edit")
     @Log(title = "物料类型", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody MaterialType materialType)
@@ -109,7 +109,7 @@ public class MaterialTypeController extends BaseController
     /**
      * 删除物料类型
      */
-    @RequiresPermissions("masterdata:type:remove")
+    //@RequiresPermissions("masterdata:type:remove")
     @Log(title = "物料类型", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

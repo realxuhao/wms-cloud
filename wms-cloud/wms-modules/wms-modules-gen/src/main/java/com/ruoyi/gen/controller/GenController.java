@@ -46,7 +46,7 @@ public class GenController extends BaseController
     /**
      * 查询代码生成列表
      */
-    @RequiresPermissions("tool:gen:list")
+    //@RequiresPermissions("tool:gen:list")
     @GetMapping("/list")
     public TableDataInfo genList(GenTable genTable)
     {
@@ -58,7 +58,7 @@ public class GenController extends BaseController
     /**
      * 修改代码生成业务
      */
-    @RequiresPermissions("tool:gen:query")
+    //@RequiresPermissions("tool:gen:query")
     @GetMapping(value = "/{tableId}")
     public AjaxResult getInfo(@PathVariable Long tableId)
     {
@@ -75,7 +75,7 @@ public class GenController extends BaseController
     /**
      * 查询数据库列表
      */
-    @RequiresPermissions("tool:gen:list")
+    //@RequiresPermissions("tool:gen:list")
     @GetMapping("/db/list")
     public TableDataInfo dataList(GenTable genTable)
     {
@@ -100,7 +100,7 @@ public class GenController extends BaseController
     /**
      * 导入表结构（保存）
      */
-    @RequiresPermissions("tool:gen:import")
+    //@RequiresPermissions("tool:gen:import")
     @Log(title = "代码生成", businessType = BusinessType.IMPORT)
     @PostMapping("/importTable")
     public AjaxResult importTableSave(String tables)
@@ -115,7 +115,7 @@ public class GenController extends BaseController
     /**
      * 修改保存代码生成业务
      */
-    @RequiresPermissions("tool:gen:edit")
+    //@RequiresPermissions("tool:gen:edit")
     @Log(title = "代码生成", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult editSave(@Validated @RequestBody GenTable genTable)
@@ -128,7 +128,7 @@ public class GenController extends BaseController
     /**
      * 删除代码生成
      */
-    @RequiresPermissions("tool:gen:remove")
+    //@RequiresPermissions("tool:gen:remove")
     @Log(title = "代码生成", businessType = BusinessType.DELETE)
     @DeleteMapping("/{tableIds}")
     public AjaxResult remove(@PathVariable Long[] tableIds)
@@ -140,7 +140,7 @@ public class GenController extends BaseController
     /**
      * 预览代码
      */
-    @RequiresPermissions("tool:gen:preview")
+    //@RequiresPermissions("tool:gen:preview")
     @GetMapping("/preview/{tableId}")
     public AjaxResult preview(@PathVariable("tableId") Long tableId) throws IOException
     {
@@ -151,7 +151,7 @@ public class GenController extends BaseController
     /**
      * 生成代码（下载方式）
      */
-    @RequiresPermissions("tool:gen:code")
+    //@RequiresPermissions("tool:gen:code")
     @Log(title = "代码生成", businessType = BusinessType.GENCODE)
     @GetMapping("/download/{tableName}")
     public void download(HttpServletResponse response, @PathVariable("tableName") String tableName) throws IOException
@@ -163,7 +163,7 @@ public class GenController extends BaseController
     /**
      * 生成代码（自定义路径）
      */
-    @RequiresPermissions("tool:gen:code")
+    //@RequiresPermissions("tool:gen:code")
     @Log(title = "代码生成", businessType = BusinessType.GENCODE)
     @GetMapping("/genCode/{tableName}")
     public AjaxResult genCode(@PathVariable("tableName") String tableName)
@@ -175,7 +175,7 @@ public class GenController extends BaseController
     /**
      * 同步数据库
      */
-    @RequiresPermissions("tool:gen:edit")
+    //@RequiresPermissions("tool:gen:edit")
     @Log(title = "代码生成", businessType = BusinessType.UPDATE)
     @GetMapping("/synchDb/{tableName}")
     public AjaxResult synchDb(@PathVariable("tableName") String tableName)
@@ -187,7 +187,7 @@ public class GenController extends BaseController
     /**
      * 批量生成代码
      */
-    @RequiresPermissions("tool:gen:code")
+    //@RequiresPermissions("tool:gen:code")
     @Log(title = "代码生成", businessType = BusinessType.GENCODE)
     @GetMapping("/batchGenCode")
     public void batchGenCode(HttpServletResponse response, String tables) throws IOException

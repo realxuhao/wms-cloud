@@ -54,7 +54,7 @@ public class FrameController extends BaseController {
     /**
      * 查询跨列表
      */
-    @RequiresPermissions("masterdata:frame:list")
+    //@RequiresPermissions("masterdata:frame:list")
     @GetMapping("/list")
     @ApiOperation("查询跨列表")
     public R<PageVO<FrameVO>> list(FrameDTO frameDTO) {
@@ -66,7 +66,7 @@ public class FrameController extends BaseController {
     /**
      * 导出跨列表
      */
-    @RequiresPermissions("masterdata:frame:export")
+    //@RequiresPermissions("masterdata:frame:export")
     @Log(title = "跨", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, FrameDTO frameDTO) {
@@ -78,7 +78,7 @@ public class FrameController extends BaseController {
     /**
      * 获取跨详细信息
      */
-    @RequiresPermissions("masterdata:frame:query")
+    //@RequiresPermissions("masterdata:frame:query")
     @GetMapping(value = "/{id}")
     @ApiOperation("根据id查询跨详细信息")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
@@ -141,7 +141,7 @@ public class FrameController extends BaseController {
     /**
      * 新增跨
      */
-    @RequiresPermissions("masterdata:frame:add")
+    //@RequiresPermissions("masterdata:frame:add")
     @Log(title = "跨", businessType = BusinessType.INSERT)
     @ApiOperation("新增跨")
     @PostMapping
@@ -152,7 +152,7 @@ public class FrameController extends BaseController {
     /**
      * 修改跨
      */
-    @RequiresPermissions("masterdata:frame:edit")
+    //@RequiresPermissions("masterdata:frame:edit")
     @Log(title = "跨", businessType = BusinessType.UPDATE)
     @ApiOperation("更新跨")
     @PutMapping
@@ -163,7 +163,7 @@ public class FrameController extends BaseController {
     /**
      * 删除跨
      */
-    @RequiresPermissions("masterdata:frame:remove")
+    //@RequiresPermissions("masterdata:frame:remove")
     @Log(title = "跨", businessType = BusinessType.DELETE)
     @ApiOperation("删除跨")
     @DeleteMapping("/{ids}")

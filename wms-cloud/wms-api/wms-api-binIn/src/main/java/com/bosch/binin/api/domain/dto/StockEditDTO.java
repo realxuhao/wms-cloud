@@ -19,4 +19,6 @@ public class StockEditDTO {
     private Double availableStock;
     @ApiModelProperty("冻结库存")
     private Double freezeStock;
+    @ApiModelProperty("调整类型,0:领料，1：报废，2：其他")
+    private Integer type;
 }

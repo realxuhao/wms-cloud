@@ -53,7 +53,7 @@ public class AreaController extends BaseController {
     /**
      * 导出区域列表
      */
-    @RequiresPermissions("masterdata:area:export")
+    //@RequiresPermissions("masterdata:area:export")
     @Log(title = "区域", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Area area) {
@@ -65,7 +65,7 @@ public class AreaController extends BaseController {
     /**
      * 获取区域详细信息
      */
-    //@RequiresPermissions("masterdata:area:query")
+    ////@RequiresPermissions("masterdata:area:query")
     @GetMapping(value = "/getById/{id}")
     public AjaxResult getInfo(@PathVariable("id") Integer id) {
         return AjaxResult.success(areaService.selectAreaById(id));
@@ -74,7 +74,7 @@ public class AreaController extends BaseController {
     /**
      * 删除区域
      */
-    @RequiresPermissions("masterdata:area:remove")
+    //@RequiresPermissions("masterdata:area:remove")
     @Log(title = "区域", businessType = BusinessType.DELETE)
     @ApiOperation("删除区域")
     @DeleteMapping("/{ids}")
@@ -121,7 +121,7 @@ public class AreaController extends BaseController {
     /**
      * 新增区域
      */
-    //@RequiresPermissions("masterdata:area:add")
+    ////@RequiresPermissions("masterdata:area:add")
     @ApiOperation("新增区域")
     @Log(title = "区域", businessType = BusinessType.INSERT)
     @PostMapping
@@ -132,7 +132,7 @@ public class AreaController extends BaseController {
     /**
      * 修改区域
      */
-    //@RequiresPermissions("masterdata:area:edit")
+    ////@RequiresPermissions("masterdata:area:edit")
     @ApiOperation("修改区域")
     @Log(title = "区域", businessType = BusinessType.UPDATE)
     @PutMapping("/{id}")

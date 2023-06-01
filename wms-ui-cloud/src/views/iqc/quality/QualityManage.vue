@@ -44,48 +44,48 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <template v-if="advanced">
-            <a-col :span="4">
-              <a-form-model-item label="cell部门">
-                <a-select
-                  placeholder="请选择cell部门"
-                  allow-clear
-                  v-model="queryForm.cell"
-                >
-                  <a-select-option v-for="item in cellList" :key="item.id" :value="item.name">
-                    {{ item.name }}
-                  </a-select-option>
-                </a-select>
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-model-item label="批次号">
-                <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-item label="修改人">
-                <a-input v-model="queryForm.operateUser" placeholder="修改人" allow-clear/>
-              </a-form-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-model-item label="更新时间">
-                <a-range-picker
-                  format="YYYY-MM-DD HH:mm"
-                  :show-time="{ format: 'HH:mm' }"
-                  v-model="queryForm.updateTimeList"
-                />
-              </a-form-model-item>
-            </a-col>
-          </template>
+          <!-- <template v-if="advanced"> -->
+          <a-col :span="4">
+            <a-form-model-item label="cell部门">
+              <a-select
+                placeholder="请选择cell部门"
+                allow-clear
+                v-model="queryForm.cell"
+              >
+                <a-select-option v-for="item in cellList" :key="item.id" :value="item.name">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="批次号">
+              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="修改人">
+              <a-input v-model="queryForm.operateUser" placeholder="修改人" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="更新时间">
+              <a-range-picker
+                format="YYYY-MM-DD HH:mm"
+                :show-time="{ format: 'HH:mm' }"
+                v-model="queryForm.updateTimeList"
+              />
+            </a-form-model-item>
+          </a-col>
+          <!-- </template> -->
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button v-hasPermi="['iqc:quanlity:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              <a @click="toggleAdvanced" style="margin-left: 8px">
+              <!-- <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
                 <a-icon :type="advanced ? 'up' : 'down'"/>
-              </a>
+              </a> -->
             </span>
           </a-col>
         </a-row>
@@ -251,44 +251,44 @@ const changeStatusMap = {
 
 const columns = [
   {
-    title: '工厂编码',
+    title: '工厂',
     key: 'plantNb',
     dataIndex: 'plantNb',
-    width: 80
+    width: 60
   },
   {
-    title: '仓库编码',
+    title: '仓库',
     key: 'wareCode',
     dataIndex: 'wareCode',
     width: 80
   },
   {
-    title: '存储区编码',
+    title: '存储区',
     key: 'areaCode',
     dataIndex: 'areaCode',
-    width: 90
+    width: 60
   },
   {
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
-    width: 160,
+    width: 175,
     align: 'center'
   },
+  // {
+  //   title: 'cell部门',
+  //   key: 'cell',
+  //   dataIndex: 'cell',
+  //   width: 90
+  // },
   {
-    title: 'cell部门',
-    key: 'cell',
-    dataIndex: 'cell',
-    width: 90
-  },
-  {
-    title: '库位编码',
+    title: '库位',
     key: 'binCode',
     dataIndex: 'binCode',
-    width: 140
+    width: 120
   },
   {
-    title: '物料编码',
+    title: '物料',
     key: 'materialNb',
     dataIndex: 'materialNb',
     width: 120

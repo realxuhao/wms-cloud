@@ -37,7 +37,7 @@ public class MaterialSupplierController extends BaseController
     /**
      * 查询供应商物料列表
      */
-    @RequiresPermissions("masterdata:supplier:list")
+    //@RequiresPermissions("masterdata:supplier:list")
     @GetMapping("/list")
     public TableDataInfo list(MaterialSupplier materialSupplier)
     {
@@ -49,7 +49,7 @@ public class MaterialSupplierController extends BaseController
     /**
      * 导出供应商物料列表
      */
-    @RequiresPermissions("masterdata:supplier:export")
+    //@RequiresPermissions("masterdata:supplier:export")
     @Log(title = "供应商物料", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, MaterialSupplier materialSupplier)
@@ -62,7 +62,7 @@ public class MaterialSupplierController extends BaseController
     /**
      * 获取供应商物料详细信息
      */
-    @RequiresPermissions("masterdata:supplier:query")
+    //@RequiresPermissions("masterdata:supplier:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -72,7 +72,7 @@ public class MaterialSupplierController extends BaseController
     /**
      * 新增供应商物料
      */
-    @RequiresPermissions("masterdata:supplier:add")
+    //@RequiresPermissions("masterdata:supplier:add")
     @Log(title = "供应商物料", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody MaterialSupplier materialSupplier)
@@ -83,7 +83,7 @@ public class MaterialSupplierController extends BaseController
     /**
      * 修改供应商物料
      */
-    @RequiresPermissions("masterdata:supplier:edit")
+    //@RequiresPermissions("masterdata:supplier:edit")
     @Log(title = "供应商物料", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody MaterialSupplier materialSupplier)
@@ -94,7 +94,7 @@ public class MaterialSupplierController extends BaseController
     /**
      * 删除供应商物料
      */
-    @RequiresPermissions("masterdata:supplier:remove")
+    //@RequiresPermissions("masterdata:supplier:remove")
     @Log(title = "供应商物料", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

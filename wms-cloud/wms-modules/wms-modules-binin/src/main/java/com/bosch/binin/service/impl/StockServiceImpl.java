@@ -241,11 +241,6 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             binIn.setQuantity(Double.valueOf(item.getRemainingQty()));
             binIn.setMaterialNb(item.getSapMaterialCode());
             binIn.setBatchNb(item.getSapBatchNumber());
-            try {
-                binIn.setExpireDate(DateUtils.parseStringDate(item.getDluo()));
-            } catch (ParseException e) {
-                e.getMessage();
-            }
 //            binIn.setPalletType(materialVO.getPalletType());
             binIn.setAreaCode(item.getSapStorageLocation());
             binIn.setActualBinCode(item.getBin());
@@ -291,6 +286,10 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             stockList.add(stock);
         });
         this.saveBatch(stockList);
+
+        System.out.println(list.size());
+        System.out.println(stockList.size());
+        System.out.println(binIns.size());
 
         areaMap.clear();
     }

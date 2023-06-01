@@ -100,7 +100,7 @@ public class MaterialBinController extends BaseController {
     /**
      * 查询物料库位分配策略列表
      */
-    @RequiresPermissions("masterdata:bin:list")
+    //@RequiresPermissions("masterdata:bin:list")
     @PostMapping("/list")
     @ApiOperation("查询物料库位规则列表")
     public R<PageVO<MaterialBinVO>> list(@RequestBody MaterialBinDTO materialBinDTO) {
@@ -113,7 +113,7 @@ public class MaterialBinController extends BaseController {
     /**
      * 导出物料库位分配策略列表
      */
-    @RequiresPermissions("masterdata:bin:export")
+    //@RequiresPermissions("masterdata:bin:export")
     @Log(title = "物料库位分配策略", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, MaterialBinDTO materialBinDTO) {
@@ -125,7 +125,7 @@ public class MaterialBinController extends BaseController {
     /**
      * 获取物料库位分配策略详细信息
      */
-    @RequiresPermissions("masterdata:bin:query")
+    //@RequiresPermissions("masterdata:bin:query")
     @GetMapping(value = "/{id}")
     @ApiOperation("根据id查询物料库位规则")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
@@ -135,7 +135,7 @@ public class MaterialBinController extends BaseController {
     /**
      * 新增物料库位分配策略
      */
-    @RequiresPermissions("masterdata:bin:add")
+    //@RequiresPermissions("masterdata:bin:add")
     @Log(title = "物料库位分配策略", businessType = BusinessType.INSERT)
     @ApiOperation("新增物料库位分配策略")
     @PostMapping
@@ -157,7 +157,7 @@ public class MaterialBinController extends BaseController {
     /**
      * 修改物料库位分配策略
      */
-    @RequiresPermissions("masterdata:bin:edit")
+    //@RequiresPermissions("masterdata:bin:edit")
     @Log(title = "物料库位分配策略", businessType = BusinessType.UPDATE)
     @ApiOperation("修改物料库位分配策略")
     @PutMapping("/{id}")
@@ -169,7 +169,7 @@ public class MaterialBinController extends BaseController {
     /**
      * 删除物料库位分配策略
      */
-    @RequiresPermissions("masterdata:bin:remove")
+    //@RequiresPermissions("masterdata:bin:remove")
     @Log(title = "物料库位分配策略", businessType = BusinessType.DELETE)
     @ApiOperation("删除物料库位分配策略")
     @DeleteMapping("/{ids}")

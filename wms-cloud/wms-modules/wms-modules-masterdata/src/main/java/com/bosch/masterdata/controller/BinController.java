@@ -60,7 +60,7 @@ public class BinController extends BaseController
     /**
      * 查询库位列表
      */
-    @RequiresPermissions("masterdata:bin:list")
+    //@RequiresPermissions("masterdata:bin:list")
     @GetMapping("/list")
     public TableDataInfo list(Bin bin)
     {
@@ -72,7 +72,7 @@ public class BinController extends BaseController
     /**
      * 导出库位列表
      */
-    @RequiresPermissions("masterdata:bin:export")
+    //@RequiresPermissions("masterdata:bin:export")
     @Log(title = "库位", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Bin bin)
@@ -85,7 +85,7 @@ public class BinController extends BaseController
     /**
      * 获取库位详细信息
      */
-    @RequiresPermissions("masterdata:bin:query")
+    //@RequiresPermissions("masterdata:bin:query")
     @GetMapping(value = "/{id}")
     public R<BinVO> getInfo(@PathVariable("id") Long id)
     {
@@ -149,7 +149,7 @@ public class BinController extends BaseController
     /**
      * 删除库位
      */
-    @RequiresPermissions("masterdata:bin:remove")
+    //@RequiresPermissions("masterdata:bin:remove")
     @Log(title = "库位", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)
@@ -161,7 +161,7 @@ public class BinController extends BaseController
      * 查询库位列表
      */
     @ApiOperation("查询库位列表")
-    //@RequiresPermissions("masterdata:bin:list")
+    ////@RequiresPermissions("masterdata:bin:list")
     @GetMapping("/binVOlist")
     public R<PageVO<BinVO>> list(BinDTO binDTO)
     {
@@ -175,7 +175,7 @@ public class BinController extends BaseController
      * 新增库位
      */
     @ApiOperation("新增库位")
-    //@RequiresPermissions("masterdata:bin:add")
+    ////@RequiresPermissions("masterdata:bin:add")
     @Log(title = "库位", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody BinDTO binDTO)

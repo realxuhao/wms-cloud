@@ -39,7 +39,7 @@ public class DriverPickupController extends BaseController {
      * @param driverPickupDTO 查询条件
      * @return 司机取货信息列表
      */
-//    @RequiresPermissions("vehiclereservation:driverpickup:list")
+//    //@RequiresPermissions("vehiclereservation:driverpickup:list")
     @GetMapping("/list")
     @ApiOperation("查询司机取货信息列表")
     public R<PageVO<DriverPickupVO>> list(DriverPickupDTO driverPickupDTO) {
@@ -52,7 +52,7 @@ public class DriverPickupController extends BaseController {
     /**
      * 删除司机的取货预约信息（只能删状态是0的数据）
      */
-//    @RequiresPermissions("vehiclereservation:driverpickup:remove")
+//    //@RequiresPermissions("vehiclereservation:driverpickup:remove")
     @Log(title = "删除司机的取货预约信息", businessType = BusinessType.DELETE)
     @DeleteMapping("/{id}")
     public AjaxResult remove(@PathVariable Long id) {
@@ -62,7 +62,7 @@ public class DriverPickupController extends BaseController {
     /**
      * 新增司机的取货预约信息
      */
-//    @RequiresPermissions("vehiclereservation:driverpickup:add")
+//    //@RequiresPermissions("vehiclereservation:driverpickup:add")
     @Log(title = "新增司机的取货预约信息", businessType = BusinessType.INSERT)
     @ApiOperation("新增司机的取货预约信息")
     @PostMapping("/add")
