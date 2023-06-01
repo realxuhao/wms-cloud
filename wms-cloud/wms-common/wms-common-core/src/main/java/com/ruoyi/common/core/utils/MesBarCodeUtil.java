@@ -78,7 +78,6 @@ public class MesBarCodeUtil {
         } catch (Exception e) {
             throw new ServiceException("mesBarCode格式错误");
         }
-        ;
         return Double.valueOf(quantity).toString();
     }
 
@@ -96,7 +95,7 @@ public class MesBarCodeUtil {
         System.out.println(ceil1);
 
         String date = DateUtils.parseDateToStr("yyyyMMdd", new Date());
-        String barCode = generateMesBarCode(new Date(), "669006391110024813", "10265773", "2206221204", Double.valueOf(20));
+        String barCode = generateMesBarCode(new Date(), "669006391112623175", "10350393", "2209111257", Double.valueOf(20));
         System.out.println(barCode);
 
         System.out.println("669006391110024752".length());

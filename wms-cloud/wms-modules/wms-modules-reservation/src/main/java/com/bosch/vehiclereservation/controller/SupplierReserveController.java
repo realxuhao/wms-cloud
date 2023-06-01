@@ -61,7 +61,7 @@ public class SupplierReserveController extends BaseController {
      * @param supplierDTO 新增对象
      * @return
      */
-    //@RequiresPermissions("vehiclereservation:supplier:add")
+    ////@RequiresPermissions("vehiclereservation:supplier:add")
     @Log(title = "供应商预约单", businessType = BusinessType.INSERT)
     @ApiOperation("新增供应商预约单")
     @PostMapping("/add")
@@ -76,7 +76,7 @@ public class SupplierReserveController extends BaseController {
      * @param supplierReserveDTO 查询条件
      * @return
      */
-    //@RequiresPermissions("vehiclereservation:supplier:list")
+    ////@RequiresPermissions("vehiclereservation:supplier:list")
     @GetMapping("/list")
     @ApiOperation("查询供应商预约单列表(已预约记录)")
     public R<PageVO<SupplierReserveVO>> list(SupplierReserveDTO supplierReserveDTO) {
@@ -91,7 +91,7 @@ public class SupplierReserveController extends BaseController {
      * @param id 主键id
      * @return
      */
-    //@RequiresPermissions("vehiclereservation:supplier:remove")
+    ////@RequiresPermissions("vehiclereservation:supplier:remove")
     @Log(title = "删除供应商的预约信息", businessType = BusinessType.DELETE)
     @DeleteMapping("/{id}")
     public AjaxResult remove(@PathVariable Long id) {

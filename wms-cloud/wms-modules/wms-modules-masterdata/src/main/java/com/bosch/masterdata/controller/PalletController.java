@@ -50,7 +50,7 @@ public class PalletController extends BaseController
     /**
      * 导出托盘列表
      */
-    @RequiresPermissions("masterdata:pallet:export")
+    //@RequiresPermissions("masterdata:pallet:export")
     @Log(title = "托盘", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Pallet pallet)
@@ -64,7 +64,7 @@ public class PalletController extends BaseController
     /**
      * 删除托盘
      */
-    //@RequiresPermissions("masterdata:pallet:remove")
+    ////@RequiresPermissions("masterdata:pallet:remove")
     @ApiOperation("删除托盘")
     @Log(title = "托盘", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
@@ -77,7 +77,7 @@ public class PalletController extends BaseController
     /**
      * 查询托盘列表
      */
-    //@RequiresPermissions("masterdata:pallet:list")
+    ////@RequiresPermissions("masterdata:pallet:list")
     @GetMapping("/list")
     @ApiOperation("查询托盘列表")
     public R<PageVO<PalletVO>> list(PalletDTO palletDTO)
@@ -89,7 +89,7 @@ public class PalletController extends BaseController
     /**
      * 新增托盘
      */
-    //@RequiresPermissions("masterdata:pallet:add")
+    ////@RequiresPermissions("masterdata:pallet:add")
     @Log(title = "托盘", businessType = BusinessType.INSERT)
     @PostMapping
     @ApiOperation("新增托盘")
@@ -113,7 +113,7 @@ public class PalletController extends BaseController
     /**
      * 修改托盘
      */
-    //@RequiresPermissions("masterdata:pallet:edit")
+    ////@RequiresPermissions("masterdata:pallet:edit")
     @Log(title = "托盘", businessType = BusinessType.UPDATE)
     @PutMapping("/{id}")
     @ApiOperation("修改托盘")
@@ -134,7 +134,7 @@ public class PalletController extends BaseController
     /**
      * 获取托盘详细信息
      */
-    //@RequiresPermissions("masterdata:pallet:query")
+    ////@RequiresPermissions("masterdata:pallet:query")
     @GetMapping(value = "/{id}")
     @ApiOperation("获取托盘详细信息")
     public AjaxResult getInfo(@PathVariable("id") Long id)

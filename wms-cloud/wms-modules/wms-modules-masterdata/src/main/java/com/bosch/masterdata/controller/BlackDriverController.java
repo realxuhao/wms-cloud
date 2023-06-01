@@ -38,7 +38,7 @@ public class BlackDriverController extends BaseController {
     /**
      * 查询司机黑名单列表
      */
-    //@RequiresPermissions("masterdata:driver:list")
+    ////@RequiresPermissions("masterdata:driver:list")
     @GetMapping("/list")
     @ApiOperation("查询司机黑名单列表")
     public R<PageVO<BlackDriverVO>> list(BlackDriverDTO blackDriverDTO) {
@@ -51,7 +51,7 @@ public class BlackDriverController extends BaseController {
     /**
      * 获取司机黑名单详细信息
      */
-    //@RequiresPermissions("masterdata:driver:get")
+    ////@RequiresPermissions("masterdata:driver:get")
     @GetMapping(value = "/{id}")
     @ApiOperation("获取司机黑名单详细信息")
     public AjaxResult getInfo(@PathVariable("id") Long id) {
@@ -61,7 +61,7 @@ public class BlackDriverController extends BaseController {
     /**
      * 新增司机黑名单
      */
-    //@RequiresPermissions("masterdata:driver:add")
+    ////@RequiresPermissions("masterdata:driver:add")
     @Log(title = "司机黑名单", businessType = BusinessType.INSERT)
     @ApiOperation("新增司机黑名单")
     @PostMapping
@@ -72,7 +72,7 @@ public class BlackDriverController extends BaseController {
     /**
      * 修改司机黑名单
      */
-    @RequiresPermissions("driver:list:edit")
+    //@RequiresPermissions("driver:list:edit")
     @Log(title = "司机黑名单", businessType = BusinessType.UPDATE)
     @ApiOperation("修改司机黑名单")
     @PutMapping(value = "/{id}")
@@ -84,7 +84,7 @@ public class BlackDriverController extends BaseController {
     /**
      * 删除司机黑名单
      */
-    @RequiresPermissions("driver:list:delete")
+    //@RequiresPermissions("driver:list:delete")
     @Log(title = "司机黑名单", businessType = BusinessType.DELETE)
     @ApiOperation("删除司机黑名单")
     @DeleteMapping("/{id}")

@@ -54,7 +54,7 @@ public class SupplierInfoController extends BaseController {
     /**
      * 导出供应商列表
      */
-    @RequiresPermissions("masterdata:info:export")
+    //@RequiresPermissions("masterdata:info:export")
     @Log(title = "供应商", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, SupplierInfo supplierInfo) {
@@ -67,7 +67,7 @@ public class SupplierInfoController extends BaseController {
     /**
      * 删除供应商
      */
-    //@RequiresPermissions("masterdata:info:remove")
+    ////@RequiresPermissions("masterdata:info:remove")
     @ApiOperation("删除供应商")
     @Log(title = "供应商", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
@@ -78,7 +78,7 @@ public class SupplierInfoController extends BaseController {
     /**
      * 新增供应商DTO
      */
-    //@RequiresPermissions("masterdata:info:add")
+    ////@RequiresPermissions("masterdata:info:add")
     @ApiOperation("新增供应商")
     @Log(title = "供应商", businessType = BusinessType.INSERT)
     @PostMapping("/addSupplierInfo")
@@ -89,7 +89,7 @@ public class SupplierInfoController extends BaseController {
     /**
      * 修改供应商
      */
-    //@RequiresPermissions("masterdata:info:edit")
+    ////@RequiresPermissions("masterdata:info:edit")
     @ApiOperation("修改供应商")
     @Log(title = "供应商", businessType = BusinessType.UPDATE)
     @PutMapping("/{id}")
@@ -101,7 +101,7 @@ public class SupplierInfoController extends BaseController {
     /**
      * 查询供应商列表
      */
-    //@RequiresPermissions("masterdata:info:list")
+    ////@RequiresPermissions("masterdata:info:list")
     @GetMapping("/list")
     @ApiOperation("查询供应商")
     public R<PageVO<SupplierInfo>> list(SupplierInfoDTO supplierInfoDTO) {
@@ -113,7 +113,7 @@ public class SupplierInfoController extends BaseController {
     /**
      * 获取供应商详细信息
      */
-    //@RequiresPermissions("masterdata:info:query")
+    ////@RequiresPermissions("masterdata:info:query")
     @ApiOperation("查询供应商详情")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id) {

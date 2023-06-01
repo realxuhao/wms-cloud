@@ -37,7 +37,7 @@ public class SysMenuController extends BaseController
     /**
      * 获取菜单列表
      */
-    @RequiresPermissions("system:menu:list")
+    //@RequiresPermissions("system:menu:list")
     @GetMapping("/list")
     public AjaxResult list(SysMenu menu)
     {
@@ -49,7 +49,7 @@ public class SysMenuController extends BaseController
     /**
      * 根据菜单编号获取详细信息
      */
-    @RequiresPermissions("system:menu:query")
+    //@RequiresPermissions("system:menu:query")
     @GetMapping(value = "/{menuId}")
     public AjaxResult getInfo(@PathVariable Long menuId)
     {
@@ -84,7 +84,7 @@ public class SysMenuController extends BaseController
     /**
      * 新增菜单
      */
-    @RequiresPermissions("system:menu:add")
+    //@RequiresPermissions("system:menu:add")
     @Log(title = "菜单管理", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@Validated @RequestBody SysMenu menu)
@@ -104,7 +104,7 @@ public class SysMenuController extends BaseController
     /**
      * 修改菜单
      */
-    @RequiresPermissions("system:menu:edit")
+    //@RequiresPermissions("system:menu:edit")
     @Log(title = "菜单管理", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@Validated @RequestBody SysMenu menu)
@@ -128,7 +128,7 @@ public class SysMenuController extends BaseController
     /**
      * 删除菜单
      */
-    @RequiresPermissions("system:menu:remove")
+    //@RequiresPermissions("system:menu:remove")
     @Log(title = "菜单管理", businessType = BusinessType.DELETE)
     @DeleteMapping("/{menuId}")
     public AjaxResult remove(@PathVariable("menuId") Long menuId)

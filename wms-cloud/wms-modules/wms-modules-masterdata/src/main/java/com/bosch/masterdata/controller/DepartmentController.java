@@ -42,7 +42,7 @@ public class DepartmentController extends BaseController
     /**
      * 查询部门列表
      */
-    @RequiresPermissions("masterdata:department:list")
+    //@RequiresPermissions("masterdata:department:list")
     @GetMapping("/list")
     public TableDataInfo list(Department department)
     {
@@ -54,7 +54,7 @@ public class DepartmentController extends BaseController
     /**
      * 导出部门列表
      */
-    @RequiresPermissions("masterdata:department:export")
+    //@RequiresPermissions("masterdata:department:export")
     @Log(title = "部门", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Department department)
@@ -67,7 +67,7 @@ public class DepartmentController extends BaseController
     /**
      * 获取部门详细信息
      */
-    @RequiresPermissions("masterdata:department:query")
+    //@RequiresPermissions("masterdata:department:query")
     @GetMapping(value = "/{id}")
     public AjaxResult getInfo(@PathVariable("id") Long id)
     {
@@ -77,7 +77,7 @@ public class DepartmentController extends BaseController
     /**
      * 新增部门
      */
-    @RequiresPermissions("masterdata:department:add")
+    //@RequiresPermissions("masterdata:department:add")
     @Log(title = "部门", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody Department department)
@@ -88,7 +88,7 @@ public class DepartmentController extends BaseController
     /**
      * 修改部门
      */
-    @RequiresPermissions("masterdata:department:edit")
+    //@RequiresPermissions("masterdata:department:edit")
     @Log(title = "部门", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody Department department)
@@ -99,7 +99,7 @@ public class DepartmentController extends BaseController
     /**
      * 删除部门
      */
-    @RequiresPermissions("masterdata:department:remove")
+    //@RequiresPermissions("masterdata:department:remove")
     @Log(title = "部门", businessType = BusinessType.DELETE)
 	@DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable Long[] ids)

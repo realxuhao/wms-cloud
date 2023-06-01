@@ -194,7 +194,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         if (dto.getSampleQuantity() > stock.getTotalStock()) {
             throw new ServiceException("抽样数量不能大于库存数量");
         }
-        if (AreaListConstants.mainAreaList.contains(stock.getAreaCode())) {
+        if (!AreaListConstants.mainAreaList.contains(stock.getAreaCode())) {
             List<WareShift> wareShiftList = new ArrayList<>();
 
             //老的移库任务取消
@@ -244,7 +244,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         samplePlan.setBinDownTime(new Date());
         samplePlan.setRecommendSampleQuantity(dto.getSampleQuantity());
         samplePlan.setAreaCode(stock.getAreaCode());
-        samplePlan.setStatus(stock.getPlantNb().equals("7751") ? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
+        samplePlan.setStatus(AreaListConstants.mainAreaList.contains(stock.getAreaCode())? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
         this.save(samplePlan);
 
         stock.setFreezeStock(stock.getAvailableStock());
@@ -383,7 +383,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         if (!(samplePlan.getStatus() == IQCStatusEnum.WAAITTING_ISSUE.code() || samplePlan.getStatus() == IQCStatusEnum.WAITING_BIN_DOWN.code() || samplePlan.getStatus() == IQCStatusEnum.WARE_SHIFTING.code())) {
             throw new ServiceException("该任务状态为:" + IQCStatusEnum.getDesc(samplePlan.getStatus()) + ",不可取消");
         }
-        if (AreaListConstants.mainAreaList.contains(samplePlan.getAreaCode())) {
+        if (!AreaListConstants.mainAreaList.contains(samplePlan.getAreaCode())) {
             //移库任务
             LambdaQueryWrapper<WareShift> shiftQueryWrapper = new LambdaQueryWrapper<>();
             shiftQueryWrapper.eq(WareShift::getSsccNb, samplePlan.getSsccNb());
@@ -471,7 +471,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         stockQueryWrapper.eq(Stock::getSsccNumber, dto.getSscc());
         stockQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         Stock stock = stockService.getOne(stockQueryWrapper);
-        if (stock.getPlantNb() == "7751") {
+        if (AreaListConstants.mainAreaList.contains(stock.getAreaCode())) {
             throw new ServiceException("IQC移库只能选择外库数据");
         }
         WareShift wareShift = WareShift.builder().sourcePlantNb(stock.getPlantNb()).sourceWareCode(stock.getWareCode()).sourceAreaCode(stock.getAreaCode())
@@ -553,7 +553,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
                     throw new ServiceException("存在已下发或者已取消任务，请重新选择");
                 }
                 item.setStatus(IQCStatusEnum.WAITING_BIN_DOWN.code());
-                if (AreaListConstants.mainAreaList.contains(item.getAreaCode())) {
+                if (!AreaListConstants.mainAreaList.contains(item.getAreaCode())) {
                     Stock stock = stockService.getAvailablesStockBySscc(item.getSsccNb());
                     WareShift wareShift = WareShift.builder().sourcePlantNb(stock.getPlantNb()).sourceWareCode(stock.getWareCode()).sourceAreaCode(stock.getAreaCode())
                             .sourceBinCode(stock.getBinCode()).materialNb(stock.getMaterialNb()).batchNb(stock.getBatchNb()).expireDate(stock.getExpireDate())

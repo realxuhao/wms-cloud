@@ -120,7 +120,7 @@ public class ProductPackagingController extends BaseController {
     /**
      * 获取打包历史记录
      */
-    //@RequiresPermissions("masterdata:pallet:list")
+    ////@RequiresPermissions("masterdata:pallet:list")
     @GetMapping(value = "/getHistoryRecord")
     @ApiOperation("获取打包历史记录")
     public R<PageVO<ShippingVO>> getHistoryRecord( ShippingDTO dto) {

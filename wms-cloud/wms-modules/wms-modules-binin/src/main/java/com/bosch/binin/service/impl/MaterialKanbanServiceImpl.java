@@ -262,7 +262,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
         List<WareShift> wareShiftList = new ArrayList<>();
 
-        List<String> outWareSsccList = kanbanList.stream().filter(item -> AreaListConstants.mainAreaList.contains(item.getAreaCode())).map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
+        List<String> outWareSsccList = kanbanList.stream().filter(item -> !AreaListConstants.mainAreaList.contains(item.getAreaCode())).map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
 
         //查询外库的库存
         Map<String, List<Stock>> stockMap = new HashMap<>();
@@ -281,26 +281,26 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         kanbanList.stream().forEach(item -> {
             //修改任务状态
             item.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
-            //如果是7752的，需要生成一个移库任务，移库任务是  生成
-            if (AreaListConstants.mainAreaList.contains(item.getAreaCode())) {
-                String ssccNumber = item.getSsccNumber();
-                Stock stock = finalStockMap.get(ssccNumber).get(0);
-                WareShift wareShift = WareShift.builder().sourcePlantNb(item.getFactoryCode()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
-                        .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialCode()).expireDate(stock.getExpireDate()).batchNb(stock.getBatchNb())
-                        .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
-                        .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
-                        .quantity(item.getQuantity())
-                        .build();
-
-                wareShiftList.add(wareShift);
-                stock.setFreezeStock(stock.getFreezeStock() + stock.getAvailableStock());
-                stock.setAvailableStock(Double.valueOf(0));
-                stockList.add(stock);
-            }
+//            //如果是7752的，需要生成一个移库任务，移库任务是  生成
+//            if (!AreaListConstants.mainAreaList.contains(item.getAreaCode())) {
+//                String ssccNumber = item.getSsccNumber();
+//                Stock stock = finalStockMap.get(ssccNumber).get(0);
+//                WareShift wareShift = WareShift.builder().sourcePlantNb(item.getFactoryCode()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
+//                        .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialCode()).expireDate(stock.getExpireDate()).batchNb(stock.getBatchNb())
+//                        .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+//                        .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+//                        .quantity(item.getQuantity())
+//                        .build();
+//
+//                wareShiftList.add(wareShift);
+//                stock.setFreezeStock(stock.getFreezeStock() + stock.getAvailableStock());
+//                stock.setAvailableStock(Double.valueOf(0));
+//                stockList.add(stock);
+//            }
         });
 
         //更新库存状态
-        stockService.updateBatchById(stockList);
+//        stockService.updateBatchById(stockList);
         //更新任务状态
         updateBatchById(kanbanList);
         //新增移库任务
@@ -627,7 +627,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         callService.updateCallQuantity(materialKanban);
         //sscc库存可用 冻结修改
         if (materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_ISSUE.value()) || materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN.value())) {
-            if ("7751".equals(materialKanban.getFactoryCode())) {
+            if (AreaListConstants.mainAreaList.contains(materialKanban.getAreaCode())) {
                 updateStockBySSCC(materialKanban.getSsccNumber(),
                         materialKanban.getQuantity());
             }

@@ -20,4 +20,9 @@ public class ManualBinInDTO {
 
     @ApiModelProperty(value = "实物托盘编码")
     private String palletCode;
+
+    @ApiModelProperty(value = "0:上架到库位，1：上架到区域")
+    private int type;
+
+
 }

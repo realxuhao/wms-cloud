@@ -48,7 +48,7 @@ public class WareController extends BaseController {
     /**
      * 查询仓库列表
      */
-    @RequiresPermissions("masterdata:ware:list")
+    //@RequiresPermissions("masterdata:ware:list")
     @GetMapping("/list")
     @ApiOperation("查询仓库列表")
     public R<PageVO<WareVO>> list(WareDTO wareDTO) {
@@ -100,7 +100,7 @@ public class WareController extends BaseController {
     /**
      * 导出仓库列表
      */
-    @RequiresPermissions("masterdata:ware:export")
+    //@RequiresPermissions("masterdata:ware:export")
     @Log(title = "仓库", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     public void export(HttpServletResponse response, Ware ware) {
@@ -112,7 +112,7 @@ public class WareController extends BaseController {
     /**
      * 获取仓库详细信息
      */
-    //@RequiresPermissions("masterdata:ware:query")
+    ////@RequiresPermissions("masterdata:ware:query")
     @GetMapping(value = "/{id}")
     @ApiOperation("获取仓库详细信息")
     public R<Ware> getInfo(@PathVariable("id") String id) {
@@ -122,7 +122,7 @@ public class WareController extends BaseController {
     /**
      * 新增仓库
      */
-    @RequiresPermissions("masterdata:ware:add")
+    //@RequiresPermissions("masterdata:ware:add")
     @Log(title = "仓库", businessType = BusinessType.INSERT)
     @ApiOperation("新增仓库")
     @PostMapping
@@ -133,7 +133,7 @@ public class WareController extends BaseController {
     /**
      * 修改仓库
      */
-    @RequiresPermissions("masterdata:ware:edit")
+    //@RequiresPermissions("masterdata:ware:edit")
     @Log(title = "仓库", businessType = BusinessType.UPDATE)
     @ApiOperation("修改仓库")
     @PutMapping
@@ -144,7 +144,7 @@ public class WareController extends BaseController {
     /**
      * 删除仓库
      */
-    @RequiresPermissions("masterdata:ware:remove")
+    //@RequiresPermissions("masterdata:ware:remove")
     @Log(title = "仓库", businessType = BusinessType.DELETE)
     @ApiOperation("删除仓库")
     @DeleteMapping("/{ids}")

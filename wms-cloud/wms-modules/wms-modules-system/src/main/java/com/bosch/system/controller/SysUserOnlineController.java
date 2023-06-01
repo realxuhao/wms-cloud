@@ -39,7 +39,7 @@ public class SysUserOnlineController extends BaseController
     @Autowired
     private RedisService redisService;
 
-    @RequiresPermissions("monitor:online:list")
+    //@RequiresPermissions("monitor:online:list")
     @GetMapping("/list")
     public TableDataInfo list(String ipaddr, String userName)
     {
@@ -82,7 +82,7 @@ public class SysUserOnlineController extends BaseController
     /**
      * 强退用户
      */
-    @RequiresPermissions("monitor:online:forceLogout")
+    //@RequiresPermissions("monitor:online:forceLogout")
     @Log(title = "在线用户", businessType = BusinessType.FORCE)
     @DeleteMapping("/{tokenId}")
     public AjaxResult forceLogout(@PathVariable String tokenId)
