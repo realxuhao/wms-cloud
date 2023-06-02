@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.RemoteBinInService;
-import com.bosch.binin.api.domain.dto.SsccListDTO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.product.api.domain.ProComparison;
 import com.bosch.product.api.domain.RmComparison;
@@ -95,8 +94,6 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
             throw new ServiceException("导入数据不能为空");
         }
         //根据ssccs获取stockVOs
-        SsccListDTO ssccListDTO = new SsccListDTO();
-        ssccListDTO.setSsccList(ssccs);
         R<List<StockVO>> r = remoteBinInService.listBySSCC(ssccs);
         if (!r.isSuccess()) {
             throw new ServiceException("获取库存信息失败");
