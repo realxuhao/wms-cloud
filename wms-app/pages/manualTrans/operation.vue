@@ -84,11 +84,11 @@ export default {
 		return {
 			typeList: [
 				{
-					text: '区域',
+					text: '库位',
 					value: 0
 				},
 				{
-					text: '库位',
+					text: '区域',
 					value: 1
 				}
 			],
