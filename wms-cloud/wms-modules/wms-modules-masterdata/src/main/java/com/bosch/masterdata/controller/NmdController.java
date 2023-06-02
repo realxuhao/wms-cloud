@@ -45,6 +45,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -94,6 +95,7 @@ public class NmdController extends BaseController {
     public AjaxResult getInfo(@PathVariable("id") Long id) {
         return AjaxResult.success(nmdService.selectNmdById(id));
     }
+
     /**
      * 新增
      */
@@ -101,11 +103,10 @@ public class NmdController extends BaseController {
     @PostMapping
     @ApiOperation("新增")
     public AjaxResult add(@RequestBody NmdDTO nmdDTO) {
-        if(nmdDTO.getClassification()== NmdClassificationEnum.A.getCode()){
-            if(StringUtils.isEmpty(nmdDTO.getLevel())|| Objects.isNull(nmdDTO.getPlan())){
-                throw new ServiceException("类型为Components时，其他选项不可为空。");
-            }
-        }
+        List<NmdDTO> nmdDTOList = new ArrayList<>();
+        nmdDTOList.add(nmdDTO);
+        //校验
+        boolean valid = nmdService.validNmdList(nmdDTOList);
         return toAjax(nmdService.insertNmd(nmdDTO));
     }
 
@@ -116,7 +117,10 @@ public class NmdController extends BaseController {
     @ApiOperation("修改")
     @PutMapping
     public AjaxResult edit(@RequestBody NmdDTO nmdDTO) {
-
+        List<NmdDTO> nmdDTOList = new ArrayList<>();
+        nmdDTOList.add(nmdDTO);
+        //校验
+        boolean valid = nmdService.validNmdList(nmdDTOList);
         return toAjax(nmdService.updateNmd(nmdDTO));
     }
 

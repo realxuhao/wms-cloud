@@ -13,11 +13,13 @@ import com.bosch.masterdata.mapper.NmdMapper;
 import com.bosch.masterdata.utils.BeanConverUtil;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
 * @author GUZ1CGD4
@@ -89,29 +91,36 @@ public class NmdServiceImpl extends ServiceImpl<NmdMapper, Nmd>
         nmdDTOS.forEach(r->{
             //校验类别
             if(r.getClassification()==null){
-                throw  new ServiceException("校验类别为空");
+                throw  new ServiceException(r.getMaterialCode()+" "+"校验类别为空");
             }
             boolean checkClass = NmdClassificationEnum.contain(r.getClassification());
             if (!checkClass){
-                throw  new ServiceException("校验类别不规范:"+r.getClassification());
+                throw  new ServiceException(r.getMaterialCode()+" "+"校验类别不规范:"+r.getClassification());
             }
 
-            //校验检验水平级别
-            if(r.getLevel()==null){
-                throw  new ServiceException("校验检验水平级别为空");
+            if(r.getClassification()== NmdClassificationEnum.A.getCode()){
+                if(StringUtils.isEmpty(r.getLevel())|| Objects.isNull(r.getPlan())){
+                    throw new ServiceException(r.getMaterialCode()+" "+"类型为A时，检验水平级别和校验抽样方案不可为空。");
+                }
+                boolean checkLevel = NmdLevelEnum.contain(r.getLevel().toString());
+                if (!checkLevel){
+                    throw  new ServiceException(r.getMaterialCode()+" "+"校验检验水平级别不规范");
+                }
+                boolean checkPlan = NmdPlanEnum.contain(r.getPlan().toString());
+                if (!checkPlan){
+                    throw  new ServiceException(r.getMaterialCode()+" "+"校验抽样方案不规范");
+                }
             }
-            boolean checkLevel = NmdLevelEnum.contain(r.getLevel().toString());
-            if (!checkLevel){
-                throw  new ServiceException("校验检验水平级别不规范");
-            }
-            //校验抽样方案
-            if(r.getPlan()==null){
-                throw  new ServiceException("校验抽样方案为空");
-            }
-            boolean checkPlan = NmdPlanEnum.contain(r.getPlan().toString());
-            if (!checkPlan){
-                throw  new ServiceException("校验抽样方案不规范");
-            }
+//            //校验检验水平级别
+//            if(r.getLevel()==null){
+//                throw  new ServiceException("校验检验水平级别为空");
+//            }
+
+//            //校验抽样方案
+//            if(r.getPlan()==null){
+//                throw  new ServiceException("校验抽样方案为空");
+//            }
+
         });
 
         return true;
