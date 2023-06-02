@@ -8,7 +8,7 @@
 		</view>
 		<view class="form">
 			<uni-forms ref="form" :modelValue="formData" :rules="rules">
-				<uni-forms-item name="username" label="账号" required><uni-easyinput v-model="formData.username" placeholder="请输入账号" /></uni-forms-item>
+				<uni-forms-item name="username" label="账号" required><uni-easyinput v-model="formData.username" placeholder="请输入登录账号" /></uni-forms-item>
 				<uni-forms-item name="password" label="密码" required><uni-easyinput type="password" v-model="formData.password" placeholder="请输入密码" /></uni-forms-item>
 			</uni-forms>
 			<o-btn block :loading="loading" loading-text="正在登录" @click="submit" class="loginBtn">登录</o-btn>
@@ -38,7 +38,7 @@ export default {
 					rules: [
 						{
 							required: true,
-							errorMessage: '请输入账号'
+							errorMessage: '请输入登录账号'
 						}
 					]
 				},

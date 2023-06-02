@@ -225,6 +225,12 @@
 		},
 		{
 			"path": "pages/wareShift/binInBatchOperation"
+		},
+		{
+			"path": "pages/manualTrans/scan"
+		},
+		{
+			"path": "pages/manualTrans/operation"
 		}
 	],
 	"globalStyle": {

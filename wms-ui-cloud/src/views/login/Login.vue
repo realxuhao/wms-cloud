@@ -22,8 +22,8 @@
         closable
         :after-close="handleCloseLoginError"
       />
-      <a-form-model-item prop="username" label="账户：">
-        <a-input v-model="form.username" size="large" placeholder="账户" >
+      <a-form-model-item prop="username" label="登录账号：">
+        <a-input v-model="form.username" size="large" placeholder="登录账号" >
           <a-icon slot="prefix" type="user" :style="{ color: 'rgba(0,0,0,.25)' }"/>
         </a-input>
       </a-form-model-item>
@@ -84,7 +84,7 @@ export default {
         rememberMe: false
       },
       rules: {
-        username: [{ required: true, message: '请输入帐户名', trigger: 'blur' }],
+        username: [{ required: true, message: '请输入登录账号', trigger: 'blur' }],
         password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
         code: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
       },

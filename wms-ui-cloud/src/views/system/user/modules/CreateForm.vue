@@ -26,7 +26,7 @@
       <a-form-model-item label="邮箱" prop="email">
         <a-input v-model="form.email" placeholder="请输入" />
       </a-form-model-item>
-      <a-form-model-item label="用户名" prop="userName" v-if="form.userId == undefined">
+      <a-form-model-item label="登录账号" prop="userName" v-if="form.userId == undefined">
         <a-input v-model="form.userName" placeholder="请输入" />
       </a-form-model-item>
       <a-form-model-item label="密码" prop="password" v-if="form.userId == undefined">

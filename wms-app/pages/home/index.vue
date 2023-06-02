@@ -56,14 +56,19 @@
 				class="m-b-12"
 			>
 				<view class="list header-box">
-					<view class="list-item" v-if="$hasPermi(['app:manualTrans:binDown'])" @click="handleGoto('/pages/manualTrans/binDown')">
+					<!-- <view class="list-item" v-if="$hasPermi(['app:manualTrans:binDown'])" @click="handleGoto('/pages/manualTrans/binDown')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-xiajia" color="BLUE"></uni-icons>
 						<view class="text">转储下架</view>
 					</view>
 					<view class="list-item" v-if="$hasPermi(['app:manualTrans:binIn'])" @click="handleGoto('/pages/manualTrans/binIn')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
 						<view class="text">转储上架</view>
+					</view> -->
+					<view class="list-item" v-if="$hasPermi(['app:manualTrans'])" @click="handleGoto('/pages/manualTrans/scan')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
+						<view class="text">库内转储</view>
 					</view>
+
 					<view class="list-item" v-if="$hasPermi(['app:manualTrans:scan'])" @click="handleGoto('/pages/splitPallet/scan')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-chaifen" color="#1afa29"></uni-icons>
 						<view class="text">拆托</view>
