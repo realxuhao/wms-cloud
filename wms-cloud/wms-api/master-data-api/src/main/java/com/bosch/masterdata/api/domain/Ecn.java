@@ -1,9 +1,6 @@
 package com.bosch.masterdata.api.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
@@ -64,6 +61,7 @@ public class Ecn extends BaseEntity {
     /**
      * 取样规则
      */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private String plan;
 
     @TableField(exist = false)

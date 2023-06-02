@@ -1,9 +1,7 @@
 package com.bosch.masterdata.api.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.io.Serializable;
 import java.util.Date;
 
@@ -45,6 +43,7 @@ public class Nmd extends BaseEntity {
     /**
      * 检验水平级别
      */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private String level;
 
     /**
@@ -54,6 +53,7 @@ public class Nmd extends BaseEntity {
     /**
      * 抽样方案（1：正常,2：加严,3：放宽）
      */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Integer plan;
 
     @TableField(exist = false)

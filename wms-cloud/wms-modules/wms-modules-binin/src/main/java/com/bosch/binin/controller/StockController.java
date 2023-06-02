@@ -22,6 +22,7 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import feign.Headers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -67,6 +68,8 @@ public class StockController extends BaseController {
         List<StockVO> list = stockService.selectStockVOList(stockQuerySTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
+
+
     @PostMapping(value = "/listBySSCC")
     @ApiOperation("库存列表")
     public R<List<StockVO>> listBySSCC(@RequestBody List<String> ssccList) {

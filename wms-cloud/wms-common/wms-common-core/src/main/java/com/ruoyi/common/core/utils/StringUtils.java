@@ -3,6 +3,9 @@ package com.ruoyi.common.core.utils;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.util.AntPathMatcher;
 import com.ruoyi.common.core.constant.Constants;
 import com.ruoyi.common.core.text.StrFormatter;
@@ -552,5 +555,22 @@ public class StringUtils extends org.apache.commons.lang3.StringUtils
             }
         }
         return sb.toString();
+    }
+
+    /**
+     * 判断数字
+     * @param str
+     * @return
+     */
+    public static boolean isNumeric(String str){
+
+        Pattern pattern = Pattern.compile("[0-9]*\\.?[0-9]+");
+        Matcher isNum = pattern.matcher(str);
+        if (!isNum.matches()) {
+            return false;
+        }
+        return true;
+
+
     }
 }

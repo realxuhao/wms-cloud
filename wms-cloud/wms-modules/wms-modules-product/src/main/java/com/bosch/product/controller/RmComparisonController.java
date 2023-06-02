@@ -131,6 +131,7 @@ public class RmComparisonController extends BaseController {
                     }
                     resultList = rmComparisonService.insertRmComparison(rmComparisons);
 
+                    boolean b1 = rmComparisonService.saveBatch(resultList);
                 } else {
                     return R.fail("excel中无数据");
                 }
