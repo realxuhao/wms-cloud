@@ -37,7 +37,7 @@ public class HeaderInterceptor implements AsyncHandlerInterceptor
         SecurityContextHolder.setUserKey(ServletUtils.getHeader(request, SecurityConstants.USER_KEY));
         SecurityContextHolder.setWareCode(ServletUtils.getHeader(request, SecurityConstants.WARE_CODE));
 
-        logger.info("UserId: "+SecurityContextHolder.getUserId().toString()
+        logger.info("请求地址"+request.getRequestURI()+".UserId: "+SecurityContextHolder.getUserId().toString()
                 +".UserName: "+SecurityContextHolder.getUserName()
                         +".UserKey: "+SecurityContextHolder.getUserKey()
                 +".WareCode: "+SecurityContextHolder.getWareCode());
