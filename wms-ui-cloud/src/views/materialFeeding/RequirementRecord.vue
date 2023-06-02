@@ -54,11 +54,17 @@
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons">
-              <a-button v-hasPermi="['requirement:list:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon
-                  type="search" />查询</a-button>
+              <a-button
+                v-hasPermi="['requirement:list:query']"
+                type="primary"
+                @click="handleSearch"
+                :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              <a-button v-hasPermi="['requirement:list:export']" style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon
-                  type="download" />导出结果</a-button>
+              <a-button
+                v-hasPermi="['requirement:list:export']"
+                style="margin-left: 8px"
+                :loading="exportLoading"
+                @click="handleDownload"><a-icon type="download" />导出结果</a-button>
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
                 <a-icon :type="advanced ? 'up' : 'down'" />
@@ -68,7 +74,12 @@
         </a-row>
       </a-form>
       <div class="action-content">
-        <a-button v-hasPermi="['requirement:list:add']" type="primary" icon="upload" style="margin-right:8px" @click="handleOpenUpload">
+        <a-button
+          v-hasPermi="['requirement:list:add']"
+          type="primary"
+          icon="upload"
+          style="margin-right:8px"
+          @click="handleOpenUpload">
           创建物料需求
         </a-button>
         <a-button
@@ -82,13 +93,13 @@
       </div>
       <a-table
         :row-selection="{
-            selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
-            getCheckboxProps: record => ({
-              props: {
-                disabled: !([0, 1].includes(record.status))
-              },
-            }),
-          }"
+          selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
+          getCheckboxProps: record => ({
+            props: {
+              disabled: !([0, 1].includes(record.status))
+            },
+          }),
+        }"
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
@@ -106,7 +117,10 @@
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a-popconfirm title="确认要取消该条任务吗?" ok-text="确认" cancel-text="取消" @confirm="handleCancel(record)">
-              <a v-hasPermi="['requirement:list:cancel']" class="danger-color" :disabled="!([0, 1].includes(record.status))">取消</a>
+              <a
+                v-hasPermi="['requirement:list:cancel']"
+                class="danger-color"
+                :disabled="!([0, 1].includes(record.status))">取消</a>
             </a-popconfirm>
             <!-- <a-divider type="vertical" />
             <a

@@ -80,7 +80,7 @@
 						<uni-icons custom-prefix="iconfont" class="icon " type="icon-kuwei" color="#2664CB"></uni-icons>
 						<view class="text">库位查询</view>
 					</view>
-					<view class="list-item" v-if="$hasPermi(['app:location:adjust'])" @click="handleGoto('/pages/adjust/adjustList')">
+					<view class="list-item" v-if="$hasPermi(['app:location:adjust'])" @click="handleGoto('/pages/adjust/adjustScan')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-kucuntiaozheng" type="icon-kucuntiaozheng" color="#2664CB"></uni-icons>
 						<view class="text">库存调整</view>
 					</view>
@@ -333,15 +333,25 @@ export default {
 
 			this.plantName = plantName;
 		},
-		handleOpenPicker() {
-			this.$refs.picker.show();
+		async handleOpenPicker() {
+			try {
+				uni.showLoading({
+					title: '加载中'
+				});
+				await this.loadPlantList();
+				this.$refs.picker.show();
+			} catch (e) {
+				wx.showToast({ title: '请求失败', icon: 'none' });
+			} finally {
+				uni.hideLoading();
+			}
 		}
 	},
 	mounted() {
 		const plant = uni.getStorageSync('plant');
 		this.plantName = plant.name;
 
-		this.loadPlantList();
+		// this.loadPlantList();
 	}
 };
 </script>

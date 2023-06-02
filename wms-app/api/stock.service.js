@@ -97,8 +97,6 @@ const editStock = async (data) => {
 }
 
 
-
-
 export const stockService = {
 	getStockInfoByMesBarCode,
 	getStockInfoBySscc,

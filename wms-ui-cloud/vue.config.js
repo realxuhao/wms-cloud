@@ -109,9 +109,9 @@ const vueConfig = {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
         // target: `http://106.15.121.243:8002`,
-        // target: `http://121.37.188.213:8080`,
+        target: `http://121.37.188.213:8080`,
         // target: `https://nutricia-home.com`,
-        target: `http://localhost:8080`,
+        // target: `http://localhost:8080`,
         changeOrigin: true,
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''

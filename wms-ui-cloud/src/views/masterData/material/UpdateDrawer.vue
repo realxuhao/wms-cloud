@@ -2,33 +2,48 @@
   <a-drawer width="1200px" :title="title" placement="right" :visible="visible" @close="onClose">
     <a-form :form="form" :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-form-item label="物料名称">
-        <a-input placeholder="物料名称" v-decorator="[
-          'name',
-          { rules: [{ required: true, message: '请输入物料名称!' }] }
-        ]" />
+        <a-input
+          placeholder="物料名称"
+          v-decorator="[
+            'name',
+            { rules: [{ required: true, message: '请输入物料名称!' }] }
+          ]" />
       </a-form-item>
       <a-form-item label="物料编码">
-        <a-input placeholder="物料编码" v-decorator="[
-          'code',
-          { rules: [{ required: true, message: '请输入物料编码!' }] }
-        ]" />
+        <a-input
+          placeholder="物料编码"
+          v-decorator="[
+            'code',
+            { rules: [{ required: true, message: '请输入物料编码!' }] }
+          ]" />
       </a-form-item>
       <a-form-item label="物料类型">
-        <a-select allowClear show-search :filter-option="filterOption" option-filter-prop="children"
-          :loading="materialTypeListLoading" v-decorator="[
+        <a-select
+          allowClear
+          show-search
+          :filter-option="filterOption"
+          option-filter-prop="children"
+          :loading="materialTypeListLoading"
+          v-decorator="[
             'materialTypeId',
             { rules: [{ required: true, message: '请选择物料类型！' }] }
-          ]" placeholder="物料类型">
+          ]"
+          placeholder="物料类型">
           <a-select-option :value="item.id" v-for="item in materialTypeList" :key="item.id">
             {{ item.code }}
           </a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item label="托盘类型">
-        <a-select allowClear show-search :filter-option="filterOption" v-decorator="[
-          'palletId',
-          { rules: [{ required: true, message: '请选择托盘类型！' }] }
-        ]" placeholder="托盘类型">
+        <a-select
+          allowClear
+          show-search
+          :filter-option="filterOption"
+          v-decorator="[
+            'palletId',
+            { rules: [{ required: true, message: '请选择托盘类型！' }] }
+          ]"
+          placeholder="托盘类型">
           <a-select-option :value="item.id" v-for="item in palletTypeList" :key="item.id">
             {{ item.type }}
           </a-select-option>
@@ -43,10 +58,12 @@
           ]" />
       </a-form-item> -->
       <a-form-item label="托盘重量">
-        <a-input-number placeholder="托盘重量" v-decorator="[
-          'palletWeight',
-          { rules: [{ required: true, message: '请输入托盘重量!' }] }
-        ]" />
+        <a-input-number
+          placeholder="托盘重量"
+          v-decorator="[
+            'palletWeight',
+            { rules: [{ required: true, message: '请输入托盘重量!' }] }
+          ]" />
       </a-form-item>
       <!-- <a-form-item label="是否绑定托盘">
         <a-radio-group
@@ -83,16 +100,20 @@
         </a-radio-group>
       </a-form-item> -->
       <a-form-item label="来料总重量">
-        <a-input-number placeholder="来料总重量" v-decorator="[
-          'totalWeight',
-          { rules: [{ required: true, message: '请输入来料总重量!' }] }
-        ]" />
+        <a-input-number
+          placeholder="来料总重量"
+          v-decorator="[
+            'totalWeight',
+            { rules: [{ required: true, message: '请输入来料总重量!' }] }
+          ]" />
       </a-form-item>
       <a-form-item label="物料防错方式">
-        <a-select v-decorator="[
-          'errorProofingMethod',
-          { rules: [{ required: true, message: '请选择物料防错方式！' }] }
-        ]" placeholder="物料防错方式">
+        <a-select
+          v-decorator="[
+            'errorProofingMethod',
+            { rules: [{ required: true, message: '请选择物料防错方式！' }] }
+          ]"
+          placeholder="物料防错方式">
           <a-select-option value="称重">
             称重
           </a-select-option>
@@ -116,29 +137,36 @@
       </a-form-item> -->
 
       <a-form-item label="最小包装重量">
-        <a-input-number placeholder="最小包装重量（净重）" v-decorator="[
-          'minPackageNetWeight',
-          { rules: [{ required: true, message: '请输入最小包装重量!' }] }
-        ]" />
+        <a-input-number
+          placeholder="最小包装重量（净重）"
+          v-decorator="[
+            'minPackageNetWeight',
+            { rules: [{ required: true, message: '请输入最小包装重量!' }] }
+          ]" />
       </a-form-item>
       <a-form-item label="最小包装毛重">
-        <a-input-number placeholder="最小包装毛重" v-decorator="[
-          'packageWeight',
-          { rules: [{ required: true, message: '不能为空!' }] }
-        ]" />
+        <a-input-number
+          placeholder="最小包装毛重"
+          v-decorator="[
+            'packageWeight',
+            { rules: [{ required: true, message: '不能为空!' }] }
+          ]" />
       </a-form-item>
 
       <a-form-item label="最小包装数量">
-        <a-input-number placeholder="最小包装数量" v-decorator="[
-          'minPackageNumber',
-          { rules: [{ required: true, message: '请输入最小包装数量!' }] }
-        ]" />
+        <a-input-number
+          placeholder="最小包装数量"
+          v-decorator="[
+            'minPackageNumber',
+            { rules: [{ required: true, message: '请输入最小包装数量!' }] }
+          ]" />
       </a-form-item>
       <a-form-item label="单位">
-        <a-select v-decorator="[
-          'unit',
-          { rules: [{ required: true, message: '请选择单位' }], initialValue: 'kg' }
-        ]">
+        <a-select
+          v-decorator="[
+            'unit',
+            { rules: [{ required: true, message: '请选择单位' }], initialValue: 'kg' }
+          ]">
           <a-select-option value="BAG">
             BAG
           </a-select-option>
@@ -170,28 +198,36 @@
       </a-form-item>
 
       <a-form-item label="最小包装量允许最小值">
-        <a-input-number placeholder="最小包装量允许最小值" v-decorator="[
-          'lessDeviationRatio',
-          { rules: [{ required: true, message: '不能为空!' }] }
-        ]" />
+        <a-input-number
+          placeholder="最小包装量允许最小值"
+          v-decorator="[
+            'lessDeviationRatio',
+            { rules: [{ required: true, message: '不能为空!' }] }
+          ]" />
       </a-form-item>
       <a-form-item label="最小包装量允许最大值">
-        <a-input-number placeholder="最小包装量允许最大值" v-decorator="[
-          'moreDeviationRatio',
-          { rules: [{ required: true, message: '不能为空!' }] }
-        ]" />
+        <a-input-number
+          placeholder="最小包装量允许最大值"
+          v-decorator="[
+            'moreDeviationRatio',
+            { rules: [{ required: true, message: '不能为空!' }] }
+          ]" />
       </a-form-item>
       <a-form-item label="标准计数单位[L,Kg,m,㎡]对应的重量值KG[只针对称重物料]">
-        <a-input-number placeholder="标准计数单位[L,Kg,m,㎡]对应的重量值KG[只针对称重物料]" v-decorator="[
-          'transferWeightRatio',
-          { rules: [{ required: true, message: '不能为空!' }] }
-        ]" />
+        <a-input-number
+          placeholder="标准计数单位[L,Kg,m,㎡]对应的重量值KG[只针对称重物料]"
+          v-decorator="[
+            'transferWeightRatio',
+            { rules: [{ required: true, message: '不能为空!' }] }
+          ]" />
       </a-form-item>
       <a-form-item label="IQC">
-        <a-select v-decorator="[
-          'iqc',
-          { rules: [{ required: true, message: '请选择IQC' }] }
-        ]" placeholder="IQC">
+        <a-select
+          v-decorator="[
+            'iqc',
+            { rules: [{ required: true, message: '请选择IQC' }] }
+          ]"
+          placeholder="IQC">
           <a-select-option value="Y">
             Y
           </a-select-option>
@@ -202,10 +238,12 @@
       </a-form-item>
 
       <a-form-item label="整托移库标记">
-        <a-select v-decorator="[
-          'wholeShiftFlag',
-          { rules: [{ required: true, message: '请选择整托移库标记' }] }
-        ]" placeholder="整托移库标记">
+        <a-select
+          v-decorator="[
+            'wholeShiftFlag',
+            { rules: [{ required: true, message: '请选择整托移库标记' }] }
+          ]"
+          placeholder="整托移库标记">
           <a-select-option value="Y">
             Y
           </a-select-option>
@@ -216,9 +254,11 @@
       </a-form-item>
 
       <a-form-item label="备注">
-        <a-input placeholder="备注" v-decorator="[
-          'remark'
-        ]" />
+        <a-input
+          placeholder="备注"
+          v-decorator="[
+            'remark'
+          ]" />
       </a-form-item>
 
     </a-form>
