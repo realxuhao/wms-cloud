@@ -144,7 +144,7 @@
 						</view>
 						<view class="text-line">
 							<view class="label">目标重量每件：</view>
-							[{{ resultData.minStandard }} ,{{ resultData.maxStandard }}]（{{ resultData.unit }})
+							[{{ resultData.minStandard }} —————— {{ resultData.maxStandard }}]（{{ resultData.unit }})
 						</view>
 					</view>
 

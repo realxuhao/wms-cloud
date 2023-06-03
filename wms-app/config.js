@@ -1,6 +1,6 @@
 const baseApi = {
-	development: "http://192.168.241.161:8080", // "http://192.168.85.161:8080",//本地开发环境地址
-	production: "http://121.37.188.213:8080" //正式环境地址
+	development: "http://www.nutricia-home.com:8080", // "http://192.168.85.161:8080",//本地开发环境地址
+	production: "http://www.nutricia-home.com:8080" //正式环境地址
 }
 
 const NODE_ENV = process.env.NODE_ENV

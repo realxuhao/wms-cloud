@@ -147,8 +147,10 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         }
         MaterialInVO materialInVO = getMaterialInVO(mesBarCode);
 
-        String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
-        String batchNb = MesBarCodeUtil.getBatchNb(mesBarCode);
+        materialInVO.getMaterialNb();
+
+        String materialNb = materialInVO.getMaterialNb();;
+        String batchNb = materialInVO.getBatchNb();;
         MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
         if (binInVO == null) {
@@ -391,6 +393,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         });
         stockService.saveBatch(stockList);
 
+        dealIQC(mesBarCode, materialCode, batchNb);
+
 
     }
 
@@ -572,6 +576,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setUpdateBy(SecurityUtils.getUsername());
         binIn.setStatus(BinInStatusEnum.FINISH.value());
         binIn.setUpdateTime(new Date());
+        binIn.setWareCode(SecurityUtils.getWareCode());
         binIn.setAreaCode(actualBinVO.getAreaCode());
         if (StringUtils.isEmpty(binIn.getPalletCode())) {
             binIn.setPalletCode(binInDTO.getPalletCode());
@@ -610,7 +615,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 //        // 更新kanban和移库,转储单状态
 //        updateKanbanWareShiftStatus(stock, sscc);
 
-        dealIQC(mesBarCode, materialNb, binIn);
+        dealIQC(mesBarCode, materialNb, binIn.getBatchNb());
 
 
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
@@ -618,7 +623,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    private void dealIQC(String mesBarCode, String materialNb, BinIn binIn) {
+    private void dealIQC(String mesBarCode, String materialNb, String batchNb) {
         MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
 
@@ -629,7 +634,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             boolean lastFlag = true;
 
             //获取收货的同批次信息
-            R<List<MaterialReceiveVO>> sameBatchListR = remoteMaterialInService.getSameBatchList(materialNb, binIn.getBatchNb());
+            R<List<MaterialReceiveVO>> sameBatchListR = remoteMaterialInService.getSameBatchList(materialNb, batchNb);
 
             if (StringUtils.isNull(sameBatchListR) || StringUtils.isNull(sameBatchListR.getData())) {
                 throw new ServiceException("不存在该批次信息");
@@ -643,7 +648,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             //获取上架的同批次信息
             LambdaQueryWrapper<BinIn> binInQueryWrapper = new LambdaQueryWrapper<>();
             binInQueryWrapper.eq(BinIn::getMaterialNb, materialNb);
-            binInQueryWrapper.eq(BinIn::getBatchNb, binIn.getBatchNb());
+            binInQueryWrapper.eq(BinIn::getBatchNb, batchNb);
             binInQueryWrapper.eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
             binInQueryWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
             List<BinIn> binInList = binInMapper.selectList(binInQueryWrapper);
@@ -652,11 +657,11 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             }
             List<IQCSamplePlan> samplePlanList = new ArrayList<>();
             if (lastFlag && DeparementEnum.NMD.getCode().equals(materialVO.getCell())) {//NMD
-                samplePlanList = dealNMDIQCProcess(materialVO, binIn.getBatchNb(), binInList, sameBatchList);
+                samplePlanList = dealNMDIQCProcess(materialVO, batchNb, binInList, sameBatchList);
             } else if (lastFlag && DeparementEnum.ECN.getCode().equals(materialVO.getCell())) {//ECN
-                samplePlanList = dealECNIQCProcess(materialVO, binIn.getBatchNb(), binInList, sameBatchList);
+                samplePlanList = dealECNIQCProcess(materialVO, batchNb, binInList, sameBatchList);
             } else if (lastFlag && DeparementEnum.FSMP.getCode().equals(materialVO.getCell())) {//FSMP
-                samplePlanList = dealFSMPIQCProces(materialVO, binIn.getBatchNb(), binInList, sameBatchList);
+                samplePlanList = dealFSMPIQCProces(materialVO, batchNb, binInList, sameBatchList);
             }
             //下发的时候去新增外库任务。
             // 如果是外库的，新增移库任务
@@ -982,13 +987,19 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             ruleDTO.setQuantity(quantity);
             ruleDTO.setCheckLevel(nmd.getLevel());
             NMDIQCRule nmdiqcRule = ruleService.getNMDIQCRule(ruleDTO);
-            if (nmd.getPlan() == 1) {
-                sampleQuantity = nmdiqcRule.getNormal();
-            } else if (nmd.getPlan() == 2) {
-                sampleQuantity = nmdiqcRule.getStricture();
-            } else {
-                sampleQuantity = nmdiqcRule.getRelaxation();
+            if (nmdiqcRule==null){
+                sampleQuantity = 0;
+            }else {
+                if (nmd.getPlan() == 1) {
+                    sampleQuantity = nmdiqcRule.getNormal();
+                } else if (nmd.getPlan() == 2) {
+                    sampleQuantity = nmdiqcRule.getStricture();
+                } else {
+                    sampleQuantity = nmdiqcRule.getRelaxation();
+                }
             }
+        }else if (nmd.getClassification() == NmdClassificationEnum.B.getCode()){
+            sampleQuantity = 3;
         }
 
         Collections.shuffle(binInList);
@@ -1331,6 +1342,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         List<AreaVO> areaVOList = areaListR.getData();
         List<AreaVO> areaList = areaVOList.stream().filter(item -> item.getAreaType() == areaType).collect(Collectors.toList());
         if (StringUtils.isEmpty(areaList)) {
+            log.error("没有类型为" + AreaTypeEnum.getDescByCode(areaType) + "的区域");
             throw new ServiceException("没有类型为" + AreaTypeEnum.getDescByCode(areaType) + "的区域");
         }
 
