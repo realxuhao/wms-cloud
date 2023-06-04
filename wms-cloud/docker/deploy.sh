@@ -70,7 +70,7 @@ case "$1" in
 	rm
 ;;
 "build")
-	modules-build
+	build
 ;;
 *)
 	usage

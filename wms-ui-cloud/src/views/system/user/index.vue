@@ -15,7 +15,7 @@
             <a-form layout="inline">
               <a-row :gutter="48">
                 <a-col :span="4">
-                  <a-form-item label="用户名称">
+                  <a-form-item label="登录账号">
                     <a-input v-model="queryParam.userName" placeholder="请输入" allow-clear />
                   </a-form-item>
                 </a-col>
@@ -238,7 +238,7 @@ export default {
           align: 'center'
         },
         {
-          title: '账号名',
+          title: '登录账号',
           dataIndex: 'userName',
           align: 'center'
         },

@@ -161,7 +161,6 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
 
             //调用分配库位接口
 
-
             return materialInDTO;
         }).collect(Collectors.toList());
         materialInMapper.batchInsert(materialInDTOList);
@@ -197,13 +196,16 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
     private Boolean checkWeight(String mesBarCode, Double actualQuantity,
                                 Double actualResult, MaterialCheckResultVO checkResultVO, Integer weightTimes) {
         //计算平均值
-        //TODO 补充计算说明
         MaterialVO materialVO = getMaterialVOByMesBarCode(mesBarCode);
         double caculateResult = (actualResult - materialVO.getPalletWeight().doubleValue() * weightTimes) / actualQuantity - (materialVO.getPackageWeight().doubleValue() - materialVO.getMinPackageNetWeight().doubleValue());
         double res = caculateResult / materialVO.getTransferWeightRatio().doubleValue();
 
+        caculateResult = Math.round(caculateResult * 1000) / 1000;
+        res = Math.round(res * 1000) /1000;
         checkResultVO.setAverageResult(res);
         checkResultVO.setActualResult(actualResult).setActualQuantity(actualQuantity);
+
+
 
 
         if (res < materialVO.getLessDeviationRatio().doubleValue() || res > materialVO.getMoreDeviationRatio().doubleValue()) {

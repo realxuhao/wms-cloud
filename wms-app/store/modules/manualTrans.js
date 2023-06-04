@@ -1,38 +1,68 @@
-import { manualTransService } from '@/api'
+import {
+	manualTransService
+} from '@/api'
 
 const IQC = {
- namespaced: true,
-  state: {
-  },
+	namespaced: true,
+	state: {},
 
-  mutations: {
-  },
+	mutations: {},
 
-  actions: {
-    async getList ({ commit }, parameter) {
-      const {data} = await manualTransService.getList({...parameter})
-      return data
-    },
-	async getManualTransInfo ({ commit }, barCode) {
-      const {data} = await manualTransService.info(barCode)
-      return data
-    },
-	async binDown({ commit }, barCode) {
-      // const {data} = await manualTransService.binDown(barCode)
-	  const {data} = await manualTransService.binDown(barCode)
-      return data
-    },
-	async allocateBin({ commit }, barCode) {
-	  const {data} = await manualTransService.allocateBin(barCode)
-	  return data
-	},
-	async postBinIn({ commit }, options) {
-	  const {data} = await manualTransService.postBinIn(options)
-	  return data
-	},
-	
-  }
+	actions: {
+		async getList({
+			commit
+		}, parameter) {
+			const {
+				data
+			} = await manualTransService.getList({
+				...parameter
+			})
+			return data
+		},
+		async getManualTransInfo({
+			commit
+		}, barCode) {
+			const {
+				data
+			} = await manualTransService.info(barCode)
+			return data
+		},
+		async binDown({
+			commit
+		}, barCode) {
+			// const {data} = await manualTransService.binDown(barCode)
+			const {
+				data
+			} = await manualTransService.binDown(barCode)
+			return data
+		},
+		async allocateBin({
+			commit
+		}, barCode) {
+			const {
+				data
+			} = await manualTransService.allocateBin(barCode)
+			return data
+		},
+		async postBinIn({
+			commit
+		}, options) {
+			const {
+				data
+			} = await manualTransService.postBinIn(options)
+			return data
+		},
+		async trans({
+			commit
+		}, options) {
+			const {
+				data
+			} = await manualTransService.trans(options)
+			return data
+		},
+
+
+	}
 }
 
 export default IQC
-
