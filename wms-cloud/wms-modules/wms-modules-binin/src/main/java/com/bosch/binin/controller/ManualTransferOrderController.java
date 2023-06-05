@@ -107,7 +107,7 @@ public class ManualTransferOrderController extends BaseController {
 
 
     @PostMapping(value = "/trans")
-    @ApiOperation("转储单任务下架")
+    @ApiOperation("转储")
     public R trans(@RequestBody ManualBinInDTO binInDTO) {
         manualTransferOrderService.trans(binInDTO);
         return R.ok("转储成功");

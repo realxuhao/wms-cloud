@@ -107,6 +107,7 @@ public class NmdController extends BaseController {
         nmdDTOList.add(nmdDTO);
         //校验
         boolean valid = nmdService.validNmdList(nmdDTOList);
+        boolean b = nmdService.validData(nmdDTOList);
         return toAjax(nmdService.insertNmd(nmdDTO));
     }
 
@@ -121,6 +122,7 @@ public class NmdController extends BaseController {
         nmdDTOList.add(nmdDTO);
         //校验
         boolean valid = nmdService.validNmdList(nmdDTOList);
+        boolean b = nmdService.validData(nmdDTOList);
         return toAjax(nmdService.updateNmd(nmdDTO));
     }
 

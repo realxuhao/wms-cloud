@@ -491,9 +491,10 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         queryWrapper.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.ne(MaterialCall::getStatus, CallStatusEnum.CANCEL.code());
         queryWrapper.eq(MaterialCall::getOrderNb, orderNb);
+        queryWrapper.eq(MaterialCall::getMaterialNb,materialNb);
         List<MaterialCall> list = this.list(queryWrapper);
         if (!CollectionUtils.isEmpty(list)) {
-            throw new ServiceException("存在相同的需求号！");
+            throw new ServiceException(orderNb + "订单下已经存在" + materialNb + "的需求");
         }
         MaterialCall materialCall = new MaterialCall();
         materialCall.setMaterialNb(materialNb);
@@ -600,7 +601,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         lambdaQueryWrapper.eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode());
         lambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         lambdaQueryWrapper.eq(Stock::getFreezeStock, 0);
-        lambdaQueryWrapper.le(Stock::getExpireDate, new Date());
+        lambdaQueryWrapper.ge(Stock::getExpireDate, new Date());
         List<Stock> stockList = stockService.list(lambdaQueryWrapper);
         if (CollectionUtils.isEmpty(stockList)) {
             stockList = new ArrayList<>();

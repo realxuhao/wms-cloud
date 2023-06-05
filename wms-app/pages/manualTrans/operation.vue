@@ -40,13 +40,13 @@
 				<uni-forms :label-width="80" ref="binInForm" :rules="formRules" :modelValue="form" label-position="left">
 					<uni-forms-item label="转储动作" required><uni-data-checkbox v-model="form.type" :localdata="typeList" /></uni-forms-item>
 
-					<template v-if="form.type === 0">
+					<template v-if="form.type === 1">
 						<uni-forms-item label="存储区" name="actualCode" required>
 							<uni-data-picker ref="picker" v-model="area" popup-title="请选择存储区" :localdata="areaList" @change="handleAreaChange"></uni-data-picker>
 						</uni-forms-item>
 					</template>
 
-					<template v-if="form.type === 1">
+					<template v-if="form.type === 0">
 						<uni-forms-item label="库位编码" name="actualCode" required>
 							<uni-easyinput v-model="form.actualCode" placeholder="请输入或扫描库位编码"></uni-easyinput>
 						</uni-forms-item>
@@ -84,12 +84,12 @@ export default {
 		return {
 			typeList: [
 				{
-					text: '库位',
-					value: 0
-				},
-				{
 					text: '区域',
 					value: 1
+				},
+				{
+					text: '库位',
+					value: 0
 				}
 			],
 			submitLoading: false,
@@ -117,6 +117,10 @@ export default {
 	onLoad(options) {
 		this.form.mesBarCode = options.barCode;
 		this.getInfo(options.barCode);
+		this.type = 0
+		
+		
+		this.initScanCode()
 	},
 	onLaunch() {
 		Bus.$off('scancodedate');
@@ -124,7 +128,8 @@ export default {
 	methods: {
 		async initScanCode() {
 			Bus.$on('scancodedate', data => {
-				if (this.type === 1) {
+		console.log(this.type)
+				if (this.type === 0) {
 					const code = data.code.trim();
 					this.form.actualCode = code;
 				}
@@ -158,7 +163,7 @@ export default {
 		},
 
 		async lodaData() {
-			this.getWareList();
+			// this.getWareList();
 		},
 
 		async handlePost() {

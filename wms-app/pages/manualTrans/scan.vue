@@ -34,9 +34,12 @@ export default {
 		},
 
 		handleGoto(code) {
+			uni.showLoading();
+			Bus.$off('scancodedate', this.scanCodeCallback);
 			uni.navigateTo({
 				url: `/pages/manualTrans/operation?barCode=${code}`
 			});
+			uni.hideLoading();
 			Bus.$emit('startScan');
 		}
 	}
