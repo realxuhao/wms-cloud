@@ -143,7 +143,10 @@ public class MaterialFeedingController extends BaseController {
     @ApiOperation("新增叫料需求")
     @Transactional(rollbackFor = Exception.class)
     public R add(@RequestBody MaterialCall call) {
-         materialCallService.add(call);
+        if (call.getQuantity() <= 0) {
+            throw new ServiceException("需求量必须大于0");
+        }
+        materialCallService.add(call);
         return R.ok();
     }
 
@@ -154,6 +157,7 @@ public class MaterialFeedingController extends BaseController {
         if (Objects.isNull(id)) {
             throw new ServiceException("id不能为空");
         }
+
         return R.ok(materialCallService.updateCallQuantity(callDTO));
     }
 

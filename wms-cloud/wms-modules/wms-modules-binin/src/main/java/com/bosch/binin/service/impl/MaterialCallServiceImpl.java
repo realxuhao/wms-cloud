@@ -211,7 +211,12 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         if (materialCall == null || MaterialCallStatusEnum.FULL_ISSUED.code().equals(materialCall.getStatus()) || MaterialCallStatusEnum.PART_ISSUED.code().equals(materialCall.getStatus())) {
             throw new ServiceException("该需求已经下发，不能修改");
         }
+
         MaterialCall call = BeanConverUtil.conver(callDTO, MaterialCall.class);
+
+        if (callDTO.getQuantity()==0){
+            call.setStatus(CallStatusEnum.CANCEL.code());
+        }
 
         return materialCallMapper.updateById(call);
     }

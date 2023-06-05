@@ -25,16 +25,51 @@ public class WareShiftVO  {
     @ApiModelProperty(value = "主键id")
     private Long id;
 
+    @ApiModelProperty(value = "移库单号")
+    @Excel(name = "移库单号")
+    private String orderNb;
 
 
-    @ApiModelProperty(value = "recommendBinCode")
-    @Excel(name = "推荐库位")
-    private String recommendBinCode;
+    @ApiModelProperty(value = "车牌号")
+    private String carNb;
 
+    /**
+     * sscc
+     */
+    @ApiModelProperty(value = "sscc")
+    @Excel(name = "sscc")
+    private String ssccNb;
+
+
+
+    /**
+     * 物料号
+     */
+    @ApiModelProperty(value = "物料号")
+    @Excel(name = "物料号")
+    private String materialNb;
 
     @ApiModelProperty(value = "materialName")
     @Excel(name = "物料名称")
     private String materialName;
+
+    /**
+     * 批次号
+     */
+    @ApiModelProperty(value = "批次号")
+    @Excel(name = "批次号")
+    private String batchNb;
+
+    @ApiModelProperty(value = "移库数量")
+    @Excel(name = "移库数量")
+    private Double quantity;
+
+
+    @ApiModelProperty(value = "拆托标记，0：整托，1：拆托")
+    private Integer splitType;
+
+    @ApiModelProperty(value = "拆托数量")
+    private Double splitQuality;
 
     /**
      * 源工厂
@@ -57,6 +92,8 @@ public class WareShiftVO  {
     @Excel(name = "源存储区")
     private String sourceAreaCode;
 
+
+
     /**
      * 源库位
      */
@@ -64,45 +101,15 @@ public class WareShiftVO  {
     @Excel(name = "源库位")
     private String sourceBinCode;
 
+
+
     /**
      * 移动类型
      */
     @ApiModelProperty(value = "移动类型, (\"0\", \"收货\"),(\"1\", \"入库\"),(“2”, \"上架\"),(\"3\",\"生产叫料\"),(\"4\", \"移库\"),(\"5\",\"拆托上架\"),(\"6\",\"仓库内移动\"),(\"7\",\"生产退料\");")
     private String moveType;
 
-    /**
-     * sscc
-     */
-    @ApiModelProperty(value = "sscc")
-    @Excel(name = "sscc")
-    private String ssccNb;
 
-    /**
-     * 物料号
-     */
-    @ApiModelProperty(value = "物料号")
-    @Excel(name = "物料号")
-    private String materialNb;
-
-    /**
-     * 批次号
-     */
-    @ApiModelProperty(value = "批次号")
-    @Excel(name = "批次号")
-    private String batchNb;
-
-    @ApiModelProperty(value = "移库单号")
-    @Excel(name = "移库单号")
-    private String orderNb;
-
-
-    @ApiModelProperty(value = "移库数量")
-    @Excel(name = "移库数量")
-    private Double quantity;
-
-
-    @ApiModelProperty(value = "车牌号")
-    private String carNb;
 
     /**
      * bbd过期时间
@@ -147,6 +154,10 @@ public class WareShiftVO  {
     @Excel(name = "目的存储区code")
     private String targetAreaCode;
 
+    @ApiModelProperty(value = "recommendBinCode")
+    @Excel(name = "推荐库位")
+    private String recommendBinCode;
+
 
     /**
      * 目的库位code
@@ -184,10 +195,6 @@ public class WareShiftVO  {
     @Excel(name = "备注")
     private String remark;
 
-    @ApiModelProperty(value = "拆托标记，0：整托，1：拆托")
-    private Integer splitType;
 
-    @ApiModelProperty(value = "拆托数量")
-    private Double splitQuality;
 
 }
