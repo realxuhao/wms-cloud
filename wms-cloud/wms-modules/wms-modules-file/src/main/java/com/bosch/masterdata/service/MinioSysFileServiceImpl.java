@@ -4,6 +4,7 @@ import io.minio.DownloadObjectArgs;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.http.Method;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,12 +15,12 @@ import io.minio.PutObjectArgs;
 
 /**
  * Minio 文件存储
- * 
+ *
  * @author ruoyi
  */
 @Service
-public class MinioSysFileServiceImpl implements ISysFileService
-{
+@Slf4j
+public class MinioSysFileServiceImpl implements ISysFileService {
     @Autowired
     private MinioConfig minioConfig;
 
@@ -28,14 +29,13 @@ public class MinioSysFileServiceImpl implements ISysFileService
 
     /**
      * 本地文件上传接口
-     * 
+     *
      * @param file 上传的文件
      * @return 访问地址
      * @throws Exception
      */
     @Override
-    public String uploadFile(MultipartFile file) throws Exception
-    {
+    public String uploadFile(MultipartFile file) throws Exception {
         String fileName = FileUploadUtils.extractFilename(file);
         PutObjectArgs args = PutObjectArgs.builder()
                 .bucket(minioConfig.getBucketName())
@@ -49,12 +49,12 @@ public class MinioSysFileServiceImpl implements ISysFileService
 
     @Override
     @SneakyThrows
-    public String downloadObject(String fileName){
+    public String downloadObject(String fileName) {
         DownloadObjectArgs.Builder builder = DownloadObjectArgs.builder();
 
         builder.bucket(minioConfig.getBucketName());
         builder.object(fileName);
-        builder.filename(minioConfig.getDownloadPath()+fileName);
+        builder.filename(minioConfig.getDownloadPath() + fileName);
         DownloadObjectArgs downloadObjectArgs = builder.build();
 
         // 创建一个MinioClient对象
@@ -68,15 +68,16 @@ public class MinioSysFileServiceImpl implements ISysFileService
                         GetPresignedObjectUrlArgs.builder()
                                 .method(Method.GET)
                                 .bucket(minioConfig.getBucketName())
-                                .object(minioConfig.getDownloadPath()+fileName)
+                                .object(minioConfig.getDownloadPath() + fileName)
                                 .expiry(60 * 60 * 24)
                                 .build());
 
-        String replacement = "https://www.nutricia-home.com/templateExcel/wms";
+        String replacement = "https://www.nutricia-home.com/download/"+fileName;
 
         //String replacedString = url.replaceFirst(".*/wms", replacement);
+        log.info("返回地址： "+url);
 
-        return url;
+        return replacement;
     }
 
 }
