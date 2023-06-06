@@ -3,15 +3,15 @@ export default {
 	onLaunch: async function() {
 		console.log('App Launch');
 		console.log('onload');
-		try {
-			await this.$store.dispatch('GetInfo');
-		} catch (e) {
-			uni.reLaunch({
-				url: '/pages/login/index'
-			});
-			//TODO handle the exception
-		} finally {
-		}
+		// try {
+		// 	await this.$store.dispatch('GetInfo');
+		// } catch (e) {
+		// 	uni.reLaunch({
+		// 		url: '/pages/login/index'
+		// 	});
+		// 	//TODO handle the exception
+		// } finally {
+		// }
 	},
 	onShow: function() {
 		console.log('App Show');

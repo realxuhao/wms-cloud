@@ -245,6 +245,7 @@ export default {
 					that.showdownLine = false;
 					uni.hideLoading();
 					console.log('downloadResult.statusCode' + downloadResult.statusCode);
+					console.log('downloadResult', downloadResult);
 					if (downloadResult.statusCode == 200) {
 						console.log('更新中');
 						uni.showModal({
@@ -254,6 +255,7 @@ export default {
 							confirmColor: '#541b86',
 							showCancel: false,
 							success: function(res) {
+								console.log(res, 'res');
 								if (res.confirm == true) {
 									plus.runtime.install(
 										//安装
@@ -274,8 +276,10 @@ export default {
 				fail: err => {
 					uni.hideLoading();
 					that.showdownLine = false;
-					that.$u.toast(err.errMsg);
-					console.log(err);
+					uni.showToast({
+						icon: 'none',
+						title: err.errMsg
+					});
 				},
 				complete: com => {
 					this.downloadLoading = false;
