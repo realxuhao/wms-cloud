@@ -117,9 +117,20 @@ const columns = [
   {
     title: '主库是否满足',
     key: 'enough',
+    filters: [
+      {
+        text: '满足',
+        value: 1,
+      },
+      {
+        text: '不满足',
+        value: 0,
+      },
+    ],
+    onFilter: (value, record) => record.enough == value,
     scopedSlots: { customRender: 'enough' },
     dataIndex: 'enough',
-    width: 80
+    width: 100
   }
 ]
 
@@ -208,4 +219,8 @@ export default {
 }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+/deep/.ant-table-filter-selected.anticon {
+  color: #fff !important;
+}
+</style>

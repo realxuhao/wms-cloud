@@ -18,7 +18,7 @@
 								<text class="m-r-8 grey-color sscc">{{ index + 1 }}.</text>
 								<text>{{ item }}</text>
 							</view>
-							<o-btn size="sm" @click="handleDelete">删除</o-btn>
+							<o-btn size="sm" @click="handleDelete(item)">删除</o-btn>
 						</view>
 					</template>
 				</uni-list-item>

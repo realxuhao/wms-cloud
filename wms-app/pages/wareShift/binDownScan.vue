@@ -7,7 +7,8 @@
 		<Message ref="message"></Message>
 
 		<uni-popup ref="submitPopup" type="dialog">
-			<uni-popup-dialog before-close type="info" cancelText="取消" confirmText="确认" title="是否确认下架?" @confirm="handleBinDown" @close="handleCancel">
+			<uni-popup-dialog before-close type="info" cancelText="取消" confirmText="确认" title="是否确认下架?"
+				@confirm="handleBinDown" @close="handleCancel">
 				<view>
 					<view class="text-align m-b-4">
 						<text class="label m-r-8">SSCC码:</text>
@@ -24,114 +25,123 @@
 </template>
 
 <script>
-import Message from '@/components/Message';
-import Bus from '@/utils/bus';
+	import Message from '@/components/Message';
+	import Bus from '@/utils/bus';
 
-export default {
-	components: {
-		Message
-	},
-	onLoad() {},
-	onShow() {
-		// this.scanCodeCallback({ code: '20230518669006391113713486103110422302211448000600' });
-		Bus.$on('scancodedate', this.scanCodeCallback);
-	},
-	destroyed() {
-		Bus.$off('scancodedate');
-	},
-	data() {
-		return {
-			code: '',
-			info: {}
-		};
-	},
-	methods: {
-		async scanCodeCallback(data) {
-			Bus.$emit('stopScan');
-			this.$refs.submitPopup.close();
-
-			this.code = data.code;
-			await this.parsedBarCode(data.code);
+	export default {
+		components: {
+			Message
 		},
-		async parsedBarCode(barCode) {
-			try {
-				const data = await this.$store.dispatch('kanban/parsedBarCode', barCode);
+		onLoad() {},
+		onShow() {
+			// this.scanCodeCallback({ code: '20230518669006391113713486103110422302211448000600' });
+			Bus.$on('scancodedate', this.scanCodeCallback);
+		},
+		destroyed() {
+			Bus.$off('scancodedate');
+		},
+		data() {
+			return {
+				code: '',
+				info: {}
+			};
+		},
+		methods: {
+			async scanCodeCallback(data) {
+				Bus.$emit('stopScan');
 
-				const splitData = await this.$store.dispatch('wareShift/getOneBinDown', data.ssccNb);
+				console.log(3333)
 
-				if (splitData.splitType === 1) {
-					uni.navigateTo({
-						url: `/pages/wareShift/splitPallet?ssccNumber=${data.ssccNb}&quantity=${splitData.splitQuality}`
-					});
-					return;
+				// this.$refs.submitPopup.close();
+
+				this.code = data.code;
+				await this.parsedBarCode(data.code);
+			},
+			async parsedBarCode(barCode) {
+				try {
+					const data = await this.$store.dispatch('kanban/parsedBarCode', barCode);
+					console.log(data, '1111')
+					const splitData = await this.$store.dispatch('wareShift/getOneBinDown', data.ssccNb);
+
+					if (splitData.splitType === 1) {
+						uni.navigateTo({
+							url: `/pages/wareShift/splitPallet?ssccNumber=${data.ssccNb}&quantity=${splitData.splitQuality}`
+						});
+						return;
+					}
+
+					console.log(22222)
+					this.info = data;
+					this.$refs.submitPopup.open();
+				} catch (e) {
+					this.$refs.message.error(e.message);
+				} finally {
+					Bus.$emit('startScan');
 				}
-				this.info = data;
-				this.$refs.submitPopup.open();
-			} catch (e) {
-				this.$refs.message.error(e.message);
-			} finally {
-				Bus.$emit('startScan');
-			}
-		},
-		async handleBinDown(data) {
-			try {
-				uni.showLoading();
-				await this.$store.dispatch('wareShift/binDown', this.code);
-				this.$refs.message.success('下架成功');
-				Bus.$emit('startScan');
+			},
+			async handleBinDown() {
+				try {
+					uni.showLoading();
+					await this.$store.dispatch('wareShift/binDown', this.code);
+					this.$refs.message.success('下架成功');
+					Bus.$emit('startScan');
+					this.$refs.submitPopup.close();
+				} catch (e) {
+					this.$refs.message.error(e.message);
+				} finally {
+					uni.hideLoading();
+				}
+			},
+			async handleCancel() {
 				this.$refs.submitPopup.close();
-			} catch (e) {
-				this.$refs.message.error(e.message);
-			} finally {
-				uni.hideLoading();
+				Bus.$emit('startScan');
+			},
+			handleGoBack() {
+				uni.navigateBack({});
+			},
+			handleGoto() {
+				Bus.$off('scancodedate', this.scanCodeCallback);
+				uni.navigateTo({
+					url: `/pages/materialIn/operator?barCode=${this.code}`
+				});
 			}
-		},
-		async handleCancel() {
-			this.$refs.submitPopup.close();
-			Bus.$emit('startScan');
-		},
-		handleGoBack() {
-			uni.navigateBack({});
-		},
-		handleGoto() {
-			Bus.$off('scancodedate', this.scanCodeCallback);
-			uni.navigateTo({
-				url: `/pages/materialIn/operator?barCode=${this.code}`
-			});
 		}
-	}
-};
+	};
 </script>
 
 <style lang="scss">
-.wrapper {
-	display: flex;
-	flex-direction: column;
-}
-/deep/.uni-navbar--shadow {
-	box-shadow: none;
-}
-/deep/.uni-navbar--border {
-	border: none;
-}
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+	}
 
-.content {
-	height: 100%;
-	background-color: $primary-color;
-	flex: 1;
-	display: flex;
-	align-items: center;
-	// justify-content: center;
-	flex-direction: column;
-	image {
-		width: 180px;
-		// height: 160px;
-		margin-top: 120px;
-		margin-bottom: 32px;
+	/deep/.uni-navbar--shadow {
+		box-shadow: none;
 	}
-	text {
-		color: #fff;
-		font-size: 16px;
+
+	/deep/.uni-navbar--border {
+		border: none;
 	}
-}
+
+	.content {
+		height: 100%;
+		background-color: $primary-color;
+		flex: 1;
+		display: flex;
+		align-items: center;
+		// justify-content: center;
+		flex-direction: column;
+
+		image {
+			width: 180px;
+			// height: 160px;
+			margin-top: 120px;
+			margin-bottom: 32px;
+		}
+
+		text {
+			color: #fff;
+			font-size: 16px;
+		}
+	}
 </style>

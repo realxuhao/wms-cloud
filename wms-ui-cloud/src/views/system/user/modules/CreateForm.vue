@@ -6,7 +6,7 @@
     </a-divider>
     <a-form-model ref="form" :model="form" :rules="rules">
       <a-form-model-item label="用户名称" prop="nickName">
-        <a-input v-model="form.nickName" placeholder="请输入" :maxLength="30" />
+        <a-input v-model="form.nickName" placeholder="请输入" :maxLength="100" />
       </a-form-model-item>
       <a-form-model-item label="所属公司" prop="deptId">
         <a-tree-select
