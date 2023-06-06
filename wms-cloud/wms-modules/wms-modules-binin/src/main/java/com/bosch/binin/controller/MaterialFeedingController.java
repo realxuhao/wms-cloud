@@ -82,18 +82,23 @@ public class MaterialFeedingController extends BaseController {
             if (result.isSuccess()) {
                 Object data = result.getData();
                 List<MaterialCallDTO> dtos = JSON.parseArray(JSON.toJSONString(data), MaterialCallDTO.class);
+                List<MaterialCallDTO> newList=new ArrayList<>();
                 if (!CollectionUtils.isEmpty(dtos)) {
                     boolean valid = materialCallService.validList(dtos);
                     if (valid) {
                         return R.fail(400, "已录入相同订单号的记录");
                     } else {
-                        dtos.forEach(r -> {
-                            if (r.getQuantity() == null || r.getQuantity() < 0) {
+                        for (MaterialCallDTO r : dtos) {
+                            if(r.getQuantity() == null ||r.getQuantity()==0){
+                                continue;
+                            }
+                            if ( r.getQuantity() < 0) {
                                 throw new ServiceException("数量输入有误", 400);
                             }
                             r.setSortType(0);
                             r.setCell(cell);
-                        });
+                            newList.add(r);
+                        }
 
 //                        List<Student> studentList = new ArrayList<>();
 //                        list.parallelStream().collect(Collectors.groupingBy(o -> (o.getUid() + o.getUname()), Collectors.toList())).forEach((id, transfer) -> {
@@ -101,7 +106,7 @@ public class MaterialFeedingController extends BaseController {
 //                        });
 
                         List<MaterialCallDTO> dtoList = new ArrayList<>();
-                        dtos.parallelStream().collect(Collectors.groupingBy(o -> (o.getOrderNb() + o.getMaterialNb()), Collectors.toList())).forEach((num, dto) -> {
+                        newList.parallelStream().collect(Collectors.groupingBy(o -> (o.getOrderNb() + o.getMaterialNb()), Collectors.toList())).forEach((num, dto) -> {
                             dto.stream().reduce((a, b) -> {
                                 a.setQuantity(a.getQuantity() + b.getQuantity());
 
@@ -143,7 +148,10 @@ public class MaterialFeedingController extends BaseController {
     @ApiOperation("新增叫料需求")
     @Transactional(rollbackFor = Exception.class)
     public R add(@RequestBody MaterialCall call) {
-         materialCallService.add(call);
+        if (call.getQuantity() <= 0) {
+            throw new ServiceException("需求量必须大于0");
+        }
+        materialCallService.add(call);
         return R.ok();
     }
 
@@ -154,6 +162,7 @@ public class MaterialFeedingController extends BaseController {
         if (Objects.isNull(id)) {
             throw new ServiceException("id不能为空");
         }
+
         return R.ok(materialCallService.updateCallQuantity(callDTO));
     }
 

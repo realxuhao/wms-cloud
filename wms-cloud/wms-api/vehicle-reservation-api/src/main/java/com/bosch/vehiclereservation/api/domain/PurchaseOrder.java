@@ -100,11 +100,13 @@ public class PurchaseOrder extends BaseEntity {
     /**
      * 预计到货开始日期
      */
+    @TableField(exist = false)
     private Date startDate;
 
     /**
      * 预计到货结束日期
      */
+    @TableField(exist = false)
     private Date endDate;
 
 }

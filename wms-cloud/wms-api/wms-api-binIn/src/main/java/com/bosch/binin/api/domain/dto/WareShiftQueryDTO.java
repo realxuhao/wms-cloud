@@ -53,6 +53,6 @@ public class WareShiftQueryDTO extends PageDomain {
     @ApiModelProperty(value = "结束更新时间")
     private Date endUpdateTime;
 
-
+    @ApiModelProperty(value = "ssccNb")
     private String ssccNb;
 }

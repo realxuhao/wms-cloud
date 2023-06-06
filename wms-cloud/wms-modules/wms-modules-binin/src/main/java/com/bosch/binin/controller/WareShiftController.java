@@ -202,21 +202,9 @@ public class WareShiftController extends BaseController {
     @ApiOperation("移库列表导出")
     public void export(HttpServletResponse response, WareShiftQueryDTO queryDTO) {
         List<WareShiftVO> wareShiftList = shiftService.getWareShiftList(queryDTO);
-//        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
-
         ExcelUtil<WareShiftVO> util = new ExcelUtil<>(WareShiftVO.class);
         util.exportExcel(response, wareShiftList, "移库任务列表");
     }
-
-
-
-
-
-
-
-
-
-
 
 
 

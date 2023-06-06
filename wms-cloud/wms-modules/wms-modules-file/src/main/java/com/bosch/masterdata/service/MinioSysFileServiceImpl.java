@@ -57,9 +57,14 @@ public class MinioSysFileServiceImpl implements ISysFileService
         builder.filename(minioConfig.getDownloadPath()+fileName);
         DownloadObjectArgs downloadObjectArgs = builder.build();
 
+        // 创建一个MinioClient对象
+        MinioClient minioClient = MinioClient.builder()
+                .endpoint(minioConfig.getUrl())
+                .credentials(minioConfig.getAccessKey(), minioConfig.getSecretKey())
+                .build();
         // 指定一个GET请求，返回获取文件对象的URL，此URL过期时间为一天
         String url =
-                client.getPresignedObjectUrl(
+                minioClient.getPresignedObjectUrl(
                         GetPresignedObjectUrlArgs.builder()
                                 .method(Method.GET)
                                 .bucket(minioConfig.getBucketName())
@@ -69,9 +74,9 @@ public class MinioSysFileServiceImpl implements ISysFileService
 
         String replacement = "https://www.nutricia-home.com/templateExcel/wms";
 
-        String replacedString = url.replaceFirst(".*/wms", replacement);
+        //String replacedString = url.replaceFirst(".*/wms", replacement);
 
-        return replacedString;
+        return url;
     }
 
 }
