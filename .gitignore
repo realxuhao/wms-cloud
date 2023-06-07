@@ -5,6 +5,7 @@
 /build/
 !gradle/wrapper/gradle-wrapper.jar
 
+/.idea/
 target/
 !.mvn/wrapper/maven-wrapper.jar
 

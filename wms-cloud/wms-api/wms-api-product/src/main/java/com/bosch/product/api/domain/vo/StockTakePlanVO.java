@@ -51,14 +51,14 @@ public class StockTakePlanVO extends BaseEntity {
      * 盘点类型，0:明盘，1:盲盘
      */
     @ApiModelProperty(value = "盘点类型，0:明盘，1:盲盘")
-    @Excel(name = "盘点类型",readConverterExp = "0:明盘，1:盲盘")
+    @Excel(name = "盘点类型",readConverterExp = "0=明盘，1=盲盘")
     private int type;
 
     /**
      * 盘点方式
      */
     @ApiModelProperty(value = "盘点方式")
-    @Excel(name = "盘点方式",readConverterExp = "0:普通盘点,1:循环盘点")
+    @Excel(name = "盘点方式",readConverterExp = "0=普通盘点,1=循环盘点")
     private int method;
 
     /**
@@ -114,14 +114,14 @@ public class StockTakePlanVO extends BaseEntity {
      * 0:已创建，1:进行中，2:完成
      */
     @ApiModelProperty(value = "0:已创建，1:进行中，2:完成")
-    @Excel(name = "状态", readConverterExp = "0:已创建,1:进行中,2:完成")
+    @Excel(name = "状态", readConverterExp = "0=已创建,1=进行中,2=完成")
     private Integer status;
 
     /**
      * 物料类型：0:原材料，1:成品
      */
     @ApiModelProperty(value = "物料类型：0:原材料，1:成品")
-    @Excel(name = "物料类型", readConverterExp = "0:原材料,1:成品")
+    @Excel(name = "物料类型", readConverterExp = "0=原材料,1=成品")
     private Integer takeMaterialType;
 
     @ApiModelProperty(value = "循环盘点月份")

@@ -135,7 +135,7 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
         Stock sourceStock = stockService.getOne(stockQueryWrapper);
         //分配库位信息
         String newMesBarCode = MesBarCodeUtil.generateMesBarCode(sourceStock.getExpireDate(), sscc, sourceStock.getMaterialNb(), sourceStock.getBatchNb(), splitRecord.getSplitQuantity());
-        BinInVO binInVO = binInService.generateInTaskByMesBarCode(newMesBarCode);
+        BinInVO binInVO = binInService.generateInTaskByMesBarCode(newMesBarCode,splitRecord.getSplitQuantity());
         return binInVO;
     }
 

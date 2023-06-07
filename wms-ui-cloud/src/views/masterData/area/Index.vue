@@ -5,16 +5,18 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           <a-col :span="4">
-            <a-form-model-item label="编码">
-              <a-input v-model="queryForm.code" placeholder="编码" allow-clear/>
+            <a-form-model-item label="仓库编码">
+              <a-input v-model="queryForm.wareCode" placeholder="仓库编码" allow-clear/>
             </a-form-model-item>
 
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="名称">
-              <a-input v-model="queryForm.name" placeholder="名称" allow-clear/>
+            <a-form-model-item label="存储区编码">
+              <a-input v-model="queryForm.code" placeholder="存储区编码" allow-clear/>
             </a-form-model-item>
+
           </a-col>
+          
 
           <template v-if="advanced">
 
@@ -79,6 +81,8 @@
       <div class="pagination-con">
         <a-pagination
           show-size-changer
+          :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
+          
           show-less-items
           :current="queryForm.pageNum"
           :page-size.sync="queryForm.pageSize"
@@ -152,14 +156,16 @@ const columns = [
 const queryFormAttr = () => {
   return {
     code: '',
-    name: ''
+    wareCode: ''
   }
 }
 
 const areaTypeMap = {
   0: '原材料',
   1: '成品',
-  2: 'IQC'
+  2: 'IQC',
+  3: '不合格品区域',
+  4: '成品暂存区'
 }
 
 export default {

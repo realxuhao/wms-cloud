@@ -165,6 +165,9 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         qw.eq(WareShift::getSsccNb, sscc);
         qw.eq(WareShift::getStatus, KanbanStatusEnum.INNER_BIN_IN.value());
         qw.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
+        qw.ne(WareShift::getStatus, KanbanStatusEnum.FINISH.value());
+
         qw.last("limit 1");
         qw.last("for update");
         WareShift wareShift = wareShiftMapper.selectOne(qw);
@@ -299,6 +302,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             wareShift.setExpireDate(item.getExpireDate());
             wareShift.setTargetPlant(targetPlantNb);
             wareShift.setTargetWareCode(targetWareCode);
+            wareShift.setQuantity(item.getTotalStock());
+            wareShift.setSplitType(0);
             wareShift.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
             wareShiftList.add(wareShift);
 
@@ -317,6 +322,9 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
         wareShiftQueryWrapper.eq(WareShift::getSsccNb, sscc);
         wareShiftQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        wareShiftQueryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
+        wareShiftQueryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.FINISH.value());
+
         WareShift wareShift = wareShiftMapper.selectOne(wareShiftQueryWrapper);
         if (wareShift == null) {
             throw new ServiceException("没有该sscc:" + sscc + "对应的移库待上架任务");
@@ -402,6 +410,9 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                 item.setQuantity(item.getSplitQuality());
             }
         });
+        if (CollectionUtils.isEmpty(list)){
+            return Double.valueOf(0);
+        }
         double sum = list.stream().mapToDouble(WareShift::getQuantity).sum();
 
         return sum;
@@ -485,6 +496,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         qw.eq(TranshipmentOrder::getSsccNumber, MesBarCodeUtil.getSSCC(dto.getMesBarCode()));
         qw.eq(TranshipmentOrder::getStatus, StatusEnums.TRUE.getCode());
         qw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.orderByDesc(TranshipmentOrder::getCreateTime);
         qw.last("limit 1");
         TranshipmentOrder transhipmentOrder = transhipmentOrderService.getOne(qw);
         if (transhipmentOrder.getStatus() == 0) {
@@ -664,7 +676,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                     //直接上架到IQC虚拟区域
                     StockVO lastOneBySSCC = stockService.getLastOneBySSCC(samplePlan.getSsccNb());
                     String mesBarCode = MesBarCodeUtil.generateMesBarCode(lastOneBySSCC.getExpireDate(), lastOneBySSCC.getSsccNumber(), lastOneBySSCC.getMaterialNb(), lastOneBySSCC.getBatchNb(), lastOneBySSCC.getTotalStock());
-                    BinInVO binInVO = binInService.performToAreaType(mesBarCode, AreaTypeEnum.IQC.getCode());
+                    BinInVO binInVO = binInService.performToAreaType(mesBarCode, lastOneBySSCC.getTotalStock(),AreaTypeEnum.IQC.getCode());
                     //修改IQC抽样状态
                     samplePlan.setStatus(IQCStatusEnum.WAITING_SAMPLE.code());
                     samplePlan.setWareCode(SecurityUtils.getWareCode());

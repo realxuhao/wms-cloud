@@ -28,6 +28,9 @@ public class IQCSamplePlanVO {
     @ApiModelProperty(value = "物料名称")
     @Excel(name = "物料名称")
     private String materialName;
+    @ApiModelProperty(value = "物料类型")
+    @Excel(name = "物料类型")
+    private String materialType;
     @ApiModelProperty(value = "批次号")
     @Excel(name = "批次号")
     private String batchNb;

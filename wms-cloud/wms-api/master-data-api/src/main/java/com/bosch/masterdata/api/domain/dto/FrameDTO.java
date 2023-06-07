@@ -67,4 +67,11 @@ public class FrameDTO extends PageDomain {
     @ExcelProperty(value = "高度[CM]")
     @ApiModelProperty(value = "高度")
     private BigDecimal height;
+
+    @ApiModelProperty(value = "wareCode")
+    private String wareCode;
+
+    @ApiModelProperty(value = "frameType")
+    private String frameType;
+
 }

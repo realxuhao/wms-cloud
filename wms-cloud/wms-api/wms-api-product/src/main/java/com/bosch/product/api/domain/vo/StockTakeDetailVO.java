@@ -19,10 +19,10 @@ public class StockTakeDetailVO extends StockTakeDetail {
     @Excel(name = "cell")
     private int takeMaterialType;
     @ApiModelProperty(value = "盘点类型:0:明盘，1:盲盘(默认明盘)")
-    @Excel(name = "盘点类型",readConverterExp = "0:明盘,1:盲盘")
+    @Excel(name = "盘点类型",readConverterExp = "0=明盘,1=盲盘")
     private int type;
     @ApiModelProperty(value = "盘点方式,0:普通盘点，1：循环判断(默认普通盘点)")
-    @Excel(name = "盘点方式",readConverterExp = "0:普通盘点,1：循环判断")
+    @Excel(name = "盘点方式",readConverterExp = "0=普通盘点,1=循环判断")
     private int method;
     @ApiModelProperty(value = "物料名称")
     @Excel(name = "物料名称")

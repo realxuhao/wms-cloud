@@ -34,35 +34,31 @@
               <a-input v-model="queryForm.fromProdOrder" placeholder="FromProdOrder" allow-clear/>
             </a-form-item>
           </a-col>
-          <template v-if="advanced">
-            <a-col :span="4">
-              <a-form-item label="FromProdOrder">
-                <a-input v-model="queryForm.fromProdOrder" placeholder="FromProdOrder" allow-clear/>
-              </a-form-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-item label="创建人">
-                <a-input v-model="queryForm.createBy" placeholder="创建人" allow-clear/>
-              </a-form-item>
-            </a-col>
-            <a-col :span="8">
-              <a-form-item label="创建时间" >
-                <a-range-picker
-                  format="YYYY-MM-DD HH:mm"
-                  :show-time="{ format: 'HH:mm' }"
-                  v-model="queryForm.date"
-                />
-              </a-form-item>
-            </a-col>
-          </template>
+         
+          <a-col :span="4">
+            <a-form-item label="FromProdOrder">
+              <a-input v-model="queryForm.fromProdOrder" placeholder="FromProdOrder" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="创建人">
+              <a-input v-model="queryForm.createBy" placeholder="创建人" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="8">
+            <a-form-item label="创建时间" >
+              <a-range-picker
+                format="YYYY-MM-DD HH:mm"
+                :show-time="{ format: 'HH:mm' }"
+                v-model="queryForm.date"
+              />
+            </a-form-item>
+          </a-col>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              <a @click="toggleAdvanced" style="margin-left: 8px">
-                {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'"/>
-              </a>
+              
             </span>
           </a-col>
         </a-row>
@@ -97,6 +93,7 @@
       <div class="pagination-con">
         <a-pagination
           show-size-changer
+          :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
           show-less-items
           :current="queryForm.pageNum"
           :page-size.sync="queryForm.pageSize"

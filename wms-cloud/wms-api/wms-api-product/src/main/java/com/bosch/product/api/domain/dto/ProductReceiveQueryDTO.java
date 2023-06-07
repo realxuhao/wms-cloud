@@ -1,5 +1,6 @@
 package com.bosch.product.api.domain.dto;
 
+import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,7 +13,7 @@ import java.util.Date;
  * @create: 2023-03-29 13:31
  **/
 @Data
-public class ProductReceiveQueryDTO {
+public class ProductReceiveQueryDTO extends PageDomain {
 
     @ApiModelProperty(value = "仓库")
     private String wareCode;

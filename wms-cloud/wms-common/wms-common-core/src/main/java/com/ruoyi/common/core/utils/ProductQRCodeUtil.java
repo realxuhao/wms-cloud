@@ -80,10 +80,10 @@ public class ProductQRCodeUtil {
 
 
         String productDate = "221025";
-        String batchNb = "101235866";
+        String batchNb = "185377";
         String expireDate = "240709";
-        String quantity = "000992";
-        String sscc="369006391113669850";
+        String quantity = "000096";
+        String sscc="369006391113669829";
 
 
         String s1="11"+productDate+"10"+batchNb;

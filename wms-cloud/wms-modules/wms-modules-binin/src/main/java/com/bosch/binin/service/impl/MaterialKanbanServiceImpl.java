@@ -667,7 +667,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         Date expireDate = parentStock.getExpireDate();
         String batchNb = parentStock.getBatchNb();
         String mesBarCode = MesBarCodeUtil.generateMesBarCode(expireDate, subKanban.getSsccNumber(), subKanban.getMaterialCode(), batchNb, subKanban.getQuantity());
-        binInService.generateInTaskByMesBarCode(mesBarCode);
+        binInService.generateInTaskByMesBarCode(mesBarCode, subKanban.getQuantity());
 
     }
 }

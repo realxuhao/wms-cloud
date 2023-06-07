@@ -70,6 +70,12 @@
           @click="handleAddWareShift"
         >新增移库单</a-button>
 
+        <a-button
+          :loading="exportLoading"
+          class="m-r-8"
+          @click="handleDownload"
+          v-hasPermi="['ware:shift:export']"><a-icon type="download" />导出结果</a-button>
+
       </div>
       <a-table
         :columns="columns"
@@ -115,6 +121,7 @@
       <div class="pagination-con">
         <a-pagination
           show-size-changer
+          :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
           show-less-items
           :current="queryForm.pageNum"
           :page-size.sync="queryForm.pageSize"
@@ -136,6 +143,7 @@
 import { mixinTableList } from '@/utils/mixin/index'
 import { colorMap } from '@/utils/color'
 import _ from 'lodash'
+import { download } from '@/utils/file'
 import StockList from './StockList'
 
 const columns = [
@@ -331,7 +339,7 @@ const queryFormAttr = () => {
     data: [],
     createBy: '',
     updateDate: [],
-    sourceWareCode: ''
+    sourceWareCode: '',
   }
 }
 
@@ -345,6 +353,7 @@ export default {
     return {
       tableLoading: false,
       uploadLoading: false,
+      exportLoading: false,
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -377,6 +386,19 @@ export default {
         this.loadTableList()
       } catch (error) {
         this.$message.error(error.message)
+      }
+    },
+    async handleDownload () {
+      try {
+        this.exportLoading = true
+        this.queryForm.pageSize = 0
+        const blobData = await this.$store.dispatch('wareShift/exportExcel', this.queryForm)
+        download(blobData, '移库列表')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
       }
     },
     async loadTableList () {

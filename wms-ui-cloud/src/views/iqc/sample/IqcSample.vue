@@ -15,6 +15,16 @@
                 </a-form-model-item>
               </a-col>
               <a-col :span="4">
+                <a-form-model-item label="区域编码">
+                  <a-input v-model="queryForm.areaCode" placeholder="区域编码" allow-clear />
+                </a-form-model-item>
+              </a-col>
+              <a-col :span="4">
+                <a-form-model-item label="SSCC">
+                  <a-input v-model="queryForm.ssccNumber" placeholder="SSCC" allow-clear />
+                </a-form-model-item>
+              </a-col>
+              <a-col :span="4">
                 <a-form-model-item label="物料编码">
                   <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear />
                 </a-form-model-item>
@@ -46,7 +56,7 @@
             </a-row>
           </a-form>
           <div class="m-b-8">
-            <a-button icon="step-forward" class="m-r-8" @click="checkSelectSSCC">下一步</a-button>
+            <a-button icon="step-forward" class="m-r-8 m-t-8" @click="checkSelectSSCC">下一步</a-button>
           </div>
           <a-table
             :row-selection="{
@@ -133,6 +143,8 @@ const queryFormAttr = () => {
     'batchNb': '',
     'wareCode': '',
     'materialNb': '',
+    'ssccNumber': '',
+    'areaCode': '',
     'cell': ''
   }
 }
@@ -142,6 +154,12 @@ const selectColumns = [
     title: '仓库编码',
     key: 'wareCode',
     dataIndex: 'wareCode',
+    width: 120
+  },
+  {
+    title: '区域编码',
+    key: 'areaCode',
+    dataIndex: 'areaCode',
     width: 120
   },
   {
@@ -247,6 +265,12 @@ export default {
           title: '仓库编码',
           key: 'wareCode',
           dataIndex: 'wareCode',
+          width: 120
+        },
+        {
+          title: '区域编码',
+          key: 'areaCode',
+          dataIndex: 'areaCode',
           width: 120
         },
         {
@@ -429,5 +453,9 @@ export default {
 
 /deep/.ant-input-number {
   width: 100%;
+}
+
+.m-t-8 {
+  margin-top: 8px;
 }
 </style>

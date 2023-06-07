@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @program: wms-cloud
@@ -37,4 +38,8 @@ public class ProductWareShiftQueryDTO {
     private Date startUpdateTime;
     @ApiModelProperty(value = "结束更新时间")
     private Date endUpdateTime;
+
+    @ApiModelProperty(value = "ssccList")
+    private List<String> ssccList;
+
 }

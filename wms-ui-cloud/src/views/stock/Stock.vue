@@ -24,7 +24,18 @@
               <a-input v-model="queryForm.binCode" placeholder="库位编码" allow-clear/>
             </a-form-item>
           </a-col>
-
+          <a-col :span="4">
+            <a-form-item label="质检状态" >
+              <a-select
+                allow-clear
+                v-model="queryForm.qualityStatus"
+              >
+                <a-select-option v-for="item in qualityStatus" :key="item.value" :value="item.text">
+                  {{ item.text }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
           <template v-if="advanced">
             <a-col :span="4">
               <a-form-item label="托盘编码">
@@ -94,6 +105,7 @@
       <div class="pagination-con">
         <a-pagination
           show-size-changer
+          :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
           show-less-items
           :current="queryForm.pageNum"
           :page-size.sync="queryForm.pageSize"
@@ -109,7 +121,20 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
-
+const qualityStatus = [
+  {
+    text: 'U',
+    value: 0
+  },
+  {
+    text: 'B',
+    value: 1
+  },
+  {
+    text: 'Q',
+    value: 2
+  }
+]
 const columns = [
   {
     title: '工厂编码',
@@ -206,7 +231,8 @@ const queryFormAttr = () => {
     batchNb: '',
     areaCode: '',
     binCode: '',
-    palletCode: ''
+    palletCode: '',
+    qualityStatus: '',
   }
 }
 
@@ -225,6 +251,10 @@ export default {
       columns,
       list: []
     }
+  },
+  computed: {
+    qualityStatus: () => qualityStatus
+    
   },
   methods: {
     handleResetQuery () {

@@ -107,7 +107,7 @@ const getProductShiftList = async (data) => {
 
 const postShift = async (data) => {
 	const url = `/product/product-shift/ship`
-	const method = 'PUT'
+	const method = 'POST'
 
 	return request({
 		url,

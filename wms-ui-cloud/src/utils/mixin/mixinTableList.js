@@ -15,7 +15,8 @@ const mixinTableList = {
       },
       paginationTotal: 0,
 
-      tableLoading: false
+      tableLoading: false,
+      pageSizeOptions: ['10', '20', '30', '40', '50', '100', '300'],
     }
   },
   computed: {

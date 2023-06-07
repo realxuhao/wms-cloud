@@ -164,9 +164,9 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         String barCode = MesBarCodeUtil.generateMesBarCode(MesBarCodeUtil.getExpireDate(mesBarCode), sscc, materialReturn.getMaterialNb(), materialReturn.getBatchNb(), materialReturn.getQuantity());
 
         if (materialReturn.getType() == MaterialTransTypeEnum.NORMAL.code()) {//正常退料分配到库位
-            binInVO = binInService.allocateToBin(barCode);
+            binInVO = binInService.allocateToBin(barCode,materialReturn.getQuantity());
         } else if (materialReturn.getType() == MaterialTransTypeEnum.AB_NORMAL.code()) {//异常退料分配到存储区
-            binInVO = binInService.allocateToBinOrArea(barCode, null, materialReturn.getAreaCode());
+            binInVO = binInService.allocateToBinOrArea(barCode, materialReturn.getQuantity(), null, materialReturn.getAreaCode());
         }
 
         return binInVO;

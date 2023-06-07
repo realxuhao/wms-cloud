@@ -136,7 +136,7 @@ public class ProductWareShiftVO {
      * 状态：待下架（来自于②）、待发运（外库pda下架）、待收货（外库发运扫描）、已收货（目的仓库收货扫描）、已上架（pda扫描上架
      */
     @ApiModelProperty(value = "状态：待下架（来自于②）、待发运（外库pda下架）、待收货（外库发运扫描）、已收货（目的仓库收货扫描）、已上架（pda扫描上架")
-    @Excel(name = "状态", readConverterExp = "1:待下架,2:待发运,4:待收货,5:待上架,7:完成")
+    @Excel(name = "状态", readConverterExp = "1=待下架,2=待发运,4=待收货,5=待上架,7=完成")
     private Integer status;
 
     /**

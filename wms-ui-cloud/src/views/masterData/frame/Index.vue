@@ -5,16 +5,31 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           <a-col :span="4">
-            <a-form-model-item label="编码">
-              <a-input v-model="queryForm.code" placeholder="编码" allow-clear/>
+            <a-form-model-item label="仓库编码">
+              <a-input v-model="queryForm.wareCode" placeholder="仓库编码" allow-clear/>
             </a-form-model-item>
 
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="名称">
-              <a-input v-model="queryForm.name" placeholder="名称" allow-clear/>
+            <a-form-model-item label="区域编码">
+              <a-input v-model="queryForm.areaCode" placeholder="区域编码" allow-clear/>
             </a-form-model-item>
+
           </a-col>
+         
+          <a-col :span="4">
+            <a-form-model-item label="跨类型">
+              <a-input v-model="queryForm.frameType" placeholder="跨类型" allow-clear/>
+            </a-form-model-item>
+
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="跨编码">
+              <a-input v-model="queryForm.code" placeholder="跨编码" allow-clear/>
+            </a-form-model-item>
+
+          </a-col>
+         
 
           <template v-if="advanced">
 
@@ -74,6 +89,7 @@
       <div class="pagination-con">
         <a-pagination
           show-size-changer
+          :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
           show-less-items
           :current="queryForm.pageNum"
           :page-size.sync="queryForm.pageSize"
@@ -170,7 +186,9 @@ const columns = [
 const queryFormAttr = () => {
   return {
     code: '',
-    name: ''
+    wareCode: '',
+    areaCode: '',
+    frameType: ''
   }
 }
 

@@ -22,6 +22,12 @@ const cancelTransfer = async (id) => {
   return data
 }
 
+const issueJob = async (ids) => {
+  const url = `/product-shift/issueJob/${ids}`
+  const { data } = await createAuthInstance(baseUrl).put(url)
+  return data
+}
+
 export const finishedProductTransferService = {
   getTransferList,
   createTransfer,

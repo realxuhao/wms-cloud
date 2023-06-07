@@ -20,6 +20,7 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -82,10 +83,14 @@ public class ProductWareShiftController extends BaseController {
     }
 
 
-    @PutMapping(value = "/ship/{carNb}")
+    @PostMapping(value = "/ship")
     @ApiOperation("发运")
-    public R ship(@RequestBody List<String> ssccList, @PathVariable("carNb") String carNb) {
-        productWareShiftService.ship(ssccList, carNb);
+    public R ship(@RequestBody ProductWareShiftQueryDTO dto) {
+        Assert.notNull(dto,"参数不可以为空");
+        Assert.noNullElements(dto.getSsccList(),"ssccList不可以为空");
+        Assert.notNull(dto.getCarNb(),"车牌号不可以为空");
+
+        productWareShiftService.ship(dto.getSsccList(), dto.getCarNb());
         return R.ok();
     }
 
