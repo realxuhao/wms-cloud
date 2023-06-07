@@ -20,6 +20,9 @@ public interface IStockService extends IService<Stock> {
     List<StockVO> selectStockVOList(StockQueryDTO stockQuerySTO);
 
     List<StockVO> selectStockVOListBySSCC(List<String> ssccs);
+
+
+
     List<StockVO> selectIQCManagementList(IQCManagementQueryDTO iqcManagementQueryDTO);
 
     boolean validateStatus(Long id);
@@ -28,6 +31,8 @@ public interface IStockService extends IService<Stock> {
 
     List<IQCVO> excelChangeStatus(List<IQCDTO> list);
 
+    List<IQCVO> mapToMaterial(List<IQCVO> result);
+    List<IQCDTO> iqcDTOSToMaterial(List<IQCDTO> result);
     List<StockVO> selectStockVOBySortType(StockQueryDTO stockQuerySTO);
 
     Double countAvailableStock(StockQueryDTO stockQueryDTO);

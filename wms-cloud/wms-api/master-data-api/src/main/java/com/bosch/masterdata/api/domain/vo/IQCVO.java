@@ -1,5 +1,6 @@
 package com.bosch.masterdata.api.domain.vo;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -47,4 +48,17 @@ public class IQCVO {
      */
     @ApiModelProperty(value = "status 0:成功 1:失败")
     private Integer status;
+    /**
+     * 物料号
+     */
+    @ApiModelProperty(value = "物料号")
+    @ExcelIgnore
+    private String materialNb;
+
+    /**
+     * 物料名称
+     */
+    @ApiModelProperty(value = "物料名称")
+    @ExcelIgnore
+    private String materialName;
 }

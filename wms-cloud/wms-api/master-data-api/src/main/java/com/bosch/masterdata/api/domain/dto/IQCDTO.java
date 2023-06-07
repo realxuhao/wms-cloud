@@ -1,8 +1,7 @@
 package com.bosch.masterdata.api.domain.dto;
 
+import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -26,7 +25,7 @@ public class IQCDTO  {
      */
     @ExcelProperty(value = "SSCCNumber")
     @ApiModelProperty(value = "SSCCNumber")
-    private String SSCCNumber;
+    private String ssccnumber;
 
     /**
      * J:FinalSAPStatus
@@ -50,6 +49,19 @@ public class IQCDTO  {
     private String identification;
 
     /**
+     * 物料号
+     */
+    @ApiModelProperty(value = "物料号")
+    @ExcelIgnore
+    private String materialNb;
+
+    /**
+     * 物料名称
+     */
+    @ApiModelProperty(value = "物料名称")
+    @ExcelIgnore
+    private String materialName;
+    /**
      * 重写equals方法
      */
     @Override
@@ -57,7 +69,7 @@ public class IQCDTO  {
         if (o == this) return true;
         if (!(o instanceof IQCDTO)) return false;
         IQCDTO iqcdto = (IQCDTO) o;
-        return Objects.equals(plantNb, iqcdto.plantNb) && Objects.equals(SSCCNumber, iqcdto.SSCCNumber)
+        return Objects.equals(plantNb, iqcdto.plantNb) && Objects.equals(ssccnumber, iqcdto.ssccnumber)
                 && Objects.equals(finalSAPStatus, iqcdto.finalSAPStatus) && Objects.equals(sapProcessStatus, iqcdto.sapProcessStatus)
                 && Objects.equals(identification, iqcdto.identification);
     }
@@ -67,6 +79,6 @@ public class IQCDTO  {
      */
     @Override
     public int hashCode() {
-        return Objects.hash(plantNb, SSCCNumber, finalSAPStatus, sapProcessStatus, identification);
+        return Objects.hash(plantNb, ssccnumber, finalSAPStatus, sapProcessStatus, identification);
     }
 }

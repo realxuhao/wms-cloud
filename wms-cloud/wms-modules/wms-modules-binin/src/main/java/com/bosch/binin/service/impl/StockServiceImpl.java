@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.text.ParseException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -123,7 +122,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                 // 执行批量更新操作
                 for (IQCDTO iqcdto : batchList) {
                     LambdaUpdateWrapper<Stock> wrapper = new LambdaUpdateWrapper<>();
-                    wrapper.eq(Stock::getSsccNumber, iqcdto.getSSCCNumber());
+                    wrapper.eq(Stock::getSsccNumber, iqcdto.getSsccnumber());
                     wrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
                     wrapper.set(Stock::getQualityStatus, iqcdto.getFinalSAPStatus());
                     wrapper.set(Stock::getChangeStatus, 1);
@@ -147,9 +146,48 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             // 处理线程被中断的异常
             e.printStackTrace();
         }
-        return result;
+        List<IQCVO> stockVOS = mapToMaterial(result);
+        return stockVOS;
     }
 
+    @Override
+    public List<IQCVO> mapToMaterial(List<IQCVO> result){
+        List<String> ssccList = result.stream().map(IQCVO::getSSCCNumber).collect(Collectors.toList());
+        List<StockVO> stockVOS = stockMapper.selectMaterialBySSCC(ssccList);
+        // 构建哈希映射
+        Map<String, StockVO> mapStockVO = new HashMap<>();
+        for (StockVO item : stockVOS) {
+            mapStockVO.put(item.getSsccNumber(), item);
+        }
+        // 进行映射和赋值
+        for (IQCVO item : result) {
+            StockVO vo = mapStockVO.get(item.getSSCCNumber());
+            if (vo != null) {
+                item.setMaterialName(vo.getMaterialName());
+                item.setMaterialNb(vo.getMaterialNb());
+            }
+        }
+        return result;
+    }
+    @Override
+    public List<IQCDTO> iqcDTOSToMaterial(List<IQCDTO> result){
+        List<String> ssccList = result.stream().map(IQCDTO::getSsccnumber).collect(Collectors.toList());
+        List<StockVO> stockVOS = stockMapper.selectMaterialBySSCC(ssccList);
+        // 构建哈希映射
+        Map<String, StockVO> mapStockVO = new HashMap<>();
+        for (StockVO item : stockVOS) {
+            mapStockVO.put(item.getSsccNumber(), item);
+        }
+        // 进行映射和赋值
+        for (IQCDTO item : result) {
+            StockVO vo = mapStockVO.get(item.getSsccnumber());
+            if (vo != null) {
+                item.setMaterialName(vo.getMaterialName());
+                item.setMaterialNb(vo.getMaterialNb());
+            }
+        }
+        return result;
+    }
     @Override
     public List<StockVO> selectStockVOBySortType(StockQueryDTO stockQuerySTO) {
         List<StockVO> stockVOList = stockMapper.selectStockVOBySortType(stockQuerySTO);

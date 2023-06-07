@@ -294,6 +294,12 @@ const columns = [
     width: 120
   },
   {
+    title: '物料名称',
+    key: 'materialName',
+    dataIndex: 'materialName',
+    width: 120
+  },
+  {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
@@ -362,24 +368,41 @@ const editSSCCColumns = [
   {
     title: '序号',
     key: 'index',
-    dataIndex: 'index'
+    dataIndex: 'index',
+    width: 20
   },
   {
     title: 'SSCC码',
     key: 'ssccnumber',
-    dataIndex: 'ssccnumber'
+    dataIndex: 'ssccnumber',
+    width: 100
+  },
+  {
+    title: '物料号',
+    key: 'materialNb',
+    dataIndex: 'materialNb',
+    width: 120
+  },
+  {
+    title: '物料名称',
+    key: 'materialName',
+    dataIndex: 'materialName',
+    width: 120
   },
   {
     title: '质检状态',
     key: 'finalSAPStatus',
-    dataIndex: 'finalSAPStatus'
+    dataIndex: 'finalSAPStatus',
+    width: 30
   },
   {
     title: '更新状态',
     key: 'status',
     dataIndex: 'status',
-    scopedSlots: { customRender: 'status' }
-  }
+    scopedSlots: { customRender: 'status' },
+    width: 30
+  },
+
 ]
 
 const statusTextMap = {

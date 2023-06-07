@@ -210,6 +210,19 @@
         </foreach>
 
     </select>
+    <select id="selectMaterialBySSCC" resultMap="StockVOResult">
+        select bs.id as id,
+        bs.sscc_number as sscc_number,
+        bs.material_nb as material_nb,
+        mm.name as material_name
+        from bi_stock bs
+        left join md_material mm on bs.material_nb = mm.code and mm.delete_flag = 0
+        where bs.delete_flag=0 and bs.sscc_number in
+        <foreach collection="ssccList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+
+    </select>
     <select id="selectStockVOListBySSCCList" resultMap="StockVOResult">
         select bs.id as id,
         bs.sscc_number as sscc_number,

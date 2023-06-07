@@ -3,42 +3,27 @@ package com.bosch.binin.controller;
 
 import com.alibaba.fastjson2.JSON;
 import com.alibaba.nacos.common.utils.CollectionUtils;
-import com.bosch.binin.api.domain.dto.BinAllocationDTO;
 import com.bosch.binin.api.domain.dto.IQCChangeStatusDTO;
 import com.bosch.binin.api.domain.dto.IQCManagementQueryDTO;
-import com.bosch.binin.api.domain.dto.StockQueryDTO;
-import com.bosch.binin.api.domain.vo.BinAllocationVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.service.IStockService;
-import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.file.api.FileService;
-import com.bosch.masterdata.api.RemoteMesBarCodeService;
-import com.bosch.masterdata.api.domain.Ecn;
-import com.bosch.masterdata.api.domain.dto.EcnDTO;
 import com.bosch.masterdata.api.domain.dto.IQCDTO;
 import com.bosch.masterdata.api.domain.vo.IQCVO;
-import com.bosch.masterdata.api.domain.vo.MesBarCodeVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
-import com.ruoyi.common.core.exception.ServiceException;
-import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.swing.plaf.ProgressBarUI;
 import javax.validation.Valid;
-import java.io.Console;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -113,12 +98,13 @@ public class IQCManagementController extends BaseController {
             List<IQCDTO> list = JSON.parseArray(JSON.toJSONString(data), IQCDTO.class);
             if (CollectionUtils.isNotEmpty(list)) {
                 list.removeIf(o -> !o.getSapProcessStatus().equals("O"));
-                Map<String, List<IQCDTO>> collect = list.stream().collect(Collectors.groupingBy(IQCDTO::getSSCCNumber));
+                Map<String, List<IQCDTO>> collect = list.stream().collect(Collectors.groupingBy(IQCDTO::getSsccnumber));
                 collect.forEach((k, v) -> {
                     IQCDTO iqcdto = v.stream().max(Comparator.comparing(IQCDTO::getIdentification)).get();
                     resultList.add(iqcdto);
                 });
-                return R.ok(resultList);
+                List<IQCDTO> iqcdtos = stockService.iqcDTOSToMaterial(resultList);
+                return R.ok(iqcdtos);
 
             } else {
                 return R.fail("excel中无数据");
