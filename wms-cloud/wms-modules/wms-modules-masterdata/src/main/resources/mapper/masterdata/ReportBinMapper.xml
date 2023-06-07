@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.masterdata.mapper.ReportBinMapper">
+
+    <resultMap id="BaseResultMap" type="com.bosch.masterdata.api.domain.ReportBin">
+            <result property="id" column="id" jdbcType="BIGINT"/>
+            <result property="materialOccupyBin" column="material_occupy_bin" jdbcType="INTEGER"/>
+            <result property="productOccupyBin" column="product_occupy_bin" jdbcType="INTEGER"/>
+            <result property="totalBin" column="total_bin" jdbcType="INTEGER"/>
+            <result property="percent" column="percent" jdbcType="DECIMAL"/>
+            <result property="wareCode" column="ware_code" jdbcType="VARCHAR"/>
+            <result property="wareId" column="ware_id" jdbcType="BIGINT"/>
+            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,material_occupy_bin,product_occupy_bin,
+        total_bin,percent,ware_code,
+        ware_id,create_by,update_by,
+        create_time,update_time,status,
+        remark,delete_flag
+    </sql>
+    <select id="selectBinReport" resultType="com.bosch.masterdata.api.domain.ReportBin">
+        SELECT t1.*, bs.*,ps.*
+        FROM
+            (SELECT COUNT(*) AS total_bin, w.code AS ware_code, w.id AS ware_id
+             FROM md_bin b
+                      LEFT JOIN md_frame f ON b.frame_id = f.id
+                      LEFT JOIN md_area a ON a.id = f.area_id
+                      LEFT JOIN md_ware w ON a.ware_id = w.id
+             GROUP BY ware_id) AS t1
+                LEFT JOIN
+            (SELECT COUNT(*) AS material_occupy_bin, bs.ware_code
+             FROM bi_stock bs
+             GROUP BY bs.ware_code) AS bs ON t1.ware_code = bs.ware_code
+                LEFT JOIN
+            (SELECT COUNT(*) AS product_occupy_bin, ps.ware_code
+             FROM product_stock ps
+             GROUP BY ps.ware_code) AS ps ON t1.ware_code = ps.ware_code;
+    </select>
+</mapper>
