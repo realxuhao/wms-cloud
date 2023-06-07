@@ -36,10 +36,12 @@ public class ReportBinServiceImpl extends ServiceImpl<ReportBinMapper, ReportBin
         try {
             if(!CollectionUtils.isEmpty(reportBins)){
                 for (ReportBin reportBin : reportBins) {
-                    int i = reportBin.getMaterialOccupyBin() + reportBin.getProductOccupyBin();
-                    BigDecimal used = new BigDecimal(i);
-                    BigDecimal all = new BigDecimal(reportBin.getTotalBin());
-                    reportBin.setPercent(used.divide(all, 2, BigDecimal.ROUND_HALF_UP));
+                    int mb = reportBin.getMaterialOccupyBin() != null ? reportBin.getMaterialOccupyBin() : 0;
+                    int pb = reportBin.getProductOccupyBin() != null ? reportBin.getProductOccupyBin() : 0;
+                    BigDecimal used = new BigDecimal(mb+pb);
+                    BigDecimal all = new BigDecimal(reportBin.getTotalBin()!= null ? reportBin.getTotalBin() : 0);
+                    BigDecimal divide = used.divide(all, 2, BigDecimal.ROUND_HALF_UP);
+                    reportBin.setPercent(divide);
                     reportBin.setCreateTime(LocalDateTime.now());
                 }
             }
