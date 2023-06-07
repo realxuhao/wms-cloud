@@ -59,7 +59,7 @@ public class MaterialReturnVO {
      * 退库类型 (0：正常退库,1：异常退库)
      */
     @ApiModelProperty(value = "退库类型 (0：正常退库,1：异常退库)")
-    @Excel(name = "退库类型",readConverterExp = "0:正常退库,1:异常退库")
+    @Excel(name = "退库类型",readConverterExp = "0=正常退库,1=异常退库")
     private Integer type;
 
 
@@ -93,7 +93,7 @@ public class MaterialReturnVO {
      (0,"正常")
      */
     @ApiModelProperty(value = "-1:取消任务,0:待确认,1:待上架,2:完成")
-    @Excel(name = "状态",readConverterExp = "-1:取消任务,0:待确认,1:待上架,2:完成")
+    @Excel(name = "状态",readConverterExp = "-1=取消任务,0=待确认,1=待上架,2=完成")
     private Integer status;
 
     /**

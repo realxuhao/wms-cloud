@@ -132,6 +132,12 @@ const issueCall = async (ids) => {
   return data
 }
 
+const batchCancel = async (ids) => {
+  const url = `binin/material-feeding/deleteCall/${ids}`
+  const { data } = await createAuthInstance(config.apiHost).delete(url)
+  return data
+}
+
 const generateJobByCall = async (ids) => {
   const url = `binin/material-feeding/generateJobByCall/${ids}`
   const { data } = await createAuthInstance(config.apiHost).put(url)
@@ -166,5 +172,6 @@ export const materialFeedingService = {
   issueCall,
   generateJobByCall,
   callAdd,
-  getCallList
+  getCallList,
+  batchCancel
 }

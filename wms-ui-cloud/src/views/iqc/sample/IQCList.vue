@@ -11,6 +11,11 @@
               </a-form-model-item>
             </a-col>
             <a-col :span="4">
+              <a-form-model-item label="区域">
+                <a-input v-model="queryForm.areaCode" placeholder="区域" allow-clear/>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="4">
               <a-form-model-item label="SSCC码">
                 <a-input v-model="queryForm.ssccNb" placeholder="sscc码" allow-clear/>
               </a-form-model-item>
@@ -34,6 +39,17 @@
               </a-form-model-item>
             </a-col>
             <a-col :span="4">
+              <a-form-model-item label="批次号">
+                <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-model-item label="物料类型">
+                <a-input v-model="queryForm.materialType" placeholder="物料类型" allow-clear/>
+              </a-form-model-item>
+            </a-col>
+            
+            <a-col :span="4">
               <a-form-model-item label="状态">
                 <a-select
                   placeholder="请选择状态"
@@ -56,6 +72,15 @@
               <a-col :span="4">
                 <a-form-model-item label="质检人">
                   <a-input v-model="queryForm.sampleUser" placeholder="质检人" allow-clear/>
+                </a-form-model-item>
+              </a-col>
+              <a-col :span="4">
+                <a-form-model-item label="创建时间">
+                  <a-range-picker
+                    format="YYYY-MM-DD HH:mm"
+                    :show-time="{ format: 'HH:mm' }"
+                    v-model="queryForm.createTime"
+                  />
                 </a-form-model-item>
               </a-col>
               <a-col :span="4">
@@ -87,18 +112,18 @@
                 </a>
               </span>
             </a-col>
+            
           </a-row>
         </a-form>
+
         <div class="action-content">
           <a-button
             :loading="exportLoading"
-            class="m-r-8"
             @click="handleDownload"
             v-hasPermi="['iqc:list:export']"><a-icon type="download" />导出结果</a-button>
           <a-button
             v-hasPermi="['iqc:list:add']"
             type="primary"
-            class="m-r-8"
             icon="plus"
             @click="handleAddIqcSample">
             新建抽样计划
@@ -171,7 +196,7 @@
                 <template slot="title">
                   <p>确认提交吗？</p>
                 </template>
-                <a :disabled="!(record.status ===4 && record.plantNb === '7752')" ><a-icon class="m-r-4" type="to-top" />此库抽样</a>
+                <a :disabled="!(record.status ===4 && !['0100','0101','0102','0103'].includes(record.areaCode))" ><a-icon class="m-r-4" type="to-top" />此库抽样</a>
               </a-popconfirm>
             </div>
           </template>
@@ -258,31 +283,49 @@ const columns = [
     title: '工厂',
     key: 'plantNb',
     dataIndex: 'plantNb',
-    width: 60
+    width: 55
   },
   {
     title: '仓库',
     key: 'wareCode',
     dataIndex: 'wareCode',
-    width: 80
+    width: 75
+  },
+  {
+    title: '区域',
+    key: 'areaCode',
+    dataIndex: 'areaCode',
+    width: 75
   },
   {
     title: 'SSCC码',
     key: 'ssccNb',
     dataIndex: 'ssccNb',
-    width: 160
+    width: 175
   },
   {
-    title: 'cell部门',
+    title: 'cell',
     key: 'cell',
     dataIndex: 'cell',
-    width: 90
+    width: 60
   },
   {
     title: '物料编码',
     key: 'materialNb',
     dataIndex: 'materialNb',
+    width: 100
+  },
+  {
+    title: '物料名称',
+    key: 'materialName',
+    dataIndex: 'materialName',
     width: 120
+  },
+  {
+    title: '物料类型',
+    key: 'materialType',
+    dataIndex: 'materialType',
+    width: 80
   },
   {
     title: '批次号',
@@ -300,14 +343,14 @@ const columns = [
     title: '状态',
     key: 'status',
     dataIndex: 'status',
-    width: 120,
+    width: 90,
     scopedSlots: { customRender: 'statusSlot' }
   },
   {
     title: '数量',
     key: 'quantity',
     dataIndex: 'quantity',
-    width: 90
+    width: 70
   },
   {
     title: '推荐抽样量',
@@ -325,6 +368,12 @@ const columns = [
     title: '下架库位',
     key: 'binDownCode',
     dataIndex: 'binDownCode',
+    width: 120
+  },
+  {
+    title: '创建时间',
+    key: 'createTime',
+    dataIndex: 'createTime',
     width: 120
   },
   {
@@ -393,9 +442,13 @@ const queryFormAttr = () => {
     binDownTime: [],
     sampleUser: '',
     sampleTime: [],
+    createTime: [],
     wareCode: '',
     cellList: [],
-    cell: ''
+    cell: '',
+    batchNb: '',
+    areaCode: '',
+    materialType: ''
   }
 }
 export default {
@@ -530,18 +583,22 @@ export default {
     async loadTableList () {
       try {
         this.tableLoading = true
-        const { binDownTime = [], sampleTime = [] } = this.queryForm
+        const { binDownTime = [], sampleTime = [], createTime = [] } = this.queryForm
         const startBinDownTime = binDownTime.length > 0 ? binDownTime[0].format(this.startDateFormat) : undefined
         const endBinDownTime = binDownTime.length > 0 ? binDownTime[1].format(this.endDateFormat) : undefined
         const startSampleTime = sampleTime.length > 0 ? sampleTime[0].format(this.startDateFormat) : undefined
         const endSampleTime = sampleTime.length > 0 ? sampleTime[1].format(this.endDateFormat) : undefined
+        const startCreateTime = createTime.length > 0 ? createTime[0].format(this.startDateFormat) : undefined
+        const endCreateTime = createTime.length > 0 ? createTime[1].format(this.endDateFormat) : undefined
 
         const options = {
-          ..._.omit(this.queryForm, ['binDownTime', 'sampleTime']),
+          ..._.omit(this.queryForm, ['binDownTime', 'sampleTime', 'createTime']),
           startBinDownTime,
           endBinDownTime,
           startSampleTime,
-          endSampleTime
+          endSampleTime,
+          startCreateTime,
+          endCreateTime
         }
         const {
           data: { rows, total }

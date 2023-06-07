@@ -89,6 +89,7 @@
       <div class="pagination-con">
         <a-pagination
           show-size-changer
+          :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
           show-less-items
           :current="queryForm.pageNum"
           :page-size.sync="queryForm.pageSize"

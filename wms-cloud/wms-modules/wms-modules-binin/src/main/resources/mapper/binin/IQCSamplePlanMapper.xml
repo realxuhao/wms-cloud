@@ -6,9 +6,10 @@
 
 
     <select id="getSamplePlanList" resultType="com.bosch.binin.api.domain.vo.IQCSamplePlanVO">
-        select isp.*,mm.name as materialName
+        select isp.*,mm.name as materialName,mt.code as materialType
         from iqc_sample_plan isp
         left join md_material mm on mm.code = isp.material_nb and mm.delete_flag = 0
+        LEFT JOIN md_material_type mt ON mm.material_type_id = mt.id
         where isp.delete_flag = 0
         <if test="ssccNb != null and ssccNb != ''">and isp.sscc_nb like concat('%', #{ssccNb},
             '%')
@@ -16,10 +17,19 @@
         <if test="wareCode != null and wareCode != ''">and isp.ware_code like concat('%', #{wareCode},
             '%')
         </if>
+        <if test="areaCode != null and areaCode != ''">and isp.area_code like concat('%', #{areaCode},
+            '%')
+        </if>
         <if test="cell != null and cell != ''">and isp.cell like concat('%', #{cell},
             '%')
         </if>
         <if test="materialNb != null and materialNb != ''">and isp.material_nb like concat('%', #{materialNb},
+            '%')
+        </if>
+        <if test="batchNb != null and batchNb != ''">and isp.batch_nb like concat('%', #{batchNb},
+            '%')
+        </if>
+        <if test="materialType != null and materialType != ''">and mt.code like concat('%', #{materialType},
             '%')
         </if>
         <if test="status != null">and isp.status = #{status}
@@ -36,6 +46,8 @@
         <if test="sampleUser != null and sampleUser != ''">and isp.sample_user like concat('%', #{sampleUser},
             '%')
         </if>
+        <if test="startCreateTime != null">and isp.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
+        <if test="endCreateTime != null">and isp.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
         <if test="startBinDownTime != null">and isp.bin_down_time <![CDATA[ >= ]]> #{startBinDownTime}</if>
         <if test="endBinDownTime != null">and isp.bin_down_time <![CDATA[ <= ]]> #{endBinDownTime}</if>
         <if test="startSampleTime != null">and isp.sample_time <![CDATA[ >= ]]> #{startSampleTime}</if>

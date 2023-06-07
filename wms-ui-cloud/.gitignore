@@ -3,7 +3,7 @@ node_modules
 dist
 dist1
 dist2
-
+/idea/
 # local env files
 .env.local
 .env.*.local

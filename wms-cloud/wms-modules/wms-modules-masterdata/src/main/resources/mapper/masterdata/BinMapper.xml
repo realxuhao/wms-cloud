@@ -89,6 +89,11 @@
             <if test="name != null  and name != ''">and b.name like concat('%', #{name}, '%')</if>
             <if test="code != null  and code != ''">and b.code = #{code}</if>
             <if test="status != null ">and b.status = #{status}</if>
+            <if test="wareCode != null  and wareCode != ''">and w.code like concat('%', #{wareCode}, '%')</if>
+            <if test="areaCode != null  and areaCode != ''">and a.code  like concat('%', #{areaCode}, '%')</if>
+            <if test="frameCode != null  and frameCode != ''">and f.code  like concat('%', #{frameCode}, '%')</if>
+            <if test="frameType != null  and frameType != ''">and f.type  like concat('%', #{frameType}, '%')</if>
+
         </where>
     </select>
     <select id="selectBinById" parameterType="Long" resultMap="BinResult">

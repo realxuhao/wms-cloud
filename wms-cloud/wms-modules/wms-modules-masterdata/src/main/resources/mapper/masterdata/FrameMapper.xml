@@ -55,11 +55,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <where>
             <if test="areaId != null "> and f.area_id = #{areaId}</if>
             <if test="name != null  and name != ''"> and f.name like concat('%', #{name}, '%')</if>
-            <if test="code != null  and code != ''"> and f.code = #{code}</if>
+            <if test="code != null  and code != ''"> and f.code like concat('%', #{code}, '%')</if>
             <if test="width != null "> and f.width = #{width}</if>
             <if test="bearWeight != null "> and f.bear_weight = #{bearWeight}</if>
             <if test="height != null "> and f.height = #{height}</if>
             <if test="typeCode != null "> and f.type_code = #{typeCode}</if>
+            <if test="frameType != null "> and f.type_code like concat('%', #{frameType}, '%')</if>
+            <if test="wareCode != null "> and w.code like concat('%', #{wareCode}, '%')</if>
+            <if test="areaCode != null "> and a.code like concat('%', #{areaCode}, '%')</if>
+
         </where>
     </select>
     

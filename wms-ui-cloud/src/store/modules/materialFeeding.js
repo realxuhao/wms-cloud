@@ -97,6 +97,10 @@ const materialFeeding = {
     async callAdd ({ commit }, options) {
       const data = await materialFeedingService.callAdd(options)
       return data
+    },
+    async batchCancel ({ commit }, ids) {
+      const data = await materialFeedingService.batchCancel(ids)
+      return data
     }
 
   }

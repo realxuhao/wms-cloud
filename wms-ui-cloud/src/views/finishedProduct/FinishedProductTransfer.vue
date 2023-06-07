@@ -75,6 +75,7 @@
         </a-row>
       </a-form>
       <div class="action-content">
+
       </div>
       <a-table
         :columns="columns"
@@ -110,6 +111,7 @@
       <div class="pagination-con">
         <a-pagination
           show-size-changer
+          :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
           show-less-items
           :current="queryForm.pageNum"
           :page-size.sync="queryForm.pageSize"
@@ -268,23 +270,18 @@ const columns = [
 ]
 
 const moveTypeMap = {
-  0: '收货',
-  1: '入库',
-  2: '上架',
-  3: '生产叫料',
-  4: '移库',
-  5: '拆托上架'
+ '-1': '取消',
+  0: '待发运',
+  1: '待收货',
+  2: '待上架',
+  3: '完成'
 }
 const statusMap = {
-  '-1': '取消任务',
-  0: '待下发',
-  1: '待下架',
-  2: '外库待转运',
-  3: '产线待收货',
-  4: '主库待收货',
-  5: '待上架',
-  6: '产线已收货',
-  7: '完成'
+  '-1': '取消',
+  0: '待发运',
+  1: '待收货',
+  2: '待上架',
+  3: '完成'
 }
 
 const statusColorMap = {
@@ -292,11 +289,8 @@ const statusColorMap = {
   0: colorMap['warning'],
   1: colorMap['warning'],
   2: colorMap['warning'],
-  3: colorMap['warning'],
-  4: colorMap['warning'],
-  5: colorMap['warning'],
-  6: colorMap['success'],
-  7: colorMap['success']
+  3: colorMap['success']
+  
 }
 
 const queryFormAttr = () => {

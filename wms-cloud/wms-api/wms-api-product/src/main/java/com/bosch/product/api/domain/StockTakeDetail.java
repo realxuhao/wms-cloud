@@ -86,7 +86,7 @@ public class StockTakeDetail extends BaseEntity implements Serializable {
      * 状态
      */
     @TableField(value = "status")
-    @Excel(name = "状态",readConverterExp = "0:待下发,1:待盘点,2:待确认,3:完成")
+    @Excel(name = "状态",readConverterExp = "0=待下发,1=待盘点,2=待确认,3=完成")
     private Integer status;
 
     /**
@@ -107,7 +107,7 @@ public class StockTakeDetail extends BaseEntity implements Serializable {
      * 0:无差异，1:有差异
      */
     @TableField(value = "is_diff")
-    @Excel(name = "库存数量",readConverterExp = "0:无差异,1:有差异")
+    @Excel(name = "库存数量",readConverterExp = "0=无差异,1=有差异")
     private Integer isDiff;
 
     /**

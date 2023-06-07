@@ -362,6 +362,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         //再去执行上架
         BinInVO binInVO = binInService.performBinIn(binInDTO,null);
 
+
         iqcSamplePlan.setBinInCode(binInVO.getActualBinCode());
         iqcSamplePlan.setBinInTime(new Date());
         iqcSamplePlan.setBinInUser(SecurityUtils.getUsername());
@@ -452,6 +453,20 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         } else {
             iqcSamplePlan.setStatus(IQCStatusEnum.FINISH.code());
         }
+        //因为是外库的，是有库存的，需要把库存量扣减掉
+        LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Stock::getSsccNumber,dto.getSsccNb());
+        queryWrapper.eq(Stock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.last("limit 1");
+
+        Stock stock = stockService.getOne(queryWrapper);
+        if (stock!=null){
+            stock.setTotalStock(stock.getTotalStock()-dto.getSampleQuantity());
+            stock.setAvailableStock(stock.getTotalStock()-stock.getFreezeStock());
+            stockService.updateById(stock);
+            iqcSamplePlan.setStatus(IQCStatusEnum.FINISH.code());
+        }
+
         samplePlanMapper.updateById(iqcSamplePlan);
     }
 

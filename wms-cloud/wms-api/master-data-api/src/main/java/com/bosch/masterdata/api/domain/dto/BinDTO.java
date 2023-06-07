@@ -38,4 +38,13 @@ public class BinDTO extends PageDomain {
     @ExcelProperty(value = "id")
     @ApiModelProperty(value = "状态（1：启用，0：停用）")
     private Long status;
+
+    @ApiModelProperty(value = "areaCode")
+    private String areaCode;
+
+    @ApiModelProperty(value = "wareCode")
+    private String wareCode;
+
+    @ApiModelProperty(value = "frameType")
+    private String frameType;
 }

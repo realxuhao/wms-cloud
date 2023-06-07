@@ -71,8 +71,8 @@ public class MaterialCallVO {
     /**
      * 状态：0:未执行，1:已执行
      */
-    @Excel(name = "状态",readConverterExp = "0=未下发,1=部分下发,2=已全部下发")
-    @ApiModelProperty(value = "状态：0:未下发，1：部分下发，2：已全部下发")
+    @Excel(name = "状态",readConverterExp = "-1=已取消,0=未跑,1=已跑,2=已下发,3=已全部生成,4:部分生成")
+    @ApiModelProperty(value = "-1=已取消,0=未跑,1=已跑,2=已下发,3=已全部生成,4:部分生成")
     private Integer status;
 
     /**

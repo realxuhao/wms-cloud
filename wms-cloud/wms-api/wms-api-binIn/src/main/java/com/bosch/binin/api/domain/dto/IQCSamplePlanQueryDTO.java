@@ -19,6 +19,12 @@ public class IQCSamplePlanQueryDTO extends PageDomain {
     private String ssccNb;
     @ApiModelProperty(value = "物料号")
     private String materialNb;
+    @ApiModelProperty(value = "区域")
+    private String areaCode;
+    @ApiModelProperty(value = "批次号")
+    private String batchNb;
+    @ApiModelProperty(value = "物料类型")
+    private String materialType;
     @ApiModelProperty(value = "仓库号")
     private String wareCode;
     @ApiModelProperty(value = "状态(多选)0：待下架，1：待收养，2：待上架，3：完成")
@@ -31,6 +37,10 @@ public class IQCSamplePlanQueryDTO extends PageDomain {
     private Date startBinDownTime;
     @ApiModelProperty(value = "结束下架时间")
     private Date endBinDownTime;
+    @ApiModelProperty(value = "开始创建时间")
+    private Date startCreateTime;
+    @ApiModelProperty(value = "结束创建时间")
+    private Date endCreateTime;
     @ApiModelProperty(value = "抽样人")
     private String sampleUser;
     @ApiModelProperty(value = "开始抽样时间")

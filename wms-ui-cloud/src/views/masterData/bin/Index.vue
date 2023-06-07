@@ -5,28 +5,48 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           <a-col :span="4">
-            <a-form-model-item label="编码">
-              <a-input v-model="queryForm.code" placeholder="编码" allow-clear/>
+            <a-form-model-item label="仓库编码">
+              <a-input v-model="queryForm.wareCode" placeholder="仓库编码" allow-clear/>
             </a-form-model-item>
 
           </a-col>
           <a-col :span="4">
+            <a-form-model-item label="区域编码">
+              <a-input v-model="queryForm.areaCode" placeholder="区域编码" allow-clear/>
+            </a-form-model-item>
+
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="跨编码">
+              <a-input v-model="queryForm.frameCode" placeholder="跨编码" allow-clear/>
+            </a-form-model-item>
+
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="跨类型">
+              <a-input v-model="queryForm.frameType" placeholder="跨类型" allow-clear/>
+            </a-form-model-item>
+
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="库位编码">
+              <a-input v-model="queryForm.code" placeholder="库位编码" allow-clear/>
+            </a-form-model-item>
+
+          </a-col>
+          <!-- <a-col :span="4">
             <a-form-model-item label="名称">
               <a-input v-model="queryForm.name" placeholder="名称" allow-clear/>
             </a-form-model-item>
-          </a-col>
+          </a-col> -->
+          
 
-          <template v-if="advanced">
 
-          </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button v-hasPermi="['bin:info:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              <a @click="toggleAdvanced" style="margin-left: 8px">
-                {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'"/>
-              </a>
+            
             </span>
           </a-col>
         </a-row>
@@ -74,6 +94,7 @@
       <div class="pagination-con">
         <a-pagination
           show-size-changer
+          :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
           show-less-items
           :current="queryForm.pageNum"
           :page-size.sync="queryForm.pageSize"
@@ -164,7 +185,11 @@ const columns = [
 const queryFormAttr = () => {
   return {
     code: '',
-    name: ''
+    // name: '',
+    frameCode: '',
+    areaCode: '',
+    wareCode: '',
+    frameType: ''
   }
 }
 

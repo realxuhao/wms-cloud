@@ -24,9 +24,9 @@ public interface IBinInService extends IService<BinIn> {
 
     BinInVO getByMesBarCode(String mesBarCode);
 
-    BinInVO allocateToBin(String mesBarCode);
+    BinInVO allocateToBin(String mesBarCode,Double quantity);
 
-    BinInVO generateInTaskByMesBarCode(String mesBarCode);
+    BinInVO generateInTaskByMesBarCode(String mesBarCode,Double quantity);
 
     /**
      * 分配到具体的区域或者库位，如果是分配到库位，那么areaCode为null
@@ -40,9 +40,9 @@ public interface IBinInService extends IService<BinIn> {
     BinInVO allocateToBinOrArea(String ssccNb, String materialCode, String binCode, String areaCode, Double quantity);
 
 
-    BinInVO performToAreaType(String mesBarCode, Integer areaType);
+    BinInVO performToAreaType(String mesBarCode,Double quantity, Integer areaType);
 
-    BinInVO allocateToBinOrArea(String mesBarCode, String binCode, String areaCode);
+    BinInVO allocateToBinOrArea(String mesBarCode,Double quantity, String binCode, String areaCode);
 
 
     List<BinInVO> currentUserData(BinInQueryDTO queryDTO);

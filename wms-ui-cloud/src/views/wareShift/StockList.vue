@@ -24,6 +24,11 @@
                   <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear />
                 </a-form-model-item>
               </a-col>
+              <a-col :span="4">
+                <a-form-model-item label="SSCC">
+                  <a-input v-model="queryForm.ssccNumber" placeholder="SSCC" allow-clear />
+                </a-form-model-item>
+              </a-col>
               <a-col span="4">
                 <span class="table-page-search-submitButtons">
                   <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
@@ -107,7 +112,8 @@ const queryFormAttr = () => {
   return {
     'batchNb': '',
     'wareCode': '',
-    'materialCode': ''
+    'materialCode': '',
+    'ssccNumber': '',
   }
 }
 

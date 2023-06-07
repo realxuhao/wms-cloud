@@ -90,6 +90,15 @@
           :disabled="!hasSelected"
           @click="handleRunRequirement">需求计算</a-button>
         <a-button style="margin-right:8px" type="primary" @click="handleCreateRequirement">手动创建需求</a-button>
+        <a-popconfirm title="确认批量取消这些任务吗?" ok-text="确认" cancel-text="取消" @confirm="batchCancel">
+
+          <a-button
+            v-hasPermi="['requirement:batch:cancel']"
+            style="margin-right:8px"
+            type="primary"
+            :loading="tableLoading"
+            :disabled="!hasSelected">批量取消</a-button>  
+        </a-popconfirm> 
       </div>
       <a-table
         :row-selection="{
@@ -135,6 +144,7 @@
       <div class="pagination-con">
         <a-pagination
           show-size-changer
+          :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
           show-less-items
           :current="queryForm.pageNum"
           :page-size.sync="queryForm.pageSize"
@@ -411,6 +421,23 @@ export default {
         this.submitLoading = false
       }
     },
+
+    async batchCancel () {
+      try {
+        this.tableLoading = true
+        // const options = { ids:  }
+        const { data } = await this.$store.dispatch('materialFeeding/batchCancel', _.join(this.selectedRowKeys, ','))
+
+        this.loadTableList()
+
+        this.$message.success('取消成功')
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.tableLoading = false
+      }
+    },
+
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()

@@ -22,6 +22,7 @@ const finishedProductTransfer = {
       const data = await finishedProductTransferService.cancelTransfer(options)
       return data
     }
+
   }
 }
 
