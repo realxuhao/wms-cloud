@@ -23,9 +23,7 @@
         @click="handleIssue">下发</a-button>
     </div>
     <a-table
-      :row-selection="{
-        selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
-      }"
+      :row-selection="rowSelection"
       :columns="columns"
       :data-source="tableList"
       rowKey="callId"
@@ -117,17 +115,17 @@ const columns = [
   {
     title: '主库是否满足',
     key: 'enough',
-    filters: [
-      {
-        text: '满足',
-        value: 1,
-      },
-      {
-        text: '不满足',
-        value: 0,
-      },
-    ],
-    onFilter: (value, record) => record.enough == value,
+    // filters: [
+    //   {
+    //     text: '满足',
+    //     value: 1,
+    //   },
+    //   {
+    //     text: '不满足',
+    //     value: 0,
+    //   },
+    // ],
+    // onFilter: (value, record) => record.enough == value,
     scopedSlots: { customRender: 'enough' },
     dataIndex: 'enough',
     width: 100
@@ -159,7 +157,46 @@ export default {
   computed: {
     hasSelected () {
       return this.selectedRowKeys.length > 0
-    }
+    },
+    rowSelection() {
+      const { selectedRowKeys } = this
+      return {
+        selectedRowKeys,
+        onChange: this.onSelectChange,
+        hideDefaultSelections: true,
+        selections: [
+          {
+            key: '全选',
+            text: '全选',
+            onSelect: () => {
+              // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+              this.selectedRowKeys = _.map(this.tableList,x=>x.callId) // 0...45
+            },
+          },
+          {
+            key: '主库满足',
+            text: '主库满足',
+            onSelect: changableRowKeys => {
+              let newSelectedRowKeys = []
+              newSelectedRowKeys = changableRowKeys.filter(item=>item.enough)
+              // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+              this.selectedRowKeys = newSelectedRowKeys
+            },
+          },
+          {
+            key: '主库不满足',
+            text: '主库不满足',
+            onSelect: changableRowKeys => {
+              let newSelectedRowKeys = []
+              newSelectedRowKeys = changableRowKeys.filter(item=>!item.enough)
+              // eslint-disable-next-line vue/no-side-effects-in-computed-properties
+              this.selectedRowKeys = newSelectedRowKeys
+            },
+          },
+        ],
+        onSelection: this.onSelection,
+      }
+    },
   },
   methods: {
     onClose () {
