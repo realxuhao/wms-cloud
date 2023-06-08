@@ -20,7 +20,7 @@ public class IQCVO {
      */
     @ExcelProperty(value = "SSCCNumber")
     @ApiModelProperty(value = "SSCCNumber")
-    private String SSCCNumber;
+    private String ssccnumber;
 
     /**
      * J:FinalSAPStatus

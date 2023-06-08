@@ -52,7 +52,8 @@
             <p>{{ fileName }}</p>
           </a-upload-dragger>
           <div class="download-template">
-            <a >下载模板</a>
+            <a @click="handleDownloadTemplate">下载模板</a>
+
           </div>
         </div>
       </a-form-item>

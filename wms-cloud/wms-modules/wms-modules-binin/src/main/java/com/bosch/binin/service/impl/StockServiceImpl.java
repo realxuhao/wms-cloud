@@ -152,7 +152,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     @Override
     public List<IQCVO> mapToMaterial(List<IQCVO> result){
-        List<String> ssccList = result.stream().map(IQCVO::getSSCCNumber).collect(Collectors.toList());
+        List<String> ssccList = result.stream().map(IQCVO::getSsccnumber).collect(Collectors.toList());
         List<StockVO> stockVOS = stockMapper.selectMaterialBySSCC(ssccList);
         // 构建哈希映射
         Map<String, StockVO> mapStockVO = new HashMap<>();
@@ -161,7 +161,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         }
         // 进行映射和赋值
         for (IQCVO item : result) {
-            StockVO vo = mapStockVO.get(item.getSSCCNumber());
+            StockVO vo = mapStockVO.get(item.getSsccnumber());
             if (vo != null) {
                 item.setMaterialName(vo.getMaterialName());
                 item.setMaterialNb(vo.getMaterialNb());
