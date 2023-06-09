@@ -6,6 +6,31 @@
     width="70%"
     :footer="false"
     @cancel="onClose">
+    <a-form layout="inline" class="search-content">
+      <a-row :gutter="16">
+        <a-col :span="6">
+          <a-form-model-item label="主库是否满足">
+            <a-select placeholder="请选择" allow-clear v-model="queryForm.enough">
+              <a-select-option v-for="item in list" :key="item.value" :value="item.value">
+                {{ item.label }}
+              </a-select-option>
+            </a-select>
+          </a-form-model-item>
+        </a-col>
+        <a-col span="4">
+          <span class="table-page-search-submitButtons">
+            <a-button
+              v-hasPermi="['requirement:list:query']"
+              type="primary"
+              @click="handleSearch"
+            ><a-icon type="search" />查询</a-button>
+            <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+           
+          </span>
+        </a-col>
+      </a-row>
+    </a-form>
+      
     <div class="action-content">
       <a-button
         type="primary"
@@ -23,9 +48,12 @@
         @click="handleIssue">下发</a-button>
     </div>
     <a-table
-      :row-selection="rowSelection"
+      :row-selection="{
+        selectedRowKeys,
+        onChange: this.onSelectChange,
+      }"
       :columns="columns"
-      :data-source="tableList"
+      :data-source="filterList"
       rowKey="callId"
       :pagination="false"
       size="middle">
@@ -55,6 +83,17 @@
 <script>
 import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
+
+const list = [
+  {
+    label: '满足',
+    value: 1,
+  },
+  {
+    label: '不满足',
+    value: 0,
+  },
+]
 
 const columns = [
   {
@@ -132,6 +171,12 @@ const columns = [
   }
 ]
 
+const queryFormAttr = () => {
+  return {
+    enough: undefined,
+  }
+}
+
 export default {
   name: 'Area',
   mixins: [mixinTableList],
@@ -144,13 +189,19 @@ export default {
   data () {
     return {
       tableList: [],
+      filterList:[],
       visible: false,
       submitLoading: false,
       selectedRowKeys: [],
       columns,
       selectedRows: [],
       createMoveTaskLoading: false,
-      runRequirementLoading: false
+      runRequirementLoading: false,
+      queryForm: {
+        pageSize: 20,
+        pageNum: 1,
+        ...queryFormAttr()
+      },
       // createReductionTaskVisible: false,
     }
   },
@@ -158,57 +209,40 @@ export default {
     hasSelected () {
       return this.selectedRowKeys.length > 0
     },
-    rowSelection() {
-      const { selectedRowKeys } = this
-      return {
-        selectedRowKeys,
-        onChange: this.onSelectChange,
-        hideDefaultSelections: true,
-        selections: [
-          {
-            key: '全选',
-            text: '全选',
-            onSelect: () => {
-              // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-              this.selectedRowKeys = _.map(this.tableList,x=>x.callId) // 0...45
-            },
-          },
-          {
-            key: '主库满足',
-            text: '主库满足',
-            onSelect: changableRowKeys => {
-              let newSelectedRowKeys = []
-              newSelectedRowKeys = changableRowKeys.filter(item=>item.enough)
-              // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-              this.selectedRowKeys = newSelectedRowKeys
-            },
-          },
-          {
-            key: '主库不满足',
-            text: '主库不满足',
-            onSelect: changableRowKeys => {
-              let newSelectedRowKeys = []
-              newSelectedRowKeys = changableRowKeys.filter(item=>!item.enough)
-              // eslint-disable-next-line vue/no-side-effects-in-computed-properties
-              this.selectedRowKeys = newSelectedRowKeys
-            },
-          },
-        ],
-        onSelection: this.onSelection,
-      }
+    list(){
+      return list
     },
+
   },
   methods: {
     onClose () {
       this.visible = false
       this.selectedRowKeys = []
       this.selectedRows = []
+      this.handleResetQuery()
       this.$emit('successCallback')
     },
     onOpen (list) {
       this.tableList = list
+      this.filterList = list
       this.visible = true
     },
+    handleSearch(){
+      this.selectedRowKeys = []
+      this.selectedRows = []
+
+      if(this.queryForm.enough === undefined){
+        this.filterList = this.tableList
+        return
+      }
+
+      this.filterList = _.filter(this.tableList,x=>x.enough === Boolean(this.queryForm.enough))
+    },
+    handleResetQuery () {
+      this.queryForm = { ...this.queryForm, ...queryFormAttr() }
+      this.handleSearch()
+    },
+
     onSelectChange (selectedRowKeys, selectedRows) {
       this.selectedRowKeys = selectedRowKeys
       this.selectedRows = selectedRows
