@@ -4,14 +4,36 @@
     <div class="table-content">
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
-          <a-col :span="4">
+          <a-col :span="7">
             <a-form-model-item label="订单PO号">
-              <a-input v-model="queryForm.poNo" placeholder="订单PO号" allow-clear/>
+              <!-- <a-input v-model="queryForm.poNo" placeholder="订单PO号" allow-clear/> -->
+              <a-select
+                mode="multiple"
+                v-model="queryForm.poNoList"
+                style="width: 100%"
+                allow-clear
+                placeholder="订单PO号"
+              >
+                <a-select-option v-for="i in poCodeList" :key="i">
+                  {{ i }}
+                </a-select-option>
+              </a-select>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
+          <a-col :span="7">
             <a-form-model-item label="订单行号">
-              <a-input v-model="queryForm.poItem" placeholder="订单行号" allow-clear/>
+              <!-- <a-input v-model="queryForm.poItem" placeholder="订单行号" allow-clear/> -->
+              <a-select
+                mode="multiple"
+                v-model="queryForm.poItemList"
+                style="width: 100%"
+                allow-clear
+                placeholder="订单行号"
+              >
+                <a-select-option v-for="i in poItemList" :key="i">
+                  {{ i }}
+                </a-select-option>
+              </a-select>
             </a-form-model-item>
           </a-col>
           <a-col span="4">
@@ -24,7 +46,7 @@
               </a>
             </span>
           </a-col>
-          <a-col span="4" offset="8">
+          <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button style="float: right;" type="primary" @click="handleSumbitPo" :loading="submitPoLoading"><a-icon type="check" />提交</a-button>
             </span>
@@ -216,8 +238,8 @@ const columns = [
 
 const queryFormAttr = () => {
   return {
-    poNo: '',
-    poItem: ''
+    poNoList: [],
+    poItemList: []
   }
 }
 
@@ -286,7 +308,9 @@ export default {
       /** 是否显示仓库timewindow列表 */
       isShowTimeWindowData: false,
       /** 提交按钮loading */
-      confirmLoading: false
+      confirmLoading: false,
+      poCodeList: [],
+      poItemList: []
     }
   },
   methods: {
@@ -444,13 +468,21 @@ export default {
       try {
         this.selectedRowKeys = []
         this.selectedRowList = []
+        this.poCodeList = []
+        this.poItemList = []
         this.list = []
         this.tableLoading = true
         const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', { name: this.supplierName, queryParams: this.queryForm })
         this.list = rows
+        let poCode = []
+        let poItem = []
         this.list.forEach(item => {
           this.$set(item, 'arriveQuantity', null)
+          poCode = [...poCode, item.poNo]
+          poItem = [...poItem, item.poItem]
         })
+        this.poCodeList = this.removalDuplicate(poCode)
+        this.poItemList = this.removalDuplicate(poItem)
         this.paginationTotal = total
       } catch (error) {
         this.$message.error(error.message)
@@ -458,6 +490,17 @@ export default {
         this.tableLoading = false
       }
     },
+    removalDuplicate(dataList) {
+		var result = []
+		var tem = {}
+		for (var i = 0; i < dataList.length; i++) {
+			if (!tem[dataList[i]]) {
+				result.push(dataList[i])
+				tem[dataList[i]] = 1
+			}
+		}
+		return result
+	},
     async loadData () {
       this.initTableList()
     },
@@ -465,6 +508,11 @@ export default {
     async preOptionList () {
       const data = await this.$store.dispatch('ware/getOptionList')
       this.wareOptionList = data.data
+      // const poCodeData = await this.$store.dispatch('purchase/getPoCodeList')
+      // console.info(poCodeData)
+      // this.poCodeList = poCodeData.data
+      // const poItemData = await this.$store.dispatch('purchase/getPoItemList')
+      // this.poItemList = poItemData.data
     }
   },
   mounted () {

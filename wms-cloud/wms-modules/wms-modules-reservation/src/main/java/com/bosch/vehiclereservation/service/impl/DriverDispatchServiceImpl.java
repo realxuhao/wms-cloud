@@ -218,7 +218,7 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
         value1Map.put("value", "入场提醒");
         data.put("thing1", value1Map);
         Map<String, String> value2Map = new HashMap<>();
-        value2Map.put("value", "仓库:" + dispatchSendWxDTO.getWareCode() + ", 道口:" + dispatchSendWxDTO.getDockCode() + "。请及时入厂!");
+        value2Map.put("value", dispatchSendWxDTO.getWareCode() + ", 道口:" + dispatchSendWxDTO.getDockCode() + "。请入厂!");
         data.put("thing2", value2Map);
         WxMsgDTO wxMsgDTO = new WxMsgDTO();
         wxMsgDTO.setTouser(dispatchSendWxDTO.getWechatId());

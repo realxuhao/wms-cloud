@@ -40,11 +40,25 @@ const getErrorPoCode = async () => {
   return data
 }
 
+const getPoCodeList = async () => {
+  const url = `/purchase/getPoCodeList`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const getPoItemList = async () => {
+  const url = `/purchase/getPoItemList`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
 export const purchaseService = {
   getList,
   getListBySupplierName,
   close,
   detail,
   syncdata,
-  getErrorPoCode
+  getErrorPoCode,
+  getPoCodeList,
+  getPoItemList
 }

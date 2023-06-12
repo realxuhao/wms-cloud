@@ -33,6 +33,14 @@ const purchase = {
     async getErrorPoCode ({ commit }) {
       const data = await purchaseService.getErrorPoCode()
       return data
+    },
+    async getPoCodeList ({ commit }) {
+      const data = await purchaseService.getPoCodeList()
+      return data
+    },
+    async getPoItemList ({ commit }) {
+      const data = await purchaseService.getPoItemList()
+      return data
     }
   }
 }
