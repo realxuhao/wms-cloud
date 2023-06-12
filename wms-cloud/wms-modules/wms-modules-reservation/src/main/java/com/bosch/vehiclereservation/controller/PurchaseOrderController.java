@@ -64,7 +64,7 @@ public class PurchaseOrderController extends BaseController {
         startPage();
         List<PurchaseOrder> list = purchaseOrderService.selectSupplierPurchaseOrder(name, BeanConverUtil.conver(purchaseOrderDTO, PurchaseOrder.class));
         List<PurchaseOrderVO> blackDriverVOS = BeanConverUtil.converList(list, PurchaseOrderVO.class);
-        return R.ok(new PageVO<>(blackDriverVOS, new PageInfo<>(blackDriverVOS).getTotal()));
+        return R.ok(new PageVO<>(blackDriverVOS, new PageInfo<>(list).getTotal()));
     }
 
     /**

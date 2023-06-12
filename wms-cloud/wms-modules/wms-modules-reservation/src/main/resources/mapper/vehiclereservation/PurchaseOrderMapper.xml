@@ -109,7 +109,10 @@
             <if test="deliveryDate != null">
                 and delivery_date = #{deliveryDate}
             </if>
-            and status=0 and supplier_name = #{supplier}
+            <if test="supplier != null and supplier != ''">
+                and supplier_name = #{supplier}
+            </if>
+            and status=0
         </where>
     </select>
 
