@@ -57,6 +57,7 @@
             <if test="poItem != null  and poItem != ''">and po_item like concat('%', #{poItem}, '%')</if>
             <if test="supplier != null  and supplier != ''">and supplier_name like concat('%', #{supplier}, '%')</if>
             <if test="sapCode != null  and sapCode != ''">and material_code like concat('%', #{sapCode}, '%')</if>
+            <if test="cmsNumber != null  and cmsNumber != ''">and cms_number like concat('%', #{cmsNumber}, '%')</if>
             <if test="status != null ">and status = #{status}</if>
             <if test="startDate != null">
                and delivery_date <![CDATA[ >= ]]> #{startDate}

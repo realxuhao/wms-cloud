@@ -75,9 +75,11 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
                     Ware ware = remoteMasterDataService.getWareInfo(dispatchVO.getWareId().toString()).getData();
                     if (ware != null) {
                         wareMap.put(dispatchVO.getWareId(), ware.getCode());
+                        wareMap.put(dispatchVO.getWareId() + 1, ware.getName());
                     }
                 }
                 dispatchVO.setWareCode(wareMap.get(dispatchVO.getWareId()));
+                dispatchVO.setWareName(wareMap.get(dispatchVO.getWareId() + 1));
             }
             if (StringUtils.isNotEmpty(dispatchVO.getSupplierCode())) {
                 if (!supplierMap.keySet().contains(dispatchVO.getSupplierCode())) {
@@ -218,7 +220,7 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
         value1Map.put("value", "入场提醒");
         data.put("thing1", value1Map);
         Map<String, String> value2Map = new HashMap<>();
-        value2Map.put("value", dispatchSendWxDTO.getWareCode() + ", 道口:" + dispatchSendWxDTO.getDockCode() + "。请入厂!");
+        value2Map.put("value", (dispatchSendWxDTO.getWareName().split("-").length > 0 ? dispatchSendWxDTO.getWareName().split("-")[0] : "" )+ ".请入厂!");
         data.put("thing2", value2Map);
         WxMsgDTO wxMsgDTO = new WxMsgDTO();
         wxMsgDTO.setTouser(dispatchSendWxDTO.getWechatId());

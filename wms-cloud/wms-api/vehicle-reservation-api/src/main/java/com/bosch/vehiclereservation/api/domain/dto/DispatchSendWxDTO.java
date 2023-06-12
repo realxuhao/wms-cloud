@@ -17,6 +17,8 @@ public class DispatchSendWxDTO {
 
     @ApiModelProperty(value = "仓库编码")
     private String wareCode;
+    @ApiModelProperty(value = "仓库名称")
+    private String wareName;
 
     @ApiModelProperty(value = "道口编号")
     private String dockCode;

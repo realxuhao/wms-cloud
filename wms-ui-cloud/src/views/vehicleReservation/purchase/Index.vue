@@ -20,12 +20,17 @@
               <a-input v-model="queryForm.supplier" placeholder="供应商名称" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
+          <a-col :span="5">
             <a-form-model-item label="料号">
               <a-input v-model="queryForm.sapCode" placeholder="料号" allow-clear/>
             </a-form-model-item>
           </a-col>          
           <template v-if="advanced">
+            <a-col :span="5">
+              <a-form-model-item label="海关台帐号">
+                <a-input v-model="queryForm.cmsNumber" placeholder="海关台帐号" allow-clear/>
+              </a-form-model-item>
+            </a-col>
             <a-col :span="8">
               <a-form-item label="预计到货日期" >
                 <a-range-picker
@@ -263,6 +268,7 @@ const queryFormAttr = () => {
     poItem: '',
     supplier: '',
     sapCode: '',
+    cmsNumber: '',
     date: [],
   }
 }
