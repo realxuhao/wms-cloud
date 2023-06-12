@@ -3,7 +3,6 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bosch.vehiclereservation.mapper.PurchaseOrderMapper">
-
     <resultMap type="com.bosch.vehiclereservation.api.domain.PurchaseOrder" id="PurchaseOrderResult">
         <result property="purchaseId" column="purchase_id"/>
         <result property="poId" column="po_id"/>
@@ -53,17 +52,29 @@
     <select id="selectPurchaseOrderList" resultMap="PurchaseOrderResult">
         <include refid="selectPurchaseOrder"/>
         <where>
-            <if test="poNo != null  and poNo != ''">and po_code like concat('%', #{poNo}, '%')</if>
-            <if test="poItem != null  and poItem != ''">and po_item like concat('%', #{poItem}, '%')</if>
-            <if test="supplier != null  and supplier != ''">and supplier_name like concat('%', #{supplier}, '%')</if>
-            <if test="sapCode != null  and sapCode != ''">and material_code like concat('%', #{sapCode}, '%')</if>
-            <if test="cmsNumber != null  and cmsNumber != ''">and cms_number like concat('%', #{cmsNumber}, '%')</if>
-            <if test="status != null ">and status = #{status}</if>
+            <if test="poNo != null  and poNo != ''">
+                and po_code like concat('%', #{poNo}, '%')
+            </if>
+            <if test="poItem != null  and poItem != ''">
+                and po_item like concat('%', #{poItem}, '%')
+            </if>
+            <if test="supplier != null  and supplier != ''">
+                and supplier_name like concat('%', #{supplier}, '%')
+            </if>
+            <if test="sapCode != null  and sapCode != ''">
+                and material_code like concat('%', #{sapCode}, '%')
+            </if>
+            <if test="cmsNumber != null  and cmsNumber != ''">
+                and cms_number like concat('%', #{cmsNumber}, '%')
+            </if>
+            <if test="status != null ">
+                and status = #{status}
+            </if>
             <if test="startDate != null">
-               and delivery_date <![CDATA[ >= ]]> #{startDate}
+                and delivery_date <![CDATA[ >= ]]> #{startDate}
             </if>
             <if test="endDate != null">
-               and delivery_date <![CDATA[ <= ]]> #{endDate}
+                and delivery_date <![CDATA[ <= ]]> #{endDate}
             </if>
         </where>
     </select>
@@ -89,6 +100,15 @@
                     #{poItem}
                 </foreach>
             </if>
+            <if test="cmsNumberList != null and cmsNumberList.size()>0">
+                and cms_number in
+                <foreach collection="cmsNumberList" item="cmsNumber" index="index" open="(" close=")" separator=",">
+                    #{cmsNumber}
+                </foreach>
+            </if>
+            <if test="deliveryDate != null">
+                and delivery_date = #{deliveryDate}
+            </if>
             and status=0 and supplier_name = #{supplier}
         </where>
     </select>
@@ -102,10 +122,20 @@
     </select>
 
     <select id="getPoCodeList" resultType="java.lang.String">
-        SELECT DISTINCT po_code from vr_purchase_order
+        SELECT DISTINCT po_code
+        from vr_purchase_order
+        where supplier_name = #{name}
     </select>
 
     <select id="getPoItemList" resultType="java.lang.String">
-        SELECT DISTINCT po_item from vr_purchase_order
+        SELECT DISTINCT po_item
+        from vr_purchase_order
+        where supplier_name = #{name}
+    </select>
+
+    <select id="getCmsNumberList" resultType="java.lang.String">
+        SELECT DISTINCT cms_number
+        from vr_purchase_order
+        where supplier_name = #{name}
     </select>
 </mapper>

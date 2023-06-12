@@ -80,12 +80,17 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     }
 
     @Override
-    public List<String> getPoCodeList() {
-        return purchaseOrderMapper.getPoCodeList();
+    public List<String> getPoCodeList(String name) {
+        return purchaseOrderMapper.getPoCodeList(name);
     }
 
     @Override
-    public List<String> getPoItemList() {
-        return purchaseOrderMapper.getPoItemList();
+    public List<String> getPoItemList(String name) {
+        return purchaseOrderMapper.getPoItemList(name);
+    }
+
+    @Override
+    public List<String> getCmsNumberList(String name) {
+        return purchaseOrderMapper.getCmsNumberList(name);
     }
 }

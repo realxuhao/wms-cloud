@@ -86,10 +86,10 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
         if (driverDeliver == null) {
             throw new ServiceException("预约单不存在！");
         }
-        /*if (driverDeliver.getStatus() != SignStatusEnum.NOT_SIGN.getCode()) {
-            throw new ServiceException("订单已到货，不允许删除！");
-        }*/
-       /* boolean res = super.removeById(deliverId);
+        if (driverDeliver.getStatus() != SignStatusEnum.NOT_SIGN.getCode()) {
+            throw new ServiceException("司机已签到，不允许删除！");
+        }
+        boolean res = super.removeById(deliverId);
         if (res) {
             QueryWrapper<SupplierReserve> wrapper = new QueryWrapper<>();
             wrapper.eq("reserve_no", driverDeliver.getReserveNo());
@@ -98,8 +98,8 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
                 supplierReserve.get().setStatus(ReserveStatusEnum.RESERVED.getCode());
                 supplierReserveMapper.updateById(supplierReserve.get());
             }
-        }*/
-        QueryWrapper<SupplierReserve> wrapper = new QueryWrapper<>();
+        }
+      /*  QueryWrapper<SupplierReserve> wrapper = new QueryWrapper<>();
         wrapper.eq("reserve_no", driverDeliver.getReserveNo());
         Optional<SupplierReserve> supplierReserve = supplierReserveMapper.selectList(wrapper).stream().findFirst();
         if (supplierReserve.isPresent() && supplierReserve.get().getStatus() == ReserveStatusEnum.COMPLETE.getCode()) {
@@ -120,7 +120,7 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
                 supplierReserve.get().setStatus(ReserveStatusEnum.RESERVED.getCode());
                 supplierReserveMapper.updateById(supplierReserve.get());
             }
-        }
+        }*/
         return res;
     }
 

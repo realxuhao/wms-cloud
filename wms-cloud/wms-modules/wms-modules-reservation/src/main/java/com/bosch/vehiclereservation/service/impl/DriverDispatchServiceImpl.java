@@ -9,6 +9,7 @@ import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.vo.SupplierInfoVO;
 import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
+import com.bosch.vehiclereservation.api.domain.DriverPickup;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
 import com.bosch.vehiclereservation.api.domain.dto.DispatchSendWxDTO;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDispatchDTO;
@@ -21,6 +22,7 @@ import com.bosch.vehiclereservation.api.enumeration.ReserveStatusEnum;
 import com.bosch.vehiclereservation.api.enumeration.ReserveTypeEnum;
 import com.bosch.vehiclereservation.mapper.DriverDeliverMapper;
 import com.bosch.vehiclereservation.mapper.DriverDispatchMapper;
+import com.bosch.vehiclereservation.mapper.DriverPickupMapper;
 import com.bosch.vehiclereservation.mapper.SupplierReserveMapper;
 import com.bosch.vehiclereservation.service.IDriverDispatchService;
 import com.bosch.vehiclereservation.utils.BeanConverUtil;
@@ -56,6 +58,9 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
 
     @Autowired
     private DriverDeliverMapper driverDeliverMapper;
+
+    @Autowired
+    private DriverPickupMapper driverPickupMapper;
 
     @Autowired
     private SupplierReserveMapper supplierReserveMapper;
@@ -164,6 +169,44 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
     }
 
     @Override
+    public boolean dispatchCancel(Long dispatchId) {
+        DriverDispatch driverDispatch = driverDispatchMapper.selectById(dispatchId);
+        if (driverDispatch == null) {
+            throw new ServiceException("调度信息不存在！");
+        }
+        if (driverDispatch.getStatus() == DispatchStatusEnum.COMPLETE.getCode() || driverDispatch.getStatus() == DispatchStatusEnum.ERROR.getCode()) {
+            throw new ServiceException("订单已完成，不允许删除！");
+        }
+        boolean res = super.removeById(dispatchId);
+        if (driverDispatch.getDriverType() == DispatchTypeEnum.DELIVER.getCode()) {
+            QueryWrapper<DriverDeliver> wrapper = new QueryWrapper<>();
+            wrapper.eq("driver_id", driverDispatch.getDriverId());
+            Optional<DriverDeliver> driverDeliver = driverDeliverMapper.selectList(wrapper).stream().findFirst();
+            if (driverDeliver.isPresent()) {
+                int i = driverDeliverMapper.deleteById(driverDeliver.get().getDeliverId());
+                if (StringUtils.isNotEmpty(driverDeliver.get().getReserveNo())) {
+                    QueryWrapper<SupplierReserve> wrapper1 = new QueryWrapper<>();
+                    wrapper1.eq("reserve_no", driverDeliver.get().getReserveNo());
+                    Optional<SupplierReserve> supplierReserve = supplierReserveMapper.selectList(wrapper1).stream().findFirst();
+                    if (supplierReserve.isPresent()) {
+                        supplierReserve.get().setStatus(ReserveStatusEnum.RESERVED.getCode());
+                        supplierReserveMapper.updateById(supplierReserve.get());
+                    }
+                }
+            }
+        }
+        if (driverDispatch.getDriverType() == DispatchTypeEnum.PICKUP.getCode()) {
+            QueryWrapper<DriverPickup> wrapper = new QueryWrapper<>();
+            wrapper.eq("pickup_id", driverDispatch.getDriverId());
+            Optional<DriverPickup> driverPickup = driverPickupMapper.selectList(wrapper).stream().findFirst();
+            if (driverPickup.isPresent()) {
+                int i = driverPickupMapper.deleteById(driverPickup.get().getPickupId());
+            }
+        }
+        return res;
+    }
+
+    @Override
     public boolean dispatchSort(DriverSortDTO driverDispatchDTO) {
         if (driverDispatchDTO.getDispatchId() == null) {
             return false;
@@ -220,7 +263,7 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
         value1Map.put("value", "入场提醒");
         data.put("thing1", value1Map);
         Map<String, String> value2Map = new HashMap<>();
-        value2Map.put("value", (dispatchSendWxDTO.getWareName().split("-").length > 0 ? dispatchSendWxDTO.getWareName().split("-")[0] : "" )+ ".请入厂!");
+        value2Map.put("value", (dispatchSendWxDTO.getWareName().split("-").length > 0 ? dispatchSendWxDTO.getWareName().split("-")[0] : "") + ".请入厂!");
         data.put("thing2", value2Map);
         WxMsgDTO wxMsgDTO = new WxMsgDTO();
         wxMsgDTO.setTouser(dispatchSendWxDTO.getWechatId());

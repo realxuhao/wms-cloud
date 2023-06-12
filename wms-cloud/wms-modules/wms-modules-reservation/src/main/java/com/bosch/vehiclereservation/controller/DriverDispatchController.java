@@ -119,6 +119,19 @@ public class DriverDispatchController extends BaseController {
     }
 
     /**
+     * 取消
+     *
+     * @param dispatchId 主键id
+     * @return
+     */
+    //@RequiresPermissions("warehouse:dispatch:complete")
+    @GetMapping("/cancel/{id}")
+    @ApiOperation("取消")
+    public AjaxResult dispatchCancel(@PathVariable("id") Long dispatchId) {
+        return toAjax(driverDispatchService.dispatchCancel(dispatchId));
+    }
+
+    /**
      * 车辆进厂排序
      *
      * @param driverDispatchDTO

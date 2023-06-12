@@ -33,7 +33,9 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
 
     public List<String> selectAllErrorPoCode();
 
-    public List<String> getPoCodeList();
+    public List<String> getPoCodeList(String name);
 
-    public List<String> getPoItemList();
+    public List<String> getPoItemList(String name);
+
+    public List<String> getCmsNumberList(String name);
 }

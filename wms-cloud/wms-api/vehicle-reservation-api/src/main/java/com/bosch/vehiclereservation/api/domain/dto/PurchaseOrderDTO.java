@@ -70,6 +70,7 @@ public class PurchaseOrderDTO extends PageDomain {
      * 客户预计供应商到货日期
      */
     @ApiModelProperty(value = "客户预计供应商到货日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date deliveryDate;
 
     /**
@@ -127,5 +128,11 @@ public class PurchaseOrderDTO extends PageDomain {
      */
     @ApiModelProperty(value = "订单行号")
     private List<String> poItemList;
+
+    /**
+     * 海关台账号
+     */
+    @ApiModelProperty(value = "海关台账号")
+    private List<String> cmsNumberList;
 
 }

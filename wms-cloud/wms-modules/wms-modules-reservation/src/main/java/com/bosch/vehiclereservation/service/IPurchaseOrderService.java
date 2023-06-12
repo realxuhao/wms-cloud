@@ -43,11 +43,14 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
 
     /**
      * 获取错误状态的采购单PO号
+     *
      * @return
      */
     public List<String> getAllErrorPoCode();
 
-    public List<String> getPoCodeList();
+    public List<String> getPoCodeList(String name);
 
-    public List<String> getPoItemList();
+    public List<String> getPoItemList(String name);
+
+    public List<String> getCmsNumberList(String name);
 }

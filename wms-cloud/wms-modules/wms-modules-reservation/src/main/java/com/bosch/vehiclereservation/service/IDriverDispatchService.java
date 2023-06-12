@@ -53,6 +53,14 @@ public interface IDriverDispatchService extends IService<DriverDispatch> {
     boolean dispatchComplete(Long dispatchId);
 
     /**
+     * 取消
+     *
+     * @param dispatchId 主键id
+     * @return
+     */
+    boolean dispatchCancel(Long dispatchId);
+
+    /**
      * 车辆排序
      *
      * @param driverDispatchDTO
@@ -76,6 +84,7 @@ public interface IDriverDispatchService extends IService<DriverDispatch> {
 
     /**
      * 处理异常超时数据
+     *
      * @return
      */
     public void syncErrorData();

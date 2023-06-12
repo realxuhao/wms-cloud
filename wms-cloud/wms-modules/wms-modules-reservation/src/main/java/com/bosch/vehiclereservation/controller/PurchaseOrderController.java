@@ -118,10 +118,10 @@ public class PurchaseOrderController extends BaseController {
      *
      * @return
      */
-    @GetMapping(value = "/getPoCodeList")
+    @GetMapping(value = "/getPoCodeList/{name}")
     @ApiOperation("获取采购单PO号")
-    public R<List<String>> getPoCodeList() {
-        return R.ok(purchaseOrderService.getPoCodeList());
+    public R<List<String>> getPoCodeList(@PathVariable("name") String name) {
+        return R.ok(purchaseOrderService.getPoCodeList(name));
     }
 
     /**
@@ -129,9 +129,20 @@ public class PurchaseOrderController extends BaseController {
      *
      * @return
      */
-    @GetMapping(value = "/getPoItemList")
+    @GetMapping(value = "/getPoItemList/{name}")
     @ApiOperation("获取采购单订单行号")
-    public R<List<String>> getPoItemList() {
-        return R.ok(purchaseOrderService.getPoItemList());
+    public R<List<String>> getPoItemList(@PathVariable("name") String name) {
+        return R.ok(purchaseOrderService.getPoItemList(name));
+    }
+
+    /**
+     * 获取采购单海关台账号
+     *
+     * @return
+     */
+    @GetMapping(value = "/getCmsNumberList/{name}")
+    @ApiOperation("获取采购单海关台账号")
+    public R<List<String>> getCmsNumberList(@PathVariable("name") String name) {
+        return R.ok(purchaseOrderService.getCmsNumberList(name));
     }
 }
