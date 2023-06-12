@@ -92,6 +92,11 @@
             <span>{{ reText ? reText.length > 10 ? reText.substring(0,10) + "..." : reText : "" }}</span>
           </a-tooltip>
         </template>
+        <template slot="sapName" slot-scope="text, record">
+          <div>
+            {{ text || record.remark }}
+          </div>
+        </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a v-hasPermi="['purchase:order:details']" class="primary-color" @click="handleDetails(record.purchaseId)"><a-icon class="m-r-4" type="table" />跟踪</a>
@@ -189,6 +194,7 @@ const columns = [
     title: '物料名称',
     key: 'sapName',
     dataIndex: 'sapName',
+    scopedSlots: { customRender: 'sapName' },
     width: 200
   },
   {

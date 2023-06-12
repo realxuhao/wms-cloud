@@ -108,6 +108,18 @@
                 <a-divider type="vertical" />
 
                 <a-popconfirm
+                  v-if="record.status != 2"
+                  title="确认要取消吗?"
+                  ok-text="确认"
+                  cancel-text="取消"
+                  @confirm="record.status != 2 && handleCancel(record)"
+                >
+                  <a class="primary-color"><a-icon class="m-r-4" type="check-circle" />取消</a>
+                </a-popconfirm>
+                <a v-else class="not-danger-color" ><a-icon class="m-r-4" type="check-circle" />取消</a>
+                <a-divider type="vertical" />
+
+                <a-popconfirm
                   v-if="record.status == 1"
                   title="确认要完成吗?"
                   ok-text="确认"
@@ -200,7 +212,7 @@ const signColumns = [
   {
     title: '操作',
     key: 'action',
-    width: 220,
+    width: 280,
     scopedSlots: { customRender: 'action' }
   },
   {
@@ -485,6 +497,18 @@ export default {
       } catch (error) {
         console.log(error)
         this.$message.error('完成失败，请联系系统管理员！')
+      }
+    },
+    /** 完成动作 */
+    async handleCancel (record) {
+      try {
+        await this.$store.dispatch('driverDispatch/cancel', record.dispatchId)
+        this.$message.success('已取消')
+
+        this.loadSignTableList()
+      } catch (error) {
+        console.log(error)
+        this.$message.error('取消失败，请联系系统管理员！')
       }
     },
     /** 发送微信推送 */

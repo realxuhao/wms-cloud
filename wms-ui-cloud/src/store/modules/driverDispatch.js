@@ -26,6 +26,10 @@ const driverDispatch = {
       const data = await driverDispatchService.importDock(options)
       return data
     },
+    async cancel ({ commit }, id) {
+      const data = await driverDispatchService.cancel(id)
+      return data
+    },
     async enter ({ commit }, id) {
       const data = await driverDispatchService.enter(id)
       return data

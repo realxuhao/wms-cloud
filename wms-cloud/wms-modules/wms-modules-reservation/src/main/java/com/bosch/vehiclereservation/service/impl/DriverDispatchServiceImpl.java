@@ -175,12 +175,12 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
             throw new ServiceException("调度信息不存在！");
         }
         if (driverDispatch.getStatus() == DispatchStatusEnum.COMPLETE.getCode() || driverDispatch.getStatus() == DispatchStatusEnum.ERROR.getCode()) {
-            throw new ServiceException("订单已完成，不允许删除！");
+            throw new ServiceException("订单已完成，不允许取消！");
         }
         boolean res = super.removeById(dispatchId);
         if (driverDispatch.getDriverType() == DispatchTypeEnum.DELIVER.getCode()) {
             QueryWrapper<DriverDeliver> wrapper = new QueryWrapper<>();
-            wrapper.eq("driver_id", driverDispatch.getDriverId());
+            wrapper.eq("deliver_id", driverDispatch.getDriverId());
             Optional<DriverDeliver> driverDeliver = driverDeliverMapper.selectList(wrapper).stream().findFirst();
             if (driverDeliver.isPresent()) {
                 int i = driverDeliverMapper.deleteById(driverDeliver.get().getDeliverId());

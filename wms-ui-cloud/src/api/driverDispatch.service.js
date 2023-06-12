@@ -39,6 +39,13 @@ const enter = async (id) => {
   return data
 }
 
+/** 取消 */
+const cancel = async (id) => {
+  const url = `/driverDispatch/cancel/${id}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
 /** 完成 */
 const complete = async (id) => {
   const url = `/driverDispatch/complete/${id}`
@@ -71,6 +78,7 @@ export const driverDispatchService = {
   getTodayNoSignList,
   importDock,
   enter,
+  cancel,
   complete,
   sort,
   getWxToken,

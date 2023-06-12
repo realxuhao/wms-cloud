@@ -35,7 +35,33 @@
                 </a-select-option>
               </a-select>
             </a-form-model-item>
-          </a-col>
+          </a-col>          
+          <template v-if="advanced">
+            <a-col :span="7">
+              <a-form-model-item label="海关台帐号">
+                <a-select
+                  mode="multiple"
+                  v-model="queryForm.cmsNumberList"
+                  style="width: 100%"
+                  allow-clear
+                  placeholder="海关台帐号"
+                >
+                  <a-select-option v-for="i in cmsNumberList" :key="i">
+                    {{ i }}
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="7">
+              <a-form-model-item label="预计到货日期">
+                <a-date-picker
+                  v-model="searchDate"
+                  format="YYYY-MM-DD"
+                />
+              </a-form-model-item>
+            </a-col>
+          
+          </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
@@ -66,7 +92,16 @@
       >
         <template slot="arriveQuantity" slot-scope="text, record">
           <div>
-            <a-input-number style="width: 85%;" :v-model="text == null ? '' : text" @change="e => onArriveNumChange(e,record.purchaseId)" />
+            <a-input-number
+              style="width: 85%;" 
+              :defaultValue="record.quantity"
+              :v-model="text == null ? '' : text"
+              @change="e => onArriveNumChange(e,record.purchaseId)" />
+          </div>
+        </template>
+        <template slot="sapName" slot-scope="text, record">
+          <div>
+            {{ text || record.remark }}
           </div>
         </template>
         <template slot="remark" slot-scope="reText">
@@ -182,6 +217,7 @@ const columns = [
     title: '物料名称',
     key: 'sapName',
     dataIndex: 'sapName',
+    scopedSlots: { customRender: 'sapName' },
     width: 200
   },
   {
@@ -210,6 +246,12 @@ const columns = [
     width: 120
   },
   {
+    title: '海关台帐号',
+    key: 'cmsNumber',
+    dataIndex: 'cmsNumber',
+    width: 150
+  },
+  {
     title: '需求放行日期',
     key: 'releaseDate',
     dataIndex: 'releaseDate',
@@ -219,12 +261,6 @@ const columns = [
     title: '首批变更号',
     key: 'firstBatchChangeNo',
     dataIndex: 'firstBatchChangeNo',
-    width: 150
-  },
-  {
-    title: '海关台帐号',
-    key: 'cmsNumber',
-    dataIndex: 'cmsNumber',
     width: 150
   },
   {
@@ -239,7 +275,9 @@ const columns = [
 const queryFormAttr = () => {
   return {
     poNoList: [],
-    poItemList: []
+    poItemList: [],
+    cmsNumberList: [],
+    deliveryDate: null
   }
 }
 
@@ -310,7 +348,9 @@ export default {
       /** 提交按钮loading */
       confirmLoading: false,
       poCodeList: [],
-      poItemList: []
+      poItemList: [],
+      cmsNumberList: [],
+      searchDate: null
     }
   },
   methods: {
@@ -449,11 +489,13 @@ export default {
         this.selectedRowList = []
         this.list = []
         try {
+          this.queryForm.deliveryDate = this.searchDate == null ? null : moment(new Date(this.searchDate)).format('YYYY-MM-DD')
+          console.info(this.queryForm.deliveryDate)
           this.tableLoading = true
           const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', { name: this.supplierName, queryParams: { ...this.queryForm, ...{ status: 0 } } })
           this.list = rows
           this.list.forEach(item => {
-            this.$set(item, 'arriveQuantity', null)
+            this.$set(item, 'arriveQuantity', item.quantity)
           })
           this.paginationTotal = total
         } catch (error) {
@@ -468,21 +510,13 @@ export default {
       try {
         this.selectedRowKeys = []
         this.selectedRowList = []
-        this.poCodeList = []
-        this.poItemList = []
         this.list = []
         this.tableLoading = true
         const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', { name: this.supplierName, queryParams: this.queryForm })
         this.list = rows
-        let poCode = []
-        let poItem = []
         this.list.forEach(item => {
-          this.$set(item, 'arriveQuantity', null)
-          poCode = [...poCode, item.poNo]
-          poItem = [...poItem, item.poItem]
+          this.$set(item, 'arriveQuantity', item.quantity)
         })
-        this.poCodeList = this.removalDuplicate(poCode)
-        this.poItemList = this.removalDuplicate(poItem)
         this.paginationTotal = total
       } catch (error) {
         this.$message.error(error.message)
@@ -490,17 +524,6 @@ export default {
         this.tableLoading = false
       }
     },
-    removalDuplicate(dataList) {
-		var result = []
-		var tem = {}
-		for (var i = 0; i < dataList.length; i++) {
-			if (!tem[dataList[i]]) {
-				result.push(dataList[i])
-				tem[dataList[i]] = 1
-			}
-		}
-		return result
-	},
     async loadData () {
       this.initTableList()
     },
@@ -508,11 +531,12 @@ export default {
     async preOptionList () {
       const data = await this.$store.dispatch('ware/getOptionList')
       this.wareOptionList = data.data
-      // const poCodeData = await this.$store.dispatch('purchase/getPoCodeList')
-      // console.info(poCodeData)
-      // this.poCodeList = poCodeData.data
-      // const poItemData = await this.$store.dispatch('purchase/getPoItemList')
-      // this.poItemList = poItemData.data
+      const poCodeData = await this.$store.dispatch('purchase/getPoCodeList', this.supplierName)
+      this.poCodeList = poCodeData.data
+      const poItemData = await this.$store.dispatch('purchase/getPoItemList', this.supplierName)
+      this.poItemList = poItemData.data
+      const cmsNumberData = await this.$store.dispatch('purchase/getCmsNumberList', this.supplierName)
+      this.cmsNumberList = cmsNumberData.data
     }
   },
   mounted () {
