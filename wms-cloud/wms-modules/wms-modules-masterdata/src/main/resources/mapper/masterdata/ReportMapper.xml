@@ -4,37 +4,106 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.bosch.masterdata.mapper.ReportMapper">
 
-<select id="getCellCode" resultType="String">
-    SELECT CODE from md_department GROUP BY CODE
-</select>
+
+    <select id="selectCellReportByType" parameterType="com.bosch.masterdata.api.domain.dto.ReportBinDTO" resultType="com.bosch.masterdata.api.domain.vo.ReportBinVO">
+        SELECT *
+        <if test="type!=null and type==0">,DATE_FORMAT(create_time, '%Y-%m-%d') AS new_date</if>
+        <if test="type!=null and type==1">,DATE_FORMAT(create_time, '%Y-%m') AS new_date</if>
+        FROM report_bin WHERE 1=1
+        <if test="type!=null and type==0 and createTimeStart!=null">AND DATE_FORMAT(create_time, '%Y-%m-%d')
+            &gt;= DATE_FORMAT(#{createTimeStart}, '%Y-%m-%d')
+        </if>
+        <if test="type!=null and type==0 and createTimeEnd!=null">AND DATE_FORMAT(create_time, '%Y-%m-%d')
+            &lt;= DATE_FORMAT(#{createTimeEnd}, '%Y-%m-%d')
+        </if>
+        <if test="type!=null and type==1 and createTimeStart!=null">AND DATE_FORMAT(create_time, '%Y-%m')
+            &gt;= DATE_FORMAT(#{createTimeStart}, '%Y-%m')
+        </if>
+        <if test="type!=null and type==1 and createTimeEnd!=null">AND DATE_FORMAT(create_time, '%Y-%m')
+            &lt;= DATE_FORMAT(#{createTimeEnd}, '%Y-%m')
+        </if>
+        order BY create_time
+    </select>
+
+<!--    <select id="selectReportBinByMonth" parameterType="ReportBinDTO" resultType="com.bosch.masterdata.api.domain.vo.ReportBinVO">-->
+<!--        SELECT SUM(material_occupy_bin),SUM(product_occupy_bin),SUM(total_bin),DATE_FORMAT(create_time, '%Y-%m')FROM-->
+<!--        report_bin WHERE-->
+<!--        1=1-->
+<!--        <if test="wareCode != null and wareCode != ''">AND ware_code=#{wareCode}</if>-->
+<!--        and DATE_FORMAT(create_time, '%Y-%m') = DATE_FORMAT(#{createTime}, '%Y-%m')-->
+<!--        GROUP BY DATE_FORMAT(create_time, '%Y-%m')-->
+<!--    </select>-->
+<!--    <select id="selectReportBinByDay" parameterType="ReportBinDTO" resultType="com.bosch.masterdata.api.domain.vo.ReportBinVO">-->
+<!--        SELECT SUM(material_occupy_bin),SUM(product_occupy_bin),SUM(total_bin),DATE_FORMAT(create_time, '%Y-%m-%d')FROM-->
+<!--        report_bin WHERE-->
+<!--        1=1-->
+<!--        <if test="wareCode != null and wareCode != ''">AND ware_code=#{wareCode}</if>-->
+<!--        and DATE_FORMAT(create_time, '%Y-%m-%d') = DATE_FORMAT(#{createTime}, '%Y-%m-%d')-->
+<!--        GROUP BY DATE_FORMAT(create_time, '%Y-%m-%d')-->
+<!--    </select>-->
+<!--   -->
+    <select id="getCellCode" resultType="String">
+        SELECT CODE
+        from md_department
+        GROUP BY CODE
+    </select>
     <select id="toBeReceived" resultType="com.bosch.masterdata.api.domain.MissionMap">
-        SELECT md.code AS code, COUNT(md.code) as number
+        SELECT
+        <if test="cell != null and cell != ''"> md.code AS code, COUNT(md.code) as number</if>
         FROM si_material_receive mr
-                 left join md_material mm on mr.material_nb = mm.code and mm.delete_flag = 0
-                 LEFT JOIN md_material_type mt ON mm.material_type_id = mt.id
-                 left join md_department md on mt.department_id = md.id
+        left join md_material mm on mr.material_nb = mm.code and mm.delete_flag = 0
+        LEFT JOIN md_material_type mt ON mm.material_type_id = mt.id
+        left join md_department md on mt.department_id = md.id
         WHERE
-            -- mr.STATUS=0 AND
-            mr.delete_flag=0
-            -- AND  md.code='NMD'
-        <if test="code != null and code != ''">AND  md.code=#{code}</if>
-        GROUP BY code
+        mr.delete_flag=0
+       <if test="cell != null and cell != ''and cell != 'All'">AND md.code=#{cell}</if>
+        <if test="cell != null and cell != ''">GROUP BY code</if>
     </select>
 
     <select id="toBeBin" resultType="com.bosch.masterdata.api.domain.MissionMap">
-        SELECT count(md.code) AS number, md.code AS code
+        SELECT
+        <if test="cell != null and cell != ''"> count(md.code) AS number, md.code AS code </if>
+        <if test="wareCode != null and wareCode != ''">count(sm.ware_code) AS number, sm.ware_code AS code</if>
         FROM si_material_in sm
-                 LEFT JOIN bi_in bi ON bi.sscc_number = sm.sscc_number AND bi.delete_flag = 0
-                 LEFT JOIN si_material_receive smr ON smr.sscc_number = sm.sscc_number AND smr.delete_flag = 0
-                 LEFT JOIN md_material mm ON sm.material_nb = mm.code AND mm.delete_flag = 0
-                 LEFT JOIN md_material_type mt ON mm.material_type_id = mt.id
-                 left join md_department md on mt.department_id = md.id
+        LEFT JOIN bi_in bi ON bi.sscc_number = sm.sscc_number AND bi.delete_flag = 0
+        LEFT JOIN si_material_receive smr ON smr.sscc_number = sm.sscc_number AND smr.delete_flag = 0
+        LEFT JOIN md_material mm ON sm.material_nb = mm.code AND mm.delete_flag = 0
+        LEFT JOIN md_material_type mt ON mm.material_type_id = mt.id
+        left join md_department md on mt.department_id = md.id
         WHERE sm.delete_flag = 0
-          AND NOT EXISTS (SELECT 1 FROM bi_in WHERE bi_in.sscc_number = sm.sscc_number AND bi_in.delete_flag = 1)
-        <if test="code != null and code != ''">AND  md.code=#{code}</if>
-          AND (bi.status = 0
-                or
-               sm.sscc_number not in (SELECT sscc_number from bi_in WHERE delete_flag = 0 and `status` = 1))
-        GROUP BY md.code
+        AND NOT EXISTS (SELECT 1 FROM bi_in WHERE bi_in.sscc_number = sm.sscc_number AND bi_in.delete_flag = 1)
+         <if test="cell != null and cell != ''and cell != 'All'">AND md.code=#{cell}</if>
+        <if test="wareCode != null and wareCode != ''and wareCode != 'All'">AND sm.ware_code =#{wareCode}</if>
+        AND (bi.status = 0
+        or
+        sm.sscc_number not in (SELECT sscc_number from bi_in WHERE delete_flag = 0 and `status` = 1))
+        <if test="cell != null and cell != ''">GROUP BY md.code </if>
+        <if test="wareCode != null and wareCode != ''">GROUP BY sm.ware_code </if>
+    </select>
+
+    <select id="toBeCall" resultType="com.bosch.masterdata.api.domain.MissionMap">
+        SELECT
+        <if test="cell != null and cell != ''">COUNT(order_number) as number,cell as code</if>
+        <if test="wareCode != null and wareCode != ''">COUNT(ware_code)as number,ware_code as code </if>
+        FROM material_kanban WHERE STATUS &gt;= 1 AND STATUS &lt;= 5 AND delete_flag=0
+        <if test="cell != null and cell != ''and cell != 'All'">AND cell=#{cell}</if>
+        <if test="wareCode != null and wareCode != ''and wareCode != 'All'">AND ware_code=#{wareCode}</if>
+        <if test="cell != null and cell != ''">GROUP BY cell</if>
+        <if test="wareCode != null and wareCode != ''">GROUP BY ware_code</if>
+    </select>
+    <select id="toBeMove" resultType="com.bosch.masterdata.api.domain.MissionMap">
+        SELECT
+        <if test="cell != null and cell != ''">  md.code AS code,count(md.code) AS NUMBER</if>
+        <if test="wareCode != null and wareCode != ''">ws.source_ware_code AS code,count(ws.source_ware_code) AS NUMBER</if>
+        FROM ware_shift ws
+        LEFT JOIN md_material mm ON ws.material_nb = mm.code AND mm.delete_flag = 0
+        LEFT JOIN md_material_type mt ON mm.material_type_id = mt.id
+        left join md_department md on mt.department_id = md.id
+        WHERE
+            ws.delete_flag=0 AND (ws.STATUS&gt;=1 AND ws.STATUS&lt;=5)
+        <if test="cell != null and cell != ''and cell != 'All'">AND md.code=#{cell}</if>
+        <if test="wareCode != null and wareCode != ''and wareCode != 'All'">AND ws.source_ware_code=#{wareCode}</if>
+        <if test="cell != null and cell != ''"> GROUP BY md.code</if>
+        <if test="wareCode != null and wareCode != ''">GROUP BY ws.source_ware_code</if>
     </select>
 </mapper>

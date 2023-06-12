@@ -42,7 +42,7 @@ public class ReportBinServiceImpl extends ServiceImpl<ReportBinMapper, ReportBin
                     BigDecimal all = new BigDecimal(reportBin.getTotalBin()!= null ? reportBin.getTotalBin() : 0);
                     BigDecimal divide = used.divide(all, 2, BigDecimal.ROUND_HALF_UP);
                     reportBin.setPercent(divide);
-                    reportBin.setCreateTime(LocalDateTime.now());
+                    reportBin.setCreateTime(new Date());
                 }
             }
         }catch (Exception e){
