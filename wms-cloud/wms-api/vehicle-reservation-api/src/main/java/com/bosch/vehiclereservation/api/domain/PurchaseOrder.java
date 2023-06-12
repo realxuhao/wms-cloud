@@ -10,6 +10,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 /**
  * nutricia的采购订单 vr_purchase_order
@@ -108,5 +109,11 @@ public class PurchaseOrder extends BaseEntity {
      */
     @TableField(exist = false)
     private Date endDate;
+
+    @TableField(exist = false)
+    private List<String> poNoList;
+
+    @TableField(exist = false)
+    private List<String> poItemList;
 
 }

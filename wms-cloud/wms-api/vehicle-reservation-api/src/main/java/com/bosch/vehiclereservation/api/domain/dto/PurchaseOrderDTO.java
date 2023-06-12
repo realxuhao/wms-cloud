@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class PurchaseOrderDTO extends PageDomain {
@@ -114,5 +115,17 @@ public class PurchaseOrderDTO extends PageDomain {
     @ApiModelProperty(value = "预计到货结束日期")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date endDate;
+
+    /**
+     * 订单PO号
+     */
+    @ApiModelProperty(value = "订单PO号")
+    private List<String> poNoList;
+
+    /**
+     * 订单行号
+     */
+    @ApiModelProperty(value = "订单行号")
+    private List<String> poItemList;
 
 }

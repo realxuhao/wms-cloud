@@ -46,4 +46,8 @@ public interface IPurchaseOrderService extends IService<PurchaseOrder> {
      * @return
      */
     public List<String> getAllErrorPoCode();
+
+    public List<String> getPoCodeList();
+
+    public List<String> getPoItemList();
 }

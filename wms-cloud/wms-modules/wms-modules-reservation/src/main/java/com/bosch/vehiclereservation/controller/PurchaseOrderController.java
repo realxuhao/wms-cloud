@@ -113,4 +113,25 @@ public class PurchaseOrderController extends BaseController {
         return R.ok(purchaseOrderService.getAllErrorPoCode());
     }
 
+    /**
+     * 获取采购单PO号
+     *
+     * @return
+     */
+    @GetMapping(value = "/getPoCodeList")
+    @ApiOperation("获取采购单PO号")
+    public R<List<String>> getPoCodeList() {
+        return R.ok(purchaseOrderService.getPoCodeList());
+    }
+
+    /**
+     * 获取采购单订单行号
+     *
+     * @return
+     */
+    @GetMapping(value = "/getPoItemList")
+    @ApiOperation("获取采购单订单行号")
+    public R<List<String>> getPoItemList() {
+        return R.ok(purchaseOrderService.getPoItemList());
+    }
 }

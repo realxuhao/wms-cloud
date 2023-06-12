@@ -78,4 +78,14 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     public List<String> getAllErrorPoCode() {
         return purchaseOrderMapper.selectAllErrorPoCode();
     }
+
+    @Override
+    public List<String> getPoCodeList() {
+        return purchaseOrderMapper.getPoCodeList();
+    }
+
+    @Override
+    public List<String> getPoItemList() {
+        return purchaseOrderMapper.getPoItemList();
+    }
 }

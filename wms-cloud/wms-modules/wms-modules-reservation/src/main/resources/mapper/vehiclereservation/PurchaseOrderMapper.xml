@@ -76,6 +76,18 @@
             <if test="poItem != null  and poItem != ''">
                 and po_item like concat('%', #{poItem}, '%')
             </if>
+            <if test="poNoList != null and poNoList.size()>0">
+                and po_code in
+                <foreach collection="poNoList" item="poNo" index="index" open="(" close=")" separator=",">
+                    #{poNo}
+                </foreach>
+            </if>
+            <if test="poItemList != null and poItemList.size()>0">
+                and po_item in
+                <foreach collection="poItemList" item="poItem" index="index" open="(" close=")" separator=",">
+                    #{poItem}
+                </foreach>
+            </if>
             and status=0 and supplier_name = #{supplier}
         </where>
     </select>
@@ -86,5 +98,13 @@
                  INNER JOIN vr_supplier_porder t2 on t2.purchase_id = t1.purchase_id
                  INNER JOIN vr_supplier_reserve t3 on t3.reserve_no = t2.reserve_no
         WHERE t3.`status` = 4
+    </select>
+
+    <select id="getPoCodeList" resultType="java.lang.String">
+        SELECT DISTINCT po_code from vr_purchase_order
+    </select>
+
+    <select id="getPoItemList" resultType="java.lang.String">
+        SELECT DISTINCT po_item from vr_purchase_order
     </select>
 </mapper>
