@@ -127,10 +127,11 @@ public class FrameController extends BaseController {
 
     @GetMapping(value = "getFrameInfoByType/{type}")
     @ApiOperation("根据type查询跨详细信息")
-    public R<List<FrameVO>> getFrameInfoByType(@PathVariable("type") String type) {
+    public R<List<FrameVO>> getFrameInfoByType(@PathVariable("type") String type, @RequestParam("wareCode") String wareCode) {
         try {
             FrameDTO frameDTO=new FrameDTO();
             frameDTO.setTypeCode(type);
+            frameDTO.setWareCode(wareCode);
             List<FrameVO> frameVOS = frameService.selectFrameList(frameDTO);
             return R.ok(frameVOS);
         }catch (Exception e) {

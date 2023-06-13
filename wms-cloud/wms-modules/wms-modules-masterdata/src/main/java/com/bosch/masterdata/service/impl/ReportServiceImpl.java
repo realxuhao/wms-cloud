@@ -28,7 +28,7 @@ public class ReportServiceImpl implements IReportService {
     }
     @Override
     public List<MissionToDo> selectReportList(MissionToDo mission) {
-        List<String> cellCode = reportMapper.getCellCode();
+            List<String> cellCode = reportMapper.getCellCode();
         List<MissionToDo> list=new ArrayList<>();
         for (String s : cellCode) {
             MissionToDo missionToDo = new MissionToDo();

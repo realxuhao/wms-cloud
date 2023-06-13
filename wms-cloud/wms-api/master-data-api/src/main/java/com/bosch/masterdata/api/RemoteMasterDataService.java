@@ -43,7 +43,7 @@ public interface RemoteMasterDataService {
     public R<FrameVO> getFrameInfoByCode(@PathVariable("code") String code);
 
     @GetMapping(value = "/frame/getFrameInfoByType/{type}")
-    public R<List<FrameVO>> getFrameInfoByType(@PathVariable("type") String type);
+    public R<List<FrameVO>> getFrameInfoByType(@PathVariable("type") String type, @RequestParam("wareCode") String wareCode);
 
     @GetMapping(value = "/bin/getInfoByFrameId/{frameId}")
     public R<List<Bin>> getInfoByFrameId(@PathVariable("frameId") Long frameId);

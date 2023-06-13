@@ -123,9 +123,9 @@ public class BinAssignmentServiceImpl implements IBinAssignmentService {
                 materialBinVOList.stream().map(MaterialBinVO::getFrameTypeCode).collect(Collectors.toList());
         //根据跨类型获取跨list
         for (String frameTypeCode : frameTypeCodes) {
-            R<List<FrameVO>> framesListResult = remoteMasterDataService.getFrameInfoByType(frameTypeCode);
+            R<List<FrameVO>> framesListResult = remoteMasterDataService.getFrameInfoByType(frameTypeCode,binAllocationDTO.getWareCode());
             if (!framesListResult.isSuccess()) {
-                throw new ServiceException("根据跨类型获取跨失败");
+                throw new ServiceException("在当前仓库根据跨类型获取跨失败");
             }
 
             List<FrameVO> framesVOByType = framesListResult.getData();
