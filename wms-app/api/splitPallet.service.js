@@ -57,6 +57,5 @@ export const splitPalletService = {
   getList,
   getInfo,
   getBinInInfo,
-  postBinIn,
-  add
+  postBinIn
 }
