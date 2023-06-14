@@ -105,6 +105,17 @@ const getProductShiftList = async (data) => {
 	})
 }
 
+const getProductReceivingList = async (data) => {
+	const url = `/product/product-shift/receivinglist`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
 const postShift = async (data) => {
 	const url = `/product/product-shift/ship`
 	const method = 'POST'
@@ -126,6 +137,28 @@ const productShiftGetBinInInfo = async (barCode) => {
 	})
 }
 
+const postBinIn = async (data) => {
+	const url = '/product/product-shift/binIn'
+	const method = 'POST'
+
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+const mainReceiveConfirm = async (data) => {
+	const url = `/product/product-shift/mainReceiveConfirm`
+	const method = 'POST'
+
+	return request({
+		url,
+		method,
+		data: data.sscc
+	})
+}
+
 
 
 export const finishedProductService = {
@@ -140,5 +173,8 @@ export const finishedProductService = {
 	getOneProductIn,
 	getProductShiftList,
 	postShift,
-	productShiftGetBinInInfo
+	getProductReceivingList,
+	productShiftGetBinInInfo,
+	mainReceiveConfirm,
+	postBinIn
 }

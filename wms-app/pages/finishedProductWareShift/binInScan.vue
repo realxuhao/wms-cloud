@@ -37,7 +37,7 @@ export default {
 			try {
 				uni.showLoading();
 				const data = await this.$store.dispatch('finishedProduct/productShiftGetBinInInfo', barCode);
-				if (data.status === 2) {
+				if (data.binInFlag === 1) {
 					this.handleGoto();
 				} else {
 					throw Error('此托已上架或为非上架托，请确认');

@@ -58,6 +58,7 @@ export default {
 		},
 		async getSample(barCode) {
 			try {
+				console.log(barCode)
 				uni.showLoading();
 				const data = await this.$store.dispatch('finishedProduct/getOneProductIn', barCode);
 				if (data.status === 0) {
@@ -66,6 +67,7 @@ export default {
 					throw Error('此托已入库或为非入库托，请确认');
 				}
 				this.info = data;
+				
 			} catch (e) {
 				this.$refs.message.error(e.message);
 			} finally {

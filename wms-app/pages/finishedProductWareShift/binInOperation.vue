@@ -218,7 +218,7 @@ export default {
 					actualBinCode: this.binInForm.recommendBinCode,
 					palletCode: this.binInForm.palletTypeCode
 				};
-				await this.$store.dispatch('wareShift/shiftBinIn', options);
+				await this.$store.dispatch('finishedProduct/postBinIn', options);
 				this.$refs.popup.open();
 			} catch (e) {
 				this.$refs.message.error(e.message);
