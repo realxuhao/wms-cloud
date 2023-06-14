@@ -9,63 +9,66 @@
 </template>
 
 <script>
-import Bus from '@/utils/bus';
-import Message from '@/components/Message';
+	import Bus from '@/utils/bus';
+	import Message from '@/components/Message';
 
-export default {
-	components: {
-		Message
-	},
-	data() {
-		return {
-			code: ''
-		};
-	},
-	onShow() {
-		Bus.$on('scancodedate', this.scanCodeCallback);
-	},
-	destroyed() {
-		Bus.$off('scancodedate', this.scanCodeCallback);
-	},
-	methods: {
-		async scanCodeCallback(data) {
-			// Bus.$emit('stopScan');
-			this.code = data.code;
-			this.handleGoto();
+	export default {
+		components: {
+			Message
 		},
-		handleGoto() {
+		data() {
+			return {
+				code: ''
+			};
+		},
+		onShow() {
+			Bus.$on('scancodedate', this.scanCodeCallback);
+		},
+		destroyed() {
 			Bus.$off('scancodedate', this.scanCodeCallback);
-			uni.navigateTo({
-				url: `/pages/sscc/dashboard?barCode=${this.code}`
-			});
+		},
+		methods: {
+			async scanCodeCallback(data) {
+				Bus.$emit('stopScan');
+				this.code = data.code;
+				this.handleGoto();
+				Bus.$emit('startScan');
+			},
+			handleGoto() {
+				Bus.$off('scancodedate', this.scanCodeCallback);
+				uni.navigateTo({
+					url: `/pages/sscc/dashboard?barCode=${this.code}`
+				});
+			}
 		}
-	}
-};
+	};
 </script>
 
 <style lang="scss">
-.wrapper {
-	display: flex;
-	flex-direction: column;
-}
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+	}
 
-.content {
-	height: 100%;
-	background-color: $primary-color;
-	flex: 1;
-	display: flex;
-	align-items: center;
-	// justify-content: center;
-	flex-direction: column;
-	image {
-		width: 180px;
-		// height: 160px;
-		margin-top: 120px;
-		margin-bottom: 32px;
+	.content {
+		height: 100%;
+		background-color: $primary-color;
+		flex: 1;
+		display: flex;
+		align-items: center;
+		// justify-content: center;
+		flex-direction: column;
+
+		image {
+			width: 180px;
+			// height: 160px;
+			margin-top: 120px;
+			margin-bottom: 32px;
+		}
+
+		text {
+			color: #fff;
+			font-size: 16px;
+		}
 	}
-	text {
-		color: #fff;
-		font-size: 16px;
-	}
-}
 </style>
