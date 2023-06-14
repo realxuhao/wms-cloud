@@ -3,8 +3,8 @@
     title="需求计算"
     :visible="visible"
     :confirm-loading="submitLoading"
-    :width="940"
     :footer="false"
+    width="80%"
     @cancel="onClose">
     <a-form layout="inline" class="search-content">
       <a-row :gutter="16">
@@ -154,17 +154,6 @@ const columns = [
   {
     title: '主库是否满足',
     key: 'enough',
-    // filters: [
-    //   {
-    //     text: '满足',
-    //     value: 1,
-    //   },
-    //   {
-    //     text: '不满足',
-    //     value: 0,
-    //   },
-    // ],
-    // onFilter: (value, record) => record.enough == value,
     scopedSlots: { customRender: 'enough' },
     dataIndex: 'enough',
     width: 100
