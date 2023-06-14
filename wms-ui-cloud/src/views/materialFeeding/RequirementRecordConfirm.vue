@@ -3,7 +3,7 @@
     title="需求计算"
     :visible="visible"
     :confirm-loading="submitLoading"
-    width="70%"
+    :width="940"
     :footer="false"
     @cancel="onClose">
     <a-form layout="inline" class="search-content">
