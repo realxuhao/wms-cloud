@@ -61,7 +61,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             throw new ServiceException("该SSCC码:" + receive.getSsccNumber() + "已有库存");
         }
 
-        AreaVO areaVO = getAreaByType(SecurityUtils.getWareCode(), AreaTypeEnum.PRO_TEMP.getCode());
+        AreaVO areaVO = getAreaByType(SecurityUtils.getWareCode(), AreaTypeEnum.PRO.getCode());
 
         ProductStock stock = new ProductStock();
         stock.setSsccNumber(receive.getSsccNumber());
@@ -86,7 +86,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
     @Override
     public void generateStockByProductWareShifts(List<ProductWareShift> productWareShiftList) {
-        AreaVO areaVO = getAreaByType(SecurityUtils.getWareCode(), AreaTypeEnum.PRO_TEMP.getCode());
+        AreaVO areaVO = getAreaByType(SecurityUtils.getWareCode(), AreaTypeEnum.PRO.getCode());
         List<String> ssccList = productWareShiftList.stream().map(ProductWareShift::getSsccNb).collect(Collectors.toList());
         //修改库存
         LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
@@ -124,7 +124,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         List<AreaVO> areaVOList = areaListR.getData();
         List<AreaVO> areaList = areaVOList.stream().filter(item -> item.getAreaType().equals(areaType)).collect(Collectors.toList());
         if (StringUtils.isEmpty(areaList)) {
-            throw new ServiceException("没有类型为" + AreaTypeEnum.getDescByCode(AreaTypeEnum.PRO_TEMP.getCode()) + "的区域");
+            throw new ServiceException("没有类型为" + AreaTypeEnum.getDescByCode(AreaTypeEnum.PRO.getCode()) + "的区域");
         }
         return areaList.get(0);
     }

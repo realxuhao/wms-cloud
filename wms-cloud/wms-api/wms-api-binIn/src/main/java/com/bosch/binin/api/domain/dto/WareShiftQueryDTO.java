@@ -55,4 +55,12 @@ public class WareShiftQueryDTO extends PageDomain {
 
     @ApiModelProperty(value = "ssccNb")
     private String ssccNb;
+
+    private String materialNb;
+
+    private String batchNb;
+
+    private String carNb;
+
+    private String orderNb;
 }

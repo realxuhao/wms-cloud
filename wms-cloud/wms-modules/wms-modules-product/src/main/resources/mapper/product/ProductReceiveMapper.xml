@@ -29,7 +29,7 @@
         select pr.id,
         pr.sscc_number,
         pr.batch_nb,
-        str_to_date(pr.expire_date, '%d/%m/%y') as expire_date,
+        str_to_date(pr.expire_date, '%d/%m/%Y') as expire_date,
         pr.material_nb,
         p.product_name as material_name,
         pr.unit,
@@ -56,7 +56,7 @@
         </if>
         <if test="status != null">and pr.status = #{status}</if>
         <if test="createBy != null  and createBy != ''">and pr.create_by like concat('%', #{createBy}, '%')</if>
-        <if test="startCreateTime != null and endCreateTime != null">and str_to_date(pr.create_time, '%d/%m/%y') between
+        <if test="startCreateTime != null and endCreateTime != null">and str_to_date(pr.create_time, '%d/%m/%Y') between
             #{startCreateTime} and #{endCreateTime}
         </if>
         order by update_time desc,create_time desc

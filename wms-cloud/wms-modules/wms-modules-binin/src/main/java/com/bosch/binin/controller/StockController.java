@@ -80,7 +80,8 @@ public class StockController extends BaseController {
     @GetMapping(value = "/getByMesBarCode/{mesBarCode}")
     @ApiOperation("扫码查询某个物料的库存信息")
     public R<StockVO> getByMesBarCode(@PathVariable("mesBarCode") String mesBarCode) {
-        if (mesBarCode.length() == 50) {
+        if (mesBarCode.length()>=44 && mesBarCode.length()<=55){
+//        mesBarCode.length() == 50||mesBarCode.contains(".")) {
             String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
             R<StockVO> stockVOR = getBySscc(sscc);
             if (!stockVOR.isSuccess() || stockVOR.getData() == null) {

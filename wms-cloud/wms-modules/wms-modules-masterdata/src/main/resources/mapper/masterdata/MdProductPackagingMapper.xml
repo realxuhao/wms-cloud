@@ -17,7 +17,7 @@
             <result property="cell" column="cell" jdbcType="VARCHAR"/>
         <result property="productName" column="product_name" jdbcType="VARCHAR"/>
         <result property="transportUnit" column="transport_unit" jdbcType="VARCHAR"/>
-        <result property="boxSpecification" column="box_specification" jdbcType="VARCHAR"/>
+        <result property="boxSpecification" column="box_specification"/>
             <result property="standardUnits" column="standard_units" jdbcType="VARCHAR"/>
             <result property="weight" column="weight" jdbcType="VARCHAR"/>
         <result property="volume" column="volume" jdbcType="VARCHAR"/>

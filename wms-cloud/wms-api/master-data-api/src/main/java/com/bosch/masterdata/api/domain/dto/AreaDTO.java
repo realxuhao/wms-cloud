@@ -18,6 +18,8 @@ public class AreaDTO extends PageDomain {
     @ExcelIgnore
     private Long wareId;
 
+    private String plantNb;
+
     /** 仓库Code */
     @ApiModelProperty(value = "仓库编码")
     @ExcelProperty(value = "仓库编码")

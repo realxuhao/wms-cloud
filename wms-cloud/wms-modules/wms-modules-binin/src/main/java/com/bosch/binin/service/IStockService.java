@@ -57,6 +57,14 @@ public interface IStockService extends IService<Stock> {
      */
     Double getMainStockCount(String materialNb);
 
+
+    /**
+     * 暂时不可用的可用量
+     * @param materialNb
+     * @return
+     */
+    Double getNoAvailableStockCount(String materialNb);
+
     /**
      * 外库库存量
      */

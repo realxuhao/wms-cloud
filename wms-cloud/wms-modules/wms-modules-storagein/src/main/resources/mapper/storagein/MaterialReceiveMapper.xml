@@ -29,7 +29,7 @@
         select sm.id,
                sm.sscc_number,
                sm.batch_nb,
-               str_to_date(sm.expire_date, '%d/%m/%y') as expire_date,
+               str_to_date(sm.expire_date, '%d/%m/%Y') as expire_date,
                sm.material_nb,
                sm.unit,
                sm.quantity,
@@ -50,7 +50,7 @@
         select sm.id,
         sm.sscc_number,
         sm.batch_nb,
-        str_to_date(sm.expire_date, '%d/%m/%y') as expire_date,
+        str_to_date(sm.expire_date, '%d/%m/%Y') as expire_date,
         sm.material_nb,
         mm.name as material_name,
         sm.unit,
@@ -64,11 +64,14 @@
         sm.delete_flag,
         sm.status,
         sm.edit_flag,
-        sm.plant_nb
+        sm.plant_nb,
+               sm.ware_code
         from si_material_receive sm left join (select * from md_material where delete_flag=0 )mm on sm.material_nb =
         mm.code
         where sm.delete_flag=0
         <if test="plantNb != null  and plantNb != ''">and sm.plant_nb like concat('%', #{plantNb}, '%')</if>
+        <if test="wareCode != null  and wareCode != ''">and sm.ware_code like concat('%', #{wareCode}, '%')</if>
+
         <if test="materialNb != null  and materialNb != ''">and sm.material_nb like concat('%', #{materialNb}, '%')</if>
         <if test="batchNb != null  and batchNb != ''">and sm.batch_nb like concat('%', #{batchNb}, '%')</if>
         <if test="ssccNumber != null  and ssccNumber != ''">and sm.sscc_number like concat('%', #{ssccNumber}, '%')</if>
@@ -80,11 +83,11 @@
             '%')
         </if>
 
-        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(sm.expire_date, '%d/%m/%y') between
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(sm.expire_date, '%d/%m/%Y') between
             #{startExpireDate} and #{endExpireDate}
         </if>
 
-        <if test="startUploadTime != null and endUploadTime != null">and str_to_date(sm.upload_time, '%d/%m/%y') between
+        <if test="startUploadTime != null and endUploadTime != null">and str_to_date(sm.upload_time, '%d/%m/%Y') between
             #{startUploadTime} and #{endUploadTime}
         </if>
         <if test="status != null">and sm.status = #{status}</if>

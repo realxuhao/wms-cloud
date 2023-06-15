@@ -5,13 +5,33 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           <a-col :span="4">
-            <a-form-model-item label="源库位编码">
-              <a-input v-model="queryForm.sourceWareCode" placeholder="源库位编码" allow-clear/>
+            <a-form-model-item label="物料号">
+              <a-input v-model="queryForm.materialNb" placeholder="物料号" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="目的库位编码">
-              <a-input v-model="queryForm.targetWareCode" placeholder="目的库位编码" allow-clear/>
+            <a-form-model-item label="批次号">
+              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="源仓库">
+              <a-input v-model="queryForm.sourceWareCode" placeholder="源仓库" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="目的仓库">
+              <a-input v-model="queryForm.targetWareCode" placeholder="目的仓库" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="车牌号">
+              <a-input v-model="queryForm.carNb" placeholder="车牌号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="运单号">
+              <a-input v-model="queryForm.orderNb" placeholder="运单号" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
@@ -340,6 +360,10 @@ const queryFormAttr = () => {
     createBy: '',
     updateDate: [],
     sourceWareCode: '',
+    materialNb: '',
+    batchNb: '',
+    carNb: '',
+    orderNb: ''
   }
 }
 

@@ -168,4 +168,9 @@ public class AreaServiceImpl extends ServiceImpl<AreaMapper, Area> implements IA
         });
         return dtos;
     }
+
+    @Override
+    public List<AreaVO> getAreaListByDTO(List<AreaDTO> areaDTOList) {
+        return areaMapper.getAreaListByDTO(areaDTOList);
+    }
 }

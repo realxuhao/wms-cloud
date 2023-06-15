@@ -20,6 +20,7 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +54,26 @@ public class ProductWareShiftController extends BaseController {
             queryDTO = new ProductWareShiftQueryDTO();
         }
         if (!StringUtils.isEmpty(SecurityUtils.getWareCode())) {
-            queryDTO.setSourceWareCode(SecurityUtils.getWareCode());
+            if(queryDTO.getStatus().equals(ProductWareShiftEnum.WAITTING_BIN_IN.code())) {
+                queryDTO.setTargetWareCode(SecurityUtils.getWareCode());
+            }else if (queryDTO.getStatus().equals(ProductWareShiftEnum.FINISH.code())){
+                queryDTO.setTargetWareCode(SecurityUtils.getWareCode());
+            }else {
+                queryDTO.setSourceWareCode(SecurityUtils.getWareCode());
+            }
+        }
+
+        startPage();
+        List<ProductWareShiftVO> list = productWareShiftService.list(queryDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
+
+    @GetMapping(value = "/receivinglist")
+    @ApiOperation("成品移库任务列表")
+    public R<PageVO<ProductWareShiftVO>> receivinglist(ProductWareShiftQueryDTO queryDTO) {
+        if (queryDTO == null) {
+            queryDTO = new ProductWareShiftQueryDTO();
         }
         startPage();
         List<ProductWareShiftVO> list = productWareShiftService.list(queryDTO);
@@ -90,7 +110,9 @@ public class ProductWareShiftController extends BaseController {
         Assert.noNullElements(dto.getSsccList(),"ssccList不可以为空");
         Assert.notNull(dto.getCarNb(),"车牌号不可以为空");
 
-        productWareShiftService.ship(dto.getSsccList(), dto.getCarNb());
+        List<String> list = dto.getSsccList().stream().map(item -> ProductQRCodeUtil.getSSCC(item)).collect(Collectors.toList());
+
+        productWareShiftService.ship(list, dto.getCarNb());
         return R.ok();
     }
 
@@ -137,6 +159,15 @@ public class ProductWareShiftController extends BaseController {
 
         ExcelUtil<ProductWareShiftVO> util = new ExcelUtil<>(ProductWareShiftVO.class);
         util.exportExcel(response, wareShiftList, "成品移库任务列表");
+    }
+
+
+    @PostMapping(value = "/mainReceiveConfirm")
+    @ApiOperation("确认并入库")
+    @Transactional(rollbackFor = Exception.class)
+    public R confirmOrder(@RequestBody List<String> ssccList){
+        productWareShiftService.mainReceiveConfirm(ssccList);
+        return R.ok();
     }
 
 

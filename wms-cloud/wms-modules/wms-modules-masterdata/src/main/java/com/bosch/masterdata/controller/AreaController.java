@@ -22,6 +22,7 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
@@ -118,6 +119,25 @@ public class AreaController extends BaseController {
         }
         return R.ok(null);
     }
+
+    @GetMapping("/getByCodeAndPlant")
+    public R<AreaVO> getByCodeAndPlant(@RequestParam("areaCode") String areaCode,
+                                       @RequestParam("plantNb") String plantNb){
+        AreaDTO areaDTO = new AreaDTO();
+        areaDTO.setCode(areaCode);
+        areaDTO.setPlantNb(plantNb);
+        List<AreaVO> list = areaService.selectAreaVOList(areaDTO);
+        if (CollectionUtils.isNotEmpty(list)){
+            return R.ok(list.get(0));
+        }
+        return R.ok(null);
+    }
+
+    @GetMapping("/area/getAreaListByDTO")
+    public R<List<AreaVO>> getAreaListByDTO(@SpringQueryMap List<AreaDTO> areaDTOList){
+        return R.ok(areaService.getAreaListByDTO(areaDTOList));
+    }
+
     /**
      * 新增区域
      */

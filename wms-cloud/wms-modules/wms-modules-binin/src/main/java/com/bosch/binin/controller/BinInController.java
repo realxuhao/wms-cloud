@@ -152,6 +152,7 @@ public class BinInController extends BaseController {
 
     @ApiOperation("按照批次批量上架")
     @PutMapping("/batchBinIn")
+    @Synchronized
     public R batchBinIn(@RequestParam("mesBarCode") String mesBarCode,
                         @RequestParam("areaCode") String areaCode) {
         binInService.batchBinIn(mesBarCode,areaCode);

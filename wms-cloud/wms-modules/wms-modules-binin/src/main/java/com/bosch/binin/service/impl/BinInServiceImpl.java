@@ -333,6 +333,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         if (!CollectionUtils.isEmpty(finishedSscc)) {
             sameBatchList = sameBatchList.stream().filter(item -> !finishedSscc.contains(item.getSsccNumber())).collect(Collectors.toList());
         }
+        if (CollectionUtils.isEmpty(sameBatchList)){
+            throw new ServiceException("该批次都已经上架！");
+        }
         // 先删除待上架的
         if (!CollectionUtils.isEmpty(processingBinInList)) {
             processingBinInList.stream().forEach(item -> {
@@ -831,7 +834,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         double quantity = sameBatchList.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
         NMDIQCRuleDTO ruleDTO = new NMDIQCRuleDTO();
         ruleDTO.setQuantity(quantity);
-        ruleDTO.setCheckLevel("Ⅰ");
+        ruleDTO.setCheckLevel(EcnPlanEnum.A.getDesc());
         NMDIQCRule iqcRule = ruleService.getNMDIQCRule(ruleDTO);
         //抽样量
         Integer sampleQuantity = iqcRule.getNormal();
@@ -840,17 +843,17 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         List<IQCSamplePlan> res = new ArrayList<>();
 
         if (totalPallet <= 3) {
-            double sample = Math.ceil(sampleQuantity / totalPallet);
+            double sample = Math.round(sampleQuantity / totalPallet);
             res = convertToSamplePlans(binInList, materialVO, sample);
         } else if (totalPallet > 3 && totalPallet <= 300) {
             Collections.shuffle(binInList);
             List<BinIn> binIns = binInList.subList(0, (int) Math.round(Math.sqrt(totalPallet) + 1));
-            double sample = Math.ceil(sampleQuantity / (Math.sqrt(totalPallet) + 1));
+            double sample = Math.round(sampleQuantity / (Math.sqrt(totalPallet) + 1));
             res = convertToSamplePlans(binIns, materialVO, sample);
         } else {
             Collections.shuffle(binInList);
             List<BinIn> binIns = binInList.subList(0, (int) Math.round(Math.sqrt(totalPallet) / 2 + 1));
-            double sample = Math.ceil(sampleQuantity / (Math.sqrt(totalPallet) / 2 + 1));
+            double sample = Math.round(sampleQuantity / (Math.sqrt(totalPallet) / 2 + 1));
             res = convertToSamplePlans(binIns, materialVO, sample);
         }
 
@@ -1315,7 +1318,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         BinIn binIn = new BinIn();
         binIn.setSsccNumber(sscc);
-        binIn.setQuantity(Double.valueOf(MesBarCodeUtil.getQuantity(mesBarCode)));
+//        binIn.setQuantity(Double.valueOf(MesBarCodeUtil.getQuantity(mesBarCode)));
+        binIn.setQuantity(quantity);
         binIn.setMaterialNb(materialNb);
         binIn.setBatchNb(oldStock.getBatchNb());
         binIn.setExpireDate(MesBarCodeUtil.getExpireDate(mesBarCode));

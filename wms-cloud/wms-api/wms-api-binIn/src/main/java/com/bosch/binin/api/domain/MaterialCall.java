@@ -87,6 +87,8 @@ public class MaterialCall extends BaseEntity {
     @TableField(exist = false)
     private Double unIssuedQuantity;
 
+    private int shiftFlag;
+
 
 
 

@@ -16,7 +16,7 @@
               </a-col>
               <a-col :span="4">
                 <a-form-model-item label="物料号">
-                  <a-input v-model="queryForm.materialCode" placeholder="物料号" allow-clear />
+                  <a-input v-model="queryForm.materialNb" placeholder="物料号" allow-clear />
                 </a-form-model-item>
               </a-col>
               <a-col :span="4">
@@ -112,7 +112,7 @@ const queryFormAttr = () => {
   return {
     'batchNb': '',
     'wareCode': '',
-    'materialCode': '',
+    'materialNb': '',
     'ssccNumber': '',
   }
 }

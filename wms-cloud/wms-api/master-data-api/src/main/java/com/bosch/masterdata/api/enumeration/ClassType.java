@@ -1,5 +1,7 @@
 package com.bosch.masterdata.api.enumeration;
 
+import org.apache.ibatis.javassist.runtime.Desc;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +34,9 @@ public enum ClassType {
     PRODUCTFRAMEDTO("ProductFrameDTO", new ArrayList<String>(Arrays.asList("成品代码","优先级","可用跨编码","备注"))),
     RMCOMPARISONEXCELDTO("RmComparisonExcelDTO", new ArrayList<String>(Arrays.asList("PlantNb","SSCCNumber","SAPMaterialCode","SAPBatchNumber","RemainingQty","UnitOfMeasure","R3StockStatus"))),
     PROCOMPARISONDTO("ProComparisonDTO", new ArrayList<String>(Arrays.asList("Plant","Material Description","Material","Unrestricted","Base Unit of Measure","Storage Location","Batch","In Quality Insp.","Restricted-Use Stock","Blocked","Returns","Stock in Transit","In transfer (plant)"))),
-    INITSTOCKDTO("InitStockDTO",new ArrayList<String>(Arrays.asList("PlantNb","SSCCNumber","SAPMaterialCode","SAPBatchNumber","DefaultQty","RemainingQty","Dluo","SAPStorageLocation","Area","Bin","PONumber","R3StockStatus")));
+    INITSTOCKDTO("InitStockDTO",new ArrayList<String>(Arrays.asList("PlantNb","SSCCNumber","SAPMaterialCode","SAPBatchNumber","DefaultQty","RemainingQty","Dluo","SAPStorageLocation","Area","Bin","PONumber","R3StockStatus"))),
+    SPDNDTO("SPDNDTO",new ArrayList<String>(Arrays.asList("External Ref","Plant","DeliveryNb","Ship_To","Ship_Date","Vendor Code","SSCCNumber","Delivery_Item","Material","Batch","Qty","UoM","StorageLocation","ProdBatch")));
+
     private String desc;
     private List<String> strings;
 

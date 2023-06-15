@@ -136,7 +136,7 @@ public class MaterialKanbanVO extends BaseEntity {
     /**
      * 状态
      */
-    @Excel(name = "状态",readConverterExp = "-1=取消任务,0=待下发,1=待下架,2=外库已下架,3=主库已下架,4=主库待收货,5=主库入库,6=主库上架,7=产线收货")
+    @Excel(name = "状态",readConverterExp = "-1=取消任务,0=待下发,1=待下架,2=外库待发运,3=产线待收货,4=主库待收货,5=待上架,6=产线已收货,7=完成")
     @ExcelProperty(value = "状态")
     @ApiModelProperty(value = "(-1,\"取消任务\"),\n" +
             "(0, \"待下发\"),\n" +

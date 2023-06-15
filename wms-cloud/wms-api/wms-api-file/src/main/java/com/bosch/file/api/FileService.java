@@ -48,4 +48,6 @@ public interface FileService {
     @PostMapping(value = "/file/InitStockImport",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public <T> R<List<T>> InitStockImport(@RequestPart(value = "file") MultipartFile file, @RequestParam(value = "className") String className);
 
+    @PostMapping(value = "/file/SPDNFileImport",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    <T> R SPDNFileImport(@RequestPart(value = "file")MultipartFile file,@RequestParam(value = "className") String desc);
 }

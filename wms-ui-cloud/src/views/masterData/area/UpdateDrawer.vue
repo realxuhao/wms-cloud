@@ -30,7 +30,7 @@
             'wareId',
             { rules: [{ required: true, message: '请选择仓库!' },] }
           ]">
-          <a-select-option v-for="item in wareList" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+          <a-select-option v-for="item in wareList" :key="item.id" :value="item.id">{{ item.code }}———{{ item.name }}</a-select-option>
         </a-select>
       </a-form-item>
       <a-form-item label="区域类型">
@@ -69,8 +69,7 @@ const areaTypeMap = {
   0: '原材料',
   1: '成品',
   2: 'IQC',
-  3: '不合格品区域',
-  4: '成品暂存区'
+  3: '不合格品区域'
 }
 
 export default {

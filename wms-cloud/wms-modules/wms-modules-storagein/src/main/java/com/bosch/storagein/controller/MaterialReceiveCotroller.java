@@ -1,8 +1,9 @@
 package com.bosch.storagein.controller;
 
 import com.alibaba.fastjson2.JSON;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.file.api.FileService;
+import com.bosch.masterdata.api.RemoteMasterDataService;
+import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.storagein.api.domain.MaterialReceive;
 import com.bosch.storagein.api.domain.dto.MaterialQueryDTO;
@@ -14,6 +15,7 @@ import com.bosch.storagein.service.IMaterialReceiveService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
@@ -45,11 +47,19 @@ public class MaterialReceiveCotroller extends BaseController {
     @Autowired
     private IMaterialReceiveService materialReceiveService;
 
+    @Autowired
+    private RemoteMasterDataService remoteMasterDataService;
 
 
     @GetMapping("/list")
     @ApiOperation("查询收货列表")
     public R<PageVO<MaterialReceiveVO>> list(@Validated MaterialReceiveDTO materialReceiveDTO) {
+        if (materialReceiveDTO == null) {
+            materialReceiveDTO = new MaterialReceiveDTO();
+        }
+        if (StringUtils.isEmpty(materialReceiveDTO.getWareCode())) {
+            materialReceiveDTO.setWareCode(SecurityUtils.getWareCode());
+        }
         startPage();
         List<MaterialReceiveVO> list = materialReceiveService.selectMaterialReceiveList(materialReceiveDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
@@ -90,9 +100,9 @@ public class MaterialReceiveCotroller extends BaseController {
      * 批量上传
      */
     @ApiOperation("批量上传")
-    @PostMapping(value = "/import" , headers = "content-type=multipart/form-data")
+    @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
     @Transactional(rollbackFor = Exception.class)
-    public R importExcel(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
+    public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
         try {
             //解析文件服务
             R result = fileService.materialReceiveImport(file, ClassType.MATERIALRECEIVE.getDesc());
@@ -104,16 +114,25 @@ public class MaterialReceiveCotroller extends BaseController {
 
                     //查询是否有已上架状态的sscc码
                     boolean validReceive = materialReceiveService.validReceive(ssccList);
-                    if (validReceive){
+                    if (validReceive) {
                         return R.fail("excel中存在已入库状态的SSCCNumber,请修改后上传");
                     }
                     boolean validList = materialReceiveService.validList(ssccList);
                     if (validList) {
                         return R.fail(400, "存在重复数据");
                     } else {
-                        //添加
-                        dtos.forEach(item->item.setMoveType(MoveTypeEnums.RECEIVE.getCode()));
+
+
+                          //添加
+                        dtos.forEach(item -> {
+                            item.setMoveType(MoveTypeEnums.RECEIVE.getCode());
+                            AreaVO areaVO = getAreaVo(item.getStorageLocation(), item.getPlantNb());
+                            item.setWareCode(areaVO==null?null:areaVO.getWareCode());
+
+                        });
                         materialReceiveService.saveBatch(dtos);
+
+
                     }
                 }
                 return R.ok("解析成功");
@@ -131,9 +150,9 @@ public class MaterialReceiveCotroller extends BaseController {
      * 批量更新
      */
     @ApiOperation("批量更新")
-    @PostMapping(value = "/saveBatch" , headers = "content-type=multipart/form-data")
+    @PostMapping(value = "/saveBatch", headers = "content-type=multipart/form-data")
     @Transactional(rollbackFor = Exception.class)
-    public R saveBatch(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
+    public R saveBatch(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
 
         try {
             //解析文件服务
@@ -144,10 +163,13 @@ public class MaterialReceiveCotroller extends BaseController {
                 List<MaterialReceive> dtos = JSON.parseArray(JSON.toJSONString(data), MaterialReceive.class);
                 if (!CollectionUtils.isEmpty(dtos)) {
 
-                    dtos.forEach(r->{
+                    dtos.forEach(r -> {
                         r.setMoveType(MoveTypeEnums.RECEIVE.getCode());
-                        boolean update =materialReceiveService.updateBatchReceive(r);
-                        if (!update){
+                        //添加
+                        AreaVO areaVO = getAreaVo(r.getStorageLocation(), r.getPlantNb());
+                        r.setWareCode(areaVO==null?null:areaVO.getWareCode());
+                        boolean update = materialReceiveService.updateBatchReceive(r);
+                        if (!update) {
                             r.setUpdateTime(null);
                             r.setUpdateUser(null);
                             materialReceiveService.save(r);
@@ -155,8 +177,7 @@ public class MaterialReceiveCotroller extends BaseController {
                     });
                 }
                 return R.ok("导入成功");
-            }
-            else {
+            } else {
                 return R.fail(result.getMsg());
             }
 
@@ -165,6 +186,18 @@ public class MaterialReceiveCotroller extends BaseController {
             return R.fail(e.getMessage());
         }
 
+    }
+
+    private AreaVO getAreaVo(String areaCode, String plantNb) {
+        R<AreaVO> r = remoteMasterDataService.getByCodeAndPlant(areaCode,plantNb);
+        if (!r.isSuccess() || r.getData() == null) {
+            throw new ServiceException("调用主数据查询区域失败");
+        }
+        AreaVO areaVO = r.getData();
+        if (areaVO==null) {
+            throw new ServiceException("不存在区域为"+areaCode+"的仓库");
+        }
+        return r.getData();
     }
 
 

@@ -24,7 +24,7 @@
           </a-col>
           <a-col :span="4">
             <a-form-model-item label="物料编码">
-              <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
+              <a-input v-model="queryForm.materialCode" placeholder="物料编码" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
@@ -55,6 +55,11 @@
             </a-form-model-item>
           </a-col>
           <template v-if="advanced">
+            <a-col :span="4">
+              <a-form-item label="SSCC">
+                <a-input v-model="queryForm.ssccNumber" placeholder="SSCC" allow-clear/>
+              </a-form-item>
+            </a-col>
             <a-col :span="4">
               <a-form-item label="创建人">
                 <a-input v-model="queryForm.createBy" placeholder="创建人" allow-clear/>
@@ -373,13 +378,14 @@ const typeColorMap = {
 const queryFormAttr = () => {
   return {
     cell: '',
-    materialNb: '',
+    materialCode: '',
     orderNumber: '',
     status: undefined,
     createBy: '',
     date: [],
     updateDate: [],
-    materialTypeList: []
+    materialTypeList: [],
+    ssccNumber: ''
   }
 }
 
@@ -395,7 +401,7 @@ export default {
       tableLoading: false,
       exportLoading: false,
       queryForm: {
-        pageSize: 20,
+        pageSize: 300,
         pageNum: 1,
         ...queryFormAttr()
       },
@@ -543,7 +549,7 @@ export default {
         this.queryForm.pageSize = 0
         const blobData = await this.$store.dispatch('materialFeeding/exportCallExcel', this.queryForm)
         console.log(blobData)
-        download(blobData, '叫料记录')
+        download(blobData, '拣配记录')
       } catch (error) {
         console.log(error)
         this.$message.error(error.message)

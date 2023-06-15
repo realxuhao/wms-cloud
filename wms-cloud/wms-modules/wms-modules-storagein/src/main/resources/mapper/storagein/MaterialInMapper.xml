@@ -161,7 +161,7 @@
         <if test="checkType != null">and si.check_type like concat('%', #{checkType}, '%')</if>
         <if test="operateUser != null  and operateUser != ''">and si.operate_user like concat('%', #{operateUser}, '%')</if>
 
-        <if test="startOperateTime != null and endOperateTime != null">and str_to_date(si.operate_time, '%d/%m/%y') between
+        <if test="startOperateTime != null and endOperateTime != null">and str_to_date(si.operate_time, '%d/%m/%Y') between
             #{startOperateTime} and #{endOperateTime}
         </if>
         order by operate_time desc

@@ -9,6 +9,11 @@ const getList = async (options) => {
   const { data } = await createAuthInstance(baseUrl).post(url, options)
   return data
 }
+const getReceivIngList = async (options) => {
+  const url = `/productFrame/receivinglist`
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
+  return data
+}
 const getProductList = async (options) => {
   const url = `/mdProductPackaging/list`
   const { data } = await createAuthInstance(baseUrl).post(url, options)
@@ -92,6 +97,7 @@ const uploadMaterialBinBatchUpdate = async (formdata) => {
 
 export const productService = {
   getList,
+  getReceivIngList,
   getOne,
   edit,
   add,

@@ -262,6 +262,22 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         if (CollectionUtils.isEmpty(list)){
             return Double.valueOf(0);
         }
+        double sum = list.stream().filter(item -> AreaListConstants.mainAreaList.contains(item.getAreaCode())&&!AreaListConstants.noQualifiedAreaList.contains(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
+        return sum;
+    }
+
+    @Override
+    public Double getNoAvailableStockCount(String materialNb) {
+        LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Stock::getMaterialNb, materialNb)
+                .ne(Stock::getFreezeStock, Double.valueOf(0))
+                .ne(Stock::getAvailableStock,Double.valueOf(0))
+                .eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode())
+                .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<Stock> list = this.list(queryWrapper);
+        if (CollectionUtils.isEmpty(list)){
+            return Double.valueOf(0);
+        }
         double sum = list.stream().filter(item -> AreaListConstants.mainAreaList.contains(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
         return sum;
     }

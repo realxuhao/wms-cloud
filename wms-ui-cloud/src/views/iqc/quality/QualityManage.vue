@@ -271,8 +271,8 @@ const columns = [
   },
   {
     title: 'SSCC码',
-    key: 'ssccnumber',
-    dataIndex: 'ssccnumber',
+    key: 'ssccNumber',
+    dataIndex: 'ssccNumber',
     width: 175,
     align: 'center'
   },

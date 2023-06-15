@@ -14,12 +14,15 @@ import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
+import com.bosch.product.api.domain.ProductWareShift;
+import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
+import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.page.PageDomain;
@@ -60,11 +63,14 @@ public class MaterialKanbanController {
     private IWareShiftService wareShiftService;
 
     @Autowired
+    private IProductWareShiftService productWareShiftService;
+
+    @Autowired
     private IStockService stockService;
 
     @GetMapping(value = "/list")
     @ApiOperation("查询kanban列表")
-    public R<PageVO<MaterialKanbanVO>> list( MaterialKanbanDTO materialKanbanDTO) {
+    public R<PageVO<MaterialKanbanVO>> list(MaterialKanbanDTO materialKanbanDTO) {
         if (Objects.isNull(materialKanbanDTO)) {
             materialKanbanDTO = new MaterialKanbanDTO();
         }
@@ -279,8 +285,6 @@ public class MaterialKanbanController {
             materialKanbanService.cancelKanban(id);
 
 
-
-
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             return R.fail(ex.getMessage());
@@ -326,7 +330,7 @@ public class MaterialKanbanController {
     @PostMapping(value = "/genOrderAndSetStatus/{carNb}")
     @ApiOperation("生成转运单号,修改对应任务状态为主库待收货")
     @Transactional(rollbackFor = Exception.class)
-    public R genTranshipmentOrder(@RequestBody List<String> mesbarCodes,@PathVariable("carNb")String carNb) {
+    public R genTranshipmentOrder(@RequestBody List<String> mesbarCodes, @PathVariable("carNb") String carNb) {
         try {
             List<TranshipmentOrder> transhipmentOrders = new ArrayList<>();
             List<String> ssccs = new ArrayList<>();
@@ -338,26 +342,26 @@ public class MaterialKanbanController {
             }
             //ssccs
             List<String> collect = mesbarCodes.stream().distinct().collect(Collectors.toList());
-            collect.forEach(r->{
+            collect.forEach(r -> {
                 String sscc = MesBarCodeUtil.getSSCC(r);
                 validSSSCCs.add(sscc);
             });
             //校验sscc在不在待发运单中
             List<WareShift> listBySSCC = wareShiftService.getListBySSCC(validSSSCCs);
 
-            if (CollectionUtils.isEmpty(listBySSCC)){
+            if (CollectionUtils.isEmpty(listBySSCC)) {
                 throw new ServiceException("选择的sscc码不在待转运清单中");
             }
-            if(collect.size()!=listBySSCC.size()){
+            if (collect.size() != listBySSCC.size()) {
                 List<String> wareShiftSSCCs = listBySSCC.stream().map(WareShift::getSsccNb).collect(Collectors.toList());
                 boolean b = validSSSCCs.removeAll(wareShiftSSCCs);
-                throw new ServiceException("选择的如下sscc码不在待转运清单中: "+String.join(",", validSSSCCs));
+                throw new ServiceException("选择的如下sscc码不在待转运清单中: " + String.join(",", validSSSCCs));
             }
             List<TranshipmentOrder> infoBySSCC = transhipmentOrderService.getInfoBySSCC(validSSSCCs);
             if (CollectionUtils.isNotEmpty(infoBySSCC)) {
                 throw new ServiceException("选择的sscc码在装运单中已存在");
             }
-            listBySSCC.forEach(w->{
+            listBySSCC.forEach(w -> {
                 TranshipmentOrder transhipmentOrder = new TranshipmentOrder();
                 transhipmentOrder.setOrderNumber(nextOrderNb);
                 transhipmentOrder.setSsccNumber(w.getSsccNb());
@@ -395,10 +399,15 @@ public class MaterialKanbanController {
 
     @GetMapping(value = "/getTranshipmentOrder")
     @ApiOperation("转运单查询")
-    public R<List<WareShift>> getTranshipmentOrder(@RequestParam(value = "mesbarCode") String mesbarCode) {
+    public R getTranshipmentOrder(@RequestParam(value = "mesbarCode") String mesbarCode) {
 
         try {
-            String sscc = MesBarCodeUtil.getSSCC(mesbarCode);
+            String sscc = "";
+            if (mesbarCode.length() == 50||mesbarCode.contains(".")) {
+                 sscc = MesBarCodeUtil.getSSCC(mesbarCode);
+            }else{
+                sscc= ProductQRCodeUtil.getSSCC(mesbarCode);
+            }
             String order = transhipmentOrderService.getOrderBySSCC(sscc);
             //根据运单号获取相关sscc
             List<TranshipmentOrder> ssccByOrder = transhipmentOrderService.getSSCCByOrder(order);
@@ -410,13 +419,22 @@ public class MaterialKanbanController {
                     ssccByOrder.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
             //*根据sscc获取kanban信息
             //根据sscc获取stock信息
-            LambdaQueryWrapper<WareShift> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.in(WareShift::getSsccNb,collect);
-            queryWrapper.eq(WareShift::getStatus,KanbanStatusEnum.INNER_RECEIVING.value());
-            queryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-            wareShiftService.list(queryWrapper);
-            return R.ok(wareShiftService.list(queryWrapper));
-//            collect.stream().forEach(r -> {
+            if (mesbarCode.length() == 50||mesbarCode.contains(".")) {
+                LambdaQueryWrapper<WareShift> queryWrapper = new LambdaQueryWrapper<>();
+                queryWrapper.in(WareShift::getSsccNb, collect);
+                queryWrapper.eq(WareShift::getStatus, KanbanStatusEnum.INNER_RECEIVING.value());
+                queryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+                List<WareShift> wareShifts = wareShiftService.list(queryWrapper);
+                return R.ok(wareShifts);
+            }else {
+                LambdaQueryWrapper<ProductWareShift> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+                lambdaQueryWrapper.in(ProductWareShift::getSsccNb, collect);
+                lambdaQueryWrapper.eq(ProductWareShift::getStatus, ProductWareShiftEnum.WAITTING_RECEIVING.code());
+                lambdaQueryWrapper.eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+                List<ProductWareShift> productWareShifts = productWareShiftService.list(lambdaQueryWrapper);
+                return R.ok(productWareShifts);
+            }
+            //            collect.stream().forEach(r -> {
 //                StockVO oneBySSCC = stockService.getLastOneBySSCC(r);
 //                if (oneBySSCC == null) {
 //                    throw new ServiceException("根据sscc" + r + "未获取到库存信息");
@@ -581,6 +599,7 @@ public class MaterialKanbanController {
             return R.fail(ex.getMessage());
         }
     }
+
     @GetMapping(value = "/confirmMaterialBySSCCs")
     @ApiOperation("多个sscc收货确认")
     @Transactional(rollbackFor = Exception.class)
@@ -619,8 +638,7 @@ public class MaterialKanbanController {
     @Log(title = "看板", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @ApiOperation("叫料需求列表导出")
-    public void export(HttpServletResponse response, MaterialKanbanDTO queryDTO) {
-        startPage();
+    public void export(HttpServletResponse response, @RequestBody MaterialKanbanDTO queryDTO) {
         List<MaterialKanbanVO> materialKanbanVOS = materialKanbanService.getKanbanList(queryDTO);
 //        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
 

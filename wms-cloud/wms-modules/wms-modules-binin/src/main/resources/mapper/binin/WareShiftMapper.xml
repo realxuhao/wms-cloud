@@ -44,6 +44,18 @@
         <if test="endCreateTime != null">and ws.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
         <if test="startUpdateTime != null">and ws.update_time <![CDATA[ >= ]]> #{startUpdateTime}</if>
         <if test="startUpdateTime != null">and ws.update_time <![CDATA[ <= ]]> #{endUpdateTime}</if>
+        <if test="materialNb != null and materialNb != ''">
+            AND ws.material_nb like concat('%', #{materialNb}, '%')
+        </if>
+        <if test="batchNb != null and batchNb != ''">
+            AND ws.batch_nb like concat('%', #{batchNb}, '%')
+        </if>
+        <if test="orderNb != null and orderNb != ''">
+            AND tr.order_number like concat('%', #{orderNb}, '%')
+        </if>
+        <if test="carNb != null and carNb != ''">
+            AND tr.car_nb like concat('%', #{carNb}, '%')
+        </if>
 
         order by create_time desc
     </select>

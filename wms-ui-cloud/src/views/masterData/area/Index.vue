@@ -164,8 +164,7 @@ const areaTypeMap = {
   0: '原材料',
   1: '成品',
   2: 'IQC',
-  3: '不合格品区域',
-  4: '成品暂存区'
+  3: '不合格品区域'
 }
 
 export default {

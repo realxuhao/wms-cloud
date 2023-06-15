@@ -103,7 +103,7 @@ public class MdProductPackagingServiceImpl extends ServiceImpl<MdProductPackagin
                 throw new ServiceException("运输单位(Tr) 不能为空");
             }
             // Check 箱 Tr 对应包装规格
-            if (StringUtils.isEmpty(r.getBoxSpecification())) {
+            if (r.getBoxSpecification()==null) {
                 throw new ServiceException("箱 Tr 对应包装规格 不能为空");
             }
             // Check 标准 Tr/托

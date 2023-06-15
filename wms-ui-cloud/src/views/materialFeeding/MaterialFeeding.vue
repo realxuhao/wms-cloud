@@ -332,7 +332,7 @@ export default {
       tableLoading: false,
       exportLoading: false,
       queryForm: {
-        pageSize: 20,
+        pageSize: 300,
         pageNum: 1,
         ...queryFormAttr()
       },
@@ -366,6 +366,7 @@ export default {
       try {
         this.exportLoading = true
         this.queryForm.pageSize = 0
+        this.queryForm.status = 2
         const blobData = await this.$store.dispatch('materialFeeding/exportExcel', this.queryForm)
         console.log(blobData)
         download(blobData, '叫料记录')

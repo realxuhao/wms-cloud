@@ -14,6 +14,10 @@ const product = {
       const { data: { rows } } = await productService.getList({ pageSize: 0 })
       return rows
     },
+    async getReceivIngList ({ commit }, options) {
+      const { data: { rows } } = await productService.getReceivIngList({ pageSize: 0 })
+      return rows
+    },
     async getProductList ({ commit }, options) {
       const { data: { rows } } = await productService.getProductList({ pageSize: 0 })
       return rows

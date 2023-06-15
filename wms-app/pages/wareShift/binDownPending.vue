@@ -21,6 +21,8 @@
 				<view class="card-text m-b-4">下架类型：{{ item.splitType === 1 ? '拆托' : '整托' }}</view>
 				<view class="card-text m-b-4" v-show="item.splitType === 1">拆托数量：{{ item.splitQuality }}</view>
 				<view class="card-text m-b-4">物料编码：{{ item.materialNb }}</view>
+				<view class="card-text m-b-4">区域：{{ item.sourceAreaCode }}</view>
+				<view class="card-text m-b-4">关联需求号：{{ item.orderNumber }}</view>
 				<view class="card-text m-b-4">库位：{{ item.sourceBinCode }}</view>
 				<view class="card-text sscc">
 					<text>SSCC码：{{ item.ssccNb }}</text>

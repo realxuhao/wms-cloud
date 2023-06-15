@@ -10,7 +10,7 @@ const mixinTableList = {
 
       searchLoading: false,
       queryForm: {
-        pageSize: 20,
+        pageSize: 300,
         pageNum: 1
       },
       paginationTotal: 0,
@@ -39,6 +39,8 @@ const mixinTableList = {
     },
     async handleSearch () {
       this.searchLoading = true
+      this.selectedRowKeys = []
+      this.selectedRows = []
       await this.loadTableList()
       this.searchLoading = false
     },

@@ -20,7 +20,8 @@
         mc.create_time as create_time,
         mc.update_time as update_time,
         mc.issued_quantity as issued_quantity,
-        mm.name as material_name
+        mm.name as material_name,
+        mc.shift_flag
         from material_call mc left join (SELECT * from md_material where delete_flag='0' ) mm on mc.material_nb =
         mm.code
         where
@@ -47,7 +48,7 @@
         mc.order_nb as order_nb,
         mc.material_nb as material_nb,
         mc.quantity as quantity,
-        mc.unit as unit,
+        mm.unit as unit,
         mc.remark as remark,
         mc.cell as cell,
         mc.sort_type as sort_type,

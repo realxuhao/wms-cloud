@@ -30,6 +30,7 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -211,7 +212,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         wareShiftWrapper.eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         wareShiftWrapper.eq(ProductWareShift::getStatus, ProductWareShiftEnum.WAITTING_RECEIVING.code());
         List<ProductWareShift> wareShifts = this.list(wareShiftWrapper);
-        AreaVO areaVO = stockService.getAreaByType(SecurityUtils.getWareCode(), AreaTypeEnum.PRO_TEMP.getCode());
+        AreaVO areaVO = stockService.getAreaByType(SecurityUtils.getWareCode(), AreaTypeEnum.PRO.getCode());
         wareShifts.forEach(item -> {
             item.setStatus(ProductWareShiftEnum.WAITTING_BIN_IN.code());
             item.setTargetWareCode(SecurityUtils.getWareCode());
@@ -286,11 +287,14 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         if (productStockVO.getBinInFlag().equals(ProductStockBinInEnum.NONE.code())) {
             throw new ServiceException("该sscc:" + sscc + "为主库收货，无需上架。");
         }
-        String allocationBinCode = binAssignmentService.getBinAllocationVO(qrCode);
-        if (StringUtils.isEmpty(allocationBinCode)) {
-            throw new ServiceException("未找到合适库位");
+        try {
+            String allocationBinCode = binAssignmentService.getBinAllocationVO(qrCode);
+            productStockVO.setRecommendBinCode(allocationBinCode);
+        }catch(Exception e){
+            log.error(e.getMessage());
         }
-        productStockVO.setRecommendBinCode(allocationBinCode);
+
+
         return productStockVO;
     }
 
@@ -334,6 +338,40 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         stockService.updateBatchById(stockList);
 
         this.saveBatch(wareShifts);
+
+    }
+
+    @Override
+    public void mainReceiveConfirm(List<String> ssccList) {
+        Assert.notEmpty(ssccList,"至少选择一托");
+
+        //先更新转运单状态
+        LambdaQueryWrapper<TranshipmentOrder> transhipmentQueryWrapper = new LambdaQueryWrapper<>();
+        transhipmentQueryWrapper.in(TranshipmentOrder::getSsccNumber,ssccList);
+        transhipmentQueryWrapper.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<TranshipmentOrder> transhipmentOrderList = transhipmentOrderService.list(transhipmentQueryWrapper);
+        transhipmentOrderList.forEach(item -> item.setStatus(1));
+        transhipmentOrderService.updateBatchById(transhipmentOrderList);
+
+        //移库变为完成
+        LambdaQueryWrapper<ProductWareShift> shiftQueryWrapper = new LambdaQueryWrapper<>();
+        shiftQueryWrapper.in(ProductWareShift::getSsccNb,ssccList);
+        shiftQueryWrapper.ne(ProductWareShift::getStatus,ProductWareShiftEnum.CANCEL.code());
+        shiftQueryWrapper.ne(ProductWareShift::getStatus,ProductWareShiftEnum.FINISH.code());
+        shiftQueryWrapper.eq(ProductWareShift::getStatus,ProductWareShiftEnum.WAITTING_RECEIVING.code());
+        shiftQueryWrapper.eq(ProductWareShift::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        List<ProductWareShift> wareShiftList = wareShiftMapper.selectList(shiftQueryWrapper);
+        AreaVO areaVO = stockService.getAreaByType(SecurityUtils.getWareCode(), AreaTypeEnum.PRO.getCode());
+        wareShiftList.forEach(item -> {
+            item.setStatus(ProductWareShiftEnum.WAITTING_BIN_IN.code());
+            item.setTargetWareCode(SecurityUtils.getWareCode());
+            item.setTargetAreaCode(areaVO.getCode());
+            item.setTargetPlant(areaVO.getPlantNb());
+        });
+        this.updateBatchById(wareShiftList);
+
+        //库存修改
+        stockService.generateStockByProductWareShifts(wareShiftList);
 
     }
 }

@@ -68,4 +68,6 @@ public interface AreaMapper extends BaseMapper<Area>
      * @return 结果
      */
     public int deleteAreaByIds(Integer[] ids);
+
+    List<AreaVO> getAreaListByDTO(List<AreaDTO> areaDTOList);
 }

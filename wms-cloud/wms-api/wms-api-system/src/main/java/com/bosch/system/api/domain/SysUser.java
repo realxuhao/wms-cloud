@@ -130,7 +130,7 @@ public class SysUser extends BaseEntity
     }
 
     @Xss(message = "用户昵称不能包含脚本字符")
-    @Size(min = 0, max = 30, message = "用户昵称长度不能超过30个字符")
+    @Size(min = 0, max = 200, message = "用户昵称长度不能超过30个字符")
     public String getNickName()
     {
         return nickName;

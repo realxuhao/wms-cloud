@@ -66,5 +66,10 @@ public class FileFallbackFactory implements FileService {
         return R.fail("初始化库存服务调用失败");
     }
 
+    @Override
+    public <T> R SPDNFileImport(MultipartFile file, String desc) {
+        return R.fail("调用导入SPDN导入失败");
+    }
+
 
 }

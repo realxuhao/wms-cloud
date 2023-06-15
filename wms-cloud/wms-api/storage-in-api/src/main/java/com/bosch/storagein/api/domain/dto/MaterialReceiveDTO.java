@@ -19,6 +19,9 @@ public class MaterialReceiveDTO extends PageDomain {
     @ApiModelProperty(value = "工厂")
     private String plantNb;
 
+    @ApiModelProperty(value = "仓库")
+    private String wareCode;
+
 
 
     /**

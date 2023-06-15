@@ -11,9 +11,8 @@ public enum AreaTypeEnum {
     RM("原材料", 0),
     PRO("成品", 1),
     IQC("质检", 2),
-    UNQUALIFIED("不合格品",3),
-    PRO_TEMP("成品暂存区",4);
-    
+    UNQUALIFIED("不合格品",3);
+
 
     private String desc;
     private Integer code;

@@ -63,6 +63,9 @@
       <template slot="enough" slot-scope="text">
         {{ text ? '满足' : '不满足' }}
       </template>
+      <template slot="shiftFlag" slot-scope="text">
+        {{ text ? '是' : '否' }}
+      </template>
       <template slot="action" slot-scope="text, record">
         <div class="action-con">
           <a-popconfirm title="确认要取消该条任务吗?" ok-text="确认" cancel-text="取消" @confirm="handleCancel(record)">
@@ -94,6 +97,8 @@ const list = [
     value: 0,
   },
 ]
+
+
 
 const columns = [
   {
@@ -127,9 +132,15 @@ const columns = [
     width: 80
   },
   {
-    title: '主库库存量',
+    title: '主库可用库存量',
     key: 'mainStock',
     dataIndex: 'mainStock',
+    width: 80
+  },
+  {
+    title: '主库暂不可用库存量',
+    key: 'noAvailableStockCount',
+    dataIndex: 'noAvailableStockCount',
     width: 80
   },
   {
@@ -152,6 +163,24 @@ const columns = [
     width: 60
   },
   {
+    title: '是否创建过移库',
+    key: 'shiftFlag',
+    // filters: [
+    //   {
+    //     text: '满足',
+    //     value: 1,
+    //   },
+    //   {
+    //     text: '不满足',
+    //     value: 0,
+    //   },
+    // ],
+    // onFilter: (value, record) => record.enough == value,
+    scopedSlots: { customRender: 'shiftFlag' },
+    dataIndex: 'shiftFlag',
+    width: 100
+  },
+  {
     title: '主库是否满足',
     key: 'enough',
     scopedSlots: { customRender: 'enough' },
@@ -163,6 +192,7 @@ const columns = [
 const queryFormAttr = () => {
   return {
     enough: undefined,
+    shiftFlag: undefined
   }
 }
 

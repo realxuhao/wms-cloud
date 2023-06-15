@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.product.mapper.SPDNMapper">
+
+
+    <resultMap id="DeliveryOrderResultMap" type="com.bosch.product.api.domain.vo.SPDNVO">
+        <id property="id" column="id"/>
+        <result property="externalRef" column="external_ref"/>
+        <result property="plant" column="plant"/>
+        <result property="deliveryNb" column="delivery_nb"/>
+        <result property="shipTo" column="ship_to"/>
+        <result property="shipDate" column="ship_date"/>
+        <result property="vendorCode" column="vendor_code"/>
+        <result property="ssccNumber" column="sscc_number"/>
+        <result property="deliveryItem" column="delivery_item"/>
+        <result property="material" column="material"/>
+        <result property="batch" column="batch"/>
+        <result property="qty" column="qty"/>
+        <result property="uom" column="uom"/>
+        <result property="storageLocation" column="storage_location"/>
+        <result property="prodBatch" column="prod_batch"/>
+        <result property="materialName" column="material_name"/>
+        <result property="boxSpecification" column="box_specification"/>
+        <result property="totalPCS" column="total_pcs"/>
+
+    </resultMap>
+
+
+    <select id="getList" resultType="com.bosch.product.api.domain.vo.SPDNVO">
+        SELECT sp.id,
+               sp.external_ref,
+               sp.plant,
+               sp.delivery_nb,
+               sp.ship_to,
+               sp.ship_date,
+               sp.vendor_code,
+               sp.sscc_number,
+               sp.delivery_item,
+               sp.material,
+               sp.batch,
+               sp.qty,
+               sp.uom,
+               sp.storage_location,
+               sp.prod_batch
+
+        FROM spdn sp
+                 left join md_product_packaging pp on pp.product_no = sp.material and pp.delete_flag = 0
+
+        WHERE sp.delete_flag = 0
+
+
+    </select>
+
+</mapper>

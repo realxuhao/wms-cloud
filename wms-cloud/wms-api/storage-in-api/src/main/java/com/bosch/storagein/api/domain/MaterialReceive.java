@@ -36,6 +36,13 @@ public class MaterialReceive {
     private String plantNb;
 
     /**
+     * 仓库
+     */
+    @ExcelProperty(value = "wareCode")
+    @CsvBindByName(column = "wareCode")
+    private String wareCode;
+
+    /**
      * SSCC码
      */
     @ExcelProperty(value = "SSCCNumber")

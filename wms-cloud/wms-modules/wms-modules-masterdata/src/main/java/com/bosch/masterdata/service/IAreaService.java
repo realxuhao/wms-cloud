@@ -89,4 +89,6 @@ public interface IAreaService extends IService<Area>
      * @return
      */
     public List<AreaDTO> setValue(List<AreaDTO> dtos);
+
+    List<AreaVO> getAreaListByDTO(List<AreaDTO> areaDTOList);
 }

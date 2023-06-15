@@ -166,6 +166,11 @@ public class WareShiftVO  {
     @ApiModelProperty(value = "目的库位code")
     @Excel(name = "目的库位code")
     private String targetBinCode;
+
+
+    @ApiModelProperty(value = "所属需求订单号")
+    private String orderNumber;
+
     /** 创建者 */
     @TableField(fill = FieldFill.INSERT)
     @ApiModelProperty(value = "创建者")
@@ -195,6 +200,8 @@ public class WareShiftVO  {
     /** 备注 */
     @Excel(name = "备注")
     private String remark;
+
+
 
 
 

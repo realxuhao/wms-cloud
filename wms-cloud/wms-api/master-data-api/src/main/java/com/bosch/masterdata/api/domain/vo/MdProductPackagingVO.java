@@ -55,7 +55,7 @@ public class MdProductPackagingVO extends BaseEntity {
     /**
      * 箱 Tr 对应包装规格
      */
-    private String boxSpecification;
+    private Double boxSpecification;
 
     /**
      * 标准 Tr/托

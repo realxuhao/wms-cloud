@@ -88,6 +88,27 @@
         <include refid="selectAreaVo"/>
         where id = #{id}
     </select>
+    <select id="getAreaListByDTO" resultType="com.bosch.masterdata.api.domain.vo.AreaVO">
+        SELECT a.id,
+               a.CODE         as code,
+               a.NAME         as name,
+               w.code         as wareCode,
+               w.name         as wareName,
+               a.ware_id,
+               a.create_by,
+               a.update_by,
+               a.create_time,
+               a.update_time,
+               a.remark,
+               a.area_type,
+               w.factory_code as plant_nb
+        FROM md_area AS a
+                 LEFT JOIN md_ware as w on a.ware_id = w.id
+                 where 1=1
+        <foreach item="item" collection="areaDTOList" open="and (" separator="or" close=")">
+            a.code = #{item.areaCode} and w.factory_code = #{item.plantNb}
+        </foreach>
+    </select>
 
     <insert id="insertArea" parameterType="Area">
         insert into md_area

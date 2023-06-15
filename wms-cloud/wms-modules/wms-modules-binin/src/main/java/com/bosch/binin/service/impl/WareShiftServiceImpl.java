@@ -31,6 +31,7 @@ import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import org.apache.poi.ss.formula.functions.IDStarAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -437,8 +438,37 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                 dtos.stream().collect(Collectors.groupingBy(CallWareShiftDTO::getCallId,
                         Collectors.summingDouble(CallWareShiftDTO::getShiftQuality)));
         List<WareShift> wareShiftList = new ArrayList<>();
+        callList = callList.stream().filter(item -> item.getShiftFlag() == 0).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(callList)) {
+            throw new ServiceException("当前选择的数据都创建过移库！请重新选择");
+        }
+        Map<String, List<MaterialCall>> matrialCallMap = callList.stream().collect(Collectors.groupingBy(MaterialCall::getMaterialNb));
+
+        Map<String, Double> materialCountMap = new HashMap<>();
+        Map<String,String> materialCallIds = new HashMap<>();
+        Map<String,String> materialCallOrders = new HashMap<>();
+
+        matrialCallMap.forEach((materialNb, list) -> {
+            double sum = list.stream().mapToDouble(item -> callQuantityMap.get(item.getId())).sum();
+            materialCountMap.put(materialNb,sum);
+            List<String> ids=new ArrayList<>();
+            list.stream().forEach(item->ids.add(item.getId().toString()));
+            String join = String.join(",", ids);
+            materialCallIds.put(materialNb,join);
+
+
+            List<String> orderList=new ArrayList<>();
+            list.stream().forEach(item->orderList.add(item.getOrderNb().toString()));
+            materialCallOrders.put(materialNb,String.join(",", orderList));
+
+
+            List<WareShift> wareShifts = gennerateWareShift(materialNb, materialCountMap.get(materialNb), materialCallIds.get(materialNb),materialCallOrders.get(materialNb));
+            wareShiftList.addAll(wareShifts);
+        });
+
+
         callList.stream().forEach(call -> {
-            wareShiftList.addAll(getWareShiftByCall(call.getId(), call.getMaterialNb(), callQuantityMap.get(call.getId())));
+            call.setShiftFlag(1);
         });
         this.saveBatch(wareShiftList);
         callService.updateBatchById(callList);
@@ -547,6 +577,15 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
 
             //插入库存
+
+            Stock lastOneBySSCC = new Stock();
+            if (item.getSplitType() == 1) {
+                lastOneBySSCC = stockService.getOneStock(item.getSourceSscc());
+            } else {
+                StockVO oneBySSCC = stockService.getLastOneBySSCC(item.getSsccNb());
+                lastOneBySSCC = BeanConverUtil.conver(oneBySSCC, Stock.class);
+            }
+
             Stock stock = new Stock();
             stock.setPlantNb(binIn.getPlantNb());
             stock.setWareCode(SecurityUtils.getWareCode());
@@ -564,7 +603,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
             stock.setCreateBy(SecurityUtils.getUsername());
             stock.setCreateTime(new Date());
-            stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+            stock.setQualityStatus(StringUtils.isEmpty(lastOneBySSCC.getQualityStatus())?QualityStatusEnums.WAITING_QUALITY.getCode():lastOneBySSCC.getQualityStatus());
             stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
             stock.setAreaCode(binIn.getAreaCode());
             stock.setPalletCode(binIn.getPalletCode());
@@ -582,6 +621,76 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
         this.updateBatchById(wareShiftList);
 
+    }
+
+    private List<WareShift> gennerateWareShift(String materialNb,Double shiftQuality,String ids,String orders){
+        LambdaQueryWrapper<Stock> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Stock::getMaterialNb, materialNb);
+        lambdaQueryWrapper.eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode());
+        lambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        lambdaQueryWrapper.eq(Stock::getFreezeStock, Double.valueOf(0));
+        lambdaQueryWrapper.ge(Stock::getExpireDate, new Date());
+        lambdaQueryWrapper.notIn(Stock::getAreaCode, AreaListConstants.mainAreaList);
+        List<Stock> stockList = stockService.list(lambdaQueryWrapper);
+        if (CollectionUtils.isEmpty(stockList)) {
+            throw new ServiceException("没有该物料" + materialNb + "对应的外库库存");
+        }
+        List<Stock> sortedStockList = new ArrayList<>();
+        sortedStockList =
+                stockList.stream().filter(item -> item.getAvailableStock() != 0).
+                        sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder())).collect(Collectors.toList());
+        double count = 0;
+        List<Stock> useMaterialStockList = new ArrayList<>();
+
+        for (Stock stock : sortedStockList) {
+            count = DoubleMathUtil.doubleMathCalculation(count, stock.getAvailableStock(), "+");
+            useMaterialStockList.add(stock);
+            if (count >= shiftQuality) {
+                break;
+            }
+        }
+        boolean splitFlag = false;
+        if (count > shiftQuality) {
+            //查询物料主数据，看是不是要整托移库的
+
+            splitFlag = true;
+
+        }
+        R<MaterialVO> materialVORes = remoteMaterialService.getInfoByMaterialCode(materialNb);
+        if (StringUtils.isNull(materialVORes) || Objects.isNull(materialVORes.getData())) {
+            throw new ServiceException("该物料：" + materialNb + " 不存在");
+        }
+
+        if (R.FAIL == materialVORes.getCode()) {
+            throw new ServiceException(materialVORes.getMsg());
+        }
+        MaterialVO materialVO = materialVORes.getData();
+        if ("Y".equals(materialVO.getWholeShiftFlag())) {
+            splitFlag = false;
+        }
+
+        List<WareShift> wareShiftList = new ArrayList<>();
+        useMaterialStockList.stream().forEach(item -> {
+            item.setFreezeStock(item.getTotalStock());
+            WareShift wareShift = WareShift.builder().sourcePlantNb(item.getPlantNb()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
+                    .sourceBinCode(item.getBinCode()).materialNb(item.getMaterialNb()).expireDate(item.getExpireDate()).batchNb(item.getBatchNb())
+                    .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+                    .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                    .quantity(item.getTotalStock())
+                    .callId(ids)
+                    .orderNumber(orders)
+                    .build();
+            wareShiftList.add(wareShift);
+        });
+        //如果最后一托是拆托
+        if (splitFlag) {
+            WareShift wareShift = wareShiftList.get(wareShiftList.size() - 1);
+            wareShift.setSplitType(1);
+            wareShift.setSplitQuality(wareShift.getQuantity() - (count - shiftQuality));
+        }
+        stockService.updateBatchById(useMaterialStockList);
+
+        return CollectionUtils.isEmpty(wareShiftList) ? Collections.emptyList() : wareShiftList;
     }
 
     private List<WareShift> getWareShiftByCall(Long callId, String materialNb, Double shiftQuality) {
@@ -638,7 +747,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                     .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
                     .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
                     .quantity(item.getTotalStock())
-                    .callId(callId)
+                    .callId(callId.toString())
                     .build();
             wareShiftList.add(wareShift);
         });

@@ -110,7 +110,7 @@ public class WareShift extends BaseEntity {
     private String targetBinCode;
 
 
-    private Long callId;
+    private String callId;
 
 
     private int splitType;
@@ -118,5 +118,7 @@ public class WareShift extends BaseEntity {
     private Double splitQuality;
 
     private String sourceSscc;
+
+    private String orderNumber;
 
 }

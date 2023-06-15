@@ -4,9 +4,10 @@
     <div class="table-content">
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
+          
           <a-col :span="4">
-            <a-form-model-item label="工厂编码">
-              <a-input v-model="queryForm.plantNb" placeholder="工厂编码" allow-clear/>
+            <a-form-model-item label="仓库">
+              <a-input v-model="queryForm.wareCode" placeholder="仓库" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
@@ -37,6 +38,11 @@
             </a-form-model-item>
           </a-col>
           <template v-if="advanced">
+            <a-col :span="4">
+              <a-form-model-item label="工厂编码">
+                <a-input v-model="queryForm.plantNb" placeholder="工厂编码" allow-clear/>
+              </a-form-model-item>
+            </a-col>
             <a-col :span="4">
               <a-form-item label="来源PO号">
                 <a-input v-model="queryForm.fromPurchaseOrder" placeholder="来源PO号" allow-clear/>
@@ -155,6 +161,12 @@ const columns = [
     width: 80
   },
   {
+    title: '仓库',
+    key: 'wareCode',
+    dataIndex: 'wareCode',
+    width: 80
+  },
+  {
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
@@ -251,6 +263,7 @@ const columns = [
 const queryFormAttr = () => {
   return {
     plantNb: '',
+    wareCode: '',
     wareCode: '',
     ssccNumber: '',
     materialNb: '',

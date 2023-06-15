@@ -23,6 +23,12 @@ public class MaterialReceiveVO {
     private String plantNb;
 
     /**
+     * 仓库
+     */
+    @ApiModelProperty(value = "仓库")
+    private String wareCode;
+
+    /**
      * SSCC码
      */
     @ApiModelProperty(value = "SSCC码")

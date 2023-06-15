@@ -128,7 +128,7 @@
             #{fromProdOrder}, '%')
         </if>
         <if test="createBy != null  and createBy != ''">and ps.create_by like concat('%', #{createBy}, '%')</if>
-        <if test="startCreateTime != null and endCreateTime != null">and str_to_date(ps.create_time, '%d/%m/%y') between
+        <if test="startCreateTime != null and endCreateTime != null">and str_to_date(ps.create_time, '%d/%m/%Y') between
             #{startCreateTime} and #{endCreateTime}
         </if>
         order by ps.update_time desc,ps.create_time desc
@@ -174,7 +174,7 @@
             #{fromProdOrder}, '%')
         </if>
         <if test="createBy != null  and createBy != ''">and ps.create_by like concat('%', #{createBy}, '%')</if>
-        <if test="startCreateTime != null and endCreateTime != null">and str_to_date(ps.create_time, '%d/%m/%y') between
+        <if test="startCreateTime != null and endCreateTime != null">and str_to_date(ps.create_time, '%d/%m/%Y') between
             #{startCreateTime} and #{endCreateTime}
         </if>
         <if test="qualityStatus != null and qualityStatus != ''">and ps.quality_status = #{qualityStatus}</if>

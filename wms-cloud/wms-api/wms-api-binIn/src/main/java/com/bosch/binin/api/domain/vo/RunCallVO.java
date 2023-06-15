@@ -74,6 +74,11 @@ public class RunCallVO  {
     @ApiModelProperty(value = "在途量")
     private Double inTransStock;
 
+    @Excel(name = "暂不可用量")
+    @ExcelProperty(value = "暂不可用量")
+    @ApiModelProperty(value = "暂不可用量")
+    private Double noAvailableStockCount;
+
     /**
      * 已下发量
      */
@@ -86,6 +91,8 @@ public class RunCallVO  {
 
     @ApiModelProperty(value = "推荐移库量")
     private Double recommendShiftQuantity;
+
+    private boolean shiftFlag;
 
 
 

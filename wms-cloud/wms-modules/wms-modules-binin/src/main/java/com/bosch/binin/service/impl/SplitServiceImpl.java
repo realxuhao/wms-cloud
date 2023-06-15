@@ -25,7 +25,9 @@ import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
+import javax.naming.ldap.SortKey;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -61,15 +63,24 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
             throw new ServiceException("SSCC: " + sourceSsccNb + ",无库存，不可拆托");
         }
         String newMesBarCode = splitPallet.getNewMesBarCode();
+
+        if (splitPallet.getSplitQuantity() <= 0) {
+            throw new ServiceException("拆托数不可以小于0");
+        }
+
+        if (MesBarCodeUtil.getSSCC(newMesBarCode).equals(splitPallet.getSourceSsccNb())) {
+            throw new ServiceException("拆托SSCC不可以和源SSCC一致");
+        }
+
         //校验物料号
-        if (newMesBarCode.length() == 50) {
+        if (newMesBarCode.length() == 50||newMesBarCode.contains(".")) {
             String materialNb = MesBarCodeUtil.getMaterialNb(newMesBarCode);
             if (!materialNb.equals(sourceStock.getMaterialNb())) {
                 throw new ServiceException("拆托物料号:" + materialNb + "和源物料号不一致，不可拆托");
             }
         }
 
-        String newSscc = newMesBarCode.length() == 50 ? MesBarCodeUtil.getSSCC(newMesBarCode) : newMesBarCode;
+        String newSscc = newMesBarCode.length() == 50||newMesBarCode.contains(".") ? MesBarCodeUtil.getSSCC(newMesBarCode) : newMesBarCode;
         //校验sscc是否已经存在拆托中
         LambdaQueryWrapper<SplitRecord> splitQueryWrapper = new LambdaQueryWrapper<>();
         splitQueryWrapper.eq(SplitRecord::getSsccNb, newSscc).eq(SplitRecord::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
@@ -89,7 +100,7 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
         splitRecord.setSplitQuantity(splitQuantity);
         splitRecord.setMaterialNb(sourceStock.getMaterialNb());
         splitRecord.setNewMesBarCode(newMesBarCode);
-        splitRecord.setSsccNb(newMesBarCode.length() == 50 ? MesBarCodeUtil.getSSCC(newMesBarCode) : newMesBarCode);
+        splitRecord.setSsccNb(newMesBarCode.length() == 50||newMesBarCode.contains(".") ? MesBarCodeUtil.getSSCC(newMesBarCode) : newMesBarCode);
         splitRecord.setSourceSscc(sourceSsccNb);
         splitRecord.setSourceTotalStock(sourceStock.getTotalStock());
         splitRecord.setWareCode(sourceStock.getWareCode());
@@ -148,7 +159,7 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
         iqcQueryWrapper.eq(SplitRecord::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         SplitRecord splitRecord = splitMapper.selectOne(iqcQueryWrapper);
         if (splitRecord == null) {
-            throw new ServiceException("没有该sscc:" + sscc + "对应的IQC抽样待上架任务");
+            throw new ServiceException("没有该sscc:" + sscc + "对应的拆托待上架任务");
         }
         if (splitRecord.getStatus() != SplitStatusEnum.WAIT_BIN_IN.code()) {
             throw new ServiceException("sscc:" + sscc + "对应任务状态为:" + IQCStatusEnum.getDesc(splitRecord.getStatus()) + ",不可上架");

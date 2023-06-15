@@ -3,6 +3,7 @@ package com.bosch.masterdata.api;
 import com.bosch.masterdata.api.domain.Bin;
 import com.bosch.masterdata.api.domain.ProductFrame;
 import com.bosch.masterdata.api.domain.Ware;
+import com.bosch.masterdata.api.domain.dto.AreaDTO;
 import com.bosch.masterdata.api.domain.dto.BlackDriverDTO;
 import com.bosch.masterdata.api.domain.vo.*;
 import com.bosch.masterdata.api.factory.RemoteMaterialFallbackFactory;
@@ -11,6 +12,7 @@ import com.ruoyi.common.core.constant.ServiceNameConstants;
 import com.ruoyi.common.core.domain.R;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.cloud.openfeign.SpringQueryMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -73,7 +75,14 @@ public interface RemoteMasterDataService {
     @GetMapping("/area/getByWareCode/{wareCode}")
     public R<List<AreaVO>> getByWareCode(@PathVariable("wareCode") String wareCode);
 
+    @GetMapping("/area/getAreaListByDTO")
+    public R<List<AreaVO>> getAreaListByDTO(@SpringQueryMap List<AreaDTO> areaDTOList);
+
 
     @GetMapping("/area/getByCode/{areaCode}")
     public R<AreaVO> getByCode(@PathVariable("areaCode") String areaCode);
+
+
+    @GetMapping("/area/getByCodeAndPlant")
+    public R<AreaVO> getByCodeAndPlant(@RequestParam("areaCode") String areaCode, @RequestParam("plantNb") String plantNb);
 }

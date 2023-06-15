@@ -6,15 +6,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.*;
 import com.bosch.binin.api.domain.dto.*;
-import com.bosch.binin.api.domain.vo.BinInVO;
-import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
-import com.bosch.binin.api.domain.vo.MaterialReturnVO;
-import com.bosch.binin.api.domain.vo.WareShiftVO;
+import com.bosch.binin.api.domain.vo.*;
 import com.bosch.binin.api.enumeration.*;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IMaterialReturnService;
 import com.bosch.binin.mapper.MaterialReturnMapper;
 import com.bosch.binin.service.IStockService;
+import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
@@ -164,7 +162,7 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         String barCode = MesBarCodeUtil.generateMesBarCode(MesBarCodeUtil.getExpireDate(mesBarCode), sscc, materialReturn.getMaterialNb(), materialReturn.getBatchNb(), materialReturn.getQuantity());
 
         if (materialReturn.getType() == MaterialTransTypeEnum.NORMAL.code()) {//正常退料分配到库位
-            binInVO = binInService.allocateToBin(barCode,materialReturn.getQuantity());
+            binInVO = binInService.allocateToBin(barCode, materialReturn.getQuantity());
         } else if (materialReturn.getType() == MaterialTransTypeEnum.AB_NORMAL.code()) {//异常退料分配到存储区
             binInVO = binInService.allocateToBinOrArea(barCode, materialReturn.getQuantity(), null, materialReturn.getAreaCode());
         }
@@ -205,7 +203,12 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         queryWrapper.last("limit 1");
         queryWrapper.last("for update");
         MaterialReturn materialReturn = materialReturnMapper.selectOne(queryWrapper);
+        //插入库存
 
+        Stock lastOneBySSCC = new Stock();
+
+        StockVO oneBySSCC = stockService.getLastOneBySSCC(sscc);
+        lastOneBySSCC = BeanConverUtil.conver(oneBySSCC, Stock.class);
 
         if (materialReturn.getType() == MaterialTransTypeEnum.AB_NORMAL.code()) {
             //异常入库
@@ -217,7 +220,8 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
                 binIn.setPalletCode(binInDTO.getPalletCode());
             }
             binInService.updateById(binIn);
-            //插入库存
+
+
             Stock stock = new Stock();
             stock.setPlantNb(binIn.getPlantNb());
             stock.setWareCode(binIn.getWareCode());
@@ -234,7 +238,7 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
             stock.setBinInId(binIn.getId());
             stock.setCreateBy(SecurityUtils.getUsername());
             stock.setCreateTime(new Date());
-            stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+            stock.setQualityStatus(StringUtils.isEmpty(lastOneBySSCC.getQualityStatus()) ? QualityStatusEnums.WAITING_QUALITY.getCode() : QualityStatusEnums.USE.getCode());
             stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
             stock.setAreaCode(binIn.getAreaCode());
             stock.setPalletCode(binIn.getPalletCode());
@@ -246,7 +250,7 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
             dto.setActualBinCode(binInDTO.getActualCode());
             dto.setPalletCode(binInDTO.getPalletCode());
             dto.setMesBarCode(binInDTO.getMesBarCode());
-            BinInVO binInVO = binInService.performBinIn(dto,null);
+            BinInVO binInVO = binInService.performBinIn(dto, StringUtils.isEmpty(lastOneBySSCC.getQualityStatus()) ? QualityStatusEnums.WAITING_QUALITY.getCode() : QualityStatusEnums.USE.getCode());
         }
         materialReturn.setStatus(MaterialReturnStatusEnum.FINISH.value());
         this.updateById(materialReturn);
