@@ -9,18 +9,18 @@
 		<uni-popup ref="submitPopup" type="dialog">
 			<uni-popup-dialog before-close type="info" cancelText="取消" confirmText="确认" title="是否确认入库?" @confirm="handleConfirm" @close="handleCancel">
 				<view>
-					<!-- <view class="text-align m-b-4">
-						<text class="label m-r-8">批次号:</text>
-						<text>{{ info.batchNb }}</text>
-					</view> -->
 					<view class="text-align m-b-4">
 						<text class="label m-r-8">SSCC码:</text>
-						<text>{{ info.ssccNumber }}</text>
+						<text>{{ info.ssccNb }}</text>
 					</view>
 					<view class="text-align m-b-4">
 						<text class="label m-r-8">物料编码:</text>
 						<text>{{ info.materialNb }}</text>
 					</view>
+					<!-- <view class="text-align m-b-4">
+						<text class="label m-r-8">库位:</text>
+						<text>{{ info.binDownCode }}</text>
+					</view> -->
 				</view>
 			</uni-popup-dialog>
 		</uni-popup>
@@ -48,26 +48,25 @@ export default {
 		};
 	},
 	// mounted() {
-	// 	this.scanCodeCallback({ code: `11221025101012358660208716900568763172407093700006000369006391113669850` });
+	// 	this.getSample('20230213669006391113695972103025192112271124000800');
 	// },
 	methods: {
 		async scanCodeCallback(data) {
 			Bus.$emit('stopScan');
+			console.log(data.code);
 			this.code = data.code;
 			this.getSample(data.code);
 		},
 		async getSample(barCode) {
 			try {
-				console.log(barCode)
 				uni.showLoading();
 				const data = await this.$store.dispatch('finishedProduct/getOneProductIn', barCode);
-				if (data.status === 0) {
+				if (data.status === 1) {
 					this.$refs.submitPopup.open();
 				} else {
 					throw Error('此托已入库或为非入库托，请确认');
 				}
 				this.info = data;
-				
 			} catch (e) {
 				this.$refs.message.error(e.message);
 			} finally {

@@ -41,10 +41,22 @@ const postBinIn = async (data) => {
   })
 }
 
+const splitPallet = async (data) => {
+	const url = `/binin/split/add`
+	const method = 'POST'
+
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
 
 export const splitPalletService = {
   getList,
   getInfo,
   getBinInInfo,
-  postBinIn
+  postBinIn,
+  add
 }

@@ -25,6 +25,11 @@ const splitPallet = {
 	  const {data} = await splitPalletService.postBinIn(options)
 	  return data
 	},
+	async splitPallet({ commit }, options) {
+	  const {data} = await splitPalletService.splitPallet(options)
+	  return data
+	},
+	
 	
 	
   }

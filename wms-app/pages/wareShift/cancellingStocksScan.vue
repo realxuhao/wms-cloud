@@ -9,70 +9,74 @@
 </template>
 
 <script>
-import Message from '@/components/Message';
-import Bus from '@/utils/bus';
+	import Message from '@/components/Message';
+	import Bus from '@/utils/bus';
 
-export default {
-	components: {
-		Message
-	},
-	onShow() {
-		Bus.$on('scancodedate', this.scanCodeCallback);
-	},
-	destroyed() {
-		Bus.$off('scancodedate');
-	},
-	data() {
-		return {
-			code: ''
-		};
-	},
-	methods: {
-		async scanCodeCallback(data) {
-			Bus.$emit('stopScan');
-			this.code = data.code;
-			this.handleGoto();
+	export default {
+		components: {
+			Message
 		},
-		handleGoto() {
-			// Bus.$off('scancodedate', this.scanCodeCallback);
-			uni.redirectTo({
-				url: `/pages/wareShift/cancellingStocksOperation?barCode=${this.code}`
-			});
-			Bus.$emit('startScan');
+		onShow() {
+			Bus.$on('scancodedate', this.scanCodeCallback);
+		},
+		destroyed() {
+			Bus.$off('scancodedate');
+		},
+		data() {
+			return {
+				code: ''
+			};
+		},
+		methods: {
+			async scanCodeCallback(data) {
+				Bus.$emit('stopScan');
+				this.code = data.code;
+				this.handleGoto();
+			},
+			handleGoto() {
+				Bus.$off('scancodedate', this.scanCodeCallback);
+				uni.redirectTo({
+					url: `/pages/wareShift/cancellingStocksOperation?barCode=${this.code}`
+				});
+				Bus.$emit('startScan');
+			}
 		}
-	}
-};
+	};
 </script>
 
 <style lang="scss">
-.wrapper {
-	display: flex;
-	flex-direction: column;
-}
-/deep/.uni-navbar--shadow {
-	box-shadow: none;
-}
-/deep/.uni-navbar--border {
-	border: none;
-}
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+	}
 
-.content {
-	height: 100%;
-	background-color: $primary-color;
-	flex: 1;
-	display: flex;
-	align-items: center;
-	// justify-content: center;
-	flex-direction: column;
-	image {
-		width: 180px;
-		// height: 160px;
-		margin-top: 120px;
-		margin-bottom: 32px;
+	/deep/.uni-navbar--shadow {
+		box-shadow: none;
 	}
-	text {
-		color: #fff;
-		font-size: 16px;
+
+	/deep/.uni-navbar--border {
+		border: none;
 	}
-}
+
+	.content {
+		height: 100%;
+		background-color: $primary-color;
+		flex: 1;
+		display: flex;
+		align-items: center;
+		// justify-content: center;
+		flex-direction: column;
+
+		image {
+			width: 180px;
+			// height: 160px;
+			margin-top: 120px;
+			margin-bottom: 32px;
+		}
+
+		text {
+			color: #fff;
+			font-size: 16px;
+		}
+	}
 </style>

@@ -231,7 +231,11 @@
 		},
 		{
 			"path": "pages/manualTrans/operation"
+		},
+		{
+			"path": "pages/finishedProductWareShift/receivingOperation"
 		}
+		
 	],
 	"globalStyle": {
 		"navigationStyle": "custom"

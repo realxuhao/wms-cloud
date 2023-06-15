@@ -50,6 +50,8 @@ const finishedProduc = {
 			} = await finishedProductService.getProductInList(options)
 			return data
 		},
+		
+		
 		async getOneProductIn({
 			commit
 		}, options) {
@@ -74,6 +76,14 @@ const finishedProduc = {
 			} = await finishedProductService.getProductShiftList(options)
 			return data
 		},
+		async getProductReceivingList({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.getProductReceivingList(options)
+			return data
+		},
 		async postShift({
 			commit
 		}, options) {
@@ -90,7 +100,18 @@ const finishedProduc = {
 			} = await finishedProductService.productShiftGetBinInInfo(options)
 			return data
 		},
-
+		async mainReceiveConfirm({ commit }, options) {
+			const {data} = await finishedProductService.mainReceiveConfirm(options)
+			return data
+		},
+		async postBinIn({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.postBinIn(options)
+			return data
+		},
 	}
 }
 
