@@ -9,6 +9,7 @@ import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.*;
 import com.bosch.binin.api.enumeration.*;
 import com.bosch.binin.service.IBinInService;
+import com.bosch.binin.service.IMaterialKanbanService;
 import com.bosch.binin.service.IMaterialReturnService;
 import com.bosch.binin.mapper.MaterialReturnMapper;
 import com.bosch.binin.service.IStockService;
@@ -56,6 +57,9 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
 
     @Autowired
     private RemoteMasterDataService masterDataService;
+
+    @Autowired
+    private IMaterialKanbanService kanbanService;
 
     @Override
     public List<MaterialReturnVO> list(MaterialReturnQueryDTO queryDTO) {
@@ -209,6 +213,21 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
 
         StockVO oneBySSCC = stockService.getLastOneBySSCC(sscc);
         lastOneBySSCC = BeanConverUtil.conver(oneBySSCC, Stock.class);
+
+        if (lastOneBySSCC == null) {
+            LambdaQueryWrapper<MaterialKanban> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(MaterialKanban::getSsccNumber, sscc);
+            wrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            wrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+            wrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+            MaterialKanban kanban = kanbanService.getOne(wrapper);
+            if (kanban.getParentId() != null) {
+                MaterialKanban materialKanban = kanbanService.getById(kanban.getParentId());
+                lastOneBySSCC = stockService.getRecentOneBySSCC(materialKanban.getSsccNumber());
+            }
+
+
+        }
 
         if (materialReturn.getType() == MaterialTransTypeEnum.AB_NORMAL.code()) {
             //异常入库

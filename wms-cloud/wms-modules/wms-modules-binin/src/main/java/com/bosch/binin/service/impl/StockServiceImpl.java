@@ -228,6 +228,16 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     }
 
     @Override
+    public Stock getRecentOneBySSCC(String sscc) {
+        LambdaQueryWrapper<Stock> stockLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        stockLambdaQueryWrapper.eq(Stock::getSsccNumber, sscc);
+        stockLambdaQueryWrapper.orderByDesc(Stock::getUpdateTime);
+        stockLambdaQueryWrapper.last("limit 1");
+        Stock stock = stockMapper.selectOne(stockLambdaQueryWrapper);
+        return stock;
+    }
+
+    @Override
     public Stock getAvailablesStockBySscc(String sscc) {
         LambdaQueryWrapper<Stock> stockLambdaQueryWrapper = new LambdaQueryWrapper<>();
         stockLambdaQueryWrapper.eq(Stock::getSsccNumber, sscc);

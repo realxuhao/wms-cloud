@@ -28,10 +28,10 @@
 						{{ materialInfo.recommendBinCode }}
 					</view>
 				</view>
-				<view class="text-line m-b-8" >
+				<!-- <view class="text-line m-b-8" >
 					<view class="label">目标区域：</view>
 					{{ materialInfo.areaCode }}
-				</view>
+				</view> -->
 				<!-- <view class="text-line m-b-8 ">
 					<view class="label">托盘编码：</view>
 					<uni-tag :text="typeMap[type].text" :type="typeMap[type].color" size="mini" />
@@ -46,11 +46,11 @@
 							</view> -->
 						<uni-easyinput v-model="binInForm.palletCode" placeholder="请扫描托盘编码" @focus="handleSetEditFieldName('binInForm.palletCode')"></uni-easyinput>
 					</uni-forms-item>
-					<uni-forms-item v-if="type === 1" label="目标区域" name="actualCode" required>
+					<uni-forms-item v-if="type === 1" label="目标库位" name="actualCode" required>
 						<!-- <view class="custom-input" :class="editFieldName==='binInForm.actualCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.actualCode')">
 								<text :class="!binInForm.actualCode?'placeholder-text':''">{{binInForm.actualCode||'请扫描目标区域'}}</text>
 							</view> -->
-						<uni-easyinput v-model="binInForm.actualCode" placeholder="请扫描目标区域" @focus="handleSetEditFieldName('binInForm.actualCode')"></uni-easyinput>
+						<uni-easyinput v-model="binInForm.actualCode" placeholder="请扫描目标库位" @focus="handleSetEditFieldName('binInForm.actualCode')"></uni-easyinput>
 					</uni-forms-item>
 					<uni-forms-item label="目标库位" name="actualCode" required v-if="type === 0">
 						<!-- <view class="custom-input" :class="editFieldName==='binInForm.actualCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.actualCode')">

@@ -39,6 +39,8 @@ public interface IStockService extends IService<Stock> {
 
     StockVO getLastOneBySSCC(String ssccs);
 
+    Stock getRecentOneBySSCC(String sscc);
+
     Stock getAvailablesStockBySscc(String sscc);
 
     /**
