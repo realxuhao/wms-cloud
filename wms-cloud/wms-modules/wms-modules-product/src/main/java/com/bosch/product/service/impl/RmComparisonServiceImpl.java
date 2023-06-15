@@ -109,8 +109,8 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
                 rmComparison.setStatus(ComparisonEnum.DIFF.code());
                 if (stockVO != null) {
 
-                    rmComparison.setStockRemainingQty(stockVO.getAvailableStock() == null ? "0" :
-                            stockVO.getAvailableStock().toString());
+                    rmComparison.setStockRemainingQty(stockVO.getTotalStock() == null ? "0" :
+                            stockVO.getTotalStock().toString());
                     rmComparison.setStockUnitOfMeasure(stockVO.getUnit());
                     rmComparison.setStockR3StockStatus(stockVO.getQualityStatus());
                     rmComparison.setStockSapMaterialCode(stockVO.getMaterialNb());
@@ -122,8 +122,8 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
                     }
 
                     //如果rmComparison和stockVO的上面五个字段都相同，则设置status为相同
-                    if (CompareUtils.isEqual(rmComparison.getRemainingQty(), stockVO.getAvailableStock() == null ? "0"
-                            : stockVO.getAvailableStock().toString())
+                    if (CompareUtils.isEqual(rmComparison.getRemainingQty(), stockVO.getTotalStock() == null ? "0"
+                            : stockVO.getTotalStock().toString())
                             && rmComparison.getUnitOfMeasure().equals(stockVO.getUnit())
                             && rmComparison.getR3StockStatus().equals(stockVO.getQualityStatus())
                             && rmComparison.getSapMaterialCode().equals(stockVO.getMaterialNb())
