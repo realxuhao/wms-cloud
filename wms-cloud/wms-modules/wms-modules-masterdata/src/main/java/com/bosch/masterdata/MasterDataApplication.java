@@ -16,7 +16,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @EnableCustomConfig
 @EnableCustomSwagger2
 @EnableRyFeignClients
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.ruoyi.common.log","com.bosch.masterdata"})
 @EnableDiscoveryClient
 public class MasterDataApplication
 {

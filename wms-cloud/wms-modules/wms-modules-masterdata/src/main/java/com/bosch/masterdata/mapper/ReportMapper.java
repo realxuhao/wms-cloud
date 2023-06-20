@@ -23,6 +23,7 @@ public interface ReportMapper
 //    List<ReportBinVO> selectReportBinByMonth (ReportBinDTO reportBinDTO);
 //    List<ReportBinVO> selectReportBinByDay (ReportBinDTO reportBinDTO);
     List<String> getCellCode();
+    List<String> getWareCode();
     List<MissionMap> toBeReceived(@Param("cell") String cell,@Param("wareCode") String wareCode);
     List<MissionMap> toBeBin(@Param("cell") String cell,@Param("wareCode") String wareCode);
     //叫料

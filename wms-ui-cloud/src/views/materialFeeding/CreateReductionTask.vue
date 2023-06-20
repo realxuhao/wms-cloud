@@ -22,6 +22,12 @@
                 <a-form-model-item label="批次号">
                   <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
                 </a-form-model-item>
+
+              </a-col>
+              <a-col :span="4">
+                <a-form-model-item label="SSCC码">
+                  <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
+                </a-form-model-item>
               </a-col>
               <a-col span="4">
                 <span class="table-page-search-submitButtons" >
@@ -97,7 +103,8 @@ import { mixinTableList } from '@/utils/mixin/index'
 const queryFormAttr = () => {
   return {
     'batchNb': '',
-    'plantNb': '7751'
+    'plantNb': '7751',
+    'ssccNumber': ''
   }
 }
 

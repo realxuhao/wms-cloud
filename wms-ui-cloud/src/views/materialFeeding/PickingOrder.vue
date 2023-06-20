@@ -1,4 +1,4 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
   <div class="wrapper">
     <!-- table -->
     <div class="table-content">
@@ -22,12 +22,12 @@
               <a-input v-model="queryForm.orderNumber" placeholder="生产需求号" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
+          <a-col :span="5">
             <a-form-model-item label="物料编码">
               <a-input v-model="queryForm.materialCode" placeholder="物料编码" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
+          <a-col :span="5">
             <a-form-model-item label="物料类型">
               <a-select
                 mode="multiple"
@@ -42,7 +42,7 @@
               </a-select>
             </a-form-model-item>
           </a-col>
-          <a-col :span="3">
+          <a-col :span="5">
             <a-form-model-item label="状态">
               <a-select
                 allow-clear
@@ -84,6 +84,7 @@
               </a-form-item>
             </a-col>
           </template>
+
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button v-hasPermi="['kanban:list:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
@@ -100,6 +101,7 @@
           </a-col>
         </a-row>
       </a-form>
+
       <div class="action-content">
         <a-button
           v-hasPermi="['kanban:list:task']"

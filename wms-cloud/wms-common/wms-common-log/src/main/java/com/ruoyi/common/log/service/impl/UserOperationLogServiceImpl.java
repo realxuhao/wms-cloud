@@ -1,0 +1,43 @@
+package com.ruoyi.common.log.service.impl;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.ruoyi.common.log.domain.UserOperationLog;
+import com.ruoyi.common.log.service.IUserOperationLogService;
+import com.ruoyi.common.log.mapper.UserOperationLogMapper;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+* @author GUZ1CGD4
+* @description 针对表【user_operation_log(用户操作记录表)】的数据库操作Service实现
+* @createDate 2023-06-14 14:18:17
+*/
+@Service
+public class UserOperationLogServiceImpl extends ServiceImpl<UserOperationLogMapper, UserOperationLog>
+    implements IUserOperationLogService {
+
+    @Override
+    public Integer insertUserOperationLog(List<UserOperationLog> userOperationLog, String userName) {
+        return null;
+    }
+
+    @Override
+    public Integer insertUserOperationLog(UserOperationLog userOperationLog, String userName) {
+        return null;
+    }
+
+    @Override
+    public Integer insertUserOperationLog(List<String> ssccs, String userName, String operationType) {
+        return null;
+    }
+
+    @Override
+    public Integer insertUserOperationLog(String ssccs, String userName, String operationType) {
+        return null;
+    }
+}
+
+
+
+

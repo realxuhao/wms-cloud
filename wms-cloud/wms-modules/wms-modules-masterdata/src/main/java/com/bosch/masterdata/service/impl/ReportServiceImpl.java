@@ -6,6 +6,7 @@ import com.bosch.masterdata.api.domain.dto.ReportBinDTO;
 import com.bosch.masterdata.api.domain.vo.ReportBinVO;
 import com.bosch.masterdata.mapper.ReportMapper;
 import com.bosch.masterdata.service.IReportService;
+import com.ruoyi.common.core.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -28,9 +29,16 @@ public class ReportServiceImpl implements IReportService {
     }
     @Override
     public List<MissionToDo> selectReportList(MissionToDo mission) {
-            List<String> cellCode = reportMapper.getCellCode();
+        List<String> codes=new ArrayList<>();
+        //获取仓库或者cell
+        if (StringUtils.isNotEmpty(mission.getCell())){
+            codes= reportMapper.getCellCode();
+        }else if(StringUtils.isNotEmpty(mission.getWareCode())){
+            codes= reportMapper.getWareCode();
+        }
+
         List<MissionToDo> list=new ArrayList<>();
-        for (String s : cellCode) {
+        for (String s : codes) {
             MissionToDo missionToDo = new MissionToDo();
             missionToDo.setCell(s);
             list.add(missionToDo);

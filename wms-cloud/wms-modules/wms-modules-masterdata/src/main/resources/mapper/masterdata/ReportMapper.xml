@@ -47,6 +47,10 @@
         from md_department
         GROUP BY CODE
     </select>
+    <select id="getWareCode" resultType="String">
+        SELECT DISTINCT code
+        FROM md_ware
+    </select>
     <select id="toBeReceived" resultType="com.bosch.masterdata.api.domain.MissionMap">
         SELECT
         <if test="cell != null and cell != ''"> md.code AS code, COUNT(md.code) as number</if>
