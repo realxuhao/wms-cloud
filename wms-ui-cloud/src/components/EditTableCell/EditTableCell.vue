@@ -3,8 +3,8 @@
     <div v-if="editable" class="editable-cell-input-wrapper">
       <a-input :value="value" @change="handleChange" @pressEnter="check" />
       <div class="action-box">
-        <a class="action warning-color" @click="check">确认</a>
-        <a class="action" @click="editable=false">取消</a>
+        <a class=" danger-color" @click="check">确认</a>
+        <a class="" @click="editable=false">取消</a>
       </div>
 
     </div>
