@@ -341,6 +341,9 @@ order by bs.batch_nb
                            on mw.code = bs.ware_code
                  left join md_material mm on bs.material_nb = mm.code and mm.delete_flag = 0
         where bs.bin_code like concat('%', #{binCode}, '%')
-        order by bs.batch_nb
+        <if test="orderByColumn == null or orderByColumn == ''"> order by bs.batch_nb</if>
+
+        <if test="orderByColumn != null and orderByColumn != ''"> order by #{orderByColumn}</if>
+        <if test="isAsc != null and isAsc != ''"> #{isAsc}</if>
     </select>
 </mapper>

@@ -1,5 +1,6 @@
 package com.bosch.masterdata.api.domain.dto;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
@@ -78,7 +79,8 @@ public class ReportWareShiftDTO extends PageDomain {
      */
     @ApiModelProperty(value = "源仓库")
     @Excel(name = "源仓库")
-    private String sourceWareCode;
+    @TableField(value = "source_ware_code")
+    private String source_ware_code;
 
     /**
      * 源存储区

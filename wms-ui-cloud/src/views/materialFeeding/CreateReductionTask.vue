@@ -64,7 +64,7 @@
             rowKey="id"
             :pagination="false"
             size="middle"
-            @change="handleChangeTab"
+            @change="pageChange"
             :scroll="tableScroll"
           >
           </a-table>
@@ -95,6 +95,7 @@
             rowKey="id"
             :pagination="false"
             size="middle"
+
           >
             <template slot="quantity" slot-scope="text,record">
               <a-input-number
@@ -228,10 +229,9 @@ export default {
       queryForm: {
         pageSize: 40,
         pageNum: 1,
-        sortMap: {
-          availableStock: 'ascend',
-          batchNb: 'ascend'
-        },
+        orderByColumn: '',
+        isAsc: 'asc' ,
+
         ...queryFormAttr()
       },
 
@@ -282,7 +282,8 @@ export default {
           title: '库位编码',
           key: 'binCode',
           dataIndex: 'binCode',
-          width: 90
+          width: 90,
+          sorter: true,
         },
         {
           title: '批次号',
@@ -290,8 +291,7 @@ export default {
           dataIndex: 'batchNb',
           width: 120,
           sorter: true,
-          sortDirections: ['descend', 'ascend'],
-          sortOrder: sortMap.batchNb
+          scopedSlots: { customRender: 'batchNb' },
         },
         {
           title: '可用库存',
@@ -299,26 +299,28 @@ export default {
           dataIndex: 'availableStock',
           width: 120,
           sorter: true,
-          sortDirections: ['descend', 'ascend'],
-          sortOrder: sortMap.availableStock
+
         },
         {
           title: '冻结库存',
           key: 'freezeStock',
           dataIndex: 'freezeStock',
-          width: 120
+          width: 120,
+          sorter: true,
         },
         {
           title: '库存量',
           key: 'totalStock',
           dataIndex: 'totalStock',
-          width: 80
+          width: 80,
+          sorter: true,
         },
         {
           title: '有效期',
           key: 'expireDate',
           dataIndex: 'expireDate',
-          width: 140
+          width: 140,
+          sorter: true,
         }
       ]
       return columns
@@ -329,6 +331,24 @@ export default {
     }
   },
   methods: {
+    async pageChange(page, filters, sorter){
+
+      try {
+        this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc',
+        this.queryForm.orderByColumn= sorter.columnKey,
+        this.tableLoading = true
+        const {
+          data: { rows, total }
+        } = await this.$store.dispatch('materialFeeding/getRuleList', {...this.queryForm})
+
+        this.list = rows
+        this.paginationTotal = total
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.tableLoading = false
+      }
+    },
     handleStepChange (current) {
       this.currentStep = current
     },
@@ -401,10 +421,9 @@ export default {
     async loadTableList () {
       try {
         this.tableLoading = true
-
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('materialFeeding/getRuleList', this.queryForm)
+        } = await this.$store.dispatch('materialFeeding/getRuleList', {...this.queryForm})
 
         this.list = rows
         this.paginationTotal = total
@@ -417,9 +436,10 @@ export default {
     loadData () {
       this.loadTableList()
     },
-    handleChangeTab (p, f, { field, order }) {
-      this.queryForm.sortMap[field] = this.queryForm.sortMap[field] === 'descend' ? 'ascend' : 'descend'
-    }
+    // handleChangeTab (p, f, { field, order }) {
+    //   this.queryForm.sortMap[field] = this.queryForm.sortMap[field] === 'descend' ? 'ascend' : 'descend'
+    // },
+
   },
   watch: {
     createReductionTaskVisible: function (val) {
