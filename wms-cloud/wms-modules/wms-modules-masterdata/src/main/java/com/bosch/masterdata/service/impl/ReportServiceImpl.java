@@ -2,7 +2,10 @@ package com.bosch.masterdata.service.impl;
 
 import com.bosch.masterdata.api.domain.MissionMap;
 import com.bosch.masterdata.api.domain.MissionToDo;
+import com.bosch.masterdata.api.domain.ReportMaterial;
+import com.bosch.masterdata.api.domain.ReportWareShift;
 import com.bosch.masterdata.api.domain.dto.ReportBinDTO;
+import com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO;
 import com.bosch.masterdata.api.domain.vo.ReportBinVO;
 import com.bosch.masterdata.mapper.ReportMapper;
 import com.bosch.masterdata.service.IReportService;
@@ -11,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,9 +28,55 @@ public class ReportServiceImpl implements IReportService {
     private ReportMapper reportMapper;
     @Override
     public List<ReportBinVO> selectCellReportByType(ReportBinDTO reportBinDTO) {
-        List<ReportBinVO> reportBinVOS = reportMapper.selectCellReportByType(reportBinDTO);
+        List<ReportBinVO> reportBinVOS = new ArrayList<>();
+        if(reportBinDTO.getType()!=null&&("0").equals(reportBinDTO.getType())){
+            reportBinVOS= reportMapper.selectCellReportByType(reportBinDTO);
+        }
+        if(reportBinDTO.getType()!=null&&("1").equals(reportBinDTO.getType())){
+            reportBinVOS= reportMapper.selectCellReportByMonth(reportBinDTO);
+            if (!CollectionUtils.isEmpty(reportBinVOS)){
+                for (ReportBinVO reportBinVO : reportBinVOS) {
+                    int mb = reportBinVO.getMaterialOccupyBin() != null ? reportBinVO.getMaterialOccupyBin() : 0;
+                    int pb = reportBinVO.getProductOccupyBin() != null ? reportBinVO.getProductOccupyBin() : 0;
+                    BigDecimal used = new BigDecimal(mb+pb);
+                    BigDecimal all = new BigDecimal(reportBinVO.getTotalBin()!= null ? reportBinVO.getTotalBin() : 0);
+                    BigDecimal divide = used.divide(all, 2, BigDecimal.ROUND_HALF_UP);
+                    reportBinVO.setPercent(divide);
+                }
+            }
+        }
         return reportBinVOS;
     }
+
+    @Override
+    public List<ReportMaterial> oldMaterial() {
+        List<ReportMaterial> reportMaterials = reportMapper.oldMaterial();
+        //循环reportMaterials，根据batchNb去重,根据createTime排序
+        Map<String, List<ReportMaterial>> collect = reportMaterials.stream().collect(Collectors.groupingBy(ReportMaterial::getBatchNb));
+        //将collect的value取出来，组合成新list
+        List<ReportMaterial> list=new ArrayList<>();
+        for (Map.Entry<String, List<ReportMaterial>> entry : collect.entrySet()) {
+            List<ReportMaterial> value = entry.getValue();
+            ReportMaterial reportMaterial = value.get(0);
+            list.add(reportMaterial);
+        }
+        return list;
+    }
+
+    @Override
+    public List<ReportMaterial> expiredMaterial() {
+        //过期30天物料
+        List<ReportMaterial> reportMaterials = reportMapper.expiredMaterial();
+
+        return reportMaterials;
+    }
+
+    @Override
+    public List<ReportWareShift> reportWareShift(ReportWareShiftDTO reportWareShiftDTO) {
+        List<ReportWareShift> reportWareShifts = reportMapper.reportWareShift(reportWareShiftDTO);
+        return reportWareShifts;
+    }
+
     @Override
     public List<MissionToDo> selectReportList(MissionToDo mission) {
         List<String> codes=new ArrayList<>();

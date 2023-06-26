@@ -1,7 +1,10 @@
 package com.bosch.masterdata.service;
 
 import com.bosch.masterdata.api.domain.MissionToDo;
+import com.bosch.masterdata.api.domain.ReportMaterial;
+import com.bosch.masterdata.api.domain.ReportWareShift;
 import com.bosch.masterdata.api.domain.dto.ReportBinDTO;
+import com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO;
 import com.bosch.masterdata.api.domain.vo.ReportBinVO;
 
 import java.util.List;
@@ -20,4 +23,10 @@ public interface IReportService {
      * @return
      */
     List<ReportBinVO> selectCellReportByType (ReportBinDTO reportBinDTO);
+
+    List<ReportMaterial> oldMaterial();
+
+    List<ReportMaterial> expiredMaterial();
+
+    List<ReportWareShift> reportWareShift(ReportWareShiftDTO reportWareShiftDTO);
 }

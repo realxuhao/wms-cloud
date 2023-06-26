@@ -1,11 +1,10 @@
 package com.bosch.masterdata.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.bosch.masterdata.api.domain.Area;
-import com.bosch.masterdata.api.domain.MissionMap;
-import com.bosch.masterdata.api.domain.ReportBin;
+import com.bosch.masterdata.api.domain.*;
 import com.bosch.masterdata.api.domain.dto.AreaDTO;
 import com.bosch.masterdata.api.domain.dto.ReportBinDTO;
+import com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.ReportBinVO;
 import org.apache.ibatis.annotations.Mapper;
@@ -20,6 +19,9 @@ public interface ReportMapper
 {
 
     List<ReportBinVO> selectCellReportByType (ReportBinDTO reportBinDTO);
+
+    List<ReportBinVO> selectCellReportByMonth (ReportBinDTO reportBinDTO);
+
 //    List<ReportBinVO> selectReportBinByMonth (ReportBinDTO reportBinDTO);
 //    List<ReportBinVO> selectReportBinByDay (ReportBinDTO reportBinDTO);
     List<String> getCellCode();
@@ -32,5 +34,9 @@ public interface ReportMapper
     List<MissionMap> toBeMove(@Param("cell") String cell,@Param("wareCode") String wareCode);
 
 
+    List<ReportMaterial> oldMaterial();
 
+    List<ReportMaterial> expiredMaterial();
+
+    List<ReportWareShift> reportWareShift(ReportWareShiftDTO reportWareShiftDTO);
 }

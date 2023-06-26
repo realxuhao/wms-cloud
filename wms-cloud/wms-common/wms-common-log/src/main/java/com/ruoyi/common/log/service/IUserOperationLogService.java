@@ -12,11 +12,9 @@ import java.util.List;
 */
 public interface IUserOperationLogService extends IService<UserOperationLog> {
 
-    Integer insertUserOperationLog(List<UserOperationLog> userOperationLog,String userName);
+    Boolean insertUserOperationLog(String userName,String operationType,List<UserOperationLog> userOperationLog);
 
-    Integer insertUserOperationLog(UserOperationLog userOperationLog,String userName);
-
-    Integer insertUserOperationLog(List<String> ssccs,String userName,String operationType);
+    Integer insertUserOperationLog(UserOperationLog userOperationLog,String userName,String operationType);
 
     Integer insertUserOperationLog(String ssccs,String userName,String operationType);
 }

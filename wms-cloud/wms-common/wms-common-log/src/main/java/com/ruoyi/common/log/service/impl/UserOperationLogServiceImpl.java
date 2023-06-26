@@ -6,6 +6,7 @@ import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.log.mapper.UserOperationLogMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,20 +18,23 @@ import java.util.List;
 public class UserOperationLogServiceImpl extends ServiceImpl<UserOperationLogMapper, UserOperationLog>
     implements IUserOperationLogService {
 
+    private UserOperationLogMapper userOperationLogMapper;
     @Override
-    public Integer insertUserOperationLog(List<UserOperationLog> userOperationLog, String userName) {
-        return null;
+    public Boolean insertUserOperationLog( String userName,String operationType,List<UserOperationLog> userOperationLog) {
+        for (UserOperationLog operationLog : userOperationLog) {
+            operationLog.setCreateBy(userName);
+            operationLog.setCreateTime(new Date());
+            operationLog.setOperationType(operationType);
+        }
+        boolean b = this.saveBatch(userOperationLog);
+        return b;
     }
 
     @Override
-    public Integer insertUserOperationLog(UserOperationLog userOperationLog, String userName) {
+    public Integer insertUserOperationLog(UserOperationLog userOperationLog, String userName,String operationType) {
         return null;
     }
 
-    @Override
-    public Integer insertUserOperationLog(List<String> ssccs, String userName, String operationType) {
-        return null;
-    }
 
     @Override
     public Integer insertUserOperationLog(String ssccs, String userName, String operationType) {
