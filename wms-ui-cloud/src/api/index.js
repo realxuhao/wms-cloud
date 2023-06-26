@@ -37,3 +37,5 @@ export * from './productPackaging.service'
 export * from './stockTake.service'
 export * from './stockTakeDetail.service'
 export * from './comparison.service'
+export * from './dashboard.service'
+

@@ -1,20 +1,16 @@
 <template>
-  <div class="wrapper zx">
-    报表
+  <div class="wrapper">
+    <!-- <WarehouseLocationUtilizationRate></WarehouseLocationUtilizationRate> -->
   </div>
 </template>
 
 <script>
-
-import { mapGetters } from 'vuex'
-import { PageHeaderWrapper } from '@/components/ProLayout'
-import ruoyiLogo from '@/assets/projects/ruoyi.png'
-import antdvLogo from '@/assets/projects/antdv.png'
-import { getUserProfile } from '@/api/system/user'
+// import WarehouseLocationUtilizationRate from './dashboardComponents/WarehouseLocationUtilizationRate.vue'
 
 export default {
   name: 'Index',
   components: {
+    // WarehouseLocationUtilizationRate
   },
   data () {
     return {
@@ -35,42 +31,12 @@ export default {
 
 <style lang="less" scoped>
 .wrapper{
-  height: calc(100vh - 200px);
-  background: #fff;
-  padding: 16px;
-  border-radius: 4px;
+  // height: calc(100vh - 200px);
+  // background: #fff;
+  // padding: 16px;
+  // border-radius: 4px;
 }
 
-.title{
-  position: absolute;
-  right: 24px;
-  top:20px;
-  font-size:20px;
-  color: #037f3e;
-}
-.content{
-  display: flex;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  img{
-    max-height: 100%;
-  }
-  .border{
-    background: #037f3e;
-    width: 20px;
-    height: 200px;
-    border-radius: 2px;
-    margin-left: 40px;
-  }
-
-  .desc{
-    margin-left: 20px;
-    font-size: 64px;
-    color: #000;
-    font-weight: bold;
-  }
-}
 
 
 </style>

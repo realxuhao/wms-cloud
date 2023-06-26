@@ -53,6 +53,10 @@ import stockTake from './modules/stockTake'
 import stockTakeDetail from './modules/stockTakeDetail'
 import comparison from './modules/comparison'
 
+// dashboard
+import dashboard from './modules/dashboard'
+
+
 // dynamic router permission control (Experimental)
 // import permission from './modules/async-router'
 import getters from './getters'
@@ -108,7 +112,9 @@ export default new Vuex.Store({
     productPackaging,
     stockTake,
     stockTakeDetail,
-    comparison
+    comparison,
+
+    dashboard
   },
   state: {
 
