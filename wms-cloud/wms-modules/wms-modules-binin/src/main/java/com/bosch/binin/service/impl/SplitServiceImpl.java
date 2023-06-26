@@ -14,6 +14,7 @@ import com.bosch.binin.api.domain.vo.SplitRecordVO;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.api.enumeration.SplitStatusEnum;
+import com.bosch.binin.api.enumeration.StockWholeFlagEnum;
 import com.bosch.binin.mapper.SplitMapper;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.ISplitService;
@@ -109,6 +110,7 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
 
         sourceStock.setTotalStock(DoubleMathUtil.doubleMathCalculation(sourceStock.getTotalStock(), splitQuantity, "-"));
         sourceStock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(sourceStock.getTotalStock(), sourceStock.getFreezeStock(), "-"));
+        sourceStock.setWholeFlag(StockWholeFlagEnum.NOT_WHOLE.code());
         stockService.updateById(sourceStock);
     }
 

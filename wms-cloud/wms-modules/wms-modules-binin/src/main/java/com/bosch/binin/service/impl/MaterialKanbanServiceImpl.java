@@ -177,11 +177,12 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
                     dtos.stream().filter(x -> x.getSsccNumber().equals(r.getSsccNumber())).findFirst().orElse(new MaterialKanbanDTO());
             conver.setOrderNumber(dto.getOrderNumber());
             conver.setFactoryCode(r.getPlantNb());
+            conver.setBatchNb(r.getBatchNb());
             conver.setMaterialCode(r.getMaterialNb());
             conver.setQuantity(dto.getQuantity());
             conver.setMoveType(MoveTypeEnums.CALL.getCode());
             conver.setCell(dto.getCell());
-            conver.setType(dto.getQuantity() == r.getAvailableStock() ?
+            conver.setType(dto.getQuantity() - r.getAvailableStock() == 0 ?
                     KanbanActionTypeEnum.FULL_BIN_DOWN.value() : KanbanActionTypeEnum.PART_BIN_DOWN.value());
             conver.setStatus(KanbanStatusEnum.WAITING_ISSUE.value());
             conver.setUpdateBy(null);
@@ -538,7 +539,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
                 throw new ServiceException("当前任务状态不正确");
             }
 
-            materialKanban.setStatus(KanbanStatusEnum.INNER_RECEIVING.value());
+            materialKanban.setStatus(KanbanStatusEnum.INNER_DOWN.value());
             materialKanban.setUpdateBy(SecurityUtils.getUsername());
             materialKanban.setUpdateTime(new Date());
             materialKanbanMapper.updateById(materialKanban);
@@ -588,6 +589,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
             //生成一个新任务
             MaterialKanban newKanban = new MaterialKanban();
+            newKanban.setBatchNb(materialKanban.getBatchNb());
             newKanban.setOrderNumber(materialKanban.getOrderNumber());
             newKanban.setFactoryCode(materialKanban.getFactoryCode());
             newKanban.setWareCode(materialKanban.getWareCode());

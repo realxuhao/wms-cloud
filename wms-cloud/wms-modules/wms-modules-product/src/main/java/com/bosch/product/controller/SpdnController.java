@@ -4,15 +4,21 @@ import com.alibaba.fastjson2.JSON;
 import com.bosch.binin.api.domain.MaterialCall;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.file.api.FileService;
+import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
 import com.bosch.product.api.domain.SPDN;
+import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.dto.SPDNDTO;
+import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.api.domain.vo.SPDNVO;
 import com.bosch.product.service.IProductOutService;
+import com.bosch.product.service.IProductStockService;
 import com.bosch.product.service.ISPDNService;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.core.web.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -38,13 +44,16 @@ import java.util.stream.Collectors;
 @RestController
 @Api(tags = "SPDN")
 @RequestMapping("/spdn")
-public class SpdnController {
+public class SpdnController extends BaseController {
 
     @Autowired
     private FileService fileService;
 
     @Autowired
     private IProductOutService productOutService;
+
+    @Autowired
+    private IProductStockService productStockService;
 
     @Autowired
     private ISPDNService spdnService;
@@ -94,6 +103,15 @@ public class SpdnController {
     public R approve(@PathVariable Long[] ids){
         spdnService.approve(Arrays.asList(ids));
         return R.ok();
+    }
+
+
+    @GetMapping(value = "/spdnStocklist")
+    @ApiOperation("库存列表")
+    public R<PageVO<ProductStockVO>> spdnStocklist(ProductStockQueryDTO stockQueryDTO) {
+        startPage();
+        List<ProductStockVO> list = productStockService.spdnStocklist(stockQueryDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
 

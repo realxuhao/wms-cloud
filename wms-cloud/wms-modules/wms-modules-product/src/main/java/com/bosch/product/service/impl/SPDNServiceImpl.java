@@ -3,6 +3,7 @@ package com.bosch.product.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.domain.Stock;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.SPDN;
 import com.bosch.product.api.domain.ShippingTask;
@@ -25,6 +26,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -74,13 +76,14 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         stockLambdaQueryWrapper.in(ProductStock::getSsccNumber, ssccList);
         stockLambdaQueryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<ProductStock> stockList = productStockService.list(stockLambdaQueryWrapper);
+        Map<String,ProductStock> ssccStockMap = stockList.stream().collect(Collectors.toMap(ProductStock::getSsccNumber, Function.identity()));
         List<String> inValidPlantSSCCList = new ArrayList<>();
         List<String> inValidQtySSCCList = new ArrayList<>();
         stockList.stream().forEach(item -> {
             if (!item.getPlantNb().equals("7752")) {
                 inValidPlantSSCCList.add(item.getSsccNumber());
             }
-            if (item.getTotalStock() != ssccQtyMap.get(item.getSsccNumber())) {
+            if (!item.getTotalStock().equals(ssccQtyMap.get(item.getSsccNumber()))) {
                 inValidQtySSCCList.add(item.getSsccNumber());
             }
             if (!item.getQualityStatus().equals(QualityStatusEnums.USE.getCode())) {
@@ -97,6 +100,22 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         //7701不生成SUQA质检，对应的SSCC生成移库任务（下架，装车（track））
 
         // 如果是7761。那么就把库存的plantNb改成7761,同时质量状态变为Q
+        spdnList.stream().forEach(item->{
+            ProductStock productStock = ssccStockMap.get(item.getSsccNumber());
+            if ("7761".equals(item.getPlant())){
+                if (productStock!=null){
+                    productStock.setPlantNb(item.getPlant());
+                    productStock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+                    productStock.setChangeStatus(0);
+                }
+            }
+            if ("7701".equals(item.getPlant())){
+                if (productStock!=null){
+                    productStock.setPlantNb(item.getPlant());
+                }
+            }
+
+        });
         stockList.stream().forEach(stock->{
 //            if ()
         });

@@ -14,5 +14,5 @@ public interface IWeightService extends IService<Weight> {
 
     void addWeight(WeightDTO weightDTO);
 
-    Weight getByPort(String ip, Integer port);
+    Weight getByPort(String ip);
 }

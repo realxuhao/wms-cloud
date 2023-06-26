@@ -293,7 +293,7 @@ order by bs.batch_nb
         <if test="wareCode != null and wareCode != ''">and bs.ware_code = #{wareCode}</if>
         <if test="batchNb != null and batchNb != ''">and bs.batch_nb = #{batchNb}</if>
         <if test="ssccNumber != null and ssccNumber != ''">and bs.sscc_number like CONCAT('%', #{ssccNumber}, '%')</if>
-        order by bs.batch_nb
+        order by bs.expire_date ,bs.batch_nb
     </select>
 
     <select id="selectCountByList" resultType="int">

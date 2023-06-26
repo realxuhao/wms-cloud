@@ -72,6 +72,9 @@ public class MaterialKanban extends BaseEntity {
      * SSCC码
      */
     private String ssccNumber;
+
+
+    private String batchNb;
     /**
      * 需求cell
      */

@@ -124,7 +124,7 @@
             <a
               v-hasPermi="['call:list:create']"
               class="primary-color"
-              :disabled="2!=record.status"
+              :disabled="![2,4].includes(record.status)"
               @click="handleCreateReductionTask(record)"><a-icon class="m-r-4" type="add" />人工创建拣配任务</a>
           </div>
 

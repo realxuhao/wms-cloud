@@ -229,6 +229,27 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
     }
 
+    @Override
+    public List<ProductStockVO> selectSUQAIQCManagementList(ProductIQCManagementQueryDTO queryDTO) {
+        return stockMapper.selectSUQAIQCManagementList(queryDTO);
+    }
+
+    @Override
+    public boolean validateSUQAStatus(Long id) {
+        return stockMapper.validateSUQAStatus(id) == 1;
+    }
+
+    @Override
+    public Integer changeSUQAStatus(IQCChangeStatusDTO iqcChangeStatusDTO) {
+        Integer i = stockMapper.changeSUQAStatus(iqcChangeStatusDTO);
+        return i;
+    }
+
+    @Override
+    public List<ProductStockVO> spdnStocklist(ProductStockQueryDTO stockQueryDTO) {
+        return stockMapper.spdnStocklist(stockQueryDTO);
+    }
+
     private BinVO getBinVOByBinCode(String binCode) {
         R<BinVO> binInfoByCodeResult = remoteMasterDataService.getBinInfoByCode(binCode);
         if (StringUtils.isNull(binInfoByCodeResult) || StringUtils.isNull(binInfoByCodeResult.getData())) {

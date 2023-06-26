@@ -348,7 +348,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         if (materialCall == null) {
             throw new ServiceException("该条目不存在");
         }
-        if (materialCall.getStatus()>CallStatusEnum.RUNNED.code()) {
+        if (materialCall.getStatus()>CallStatusEnum.ISSUED.code()) {
             throw new ServiceException("只可以取消未下发状态的数据");
         }
         materialCall.setStatus(MaterialCallStatusEnum.CANCEL.code());
@@ -419,7 +419,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
     public void deleteCall(List<Long> idList) {
         List<MaterialCall> materialCalls = this.listByIds(idList);
         materialCalls.stream().forEach(item -> {
-            if (!item.getStatus().equals(CallStatusEnum.NOT_RUN.code())) {
+            if (item.getStatus()>CallStatusEnum.ISSUED.code()) {
                 throw new ServiceException("存在已跑或已下发的需求。不可删除");
             }
             item.setStatus(CallStatusEnum.CANCEL.code());
@@ -451,7 +451,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             List<Stock> sortedStockList = new ArrayList<>();
             sortedStockList =
                     stockList.stream().filter(item -> item.getAvailableStock() != 0 && AreaListConstants.mainAreaList.contains(item.getAreaCode())&&!AreaListConstants.noQualifiedAreaList.contains(item.getAreaCode())).
-                            sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder())).collect(Collectors.toList());
+                            sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder()).thenComparing(Stock::getAvailableStock)).collect(Collectors.toList());
             double sum = sortedStockList.stream().mapToDouble(Stock::getAvailableStock).sum();
 //            if (sum < call.getUnIssuedQuantity()) {
 //                throw new ServiceException("主库库存不足，请先手动创建移库");
@@ -560,6 +560,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         for (int i = 0; i < useMaterialStockList.size(); i++) {
             Stock stock = useMaterialStockList.get(i);
             MaterialKanban kanban = new MaterialKanban();
+            kanban.setBatchNb(stock.getBatchNb());
             kanban.setOrderNumber(call.getOrderNb());
             kanban.setFactoryCode(stock.getPlantNb());
             kanban.setWareCode(stock.getWareCode());

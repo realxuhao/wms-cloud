@@ -29,4 +29,13 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
     Integer changeStatus(IQCChangeStatusDTO iqcChangeStatusDTO);
 
     List<ProductStockVO> listByMaterials(@Param("list") List<Map<String, String>> list);
+
+    List<ProductStockVO> selectSUQAIQCManagementList(ProductIQCManagementQueryDTO queryDTO);
+
+    int validateSUQAStatus(Long id);
+
+    Integer changeSUQAStatus(IQCChangeStatusDTO iqcChangeStatusDTO);
+
+    List<ProductStockVO> spdnStocklist(ProductStockQueryDTO stockQueryDTO);
+
 }

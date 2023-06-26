@@ -177,9 +177,18 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
             throw new ServiceException("sscc:" + dto.getSourceSsccNb() + "对应的抽样信息不存在");
         }
 
-        if (!(iqcSamplePlan.getStatus() == IQCStatusEnum.WAAITTING_ISSUE.code() || iqcSamplePlan.getStatus() == IQCStatusEnum.WAITING_SAMPLE.code() || iqcSamplePlan.getStatus() == IQCStatusEnum.WARE_SHIFTING.code())) {
+        if (!(iqcSamplePlan.getStatus() == IQCStatusEnum.WAAITTING_ISSUE.code() || iqcSamplePlan.getStatus() == IQCStatusEnum.WAITING_BIN_DOWN.code() || iqcSamplePlan.getStatus() == IQCStatusEnum.WARE_SHIFTING.code())) {
             throw new ServiceException("状态为：" + IQCStatusEnum.getDesc(iqcSamplePlan.getStatus()) + ",不可以修改");
         }
+
+        Integer oldStatus = iqcSamplePlan.getStatus();
+
+        LambdaQueryWrapper<Stock> oldStockQueryWrapper = new LambdaQueryWrapper<>();
+        oldStockQueryWrapper.eq(Stock::getSsccNumber, dto.getSourceSsccNb()).eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        Stock oldStock = stockService.getOne(oldStockQueryWrapper);
+        oldStock.setFreezeStock(Double.valueOf(0));
+        oldStock.setAvailableStock(oldStock.getTotalStock());
+        stockService.updateById(oldStock);
 
 
         LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
@@ -194,35 +203,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         if (dto.getSampleQuantity() > stock.getTotalStock()) {
             throw new ServiceException("抽样数量不能大于库存数量");
         }
-        if (!AreaListConstants.mainAreaList.contains(stock.getAreaCode())) {
-            List<WareShift> wareShiftList = new ArrayList<>();
 
-            //老的移库任务取消
-            LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
-            wareShiftQueryWrapper.eq(WareShift::getSsccNb, dto.getSourceSsccNb()).eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode()).ne(WareShift::getStatus,KanbanStatusEnum.CANCEL.value()).ne(WareShift::getStatus,KanbanStatusEnum.FINISH.value()).ne(WareShift::getStatus,KanbanStatusEnum.LINE_RECEIVED.value() );
-            WareShift shift = wareShiftService.getOne(wareShiftQueryWrapper);
-            if (shift == null) {
-                return;
-            }
-            if (shift != null && !(shift.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN.value())
-                    || shift.getStatus().equals(KanbanStatusEnum.CANCEL.value()))) {
-                throw new ServiceException("对应移库任务状态为" + KanbanStatusEnum.getDesc(String.valueOf(shift.getStatus())) + ",不可修改");
-            }
-            shift.setStatus(KanbanStatusEnum.CANCEL.value());
-            wareShiftService.updateById(shift);
-            //如果是外库的，新增移库
-            WareShift wareShift = WareShift.builder().sourcePlantNb(stock.getPlantNb()).sourceWareCode(stock.getWareCode()).sourceAreaCode(stock.getAreaCode())
-                    .sourceBinCode(stock.getBinCode()).materialNb(stock.getMaterialNb()).batchNb(stock.getBatchNb()).expireDate(stock.getExpireDate())
-                    .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
-                    .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
-                    .quantity(stock.getTotalStock())
-                    .build();
-            wareShiftList.add(wareShift);
-
-            wareShiftService.saveBatch(wareShiftList);
-
-
-        }
 
         //老任务取消
         iqcSamplePlan.setStatus(IQCStatusEnum.CANCEL.code());
@@ -244,12 +225,44 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         samplePlan.setBinDownTime(new Date());
         samplePlan.setRecommendSampleQuantity(dto.getSampleQuantity());
         samplePlan.setAreaCode(stock.getAreaCode());
-        samplePlan.setStatus(AreaListConstants.mainAreaList.contains(stock.getAreaCode())? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
+//        samplePlan.setStatus(AreaListConstants.mainAreaList.contains(stock.getAreaCode())? IQCStatusEnum.WAITING_BIN_DOWN.code() : IQCStatusEnum.WARE_SHIFTING.code());
+        samplePlan.setStatus(IQCStatusEnum.WAAITTING_ISSUE.code());
+        samplePlan.setCreateTime(iqcSamplePlan.getCreateTime());
         this.save(samplePlan);
 
         stock.setFreezeStock(stock.getAvailableStock());
         stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
         stockService.updateById(stock);
+
+        if (!AreaListConstants.mainAreaList.contains(stock.getAreaCode())) {
+            List<WareShift> wareShiftList = new ArrayList<>();
+
+            //老的移库任务取消
+            LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
+            wareShiftQueryWrapper.eq(WareShift::getSsccNb, dto.getSourceSsccNb()).eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode()).ne(WareShift::getStatus,KanbanStatusEnum.CANCEL.value()).ne(WareShift::getStatus,KanbanStatusEnum.FINISH.value()).ne(WareShift::getStatus,KanbanStatusEnum.LINE_RECEIVED.value() );
+            WareShift shift = wareShiftService.getOne(wareShiftQueryWrapper);
+            if (shift == null) {
+                return;
+            }
+            if (shift != null && !(shift.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                    || shift.getStatus().equals(KanbanStatusEnum.CANCEL.value()))) {
+                throw new ServiceException("对应移库任务状态为" + KanbanStatusEnum.getDesc(String.valueOf(shift.getStatus())) + ",不可修改");
+            }
+            shift.setStatus(KanbanStatusEnum.CANCEL.value());
+            wareShiftService.updateById(shift);
+            //如果是外库的，新增移库
+//            WareShift wareShift = WareShift.builder().sourcePlantNb(stock.getPlantNb()).sourceWareCode(stock.getWareCode()).sourceAreaCode(stock.getAreaCode())
+//                    .sourceBinCode(stock.getBinCode()).materialNb(stock.getMaterialNb()).batchNb(stock.getBatchNb()).expireDate(stock.getExpireDate())
+//                    .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+//                    .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+//                    .quantity(stock.getTotalStock())
+//                    .build();
+//            wareShiftList.add(wareShift);
+//
+//            wareShiftService.saveBatch(wareShiftList);
+
+
+        }
 
 
     }

@@ -19,10 +19,24 @@
           <a-form layout="inline" class="search-content">
             <a-row :gutter="16">
               <a-col :span="4">
+                <a-form-model-item label="物料号">
+                  <a-input v-model="queryForm.materialNb" placeholder="物料号" allow-clear/>
+                </a-form-model-item>
+              </a-col>
+              <a-col :span="4">
                 <a-form-model-item label="批次号">
                   <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
                 </a-form-model-item>
-
+              </a-col>
+              <a-col :span="4">
+                <a-form-model-item label="区域">
+                  <a-input v-model="queryForm.areaCode" placeholder="区域" allow-clear/>
+                </a-form-model-item>
+              </a-col>
+              <a-col :span="4">
+                <a-form-model-item label="库位">
+                  <a-input v-model="queryForm.binCode" placeholder="库位" allow-clear/>
+                </a-form-model-item>
               </a-col>
               <a-col :span="4">
                 <a-form-model-item label="SSCC码">
@@ -125,6 +139,18 @@ const selectColumns = [
     title: '物料名称',
     key: 'materialName',
     dataIndex: 'materialName',
+    width: 90
+  },
+  {
+    title: '区域编码',
+    key: 'areaCode',
+    dataIndex: 'areaCode',
+    width: 90
+  },
+  {
+    title: '库位编码',
+    key: 'binCode',
+    dataIndex: 'binCode',
     width: 90
   },
   {
@@ -244,6 +270,18 @@ export default {
           title: '物料名称',
           key: 'materialName',
           dataIndex: 'materialName',
+          width: 90
+        },
+        {
+          title: '区域编码',
+          key: 'areaCode',
+          dataIndex: 'areaCode',
+          width: 90
+        },
+        {
+          title: '库位编码',
+          key: 'binCode',
+          dataIndex: 'binCode',
           width: 90
         },
         {

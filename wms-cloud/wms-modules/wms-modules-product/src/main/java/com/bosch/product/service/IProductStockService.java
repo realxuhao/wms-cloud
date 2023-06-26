@@ -56,4 +56,12 @@ public interface IProductStockService extends IService<ProductStock> {
     ProductStock binInToArea(ProductBinInDTO binInDTO);
 
     void editStock(EditStockDTO dto);
+
+    List<ProductStockVO> selectSUQAIQCManagementList(ProductIQCManagementQueryDTO queryDTO);
+
+    boolean validateSUQAStatus(Long id);
+
+    Integer changeSUQAStatus(IQCChangeStatusDTO iqcChangeStatusDTO);
+
+    List<ProductStockVO> spdnStocklist(ProductStockQueryDTO stockQueryDTO);
 }
