@@ -43,6 +43,13 @@ const exportExpiredMaterial = async (parameter) => {
   return data
 }
 
+const getWareShiftList = async (parameter) => {
+  const url = `/report/wareShift?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter)
+  return data
+}
+
+
 
 export const dashboardService = {
   getBinInSummary,
@@ -50,5 +57,6 @@ export const dashboardService = {
   getOldMaterialSummary,
   exportOldMaterial,
   getExpiredMaterial,
-  exportExpiredMaterial
+  exportExpiredMaterial,
+  getWareShiftList
 }

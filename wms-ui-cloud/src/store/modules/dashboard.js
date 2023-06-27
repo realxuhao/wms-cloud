@@ -34,6 +34,11 @@ const comparison = {
       const data = await dashboardService.exportExpiredMaterial(options)
       return data
     },
+    async getWareShiftList ({ commit }, options) {
+      const data = await dashboardService.getWareShiftList(options)
+      return data
+    },
+    
   }
 }
 
