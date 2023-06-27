@@ -98,6 +98,23 @@ const binIn = {
 			return data
 		},
 
+		async getWeightList({
+			commit
+		}, options) {
+			const {
+				data
+			} = await binInService.getWeightList(options)
+			return data
+		},
+		async getWeightByIp({
+			commit
+		}, ip) {
+			const {
+				data
+			} = await binInService.getWeightByIp(ip)
+			return data
+		},
+
 	}
 }
 
