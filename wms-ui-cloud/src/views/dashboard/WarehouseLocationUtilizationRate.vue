@@ -110,7 +110,7 @@ export default {
               label:this.dateType === 1 ? y.newDate : createTime.format(formatString),
               total:y.totalBin,
               used:y.materialOccupyBin,
-              percent:y.percent
+              percent:Number(y.percent||0)*100
             }
             wareDataMap[x].children.push(item)
           }

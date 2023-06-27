@@ -141,7 +141,8 @@ export default {
               show: true,
               formatter(item){
                 return item.value ? item.value:''
-              }
+              },
+              
             },
             stack: 'Ad',
             data: toBeReceivedList

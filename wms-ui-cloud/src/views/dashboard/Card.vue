@@ -71,7 +71,7 @@ export default{
 
   .card-main{
     margin-top: 16px;
-    // min-height: 300px;
+    min-height: 200px;
     // div{
     //   width: 100%;
     //   height: 300px;

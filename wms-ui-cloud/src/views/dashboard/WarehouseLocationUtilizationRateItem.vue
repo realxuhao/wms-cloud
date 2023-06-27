@@ -41,6 +41,12 @@ export default {
           text:this.title,
           left:'center'
         },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
         grid: {
           top: 30,
           right: 20,
@@ -74,46 +80,59 @@ export default {
             splitLine: {
               show: false,
             },
-        
+           
             axisLabel: {
               // color: '#8CB5E2'
             }
           },
           {
-        type: 'value',
-        name: '百分比',
-        min: 0,
-        max: 25,
-        interval: 5,
-        splitLine: {
-          show: false,
-        },
-        axisLabel: {
-          formatter: '{value} %'
-        }
-      }
+            type: 'value',
+            name: '百分比',
+            min: 0,
+            max: 100,
+            interval: 20,
+            splitLine: {
+              show: false,
+            },
+            axisLabel: {
+              formatter: '{value} %'
+            }
+          }
         ],
         series: [
-      {
-        name: '百分比',
-        type: 'line',
-        yAxisIndex: 1,
-        itemStyle: {
-          color:'#481d88'
-        },
-        tooltip: {
-          valueFormatter: function (value) {
-            return value + ' %'
-          }
-        },
-        data: percentList
-      },
           {
-            name: 'value',
+            name: '库位利用率',
+            type: 'line',
+            yAxisIndex: 1,
+            itemStyle: {
+              color:'#481d88'
+            },
+            // label:{
+            //   position: 'top',
+            //   valueAnimation: true,
+            //   show:true,
+            //   formatter: function (item) {
+            //     return item.value + '%'
+            //   }
+            // },
+            tooltip: {
+              valueFormatter: function (value) {
+                return value + ' %'
+              }
+            },
+            data: percentList
+          },
+          {
+            name: '已使用库位',
             type: 'bar',
             itemStyle: {
               opacity: 0.7,
               color:this.color
+            },
+            label:{
+              position: 'center',
+              valueAnimation: true,
+              show:true
             },
             z: 16,
             silent: true,
@@ -126,11 +145,16 @@ export default {
             data: usedList,
           },
             {
-            name: 'value',
+            name: '总库位',
             type: 'bar',
             itemStyle: {
             color: '#ccc',
               opacity: 0.5
+            },
+            label:{
+              position: 'top',
+              valueAnimation: true,
+              show:true
             },
             z: 3,
             silent: true,
@@ -139,20 +163,20 @@ export default {
             // 真实数据
             data: totalList,
           },
-          {
-            name: 'value',
-            type: 'pictorialBar',
-            symbolSize: [16, 3],
-            symbolOffset: [0, 0],
-            z: 3,
-            symbolPosition: 'end',
-            itemStyle: {
-              color: 'rgba(48,228,255,1)',
-              opacity: 1
-            },
-            // 设置最大数据，可以不设置data，默认为真实数据的最大值
-            data: usedList,
-          }
+          // {
+          //   name: 'value',
+          //   type: 'pictorialBar',
+          //   symbolSize: [16, 3],
+          //   symbolOffset: [0, 0],
+          //   z: 3,
+          //   symbolPosition: 'end',
+          //   itemStyle: {
+          //     color: 'rgba(48,228,255,1)',
+          //     opacity: 1
+          //   },
+          //   // 设置最大数据，可以不设置data，默认为真实数据的最大值
+          //   data: usedList,
+          // }
         ]
       }
 

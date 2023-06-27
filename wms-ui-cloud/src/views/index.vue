@@ -1,16 +1,17 @@
 <template>
-  <div class="wrapper">
-    <!-- <WarehouseLocationUtilizationRate></WarehouseLocationUtilizationRate> -->
-  </div>
+  <!-- <ToDoTasks></ToDoTasks> -->
+  <WarehouseLocationUtilizationRate></WarehouseLocationUtilizationRate>
 </template>
 
 <script>
-// import WarehouseLocationUtilizationRate from './dashboardComponents/WarehouseLocationUtilizationRate.vue'
+// import ToDoTasks from './dashboard/ToDoTasks.vue'
+import WarehouseLocationUtilizationRate from './dashboard/WarehouseLocationUtilizationRate.vue'
 
 export default {
   name: 'Index',
   components: {
-    // WarehouseLocationUtilizationRate
+    // ToDoTasks
+    WarehouseLocationUtilizationRate
   },
   data () {
     return {
