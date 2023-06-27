@@ -121,6 +121,9 @@ export default {
     }
   },
   mounted(){
+    this.createTimeStart =moment().subtract(6, 'months').format('YYYY-MM')
+    this.createTimeEnd =  moment().format('YYYY-MM')
+    this.date = [this.createTimeStart,this.createTimeEnd]
     this.getData()
   },
   watch:{

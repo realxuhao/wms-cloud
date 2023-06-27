@@ -23,8 +23,8 @@
 
     <template slot="main">
       <a-row :gutter="[24,24]">
-        <a-col :span="12" >
-         
+        <a-col :span="24" >
+          <div class="charts" id="to-do-tasks-material"></div>
         </a-col>
       </a-row>
     </template>
@@ -32,14 +32,14 @@
 </template>
 
 <script>
+import * as echarts from 'echarts'
 import Card from './Card.vue'
 import _ from 'lodash'
-import moment from 'moment'
 
 import colorList from '@/utils/echartsColor'
 
 export default {
-  name: 'Index',
+  name: 'ToDoTasks',
   components: {
     Card,
   },
@@ -51,13 +51,12 @@ export default {
 
       queryForm:{
         wareCode:'',
-        cell:'ECN'
+        // cell:'ECN'
       },
       searchLoading:false,
     }
   },
   computed: {
-    colorList:()=>colorList
   },
   methods: {
     /** 获取仓库List */
@@ -75,7 +74,60 @@ export default {
       }
     },
     handleSearch(){
+      this.getData()
+    },
 
+    loadMaterialCharts(){
+      var myChart = echarts.init(document.getElementById('to-do-tasks-material'))
+
+      const xData = _.map(this.list,x=>x.label)
+      const percentList = _.map(this.list,x=>x.percent)
+
+      const option = {
+        color:colorList,
+        title: {
+          text: 'World Population'
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        legend: {
+          show:false,
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'value',
+          boundaryGap: [0, 0.01]
+        },
+        yAxis: {
+          type: 'category',
+          data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'World']
+        },
+        series: [
+          {
+            name: '2011',
+            type: 'bar',
+            silent: true,
+            barWidth: 16,
+            barGap: '-100%',
+            tooltip:{
+              show:true
+            },
+            data: [18203, 23489, 29034, 104970, 131744, 630230]
+          },
+        
+        ]
+      }
+
+      myChart.setOption(option)
     },
     async getData(){
       const data = await this.$store.dispatch('dashboard/getMissionToDoSummary',this.queryForm)

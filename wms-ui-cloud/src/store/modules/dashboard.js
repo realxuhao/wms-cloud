@@ -18,6 +18,15 @@ const comparison = {
       const {data} = await dashboardService.getMissionToDoSummary(options)
       return data
     },
+    async getOldMaterialSummary ({ commit }, options) {
+      const {data} = await dashboardService.getOldMaterialSummary(options)
+      return data
+    },
+    async exportOldMaterial ({ commit }, options) {
+      const {data} = await dashboardService.exportOldMaterial(options)
+      return data
+    },
+    
   }
 }
 
