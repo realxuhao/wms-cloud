@@ -124,12 +124,6 @@ const columns = [
     width: 200
   },
   {
-    title: '上架id',
-    key: 'binInId',
-    dataIndex: 'binInId',
-    width: 200
-  },
-  {
     title: '质检状态',
     key: 'qualityStatus',
     dataIndex: 'qualityStatus',

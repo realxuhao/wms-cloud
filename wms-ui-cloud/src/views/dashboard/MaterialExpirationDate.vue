@@ -124,12 +124,6 @@ const columns = [
     width: 200
   },
   {
-    title: '上架id',
-    key: 'binInId',
-    dataIndex: 'binInId',
-    width: 200
-  },
-  {
     title: '质检状态',
     key: 'qualityStatus',
     dataIndex: 'qualityStatus',
@@ -164,7 +158,7 @@ export default {
       try {
         this.downloadLoading = true
 
-        const res  = await this.$store.dispatch('dashboard/getExpiredMaterial')
+        const res  = await this.$store.dispatch('dashboard/exportExpiredMaterial')
         download(res,'30天到期物料.xlsx')
       } catch (error) {
         this.$message.error(error.message)
@@ -178,7 +172,7 @@ export default {
 
         const {
           rows, total
-        } = await this.$store.dispatch('dashboard/exportExpiredMaterial', this.queryForm)
+        } = await this.$store.dispatch('dashboard/getExpiredMaterial', this.queryForm)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
