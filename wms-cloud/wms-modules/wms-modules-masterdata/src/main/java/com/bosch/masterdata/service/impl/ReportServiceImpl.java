@@ -29,10 +29,10 @@ public class ReportServiceImpl implements IReportService {
     @Override
     public List<ReportBinVO> selectCellReportByType(ReportBinDTO reportBinDTO) {
         List<ReportBinVO> reportBinVOS = new ArrayList<>();
-        if(reportBinDTO.getType()!=null&&("0").equals(reportBinDTO.getType())){
+        if(reportBinDTO.getType()!=null&&("0").equals(reportBinDTO.getType().toString())){
             reportBinVOS= reportMapper.selectCellReportByType(reportBinDTO);
         }
-        if(reportBinDTO.getType()!=null&&("1").equals(reportBinDTO.getType())){
+        if(reportBinDTO.getType()!=null&&("1").equals(reportBinDTO.getType().toString())){
             reportBinVOS= reportMapper.selectCellReportByMonth(reportBinDTO);
             if (!CollectionUtils.isEmpty(reportBinVOS)){
                 for (ReportBinVO reportBinVO : reportBinVOS) {

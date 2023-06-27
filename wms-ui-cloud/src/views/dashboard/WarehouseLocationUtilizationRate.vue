@@ -81,8 +81,8 @@ export default {
     handlePanelChange(value){
       this.date = value
 
-      this.createTimeStart = moment(value[0]).format('YYYY-MM')
-      this.createTimeEnd = moment(value[1]).format('YYYY-MM')
+      this.createTimeStart = moment(value[0]).format('YYYY-MM-DD hh:mm:ss')
+      this.createTimeEnd = moment(value[1]).format('YYYY-MM-DD hh:mm:ss')
 
       this.getData()
     },
@@ -107,7 +107,7 @@ export default {
             const createTime = moment(y.createTime)
             const formatString = this.dateType === 1 ? 'YYYY-MM':'YYYY-MM-DD'
             const item = {
-              label: createTime.format(formatString),
+              label:this.dateType === 1 ? y.newDate : createTime.format(formatString),
               total:y.totalBin,
               used:y.materialOccupyBin,
               percent:y.percent
@@ -121,8 +121,8 @@ export default {
     }
   },
   mounted(){
-    this.createTimeStart =moment().subtract(6, 'months').format('YYYY-MM')
-    this.createTimeEnd =  moment().format('YYYY-MM')
+    this.createTimeStart =moment().subtract(6, 'months').format('YYYY-MM-DD hh:mm:ss')
+    this.createTimeEnd =  moment().format('YYYY-MM-DD hh:mm:ss')
     this.date = [this.createTimeStart,this.createTimeEnd]
     this.getData()
   },

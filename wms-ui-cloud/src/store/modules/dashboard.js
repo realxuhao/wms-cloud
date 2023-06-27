@@ -23,10 +23,17 @@ const comparison = {
       return data
     },
     async exportOldMaterial ({ commit }, options) {
-      const {data} = await dashboardService.exportOldMaterial(options)
+      const data = await dashboardService.exportOldMaterial(options)
       return data
     },
-    
+    async getExpiredMaterial ({ commit }, options) {
+      const {data} = await dashboardService.getExpiredMaterial(options)
+      return data
+    },
+    async exportExpiredMaterial ({ commit }, options) {
+      const data = await dashboardService.exportExpiredMaterial(options)
+      return data
+    },
   }
 }
 

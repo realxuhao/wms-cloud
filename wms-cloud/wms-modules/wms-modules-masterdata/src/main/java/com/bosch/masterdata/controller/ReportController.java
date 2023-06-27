@@ -7,9 +7,11 @@ import com.bosch.masterdata.api.domain.ReportWareShift;
 import com.bosch.masterdata.api.domain.dto.ReportBinDTO;
 import com.bosch.masterdata.api.domain.dto.ReportMaterialDTO;
 import com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO;
+import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.domain.vo.ProductFrameVO;
 import com.bosch.masterdata.api.domain.vo.ReportBinVO;
 import com.bosch.masterdata.service.IReportService;
+import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
@@ -56,11 +58,11 @@ public class ReportController extends BaseController {
 
     @PostMapping("/oldMaterial")
     @ApiOperation("在库时间最长的物料")
-    public R<List<ReportMaterial>> oldMaterial(@RequestBody ReportMaterialDTO reportMaterialDTO)
+    public R<PageVO<ReportMaterial>> oldMaterial(@RequestBody ReportMaterialDTO reportMaterialDTO)
     {
         startPage();
         List<ReportMaterial> reportMaterials = reportService.oldMaterial();
-        return R.ok(reportMaterials);
+        return R.ok(new PageVO<>(reportMaterials, new PageInfo<>(reportMaterials).getTotal()));
     }
     /**
      * 导出列表
@@ -77,11 +79,11 @@ public class ReportController extends BaseController {
 
     @PostMapping("/expiredMaterial")
     @ApiOperation("有效期30天")
-    public R<List<ReportMaterial>> expiredMaterial(@RequestBody ReportMaterialDTO reportMaterialDTO)
+    public R<PageVO<ReportMaterial>> expiredMaterial(@RequestBody ReportMaterialDTO reportMaterialDTO)
     {
         startPage();
         List<ReportMaterial> reportMaterials = reportService.expiredMaterial();
-        return R.ok(reportMaterials);
+        return R.ok(new PageVO<>(reportMaterials, new PageInfo<>(reportMaterials).getTotal()));
     }
     /**
      * 导出列表

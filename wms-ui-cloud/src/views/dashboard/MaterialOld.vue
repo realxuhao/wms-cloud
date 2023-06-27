@@ -41,8 +41,9 @@ import { mixinTableList } from '@/utils/mixin/index'
 import { download } from '@/utils/file'
 
 const columns = [
+
   {
-    title: '工厂编码',
+    title: '工厂',
     key: 'plantNb',
     dataIndex: 'plantNb',
     width: 120
@@ -54,13 +55,31 @@ const columns = [
     width: 120
   },
   {
+    title: '区域编码',
+    key: 'areaCode',
+    dataIndex: 'areaCode',
+    width: 120
+  },
+  {
+    title: '跨编码',
+    key: 'frameCode',
+    dataIndex: 'frameCode',
+    width: 120
+  },
+  {
+    title: '库位编码',
+    key: 'binCode',
+    dataIndex: 'binCode',
+    width: 120
+  },
+  {
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
     width: 200
   },
   {
-    title: '物料编码',
+    title: '物料号',
     key: 'materialNb',
     dataIndex: 'materialNb',
     width: 200
@@ -72,64 +91,45 @@ const columns = [
     width: 200
   },
   {
-    title: '检验方式',
-    key: 'checkType',
-    dataIndex: 'checkType',
-    scopedSlots: { customRender: 'checkType' },
+    title: '过期时间',
+    key: 'expireDate',
+    dataIndex: 'expireDate',
     width: 200
   },
   {
-    title: '应检查数量',
-    key: 'checkQuantity',
-    dataIndex: 'checkQuantity',
+    title: '总库存',
+    key: 'totalStock',
+    dataIndex: 'totalStock',
     width: 200
   },
   {
-    title: '实际数量',
-    key: 'actualQuantity',
-    dataIndex: 'actualQuantity',
+    title: '冻结库存',
+    key: 'freezeStock',
+    dataIndex: 'freezeStock',
     width: 200
   },
   {
-    title: '结果',
-    key: 'actualResult',
-    dataIndex: 'actualResult',
+    title: '可用库存',
+    key: 'availableStock',
+    dataIndex: 'availableStock',
     width: 200
   },
   {
-    title: '实际平均结果',
-    key: 'averageResult',
-    dataIndex: 'averageResult',
+    title: 'PO号',
+    key: 'fromPurchaseOrder',
+    dataIndex: 'fromPurchaseOrder',
     width: 200
   },
   {
-    title: '最小标准',
-    key: 'minStandard',
-    dataIndex: 'minStandard',
+    title: '上架id',
+    key: 'binInId',
+    dataIndex: 'binInId',
     width: 200
   },
   {
-    title: '最大标准',
-    key: 'maxStandard',
-    dataIndex: 'maxStandard',
-    width: 200
-  },
-  {
-    title: '原托数',
-    key: 'originalPalletQuantity',
-    dataIndex: 'originalPalletQuantity',
-    width: 200
-  },
-  {
-    title: '操作人',
-    key: 'operateUser',
-    dataIndex: 'operateUser',
-    width: 200
-  },
-  {
-    title: '操作时间',
-    key: 'operateTime',
-    dataIndex: 'operateTime',
+    title: '质检状态',
+    key: 'qualityStatus',
+    dataIndex: 'qualityStatus',
     width: 200
   }
 ]
@@ -162,9 +162,10 @@ export default {
         this.downloadLoading = true
 
         const res  = await this.$store.dispatch('dashboard/exportOldMaterial')
-        download(res.data,'在库时间最长物料.xlsx')
+
+        download(res,'在库时间最长物料.xlsx')
       } catch (error) {
-        
+        this.$message.error(error.message)
       }finally{
         this.downloadLoading = false
       }
@@ -174,7 +175,7 @@ export default {
         this.tableLoading = true
 
         const {
-          data: { rows, total }
+           rows, total
         } = await this.$store.dispatch('dashboard/getOldMaterialSummary', this.queryForm)
         this.list = rows
         this.paginationTotal = total

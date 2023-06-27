@@ -29,12 +29,26 @@ const exportOldMaterial = async (parameter) => {
   })
   return data 
 }
+const getExpiredMaterial = async (parameter) => {
+  const url = `/report/expiredMaterial`
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter)
+  return data
+}
 
+const exportExpiredMaterial = async (parameter) => {
+  const url = `/report/expiredMaterialExport`
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter,{
+    responseType:'blob'
+  })
+  return data
+}
 
 
 export const dashboardService = {
   getBinInSummary,
   getMissionToDoSummary,
   getOldMaterialSummary,
-  exportOldMaterial
+  exportOldMaterial,
+  getExpiredMaterial,
+  exportExpiredMaterial
 }
