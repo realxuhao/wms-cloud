@@ -109,6 +109,26 @@ const batchBinIn = async (data) => {
 	})
 }
 
+const getWeightList = async () => {
+	const url = `/binin/weight/getWeightList`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+	})
+}
+
+const getWeightByIp = async (ip) => {
+	const url = `/binin/weight/getByIp/${ip}`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+	})
+}
+
 
 export const binInService = {
 	getPendingBinInList,
@@ -120,5 +140,7 @@ export const binInService = {
 	allocate,
 	generateInTask,
 	postBinIn,
-	batchBinIn
+	batchBinIn,
+	getWeightList,
+	getWeightByIp
 }
