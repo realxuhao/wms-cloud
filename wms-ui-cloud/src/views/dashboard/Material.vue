@@ -1,11 +1,11 @@
 <template>
   <div class="main">
     <a-tabs default-active-key="1">
-      <a-tab-pane key="1" tab="Tab 1">
+      <a-tab-pane key="1" tab="在库时间最长的物料">
         <MaterialOld></MaterialOld>
       </a-tab-pane>
-      <a-tab-pane key="2" tab="Tab 2" >
-        Content of Tab Pane 2
+      <a-tab-pane key="2" tab="30天有效期到期物料排序" >
+        <MaterialExpirationDate></MaterialExpirationDate>
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -14,9 +14,12 @@
 
 <script>
 import MaterialOld from './MaterialOld'
+import MaterialExpirationDate from './MaterialExpirationDate'
+
 export default {
   components:{
-    MaterialOld
+    MaterialOld,
+    MaterialExpirationDate
   }
 }
 </script>

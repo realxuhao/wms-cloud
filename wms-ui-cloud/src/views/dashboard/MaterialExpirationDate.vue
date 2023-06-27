@@ -162,7 +162,7 @@ export default {
         this.downloadLoading = true
 
         const res  = await this.$store.dispatch('dashboard/exportOldMaterial')
-        download(res,'在库时间最长物料.xlsx')
+        download(res.data,'在库时间最长物料.xlsx')
       } catch (error) {
         
       }finally{
