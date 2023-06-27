@@ -1,10 +1,10 @@
 <template>
   <div class="main">
-    <a-tabs default-active-key="1">
-      <a-tab-pane key="1" tab="在库时间最长的物料">
+    <a-tabs default-active-key="1" >
+      <a-tab-pane key="1" tab="在库时间最长的物料" :forceRender="true">
         <MaterialOld></MaterialOld>
       </a-tab-pane>
-      <a-tab-pane key="2" tab="30天有效期到期物料排序" >
+      <a-tab-pane key="2" tab="30天有效期到期物料排序" :forceRender="true">
         <MaterialExpirationDate></MaterialExpirationDate>
       </a-tab-pane>
     </a-tabs>

@@ -3,6 +3,9 @@
     <!-- table -->
     <div class="table-content">
       <div class="action-content">
+        <a-button type="primary" class="m-r-8" @click="loadTableList" >
+          <a-icon type="redo" />刷新
+        </a-button>
         <a-button type="primary" :loading="downloadLoading" @click="handleExport" >
           <a-icon type="download" />导出
         </a-button>
