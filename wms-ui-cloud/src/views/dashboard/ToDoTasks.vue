@@ -2,13 +2,23 @@
   <Card title="待办任务">
     <template slot="header">
       <a-form-model layout="inline">
-        <a-form-model-item label="仓库编码">
+        <a-form-model-item>
+          <a-radio-group buttonStyle="solid" size="small" v-model="type">
+            <a-radio-button :value="1">
+              仓库
+            </a-radio-button>
+            <a-radio-button :value="0">
+              Cell
+            </a-radio-button>
+          </a-radio-group>
+        </a-form-model-item>
+        <a-form-model-item label="仓库编码" v-show="type===1">
           <a-select show-search v-model="queryForm.wareCode" style="width: 200px" placeholder="仓库编码">
             <a-select-option v-for="item in wareList" :key="item.id" :value="item.code">
               {{ item.code }}</a-select-option>
           </a-select>
         </a-form-model-item>
-        <a-form-model-item label="Cell">
+        <a-form-model-item label="Cell" v-show="type===0">
           <a-select show-search v-model="queryForm.cell" style="width: 200px" placeholder="Cell">
             <a-select-option v-for="item in cellList" :key="item" :value="item">
               {{ item }}</a-select-option>
@@ -47,11 +57,14 @@ export default {
     return {
       wareDataMap:{},
       wareList:[],
-      cellList:['ENC','NMD','FSMP'],
+      cellList:['All','ECN','NMD','FSMP'],
+
+      type:1,
+      list:[],
 
       queryForm:{
-        wareCode:'',
-        // cell:'ECN'
+        wareCode:'All',
+        cell:''
       },
       searchLoading:false,
     }
@@ -63,30 +76,35 @@ export default {
     async getWareList () {
       try {
         const data = await this.$store.dispatch('ware/getOptionList')
-        this.wareList = data.data
-        if(data.data.length>0){
-          this.queryForm.wareCode = data.data[0].code
-        }
+        this.wareList = [{code:'All',id:-1},...data.data]
+        // if(data.data.length>0){
+        //   this.queryForm.wareCode = data.data[0].code
+        // }
 
         this.getData()
       } catch (error) {
         this.$message.error(error.message)
       }
     },
-    handleSearch(){
-      this.getData()
+    async handleSearch(){
+      this.searchLoading = true
+      await this.getData()
+      this.searchLoading = false
     },
 
     loadMaterialCharts(){
       var myChart = echarts.init(document.getElementById('to-do-tasks-material'))
 
-      const xData = _.map(this.list,x=>x.label)
-      const percentList = _.map(this.list,x=>x.percent)
+      const xData = _.map(this.list,x=>this.type === 1 ?x.wareCode:x.cell)
+      const toBeReceivedList = _.map(this.list,x=>x.toBeReceived||0)
+      const toBeMovedList = _.map(this.list,x=>x.toBeMove||0)
+      const toBeCallList = _.map(this.list,x=>x.toBeCall||0)
+      const toBeBinList = _.map(this.list,x=>x.toBeBin||0)
 
       const option = {
         color:colorList,
         title: {
-          text: 'World Population'
+          // text: 'World Population'
         },
         tooltip: {
           trigger: 'axis',
@@ -95,7 +113,6 @@ export default {
           }
         },
         legend: {
-          show:false,
         },
         grid: {
           left: '3%',
@@ -109,21 +126,77 @@ export default {
         },
         yAxis: {
           type: 'category',
-          data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'World']
+          data: xData
         },
         series: [
           {
-            name: '2011',
+            name: '待入库',
             type: 'bar',
             silent: true,
             barWidth: 16,
-            barGap: '-100%',
             tooltip:{
               show:true
             },
-            data: [18203, 23489, 29034, 104970, 131744, 630230]
+            label: {
+              show: true,
+              formatter(item){
+                return item.value ? item.value:''
+              }
+            },
+            stack: 'Ad',
+            data: toBeReceivedList
           },
-        
+          {
+            name: '待上架',
+            type: 'bar',
+            silent: true,
+            barWidth: 16,
+            stack: 'Ad',
+            tooltip:{
+              show:true
+            },
+            label: {
+              show: true,
+              formatter(item){
+                return item.value ? item.value:''
+              }
+            },
+            data: toBeBinList
+          },
+          {
+            name: '待叫料',
+            type: 'bar',
+            silent: true,
+            barWidth: 16,
+            stack: 'Ad',
+            tooltip:{
+              show:true
+            },
+            label: {
+              show: true,
+              formatter(item){
+                return item.value ? item.value:''
+              }
+            },
+            data: toBeCallList
+          },
+          {
+            name: '待移库',
+            type: 'bar',
+            silent: true,
+            barWidth: 16,
+            stack: 'Ad',
+            tooltip:{
+              show:true
+            },
+            label: {
+              show: true,
+              formatter(item){
+                return item.value ? item.value:''
+              }
+            },
+            data: toBeMovedList
+          },
         ]
       }
 
@@ -131,7 +204,8 @@ export default {
     },
     async getData(){
       const data = await this.$store.dispatch('dashboard/getMissionToDoSummary',this.queryForm)
-
+      this.list = data
+      this.loadMaterialCharts()
       // const wareList = _.map(_.uniqBy(data,'wareCode'),'wareCode')
       // this.wareList = wareList
       // this.checkedList = wareList
@@ -167,7 +241,15 @@ export default {
     // this.getData()
   },
   watch:{
-
+    type(val){
+      if(val===1){
+        this.queryForm.cell = undefined
+        this.queryForm.wareCode = 'All'
+      }else{
+        this.queryForm.wareCode = undefined
+        this.queryForm.cell = 'All'
+      }
+    }
   }
 }
 </script>
@@ -194,6 +276,18 @@ export default {
     margin-right: 2px !important;
   }
 }
+
+/deep/.ant-radio-button-wrapper:first-child{
+  border: none;
+}
+/deep/.ant-radio-button-wrapper{
+  border: none;
+}
+
+/deep/.ant-radio-button-wrapper:not(:first-child)::before{
+  display: none;
+}
+
 
 /deep/.ant-radio-button-wrapper:first-child{
   border: none;
