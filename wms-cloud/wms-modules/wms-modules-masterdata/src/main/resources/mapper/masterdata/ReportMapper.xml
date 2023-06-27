@@ -156,8 +156,8 @@
         SELECT t.car_nb,ws.* from ware_shift ws
                                       LEFT JOIN transhipment_order t ON ws.order_number=t.order_number AND t.delete_flag=0
         WHERE ws.delete_flag=0
-        <if test="sourceWareCode != null ">and status = #{source_ware_code}</if>
-        <if test="targetWareCode != null ">and status = #{target_ware_code}</if>
+        <if test="sourceWareCode != null and sourceWareCode != ''">and source_ware_code LIKE   concat('%', #{sourceWareCode}, '%')</if>
+        <if test="targetWareCode != null and targetWareCode != ''">and target_ware_code LIKE   concat('%', #{targetWareCode}, '%')</if>
     </select>
 
 </mapper>

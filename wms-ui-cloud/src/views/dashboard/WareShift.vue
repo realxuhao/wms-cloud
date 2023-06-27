@@ -5,12 +5,12 @@
       <div class="action-content">
         <a-form-model layout="inline">
     
-          <a-form-model-item label="源库位">
-            <a-input v-model="queryForm.sourceBinCode" placeholder="源库位" allow-clear/>
+          <a-form-model-item label="源仓库">
+            <a-input v-model="queryForm.sourceWareCode" placeholder="源库位" allow-clear/>
           </a-form-model-item>
 
-          <a-form-model-item label="目标库位">
-            <a-input v-model="queryForm.targetBinCode" placeholder="目标库位" allow-clear/>
+          <a-form-model-item label="目标仓库">
+            <a-input v-model="queryForm.targetWareCode" placeholder="目标库位" allow-clear/>
           </a-form-model-item>
         
           <a-form-model-item >
@@ -59,39 +59,21 @@ import { mixinTableList } from '@/utils/mixin/index'
 const columns = [
 
   {
-    title: '工厂',
-    key: 'plantNb',
-    dataIndex: 'plantNb',
-    width: 120
+    title: '移库单号',
+    key: 'orderNb',
+    dataIndex: 'orderNb',
+    width: 200
   },
   {
-    title: '仓库编码',
-    key: 'wareCode',
-    dataIndex: 'wareCode',
-    width: 120
+    title: '车牌号',
+    key: 'carNb',
+    dataIndex: 'carNb',
+    width: 200
   },
   {
-    title: '区域编码',
-    key: 'areaCode',
-    dataIndex: 'areaCode',
-    width: 120
-  },
-  {
-    title: '跨编码',
-    key: 'frameCode',
-    dataIndex: 'frameCode',
-    width: 120
-  },
-  {
-    title: '库位编码',
-    key: 'binCode',
-    dataIndex: 'binCode',
-    width: 120
-  },
-  {
-    title: 'SSCC码',
-    key: 'ssccNumber',
-    dataIndex: 'ssccNumber',
+    title: 'sscc',
+    key: 'ssccNb',
+    dataIndex: 'ssccNb',
     width: 200
   },
   {
@@ -101,59 +83,101 @@ const columns = [
     width: 200
   },
   {
+    title: '物料名称',
+    key: 'materialName',
+    dataIndex: 'materialName',
+    width: 200
+  },
+  {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
     width: 200
   },
   {
-    title: '过期时间',
+    title: '移库数量',
+    key: 'quantity',
+    dataIndex: 'quantity',
+    width: 200
+  },
+  {
+    title: '拆托数量',
+    key: 'splitQuality',
+    dataIndex: 'splitQuality',
+    width: 200
+  },
+  {
+    title: '源工厂',
+    key: 'sourcePlantNb',
+    dataIndex: 'sourcePlantNb',
+    width: 200
+  },
+  {
+    title: '源仓库',
+    key: 'sourceWareCode',
+    dataIndex: 'sourceWareCode',
+    width: 200
+  },
+  {
+    title: '源存储区',
+    key: 'sourceAreaCode',
+    dataIndex: 'sourceAreaCode',
+    width: 200
+  },
+  {
+    title: '源库位',
+    key: 'sourceBinCode',
+    dataIndex: 'sourceBinCode',
+    width: 200
+  },
+  {
+    title: 'bbd过期时间',
     key: 'expireDate',
     dataIndex: 'expireDate',
     width: 200
   },
   {
-    title: '总库存',
-    key: 'totalStock',
-    dataIndex: 'totalStock',
+    title: '目的工厂',
+    key: 'targetPlant',
+    dataIndex: 'targetPlant',
     width: 200
   },
   {
-    title: '冻结库存',
-    key: 'freezeStock',
-    dataIndex: 'freezeStock',
+    title: '目的仓库',
+    key: 'targetWareCode',
+    dataIndex: 'targetWareCode',
     width: 200
   },
   {
-    title: '可用库存',
-    key: 'availableStock',
-    dataIndex: 'availableStock',
+    title: '目的存储区',
+    key: 'targetAreaCode',
+    dataIndex: 'targetAreaCode',
     width: 200
   },
   {
-    title: 'PO号',
-    key: 'fromPurchaseOrder',
-    dataIndex: 'fromPurchaseOrder',
+    title: '推荐库位',
+    key: 'recommendBinCode',
+    dataIndex: 'recommendBinCode',
     width: 200
   },
   {
-    title: '上架id',
-    key: 'binInId',
-    dataIndex: 'binInId',
+    title: '目的库位code',
+    key: 'targetBinCode',
+    dataIndex: 'targetBinCode',
     width: 200
   },
   {
-    title: '质检状态',
-    key: 'qualityStatus',
-    dataIndex: 'qualityStatus',
+    title: '所属需求订单号',
+    key: 'orderNumber',
+    dataIndex: 'orderNumber',
     width: 200
   }
 ]
 
 const queryFormAttr = () => {
   return {
-    sourceBinCode:'',
-    targetBinCode:''
+    sourceWareCode:'',
+    targetWareCode:''
   }
 }
 
@@ -174,7 +198,10 @@ export default {
     }
   },
   methods: {
-
+    handleResetQuery () {
+      this.queryForm = { ...this.queryForm, ...queryFormAttr() }
+      this.handleSearch()
+    },
     async loadTableList () {
       try {
         this.tableLoading = true

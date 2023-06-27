@@ -17,7 +17,7 @@ const getMissionToDoSummary = async (parameter) => {
 }
 
 const getOldMaterialSummary = async (parameter) => {
-  const url = `/report/oldMaterial`
+  const url = `/report/oldMaterial?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(baseUrl).post(url, parameter)
   return data 
 }
@@ -30,7 +30,7 @@ const exportOldMaterial = async (parameter) => {
   return data 
 }
 const getExpiredMaterial = async (parameter) => {
-  const url = `/report/expiredMaterial`
+  const url = `/report/expiredMaterial?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(baseUrl).post(url, parameter)
   return data
 }

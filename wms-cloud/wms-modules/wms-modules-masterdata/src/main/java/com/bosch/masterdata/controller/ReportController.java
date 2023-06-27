@@ -102,11 +102,11 @@ public class ReportController extends BaseController {
      */
     @PostMapping("/wareShift")
     @ApiOperation("移库列表")
-    public  R<List<ReportWareShift>> wareShift(@RequestBody ReportWareShiftDTO reportWareShiftDTO) {
+    public  R<PageVO<ReportWareShift>> wareShift(@RequestBody ReportWareShiftDTO reportWareShiftDTO) {
 
         startPage();
         List<ReportWareShift> reportWareShifts = reportService.reportWareShift(reportWareShiftDTO);
-        return R.ok(reportWareShifts);
+        return R.ok(new PageVO<>(reportWareShifts, new PageInfo<>(reportWareShifts).getTotal()));
 
     }
 }

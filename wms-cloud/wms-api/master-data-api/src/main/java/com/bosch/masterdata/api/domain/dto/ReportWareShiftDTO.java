@@ -79,8 +79,7 @@ public class ReportWareShiftDTO extends PageDomain {
      */
     @ApiModelProperty(value = "源仓库")
     @Excel(name = "源仓库")
-    @TableField(value = "source_ware_code")
-    private String source_ware_code;
+    private String sourceWareCode;
 
     /**
      * 源存储区

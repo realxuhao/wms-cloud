@@ -1,11 +1,11 @@
 import config from '@/config/api.config'
 import { createAuthInstance } from './general'
-// import qs from 'qs'
+ import qs from 'qs'
 
 const baseUrl = `${config.apiHost}/masterdata`
 
 const getList = async (options) => {
-  const url = `/mdProductPackaging/list`
+  const url = `/mdProductPackaging/list?${qs.stringify(options)}`
   const { data } = await createAuthInstance(baseUrl).post(url, options)
   return data
 }

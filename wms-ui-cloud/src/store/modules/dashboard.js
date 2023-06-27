@@ -27,6 +27,7 @@ const comparison = {
       return data
     },
     async getExpiredMaterial ({ commit }, options) {
+      console.log(options)
       const {data} = await dashboardService.getExpiredMaterial(options)
       return data
     },
@@ -35,7 +36,7 @@ const comparison = {
       return data
     },
     async getWareShiftList ({ commit }, options) {
-      const data = await dashboardService.getWareShiftList(options)
+      const {data} = await dashboardService.getWareShiftList(options)
       return data
     },
     
