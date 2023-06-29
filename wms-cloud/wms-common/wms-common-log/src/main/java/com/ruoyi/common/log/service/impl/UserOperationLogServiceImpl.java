@@ -1,7 +1,7 @@
 package com.ruoyi.common.log.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ruoyi.common.log.domain.UserOperationLog;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.log.mapper.UserOperationLogMapper;
 import org.springframework.stereotype.Service;

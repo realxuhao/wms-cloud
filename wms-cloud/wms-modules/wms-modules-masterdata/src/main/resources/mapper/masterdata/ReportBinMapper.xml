@@ -39,11 +39,11 @@
         GROUP BY ware_id) AS t1
         LEFT JOIN
         (SELECT COUNT(DISTINCT bs.bin_code)  AS material_occupy_bin, bs.ware_code
-        FROM bi_stock bs where  delete_flag=0 AND bin_code &lt;&gt; ''
+        FROM bi_stock bs where  delete_flag=0 AND bin_code IS NOT NULL
         GROUP BY bs.ware_code) AS bs ON t1.ware_code = bs.ware_code
         LEFT JOIN
         (SELECT COUNT(DISTINCT ps.bin_code)  AS product_occupy_bin, ps.ware_code
-        FROM product_stock ps where  delete_flag=0 AND bin_code &lt;&gt; ''
+        FROM product_stock ps where  delete_flag=0 AND bin_code IS NOT NULL
         GROUP BY ps.ware_code) AS ps ON t1.ware_code = ps.ware_code;
     </select>
 </mapper>

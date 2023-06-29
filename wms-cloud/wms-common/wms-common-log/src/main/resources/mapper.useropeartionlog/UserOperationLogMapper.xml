@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.common.log.mapper.UserOperationLogMapper">
 
-    <resultMap id="BaseResultMap" type="com.ruoyi.common.log.domain.UserOperationLog">
+    <resultMap id="BaseResultMap" type="com.bosch.system.api.domain.UserOperationLog">
             <result property="id" column="id" jdbcType="BIGINT"/>
             <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
             <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>

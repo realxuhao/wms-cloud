@@ -1,5 +1,4 @@
 package com.bosch.masterdata.controller;
-import java.time.LocalDateTime;
 
 import com.bosch.masterdata.api.domain.MissionToDo;
 import com.bosch.masterdata.api.domain.ReportMaterial;
@@ -7,17 +6,17 @@ import com.bosch.masterdata.api.domain.ReportWareShift;
 import com.bosch.masterdata.api.domain.dto.ReportBinDTO;
 import com.bosch.masterdata.api.domain.dto.ReportMaterialDTO;
 import com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO;
+import com.bosch.masterdata.api.domain.dto.WorkloadDTO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
-import com.bosch.masterdata.api.domain.vo.ProductFrameVO;
 import com.bosch.masterdata.api.domain.vo.ReportBinVO;
+import com.bosch.masterdata.api.domain.vo.WorkloadVO;
 import com.bosch.masterdata.service.IReportService;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
-import com.ruoyi.common.core.web.page.PageDomain;
-import com.ruoyi.common.log.domain.UserOperationLog;
 import com.ruoyi.common.log.service.IUserOperationLogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -107,6 +106,30 @@ public class ReportController extends BaseController {
         startPage();
         List<ReportWareShift> reportWareShifts = reportService.reportWareShift(reportWareShiftDTO);
         return R.ok(new PageVO<>(reportWareShifts, new PageInfo<>(reportWareShifts).getTotal()));
+
+    }
+    /**
+     * 员工实际工作量（原材料+成品）-标准单位托盘
+     */
+    @PostMapping("/workload")
+    @ApiOperation("员工实际工作量（原材料+成品）-标准单位托盘")
+    public  R<PageVO<WorkloadVO>> workload(@RequestBody WorkloadDTO workloadDTO) {
+
+        startPage();
+        List<WorkloadVO> list = reportService.workload(workloadDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+
+    }
+    /**
+     * 员工实际工作量（原材料+成品）-标准单位托盘导出
+     */
+    @PostMapping("/workloadExport")
+    @ApiOperation("员工实际工作量（原材料+成品）-标准单位托盘导出")
+    public  void workloadExport(HttpServletResponse response ) {
+        WorkloadDTO workloadDTO=new WorkloadDTO();
+        List<WorkloadVO> list = reportService.workload(workloadDTO);
+        ExcelUtil<WorkloadVO> util = new ExcelUtil<>(WorkloadVO.class);
+        util.exportExcel(response, list, "员工实际工作量");
 
     }
 }

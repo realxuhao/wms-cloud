@@ -6,7 +6,9 @@ import com.bosch.masterdata.api.domain.ReportMaterial;
 import com.bosch.masterdata.api.domain.ReportWareShift;
 import com.bosch.masterdata.api.domain.dto.ReportBinDTO;
 import com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO;
+import com.bosch.masterdata.api.domain.dto.WorkloadDTO;
 import com.bosch.masterdata.api.domain.vo.ReportBinVO;
+import com.bosch.masterdata.api.domain.vo.WorkloadVO;
 import com.bosch.masterdata.mapper.ReportMapper;
 import com.bosch.masterdata.service.IReportService;
 import com.ruoyi.common.core.utils.StringUtils;
@@ -75,6 +77,11 @@ public class ReportServiceImpl implements IReportService {
     public List<ReportWareShift> reportWareShift(ReportWareShiftDTO reportWareShiftDTO) {
         List<ReportWareShift> reportWareShifts = reportMapper.reportWareShift(reportWareShiftDTO);
         return reportWareShifts;
+    }
+
+    @Override
+    public List<WorkloadVO> workload(WorkloadDTO workloadDTO) {
+        return reportMapper.workload(workloadDTO);
     }
 
     @Override

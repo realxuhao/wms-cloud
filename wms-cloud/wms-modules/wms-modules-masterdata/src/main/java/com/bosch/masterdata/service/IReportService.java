@@ -5,7 +5,9 @@ import com.bosch.masterdata.api.domain.ReportMaterial;
 import com.bosch.masterdata.api.domain.ReportWareShift;
 import com.bosch.masterdata.api.domain.dto.ReportBinDTO;
 import com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO;
+import com.bosch.masterdata.api.domain.dto.WorkloadDTO;
 import com.bosch.masterdata.api.domain.vo.ReportBinVO;
+import com.bosch.masterdata.api.domain.vo.WorkloadVO;
 
 import java.util.List;
 
@@ -29,4 +31,6 @@ public interface IReportService {
     List<ReportMaterial> expiredMaterial();
 
     List<ReportWareShift> reportWareShift(ReportWareShiftDTO reportWareShiftDTO);
+
+    List<WorkloadVO> workload(WorkloadDTO workloadDTO);
 }

@@ -1,4 +1,4 @@
-package com.ruoyi.common.log.domain;
+package com.bosch.system.api.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

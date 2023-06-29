@@ -1,6 +1,6 @@
 package com.ruoyi.common.log.service;
 
-import com.ruoyi.common.log.domain.UserOperationLog;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
