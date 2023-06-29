@@ -139,26 +139,26 @@
                 删除
               </a>
               <!--<a-divider type="vertical" v-hasPermi="['system:user:resetPwd', 'system:user:edit']" />-->
-<!--              -->
+              <!--              -->
               <a-dropdown v-hasPermi="['system:user:resetPwd', 'system:user:edit']">
-              <a class="ant-dropdown-link" @click="e => e.preventDefault()">
-              <a-icon type="double-right" />
-              更多
-              </a>
-              <a-menu slot="overlay">
-              <a-menu-item v-hasPermi="['system:user:resetPwd']">
-              <a @click="$refs.resetPassword.handleResetPwd(record)">
-              <a-icon type="key" />
-              重置密码
-              </a>
-              </a-menu-item>
-              <a-menu-item v-hasPermi="['system:user:edit']">
-                <a @click="$refs.authRole.handleAuthRole(record)">
-                <a-icon type="check-circle" />
-                分配角色
+                <a class="ant-dropdown-link" @click="e => e.preventDefault()">
+                  <a-icon type="double-right" />
+                  更多
                 </a>
-              </a-menu-item>
-              </a-menu>
+                <a-menu slot="overlay">
+                  <a-menu-item v-hasPermi="['system:user:resetPwd']">
+                    <a @click="$refs.resetPassword.handleResetPwd(record)">
+                      <a-icon type="key" />
+                      重置密码
+                    </a>
+                  </a-menu-item>
+                  <a-menu-item v-hasPermi="['system:user:edit']">
+                    <a @click="$refs.authRole.handleAuthRole(record)">
+                      <a-icon type="check-circle" />
+                      分配角色
+                    </a>
+                  </a-menu-item>
+                </a-menu>
               </a-dropdown>
             </span>
           </a-table>

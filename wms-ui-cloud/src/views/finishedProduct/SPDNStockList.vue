@@ -184,13 +184,13 @@ const columns = [
     width: 120
   },
   {
-    title: '入库人',
+    title: '创建人',
     key: 'createBy',
     dataIndex: 'createBy',
     width: 120
   },
   {
-    title: '入库时间',
+    title: '创建时间',
     key: 'createTime',
     dataIndex: 'createTime',
     width: 200

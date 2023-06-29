@@ -1,5 +1,5 @@
 <template>
-	<my-page nav-title="移库发运">
+	<my-page nav-title="SPDN下架">
 		<AloysTab slot="page-main" class="flex flex-column" :tabs="tabs" @change="onTabChange">
 			<Pending slot="content0"></Pending>
 			<Completed slot="content1"></Completed>
@@ -10,8 +10,8 @@
 
 <script>
 	import AloysTab from '@/components/aloys-tab/aloys-tab';
-	import Pending from './shipmentPending';
-	import Completed from './shipmentCompleted';
+	import Pending from './spdnBinDownPending';
+	import Completed from './spdnBinDownCompleted';
 
 	export default {
 		name: 'MaterialIn',
@@ -23,9 +23,9 @@
 		data() {
 			return {
 				tabs: [{
-					title: '待发运'
+					title: '待下架'
 				}, {
-					title: '已发运'
+					title: '已下架'
 				}],
 				currentTabIndex: 0
 			};
@@ -36,7 +36,7 @@
 			},
 			handleGotoScan() {
 				uni.navigateTo({
-					url: '/pages/finishedProductWareShift/shipmentOperation'
+					url: '/pages/finishedProduct/spdnBinDownScan'
 				});
 			}
 		}
@@ -58,8 +58,8 @@
 
 	.action {
 		border: 1px solid $uni-border-color;
-		width: 60px;
-		height: 60px;
+		width: 48px;
+		height: 48px;
 		display: flex;
 		justify-content: center;
 		align-items: center;

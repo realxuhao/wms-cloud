@@ -1,15 +1,15 @@
 <template>
-	<my-page nav-title="库存调整">
+	<my-page nav-title="库内转储">
 		<view class="main" slot="page-main">
 			<view class="header m-b-8">
 				<view class="text-line m-b-8 ">
 					<view class="label">库位：</view>
 					{{ materialInfo.binCode }}
 				</view>
-				<view class="text-line m-b-8 ">
+				<!-- 	<view class="text-line m-b-8 ">
 					<view class="label">物料名称：</view>
 					{{ materialInfo.materialName }}
-				</view>
+				</view> -->
 				<view class="text-line m-b-8 ">
 					<view class="label">物料编码</view>
 					{{ materialInfo.materialNb }}
@@ -39,24 +39,19 @@
 			<view class="content">
 				<uni-forms :label-width="80" ref="binInForm" :rules="formRules" :modelValue="form"
 					label-position="left">
-					<uni-forms-item label="调整类型" required><uni-data-checkbox v-model="form.type"
+					<uni-forms-item label="转储动作" required><uni-data-checkbox v-model="form.type"
 							:localdata="typeList" /></uni-forms-item>
 
-					<template v-if="form.type === 0">
-						<uni-forms-item label="领用数量" name="totalStock" required>
-							<uni-easyinput v-model="form.stockUse" placeholder="请输入领用数量"></uni-easyinput>
+					<template v-if="form.type === 1">
+						<uni-forms-item label="存储区" name="actualCode" required>
+							<uni-data-picker ref="picker" v-model="area" popup-title="请选择存储区" :localdata="areaList"
+								@change="handleAreaChange"></uni-data-picker>
 						</uni-forms-item>
 					</template>
 
-					<template v-if="form.type === 2">
-						<uni-forms-item label="总库存" name="totalStock" required>
-							<uni-easyinput v-model="form.totalStock" placeholder="请输入总库存"></uni-easyinput>
-						</uni-forms-item>
-						<uni-forms-item label="冻结库存" name="freezeStock" required>
-							<uni-easyinput v-model="form.freezeStock" placeholder="请输入冻结库存"></uni-easyinput>
-						</uni-forms-item>
-						<uni-forms-item label="可用库存" name="availableStock" required>
-							<uni-easyinput v-model="form.availableStock" placeholder="请输入可用库存"></uni-easyinput>
+					<template v-if="form.type === 0">
+						<uni-forms-item label="库位编码" name="actualCode" required>
+							<uni-easyinput v-model="form.actualCode" placeholder="请输入或扫描库位编码"></uni-easyinput>
 						</uni-forms-item>
 					</template>
 
@@ -84,6 +79,7 @@
 <script>
 	import Message from '@/components/Message';
 	import _ from 'lodash';
+	import Bus from '@/utils/bus';
 
 	export default {
 		components: {
@@ -92,34 +88,18 @@
 		data() {
 			return {
 				typeList: [{
-						text: '领用',
-						value: 0
-					},
-					{
-						text: '报废',
+						text: '区域',
 						value: 1
 					},
 					{
-						text: '其它',
-						value: 2
+						text: '库位',
+						value: 0
 					}
 				],
 				submitLoading: false,
 				materialInfo: {},
 				formRules: {
-					totalStock: {
-						rules: [{
-							required: true,
-							errorMessage: '不能为空'
-						}]
-					},
-					availableStock: {
-						rules: [{
-							required: true,
-							errorMessage: '不能为空'
-						}]
-					},
-					freezeStock: {
+					actualCode: {
 						rules: [{
 							required: true,
 							errorMessage: '不能为空'
@@ -127,30 +107,75 @@
 					}
 				},
 				form: {
-					freezeStock: 0,
-					availableStock: 0,
-					totalStock: 0,
+					actualCode: '',
+					mesBarCode: 0,
 					type: 0
 				},
-				list: []
+				list: [],
+				areaList: [],
+				area: undefined
 			};
 		},
 		onLoad(options) {
-			const materialInfo = JSON.parse(options.info);
-			this.materialInfo = materialInfo;
-			this.form.freezeStock = materialInfo.freezeStock;
-			this.form.availableStock = materialInfo.availableStock;
-			this.form.totalStock = materialInfo.totalStock;
-		},
+			this.form.mesBarCode = options.barCode;
+			this.getInfo(options.barCode);
+			this.type = 0
 
+
+			this.initScanCode()
+		},
+		onLaunch() {
+			Bus.$off('scancodedate');
+		},
 		methods: {
+			async initScanCode() {
+				Bus.$on('scancodedate', data => {
+					console.log(this.type)
+					if (this.type === 0) {
+						const code = data.code.trim();
+						this.form.actualCode = code;
+					}
+				});
+			},
+			async getWareList() {
+				const plant = uni.getStorageSync('plant');
+				const wareCode = plant.wareCode;
+				const data = await this.$store.dispatch('wareShift/getWareList', {
+					wareCode
+				});
+				this.areaList = _.map(data, x => ({
+					text: x.name,
+					value: x.code
+				}));
+			},
+			handleAreaChange(val) {
+				const {
+					detail: {
+						value
+					}
+				} = val;
+				this.form.actualCode = value[0].value;
+			},
 			async handleGoBack() {
 				uni.navigateBack({
 					delta: 1
 				});
 			},
+			async getInfo(barCode) {
+				try {
+					uni.showLoading();
+					const data = await this.$store.dispatch('finishedProduct/productStockGetByBarCode', barCode);
+					this.materialInfo = data;
+				} catch (e) {
+					this.$refs.message.error(e.message);
+				} finally {
+					uni.hideLoading();
+				}
+			},
 
-			async lodaData() {},
+			async lodaData() {
+				this.getWareList();
+			},
 
 			async handlePost() {
 				this.$refs.binInForm
@@ -171,7 +196,7 @@
 						...this.form,
 						ssccNumber: this.materialInfo.ssccNumber
 					};
-					await this.$store.dispatch('stock/editStock', options);
+					await this.$store.dispatch('finishedProduct/productStockTrans', options);
 					this.$refs.popup.open();
 				} catch (e) {
 					this.$refs.message.error(e.message);
@@ -183,6 +208,12 @@
 		},
 		mounted() {
 			this.lodaData();
+		},
+		watch: {
+			'form.type': function() {
+				this.area = [];
+				this.form.actualCode = undefined;
+			}
 		}
 	};
 </script>

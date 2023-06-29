@@ -36,6 +36,20 @@
           </a-col>
          
           <a-col :span="4">
+            <a-form-model-item label="状态">
+              <a-select
+                placeholder="状态"
+                allow-clear
+                v-model="queryForm.status"
+              >
+                <a-select-option v-for="(value,key) in statusTextMap" :key="key" :value="value">
+                  {{ value }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+            
+          <a-col :span="4">
             <a-form-item label="FromProdOrder">
               <a-input v-model="queryForm.fromProdOrder" placeholder="FromProdOrder" allow-clear/>
             </a-form-item>
@@ -58,7 +72,6 @@
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              
             </span>
           </a-col>
         </a-row>
@@ -191,7 +204,7 @@ const columns = [
     width: 120
   },
   {
-    title: '入库人',
+    title: '创建人',
     key: 'createBy',
     dataIndex: 'createBy',
     width: 120
@@ -234,6 +247,7 @@ const queryFormAttr = () => {
     binCode: '',
     fromProdOrder: '',
     createBy: '',
+    status:undefined,
     date: []
   }
 }

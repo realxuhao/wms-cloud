@@ -20,7 +20,7 @@
                 <a-input v-model="queryForm.ssccNb" placeholder="sscc码" allow-clear/>
               </a-form-model-item>
             </a-col>
-            <a-col :span="4">
+            <!-- <a-col :span="4">
               <a-form-model-item label="cell部门">
                 <a-select
                   placeholder="请选择cell部门"
@@ -32,7 +32,7 @@
                   </a-select-option>
                 </a-select>
               </a-form-model-item>
-            </a-col>
+            </a-col> -->
             <a-col :span="4">
               <a-form-model-item label="物料编码">
                 <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
@@ -444,8 +444,8 @@ const queryFormAttr = () => {
     sampleTime: [],
     createTime: [],
     wareCode: '',
-    cellList: [],
-    cell: '',
+    // cellList: [],
+    // cell: '',
     batchNb: '',
     areaCode: '',
     materialType: ''
@@ -454,6 +454,12 @@ const queryFormAttr = () => {
 export default {
   name: 'IQCList',
   mixins: [mixinTableList],
+  props:{
+    cell:{
+      type:String,
+      default:''
+    }
+  },
   components: {
     IqcSample,
     EditSample
@@ -598,7 +604,8 @@ export default {
           startSampleTime,
           endSampleTime,
           startCreateTime,
-          endCreateTime
+          endCreateTime,
+          cell:this.cell
         }
         const {
           data: { rows, total }
@@ -641,7 +648,7 @@ export default {
     },
     async loadData () {
       this.loadTableList()
-      this.loadCellList()
+      // this.loadCellList()
       this.getWareList()
     }
   },

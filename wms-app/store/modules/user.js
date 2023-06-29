@@ -7,7 +7,7 @@ import {
 
 const user = {
 	state: {
-		name: '',
+		userName: '',
 		info: {},
 		permissions: []
 	},
@@ -15,6 +15,7 @@ const user = {
 	mutations: {
 		setInfo(state, info) {
 			state.info = info
+			state.userName = info.user.userName
 		},
 		SET_PERMISSIONS: (state, permissions) => {
 			state.permissions = permissions

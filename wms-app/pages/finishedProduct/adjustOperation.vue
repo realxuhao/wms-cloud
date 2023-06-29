@@ -42,13 +42,13 @@
 					<uni-forms-item label="调整类型" required><uni-data-checkbox v-model="form.type"
 							:localdata="typeList" /></uni-forms-item>
 
-					<template v-if="form.type === 0">
-						<uni-forms-item label="领用数量" name="totalStock" required>
-							<uni-easyinput v-model="form.stockUse" placeholder="请输入领用数量"></uni-easyinput>
+					<template v-if="[0,1].includes(form.type)">
+						<uni-forms-item label="取样数量" name="totalStock" required>
+							<uni-easyinput v-model="form.stockUse" placeholder="取样数量"></uni-easyinput>
 						</uni-forms-item>
 					</template>
 
-					<template v-if="form.type === 2">
+					<template v-if="form.type === 4">
 						<uni-forms-item label="总库存" name="totalStock" required>
 							<uni-easyinput v-model="form.totalStock" placeholder="请输入总库存"></uni-easyinput>
 						</uni-forms-item>
@@ -92,16 +92,24 @@
 		data() {
 			return {
 				typeList: [{
-						text: '领用',
+						text: '质检取样',
 						value: 0
 					},
 					{
-						text: '报废',
+						text: '取样',
 						value: 1
 					},
 					{
-						text: '其它',
+						text: '报废',
 						value: 2
+					},
+					{
+						text: '整托出库',
+						value: 3
+					},
+					{
+						text: '其它',
+						value: 4
 					}
 				],
 				submitLoading: false,
@@ -136,11 +144,7 @@
 			};
 		},
 		onLoad(options) {
-			const materialInfo = JSON.parse(options.info);
-			this.materialInfo = materialInfo;
-			this.form.freezeStock = materialInfo.freezeStock;
-			this.form.availableStock = materialInfo.availableStock;
-			this.form.totalStock = materialInfo.totalStock;
+			this.getInfo(options.barCode)
 		},
 
 		methods: {
@@ -148,6 +152,21 @@
 				uni.navigateBack({
 					delta: 1
 				});
+			},
+			async getInfo(barCode) {
+				try {
+					uni.showLoading();
+					const materialInfo = await this.$store.dispatch('finishedProduct/productStockGetByBarCode',
+						barCode);
+					this.materialInfo = materialInfo
+					this.form.freezeStock = materialInfo.freezeStock;
+					this.form.availableStock = materialInfo.availableStock;
+					this.form.totalStock = materialInfo.totalStock;
+				} catch (e) {
+					this.$refs.message.error(e.message);
+				} finally {
+					uni.hideLoading();
+				}
 			},
 
 			async lodaData() {},
@@ -171,7 +190,7 @@
 						...this.form,
 						ssccNumber: this.materialInfo.ssccNumber
 					};
-					await this.$store.dispatch('stock/editStock', options);
+					await this.$store.dispatch('finishedProduct/productStockEditStock', options);
 					this.$refs.popup.open();
 				} catch (e) {
 					this.$refs.message.error(e.message);
