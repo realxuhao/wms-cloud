@@ -53,7 +53,44 @@ const finishedProduct = {
     async uploadBatchUpdate ({ commit }, formdata) {
       const data = await finishedProductService.uploadBatchUpdate(formdata)
       return data
-    }
+    },
+    async importSPDN({ commit }, formdata) {
+      const data = await finishedProductService.importSPDN(formdata)
+      return data
+    },
+    async spdnList({ commit }, options) {
+      const data = await finishedProductService.spdnList(options)
+      return data
+    },
+    async approveSpdnList({ commit }, options) {
+      const data = await finishedProductService.approveSpdnList(options)
+      return data
+    },
+    async spdnStocklist({ commit }, options) {
+      const data = await finishedProductService.spdnStocklist(options)
+      return data
+    },
+    async deleteSpdn({ commit }, options) {
+      const data = await finishedProductService.deleteSpdn(options)
+      return data
+    },
+    async SUQAIQCManagementList({ commit }, options) {
+      const data = await finishedProductService.SUQAIQCManagementList(options)
+      return data
+    },
+    async changeSUQAStatus({ commit }, options) {
+      const data = await finishedProductService.changeSUQAStatus(options)
+      return data
+    },
+    async validateSUQAStatus({ commit }, options) {
+      const data = await finishedProductService.validateSUQAStatus(options)
+      return data
+    },
+    async spdnPicklist({ commit }, options) {
+      const data = await finishedProductService.spdnPicklist(options)
+      return data
+    },
+    // spdnPicklist
   }
 }
 
