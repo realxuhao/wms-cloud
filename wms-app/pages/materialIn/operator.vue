@@ -76,7 +76,8 @@
 										errorMessage: '请输入称重重量'
 									}
 								]">
-								<uni-easyinput v-model="weightFormData[`weight${item}`]" placeholder="请输入重量" />
+								<uni-easyinput v-model="weightFormData[`weight${item}`]"
+									placeholder="请输入重量"></uni-easyinput>
 								<o-btn size="xs" type="primary" class="weight-action"
 									@click="getWeight(index)">获取重量</o-btn>
 							</uni-forms-item>
@@ -530,7 +531,7 @@
 
 	.weight-action {
 		position: absolute;
-		right: 0;
+		right: 0px;
 
 	}
 </style>
