@@ -18,6 +18,7 @@
         :pagination="false"
         size="middle"
         :scroll="tableScroll"
+        @change="pageChange"
       >
     
       </a-table>
@@ -97,7 +98,8 @@ const columns = [
     title: '过期时间',
     key: 'expireDate',
     dataIndex: 'expireDate',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '总库存',
@@ -154,6 +156,26 @@ export default {
     }
   },
   methods: {
+    pageChange(page, filters, sorter){
+        this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc'
+        this.queryForm.orderByColumn= sorter.columnKey
+        this.loadTableList()
+      // try {
+      //   this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc',
+      //     this.queryForm.orderByColumn= sorter.columnKey,
+      //     this.tableLoading = true
+      //   const {
+      //     data: { rows, total }
+      //   } = await this.$store.dispatch('dashboard/getExpiredMaterial', {...this.queryForm})
+      //
+      //   this.list = rows
+      //   this.paginationTotal = total
+      // } catch (error) {
+      //   this.$message.error(error.message)
+      // } finally {
+      //   this.tableLoading = false
+      // }
+    },
     async handleExport(){
       try {
         this.downloadLoading = true

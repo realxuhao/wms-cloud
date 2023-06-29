@@ -12,7 +12,12 @@
           <a-form-model-item label="目标仓库">
             <a-input v-model="queryForm.targetWareCode" placeholder="目标库位" allow-clear/>
           </a-form-model-item>
-        
+          <a-form-model-item label="车牌号">
+            <a-input v-model="queryForm.carNb" placeholder="车牌号" allow-clear/>
+          </a-form-model-item>
+          <a-form-model-item label="SSCCNumber">
+            <a-input v-model="queryForm.ssccNb" placeholder="SSCCNumber" allow-clear/>
+          </a-form-model-item>
           <a-form-model-item >
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
@@ -177,7 +182,9 @@ const columns = [
 const queryFormAttr = () => {
   return {
     sourceWareCode:'',
-    targetWareCode:''
+    targetWareCode:'',
+    carNb:'',
+    ssccNb:''
   }
 }
 
