@@ -62,115 +62,115 @@ const columns = [
     title: '移库单号',
     key: 'orderNb',
     dataIndex: 'orderNb',
-    width: 200
+    width: 120
   },
   {
     title: '车牌号',
     key: 'carNb',
     dataIndex: 'carNb',
-    width: 200
+    width: 80
   },
   {
     title: 'sscc',
     key: 'ssccNb',
     dataIndex: 'ssccNb',
-    width: 200
+    width: 120
   },
   {
     title: '物料号',
     key: 'materialNb',
     dataIndex: 'materialNb',
-    width: 200
+    width: 120
   },
   {
     title: '物料名称',
     key: 'materialName',
     dataIndex: 'materialName',
-    width: 200
+    width: 120
   },
   {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
-    width: 200
+    width: 120
   },
   {
     title: '移库数量',
     key: 'quantity',
     dataIndex: 'quantity',
-    width: 200
+    width: 80
   },
   {
     title: '拆托数量',
     key: 'splitQuality',
     dataIndex: 'splitQuality',
-    width: 200
+    width: 80
   },
   {
     title: '源工厂',
     key: 'sourcePlantNb',
     dataIndex: 'sourcePlantNb',
-    width: 200
+    width: 80
   },
   {
     title: '源仓库',
     key: 'sourceWareCode',
     dataIndex: 'sourceWareCode',
-    width: 200
+    width: 80
   },
   {
     title: '源存储区',
     key: 'sourceAreaCode',
     dataIndex: 'sourceAreaCode',
-    width: 200
+    width: 80
   },
   {
     title: '源库位',
     key: 'sourceBinCode',
     dataIndex: 'sourceBinCode',
-    width: 200
+    width: 80
   },
   {
     title: 'bbd过期时间',
     key: 'expireDate',
     dataIndex: 'expireDate',
-    width: 200
+    width: 120
   },
   {
     title: '目的工厂',
     key: 'targetPlant',
     dataIndex: 'targetPlant',
-    width: 200
+    width: 80
   },
   {
     title: '目的仓库',
     key: 'targetWareCode',
     dataIndex: 'targetWareCode',
-    width: 200
+    width: 80
   },
   {
     title: '目的存储区',
     key: 'targetAreaCode',
     dataIndex: 'targetAreaCode',
-    width: 200
+    width: 80
   },
   {
     title: '推荐库位',
     key: 'recommendBinCode',
     dataIndex: 'recommendBinCode',
-    width: 200
+    width: 80
   },
   {
-    title: '目的库位code',
+    title: '目的库位',
     key: 'targetBinCode',
     dataIndex: 'targetBinCode',
-    width: 200
+    width: 100
   },
   {
     title: '所属需求订单号',
     key: 'orderNumber',
     dataIndex: 'orderNumber',
-    width: 200
+    width: 140
   }
 ]
 

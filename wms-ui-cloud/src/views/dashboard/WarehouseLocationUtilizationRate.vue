@@ -1,5 +1,5 @@
 <template>
-  <Card title="库存使用率">
+  <Card title="库位利用率">
     <template slot="header">
       <div class="content-box">
         <div class="date-change">

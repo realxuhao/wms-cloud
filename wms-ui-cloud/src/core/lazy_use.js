@@ -111,6 +111,11 @@ Vue.use(Tree)
 Vue.use(VueClipboard)
 Vue.use(Empty)
 
+message.config({
+  duration: 6,// 持续时间
+  maxCount: 3 // 最大显示数, 超过限制时，最早的消息会被自动关闭
+ })
+
 Vue.prototype.$confirm = Modal.confirm
 Vue.prototype.$message = message
 Vue.prototype.$notification = notification

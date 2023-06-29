@@ -50,19 +50,19 @@ const columns = [
     title: '工厂',
     key: 'plantNb',
     dataIndex: 'plantNb',
-    width: 120
+    width: 80
   },
   {
     title: '仓库编码',
     key: 'wareCode',
     dataIndex: 'wareCode',
-    width: 120
+    width: 80
   },
   {
     title: '区域编码',
     key: 'areaCode',
     dataIndex: 'areaCode',
-    width: 120
+    width: 80
   },
   {
     title: '跨编码',
@@ -80,55 +80,55 @@ const columns = [
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
-    width: 200
+    width: 120
   },
   {
     title: '物料号',
     key: 'materialNb',
     dataIndex: 'materialNb',
-    width: 200
+    width: 120
   },
   {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
-    width: 200
+    width: 120
   },
   {
     title: '过期时间',
     key: 'expireDate',
     dataIndex: 'expireDate',
-    width: 200
+    width: 120
   },
   {
     title: '总库存',
     key: 'totalStock',
     dataIndex: 'totalStock',
-    width: 200
+    width: 80
   },
   {
     title: '冻结库存',
     key: 'freezeStock',
     dataIndex: 'freezeStock',
-    width: 200
+    width: 80
   },
   {
     title: '可用库存',
     key: 'availableStock',
     dataIndex: 'availableStock',
-    width: 200
+    width: 80
   },
   {
     title: 'PO号',
     key: 'fromPurchaseOrder',
     dataIndex: 'fromPurchaseOrder',
-    width: 200
+    width: 80
   },
   {
     title: '质检状态',
     key: 'qualityStatus',
     dataIndex: 'qualityStatus',
-    width: 200
+    width: 80
   },
   {
     title: '上架时间',
@@ -137,6 +137,7 @@ const columns = [
     width: 200,
     sorter: true
   },
+
 ]
 
 const queryFormAttr = () => {
