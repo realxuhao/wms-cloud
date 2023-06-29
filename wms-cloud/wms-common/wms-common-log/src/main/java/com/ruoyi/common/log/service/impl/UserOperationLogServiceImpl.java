@@ -20,8 +20,10 @@ public class UserOperationLogServiceImpl extends ServiceImpl<UserOperationLogMap
 
     private UserOperationLogMapper userOperationLogMapper;
     @Override
-    public Boolean insertUserOperationLog( String userName,String operationType,List<UserOperationLog> userOperationLog) {
+    public Boolean insertUserOperationLog( Integer type,String orderNumber,String userName,Integer operationType,List<UserOperationLog> userOperationLog) {
         for (UserOperationLog operationLog : userOperationLog) {
+            operationLog.setType(type);
+            operationLog.setOrderNumber(orderNumber);
             operationLog.setCreateBy(userName);
             operationLog.setCreateTime(new Date());
             operationLog.setOperationType(operationType);
@@ -31,14 +33,28 @@ public class UserOperationLogServiceImpl extends ServiceImpl<UserOperationLogMap
     }
 
     @Override
-    public Integer insertUserOperationLog(UserOperationLog userOperationLog, String userName,String operationType) {
-        return null;
+    public Boolean insertUserOperationLog(Integer type,String orderNumber,String userName,Integer operationType,UserOperationLog userOperationLog) {
+        userOperationLog.setType(type);
+        userOperationLog.setOrderNumber(orderNumber);
+        userOperationLog.setCreateBy(userName);
+        userOperationLog.setCreateTime(new Date());
+        userOperationLog.setOperationType(operationType);
+        boolean save = this.save(userOperationLog);
+        return save;
     }
 
 
     @Override
-    public Integer insertUserOperationLog(String ssccs, String userName, String operationType) {
-        return null;
+    public Boolean insertUserOperationLog(Integer type,String orderNumber,String userName,Integer operationType,String ssccs) {
+        UserOperationLog userOperationLog = new UserOperationLog();
+        userOperationLog.setSsccNumber(ssccs);
+        userOperationLog.setType(type);
+        userOperationLog.setOrderNumber(orderNumber);
+        userOperationLog.setCreateBy(userName);
+        userOperationLog.setCreateTime(new Date());
+        userOperationLog.setOperationType(operationType);
+        boolean save = this.save(userOperationLog);
+        return save;
     }
 }
 

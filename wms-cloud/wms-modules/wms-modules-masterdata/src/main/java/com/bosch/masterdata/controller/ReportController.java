@@ -1,4 +1,6 @@
 package com.bosch.masterdata.controller;
+import java.util.ArrayList;
+import java.util.Date;
 
 import com.bosch.masterdata.api.domain.MissionToDo;
 import com.bosch.masterdata.api.domain.ReportMaterial;
@@ -11,13 +13,16 @@ import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.domain.vo.ReportBinVO;
 import com.bosch.masterdata.api.domain.vo.WorkloadVO;
 import com.bosch.masterdata.service.IReportService;
+import com.bosch.system.api.domain.SysUser;
 import com.bosch.system.api.domain.UserOperationLog;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IUserOperationLogService;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -114,6 +119,7 @@ public class ReportController extends BaseController {
     @PostMapping("/workload")
     @ApiOperation("员工实际工作量（原材料+成品）-标准单位托盘")
     public  R<PageVO<WorkloadVO>> workload(@RequestBody WorkloadDTO workloadDTO) {
+
 
         startPage();
         List<WorkloadVO> list = reportService.workload(workloadDTO);
