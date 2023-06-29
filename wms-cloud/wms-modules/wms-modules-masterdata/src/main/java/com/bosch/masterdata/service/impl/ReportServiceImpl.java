@@ -93,6 +93,8 @@ public class ReportServiceImpl implements IReportService {
                 missionToDo.setCell(s);
                 list.add(missionToDo);
             }
+
+
         }else if(StringUtils.isNotEmpty(mission.getWareCode())){
             if (!mission.getWareCode().equals("All")){
                 codes.add(mission.getWareCode());

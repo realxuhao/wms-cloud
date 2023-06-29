@@ -17,6 +17,7 @@
         rowKey="id"
         :pagination="false"
         size="middle"
+        @change="pageChange"
         :scroll="tableScroll"
       >
     
@@ -128,7 +129,14 @@ const columns = [
     key: 'qualityStatus',
     dataIndex: 'qualityStatus',
     width: 200
-  }
+  },
+  {
+    title: '上架时间',
+    key: 'createTime',
+    dataIndex: 'createTime',
+    width: 200,
+    sorter: true
+  },
 ]
 
 const queryFormAttr = () => {
@@ -154,6 +162,24 @@ export default {
     }
   },
   methods: {
+    async pageChange(page, filters, sorter){
+
+      try {
+        this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc',
+          this.queryForm.orderByColumn= sorter.columnKey,
+          this.tableLoading = true
+        const {
+          data: { rows, total }
+        } = await this.$store.dispatch('materialFeeding/getRuleList', {...this.queryForm})
+
+        this.list = rows
+        this.paginationTotal = total
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.tableLoading = false
+      }
+    },
     async handleExport(){
       try {
         this.downloadLoading = true
