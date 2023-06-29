@@ -44,7 +44,6 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <!-- <template v-if="advanced"> -->
           <a-col :span="4">
             <a-form-model-item label="cell部门">
               <a-select
@@ -77,34 +76,17 @@
               />
             </a-form-model-item>
           </a-col>
-          <!-- </template> -->
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button v-hasPermi="['iqc:quanlity:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              <!-- <a @click="toggleAdvanced" style="margin-left: 8px">
-                {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'"/>
-              </a> -->
+             
             </span>
           </a-col>
         </a-row>
       </a-form>
       <div class="action-content">
-        <a-upload
-          :file-list="[]"
-          name="file"
-          :multiple="true"
-          :before-upload="()=>false"
-          @change="handleUpload"
-        >
-          <a-button
-            type="primary"
-            :loading="uploadLoading"
-            icon="upload"
-            v-hasPermi="['iqc:list:batchEdit']"
-          >批量修改质检状态</a-button>
-        </a-upload>
+      
       </div>
       <a-table
         :columns="columns"
@@ -127,9 +109,9 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a v-hasPermi="['iqc:list:updateBatch']" :disabled="record.freezeStock > 0" @click="handleUpdate('同批次', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />同批次</a>
+            <a :disabled="record.freezeStock > 0" @click="handleUpdate('同批次', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />同批次</a>
             <a-divider type="vertical" />
-            <a v-hasPermi="['iqc:list:updatePallet']" :disabled="record.freezeStock > 0" @click="handleUpdate('此托', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />此托</a>
+            <a :disabled="record.freezeStock > 0" @click="handleUpdate('此托', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />此托</a>
           </div>
         </template>
       </a-table>
@@ -149,20 +131,7 @@
     </div>
 
     <a-modal v-model="submitVisible" :title="modalTitle" ok-text="确认" cancel-text="取消" @ok="onSubmit">
-      <!--      <a-form layout="inline" class="search-content">
-        <a-form-model-item label="质量状态">
-          <a-select
-            style="width: 180px"
-            placeholder="请选择质量状态"
-            allow-clear
-            v-model="queryForm.qualityStatus"
-          >
-            <a-select-option v-for="item in qualityStatus" :key="item.id" :value="item.text">
-              {{ item.text }}
-            </a-select-option>
-          </a-select>
-        </a-form-model-item>
-      </a-form>-->
+     
       <a-form>
         <a-form-item label="起始质量状态" v-show="qualityType==='1'">
           <a-checkbox-group v-model="fromStatusList">
@@ -172,11 +141,7 @@
           </a-checkbox-group>
         </a-form-item>
         <a-form-item label="请选择质量状态">
-          <!-- <a-radio-group v-model="fromStatusList">
-            <a-radio v-for="item in qualityStatus" :key="item.id" :value="item.text">
-              {{ item.text }}
-            </a-radio>
-          </a-radio-group> -->
+        
           <a-radio-group v-model="radioStatus" @change="radioChange">
             <a-radio v-for="item in qualityStatus" :key="item.id" :value="item.text">
               {{ item.text }}
@@ -184,33 +149,6 @@
           </a-radio-group>
         </a-form-item>
       </a-form>
-    </a-modal>
-
-    <a-modal
-      v-model="editSSCCVisible"
-      :width="800"
-      title="确认质检状态"
-      :ok-button-props="{ props: { disabled: confirmDisable } }"
-      @cancel="handleCancel"
-      @ok="handleSubmit"
-      :confirm-loading="confirmLoading">
-      <a-table
-        :columns="editSSCCColumns"
-        :data-source="editSSCCList"
-        rowKey="ssccNumber"
-        :pagination="false"
-        size="middle"
-        :scroll="{ y: 500 }"
-      >
-        <template slot="index" slot-scope="text">
-          {{ text }}
-        </template>
-        <template slot="status" slot-scope="text">
-          <a-tag :color="statusColroMap[text]" >
-            {{ statusTextMap[text] }}
-          </a-tag>
-        </template>
-      </a-table>
     </a-modal>
 
   </div>
@@ -472,43 +410,12 @@ export default {
     statusColroMap: () => statusColroMap
   },
   methods: {
-    async handleUpload (e) {
-      const { file } = e
-
-      const formdata = new FormData()
-
-      try {
-        formdata.append('file', file)
-
-        this.uploadLoading = true
-        const { data } = await this.$store.dispatch('iqcManagement/uploadEditSSCCStatusFile', formdata)
-
-        this.editSSCCList = _.map(data, (x, index) => ({ ...x, status: 2, index: index + 1 }))
-        this.editSSCCVisible = true
-        this.confirmDisable = false
-      } catch (error) {
-        this.$message.error(error.message)
-      } finally {
-        this.uploadLoading = false
-      }
-    },
+  
     async loadCellList () {
       const { data } = await this.$store.dispatch('department/getList')
       this.cellList = data
     },
-    async handleSubmit () {
-      try {
-        this.confirmLoading = true
-        const { data } = await this.$store.dispatch('iqcManagement/saveEditSSCCStatusList', this.editSSCCList)
-        this.editSSCCList = _.map(data, (x, index) => ({ ...x, index: index + 1 }))
-        this.$message.success('提交成功')
-        this.confirmDisable = true
-      } catch (error) {
-        this.$message.error(error.message)
-      } finally {
-        this.confirmLoading = false
-      }
-    },
+
     handleCancel () {
       this.loadTableList()
     },
@@ -527,7 +434,7 @@ export default {
         const {
           data: { rows, total }
         // } = await this.$store.dispatch('stock/getPaginationList', this.queryForm)
-        } = await this.$store.dispatch('iqcManagement/getIqcQualityList', options)
+        } = await this.$store.dispatch('finishedProduct/SUQAIQCManagementList', options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -541,7 +448,7 @@ export default {
       try {
         // await this.$store.dispatch('iqcManagement/updateIqcQuality', record)
         const options = { ...this.modalRecord, 'type': this.qualityType, fromStatusList: this.fromStatusList }
-        await this.$store.dispatch('iqcManagement/updateIqcQuality', options)
+        await this.$store.dispatch('finishedProduct/changeSUQAStatus', options)
         this.$message.success('修改质检状态成功！')
         this.submitVisible = false
         this.fromStatusList = []

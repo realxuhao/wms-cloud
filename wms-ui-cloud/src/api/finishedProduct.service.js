@@ -62,6 +62,63 @@ const uploadBatchUpdate = async (formdata) => {
   const { data } = await createAuthInstance(baseUrl).post(url, formdata)
   return data
 }
+
+const importSPDN = async (formdata) => {
+  const url = `/spdn/importSPDN`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
+
+const spdnList = async (parameter) => {
+  const url = `/spdn/spdnList?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const approveSpdnList = async (parameter) => {
+  const url = `/spdn/approve/${parameter}`
+  const { data } = await createAuthInstance(baseUrl).put(url)
+  return data
+}
+
+const deleteSpdn = async (parameter) => {
+  const url = `/spdn/${parameter}`
+  const { data } = await createAuthInstance(baseUrl).delete(url)
+  return data
+}
+
+const spdnStocklist = async (parameter) => {
+  const url = `/spdn/spdnStocklist?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const SUQAIQCManagementList = async (parameter) => {
+  const url = `/SUQAIQCManagement/list?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const changeSUQAStatus = async (parameter) => {
+  const url = `/SUQAIQCManagement/changeSUQAStatus`
+  const { data } = await createAuthInstance(baseUrl).post(url,parameter)
+  return data
+}
+
+const validateSUQAStatus = async (parameter) => {
+  const url = `/SUQAIQCManagement/validateSUQAStatus`
+  const { data } = await createAuthInstance(baseUrl).post(url,parameter)
+  return data
+}
+
+
+const spdnPicklist = async (parameter) => {
+  const url = `/spdn/spdnPicklist?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+
 export const finishedProductService = {
   planImport,
   genTask,
@@ -72,5 +129,14 @@ export const finishedProductService = {
   getDashboard,
   completeTask,
   deleteTask,
-  uploadBatchUpdate
+  uploadBatchUpdate,
+  importSPDN,
+  spdnList,
+  approveSpdnList,
+  spdnStocklist,
+  deleteSpdn,
+  SUQAIQCManagementList,
+  changeSUQAStatus,
+  validateSUQAStatus,
+  spdnPicklist
 }
