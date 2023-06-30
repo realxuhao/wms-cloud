@@ -118,6 +118,17 @@ const spdnPicklist = async (parameter) => {
   return data
 }
 
+const sudnList = async (parameter) => {
+  const url = `/SUDN/sudnList?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const sudnDelete = async (parameter) => {
+  const url = `/SUDN/${parameter}`
+  const { data } = await createAuthInstance(baseUrl).delete(url)
+  return data
+}
 
 export const finishedProductService = {
   planImport,
@@ -138,5 +149,7 @@ export const finishedProductService = {
   SUQAIQCManagementList,
   changeSUQAStatus,
   validateSUQAStatus,
-  spdnPicklist
+  spdnPicklist,
+  sudnList,
+  sudnDelete
 }

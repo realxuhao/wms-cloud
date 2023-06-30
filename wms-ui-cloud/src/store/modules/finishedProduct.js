@@ -90,6 +90,16 @@ const finishedProduct = {
       const data = await finishedProductService.spdnPicklist(options)
       return data
     },
+    async sudnList({ commit }, options) {
+      const data = await finishedProductService.sudnList(options)
+      return data
+    },
+    async sudnDelete({ commit }, options) {
+      const data = await finishedProductService.sudnDelete(options)
+      return data
+    },
+    
+    
     // spdnPicklist
   }
 }
