@@ -4,27 +4,28 @@
     <div class="table-content">
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
+         
+          <a-col :span="4">
+            <a-form-model-item label="Delivery">
+              <a-input v-model="queryForm.delivery" placeholder="Delivery" allow-clear/>
+            </a-form-model-item>
+          </a-col>
           <a-col :span="4">
             <a-form-model-item label="Plant">
               <a-input v-model="queryForm.plant" placeholder="Plant" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="DeliveryNb">
-              <a-input v-model="queryForm.deliveryNb" placeholder="DeliveryNb" allow-clear/>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="4">
-            <a-form-item label="ShipTo">
-              <a-input v-model="queryForm.shipTo" placeholder="ShipTo" allow-clear/>
+            <a-form-item label="Material">
+              <a-input v-model="queryForm.material" placeholder="Material" allow-clear/>
             </a-form-item>
           </a-col>
           <a-col :span="4">
-            <a-form-item label="Vendor Code">
-              <a-input v-model="queryForm.vendorCode" placeholder="Vendor Code" allow-clear/>
+            <a-form-item label="Material Name">
+              <a-input v-model="queryForm.materialName" placeholder="Material Name" allow-clear/>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <!-- <a-col :span="8">
             <a-form-item label="Ship_Date">
               <a-range-picker
                 format="YYYY-MM-DD"
@@ -32,11 +33,38 @@
                 v-model="queryForm.shipDate"
               />
             </a-form-item>
+          </a-col> -->
+          <a-col :span="4">
+            <a-form-item label="Ship-To Party">
+              <a-input v-model="queryForm.shipToParty" placeholder="Ship-To Party" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="状态">
+              <a-select
+                allow-clear
+                v-model="queryForm.status"
+              >
+                <a-select-option v-for="(item,key) in statusMap" :key="item" :value="key">
+                  {{ item }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <span class="table-page-search-submitButtons" >
+              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+              <a @click="toggleAdvanced" style="margin-left: 8px">
+                {{ advanced ? '收起' : '展开' }}
+                <a-icon :type="advanced ? 'up' : 'down'"/>
+              </a>
+            </span>
           </a-col>
           <template v-if="advanced">
-            <a-col :span="4">
-              <a-form-item label="SSCCNumber">
-                <a-input v-model="queryForm.ssccNumber" placeholder="SSCCNumber" allow-clear/>
+            <!-- <a-col :span="4">
+              <a-form-item label="Ship-To Party">
+                <a-input v-model="queryForm.shipToParty" placeholder="Ship-To Party" allow-clear/>
               </a-form-item>
             </a-col>
             <a-col :span="4">
@@ -53,19 +81,8 @@
               <a-form-model-item label="Batch">
                 <a-input v-model="queryForm.batch" placeholder="Batch" allow-clear/>
               </a-form-model-item>
-            </a-col>
-
+            </a-col> -->
           </template>
-          <a-col span="4">
-            <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
-              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              <a @click="toggleAdvanced" style="margin-left: 8px">
-                {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'"/>
-              </a>
-            </span>
-          </a-col>
         </a-row>
       </a-form>
       <div class="action-content">
@@ -91,7 +108,7 @@
           :loading="generateLoading"
           @click="handleGenerate"
           :disabled="!selectedRowKeys.length">
-          生成
+          生成拣配
         </a-button>
       </div>
       <a-table
@@ -111,14 +128,11 @@
       >
 
         <template slot="status" slot-scope="text">
-          <div >
-            <a-tag color="orange" v-if="!text">
-              未审批
-            </a-tag>
-            <a-tag color="#87d068" v-if="text===1">
-              已审批
-            </a-tag>
-          </div>
+          <a-tag :color="statusColorMap[text]"> {{ statusMap[text] }}</a-tag>
+        </template>
+        <template slot="deliveryQuantity" slot-scope="text,record">
+          <EditTableCell v-if="record.status === 0" :text="record.deliveryQuantity" @change="(val)=>handleQuantityChange(record,val)" />
+          <span v-else>{{ text }}</span>
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
@@ -170,73 +184,71 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+import { colorMap } from '@/utils/color'
+import EditTableCell from '@/components/EditTableCell'
 
 import _ from 'lodash'
 
 const columns = [
 
   {
-    title: 'delivery',
+    title: 'Delivery',
     key: 'delivery',
     dataIndex: 'delivery',
     width: 120
   },
   {
-    title: 'deliveryDate',
+    title: 'Deliv. date(From/to)',
     key: 'deliveryDate',
     dataIndex: 'deliveryDate',
     width: 120
   },
   {
-    title: 'deliveryQuantity',
+    title: 'Delivery Quantity',
     key: 'deliveryQuantity',
     dataIndex: 'deliveryQuantity',
-    width: 120
+    scopedSlots: { customRender: 'deliveryQuantity' },
+    width: 140
   },
   {
-    title: 'item',
+    title: 'Item',
     key: 'item',
     dataIndex: 'item',
     width: 140
   },
   {
-    title: 'material',
+    title: 'Material',
     key: 'material',
     dataIndex: 'material',
     width: 120
   },
   {
-    title: 'materialName',
+    title: 'Material Name',
     key: 'materialName',
     dataIndex: 'materialName',
     width: 100
   },
   {
-    title: 'nameOfShipToParty',
+    title: 'Name of the ship-to party',
     key: 'nameOfShipToParty',
     dataIndex: 'nameOfShipToParty',
-    width: 120
+    width: 140
   },
   {
-    title: 'plant',
+    title: 'Plant',
     key: 'plant',
     dataIndex: 'plant',
     width: 120
   },
+
   {
-    title: 'remark',
-    key: 'remark',
-    dataIndex: 'remark',
-    width: 70
-  },
-  {
-    title: 'salesUnit',
+    title: 'Sales Unit',
     key: 'salesUnit',
     dataIndex: 'salesUnit',
     width: 80
   },
   {
-    title: 'shipToParty',
+    title: 'Ship-To Party',
     key: 'shipToParty',
     dataIndex: 'shipToParty',
     width: 80
@@ -247,7 +259,6 @@ const columns = [
     key: 'status',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
-
     width: 100
   },
   
@@ -287,31 +298,34 @@ const columns = [
 const queryFormAttr = () => {
   return {
     plant: '',
-    deliveryNb: '',
-    shipTo: '',
+    delivery: '',
+    shipToParty: '',
     material: '',
-    shipDate: [],
-    vendorCode: '',
-    ssccNumber: '',
-    material: '',
-    batch: '',
-    qty:'',
-
+    materialName: '',
+    
+    status:undefined
   }
 }
-const status = [
-  {
-    text: '未审批',
-    value: 0
-  },
-  {
-    text: '已审批',
-    value: 1
-  }
-]
+
+const statusMap = {
+  '-1': '取消',
+  0: '待生成',
+  1: '已生成',
+}
+
+const statusColorMap = {
+  '-1': colorMap['cancel'],
+  0: colorMap['warning'],
+  1: colorMap['success'],
+  
+}
+
 export default {
   name: 'Area',
   mixins: [mixinTableList],
+  components:{
+    EditTableCell
+  },
   data () {
     return {
       tableLoading: false,
@@ -333,20 +347,31 @@ export default {
     }
   },
   computed: {
-    status: () => status
+    statusMap: () => statusMap,
+    statusColorMap:()=>statusColorMap
   },
   methods: {
     async handleGenerate () {
       try {
         this.generateLoading = true
-        await this.$store.dispatch('finishedProduct/approveSpdnList', this.selectedRowKeys)
-        this.$message.success('审批成功')
+        await this.$store.dispatch('finishedProduct/sudnGenerate', this.selectedRowKeys)
+        this.$message.success('成功')
         this.selectedRowKeys = []
         this.loadTableList()
       } catch (error) {
         this.$message.error(error.message)
       } finally {
         this.generateLoading = false
+      }
+    },
+    async handleQuantityChange (record, value) {
+      try {
+        await this.$store.dispatch('finishedProduct/sudnUpdateQuantity', { id: record.id, newQuantity: value })
+        this.$message.success('修改成功！')
+
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
       }
     },
     onSelectChange (selectedRowKeys) {
