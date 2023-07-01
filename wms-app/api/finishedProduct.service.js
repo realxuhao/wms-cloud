@@ -232,6 +232,38 @@ const productStockTrans = async (data) => {
 	})
 }
 
+
+const sudnList = async (data) => {
+	const method = 'GET'
+	const url = `/product/SUDN/getSUDNListByType`
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+const sudnPickList = async (data) => {
+	const method = 'GET'
+	const url = `/product/sudn-pick/list`
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+const sudnPickGetByQrCode = async (options) => {
+	console.log(options)
+	const method = 'GET'
+	const url = `/product/sudn-pick/getByQrCode/${options.barCode}?sudnId=${options.sudnId}`
+	return request({
+		url,
+		method,
+	})
+}
+
+
 export const finishedProductService = {
 	getTaskList,
 	addPackageHistory,
@@ -254,5 +286,8 @@ export const finishedProductService = {
 	spdnShip,
 	productStockGetByBarCode,
 	productStockEditStock,
-	productStockTrans
+	productStockTrans,
+	sudnList,
+	sudnPickList,
+	sudnPickGetByQrCode
 }

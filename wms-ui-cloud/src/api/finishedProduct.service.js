@@ -130,6 +130,25 @@ const sudnDelete = async (parameter) => {
   return data
 }
 
+const sudnGenerate = async (ids) => {
+  const url = `/SUDN/${ids}`
+  const { data } = await createAuthInstance(baseUrl).put(url)
+  return data
+}
+
+const sudnUpdateQuantity = async (options) => {
+  const url = `/SUDN/modifyQuantity`
+  const { data } = await createAuthInstance(baseUrl).post(url,options)
+  return data
+}
+
+const sudnPickList = async (options) => {
+  const url = `/sudn-pick/list?${qs.stringify(options)}`
+  const { data } = await createAuthInstance(baseUrl).get(url,options)
+  return data
+}
+
+
 export const finishedProductService = {
   planImport,
   genTask,
@@ -151,5 +170,8 @@ export const finishedProductService = {
   validateSUQAStatus,
   spdnPicklist,
   sudnList,
-  sudnDelete
+  sudnDelete,
+  sudnGenerate,
+  sudnUpdateQuantity,
+  sudnPickList
 }

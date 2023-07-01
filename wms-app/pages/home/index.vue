@@ -216,11 +216,7 @@
 			<!-- 				v-if="$hasPermi(['app:finishedProduct:productIn', 'app:finishedProduct:shipment', 'app:finishedProduct:receiving', 'app:finishedProduct:binIn'])" -->
 			<uni-section title="成品SPDN" type="line" class="m-b-12">
 				<view class="list header-box">
-					<!-- <view class="list-item" v-if="$hasPermi(['app:finishedProduct:productIn'])"
-						@click="handleGoto('/pages/finishedProduct/productIn')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-ruku" type="icon-ruku"></uni-icons>
-						<view class="text">成品入库</view>
-					</view> -->
+
 					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:shipment'])"
 						@click="handleGoto('/pages/finishedProduct/spdnBinDown')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-wuliufahuo"
@@ -233,18 +229,24 @@
 							color="#009A9A"></uni-icons>
 						<view class="text">发运</view>
 					</view>
-					<!-- 	<view class="list-item" v-if="$hasPermi(['app:finishedProduct:receiving'])"
-						@click="handleGoto('/pages/finishedProductWareShift/receiving')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-discharge"
-							color="#00ADD4"></uni-icons>
-						<view class="text">移库收货</view>
+
+				</view>
+			</uni-section>
+			<uni-section title="成品SUDN" type="line" class="m-b-12">
+				<view class="list header-box">
+
+					<view class="list-item" @click="handleGoto('/pages/finishedProduct/sudn')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-wuliufahuo"
+							color="#009A9A"></uni-icons>
+						<view class="text">下架</view>
 					</view>
-					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:binIn'])"
-						@click="handleGoto('/pages/finishedProductWareShift/binIn')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2"
-							color="#1afa29"></uni-icons>
-						<view class="text">移库上架</view>
-					</view> -->
+					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:shipment'])"
+						@click="handleGoto('/pages/finishedProduct/spdnShipment')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-wuliufahuo" type="icon-wuliufahuo"
+							color="#009A9A"></uni-icons>
+						<view class="text">发运</view>
+					</view>
+
 				</view>
 			</uni-section>
 

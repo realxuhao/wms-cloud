@@ -172,6 +172,31 @@ const finishedProduc = {
 			} = await finishedProductService.productStockTrans(options)
 			return data
 		},
+		async sudnList({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.sudnList(options)
+			return data
+		},
+		async sudnPickList({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.sudnPickList(options)
+			return data
+		},
+		async sudnPickGetByQrCode({
+			commit
+		}, barCode) {
+			const {
+				data
+			} = await finishedProductService.sudnPickGetByQrCode(barCode)
+			return data
+		},
+
 
 
 	}

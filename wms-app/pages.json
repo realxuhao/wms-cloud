@@ -258,7 +258,17 @@
 		},
 		{
 			"path": "pages/finishedProduct/manualTransOperation"
+		},
+		{
+			"path": "pages/finishedProduct/sudn"
+		},
+		{
+			"path": "pages/finishedProduct/sudnPick"
+		},
+		{
+			"path": "pages/finishedProduct/sudnPickScan"
 		}
+
 	],
 	"globalStyle": {
 		"navigationStyle": "custom"

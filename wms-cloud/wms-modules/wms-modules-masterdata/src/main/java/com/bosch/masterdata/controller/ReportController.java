@@ -109,7 +109,9 @@ public class ReportController extends BaseController {
     public  R<PageVO<ReportWareShift>> wareShift(@RequestBody ReportWareShiftDTO reportWareShiftDTO) {
 
         startPage();
+
         List<ReportWareShift> reportWareShifts = reportService.reportWareShift(reportWareShiftDTO);
+
         return R.ok(new PageVO<>(reportWareShifts, new PageInfo<>(reportWareShifts).getTotal()));
 
     }
@@ -119,7 +121,6 @@ public class ReportController extends BaseController {
     @PostMapping("/workload")
     @ApiOperation("员工实际工作量（原材料+成品）-标准单位托盘")
     public  R<PageVO<WorkloadVO>> workload(@RequestBody WorkloadDTO workloadDTO) {
-
 
         startPage();
         List<WorkloadVO> list = reportService.workload(workloadDTO);
