@@ -19,13 +19,13 @@
     <template slot="main">
       <a-row :gutter="[24,24]">
         <a-col :span="24" >
-          <div class="charts" style="height:480px" id="process-efficiency-fsmp"></div>
+          <div class="charts"  id="process-efficiency-fsmp"></div>
         </a-col>
         <a-col :span="24" >
-          <div class="charts" style="height:480px" id="process-efficiency-ecn"></div>
+          <div class="charts"  id="process-efficiency-ecn"></div>
         </a-col>
         <a-col :span="24" >
-          <div class="charts" style="height:480px" id="process-efficiency-nmd"></div>
+          <div class="charts"  id="process-efficiency-nmd"></div>
         </a-col>
       </a-row>
     </template>
@@ -36,6 +36,7 @@
 import * as echarts from 'echarts'
 import Card from './Card.vue'
 import _ from 'lodash'
+import moment from 'moment';
 
 import colorList from '@/utils/echartsColor'
 
@@ -46,13 +47,6 @@ export default {
   },
   data () {
     return {
-      wareDataMap:{},
-      wareList:[],
-      cellList:['All','ECN','NMD','FSMP'],
-
-      type:1,
-      list:[],
-
       queryForm:{
         date:[]
       },
@@ -71,10 +65,10 @@ export default {
     loadCharts(list,id){
       var myChart = echarts.init(document.getElementById(id))
 
-      const xData = _.map(list,x=>x.date)
-      const callMaterilList = _.map(list,x=>x.jiaoliao||0)
-      const materialInList = _.map(list,x=>x.ruku||0)
-      const sampleList = _.map(list,x=>x.quyang||0)
+      const xData = _.map(list,x=>x.label)
+      const callMaterilList = _.map(list,x=>x.callConsuming||0)
+      const materialInList = _.map(list,x=>x.binInConsuming||0)
+      const sampleList = _.map(list,x=>x.iqcConsuming||0)
 
       const option = {
         color:colorList,
@@ -161,31 +155,35 @@ export default {
       myChart.setOption(option)
     },
     async getData(){
-      const data = await this.$store.dispatch('dashboard/getMissionToDoSummary',this.queryForm)
-      this.list = data
-      this.loadMaterialCharts()
-    }
-  },
-  mounted(){
-    const cellList = _.map(_.uniqBy(data,'cell'),'cell')
-    const cellDataMap = {
-      'FSMP':{children:[]},
-      'NMD':{children:[]},
-      'ECN':{children:[]}
-    }
+      const { date = [] } = this.queryForm
+      const createTimeStart = date.length > 0 ? date[0].format('YYYY-MM-DD 00:00:00') : undefined
+      const createTimeEnd = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:59') : undefined
+      const options = { ..._.omit(this.queryForm, ['date']), createTimeStart, createTimeEnd }
+
+      const data = await this.$store.dispatch('dashboard/processEfficiency',options)
+      const cellList = _.map(_.uniqBy(data,'cell'),'cell')
+      const cellDataMap = {
+        'FSMP':{children:[]},
+        'NMD':{children:[]},
+        'ECN':{children:[]}
+      }
       _.each(cellList,x=>{
         _.each(data,y=>{
           if(x === y.cell){
-            // const createTime = moment(y.createTime)
-            // const formatString = this.dateType === 1 ? 'YYYY-MM':'YYYY-MM-DD'
-            cellDataMap[x].children.push(item)
+            const createTime = moment(y.createTime)
+            cellDataMap[x].children.push({...y,label:createTime.format('YYYY-MM-DD')})
           }
         })
       })
 
-    this.loadCharts(cellDataMap['FSMP'].children,'process-efficiency-fsmp')
-    this.loadCharts(cellDataMap['NMD'].children,'process-efficiency-nmd')
-    this.loadCharts(cellDataMap['ECN'].children,'process-efficiency-ecn')
+      this.loadCharts(cellDataMap['FSMP'].children,'process-efficiency-fsmp')
+      this.loadCharts(cellDataMap['NMD'].children,'process-efficiency-nmd')
+      this.loadCharts(cellDataMap['ECN'].children,'process-efficiency-ecn')
+    }
+  },
+  mounted(){
+    this.getData()
+
 
   },
   watch:{

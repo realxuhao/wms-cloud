@@ -48,8 +48,24 @@ const getWareShiftList = async (parameter) => {
   const { data } = await createAuthInstance(baseUrl).post(url, parameter)
   return data
 }
+const getWorkload = async (parameter) => {
+  const url = `/report/workload?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter)
+  return data
+}
 
-
+const exportWorkload = async (parameter) => {
+  const url = `/report/workloadExport`
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter,{
+    responseType:'blob'
+  })
+  return data
+}
+const processEfficiency = async (parameter) => {
+  const url = `/report/processEfficiency?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter)
+  return data
+}
 
 export const dashboardService = {
   getBinInSummary,
@@ -58,5 +74,9 @@ export const dashboardService = {
   exportOldMaterial,
   getExpiredMaterial,
   exportExpiredMaterial,
-  getWareShiftList
+  getWareShiftList,
+  getWorkload,
+  exportWorkload,
+  processEfficiency
+
 }

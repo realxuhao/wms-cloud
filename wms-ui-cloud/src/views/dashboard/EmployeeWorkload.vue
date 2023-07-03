@@ -2,32 +2,39 @@
   <div class="wrapper">
     <!-- table -->
     <div class="table-content">
-      <div class="action-content">
-        <a-form-model layout="inline">
-          <a-form-model-item label="时间">
-            <a-range-picker
-              format="YYYY-MM-DD"
-              v-model="queryForm.date"
-            />
-          </a-form-model-item>
-          <a-form-model-item >
+      <a-form-model layout="inline">
+        <a-form-model-item label="时间">
+          <a-range-picker
+            format="YYYY-MM-DD"
+            v-model="queryForm.date"
+          />
+        </a-form-model-item>
+        <a-form-model-item label="操作人">
+          <a-input v-model="queryForm.createBy" placeholder="操作人" allow-clear/>
+        </a-form-model-item>
+        <a-form-model-item >
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
             </span>
-          </a-form-model-item>
-        </a-form-model>
+        </a-form-model-item>
+      </a-form-model>
+
+      <div class="action-content">
+        <a-button type="primary" :loading="downloadLoading" @click="handleExport" >
+          <a-icon type="download" />导出
+        </a-button>
       </div>
       <a-table
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
-        rowKey="id"
+        rowKey="createBy"
         :pagination="false"
         size="middle"
         :scroll="tableScroll"
       >
-    
+
       </a-table>
 
       <div class="pagination-con">
@@ -49,128 +56,55 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+import { download } from '@/utils/file'
 
 const columns = [
 
   {
-    title: '移库单号',
-    key: 'orderNb',
-    dataIndex: 'orderNb',
-    width: 120
+    title: '操作人',
+    key: 'createBy',
+    dataIndex: 'createBy',
+    width: 80
   },
+
+
   {
-    title: '车牌号',
-    key: 'carNb',
-    dataIndex: 'carNb',
+    title: '上架',
+    key: 'binIn',
+    dataIndex: 'binIn',
     width: 80
   },
   {
-    title: 'sscc',
-    key: 'ssccNb',
-    dataIndex: 'ssccNb',
-    width: 120
-  },
-  {
-    title: '物料号',
-    key: 'materialNb',
-    dataIndex: 'materialNb',
-    width: 120
-  },
-  {
-    title: '物料名称',
-    key: 'materialName',
-    dataIndex: 'materialName',
-    width: 120
-  },
-  {
-    title: '批次号',
-    key: 'batchNb',
-    dataIndex: 'batchNb',
-    width: 120
-  },
-  {
-    title: '移库数量',
-    key: 'quantity',
-    dataIndex: 'quantity',
+    title: '拣配下架',
+    key: 'binOut',
+    dataIndex: 'binOut',
     width: 80
   },
   {
-    title: '拆托数量',
-    key: 'splitQuality',
-    dataIndex: 'splitQuality',
+    title: '其他下架',
+    key: 'binOutOther',
+    dataIndex: 'binOutOther',
     width: 80
   },
   {
-    title: '源工厂',
-    key: 'sourcePlantNb',
-    dataIndex: 'sourcePlantNb',
+    title: '拆托',
+    key: 'palletSplit',
+    dataIndex: 'palletSplit',
     width: 80
   },
   {
-    title: '源仓库',
-    key: 'sourceWareCode',
-    dataIndex: 'sourceWareCode',
+    title: '翻托',
+    key: 'palletTurnover',
+    dataIndex: 'palletTurnover',
     width: 80
-  },
-  {
-    title: '源存储区',
-    key: 'sourceAreaCode',
-    dataIndex: 'sourceAreaCode',
-    width: 80
-  },
-  {
-    title: '源库位',
-    key: 'sourceBinCode',
-    dataIndex: 'sourceBinCode',
-    width: 80
-  },
-  {
-    title: 'bbd过期时间',
-    key: 'expireDate',
-    dataIndex: 'expireDate',
-    width: 120
-  },
-  {
-    title: '目的工厂',
-    key: 'targetPlant',
-    dataIndex: 'targetPlant',
-    width: 80
-  },
-  {
-    title: '目的仓库',
-    key: 'targetWareCode',
-    dataIndex: 'targetWareCode',
-    width: 80
-  },
-  {
-    title: '目的存储区',
-    key: 'targetAreaCode',
-    dataIndex: 'targetAreaCode',
-    width: 80
-  },
-  {
-    title: '推荐库位',
-    key: 'recommendBinCode',
-    dataIndex: 'recommendBinCode',
-    width: 80
-  },
-  {
-    title: '目的库位',
-    key: 'targetBinCode',
-    dataIndex: 'targetBinCode',
-    width: 100
-  },
-  {
-    title: '所属需求订单号',
-    key: 'orderNumber',
-    dataIndex: 'orderNumber',
-    width: 140
   }
+
 ]
 
 const queryFormAttr = () => {
   return {
-    date:[]
+    date:[],
+    createBy:''
   }
 }
 
@@ -180,6 +114,8 @@ export default {
   data () {
     return {
       tableLoading: false,
+      downloadLoading: false,
+
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -190,6 +126,19 @@ export default {
     }
   },
   methods: {
+    async handleExport(){
+      try {
+        this.downloadLoading = true
+
+        const res  = await this.$store.dispatch('dashboard/exportOldMaterial')
+
+        download(res,'在库时间最长物料')
+      } catch (error) {
+        this.$message.error(error.message)
+      }finally{
+        this.downloadLoading = false
+      }
+    },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
@@ -205,7 +154,7 @@ export default {
 
         const {
            rows, total
-        } = await this.$store.dispatch('dashboard/getWareShiftList', options)
+        } = await this.$store.dispatch('dashboard/getWorkload', options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
