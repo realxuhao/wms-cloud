@@ -10,21 +10,21 @@
               <a-input v-model="queryForm.delivery" placeholder="Delivery" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
+          <!-- <a-col :span="4">
             <a-form-model-item label="Plant">
               <a-input v-model="queryForm.plant" placeholder="Plant" allow-clear/>
             </a-form-model-item>
-          </a-col>
+          </a-col> -->
           <a-col :span="4">
             <a-form-item label="Material">
               <a-input v-model="queryForm.material" placeholder="Material" allow-clear/>
             </a-form-item>
           </a-col>
-          <a-col :span="4">
+          <!-- <a-col :span="4">
             <a-form-item label="Material Name">
               <a-input v-model="queryForm.materialName" placeholder="Material Name" allow-clear/>
             </a-form-item>
-          </a-col>
+          </a-col> -->
           <a-col :span="4">
             <a-form-item label="SSCC">
               <a-input v-model="queryForm.ssccNb" placeholder="SSCC" allow-clear/>
@@ -49,11 +49,11 @@
               />
             </a-form-item>
           </a-col> -->
-          <a-col :span="4">
+          <!-- <a-col :span="4">
             <a-form-item label="Ship-To Party">
               <a-input v-model="queryForm.shipToParty" placeholder="Ship-To Party" allow-clear/>
             </a-form-item>
-          </a-col>
+          </a-col> -->
           <a-col :span="4">
             <a-form-model-item label="状态">
               <a-select
