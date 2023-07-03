@@ -13,10 +13,10 @@
           <a-input v-model="queryForm.createBy" placeholder="操作人" allow-clear/>
         </a-form-model-item>
         <a-form-model-item >
-            <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
-              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-            </span>
+          <span class="table-page-search-submitButtons" >
+            <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+            <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+          </span>
         </a-form-model-item>
       </a-form-model>
 

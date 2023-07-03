@@ -19,13 +19,13 @@
     <template slot="main">
       <a-row :gutter="[24,24]">
         <a-col :span="24" >
-          <div class="charts"  id="process-efficiency-fsmp"></div>
+          <div class="charts" id="process-efficiency-fsmp"></div>
         </a-col>
         <a-col :span="24" >
-          <div class="charts"  id="process-efficiency-ecn"></div>
+          <div class="charts" id="process-efficiency-ecn"></div>
         </a-col>
         <a-col :span="24" >
-          <div class="charts"  id="process-efficiency-nmd"></div>
+          <div class="charts" id="process-efficiency-nmd"></div>
         </a-col>
       </a-row>
     </template>
@@ -36,7 +36,7 @@
 import * as echarts from 'echarts'
 import Card from './Card.vue'
 import _ from 'lodash'
-import moment from 'moment';
+import moment from 'moment'
 
 import colorList from '@/utils/echartsColor'
 
