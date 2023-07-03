@@ -62,7 +62,7 @@ export default {
       this.searchLoading = false
     },
 
-    loadCharts(list,id){
+    loadCharts(title,list,id){
       var myChart = echarts.init(document.getElementById(id))
 
       const xData = _.map(list,x=>x.label)
@@ -73,7 +73,7 @@ export default {
       const option = {
         color:colorList,
         title: {
-          // text: 'World Population'
+          text: title
         },
         tooltip: {
           trigger: 'axis',
@@ -176,9 +176,9 @@ export default {
         })
       })
 
-      this.loadCharts(cellDataMap['FSMP'].children,'process-efficiency-fsmp')
-      this.loadCharts(cellDataMap['NMD'].children,'process-efficiency-nmd')
-      this.loadCharts(cellDataMap['ECN'].children,'process-efficiency-ecn')
+      this.loadCharts('FSMP',cellDataMap['FSMP'].children,'process-efficiency-fsmp')
+      this.loadCharts('NMD',cellDataMap['NMD'].children,'process-efficiency-nmd')
+      this.loadCharts('ECN',cellDataMap['ECN'].children,'process-efficiency-ecn')
     }
   },
   mounted(){
