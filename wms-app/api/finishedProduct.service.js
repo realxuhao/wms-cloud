@@ -283,6 +283,25 @@ const sudnPickGetByQrCode = async (options) => {
 	})
 }
 
+const sudnShipGetById = async (options) => {
+	const method = 'GET'
+	const url = `/product/SUDN/getById/${options.sudnId}`
+	return request({
+		url,
+		method,
+	})
+}
+
+const sudnShip = async (options) => {
+	const method = 'POST'
+	const url = `/product/SUDN/ship`
+	return request({
+		url,
+		method,
+		data: options
+	})
+}
+
 
 export const finishedProductService = {
 	getTaskList,
@@ -311,5 +330,7 @@ export const finishedProductService = {
 	sudnPickList,
 	sudnPickGetByQrCode,
 	sudnBinDown,
-	sudnShipList
+	sudnShipList,
+	sudnShipGetById,
+	sudnShip
 }

@@ -35,7 +35,7 @@
 			},
 			handleGoto(item) {
 				uni.navigateTo({
-					url: `/pages/finishedProduct/sudnShipOperating?id=${item.id}&status=${item.status}`
+					url: `/pages/finishedProduct/sudnShipOperation?sudnId=${item.id}`
 				});
 			}
 		}

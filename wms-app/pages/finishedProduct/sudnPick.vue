@@ -34,7 +34,7 @@
 				currentTabIndex: 0,
 
 				params: {
-					id: null
+					id: ''
 				}
 			};
 		},
