@@ -372,7 +372,7 @@ export default {
     async handleDispatch () {
       try {
         this.dispatchLoading = true
-        await this.$store.dispatch('finishedProduct/sudnGenerate', this.selectedRowKeys)
+        await this.$store.dispatch('finishedProduct/sudnPickBatchIssue', this.selectedRowKeys)
         this.$message.success('成功')
         this.selectedRowKeys = []
         this.loadTableList()

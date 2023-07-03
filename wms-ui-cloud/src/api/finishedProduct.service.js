@@ -148,6 +148,13 @@ const sudnPickList = async (options) => {
   return data
 }
 
+const sudnPickBatchIssue = async (ids) => {
+  const url = `/sudn-pick/batchIssue/${ids}`
+  const { data } = await createAuthInstance(baseUrl).get(url,options)
+  return data
+}
+
+
 
 export const finishedProductService = {
   planImport,
@@ -173,5 +180,6 @@ export const finishedProductService = {
   sudnDelete,
   sudnGenerate,
   sudnUpdateQuantity,
-  sudnPickList
+  sudnPickList,
+  sudnPickBatchIssue
 }
