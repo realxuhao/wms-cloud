@@ -91,6 +91,15 @@
           :disabled="!selectedRowKeys.length">
           生成拣配
         </a-button>
+
+        <a-button
+          type="primary"
+          icon="plus"
+          :loading="dispatchLoading"
+          @click="handleDispatch"
+          :disabled="!selectedRowKeys.length">
+          批量下发
+        </a-button>
       </div>
       <a-table
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
@@ -326,6 +335,7 @@ export default {
     return {
       tableLoading: false,
       genTaskLoading: false,
+      dispatchLoading:false,
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -359,6 +369,20 @@ export default {
         this.generateLoading = false
       }
     },
+    async handleDispatch () {
+      try {
+        this.dispatchLoading = true
+        await this.$store.dispatch('finishedProduct/sudnGenerate', this.selectedRowKeys)
+        this.$message.success('成功')
+        this.selectedRowKeys = []
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.dispatchLoading = false
+      }
+    },
+    
     async handleQuantityChange (record, value) {
       try {
         await this.$store.dispatch('finishedProduct/sudnUpdateQuantity', { id: record.id, newQuantity: value })
