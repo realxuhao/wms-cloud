@@ -28,6 +28,12 @@
 	import hrPullLoad from '@/components/hr-pull-load/hr-pull-load';
 
 	export default {
+		props: {
+			sudnId: {
+				type: String,
+				default: ''
+			}
+		},
 		components: {
 			Empty,
 			Message,
@@ -50,7 +56,8 @@
 				const options = {
 					pageSize: this.pageSize,
 					pageNum: this.pageNum,
-					status: 2
+					status: 2,
+					sudnId: this.sudnId
 				};
 				const {
 					rows,

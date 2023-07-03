@@ -29,6 +29,12 @@
 
 	export default {
 		name: 'MaterialInPending',
+		props: {
+			sudnId: {
+				type: String,
+				default: ''
+			}
+		},
 		components: {
 			Empty,
 			Message,
@@ -52,7 +58,7 @@
 					pageSize: this.pageSize,
 					pageNum: this.pageNum,
 					status: 1,
-					sudnId: this.id
+					sudnId: this.sudnId
 				};
 				const {
 					rows,
