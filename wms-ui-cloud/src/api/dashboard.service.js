@@ -7,27 +7,27 @@ const baseUrl = `${config.apiHost}/master-data`
 const getBinInSummary = async (parameter) => {
   const url = `/report/bin`
   const { data } = await createAuthInstance(baseUrl).post(url, parameter)
-  return data 
+  return data
 }
 
 const getMissionToDoSummary = async (parameter) => {
   const url = `/report/getMissionToDo`
   const { data } = await createAuthInstance(baseUrl).post(url, parameter)
-  return data 
+  return data
 }
 
 const getOldMaterialSummary = async (parameter) => {
   const url = `/report/oldMaterial?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(baseUrl).post(url, parameter)
-  return data 
+  return data
 }
 
 const exportOldMaterial = async (parameter) => {
   const url = `/report/oldMaterialExport`
-  const { data } = await createAuthInstance(baseUrl).post(url, parameter,{
-    responseType:'blob'
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter, {
+    responseType: 'blob'
   })
-  return data 
+  return data
 }
 const getExpiredMaterial = async (parameter) => {
   const url = `/report/expiredMaterial?${qs.stringify(parameter)}`
@@ -37,8 +37,8 @@ const getExpiredMaterial = async (parameter) => {
 
 const exportExpiredMaterial = async (parameter) => {
   const url = `/report/expiredMaterialExport`
-  const { data } = await createAuthInstance(baseUrl).post(url, parameter,{
-    responseType:'blob'
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter, {
+    responseType: 'blob'
   })
   return data
 }
@@ -56,8 +56,8 @@ const getWorkload = async (parameter) => {
 
 const exportWorkload = async (parameter) => {
   const url = `/report/workloadExport`
-  const { data } = await createAuthInstance(baseUrl).post(url, parameter,{
-    responseType:'blob'
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter, {
+    responseType: 'blob'
   })
   return data
 }

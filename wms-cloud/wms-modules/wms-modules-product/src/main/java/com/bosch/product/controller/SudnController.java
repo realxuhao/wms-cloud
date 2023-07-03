@@ -55,6 +55,14 @@ public class SudnController extends BaseController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
+    @GetMapping(value = "/getById/{id}")
+    @ApiOperation("根据ID获取单个")
+    public R<SUDN> getById(@PathVariable("id") Long id) {
+
+        SUDN sudn = sudnService.getById(id);
+        return R.ok(sudn);
+    }
+
 
     @DeleteMapping(value = "/{ids}")
     @ApiOperation("删除spdn")

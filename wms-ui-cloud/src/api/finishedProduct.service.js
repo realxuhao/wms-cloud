@@ -69,6 +69,12 @@ const importSPDN = async (formdata) => {
   return data
 }
 
+const importSUDN = async (formdata) => {
+  const url = `/SUDN/importSUDN`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
+
 const spdnList = async (parameter) => {
   const url = `/spdn/spdnList?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(baseUrl).get(url)
@@ -101,13 +107,13 @@ const SUQAIQCManagementList = async (parameter) => {
 
 const changeSUQAStatus = async (parameter) => {
   const url = `/SUQAIQCManagement/changeSUQAStatus`
-  const { data } = await createAuthInstance(baseUrl).post(url,parameter)
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter)
   return data
 }
 
 const validateSUQAStatus = async (parameter) => {
   const url = `/SUQAIQCManagement/validateSUQAStatus`
-  const { data } = await createAuthInstance(baseUrl).post(url,parameter)
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter)
   return data
 }
 
@@ -138,19 +144,19 @@ const sudnGenerate = async (ids) => {
 
 const sudnUpdateQuantity = async (options) => {
   const url = `/SUDN/modifyQuantity`
-  const { data } = await createAuthInstance(baseUrl).post(url,options)
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
   return data
 }
 
 const sudnPickList = async (options) => {
   const url = `/sudn-pick/list?${qs.stringify(options)}`
-  const { data } = await createAuthInstance(baseUrl).get(url,options)
+  const { data } = await createAuthInstance(baseUrl).get(url, options)
   return data
 }
 
 const sudnPickBatchIssue = async (ids) => {
   const url = `/sudn-pick/batchIssue/${ids}`
-  const { data } = await createAuthInstance(baseUrl).get(url,options)
+  const { data } = await createAuthInstance(baseUrl).post(url)
   return data
 }
 
@@ -181,5 +187,6 @@ export const finishedProductService = {
   sudnGenerate,
   sudnUpdateQuantity,
   sudnPickList,
-  sudnPickBatchIssue
+  sudnPickBatchIssue,
+  importSUDN
 }

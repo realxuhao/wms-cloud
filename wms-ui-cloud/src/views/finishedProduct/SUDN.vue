@@ -403,7 +403,7 @@ export default {
         formdata.append('file', file)
 
         this.uploadLoading = true
-        await this.$store.dispatch('finishedProduct/importSPDN', formdata)
+        await this.$store.dispatch('finishedProduct/importSUDN', formdata)
 
         this.queryForm.pageNum = 1
         this.loadTableList()

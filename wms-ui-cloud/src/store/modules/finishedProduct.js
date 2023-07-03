@@ -54,59 +54,63 @@ const finishedProduct = {
       const data = await finishedProductService.uploadBatchUpdate(formdata)
       return data
     },
-    async importSPDN({ commit }, formdata) {
+    async importSPDN ({ commit }, formdata) {
       const data = await finishedProductService.importSPDN(formdata)
       return data
     },
-    async spdnList({ commit }, options) {
+    async importSUDN ({ commit }, formdata) {
+      const data = await finishedProductService.importSUDN(formdata)
+      return data
+    },
+    async spdnList ({ commit }, options) {
       const data = await finishedProductService.spdnList(options)
       return data
     },
-    async approveSpdnList({ commit }, options) {
+    async approveSpdnList ({ commit }, options) {
       const data = await finishedProductService.approveSpdnList(options)
       return data
     },
-    async spdnStocklist({ commit }, options) {
+    async spdnStocklist ({ commit }, options) {
       const data = await finishedProductService.spdnStocklist(options)
       return data
     },
-    async deleteSpdn({ commit }, options) {
+    async deleteSpdn ({ commit }, options) {
       const data = await finishedProductService.deleteSpdn(options)
       return data
     },
-    async SUQAIQCManagementList({ commit }, options) {
+    async SUQAIQCManagementList ({ commit }, options) {
       const data = await finishedProductService.SUQAIQCManagementList(options)
       return data
     },
-    async changeSUQAStatus({ commit }, options) {
+    async changeSUQAStatus ({ commit }, options) {
       const data = await finishedProductService.changeSUQAStatus(options)
       return data
     },
-    async validateSUQAStatus({ commit }, options) {
+    async validateSUQAStatus ({ commit }, options) {
       const data = await finishedProductService.validateSUQAStatus(options)
       return data
     },
-    async spdnPicklist({ commit }, options) {
+    async spdnPicklist ({ commit }, options) {
       const data = await finishedProductService.spdnPicklist(options)
       return data
     },
-    async sudnList({ commit }, options) {
+    async sudnList ({ commit }, options) {
       const data = await finishedProductService.sudnList(options)
       return data
     },
-    async sudnDelete({ commit }, options) {
+    async sudnDelete ({ commit }, options) {
       const data = await finishedProductService.sudnDelete(options)
       return data
     },
-    async sudnGenerate({ commit }, options) {
+    async sudnGenerate ({ commit }, options) {
       const data = await finishedProductService.sudnGenerate(options)
       return data
     },
-    async sudnUpdateQuantity({ commit }, options) {
+    async sudnUpdateQuantity ({ commit }, options) {
       const data = await finishedProductService.sudnUpdateQuantity(options)
       return data
     },
-    async sudnPickList({ commit }, options) {
+    async sudnPickList ({ commit }, options) {
       const data = await finishedProductService.sudnPickList(options)
       return data
     },
@@ -115,8 +119,8 @@ const finishedProduct = {
       return data
     },
     
-    
-    
+
+
     // spdnPicklist
   }
 }

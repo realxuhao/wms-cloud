@@ -72,7 +72,7 @@
 						barCode,
 						sudnId: this.sudnId
 					});
-					if (data && data.status === 0) {
+					if (data && data.status === 1) {
 						this.$refs.submitPopup.open();
 					} else {
 						throw Error('此托已下架或为非下架托，请确认');

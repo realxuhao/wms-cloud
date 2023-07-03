@@ -4,10 +4,13 @@
 			:lowerThreshold="20" :bottomTips="bottomTips" :isAllowPull="true" :isTab="false" ref="hrPullLoad">
 			<!-- 插入自己的数据-->
 			<view class="card" v-for="item in list" :key="item.id">
+			
 				<view class="card-header">
-					<text class="material-name">{{ item.delivery }}</text>
-					<text class="status">未完成</text>
+					<text class="material-name">{{ item.sscc }}</text>
+					<text class="status">待下架</text>
 				</view>
+				<view class="card-text m-b-4">Material：{{ item.delivery }}</view>
+				
 				<view class="card-text m-b-4">Material：{{ item.material }}</view>
 				<view class="card-text m-b-4">Item：{{ item.item }}</view>
 				<view class="card-text m-b-4">Deliver quantity：{{ item.deliveryQuantity }}</view>

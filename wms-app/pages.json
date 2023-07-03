@@ -267,6 +267,12 @@
 		},
 		{
 			"path": "pages/finishedProduct/sudnPickScan"
+		},
+		{
+			"path": "pages/finishedProduct/sudnShip"
+		},
+		{
+			"path": "pages/finishedProduct/sudnShipOperation"
 		}
 
 	],

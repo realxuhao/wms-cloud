@@ -18,6 +18,7 @@
 					<text class="material-name">{{ item.materialCode }}</text>
 					<text class="status">已盘点</text>
 				</view>
+				<view class="card-text m-b-4">物料名称：{{ item.ssccNb }}</view>
 				<view class="card-text m-b-4">物料名称：{{ item.materialName }}</view>
 				<view class="card-text m-b-4">库位编码：{{ item.binCode }}</view>
 			</view>

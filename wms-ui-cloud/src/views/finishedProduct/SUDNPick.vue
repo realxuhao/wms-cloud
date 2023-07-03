@@ -84,6 +84,7 @@
       <div class="action-content">
      
         <a-button
+          class="m-r-8"
           type="primary"
           icon="plus"
           :loading="generateLoading"
@@ -313,9 +314,10 @@ const queryFormAttr = () => {
 }
 
 const statusMap = {
-  '-1': '待下架',
-  0: '待发运',
-  1: '已完成',
+  '-1': '已取消',
+  0: '待下发',
+  1: '待下架',
+  2: '完成'
 }
 
 const statusColorMap = {
@@ -359,7 +361,7 @@ export default {
     async handleGenerate () {
       try {
         this.generateLoading = true
-        await this.$store.dispatch('finishedProduct/sudnGenerate', this.selectedRowKeys)
+        await this.$store.dispatch('finishedProduct/', this.selectedRowKeys)
         this.$message.success('成功')
         this.selectedRowKeys = []
         this.loadTableList()

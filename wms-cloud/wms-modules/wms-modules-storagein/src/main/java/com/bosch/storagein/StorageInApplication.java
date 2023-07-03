@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableCustomConfig
 @EnableCustomSwagger2
 @EnableRyFeignClients
-@SpringBootApplication
 //@EnableTransactionManagement
+@SpringBootApplication(scanBasePackages = {"com.ruoyi.common.log","com.bosch.masterdata"})
 public class StorageInApplication {
     public static void main(String[] args) {
         SpringApplication.run(StorageInApplication.class, args);

@@ -110,7 +110,7 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
         pickQueryWrapper.eq(ProductPick::getSudnId, sudnId);
         pickQueryWrapper.last("limit 1");
         ProductPick productPick = this.getOne(pickQueryWrapper);
-        if (productPick.getStatus() == ProductPickEnum.WAITTING_DOWN.code()) {
+        if (productPick.getStatus() != ProductPickEnum.WAITTING_DOWN.code()) {
             throw new ServiceException("状态为：" + ProductPickEnum.getDesc(productPick.getStatus()) + "，暂时不可下架");
         }
         //先查询库存信息
@@ -163,27 +163,40 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
             throw new ServiceException("该条数据不存在");
         }
         if (pick.getStatus() != ProductPickEnum.WAITTING_SHIP.code()) {
-            throw new ServiceException("该条数据状态为:"+ProductPickEnum.getDesc(pick.getStatus())+",不可修改下架量");
+            throw new ServiceException("该条数据状态为:" + ProductPickEnum.getDesc(pick.getStatus()) + ",不可修改下架量");
         }
 
         String sscc = pick.getSscc();
-        Double diff = pick.getBinDownQuantity()- dto.getNewBinDownQuantity();
+        Double diff = pick.getBinDownQuantity() - dto.getNewBinDownQuantity();
         LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProductStock::getSsccNumber,sscc);
-        queryWrapper.eq(ProductStock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.eq(ProductStock::getSsccNumber, sscc);
+        queryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
 
         ProductStock productStock = productStockService.getOne(queryWrapper);
-        if (productStock==null){
+        if (productStock == null) {
             throw new ServiceException("该托目前在库存中已经不存在");
         }
-        productStock.setAvailableStock(productStock.getAvailableStock()+diff);
-        productStock.setTotalStock(productStock.getTotalStock()+diff);
+        productStock.setAvailableStock(productStock.getAvailableStock() + diff);
+        productStock.setTotalStock(productStock.getTotalStock() + diff);
 
         pick.setBinDownQuantity(dto.getNewBinDownQuantity());
 
         this.updateById(pick);
         productStockService.updateById(productStock);
 
+
+    }
+
+    @Override
+    public void batchIssue(List<Long> idList) {
+        List<ProductPick> pickList = this.listByIds(idList);
+        pickList.forEach(item -> {
+            if (!item.getStatus().equals(ProductPickEnum.WAITING_ISSUE.code())) {
+                throw new ServiceException("存在非待下发的任务");
+            }
+            item.setStatus(ProductPickEnum.WAITTING_DOWN.code());
+        });
+        this.updateBatchById(pickList);
 
     }
 

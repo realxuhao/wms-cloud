@@ -11,15 +11,15 @@ const comparison = {
 
   actions: {
     async getBinInSummary ({ commit }, options) {
-      const {data} = await dashboardService.getBinInSummary(options)
+      const { data } = await dashboardService.getBinInSummary(options)
       return data
     },
     async getMissionToDoSummary ({ commit }, options) {
-      const {data} = await dashboardService.getMissionToDoSummary(options)
+      const { data } = await dashboardService.getMissionToDoSummary(options)
       return data
     },
     async getOldMaterialSummary ({ commit }, options) {
-      const {data} = await dashboardService.getOldMaterialSummary(options)
+      const { data } = await dashboardService.getOldMaterialSummary(options)
       return data
     },
     async exportOldMaterial ({ commit }, options) {
@@ -28,7 +28,7 @@ const comparison = {
     },
     async getExpiredMaterial ({ commit }, options) {
       console.log(options)
-      const {data} = await dashboardService.getExpiredMaterial(options)
+      const { data } = await dashboardService.getExpiredMaterial(options)
       return data
     },
     async exportExpiredMaterial ({ commit }, options) {
@@ -36,23 +36,23 @@ const comparison = {
       return data
     },
     async getWareShiftList ({ commit }, options) {
-      const {data} = await dashboardService.getWareShiftList(options)
+      const { data } = await dashboardService.getWareShiftList(options)
       return data
     },
     async getWorkload
       ({ commit }, options) {
-      const {data} = await dashboardService.getWorkload(options)
+      const { data } = await dashboardService.getWorkload(options)
       return data
     },
 
     async exportWorkload
       ({ commit }, options) {
-      const {data} = await dashboardService.exportWorkload(options)
+      const { data } = await dashboardService.exportWorkload(options)
       return data
     },
     async processEfficiency
       ({ commit }, options) {
-      const {data} = await dashboardService.processEfficiency(options)
+      const { data } = await dashboardService.processEfficiency(options)
       return data
     },
 
