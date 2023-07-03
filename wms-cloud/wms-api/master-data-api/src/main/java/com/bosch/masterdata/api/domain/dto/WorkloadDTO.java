@@ -11,6 +11,11 @@ public class WorkloadDTO extends PageDomain {
 
 
     /**
+     * type
+     */
+    @ApiModelProperty(value = "0：物料；1：成品")
+    private Integer type;
+    /**
      * 创建人
      */
     @ApiModelProperty(value = "create_by")

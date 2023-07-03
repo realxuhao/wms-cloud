@@ -5,13 +5,8 @@ import java.util.Date;
 import com.bosch.masterdata.api.domain.MissionToDo;
 import com.bosch.masterdata.api.domain.ReportMaterial;
 import com.bosch.masterdata.api.domain.ReportWareShift;
-import com.bosch.masterdata.api.domain.dto.ReportBinDTO;
-import com.bosch.masterdata.api.domain.dto.ReportMaterialDTO;
-import com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO;
-import com.bosch.masterdata.api.domain.dto.WorkloadDTO;
-import com.bosch.masterdata.api.domain.vo.PageVO;
-import com.bosch.masterdata.api.domain.vo.ReportBinVO;
-import com.bosch.masterdata.api.domain.vo.WorkloadVO;
+import com.bosch.masterdata.api.domain.dto.*;
+import com.bosch.masterdata.api.domain.vo.*;
 import com.bosch.masterdata.service.IReportService;
 import com.bosch.system.api.domain.SysUser;
 import com.bosch.system.api.domain.UserOperationLog;
@@ -137,6 +132,18 @@ public class ReportController extends BaseController {
         List<WorkloadVO> list = reportService.workload(workloadDTO);
         ExcelUtil<WorkloadVO> util = new ExcelUtil<>(WorkloadVO.class);
         util.exportExcel(response, list, "员工实际工作量");
+
+    }
+    /**
+     * 流程效率-按作业类型计算流程平均PT
+     */
+    @PostMapping("/processEfficiency")
+    @ApiOperation("流程效率-按作业类型计算流程平均PT")
+    public  R<List<ProcessEfficiencyVO>> processEfficiency(@RequestBody EfficiencyDTO processEfficiencyDTO) {
+
+//            startPage();
+            List<ProcessEfficiencyVO> list = reportService.processEfficiency(processEfficiencyDTO);
+            return R.ok(list);
 
     }
 }

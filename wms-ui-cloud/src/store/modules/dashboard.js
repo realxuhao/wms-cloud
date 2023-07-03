@@ -39,7 +39,23 @@ const comparison = {
       const {data} = await dashboardService.getWareShiftList(options)
       return data
     },
-    
+    async getWorkload
+      ({ commit }, options) {
+      const {data} = await dashboardService.getWorkload(options)
+      return data
+    },
+
+    async exportWorkload
+      ({ commit }, options) {
+      const {data} = await dashboardService.exportWorkload(options)
+      return data
+    },
+    async processEfficiency
+      ({ commit }, options) {
+      const {data} = await dashboardService.processEfficiency(options)
+      return data
+    },
+
   }
 }
 
