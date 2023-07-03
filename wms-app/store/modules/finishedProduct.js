@@ -132,6 +132,14 @@ const finishedProduc = {
 			} = await finishedProductService.spdnBinDown(options)
 			return data
 		},
+		async sudnBinDown({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.sudnBinDown(options)
+			return data
+		},
 		async spdnGetByQrCode({
 			commit
 		}, options) {
@@ -178,6 +186,14 @@ const finishedProduc = {
 			const {
 				data
 			} = await finishedProductService.sudnList(options)
+			return data
+		},
+		async sudnShipList({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.sudnShipList(options)
 			return data
 		},
 		async sudnPickList({

@@ -3,20 +3,27 @@ package com.bosch.product.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.RemoteBinInService;
 import com.bosch.binin.api.domain.Stock;
-import com.bosch.product.api.domain.ProductStock;
-import com.bosch.product.api.domain.SPDN;
-import com.bosch.product.api.domain.ShippingTask;
+import com.bosch.binin.api.domain.TranshipmentOrder;
+import com.bosch.binin.api.enumeration.SPDNStatusEnum;
+import com.bosch.product.api.domain.*;
 import com.bosch.product.api.domain.dto.SPDNDTO;
+import com.bosch.product.api.domain.enumeration.ProductSPDNPickEnum;
+import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
 import com.bosch.product.api.domain.vo.SPDNVO;
 import com.bosch.product.mapper.SPDNMapper;
 import com.bosch.product.mapper.ShippingTaskMapper;
+import com.bosch.product.service.IProductSPDNPickService;
 import com.bosch.product.service.IProductStockService;
 import com.bosch.product.service.ISPDNService;
 import com.bosch.product.service.IShippingTaskService;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.ProductQRCodeUtil;
+import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import org.hibernate.validator.internal.util.privilegedactions.NewSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +31,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -45,6 +53,12 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
 
     @Autowired
     private IProductStockService productStockService;
+
+    @Autowired
+    private IProductSPDNPickService spdnPickService;
+
+    @Autowired
+    private RemoteBinInService remoteBinInService;
 
 
     @Override
@@ -76,7 +90,10 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         stockLambdaQueryWrapper.in(ProductStock::getSsccNumber, ssccList);
         stockLambdaQueryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<ProductStock> stockList = productStockService.list(stockLambdaQueryWrapper);
-        Map<String,ProductStock> ssccStockMap = stockList.stream().collect(Collectors.toMap(ProductStock::getSsccNumber, Function.identity()));
+        if(CollectionUtils.isEmpty(stockList)){
+            throw new ServiceException("库存数据为空");
+        }
+        Map<String, ProductStock> ssccStockMap = stockList.stream().collect(Collectors.toMap(ProductStock::getSsccNumber, Function.identity()));
         List<String> inValidPlantSSCCList = new ArrayList<>();
         List<String> inValidQtySSCCList = new ArrayList<>();
         stockList.stream().forEach(item -> {
@@ -100,28 +117,118 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         //7701不生成SUQA质检，对应的SSCC生成移库任务（下架，装车（track））
 
         // 如果是7761。那么就把库存的plantNb改成7761,同时质量状态变为Q
-        spdnList.stream().forEach(item->{
+        ArrayList<ProductSPDNPick> spdnPickList = new ArrayList<>();
+        spdnList.stream().forEach(item -> {
             ProductStock productStock = ssccStockMap.get(item.getSsccNumber());
-            if ("7761".equals(item.getPlant())){
-                if (productStock!=null){
+            if ("7761".equals(item.getPlant())) {
+                if (productStock != null) {
                     productStock.setPlantNb(item.getPlant());
                     productStock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
                     productStock.setChangeStatus(0);
                 }
-            }
-            if ("7701".equals(item.getPlant())){
-                if (productStock!=null){
+            } else {//如果不是7761的，生成对应的发运装车任务
+                if (productStock != null) {
                     productStock.setPlantNb(item.getPlant());
+                    productStock.setFreezeStock(productStock.getTotalStock());
+                    productStock.setAvailableStock(Double.valueOf(0));
+                    ProductSPDNPick spdnPick = BeanConverUtil.conver(productStock, ProductSPDNPick.class);
+                    spdnPick.setSpdnId(item.getId());
+                    spdnPick.setStatus(ProductSPDNPickEnum.WAITTING_DOWN.code());
+                    spdnPick.setId(null);
+                    spdnPickList.add(spdnPick);
                 }
             }
 
+            item.setStatus(SPDNStatusEnum.APPROVED.code());
         });
-        stockList.stream().forEach(stock->{
-//            if ()
+//        stockList.stream().forEach(stock->{
+////            if ()
+//        });
+
+        if (!CollectionUtils.isEmpty(spdnPickList)) {
+            spdnPickService.saveBatch(spdnPickList);
+        }
+        ArrayList<ProductStock> list = new ArrayList<>(ssccStockMap.values());
+        productStockService.updateBatchById(list);
+
+        this.updateBatchById(spdnList);
+
+
+    }
+
+    @Override
+    public void binDown(String qrCode) {
+        String sscc = ProductQRCodeUtil.getSSCC(qrCode);
+        LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ProductStock::getSsccNumber, sscc);
+        queryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.last("limit 1");
+        ProductStock productStock = productStockService.getOne(queryWrapper);
+        if (productStock == null) {
+            throw new ServiceException("当前不存在该SSCC" + sscc + "对应的库存信息");
+        }
+        LambdaQueryWrapper<ProductSPDNPick> pickWrapper = new LambdaQueryWrapper<>();
+        pickWrapper.eq(ProductSPDNPick::getSsccNumber,sscc);
+        pickWrapper.eq(ProductSPDNPick::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        pickWrapper.eq(ProductSPDNPick::getStatus,ProductSPDNPickEnum.WAITTING_DOWN.code());
+        ProductSPDNPick spdnPick = spdnPickService.getOne(pickWrapper);
+        if (spdnPick==null){
+            throw new ServiceException("当前不存在该SSCC" + sscc + "对应的下架信息");
+        }
+        productStock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
+        productStockService.updateById(productStock);
+
+        spdnPick.setStatus(ProductSPDNPickEnum.WAITTING_SHIP.code());
+        spdnPickService.updateById(spdnPick);
+
+
+    }
+
+    @Override
+    public void ship(List<String> ssccList, String carNb) {
+        LambdaQueryWrapper<ProductSPDNPick> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(ProductSPDNPick::getSsccNumber, ssccList)
+                .eq(ProductSPDNPick::getDeleteFlag, DeleteFlagStatus.FALSE.getCode())
+                .eq(ProductSPDNPick::getStatus, ProductSPDNPickEnum.WAITTING_SHIP.code());
+        List<ProductSPDNPick> pickList = spdnPickService.list(queryWrapper);
+        if (CollectionUtils.isEmpty(pickList) || pickList.size() != ssccList.size()) {
+            throw new ServiceException("存在状态不为待发运的数据");
+
+        }
+        List<TranshipmentOrder> transhipmentOrderList = new ArrayList<>();
+        //获取next trans order
+        R<String> nextOrderNbR = remoteBinInService.getNextOrderNb();
+        if (nextOrderNbR == null || !nextOrderNbR.isSuccess()) {
+            throw new ServiceException("请求获取发运单号失败");
+        }
+        String nextOrderNb = nextOrderNbR.getData();
+        pickList.forEach(item -> {
+            if (!item.getStatus().equals(ProductSPDNPickEnum.WAITTING_SHIP.code())) {
+                throw new ServiceException("sscc:" + item.getSsccNumber() + "对应任务状态为" + ProductSPDNPickEnum.getDesc(item.getStatus()));
+            }
+            TranshipmentOrder transhipmentOrder = new TranshipmentOrder();
+            transhipmentOrder.setOrderNumber(nextOrderNb);
+            transhipmentOrder.setSsccNumber(item.getSsccNumber());
+            transhipmentOrder.setMaterialCode(item.getMaterialNb());
+            transhipmentOrder.setProductWareShiftId(item.getId());
+            transhipmentOrder.setCarNb(carNb);
+            transhipmentOrder.setStatus(0);
+            transhipmentOrderList.add(transhipmentOrder);
+
+            item.setStatus(ProductSPDNPickEnum.FINISH.code());
+
         });
 
+        //修改移库状态
+        spdnPickService.updateBatchById(pickList);
 
 
+        if (!CollectionUtils.isEmpty(transhipmentOrderList)) {
+            R saveR = remoteBinInService.saveBatch(transhipmentOrderList);
+            if (saveR == null || !saveR.isSuccess()) {
+                throw new ServiceException("远程调用生成转运单失败，请重试");
+            }
+        }
     }
 
 

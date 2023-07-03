@@ -12,15 +12,19 @@
 				<view>
 					<view class="text-align m-b-4">
 						<text class="label m-r-8">SSCC码:</text>
-						<text>{{ info.ssccNumber }}</text>
+						<text>{{ info.sscc }}</text>
 					</view>
 					<view class="text-align m-b-4">
 						<text class="label m-r-8">物料编码:</text>
-						<text>{{ info.materialNb }}</text>
+						<text>{{ info.material }}</text>
 					</view>
 					<view class="text-align m-b-4">
 						<text class="label m-r-8">库位:</text>
 						<text>{{ info.binCode }}</text>
+					</view>
+					<view class="text-align m-b-4">
+						<text class="label m-r-8">下架数量:</text>
+						<text>{{ info.deliveryQuantity }}</text>
 					</view>
 				</view>
 			</uni-popup-dialog>
@@ -52,9 +56,9 @@
 		onLoad(options) {
 			this.sudnId = options.id
 		},
-		mounted() {
-			this.getSample('11221025101012358660208716900568763172407093700006000669006391110024502')
-		},
+		// mounted() {
+		// 	this.getSample('11221025101012358660208716900568763172407093700006000669006391110024502')
+		// },
 		methods: {
 			async scanCodeCallback(data) {
 				Bus.$emit('stopScan');
@@ -84,7 +88,11 @@
 			async handleBinDown(data) {
 				try {
 					uni.showLoading();
-					await this.$store.dispatch('finishedProduct/spdnBinDown', this.code);
+					await this.$store.dispatch('finishedProduct/sudnBinDown', {
+						barCode: this.code,
+						sudnId: this.sudnId
+					});
+					// await this.$store.dispatch('finishedProduct/sudnBinDown', this.code);
 					this.$refs.message.success('下架成功');
 					this.$refs.submitPopup.close();
 				} catch (e) {

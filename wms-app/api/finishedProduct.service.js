@@ -181,6 +181,16 @@ const spdnBinDown = async (barCode) => {
 	})
 }
 
+const sudnBinDown = async (options) => {
+	const url = `/product/sudn-pick/binDown/${options.barCode}?sudnId=${options.sudnId}`
+	const method = 'PUT'
+
+	return request({
+		url,
+		method,
+	})
+}
+
 const spdnGetByQrCode = async (barCode) => {
 	const url = `/product/spdn/getByQrCode/${barCode}`
 	const method = 'GET'
@@ -243,6 +253,16 @@ const sudnList = async (data) => {
 	})
 }
 
+const sudnShipList = async (data) => {
+	const method = 'GET'
+	const url = `/product/SUDN/getSUDNShipListByType`
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
 const sudnPickList = async (data) => {
 	const method = 'GET'
 	const url = `/product/sudn-pick/list`
@@ -289,5 +309,7 @@ export const finishedProductService = {
 	productStockTrans,
 	sudnList,
 	sudnPickList,
-	sudnPickGetByQrCode
+	sudnPickGetByQrCode,
+	sudnBinDown,
+	sudnShipList
 }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.product.mapper.ProductPickMapper">
+
+
+    <select id="list" resultType="com.bosch.product.api.domain.vo.ProductPickVO">
+        SELECT pp.*
+        FROM product_pick AS pp
+        where pp.delete_flag = 0
+        <if test="sudnId != null">and pp.sudn_id = #{sudnId}</if>
+        <if test="status != null">and pp.status = #{status}</if>
+        <if test="delivery != null and delivery != ''">
+            AND pp.delivery like concat('%', #{delivery}, '%')
+        </if>
+        <if test="sscc != null and sscc != ''">
+            AND pp.sscc like concat('%', #{sscc}, '%')
+        </if>
+        <if test="material != null and material != ''">
+            AND pp.material like concat('%', #{material}, '%')
+        </if>
+        <if test="batch != null and batch != ''">
+            AND pp.batch like concat('%', #{batch}, '%')
+        </if>
+        <if test="productionBatch != null and productionBatch != ''">
+            AND pp.production_batch like concat('%', #{productionBatch}, '%')
+        </if>
+        <if test="shipper != null and shipper != ''">
+            AND pp.shipper like concat('%', #{shipper}, '%')
+        </if>
+        <if test="startCreateTime != null">and pp.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
+        <if test="endCreateTime != null">and pp.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+
+
+    </select>
+</mapper>

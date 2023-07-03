@@ -72,4 +72,10 @@ public class FileFallbackFactory implements FileService {
     }
 
 
+    @Override
+    public <T> R SUDNFileImport(MultipartFile file, String desc) {
+        return R.fail("调用导入SPDN导入失败");
+    }
+
+
 }

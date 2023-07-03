@@ -86,7 +86,5 @@ order by d.create_time desc,d.update_time desc
         FROM stock_take_detail AS t2
         WHERE t2.task_no = t1.task_no
         )
-
-
     </select>
 </mapper>

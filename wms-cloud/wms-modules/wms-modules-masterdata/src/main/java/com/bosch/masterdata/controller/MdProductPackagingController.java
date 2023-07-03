@@ -16,6 +16,7 @@ import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
@@ -59,6 +60,19 @@ public class MdProductPackagingController extends BaseController {
         MdProductPackagingDTO dto = new MdProductPackagingDTO();
         dto.setCell(cell);
         return R.ok(mdProductPackagingService.selectList(dto));
+
+    }
+
+    @GetMapping("/getByCode/{code}")
+    public R<MdProductPackagingVO> getByCode(@PathVariable("code")String code){
+        MdProductPackagingDTO dto = new MdProductPackagingDTO();
+        dto.setProductNo(code);
+        List<MdProductPackagingVO> productPackagingVOS = mdProductPackagingService.selectList(dto);
+        if (CollectionUtils.isEmpty(productPackagingVOS)){
+            throw new ServiceException("没有"+code+"对应的成品主数据");
+        }
+
+        return R.ok(productPackagingVOS.get(0));
 
     }
 

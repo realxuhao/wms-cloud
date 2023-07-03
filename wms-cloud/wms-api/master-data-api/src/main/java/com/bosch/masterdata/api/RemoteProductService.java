@@ -23,4 +23,7 @@ public interface RemoteProductService {
 
     @GetMapping("/mdProductPackaging/getByCell/{cell}")
     public R<List<MdProductPackagingVO>> getByCell(@PathVariable("cell") String cell);
+
+    @GetMapping("/mdProductPackaging/getByCode/{code}")
+    public R<MdProductPackagingVO> getByCode(@PathVariable("code") String code);
 }

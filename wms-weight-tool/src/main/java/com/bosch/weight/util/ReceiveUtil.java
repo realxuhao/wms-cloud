@@ -125,51 +125,51 @@ public class ReceiveUtil {
             Double totalWeight = getTotalWeight(s, 48, 51);
             WeightDTO weightDTO = new WeightDTO(hostAddress, port, totalWeight);
             //称重>0的时候，进行请求
-//            if (weightDTO.getTotalWeight() > 0) {
-            logger.info("收到有效称重数据:" + JSONUtil.toJsonStr(weightDTO));
-            //查看缓存，如果两分钟内，如果实现相同数据则不进行上传
-            if (!Objects.isNull(CacheUtil.get(weightDTO.getIp() + ":" + weightDTO.getPort())) &&
-                    CacheUtil.get(weightDTO.getIp() + ":" + weightDTO.getPort()).equals(weightDTO.getTotalWeight())) {
-                return;
-            } else {
-                //不存在缓存，那么就上传数据。
-                int maxRetries = 3; // 最大重试次数
-                int retryCount = 0; // 当前重试次数
-                boolean success = false; // 是否请求成功
-                Map headerMap = new HashMap<>();
-                headerMap.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
+            if (weightDTO.getTotalWeight() > 0) {
+                logger.info("收到有效称重数据:" + JSONUtil.toJsonStr(weightDTO));
+                //查看缓存，如果两分钟内，如果实现相同数据则不进行上传
+                if (!Objects.isNull(CacheUtil.get(weightDTO.getIp() + ":" + weightDTO.getPort())) &&
+                        CacheUtil.get(weightDTO.getIp() + ":" + weightDTO.getPort()).equals(weightDTO.getTotalWeight())) {
+                    return;
+                } else {
+                    //不存在缓存，那么就上传数据。
+                    int maxRetries = 3; // 最大重试次数
+                    int retryCount = 0; // 当前重试次数
+                    boolean success = false; // 是否请求成功
+                    Map headerMap = new HashMap<>();
+                    headerMap.put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3");
 
-                while (retryCount < maxRetries && !success) {
-                    try {
-                        // 发送请求
-                        HttpResponse response = HttpRequest.post(Constants.uploadUrl).body(JSONUtil.toJsonStr(weightDTO)).addHeaders(headerMap).execute();
+                    while (retryCount < maxRetries && !success) {
+                        try {
+                            // 发送请求
+                            HttpResponse response = HttpRequest.post(Constants.uploadUrl).body(JSONUtil.toJsonStr(weightDTO)).addHeaders(headerMap).execute();
 
-                        // 检查响应状态码
-                        int statusCode = response.getStatus();
-                        if (statusCode == 200) {
-                            success = true; // 请求成功
-                            String result = response.body();
-                            logger.info(result);
-                        } else {
-                            // 请求失败，进行重试
+                            // 检查响应状态码
+                            int statusCode = response.getStatus();
+                            if (statusCode == 200) {
+                                success = true; // 请求成功
+                                String result = response.body();
+                                logger.info(result);
+                            } else {
+                                // 请求失败，进行重试
+                                retryCount++;
+                                logger.info("Request failed. Retrying... Retry Count: " + retryCount);
+                            }
+                        } catch (Exception e) {
+                            // 请求异常，进行重试
                             retryCount++;
-                            logger.info("Request failed. Retrying... Retry Count: " + retryCount);
+                            logger.error("Request failed with exception. Retrying... Retry Count: " + retryCount);
                         }
-                    } catch (Exception e) {
-                        // 请求异常，进行重试
-                        retryCount++;
-                        logger.error("Request failed with exception. Retrying... Retry Count: " + retryCount);
                     }
-                }
 
-                if (!success) {
-                    logger.error("Request failed after maximum retries.");
-                }
+                    if (!success) {
+                        logger.error("Request failed after maximum retries.");
+                    }
 
-                //数据放到缓存
-                CacheUtil.put(weightDTO.getIp() + ":" + weightDTO.getPort(), weightDTO.getTotalWeight());
+                    //数据放到缓存
+                    CacheUtil.put(weightDTO.getIp() + ":" + weightDTO.getPort(), weightDTO.getTotalWeight());
+                }
             }
-//            }
 
         } else {
             logger.info("valid failed");

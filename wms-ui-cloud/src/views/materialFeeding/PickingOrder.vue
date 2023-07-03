@@ -61,6 +61,11 @@
               </a-form-item>
             </a-col>
             <a-col :span="4">
+              <a-form-item label="批次号">
+                <a-input v-model="queryForm.batchNb" placeholder="batchNb" allow-clear/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="4">
               <a-form-item label="创建人">
                 <a-input v-model="queryForm.createBy" placeholder="创建人" allow-clear/>
               </a-form-item>
@@ -287,7 +292,12 @@ const columns = [
     dataIndex: 'materialName',
     width: 120
   },
-
+{
+    title: '批次号',
+    key: 'batchNb',
+    dataIndex: 'batchNb',
+    width: 160
+  },
   {
     title: '创建人',
     key: 'createBy',
@@ -387,7 +397,8 @@ const queryFormAttr = () => {
     date: [],
     updateDate: [],
     materialTypeList: [],
-    ssccNumber: ''
+    ssccNumber: '',
+    batchNb: '',
   }
 }
 

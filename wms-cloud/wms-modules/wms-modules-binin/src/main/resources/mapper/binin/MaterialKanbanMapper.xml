@@ -255,6 +255,9 @@
         <if test="orderNumber != null and orderNumber != ''">
             and mk.order_number like concat('%', #{orderNumber}, '%')
         </if>
+        <if test="batchNb != null and batchNb != ''">
+            and mk.batch_nb like concat('%', #{batchNb}, '%')
+        </if>
         <if test="factoryCode != null and factoryCode != ''">
             and mk.factory_code like concat('%', #{factoryCode}, '%')
         </if>

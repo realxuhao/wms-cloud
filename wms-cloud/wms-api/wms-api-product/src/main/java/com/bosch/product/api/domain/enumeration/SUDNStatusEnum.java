@@ -8,6 +8,8 @@ package com.bosch.product.api.domain.enumeration;
  **/
 public enum SUDNStatusEnum {
 
+    CANCEL(-1,"已取消"),
+
     WAITING_GEN(0,"待生成"),
 
     GENERATED(1,"已生成");

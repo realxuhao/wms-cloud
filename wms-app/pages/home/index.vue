@@ -241,7 +241,7 @@
 						<view class="text">下架</view>
 					</view>
 					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:shipment'])"
-						@click="handleGoto('/pages/finishedProduct/spdnShipment')">
+						@click="handleGoto('/pages/finishedProduct/sudnShip')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-wuliufahuo" type="icon-wuliufahuo"
 							color="#009A9A"></uni-icons>
 						<view class="text">发运</view>
