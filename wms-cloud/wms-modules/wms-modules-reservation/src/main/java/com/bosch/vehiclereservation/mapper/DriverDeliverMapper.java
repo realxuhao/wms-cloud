@@ -26,4 +26,12 @@ public interface DriverDeliverMapper extends BaseMapper<DriverDeliver> {
      */
     public List<DriverDeliver> selectDriverDeliverList(@Param("driver") DriverDeliver driverDeliver);
 
+    /**
+     * 根据预约单号查询年份司机送货信息列表
+     *
+     * @param driverDeliver 查询条件
+     * @return 司机送货信息列表
+     */
+    public List<DriverDeliver> selectDriverDeliverOnTimeList(@Param("driver") DriverDeliver driverDeliver);
+
 }

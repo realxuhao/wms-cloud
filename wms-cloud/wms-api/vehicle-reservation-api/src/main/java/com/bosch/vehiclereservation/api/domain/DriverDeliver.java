@@ -94,4 +94,11 @@ public class DriverDeliver extends BaseEntity {
      */
     @TableField(exist = false)
     private Integer selectType;
+
+    /**
+     * 查询的年份
+     */
+    @TableField(exist = false)
+    private Integer selectYear;
+
 }

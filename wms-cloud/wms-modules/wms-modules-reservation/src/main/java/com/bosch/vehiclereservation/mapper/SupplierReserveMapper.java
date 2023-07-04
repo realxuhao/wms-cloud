@@ -38,4 +38,8 @@ public interface SupplierReserveMapper extends BaseMapper<SupplierReserve> {
      */
     public List<SupplierReserve> selectSupplierReserveList(SupplierReserve supplierReserve);
 
+    public List<String> selectReserveOnList(SupplierReserve supplierReserve);
+
+    public List<String> getSupplierName();
+
 }

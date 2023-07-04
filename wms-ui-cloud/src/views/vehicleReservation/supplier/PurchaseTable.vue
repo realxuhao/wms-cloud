@@ -277,7 +277,8 @@ const queryFormAttr = () => {
     poNoList: [],
     poItemList: [],
     cmsNumberList: [],
-    deliveryDate: null
+    deliveryDate: null,
+    supplier: ''
   }
 }
 
@@ -492,7 +493,8 @@ export default {
           this.queryForm.deliveryDate = this.searchDate == null ? null : moment(new Date(this.searchDate)).format('YYYY-MM-DD')
           console.info(this.queryForm.deliveryDate)
           this.tableLoading = true
-          const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', { name: this.supplierName, queryParams: { ...this.queryForm, ...{ status: 0 } } })
+          this.queryForm.supplier = this.supplierName
+          const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', { name: 'errorname', queryParams: { ...this.queryForm, ...{ status: 0 } } })
           this.list = rows
           this.list.forEach(item => {
             this.$set(item, 'arriveQuantity', item.quantity)
@@ -512,7 +514,8 @@ export default {
         this.selectedRowList = []
         this.list = []
         this.tableLoading = true
-        const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', { name: this.supplierName, queryParams: this.queryForm })
+          this.queryForm.supplier = this.supplierName
+        const { data: { rows, total } } = await this.$store.dispatch('purchase/getListBySupplierName', { name: 'errorname', queryParams: this.queryForm })
         this.list = rows
         this.list.forEach(item => {
           this.$set(item, 'arriveQuantity', item.quantity)
@@ -531,11 +534,11 @@ export default {
     async preOptionList () {
       const data = await this.$store.dispatch('ware/getOptionList')
       this.wareOptionList = data.data
-      const poCodeData = await this.$store.dispatch('purchase/getPoCodeList', this.supplierName)
+      const poCodeData = await this.$store.dispatch('purchase/getPoCodeList', {supplier: this.supplierName})
       this.poCodeList = poCodeData.data
-      const poItemData = await this.$store.dispatch('purchase/getPoItemList', this.supplierName)
+      const poItemData = await this.$store.dispatch('purchase/getPoItemList', {supplier: this.supplierName})
       this.poItemList = poItemData.data
-      const cmsNumberData = await this.$store.dispatch('purchase/getCmsNumberList', this.supplierName)
+      const cmsNumberData = await this.$store.dispatch('purchase/getCmsNumberList', {supplier: this.supplierName})
       this.cmsNumberList = cmsNumberData.data
     }
   },

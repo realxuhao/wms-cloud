@@ -118,7 +118,7 @@ export default {
       this.errorListVisible = false
     },
     async getErrorList(){
-      const { data } = await this.$store.dispatch('supplierReserve/getErrorData', this.supplierName)
+      const { data } = await this.$store.dispatch('supplierReserve/getErrorData', {supplierCode: this.supplierName})
       this.errorList = data == undefined ? [] : data
       if(this.errorList.length > 0){
         this.errorBtbType = 'danger'

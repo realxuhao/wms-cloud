@@ -40,20 +40,26 @@ const getErrorPoCode = async () => {
   return data
 }
 
-const getPoCodeList = async (name) => {
-  const url = `/purchase/getPoCodeList/${name}`
+const getPoCodeList = async (parameter) => {
+  const url = `/purchase/getPoCodeList?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(baseUrl).get(url)
   return data
 }
 
-const getPoItemList = async (name) => {
-  const url = `/purchase/getPoItemList/${name}`
+const getPoItemList = async (parameter) => {
+  const url = `/purchase/getPoItemList?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(baseUrl).get(url)
   return data
 }
 
-const getCmsNumberList = async (name) => {
-  const url = `/purchase/getCmsNumberList/${name}`
+const getCmsNumberList = async (parameter) => {
+  const url = `/purchase/getCmsNumberList?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const getSupplierName = async () => {
+  const url = `/purchase/getSupplierName`
   const { data } = await createAuthInstance(baseUrl).get(url)
   return data
 }
@@ -67,5 +73,6 @@ export const purchaseService = {
   getErrorPoCode,
   getPoCodeList,
   getPoItemList,
-  getCmsNumberList
+  getCmsNumberList,
+  getSupplierName
 }

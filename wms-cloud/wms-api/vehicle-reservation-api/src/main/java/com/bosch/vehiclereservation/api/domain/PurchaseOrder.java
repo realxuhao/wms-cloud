@@ -118,5 +118,6 @@ public class PurchaseOrder extends BaseEntity {
 
     @TableField(exist = false)
     private List<String> cmsNumberList;
+    
 
 }

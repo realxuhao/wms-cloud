@@ -35,8 +35,8 @@ const getDetailsList = async (reserveNo) => {
   return data
 }
 
-const getErrorData = async (name) => {
-  const url = `/supplierReserve/selectErrorData/${name}`
+const getErrorData = async (parameter) => {
+  const url = `/supplierReserve/selectErrorData?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(baseUrl).get(url)
   return data
 }

@@ -13,7 +13,9 @@ import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
+import com.bosch.vehiclereservation.api.domain.dto.SupplierOnTimeDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDeliverVO;
+import com.bosch.vehiclereservation.api.domain.vo.SupplierOnTimeVO;
 import com.bosch.vehiclereservation.api.enumeration.*;
 import com.bosch.vehiclereservation.mapper.DriverDeliverMapper;
 import com.bosch.vehiclereservation.mapper.DriverDispatchMapper;
@@ -29,6 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneOffset;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,6 +84,131 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
         List<DriverDeliver> driverDelivers = driverDeliverMapper.selectDriverDeliverList(driverDeliver);
         List<DriverDeliverVO> driverDeliverVOS = BeanConverUtil.converList(driverDelivers, DriverDeliverVO.class);
         return driverDeliverVOS;
+    }
+
+    @Override
+    public List<SupplierOnTimeVO> selectSupplierOnTime(SupplierOnTimeDTO supplierOnTimeDTO) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd");
+        List<SupplierOnTimeVO> result = new ArrayList<>();
+        String supplierName = supplierOnTimeDTO.getSupplierName();
+        Integer year = supplierOnTimeDTO.getSearchYear();
+        for(int i = 0; i < 12; i++){
+            SupplierOnTimeVO supplier = new SupplierOnTimeVO();
+            supplier.setSupplierName(supplierOnTimeDTO.getSupplierName());
+            supplier.setYearOn(year);
+            supplier.setMonthOn((i + 1));
+            supplier.setTotalCount(0);
+            supplier.setLateCount(0);
+            supplier.setOnTimeRatio("0");
+            result.add(supplier);
+        }
+        SupplierReserve supplierReserve = new SupplierReserve();
+        supplierReserve.setSupplierCode(supplierName);
+        List<String> selectReserveOnList = supplierReserveMapper.selectReserveOnList(supplierReserve);
+        if(selectReserveOnList.isEmpty()){
+            return result;
+        }
+        DriverDeliver driverDeliver = new DriverDeliver();
+        driverDeliver.setReserveNoList(selectReserveOnList);
+        driverDeliver.setSelectYear(year);
+        List<DriverDeliver> driverDelivers = driverDeliverMapper.selectDriverDeliverOnTimeList(driverDeliver);
+        if(driverDelivers.isEmpty()){
+            return result;
+        }
+        for(int i = 0; i < 12; i++){
+            int finalI = i + 1;
+            List<DriverDeliver> deliverFilterList = driverDelivers.stream().filter(
+                    e -> {
+                        LocalDateTime eDate = e.getReserveDate().toInstant().atOffset(ZoneOffset.of("+8")).toLocalDateTime();
+                        if (eDate.getMonth().getValue() == finalI) {
+                            return true;
+                        }
+                        return false;
+                    }
+            ).collect(Collectors.toList());
+            if (!deliverFilterList.isEmpty()) {
+                Long totalReserve = (long)deliverFilterList.size();
+                Long onTimeCount = deliverFilterList.stream().filter(
+                        e -> {
+                            if(e.getSigninDate() == null){
+                                return false;
+                            }
+                            String reserveDateStr = timeFormat.format(e.getReserveDate());
+                            String windowLastTimeStr = e.getTimeWindow().split("-")[1];
+                            LocalDateTime windowLastTime = LocalDateTime.parse(reserveDateStr + "T" + windowLastTimeStr + ":00");
+                            return windowLastTime.isAfter(e.getSigninDate().toInstant().atOffset(ZoneOffset.of("+8")).toLocalDateTime());
+                        }
+                ).count();
+                result.get(i).setOnTimeRatio(String.format("%.2f", ((onTimeCount.doubleValue() / totalReserve.doubleValue()) * 100)));
+                result.get(i).setTotalCount(deliverFilterList.size());
+                result.get(i).setLateCount((int)(totalReserve - onTimeCount));
+
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<SupplierOnTimeVO> selectAllSupplierOnTimeList(Integer year) {
+        SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd");
+        List<SupplierOnTimeVO> result = new ArrayList<>();
+        List<String> supplierNameList = supplierReserveMapper.getSupplierName();
+        supplierNameList.forEach(supplierName -> {
+            List<SupplierOnTimeVO> addList = new ArrayList<>();
+            for(int i = 0; i < 12; i++){
+                SupplierOnTimeVO supplier = new SupplierOnTimeVO();
+                supplier.setSupplierName(supplierName);
+                supplier.setYearOn(year);
+                supplier.setMonthOn((i + 1));
+                supplier.setTotalCount(0);
+                supplier.setLateCount(0);
+                supplier.setOnTimeRatio("0");
+                addList.add(supplier);
+            }
+            SupplierReserve supplierReserve = new SupplierReserve();
+            supplierReserve.setSupplierCode(supplierName);
+            List<String> selectReserveOnList = supplierReserveMapper.selectReserveOnList(supplierReserve);
+            if(!selectReserveOnList.isEmpty()){
+                DriverDeliver driverDeliver = new DriverDeliver();
+                driverDeliver.setReserveNoList(selectReserveOnList);
+                driverDeliver.setSelectYear(year);
+                List<DriverDeliver> driverDelivers = driverDeliverMapper.selectDriverDeliverOnTimeList(driverDeliver);
+                if(!driverDelivers.isEmpty()){
+                    for(int i = 0; i < 12; i++){
+                        int finalI = i + 1;
+                        List<DriverDeliver> deliverFilterList = driverDelivers.stream().filter(
+                                e -> {
+                                    LocalDateTime eDate = e.getReserveDate().toInstant().atOffset(ZoneOffset.of("+8")).toLocalDateTime();
+                                    if (eDate.getMonth().getValue() == finalI) {
+                                        return true;
+                                    }
+                                    return false;
+                                }
+                        ).collect(Collectors.toList());
+                        if (!deliverFilterList.isEmpty()) {
+                            Long totalReserve = (long)deliverFilterList.size();
+                            Long onTimeCount = deliverFilterList.stream().filter(
+                                    e -> {
+                                        if(e.getSigninDate() == null){
+                                            return false;
+                                        }
+                                        String reserveDateStr = timeFormat.format(e.getReserveDate());
+                                        String windowLastTimeStr = e.getTimeWindow().split("-")[1];
+                                        LocalDateTime windowLastTime = LocalDateTime.parse(reserveDateStr + "T" + windowLastTimeStr + ":00");
+                                        return windowLastTime.isAfter(e.getSigninDate().toInstant().atOffset(ZoneOffset.of("+8")).toLocalDateTime());
+                                    }
+                            ).count();
+                            addList.get(i).setOnTimeRatio(String.format("%.2f", ((onTimeCount.doubleValue() / totalReserve.doubleValue()) * 100)));
+                            addList.get(i).setTotalCount(deliverFilterList.size());
+                            addList.get(i).setLateCount((int)(totalReserve - onTimeCount));
+
+                        }
+                    }
+                }
+            }
+            result.addAll(addList);
+        });
+        return result;
     }
 
     @Override

@@ -3,7 +3,9 @@ package com.bosch.vehiclereservation.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
+import com.bosch.vehiclereservation.api.domain.dto.SupplierOnTimeDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDeliverVO;
+import com.bosch.vehiclereservation.api.domain.vo.SupplierOnTimeVO;
 
 import java.util.List;
 
@@ -16,6 +18,16 @@ public interface IDriverDeliverService extends IService<DriverDeliver> {
      * @return 司机送货信息列表
      */
     public List<DriverDeliverVO> selectDriverDeliverVO(DriverDeliverDTO driverDeliverDTO);
+
+    /**
+     * 查询供应商准时率（单个供应商数据）
+     *
+     * @param supplierOnTimeDTO 查询条件
+     * @return 单个供应商准时率
+     */
+    public List<SupplierOnTimeVO> selectSupplierOnTime(SupplierOnTimeDTO supplierOnTimeDTO);
+
+    public List<SupplierOnTimeVO> selectAllSupplierOnTimeList(Integer year);
 
     /**
      * 删除司机预约信息

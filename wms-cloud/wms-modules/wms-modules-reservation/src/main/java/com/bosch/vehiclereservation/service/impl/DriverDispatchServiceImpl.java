@@ -235,6 +235,32 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
     }
 
     @Override
+    public boolean dispatchChange(Long dispatchId) {
+        DriverDispatch driverDispatch = driverDispatchMapper.selectById(dispatchId);
+        if (driverDispatch == null) {
+            throw new ServiceException("调度信息不存在！");
+        }
+        driverDispatch.setCompleteDate(DateUtils.getNowDate());
+        driverDispatch.setStatus(DispatchStatusEnum.COMPLETE.getCode());
+        int i = driverDispatchMapper.updateById(driverDispatch);
+        if (i > 0 && driverDispatch.getDriverType() == DispatchTypeEnum.DELIVER.getCode()) {
+            Long driverId = driverDispatch.getDriverId();
+            DriverDeliver driverDeliver = driverDeliverMapper.selectById(driverId);
+            if (StringUtils.isNotEmpty(driverDeliver.getReserveNo())) {
+                QueryWrapper<SupplierReserve> wrapper = new QueryWrapper<>();
+                wrapper.eq("reserve_no", driverDeliver.getReserveNo());
+                Optional<SupplierReserve> first = supplierReserveMapper.selectList(wrapper).stream().findFirst();
+                if (first.isPresent()) {
+                    SupplierReserve supplierReserve = first.get();
+                    supplierReserve.setStatus(ReserveStatusEnum.COMPLETE.getCode());
+                    supplierReserveMapper.updateById(supplierReserve);
+                }
+            }
+        }
+        return i > 0;
+    }
+
+    @Override
     public String getWxToken() {
         String token = "";
         String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + APPID + "&secret=" + SECERT;

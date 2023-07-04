@@ -38,4 +38,6 @@ public interface PurchaseOrderMapper extends BaseMapper<PurchaseOrder> {
     public List<String> getPoItemList(String name);
 
     public List<String> getCmsNumberList(String name);
+
+    public List<String> getSupplierName();
 }

@@ -2,22 +2,24 @@ package com.bosch.vehiclereservation.controller;
 
 
 import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
-import com.bosch.vehiclereservation.api.domain.dto.SupplierDTO;
+import com.bosch.vehiclereservation.api.domain.dto.SupplierOnTimeDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDeliverVO;
 import com.bosch.vehiclereservation.api.domain.vo.PageVO;
+import com.bosch.vehiclereservation.api.domain.vo.SupplierOnTimeVO;
 import com.bosch.vehiclereservation.service.IDriverDeliverService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
-import com.ruoyi.common.security.annotation.RequiresPermissions;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -48,6 +50,30 @@ public class DriverDeliverController extends BaseController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
+    /**
+     * 查询供应商准时率（单个供应商数据）
+     *
+     * @param supplierOnTimeDTO 查询条件
+     * @return 单个供应商准时率
+     */
+    @GetMapping("/supplierOnTime")
+    @ApiOperation("查询司机送货信息列表")
+    public R<List<SupplierOnTimeVO>> supplierOnTime(SupplierOnTimeDTO supplierOnTimeDTO) {
+        List<SupplierOnTimeVO> list = driverDeliverService.selectSupplierOnTime(supplierOnTimeDTO);
+        return R.ok(list);
+    }
+
+    /**
+     * 导出供应商准时率数据（全部供应商数据）
+     */
+    @PostMapping("/exportOnTime")
+    @ApiOperation("导出供应商准时率数据")
+    public void exportOnTime(HttpServletResponse response, @RequestBody SupplierOnTimeDTO supplierOnTimeDTO) {
+        List<SupplierOnTimeVO> list = driverDeliverService.selectAllSupplierOnTimeList(supplierOnTimeDTO.getSearchYear());
+
+        ExcelUtil<SupplierOnTimeVO> util = new ExcelUtil<>(SupplierOnTimeVO.class);
+        util.exportExcel(response, list, "供应商准时率");
+    }
 
     /**
      * 删除司机的预约信息（预约单完成状态不能删）

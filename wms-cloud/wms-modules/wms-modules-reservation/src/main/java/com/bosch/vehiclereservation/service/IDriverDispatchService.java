@@ -69,6 +69,14 @@ public interface IDriverDispatchService extends IService<DriverDispatch> {
     boolean dispatchSort(DriverSortDTO driverDispatchDTO);
 
     /**
+     * 异常数据处理（异常 => 已完成）
+     *
+     * @param dispatchId
+     * @return
+     */
+    boolean dispatchChange(Long dispatchId);
+
+    /**
      * 根据appid及密钥获取access_token
      *
      * @return

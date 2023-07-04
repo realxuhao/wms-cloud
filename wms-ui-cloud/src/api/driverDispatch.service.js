@@ -60,6 +60,14 @@ const sort = async (options) => {
   return data
 }
 
+/** 处理 */
+const change = async (id) => {
+  const url = `/driverDispatch/change/${id}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+
 const getWxToken = async () => {
   const url = `/driverDispatch/getWxToken`
   const { data } = await createAuthInstance(baseUrl).get(url)
@@ -81,6 +89,7 @@ export const driverDispatchService = {
   cancel,
   complete,
   sort,
+  change,
   getWxToken,
   sendMsgToWx
 }
