@@ -52,6 +52,9 @@ public class MaterialKanbanDTO extends PageDomain {
     @ApiModelProperty(value = "源库位编码")
     private String binCode;
 
+    @ApiModelProperty(value = "批次号")
+    private String batchNb;
+
     /**
      * 料号
      */

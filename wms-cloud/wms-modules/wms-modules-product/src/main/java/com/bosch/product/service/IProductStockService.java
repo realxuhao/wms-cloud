@@ -2,16 +2,12 @@ package com.bosch.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.dto.IQCChangeStatusDTO;
-import com.bosch.binin.api.domain.dto.IQCManagementQueryDTO;
+import com.bosch.binin.api.domain.dto.ManualBinInDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.product.api.domain.ProductReceive;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.ProductWareShift;
-import com.bosch.product.api.domain.dto.EditStockDTO;
-import com.bosch.product.api.domain.dto.ProductBinInDTO;
-import com.bosch.product.api.domain.dto.ProductIQCManagementQueryDTO;
-import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
-import com.bosch.product.api.domain.vo.ProductReceiveVO;
+import com.bosch.product.api.domain.dto.*;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 
 import java.util.List;
@@ -42,6 +38,9 @@ public interface IProductStockService extends IService<ProductStock> {
 
     List<ProductStockVO> list(ProductStockQueryDTO stockQueryDTO);
 
+    List<ProductStockVO> allList(ProductStockQueryDTO stockQueryDTO);
+
+
 
     AreaVO getAreaByType(String wareCode, Integer areaType);
 
@@ -64,4 +63,10 @@ public interface IProductStockService extends IService<ProductStock> {
     Integer changeSUQAStatus(IQCChangeStatusDTO iqcChangeStatusDTO);
 
     List<ProductStockVO> spdnStocklist(ProductStockQueryDTO stockQueryDTO);
+
+    void adjustStock(ProductStockEditDTO stockEditDTO);
+
+    void stockReturn(ProductReturnDTO productReturnDTO);
+
+    void trans(ManualBinInDTO binInDTO);
 }

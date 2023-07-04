@@ -159,6 +159,148 @@ const mainReceiveConfirm = async (data) => {
 	})
 }
 
+const spdnPicklist = async (data) => {
+	const url = `/product/spdn/spdnPicklist`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+
+const spdnBinDown = async (barCode) => {
+	const url = `/product/spdn/binDown/${barCode}`
+	const method = 'PUT'
+
+	return request({
+		url,
+		method,
+	})
+}
+
+const sudnBinDown = async (options) => {
+	const url = `/product/sudn-pick/binDown/${options.barCode}?sudnId=${options.sudnId}`
+	const method = 'PUT'
+
+	return request({
+		url,
+		method,
+	})
+}
+
+const spdnGetByQrCode = async (barCode) => {
+	const url = `/product/spdn/getByQrCode/${barCode}`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+	})
+}
+
+const spdnShip = async (data) => {
+	const url = `/product/spdn/ship`
+	const method = 'POST'
+
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+const productStockGetByBarCode = async (barCode) => {
+	const url = `/product/product-stock/getByBarCode/${barCode}`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+	})
+}
+const productStockEditStock = async (data) => {
+	const url = `/product/product-stock/editStock`
+	const method = 'POST'
+
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+const productStockTrans = async (data) => {
+	const method = 'POST'
+	const url = `/product/product-stock/trans`
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+
+const sudnList = async (data) => {
+	const method = 'GET'
+	const url = `/product/SUDN/getSUDNListByType`
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+const sudnShipList = async (data) => {
+	const method = 'GET'
+	const url = `/product/SUDN/getSUDNShipListByType`
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+const sudnPickList = async (data) => {
+	const method = 'GET'
+	const url = `/product/sudn-pick/list`
+	return request({
+		url,
+		method,
+		data
+	})
+}
+
+const sudnPickGetByQrCode = async (options) => {
+	console.log(options)
+	const method = 'GET'
+	const url = `/product/sudn-pick/getByQrCode/${options.barCode}?sudnId=${options.sudnId}`
+	return request({
+		url,
+		method,
+	})
+}
+
+const sudnShipGetById = async (options) => {
+	const method = 'GET'
+	const url = `/product/SUDN/getById/${options.sudnId}`
+	return request({
+		url,
+		method,
+	})
+}
+
+const sudnShip = async (options) => {
+	const method = 'POST'
+	const url = `/product/SUDN/ship`
+	return request({
+		url,
+		method,
+		data: options
+	})
+}
 
 
 export const finishedProductService = {
@@ -176,5 +318,19 @@ export const finishedProductService = {
 	getProductReceivingList,
 	productShiftGetBinInInfo,
 	mainReceiveConfirm,
-	postBinIn
+	postBinIn,
+	spdnPicklist,
+	spdnBinDown,
+	spdnGetByQrCode,
+	spdnShip,
+	productStockGetByBarCode,
+	productStockEditStock,
+	productStockTrans,
+	sudnList,
+	sudnPickList,
+	sudnPickGetByQrCode,
+	sudnBinDown,
+	sudnShipList,
+	sudnShipGetById,
+	sudnShip
 }

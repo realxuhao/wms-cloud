@@ -31,19 +31,19 @@
     <select id="selectBinReport" resultType="com.bosch.masterdata.api.domain.ReportBin">
         SELECT t1.*, bs.*,ps.*
         FROM
-            (SELECT COUNT(*) AS total_bin, w.code AS ware_code, w.id AS ware_id
-             FROM md_bin b
-                      LEFT JOIN md_frame f ON b.frame_id = f.id
-                      LEFT JOIN md_area a ON a.id = f.area_id
-                      LEFT JOIN md_ware w ON a.ware_id = w.id
-             GROUP BY ware_id) AS t1
-                LEFT JOIN
-            (SELECT COUNT(*) AS material_occupy_bin, bs.ware_code
-             FROM bi_stock bs
-             GROUP BY bs.ware_code) AS bs ON t1.ware_code = bs.ware_code
-                LEFT JOIN
-            (SELECT COUNT(*) AS product_occupy_bin, ps.ware_code
-             FROM product_stock ps
-             GROUP BY ps.ware_code) AS ps ON t1.ware_code = ps.ware_code;
+        (SELECT COUNT(b.code)  AS total_bin, w.code AS ware_code, w.id AS ware_id
+        FROM md_bin b
+        LEFT JOIN md_frame f ON b.frame_id = f.id
+        LEFT JOIN md_area a ON a.id = f.area_id
+        LEFT JOIN md_ware w ON a.ware_id = w.id
+        GROUP BY ware_id) AS t1
+        LEFT JOIN
+        (SELECT COUNT(DISTINCT bs.bin_code)  AS material_occupy_bin, bs.ware_code
+        FROM bi_stock bs where  delete_flag=0 AND bin_code IS NOT NULL
+        GROUP BY bs.ware_code) AS bs ON t1.ware_code = bs.ware_code
+        LEFT JOIN
+        (SELECT COUNT(DISTINCT ps.bin_code)  AS product_occupy_bin, ps.ware_code
+        FROM product_stock ps where  delete_flag=0 AND bin_code IS NOT NULL
+        GROUP BY ps.ware_code) AS ps ON t1.ware_code = ps.ware_code;
     </select>
 </mapper>

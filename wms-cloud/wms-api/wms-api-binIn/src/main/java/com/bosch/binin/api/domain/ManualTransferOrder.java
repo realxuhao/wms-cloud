@@ -30,4 +30,6 @@ public class ManualTransferOrder extends BaseEntity {
     private Integer status;
 
     private Integer deleteFlag;
+
+    private int materialProductType;
 }

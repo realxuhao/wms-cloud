@@ -12,7 +12,12 @@
           <a-form-model-item label="目标仓库">
             <a-input v-model="queryForm.targetWareCode" placeholder="目标库位" allow-clear/>
           </a-form-model-item>
-        
+          <a-form-model-item label="车牌号">
+            <a-input v-model="queryForm.carNb" placeholder="车牌号" allow-clear/>
+          </a-form-model-item>
+          <a-form-model-item label="SSCCNumber">
+            <a-input v-model="queryForm.ssccNb" placeholder="SSCCNumber" allow-clear/>
+          </a-form-model-item>
           <a-form-model-item >
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
@@ -62,122 +67,124 @@ const columns = [
     title: '移库单号',
     key: 'orderNb',
     dataIndex: 'orderNb',
-    width: 200
+    width: 120
   },
   {
     title: '车牌号',
     key: 'carNb',
     dataIndex: 'carNb',
-    width: 200
+    width: 80
   },
   {
     title: 'sscc',
     key: 'ssccNb',
     dataIndex: 'ssccNb',
-    width: 200
+    width: 120
   },
   {
     title: '物料号',
     key: 'materialNb',
     dataIndex: 'materialNb',
-    width: 200
+    width: 120
   },
   {
     title: '物料名称',
     key: 'materialName',
     dataIndex: 'materialName',
-    width: 200
+    width: 120
   },
   {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
-    width: 200
+    width: 120
   },
   {
     title: '移库数量',
     key: 'quantity',
     dataIndex: 'quantity',
-    width: 200
+    width: 80
   },
   {
     title: '拆托数量',
     key: 'splitQuality',
     dataIndex: 'splitQuality',
-    width: 200
+    width: 80
   },
   {
     title: '源工厂',
     key: 'sourcePlantNb',
     dataIndex: 'sourcePlantNb',
-    width: 200
+    width: 80
   },
   {
     title: '源仓库',
     key: 'sourceWareCode',
     dataIndex: 'sourceWareCode',
-    width: 200
+    width: 80
   },
   {
     title: '源存储区',
     key: 'sourceAreaCode',
     dataIndex: 'sourceAreaCode',
-    width: 200
+    width: 80
   },
   {
     title: '源库位',
     key: 'sourceBinCode',
     dataIndex: 'sourceBinCode',
-    width: 200
+    width: 80
   },
   {
     title: 'bbd过期时间',
     key: 'expireDate',
     dataIndex: 'expireDate',
-    width: 200
+    width: 120
   },
   {
     title: '目的工厂',
     key: 'targetPlant',
     dataIndex: 'targetPlant',
-    width: 200
+    width: 80
   },
   {
     title: '目的仓库',
     key: 'targetWareCode',
     dataIndex: 'targetWareCode',
-    width: 200
+    width: 80
   },
   {
     title: '目的存储区',
     key: 'targetAreaCode',
     dataIndex: 'targetAreaCode',
-    width: 200
+    width: 80
   },
   {
     title: '推荐库位',
     key: 'recommendBinCode',
     dataIndex: 'recommendBinCode',
-    width: 200
+    width: 80
   },
   {
-    title: '目的库位code',
+    title: '目的库位',
     key: 'targetBinCode',
     dataIndex: 'targetBinCode',
-    width: 200
+    width: 100
   },
   {
     title: '所属需求订单号',
     key: 'orderNumber',
     dataIndex: 'orderNumber',
-    width: 200
+    width: 140
   }
 ]
 
 const queryFormAttr = () => {
   return {
     sourceWareCode:'',
-    targetWareCode:''
+    targetWareCode:'',
+    carNb:'',
+    ssccNb:''
   }
 }
 

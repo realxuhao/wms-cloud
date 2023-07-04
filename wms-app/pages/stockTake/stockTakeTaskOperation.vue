@@ -111,8 +111,8 @@ export default {
 
 				const options = {
 					detailId: this.materialInfo.id,
-					isDiff: this.isDiff ? 1 : 0,
-					pdaTakeQuantity: this.pdaTakeQuantity
+					isDiff: this.isDiff ? 0 : 1,
+					pdaTakeQuantity: this.form.pdaTakeQuantity
 				};
 				await this.$store.dispatch('stock/operate', options);
 				this.$refs.popup.open();

@@ -1,12 +1,19 @@
 package com.bosch.masterdata.api.factory;
 
+import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.RemotePalletService;
 import com.bosch.masterdata.api.RemoteProductService;
+import com.bosch.masterdata.api.domain.dto.MaterialDTO;
+import com.bosch.masterdata.api.domain.vo.MaterialVO;
+import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
+import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.ruoyi.common.core.domain.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.openfeign.FallbackFactory;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * @program: wms-cloud
@@ -21,6 +28,18 @@ public class RemoteProductFallbackFactory implements FallbackFactory<RemoteProdu
     @Override
     public RemoteProductService create(Throwable cause) {
         log.error("主数据服务调用失败:{}", cause.getMessage());
-        return palletType -> R.fail("主数据服务调用失败");
+        return new RemoteProductService() {
+
+
+            @Override
+            public R<List<MdProductPackagingVO>> getByCell(String cell) {
+                return null;
+            }
+
+            @Override
+            public R<MdProductPackagingVO> getByCode(String code) {
+                return null;
+            }
+        };
     }
 }

@@ -4,21 +4,24 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.common.log.mapper.UserOperationLogMapper">
 
-    <resultMap id="BaseResultMap" type="com.ruoyi.common.log.domain.UserOperationLog">
-            <result property="id" column="id" jdbcType="BIGINT"/>
-            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
-            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
-            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
-            <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
-            <result property="remark" column="remark" jdbcType="VARCHAR"/>
-            <result property="code" column="code" jdbcType="VARCHAR"/>
-            <result property="ssccNumber" column="sscc_number" jdbcType="VARCHAR"/>
-            <result property="operationType" column="operation_type" jdbcType="VARCHAR"/>
+    <resultMap id="BaseResultMap" type="com.bosch.system.api.domain.UserOperationLog">
+        <result property="id" column="id" jdbcType="BIGINT"/>
+        <result property="type" column="type" jdbcType="INTEGER"/>
+        <result property="orderNumber" column="order_number" jdbcType="VARCHAR"/>
+        <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+        <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+        <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="code" column="code" jdbcType="VARCHAR"/>
+        <result property="ssccNumber" column="sscc_number" jdbcType="VARCHAR"/>
+        <result property="operationType" column="operation_type" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,create_by,update_by,
+        id
+        ,create_by,update_by,type,order_number,
         create_time,update_time,delete_flag,
         remark,code,sscc_number,
         operation_type

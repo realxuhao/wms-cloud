@@ -8,6 +8,7 @@ import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.controller.ProductIQCManagementController;
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -19,8 +20,12 @@ import java.util.Map;
  * @author: xuhao
  * @create: 2023-03-29 13:06
  **/
+@Mapper
 public interface ProductStockMapper extends BaseMapper<ProductStock> {
     List<ProductStockVO> list(ProductStockQueryDTO stockQueryDTO);
+
+    List<ProductStockVO> allList(ProductStockQueryDTO stockQueryDTO);
+
 
     List<ProductStockVO> selectIQCManagementList(ProductIQCManagementQueryDTO queryDTO);
 

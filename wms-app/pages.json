@@ -234,8 +234,47 @@
 		},
 		{
 			"path": "pages/finishedProductWareShift/receivingOperation"
+		},
+		{
+			"path": "pages/finishedProduct/spdnBinDown"
+		},
+		{
+			"path": "pages/finishedProduct/spdnBinDownScan"
+		},
+		{
+			"path": "pages/finishedProduct/spdnShipment"
+		},
+		{
+			"path": "pages/finishedProduct/spdnShipmentOperation"
+		},
+		{
+			"path": "pages/finishedProduct/adjustScan"
+		},
+		{
+			"path": "pages/finishedProduct/adjustOperation"
+		},
+		{
+			"path": "pages/finishedProduct/manualTransScan"
+		},
+		{
+			"path": "pages/finishedProduct/manualTransOperation"
+		},
+		{
+			"path": "pages/finishedProduct/sudn"
+		},
+		{
+			"path": "pages/finishedProduct/sudnPick"
+		},
+		{
+			"path": "pages/finishedProduct/sudnPickScan"
+		},
+		{
+			"path": "pages/finishedProduct/sudnShip"
+		},
+		{
+			"path": "pages/finishedProduct/sudnShipOperation"
 		}
-		
+
 	],
 	"globalStyle": {
 		"navigationStyle": "custom"

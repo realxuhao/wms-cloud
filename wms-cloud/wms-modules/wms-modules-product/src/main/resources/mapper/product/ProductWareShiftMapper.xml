@@ -14,25 +14,25 @@
         ws.sscc_nb
         where ws.delete_flag = 0
         <if test="sourcePlantNb != null and sourcePlantNb != ''">
-            AND ws.source_plant_nb=#{sourcePlantNb}
+            AND ws.source_plant_nb like concat('%', #{sourcePlantNb}, '%')
         </if>
         <if test="sourceWareCode != null and sourceWareCode != ''">
-            AND ws.source_ware_code=#{sourceWareCode}
+            AND ws.source_ware_code like concat('%', #{sourceWareCode}, '%')
         </if>
         <if test="orderNb != null and orderNb != ''">
-            AND tr.order_number=#{orderNb}
+            AND tr.order_number like concat('%', #{orderNb}, '%')
         </if>
         <if test="targetWareCode != null and targetWareCode != ''">
-            AND ws.target_ware_code=#{targetWareCode}
+            AND ws.target_ware_code  like concat('%', #{targetWareCode}, '%')
         </if>
         <if test="status != null ">
             AND (ws.status = #{status})
         </if>
         <if test="carNb != null and carNb != ''">
-            AND tr.car_Nb=#{carNb}
+            AND tr.car_Nb like concat('%', #{carNb}, '%')
         </if>
         <if test="ssccNb != null and ssccNb != ''">
-            AND ws.sscc_nb=#{ssccNb}
+            AND ws.sscc_nb like concat('%', #{ssccNb}, '%')
         </if>
         <if test="createBy != null and createBy != ''">and ws.create_by like concat('%', #{createBy}, '%')</if>
         <if test="startCreateTime != null">and ws.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>

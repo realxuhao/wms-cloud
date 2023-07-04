@@ -2,31 +2,35 @@ package com.bosch.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.binin.api.domain.ManualTransferOrder;
 import com.bosch.binin.api.domain.dto.IQCChangeStatusDTO;
+import com.bosch.binin.api.domain.dto.ManualBinInDTO;
+import com.bosch.binin.api.enumeration.ManuTransStatusEnum;
+import com.bosch.binin.api.enumeration.MaterialReturnStatusEnum;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
-import com.bosch.product.api.domain.ProductReceive;
-import com.bosch.product.api.domain.ProductStock;
-import com.bosch.product.api.domain.ProductWareShift;
-import com.bosch.product.api.domain.dto.EditStockDTO;
-import com.bosch.product.api.domain.dto.ProductBinInDTO;
-import com.bosch.product.api.domain.dto.ProductIQCManagementQueryDTO;
-import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
+import com.bosch.product.api.domain.*;
+import com.bosch.product.api.domain.dto.*;
 import com.bosch.product.api.domain.enumeration.ProductStockBinInEnum;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.mapper.ProductStockMapper;
+import com.bosch.product.service.IManualTransferOrderService;
+import com.bosch.product.service.IProductReturnService;
+import com.bosch.product.service.IProductStockAdjustService;
 import com.bosch.product.service.IProductStockService;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import org.bouncycastle.util.io.pem.PemObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,6 +53,16 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
     @Autowired
     private RemoteMasterDataService remoteMasterDataService;
+
+
+    @Autowired
+    private IProductStockAdjustService stockAdjustService;
+
+    @Autowired
+    private IProductReturnService productReturnService;
+
+    @Autowired
+    private IManualTransferOrderService manualTransferOrderService;
 
     @Override
     public void generateStockByReceive(ProductReceive receive) {
@@ -108,6 +122,11 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
     @Override
     public List<ProductStockVO> list(ProductStockQueryDTO stockQueryDTO) {
         return stockMapper.list(stockQueryDTO);
+    }
+
+    @Override
+    public List<ProductStockVO> allList(ProductStockQueryDTO stockQueryDTO) {
+        return stockMapper.allList(stockQueryDTO);
     }
 
 
@@ -250,6 +269,86 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         return stockMapper.spdnStocklist(stockQueryDTO);
     }
 
+    @Override
+    public void adjustStock(ProductStockEditDTO stockEditDTO) {
+        LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ProductStock::getSsccNumber, stockEditDTO.getSsccNumber());
+        queryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.last("limit 1");
+        ProductStock stock = this.getOne(queryWrapper);
+        if (stock == null) {
+            throw new ServiceException("无此库存信息");
+        }
+        ProductStockAdjust stockAdjust = BeanConverUtil.conver(stock, ProductStockAdjust.class);
+
+        if (stockEditDTO.getType() == 0||stockEditDTO.getType() == 1) {//质检取样和取样
+
+            if (stockEditDTO.getStockUse() > stock.getAvailableStock()) {
+                throw new ServiceException("领用数量不能大于可用数量");
+            }
+            stock.setAvailableStock(stock.getAvailableStock() - stockEditDTO.getStockUse());
+            stock.setTotalStock(stock.getTotalStock() - stockEditDTO.getStockUse());
+            stock.setFreezeStock(stock.getTotalStock() - stock.getAvailableStock());
+            if (stock.getAvailableStock()==Double.valueOf(0)) {
+                stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
+            }
+            this.updateById(stock);
+
+
+
+        } else if (stockEditDTO.getType() == 2) {//报废
+            if (stock.getFreezeStock() > 0) {
+                throw new ServiceException("该库存存在执行任务，暂时不可以报废");
+            }
+            //根据areaType查询区域
+            R<List<AreaVO>> areaListR = remoteMasterDataService.getByWareCode(SecurityUtils.getWareCode());
+            if (!areaListR.isSuccess() || areaListR == null) {
+                throw new ServiceException("调用主数据服务查询区域列表失败");
+            }
+            if (StringUtils.isEmpty(areaListR.getData())) {
+                throw new ServiceException("没有区域，请维护主数据");
+            }
+            List<AreaVO> areaVOList = areaListR.getData();
+            List<AreaVO> areaList = areaVOList.stream().filter(item -> item.getAreaType() == AreaTypeEnum.DISCARD.getCode()).collect(Collectors.toList());
+            if (StringUtils.isEmpty(areaList)) {
+                log.error("没有类型为" + "报废" + "的区域");
+                throw new ServiceException("没有类型为报废的区域");
+            }
+            AreaVO areaVO = areaList.get(0);
+            stock.setAreaCode(areaVO.getCode());
+            stock.setBinCode(null);
+            stock.setQualityStatus(QualityStatusEnums.BLOCK.getCode());
+            this.updateById(stock);
+
+        }else if (stockEditDTO.getType() == 3){//整托出库
+            if (stock.getFreezeStock() > 0) {
+                throw new ServiceException("该库存存在执行任务，暂时不可以整托出库");
+            }
+            stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
+            this.updateById(stock);
+        } else {
+            if (stockEditDTO.getSsccNumber() == null || stockEditDTO.getAvailableStock() == null || stockEditDTO.getFreezeStock() == null || stockEditDTO.getTotalStock() == null) {
+                throw new ServiceException("所有参数都不能为空");
+            }
+            if (!stockEditDTO.getTotalStock().equals(stockEditDTO.getFreezeStock() + stockEditDTO.getAvailableStock())) {
+                throw new ServiceException("总库存必须等于冻结库存+可用库存");
+            }
+            stock.setAvailableStock(stockEditDTO.getAvailableStock());
+            stock.setFreezeStock(stockEditDTO.getFreezeStock());
+            stock.setTotalStock(stockEditDTO.getTotalStock());
+            this.updateById(stock);
+
+        }
+
+
+        stockAdjust.setType(stockEditDTO.getType());
+        stockAdjust.setId(null);
+        stockAdjust.setAdjustFreezeStock(stock.getFreezeStock());
+        stockAdjust.setAdjustTotalStock(stock.getTotalStock());
+        stockAdjust.setAdjustAvailableStock(stock.getAvailableStock());
+        stockAdjustService.save(stockAdjust);
+    }
+
     private BinVO getBinVOByBinCode(String binCode) {
         R<BinVO> binInfoByCodeResult = remoteMasterDataService.getBinInfoByCode(binCode);
         if (StringUtils.isNull(binInfoByCodeResult) || StringUtils.isNull(binInfoByCodeResult.getData())) {
@@ -262,5 +361,117 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         return binInfoByCodeResult.getData();
     }
 
+
+    @Override
+    public void stockReturn(ProductReturnDTO productReturnDTO) {
+        String qrCode = productReturnDTO.getQrCode();
+        String sscc = ProductQRCodeUtil.getSSCC(qrCode);
+        LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ProductStock::getSsccNumber,sscc);
+        queryWrapper.eq(ProductStock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.last("limit 1");
+        ProductStock productStock = this.getOne(queryWrapper);
+        if (productStock!=null){
+            throw new ServiceException("该托已存在于库存！");
+        }
+
+        //根据areaType查询区域
+        R<List<AreaVO>> areaListR = remoteMasterDataService.getByWareCode(SecurityUtils.getWareCode());
+        if (!areaListR.isSuccess() || areaListR == null) {
+            throw new ServiceException("调用主数据服务查询区域列表失败");
+        }
+        if (StringUtils.isEmpty(areaListR.getData())) {
+            throw new ServiceException("没有区域，请维护主数据");
+        }
+        List<AreaVO> areaVOList = areaListR.getData();
+        List<AreaVO> areaList = areaVOList.stream().filter(item -> item.getAreaType() == AreaTypeEnum.RETURN.getCode()).collect(Collectors.toList());
+        if (StringUtils.isEmpty(areaList)) {
+            log.error("没有类型为" + "退货" + "的区域");
+            throw new ServiceException("没有类型为退货的区域");
+        }
+        AreaVO areaVO = areaList.get(0);
+
+        ProductStock stock = new ProductStock();
+        //添加为销售库存
+        stock.setPlantNb("7761");
+        stock.setWareCode(SecurityUtils.getWareCode());
+        //获取退获区域
+        stock.setAreaCode(areaVO.getCode());
+
+//        stock.setMaterialNb(ProductQRCodeUtil.);
+//        stock.setBatchNb(receive.getBatchNb());
+//        stock.setExpireDate(DateUtils.parseDate(receive.getExpireDate()));
+        stock.setTotalStock(productReturnDTO.getQuantity());
+        stock.setFreezeStock((double) 0);
+        stock.setAvailableStock(productReturnDTO.getQuantity());
+        stock.setQualityStatus(QualityStatusEnums.BLOCK.getCode());
+        stock.setProductionDate(ProductQRCodeUtil.getProductionDate(qrCode));
+//        stock.setUnit(receive.getUnit());
+        stock.setBinInFlag(ProductStockBinInEnum.NONE.code());
+
+        this.save(stock);
+
+        ProductReturn productReturn = new ProductReturn();
+//        productReturn.setMaterialNb(stock.getMaterialNb());
+//        productReturn.setStatus(MaterialReturnStatusEnum.WAITING_CONFIRM.value());
+//        productReturn.setBatchNb(stock.getBatchNb());
+//        productReturn.setExpireDate(MesBarCodeUtil.getExpireDate(mesBarCode));
+//        productReturn.setMoveType(MoveTypeEnums.MATERIAL_RETURN.getCode());
+//        productReturn.setSsccNumber(MesBarCodeUtil.getSSCC(mesBarCode));
+//        productReturn.setAreaCode(areaCode);
+//        productReturn.setWareCode(wareCode);
+//        productReturn.setType(type);
+//        productReturn.setQuantity(quantity);
+//        productReturn.setCell(productReturnDTO.getCell());
+//
+        productReturnService.save(productReturn);
+
+
+
+
+
+
+    }
+
+    @Override
+    public void trans(ManualBinInDTO binInDTO) {
+        String mesBarCode = binInDTO.getMesBarCode();
+        String sscc = ProductQRCodeUtil.getSSCC(mesBarCode);
+        LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ProductStock::getSsccNumber, sscc);
+        queryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        ProductStock stock = this.getOne(queryWrapper);
+
+
+        ManualTransferOrder manualTransferOrder = new ManualTransferOrder();
+        manualTransferOrder.setSourcePlantNb(stock.getPlantNb());
+        manualTransferOrder.setSourceWareCode(stock.getWareCode());
+        manualTransferOrder.setSourceAreaCode(stock.getAreaCode());
+        manualTransferOrder.setSourceBinCode(stock.getBinCode());
+//        manualTransferOrder.setTargetAreaCode(targetAreaCode);
+        manualTransferOrder.setSsccNb(stock.getSsccNumber());
+        manualTransferOrder.setMaterialNb(stock.getMaterialNb());
+//        manualTransferOrder.setType(dto.getNormalType());
+        manualTransferOrder.setMoveType(MoveTypeEnums.IN_TRANSFER.getCode());
+        manualTransferOrder.setStatus(ManuTransStatusEnum.FINISH.code());
+        manualTransferOrder.setMaterialProductType(1);
+
+        if (binInDTO.getType() == 1) {
+            manualTransferOrder.setTargetAreaCode(binInDTO.getActualCode());
+            stock.setAreaCode(binInDTO.getActualCode());
+            stock.setBinCode(null);
+        } else {
+            BinVO binVO = getBinVOByBinCode(binInDTO.getActualCode());
+
+            manualTransferOrder.setTargetBinCode(binVO.getCode());
+            manualTransferOrder.setTargetAreaCode(binVO.getAreaCode());
+            stock.setAreaCode(binVO.getAreaCode());
+            stock.setBinCode(binVO.getCode());
+        }
+
+        manualTransferOrderService.save(manualTransferOrder);
+
+        this.updateById(stock);
+    }
 
 }

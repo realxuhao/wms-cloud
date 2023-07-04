@@ -17,6 +17,8 @@ public class BinScheduleTask {
     private IReportBinService binService;
 
     @Scheduled(cron = "0 0 1 * * ?")
+    //五分钟执行一次
+    //@Scheduled(cron = "0 0/5 * * * ?")
     public boolean genBinOccupy(){
         List<ReportBin> reportBins = binService.genBinOccupy();
         boolean b = binService.saveBatch(reportBins);

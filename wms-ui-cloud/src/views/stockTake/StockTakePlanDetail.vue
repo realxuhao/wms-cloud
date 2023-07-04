@@ -9,7 +9,11 @@
               <a-input v-model="queryForm.code" placeholder="计划编码" allow-clear/>
             </a-form-model-item>
           </a-col>
-
+          <a-col :span="3">
+            <a-form-model-item label="ssccNb">
+              <a-input v-model="queryForm.ssccNb" placeholder="ssccNb" allow-clear/>
+            </a-form-model-item>
+          </a-col>
           <a-col :span="3">
             <a-form-model-item label="批次号">
               <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
@@ -47,7 +51,11 @@
                 <a-input v-model="queryForm.materialCode" placeholder="物料编码" allow-clear/>
               </a-form-model-item>
             </a-col>
-
+            <a-col :span="3">
+              <a-form-model-item label="循环盘点月份">
+                <a-input v-model="queryForm.circleTakeMonth" placeholder="循环盘点月份" allow-clear/>
+              </a-form-model-item>
+            </a-col>
             <a-col :span="4">
               <a-form-model-item label="盘点物料类型">
                 <a-select
@@ -101,6 +109,7 @@
       </a-form>
       <div class="action-content">
         <a-button v-hasPermi="['take:detail:distribute']" type="primary" class="m-r-8" @click="issue" v-if="queryForm.method===0"> 下发</a-button>
+        <!-- <a-button v-hasPermi="['take:detail:distribute']" type="primary" class="m-r-8" @click="issue" > 下发</a-button> -->
         <a-button v-hasPermi="['take:detail:confirm']" type="primary" class="m-r-8" @click="confirm"> 确认</a-button>
         <a-button v-hasPermi="['take:detail:export']" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
       </div>
@@ -110,7 +119,7 @@
           onChange: onSelectChange ,
           getCheckboxProps:record => ({
             props: {
-              disabled: record.status >0
+              disabled: ![0,2].includes(record.status)
             },
           })}"
         :columns="columns"
@@ -156,6 +165,19 @@
             <a-tag color="#87d068" v-if="text===1">
               循环盘点
             </a-tag>
+
+          </div>
+        </template>
+        <template slot="isDiff" slot-scope="text">
+          <div>
+            <!-- <a-tag color="orange" v-if="text===0">
+              普通盘点
+            </a-tag>
+            <a-tag color="#87d068" v-if="text===1">
+              循环盘点
+            </a-tag> -->
+
+            {{ isDiffMap[text] }}
 
           </div>
         </template>
@@ -264,7 +286,7 @@ const columns = [
     width: 80
   },
   {
-    title: '循环物料类型',
+    title: '物料类型',
     key: 'takeMaterialType',
     dataIndex: 'takeMaterialType',
     width: 80,
@@ -287,6 +309,19 @@ const columns = [
     key: 'areaCode',
     dataIndex: 'areaCode',
     width: 120
+  },
+  {
+    title: '盘点数量',
+    key: 'takeQuantity',
+    dataIndex: 'takeQuantity',
+    width: 120
+  },
+  {
+    title: '是否一致',
+    key: 'isDiff',
+    dataIndex: 'isDiff',
+     width: 80,
+    scopedSlots: { customRender: 'isDiff' }
   },
   {
     title: '盘点类型',
@@ -336,7 +371,9 @@ const queryFormAttr = () => {
     materialCode: '',
     method: 0,
     type: '',
-    areaCode: ''
+    areaCode: '',
+    ssccNb: '',
+    circleTakeMonth: undefined
   }
 }
 
@@ -378,6 +415,21 @@ const method = [
     value: 1
   }
 ]
+const isDiff = [
+  {
+    text: '是',
+    value: 0
+  },
+  {
+    text: '否',
+    value: 1
+  }
+]
+
+const isDiffMap = {
+  0:'是',
+  1:'否'
+}
 const takeMaterialType = [
   {
     text: '原材料',
@@ -414,6 +466,8 @@ export default {
     status: () => status,
     type: () => type,
     method: () => method,
+    isDiff: ()=> isDiff,
+    isDiffMap:()=>isDiffMap,
     takeMaterialType: () => takeMaterialType,
     hasSelected () {
       return this.selectedRowKeys.length > 0

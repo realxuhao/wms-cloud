@@ -4,9 +4,11 @@ import com.alibaba.excel.annotation.ExcelProperty;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.page.PageDomain;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.text.DecimalFormat;
+import java.util.Date;
 
 /**
  * @program: wms-cloud
@@ -57,24 +59,22 @@ public class SPDNDTO  extends PageDomain {
     @ExcelProperty(value = "StorageLocation")
     private String storageLocation;
 
+    @ApiModelProperty(value = "开始创建时间")
+    private Date startCreateTime;
+    @ApiModelProperty(value = "结束创建时间")
+    private Date endCreateTime;
+
 
 
     @ExcelProperty(value = "ProdBatch")
     private String prodBatch;
 
 
-    private int status;
+    private Integer status;
 
 
 
-    public void setQty(String qty) {
-        try {
-            this.qty=new DecimalFormat().parse(this.qtyString).doubleValue();
 
-        }catch(Exception e){
-            throw new ServiceException("Qty列格式不正确");
-        }
-    }
 
 
 

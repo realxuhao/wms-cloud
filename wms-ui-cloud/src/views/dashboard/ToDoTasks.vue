@@ -34,7 +34,7 @@
     <template slot="main">
       <a-row :gutter="[24,24]">
         <a-col :span="24" >
-          <div class="charts" id="to-do-tasks-material"></div>
+          <div class="charts" style="height:480px" id="to-do-tasks-material"></div>
         </a-col>
       </a-row>
     </template>

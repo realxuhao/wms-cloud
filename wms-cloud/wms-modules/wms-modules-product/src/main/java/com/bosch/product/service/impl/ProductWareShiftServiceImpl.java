@@ -135,7 +135,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         LambdaQueryWrapper<ProductWareShift> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(ProductWareShift::getSsccNb, ssccList)
                 .eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode())
-                .ne(ProductWareShift::getStatus, ProductWareShiftEnum.CANCEL.code());
+                .eq(ProductWareShift::getStatus, ProductWareShiftEnum.WAITTING_SHIPPING.code());
         List<ProductWareShift> productWareShifts = this.list(queryWrapper);
         if (CollectionUtils.isEmpty(productWareShifts) || productWareShifts.size() != ssccList.size()) {
             throw new ServiceException("存在状态不为待发运的数据");

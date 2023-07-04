@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableCustomConfig
 @EnableCustomSwagger2
 @EnableRyFeignClients
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.ruoyi.common.log","com.bosch.binin"})
 @EnableDiscoveryClient
 public class BinInApplication {
     public static void main(String[] args) {

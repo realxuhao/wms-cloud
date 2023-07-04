@@ -22,4 +22,11 @@ public interface SUDNMapper extends BaseMapper<SUDN> {
 
     List<SUDNVO> getList(SUDNDTO sudndto);
 
+    List<SUDNVO> getUnFinishedSUDN();
+
+    List<SUDNVO> getFinishedSUDN();
+
+    List<SUDNVO> getUnFinishedShipSUDN();
+
+    List<SUDNVO> getFinishedShipSUDN();
 }

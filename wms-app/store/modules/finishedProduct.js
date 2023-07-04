@@ -50,8 +50,8 @@ const finishedProduc = {
 			} = await finishedProductService.getProductInList(options)
 			return data
 		},
-		
-		
+
+
 		async getOneProductIn({
 			commit
 		}, options) {
@@ -100,8 +100,12 @@ const finishedProduc = {
 			} = await finishedProductService.productShiftGetBinInInfo(options)
 			return data
 		},
-		async mainReceiveConfirm({ commit }, options) {
-			const {data} = await finishedProductService.mainReceiveConfirm(options)
+		async mainReceiveConfirm({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.mainReceiveConfirm(options)
 			return data
 		},
 		async postBinIn({
@@ -110,6 +114,118 @@ const finishedProduc = {
 			const {
 				data
 			} = await finishedProductService.postBinIn(options)
+			return data
+		},
+		async spdnPicklist({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.spdnPicklist(options)
+			return data
+		},
+		async spdnBinDown({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.spdnBinDown(options)
+			return data
+		},
+		async sudnBinDown({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.sudnBinDown(options)
+			return data
+		},
+		async spdnGetByQrCode({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.spdnGetByQrCode(options)
+			return data
+		},
+		async spdnShip({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.spdnShip(options)
+			return data
+		},
+		async productStockGetByBarCode({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.productStockGetByBarCode(options)
+			return data
+		},
+		async productStockEditStock({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.productStockEditStock(options)
+			return data
+		},
+		async productStockTrans({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.productStockTrans(options)
+			return data
+		},
+		async sudnList({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.sudnList(options)
+			return data
+		},
+		async sudnShipList({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.sudnShipList(options)
+			return data
+		},
+		async sudnPickList({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.sudnPickList(options)
+			return data
+		},
+		async sudnPickGetByQrCode({
+			commit
+		}, barCode) {
+			const {
+				data
+			} = await finishedProductService.sudnPickGetByQrCode(barCode)
+			return data
+		},
+		async sudnShipGetById({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.sudnShipGetById(options)
+			return data
+		},
+		async sudnShip({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.sudnShip(options)
 			return data
 		},
 	}

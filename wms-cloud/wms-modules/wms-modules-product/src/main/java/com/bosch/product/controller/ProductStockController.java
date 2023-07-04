@@ -1,10 +1,14 @@
 package com.bosch.product.controller;
 
+import com.bosch.binin.api.domain.dto.AddManualTransDTO;
+import com.bosch.binin.api.domain.dto.ManualBinInDTO;
+import com.bosch.binin.api.domain.dto.StockEditDTO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.RemoteProductService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.product.api.domain.dto.EditStockDTO;
+import com.bosch.product.api.domain.dto.ProductStockEditDTO;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.service.IMaterialStockService;
@@ -17,6 +21,7 @@ import com.ruoyi.common.core.web.controller.BaseController;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,6 +62,7 @@ public class ProductStockController extends BaseController {
         return R.ok(list);
     }
 
+
 //    @GetMapping(value = "/allocateBin/{qrCode}")
 //    @ApiOperation("获取分配库位")
 //    public R<ProductStockVO> allocateBin(@PathVariable("qrCode")String qrCode){
@@ -64,25 +70,43 @@ public class ProductStockController extends BaseController {
 //    }
 
 
+//    @PostMapping(value = "/editStock")
+//    @ApiOperation("修改库存")
+//    public R editStock(@RequestBody EditStockDTO dto) {
+//        String barCode = dto.getBarCode();
+//        if (barCode.length() == 50) {
+//            materialStockService.editStock(dto);
+//        } else if (barCode.length() == 71) {
+//            productStockService.editStock(dto);
+//        }
+//
+//        return R.ok();
+//    }
+
+
     @PostMapping(value = "/editStock")
     @ApiOperation("修改库存")
-    public R editStock(@RequestBody EditStockDTO dto) {
-        String barCode = dto.getBarCode();
-        if (barCode.length() == 50) {
-            materialStockService.editStock(dto);
-        } else if (barCode.length() == 71) {
-            productStockService.editStock(dto);
-        }
+    public R editStock(@RequestBody ProductStockEditDTO stockEditDTO) {
 
+        productStockService.adjustStock(stockEditDTO);
         return R.ok();
     }
+
+
+    @PostMapping(value = "/trans")
+    @ApiOperation("转储")
+    public R trans(@RequestBody ManualBinInDTO binInDTO) {
+        productStockService.trans(binInDTO);
+        return R.ok("转储成功");
+    }
+
 
     @GetMapping(value = "/getByBarCode/{barCode}")
     public R<ProductStockVO> getByBarCode(@PathVariable("barCode") String barCode) {
         String sscc = ProductQRCodeUtil.getSSCC(barCode);
         ProductStockQueryDTO queryDTO = new ProductStockQueryDTO();
         queryDTO.setSsccNumber(sscc);
-        List<ProductStockVO> list = productStockService.list(queryDTO);
+        List<ProductStockVO> list = productStockService.allList(queryDTO);
         if (!CollectionUtils.isEmpty(list)) {
             return R.ok(list.get(0));
         }

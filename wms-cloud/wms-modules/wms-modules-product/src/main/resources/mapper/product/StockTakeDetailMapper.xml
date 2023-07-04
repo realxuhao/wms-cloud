@@ -77,16 +77,14 @@ order by d.create_time desc,d.update_time desc
     <select id="getTaskList" resultType="com.bosch.product.api.domain.vo.StockTakeTaskVO">
         SELECT t1.task_no,t1.issue_time
         FROM stock_take_detail AS t1
-        <where>
+        where 1=1
             <if test="status != null">and t1.status =#{status}</if>
-        </where>
+        <if test="wareCode != null and wareCode!=''"> and t1.ware_code = #{wareCode} </if>
         GROUP BY  t1.task_no,t1.issue_time
         HAVING COUNT(*) = (
         SELECT COUNT(*)
         FROM stock_take_detail AS t2
         WHERE t2.task_no = t1.task_no
         )
-
-
     </select>
 </mapper>

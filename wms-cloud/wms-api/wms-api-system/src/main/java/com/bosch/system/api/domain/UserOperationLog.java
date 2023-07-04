@@ -1,4 +1,4 @@
-package com.ruoyi.common.log.domain;
+package com.bosch.system.api.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -22,6 +22,18 @@ public class UserOperationLog implements Serializable {
      */
     @TableField(value = "id")
     private Long id;
+
+    /**
+     * 0：物料；1：成品
+     */
+    @TableField(value = "type")
+    private Integer type;
+
+    /**
+     * 订单号
+     */
+    @TableField(value = "order_number")
+    private String orderNumber;
 
     /**
      * 创建人
@@ -75,7 +87,7 @@ public class UserOperationLog implements Serializable {
      * 
      */
     @TableField(value = "operation_type")
-    private String operationType;
+    private Integer operationType;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

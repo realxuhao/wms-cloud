@@ -2,7 +2,10 @@ package com.bosch.product.api.domain.dto;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.ruoyi.common.core.web.page.PageDomain;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * @program: wms-cloud
@@ -12,6 +15,9 @@ import lombok.Data;
  **/
 @Data
 public class SUDNDTO extends PageDomain {
+
+    private Long id;
+
     @ExcelProperty(value = "Delivery")
     private String delivery;
 
@@ -33,11 +39,35 @@ public class SUDNDTO extends PageDomain {
     @ExcelProperty(value = "Material")
     private String material;
 
+
+    private Double deliveryQuantity;
+
     @ExcelProperty(value = "Delivery quantity")
-    private String deliveryQuantity;
+    private String deliveryQuantityString;
 
     @ExcelProperty(value = "Sales Unit")
     private String salesUnit;
+
+    @ExcelProperty(value = "Batch")
+    private String batch;
+
+    @ApiModelProperty(value = "0:待生成，1：已生成")
+    private Integer status;
+
+
+    @ApiModelProperty(value = "0:未完成，1：全部完成")
+    private Integer pickStatus;
+
+
+    private Double newQuantity;
+
+    private Integer type;//0:未完成，1：已完成
+
+
+    @ApiModelProperty(value = "开始创建时间")
+    private Date startCreateTime;
+    @ApiModelProperty(value = "结束创建时间")
+    private Date endCreateTime;
 
 
 

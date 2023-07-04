@@ -1,6 +1,8 @@
 package com.bosch.product.api.domain;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
 /**
@@ -11,7 +13,7 @@ import lombok.Data;
  **/
 @Data
 @TableName(value ="sudn")
-public class SUDN {
+public class SUDN extends BaseEntity {
     private Long id;
     private String delivery;
     private String plant;
@@ -21,6 +23,16 @@ public class SUDN {
     private String item;
     private String material;
     private Double deliveryQuantity;
+    private String batch;
     private String salesUnit;
     private int status;
+    private Double shipQuantity;
+    private String carNb;
+
+    /**
+     * 删除标记1：删除，0:可用
+     */
+    @TableField(value = "delete_flag")
+    private Integer deleteFlag;
+
 }
