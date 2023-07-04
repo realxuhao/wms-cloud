@@ -32,7 +32,7 @@
         rowKey="createBy"
         :pagination="false"
         size="middle"
-        :scroll="tableScroll"
+       
       >
 
       </a-table>
@@ -130,7 +130,7 @@ export default {
       try {
         this.downloadLoading = true
 
-        const res  = await this.$store.dispatch('dashboard/exportOldMaterial')
+        const res  = await this.$store.dispatch('dashboard/exportWorkload')
 
         download(res,'在库时间最长物料')
       } catch (error) {

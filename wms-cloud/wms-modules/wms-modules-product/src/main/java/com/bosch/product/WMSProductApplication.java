@@ -15,7 +15,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 @EnableCustomConfig
 @EnableCustomSwagger2
 @EnableRyFeignClients
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.ruoyi.common.log","com.bosch.product"})
 @EnableDiscoveryClient
 public class WMSProductApplication
 {
