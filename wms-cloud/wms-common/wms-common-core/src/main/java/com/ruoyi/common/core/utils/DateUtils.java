@@ -184,14 +184,14 @@ public class DateUtils extends org.apache.commons.lang3.time.DateUtils {
         return date;
     }
 
-    //获取两个日期Date差的小时数
+    //获取两个日期Date差的分钟数
     public static  BigDecimal getDifferHour(Date startDateTime, Date endDateTime) {
 
         long mills=endDateTime.getTime()-startDateTime.getTime();
         //转 BigDecimal
         BigDecimal fz=new BigDecimal(mills);
         //转 BigDecimal
-        BigDecimal fm=new BigDecimal(60*60*1000);
+        BigDecimal fm=new BigDecimal(60*1000);
         BigDecimal bwtHours=fz.divide(fm,2, BigDecimal.ROUND_HALF_UP);
         return bwtHours;
     }

@@ -136,7 +136,7 @@ const columns = [
     width: 80
   },
   {
-    title: 'bbd过期时间',
+    title: '过期时间',
     key: 'expireDate',
     dataIndex: 'expireDate',
     width: 120

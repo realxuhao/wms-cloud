@@ -41,5 +41,7 @@ public interface ReportMapper
 
     List<EfficiencyVO> getEfficiencyByOperationType(EfficiencyDTO efficiencyDTO);
 
+    //无时间筛选
+    List<EfficiencyVO> getEfficiencyByOperationTwo(EfficiencyDTO efficiencyDTO);
     List<EfficiencyVO> getCallOver(EfficiencyDTO efficiencyDTO);
 }

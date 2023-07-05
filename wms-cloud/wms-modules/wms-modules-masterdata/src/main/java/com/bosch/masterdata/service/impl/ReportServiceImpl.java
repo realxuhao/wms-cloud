@@ -99,11 +99,11 @@ public class ReportServiceImpl implements IReportService {
         List<EfficiencyVO> importList = reportMapper.getEfficiencyByOperationType(efficiencyDTO);
         //上架List
         efficiencyDTO.setOperationType(UserOperationType.MATERIALBININ.getCode());
-        List<EfficiencyVO> materialBinInList = reportMapper.getEfficiencyByOperationType(efficiencyDTO);
+        List<EfficiencyVO> materialBinInList = reportMapper.getEfficiencyByOperationTwo(efficiencyDTO);
 
         //IQC下架List
         efficiencyDTO.setOperationType(UserOperationType.IQCBINOUT.getCode());
-        List<EfficiencyVO> iqcBinOutList = reportMapper.getEfficiencyByOperationType(efficiencyDTO);
+        List<EfficiencyVO> iqcBinOutList = reportMapper.getEfficiencyByOperationTwo(efficiencyDTO);
 
         //IQC上架List
         efficiencyDTO.setOperationType(UserOperationType.IQCBININ.getCode());
@@ -112,7 +112,7 @@ public class ReportServiceImpl implements IReportService {
         efficiencyDTO.setOperationType(UserOperationType.CALLOVER.getCode());
         List<EfficiencyVO> callOverList = reportMapper.getCallOver(efficiencyDTO);
         for (EfficiencyVO efficiencyVO : callOverList) {
-            BigDecimal fm=new BigDecimal(60*60);
+            BigDecimal fm=new BigDecimal(60);
             BigDecimal bwtHours=efficiencyVO.getTimeConsuming().divide(fm,2, BigDecimal.ROUND_HALF_UP);
             efficiencyVO.setTimeConsuming(bwtHours);
         }
@@ -128,7 +128,7 @@ public class ReportServiceImpl implements IReportService {
         }
         //获取IQC取样：下架-上架的耗时
         if (!CollectionUtils.isEmpty(iqcBinOutList) && !CollectionUtils.isEmpty(iqcBinInList)) {
-            List<EfficiencyVO> efficiencyVOS = processEfficiency(iqcBinOutList, iqcBinInList);
+            List<EfficiencyVO> efficiencyVOS = processEfficiency(iqcBinInList,iqcBinOutList );
             if (!CollectionUtils.isEmpty(efficiencyVOS)) {
                 processEfficiencyVOS = getProcessEfficiencyList(efficiencyVOS, 1,processEfficiencyVOS);
             }
@@ -146,6 +146,10 @@ public class ReportServiceImpl implements IReportService {
         for (EfficiencyVO vo1 : list1) {
             for (EfficiencyVO vo2 : list2) {
                 if (vo1.getSsccNumber().equals(vo2.getSsccNumber())) {
+                    //第二个操作在第一个之前的不计算，获取离第一个操作最近的时间
+                    if(vo1.getCreateTime().after(vo2.getCreateTime())){
+                        continue;
+                    }
                     EfficiencyVO newVO = new EfficiencyVO();
                     newVO.setCell(vo1.getCell());
                     newVO.setSsccNumber(vo1.getSsccNumber());
