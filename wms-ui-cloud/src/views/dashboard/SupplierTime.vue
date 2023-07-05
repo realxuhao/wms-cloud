@@ -37,7 +37,6 @@ import * as echarts from 'echarts'
 import { download } from '@/utils/file'
 import _ from 'lodash'
 import moment from 'moment'
-import { DatePicker } from 'antd'
 
 import colorList from '@/utils/echartsColor'
 
