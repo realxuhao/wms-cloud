@@ -20,6 +20,10 @@ public interface IReportService {
      */
     public List<MissionToDo> selectReportList(MissionToDo mission);
 
+    /**
+     * 查询成品待办任务列表
+     */
+    public List<MissionToDo> selectProReportList(MissionToDo mission);
 
     /**
      * bin报表
@@ -36,5 +40,9 @@ public interface IReportService {
 
     List<WorkloadVO> workload(WorkloadDTO workloadDTO);
 
+    List<WorkloadVO> workloadPro(WorkloadDTO workloadDTO);
+
     List<ProcessEfficiencyVO> processEfficiency(EfficiencyDTO efficiencyDTO);
+
+    Boolean genProStock();
 }

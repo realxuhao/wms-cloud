@@ -34,7 +34,7 @@
     <template slot="main">
       <a-row :gutter="[24,24]">
         <a-col :span="24" >
-          <div class="charts" style="height:480px" id="to-do-tasks-material"></div>
+          <div class="charts" style="height:480px" id="to-do-tasks-pro"></div>
         </a-col>
       </a-row>
     </template>
@@ -89,7 +89,7 @@ export default {
     },
 
     loadMaterialCharts(){
-      var myChart = echarts.init(document.getElementById('to-do-tasks-material'))
+      var myChart = echarts.init(document.getElementById('to-do-tasks-pro'))
 
       const xData = _.map(this.list,x=>this.type === 1 ?x.wareCode:x.cell)
       const toBeReceivedList = _.map(this.list,x=>x.toBeReceived||0)
@@ -202,9 +202,10 @@ export default {
 
 
     async getData(){
-      const data = await this.$store.dispatch('dashboard/getMissionToDoSummary',this.queryForm)
+      const data = await this.$store.dispatch('dashboard/getProMissionToDoSummary',this.queryForm)
       this.list = data
       this.loadMaterialCharts()
+
 
     }
   },

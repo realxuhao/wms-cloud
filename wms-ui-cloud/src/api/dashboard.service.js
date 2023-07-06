@@ -15,7 +15,11 @@ const getMissionToDoSummary = async (parameter) => {
   const { data } = await createAuthInstance(baseUrl).post(url, parameter)
   return data
 }
-
+const getProMissionToDoSummary = async (parameter) => {
+  const url = `/report/getMissionToDoPro`
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter)
+  return data
+}
 const getOldMaterialSummary = async (parameter) => {
   const url = `/report/oldMaterial?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(baseUrl).post(url, parameter)
@@ -61,6 +65,21 @@ const exportWorkload = async (parameter) => {
   })
   return data
 }
+
+const getWorkloadPro = async (parameter) => {
+  const url = `/report/workloadPro?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter)
+  return data
+}
+
+const exportWorkloadPro = async (parameter) => {
+  const url = `/report/workloadExportPro`
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter, {
+    responseType: 'blob'
+  })
+  return data
+}
+
 const processEfficiency = async (parameter) => {
   const url = `/report/processEfficiency?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(baseUrl).post(url, parameter)
@@ -70,6 +89,7 @@ const processEfficiency = async (parameter) => {
 export const dashboardService = {
   getBinInSummary,
   getMissionToDoSummary,
+  getProMissionToDoSummary,
   getOldMaterialSummary,
   exportOldMaterial,
   getExpiredMaterial,
@@ -77,6 +97,8 @@ export const dashboardService = {
   getWareShiftList,
   getWorkload,
   exportWorkload,
+  getWorkloadPro,
+  exportWorkloadPro,
   processEfficiency
 
 }

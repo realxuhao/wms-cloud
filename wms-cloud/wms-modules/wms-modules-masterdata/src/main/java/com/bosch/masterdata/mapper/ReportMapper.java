@@ -31,6 +31,13 @@ public interface ReportMapper
     List<MissionMap> toBeMove(@Param("cell") String cell,@Param("wareCode") String wareCode);
 
 
+    //成品待入库
+    List<MissionMap> toBeReceivedPro(@Param("cell") String cell,@Param("wareCode") String wareCode);
+    //成品待上架
+    List<MissionMap> toBeBinPro(@Param("cell") String cell,@Param("wareCode") String wareCode);
+    //成品待移库
+    List<MissionMap> toBeMovePro(@Param("cell") String cell,@Param("wareCode") String wareCode);
+
     List<ReportMaterial> oldMaterial();
 
     List<ReportMaterial> expiredMaterial();
@@ -38,7 +45,7 @@ public interface ReportMapper
     List<ReportWareShift> reportWareShift(ReportWareShiftDTO reportWareShiftDTO);
 
     List<WorkloadVO> workload(WorkloadDTO workloadDTO);
-
+    List<WorkloadVO> workloadPro(WorkloadDTO workloadDTO);
     List<EfficiencyVO> getEfficiencyByOperationType(EfficiencyDTO efficiencyDTO);
 
     //无时间筛选

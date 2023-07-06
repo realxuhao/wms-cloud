@@ -18,6 +18,10 @@ const comparison = {
       const { data } = await dashboardService.getMissionToDoSummary(options)
       return data
     },
+    async getProMissionToDoSummary ({ commit }, options) {
+      const { data } = await dashboardService.getProMissionToDoSummary(options)
+      return data
+    },
     async getOldMaterialSummary ({ commit }, options) {
       const { data } = await dashboardService.getOldMaterialSummary(options)
       return data
@@ -48,6 +52,17 @@ const comparison = {
     async exportWorkload
       ({ commit }, options) {
       const { data } = await dashboardService.exportWorkload(options)
+      return data
+    },
+    async getWorkloadPro
+      ({ commit }, options) {
+      const { data } = await dashboardService.getWorkloadPro(options)
+      return data
+    },
+
+    async exportWorkloadPro
+      ({ commit }, options) {
+      const { data } = await dashboardService.exportWorkloadPro(options)
       return data
     },
     async processEfficiency

@@ -59,16 +59,7 @@ public class ReportServiceImpl implements IReportService {
     @Override
     public List<ReportMaterial> oldMaterial() {
         List<ReportMaterial> reportMaterials = reportMapper.oldMaterial();
-//        //循环reportMaterials，根据batchNb去重,根据createTime排序
-//        Map<String, List<ReportMaterial>> collect = reportMaterials.stream().collect(Collectors.groupingBy
-//        (ReportMaterial::getBatchNb));
-//        //将collect的value取出来，组合成新list
-//        List<ReportMaterial> list=new ArrayList<>();
-//        for (Map.Entry<String, List<ReportMaterial>> entry : collect.entrySet()) {
-//            List<ReportMaterial> value = entry.getValue();
-//            ReportMaterial reportMaterial = value.get(0);
-//            list.add(reportMaterial);
-//        }
+
         return reportMaterials;
     }
 
@@ -89,6 +80,11 @@ public class ReportServiceImpl implements IReportService {
     @Override
     public List<WorkloadVO> workload(WorkloadDTO workloadDTO) {
         return reportMapper.workload(workloadDTO);
+    }
+
+    @Override
+    public List<WorkloadVO> workloadPro(WorkloadDTO workloadDTO) {
+        return reportMapper.workloadPro(workloadDTO);
     }
 
     @Override
@@ -322,6 +318,66 @@ public class ReportServiceImpl implements IReportService {
     }
 
 
+    @Override
+    public List<MissionToDo> selectProReportList(MissionToDo mission) {
+        List<String> codes = new ArrayList<>();
+        List<MissionToDo> list = new ArrayList<>();
+        //获取仓库或者cell
+        if (StringUtils.isNotEmpty(mission.getCell())) {
+            if (!mission.getCell().equals("All")) {
+                codes.add(mission.getCell());
+            } else {
+                codes = reportMapper.getCellCode();
+            }
+            for (String s : codes) {
+                MissionToDo missionToDo = new MissionToDo();
+                missionToDo.setCell(s);
+                list.add(missionToDo);
+            }
+
+
+        } else if (StringUtils.isNotEmpty(mission.getWareCode())) {
+            if (!mission.getWareCode().equals("All")) {
+                codes.add(mission.getWareCode());
+            } else {
+                codes = reportMapper.getWareCode();
+            }
+
+            for (String s : codes) {
+                MissionToDo missionToDo = new MissionToDo();
+                missionToDo.setWareCode(s);
+                list.add(missionToDo);
+            }
+        }
+
+
+        if (CollectionUtils.isEmpty(list)) {
+            return list;
+        }
+        List<MissionMap> beReceived = reportMapper.toBeReceivedPro(mission.getCell(), mission.getWareCode());
+        List<MissionMap> beBin = reportMapper.toBeBinPro(mission.getCell(), mission.getWareCode());
+        List<MissionMap> beMove = reportMapper.toBeMovePro(mission.getCell(), mission.getWareCode());
+        //待入库map
+        Map<String, Integer> receiveMap = getMap(beReceived);
+        //上架map
+        Map<String, Integer> beBinMap = getMap(beBin);
+        //移库map
+        Map<String, Integer> beMoveMap = getMap(beMove);
+        //赋值list
+        for (MissionToDo missionToDo : list) {
+            if (StringUtils.isNotEmpty(mission.getCell())) {
+                missionToDo.setToBeReceived(receiveMap.get(missionToDo.getCell()));
+                missionToDo.setToBeBin(beBinMap.get(missionToDo.getCell()));
+                missionToDo.setToBeMove(beMoveMap.get(missionToDo.getCell()));
+            } else if (StringUtils.isNotEmpty(mission.getWareCode())) {
+                missionToDo.setToBeReceived(receiveMap.get(missionToDo.getWareCode()));
+                missionToDo.setToBeBin(beBinMap.get(missionToDo.getWareCode()));
+                missionToDo.setToBeMove(beMoveMap.get(missionToDo.getWareCode()));
+            }
+
+        }
+        return list;
+    }
     //获取map
     public Map<String, Integer> getMap(List<MissionMap> list) {
         if (CollectionUtils.isEmpty(list)) {
@@ -332,5 +388,10 @@ public class ReportServiceImpl implements IReportService {
         Map<String, Integer> map = filterNull.stream().collect(Collectors.toMap(MissionMap::getCode,
                 MissionMap::getNumber));
         return map;
+    }
+
+    public     Boolean genProStock(){
+
+        return true;
     }
 }
