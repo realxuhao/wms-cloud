@@ -3,10 +3,8 @@ package com.bosch.masterdata.service;
 import com.bosch.masterdata.api.domain.MissionToDo;
 import com.bosch.masterdata.api.domain.ReportMaterial;
 import com.bosch.masterdata.api.domain.ReportWareShift;
-import com.bosch.masterdata.api.domain.dto.EfficiencyDTO;
-import com.bosch.masterdata.api.domain.dto.ReportBinDTO;
-import com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO;
-import com.bosch.masterdata.api.domain.dto.WorkloadDTO;
+import com.bosch.masterdata.api.domain.dto.*;
+import com.bosch.masterdata.api.domain.vo.ProInOutStockVO;
 import com.bosch.masterdata.api.domain.vo.ProcessEfficiencyVO;
 import com.bosch.masterdata.api.domain.vo.ReportBinVO;
 import com.bosch.masterdata.api.domain.vo.WorkloadVO;
@@ -44,5 +42,5 @@ public interface IReportService {
 
     List<ProcessEfficiencyVO> processEfficiency(EfficiencyDTO efficiencyDTO);
 
-    Boolean genProStock();
+    List<ProInOutStockVO> proInOutStock(ProInOutStockDTO proInOutStockDTO);
 }

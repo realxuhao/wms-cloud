@@ -1,23 +1,18 @@
 package com.bosch.masterdata.service.impl;
 
-import com.bosch.masterdata.api.domain.MissionMap;
-import com.bosch.masterdata.api.domain.MissionToDo;
-import com.bosch.masterdata.api.domain.ReportMaterial;
-import com.bosch.masterdata.api.domain.ReportWareShift;
-import com.bosch.masterdata.api.domain.dto.EfficiencyDTO;
-import com.bosch.masterdata.api.domain.dto.ReportBinDTO;
-import com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO;
-import com.bosch.masterdata.api.domain.dto.WorkloadDTO;
-import com.bosch.masterdata.api.domain.vo.EfficiencyVO;
-import com.bosch.masterdata.api.domain.vo.ProcessEfficiencyVO;
-import com.bosch.masterdata.api.domain.vo.ReportBinVO;
-import com.bosch.masterdata.api.domain.vo.WorkloadVO;
+import com.bosch.masterdata.api.domain.*;
+import com.bosch.masterdata.api.domain.dto.*;
+import com.bosch.masterdata.api.domain.vo.*;
+import com.ruoyi.common.log.mapper.ProductStockDetailMapper;
 import com.bosch.masterdata.mapper.ReportMapper;
-import com.bosch.masterdata.service.IFsmpService;
 import com.bosch.masterdata.service.IReportService;
+import com.bosch.system.api.domain.ProductStockDetail;
+import com.bosch.system.api.domain.vo.ProductStockDetailVO;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IProductStockDetailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -26,7 +21,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class ReportServiceImpl implements IReportService {
@@ -34,6 +28,10 @@ public class ReportServiceImpl implements IReportService {
     @Autowired
     private ReportMapper reportMapper;
 
+    @Autowired
+    private ProductStockDetailMapper productStockDetailMapper;
+    @Autowired
+    private IProductStockDetailService productStockDetailService;
     @Override
     public List<ReportBinVO> selectCellReportByType(ReportBinDTO reportBinDTO) {
         List<ReportBinVO> reportBinVOS = new ArrayList<>();
@@ -134,6 +132,13 @@ public class ReportServiceImpl implements IReportService {
             processEfficiencyVOS = getProcessEfficiencyList(callOverList, 2,processEfficiencyVOS);
         }
         return processEfficiencyVOS;
+    }
+
+    @Override
+    public List<ProInOutStockVO> proInOutStock(ProInOutStockDTO proInOutStockDTO) {
+
+        List<ProInOutStockVO> inOutStockAll = reportMapper.getInOutStockAll(proInOutStockDTO);
+        return inOutStockAll;
     }
 
     //获取俩个List<EfficiencyVO>的耗时
@@ -390,8 +395,5 @@ public class ReportServiceImpl implements IReportService {
         return map;
     }
 
-    public     Boolean genProStock(){
 
-        return true;
-    }
 }

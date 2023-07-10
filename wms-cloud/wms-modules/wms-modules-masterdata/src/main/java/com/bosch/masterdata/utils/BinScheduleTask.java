@@ -2,6 +2,11 @@ package com.bosch.masterdata.utils;
 
 import com.bosch.masterdata.api.domain.ReportBin;
 import com.bosch.masterdata.service.IReportBinService;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
+import com.ruoyi.common.log.service.IProductStockDetailService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -11,11 +16,13 @@ import java.util.List;
 
 @Configuration
 @EnableScheduling
-public class BinScheduleTask {
-
+public class BinScheduleTask  {
+    protected final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private IReportBinService binService;
 
+    @Autowired
+    private IProductStockDetailService productStockDetailService;
     @Scheduled(cron = "0 0 1 * * ?")
     //五分钟执行一次
     //@Scheduled(cron = "0 0/5 * * * ?")
@@ -23,5 +30,16 @@ public class BinScheduleTask {
         List<ReportBin> reportBins = binService.genBinOccupy();
         boolean b = binService.saveBatch(reportBins);
         return b;
+    }
+    //@Scheduled(cron = "0 0 1 * * ?")
+    //每一分执行一次
+    @Scheduled(cron = "0 0 1 * * ?")
+    public void genProStock(){
+        try {
+            productStockDetailService.genProStock();
+        } catch (Exception e) {
+            logger.error("库存期初期末Scheduled:"+e.getMessage());
+        }
+
     }
 }

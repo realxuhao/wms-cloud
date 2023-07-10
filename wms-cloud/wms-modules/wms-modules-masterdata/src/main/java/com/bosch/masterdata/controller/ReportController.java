@@ -180,4 +180,15 @@ public class ReportController extends BaseController {
             return R.ok(list);
 
     }
+    /**
+     * 成品报表-进销存量
+     */
+    @PostMapping("/proInOutStock")
+    @ApiOperation("成品报表-进销存量")
+    public  R<PageVO<ProInOutStockVO>> proInOutStock(@RequestBody ProInOutStockDTO proInOutStockDTO) {
+
+        List<ProInOutStockVO> list = reportService.proInOutStock(proInOutStockDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+
+    }
 }
