@@ -191,4 +191,15 @@ public class ReportController extends BaseController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
 
     }
+    /**
+     * 成品报表-进销存量
+     */
+    @PostMapping("/proInOutStockExport")
+    @ApiOperation("成品报表-进销存量导出")
+    public  void proInOutStockExport(HttpServletResponse response ,@RequestBody ProInOutStockDTO proInOutStockDTO) {
+
+        List<ProInOutStockVO> list = reportService.proInOutStock(proInOutStockDTO);
+        ExcelUtil<ProInOutStockVO> util = new ExcelUtil<>(ProInOutStockVO.class);
+        util.exportExcel(response, list, "员工实际工作量");
+    }
 }

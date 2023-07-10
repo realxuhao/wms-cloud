@@ -62,13 +62,13 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+import { download } from '@/utils/file'
 
 const columns = [
   {
     title: '操作类型',
     key: 'operationType',
     dataIndex: 'operationType',
-    width: 80,
     scopedSlots: { customRender: 'operationType' },
 
   },
@@ -76,30 +76,27 @@ const columns = [
     title: '数量',
     key: 'operationStock',
     dataIndex: 'operationStock',
-    width: 120
   },
   {
     title: '物料号',
     key: 'materialNb',
     dataIndex: 'materialNb',
-    width: 120
   },
   {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
-    width: 120
   },
   {
     title: '创建时间',
     key: 'createTime',
     dataIndex: 'createTime',
-    width: 120
   },
 
 ]
 
 const operationTypeMap = {
+  '-2':'期末',
   '-1':'期初',
   '0':'入库',
   '1':'销售出库',
@@ -138,8 +135,8 @@ export default {
       try {
         this.downloadLoading = true
 
-        const res  = await this.$store.dispatch('dashboard/exportOldMaterial')
-
+        const res  = await this.$store.dispatch('dashboard/proInOutStockExport',this.queryForm)
+        console.log(res)
         download(res,'成品进销存')
       } catch (error) {
         this.$message.error(error.message)

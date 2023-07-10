@@ -75,6 +75,11 @@ const comparison = {
       const { data } = await dashboardService.proInOutStock(options)
       return data
     },
+    async proInOutStockExport
+      ({ commit }, options) {
+      const  data  = await dashboardService.proInOutStockExport(options)
+      return data
+    },
 
     
 

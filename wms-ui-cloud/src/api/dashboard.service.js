@@ -92,8 +92,14 @@ const proInOutStock = async (parameter) => {
   return data
 }
 
-
-
+const proInOutStockExport = async (options) => {
+  const url = `/report/proInOutStockExport?${qs.stringify(options)}`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
 
 export const dashboardService = {
   getBinInSummary,
@@ -109,5 +115,6 @@ export const dashboardService = {
   getWorkloadPro,
   exportWorkloadPro,
   processEfficiency,
-  proInOutStock
+  proInOutStock,
+  proInOutStockExport
 }
