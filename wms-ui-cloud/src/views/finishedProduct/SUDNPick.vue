@@ -102,6 +102,10 @@
           批量下发
         </a-button>
       </div>
+
+      <div class="action-content">
+        <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
+      </div>
       <a-table
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
                           getCheckboxProps:record => ({
@@ -158,6 +162,7 @@
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
 import { colorMap } from '@/utils/color'
+import { download } from '@/utils/file'
 import EditTableCell from '@/components/EditTableCell'
 
 import _ from 'lodash'
@@ -358,6 +363,19 @@ export default {
     statusColorMap:()=>statusColorMap
   },
   methods: {
+    async handleDownload () {
+      try {
+        this.exportLoading = true
+        this.queryForm.pageSize = 0
+        const blobData = await this.$store.dispatch('finishedProduct/exportSUDNPickExcel', this.queryForm)
+        download(blobData, 'SUDN捡配列表')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
+      }
+    },
     async handleGenerate () {
       try {
         this.generateLoading = true

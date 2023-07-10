@@ -5,7 +5,7 @@
 <script>
 import IQCList from './IQCList.vue'
 export default {
-  comments:{
+  components:{
     IQCList
   }
 }

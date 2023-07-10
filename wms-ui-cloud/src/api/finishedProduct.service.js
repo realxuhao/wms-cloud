@@ -162,6 +162,17 @@ const sudnPickBatchIssue = async (ids) => {
 
 
 
+const exportSUDNPickExcel = async (options) => {
+  const url = `/sudn-pick/exportExcel`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
+
+
 export const finishedProductService = {
   planImport,
   genTask,
@@ -188,5 +199,6 @@ export const finishedProductService = {
   sudnUpdateQuantity,
   sudnPickList,
   sudnPickBatchIssue,
-  importSUDN
+  importSUDN,
+  exportSUDNPickExcel
 }

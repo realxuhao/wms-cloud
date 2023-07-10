@@ -114,11 +114,16 @@ const finishedProduct = {
       const data = await finishedProductService.sudnPickList(options)
       return data
     },
-    async sudnPickBatchIssue({ commit }, ids) {
+    async sudnPickBatchIssue ({ commit }, ids) {
       const data = await finishedProductService.sudnPickBatchIssue(ids)
       return data
     },
-    
+
+    async exportSUDNPickExcel ({ commit }, options) {
+      const data = await finishedProductService.exportSUDNPickExcel(options)
+      return data
+    },
+
 
 
     // spdnPicklist
