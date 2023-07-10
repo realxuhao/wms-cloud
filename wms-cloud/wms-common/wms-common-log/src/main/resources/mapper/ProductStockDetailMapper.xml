@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.common.log.mapper.ProductStockDetailMapper">
+
+    <resultMap id="BaseResultMap" type="com.bosch.system.api.domain.ProductStockDetail">
+            <id property="id" column="id" jdbcType="BIGINT"/>
+            <result property="plantNb" column="plant_nb" jdbcType="VARCHAR"/>
+            <result property="ssccNumber" column="sscc_number" jdbcType="VARCHAR"/>
+            <result property="materialNb" column="material_nb" jdbcType="VARCHAR"/>
+            <result property="batchNb" column="batch_nb" jdbcType="VARCHAR"/>
+            <result property="totalStock" column="total_stock" jdbcType="DECIMAL"/>
+            <result property="freezeStock" column="freeze_stock" jdbcType="DECIMAL"/>
+            <result property="availableStock" column="available_stock" jdbcType="DECIMAL"/>
+            <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
+            <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="updateTime" column="update_time" jdbcType="TIMESTAMP"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,plant_nb,sscc_number,
+        material_nb,batch_nb,total_stock,
+        freeze_stock,available_stock,create_by,
+        update_by,create_time,update_time,
+        status,delete_flag,remark
+    </sql>
+
+    <select id="getProductStock" resultType="com.bosch.system.api.domain.vo.ProductStockDetailVO" >
+        SELECT batch_nb,material_nb ,SUM(total_stock) AS total_stock,SUM(freeze_stock) AS freeze_stock,SUM(available_stock) AS available_stock
+        FROM product_stock GROUP BY batch_nb,material_nb
+    </select>
+</mapper>

@@ -1,12 +1,11 @@
 package com.bosch.masterdata.mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.bosch.masterdata.api.domain.*;
 import com.bosch.masterdata.api.domain.dto.*;
 import com.bosch.masterdata.api.domain.vo.*;
+import com.bosch.system.api.domain.vo.ProductStockDetailVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -51,4 +50,6 @@ public interface ReportMapper
     //无时间筛选
     List<EfficiencyVO> getEfficiencyByOperationTwo(EfficiencyDTO efficiencyDTO);
     List<EfficiencyVO> getCallOver(EfficiencyDTO efficiencyDTO);
+
+    List<ProInOutStockVO> getInOutStockAll(ProInOutStockDTO proInOutStockDTO);
 }

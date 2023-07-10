@@ -313,4 +313,63 @@
         <if test="createBy != null and createBy != ''">and u.create_by like concat('%', #{createBy}, '%')</if>
         GROUP BY order_number, md.code
     </select>
+
+<select id="getInOutStock" resultType="com.bosch.masterdata.api.domain.vo.ProInOutStockVO" parameterType="com.bosch.masterdata.api.domain.dto.ProInOutStockDTO">
+    SELECT * FROM product_stock_detail p INNER  JOIN
+                  (SELECT material_nb,batch_nb,MIN(create_time) AS s,MAX(create_time) AS e FROM
+                      product_stock_detail
+                   WHERE 1=1
+    <if test="createTimeStart != null">and create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
+    <if test="createTimeEnd != null">and create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
+    <if test="materialNb != null and materialNb != ''">and material_nb LIKE   concat('%', #{materialNb}, '%')</if>
+    <if test="batchNb != null and batchNb != ''">and batch_nb LIKE   concat('%', #{batchNb}, '%')</if>
+                   GROUP BY material_nb,batch_nb) t
+                  ON( p.material_nb=t.material_nb AND p.batch_nb=t.batch_nb AND p.create_time=t.s) OR
+
+                    (p.material_nb=t.material_nb AND p.batch_nb=t.batch_nb AND  p.create_time=t.e)
+</select>
+
+    <select id="getInOutStockAll" resultType="com.bosch.masterdata.api.domain.vo.ProInOutStockVO" parameterType="com.bosch.masterdata.api.domain.dto.ProInOutStockDTO">
+        SELECT p.material_nb, p.batch_nb, p.total_stock AS operation_stock, "-1" as operation_type,create_time
+        FROM product_stock_detail p
+                 INNER JOIN
+             (SELECT material_nb, batch_nb, MIN(create_time) AS s, MAX(create_time) AS e
+              FROM product_stock_detail
+              WHERE 1 = 1
+        <if test="createTimeStart != null">and create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
+        <if test="createTimeEnd != null">and create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
+        <if test="materialNb != null and materialNb != ''">and material_nb LIKE   concat('%', #{materialNb}, '%')</if>
+        <if test="batchNb != null and batchNb != ''">and batch_nb LIKE   concat('%', #{batchNb}, '%')</if>
+              GROUP BY material_nb, batch_nb) t
+             ON (p.material_nb = t.material_nb AND p.batch_nb = t.batch_nb AND p.create_time = t.s)
+
+        UNION ALL
+
+        SELECT p.material_nb, p.batch_nb, p.total_stock AS operation_stock, "-2" as operation_type,create_time
+        FROM product_stock_detail p
+                 INNER JOIN
+             (SELECT material_nb, batch_nb, MIN(create_time) AS s, MAX(create_time) AS e
+              FROM product_stock_detail
+        WHERE 1 = 1
+        <if test="createTimeStart != null">and create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
+        <if test="createTimeEnd != null">and create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
+        <if test="materialNb != null and materialNb != ''">and material_nb LIKE   concat('%', #{materialNb}, '%')</if>
+        <if test="batchNb != null and batchNb != ''">and batch_nb LIKE   concat('%', #{batchNb}, '%')</if>
+              GROUP BY material_nb, batch_nb) t
+             ON (p.material_nb = t.material_nb AND p.batch_nb = t.batch_nb AND p.create_time = t.e)
+
+        UNION ALL
+
+        SELECT material_nb, batch_nb, sum(operation_stock) AS operation_stock, operation_type,'' as create_time
+        FROM product_stock_operation
+        WHERE 1 = 1
+        <if test="createTimeStart != null">and create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
+        <if test="createTimeEnd != null">and create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
+        <if test="materialNb != null and materialNb != ''">and material_nb LIKE   concat('%', #{materialNb}, '%')</if>
+        <if test="batchNb != null and batchNb != ''">and batch_nb LIKE   concat('%', #{batchNb}, '%')</if>
+          AND operation_type IN ('0', '1', '2')
+        GROUP BY material_nb, batch_nb, operation_type
+
+        ORDER BY material_nb, operation_type asc
+    </select>
 </mapper>
