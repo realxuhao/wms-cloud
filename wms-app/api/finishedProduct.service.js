@@ -302,6 +302,18 @@ const sudnShip = async (options) => {
 	})
 }
 
+const addProductReturn = async (options) => {
+	const method = 'POST'
+	const url = `/product/product-return/addProductReturn`
+	return request({
+		url,
+		method,
+		data: options
+	})
+}
+
+
+
 
 export const finishedProductService = {
 	getTaskList,
@@ -332,5 +344,6 @@ export const finishedProductService = {
 	sudnBinDown,
 	sudnShipList,
 	sudnShipGetById,
-	sudnShip
+	sudnShip,
+	addProductReturn
 }

@@ -125,8 +125,8 @@
         <template slot="status" slot-scope="text">
           <a-tag :color="statusColorMap[text]"> {{ statusMap[text] }}</a-tag>
         </template>
-        <template slot="deliveryQuantity" slot-scope="text,record">
-          <EditTableCell v-if="record.status === 0" :text="record.deliveryQuantity" @change="(val)=>handleQuantityChange(record,val)" />
+        <template slot="binDownQuantity" slot-scope="text,record">
+          <EditTableCell v-if="record.status === 2" :text="record.binDownQuantity" @change="(val)=>handleQuantityChange(record,val)" />
           <span v-else>{{ text }}</span>
         </template>
         <template slot="action" slot-scope="text, record">
@@ -185,7 +185,6 @@ const columns = [
     title: 'Delivery Quantity',
     key: 'deliveryQuantity',
     dataIndex: 'deliveryQuantity',
-    scopedSlots: { customRender: 'deliveryQuantity' },
     width: 140
   },
   {
@@ -405,7 +404,7 @@ export default {
     
     async handleQuantityChange (record, value) {
       try {
-        await this.$store.dispatch('finishedProduct/sudnUpdateQuantity', { id: record.id, newQuantity: value })
+        await this.$store.dispatch('finishedProduct/editBinDownQuantity', { pickId: record.id, newBinDownQuantity: value })
         this.$message.success('修改成功！')
 
         this.loadTableList()

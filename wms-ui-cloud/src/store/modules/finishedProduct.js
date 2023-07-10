@@ -123,16 +123,22 @@ const finishedProduct = {
       const data = await finishedProductService.exportSUDNPickExcel(options)
       return data
     },
-
-
-
     async supnBatchShip({ commit }, ids) {
       const data = await finishedProductService.supnBatchShip(ids)
       return data
     },
-    
-    
-    
+    async editBinDownQuantity({ commit }, options) {
+      const data = await finishedProductService.editBinDownQuantity(options)
+      return data
+    },
+    async productReturnList({ commit }, options) {
+      const data = await finishedProductService.productReturnList(options)
+      return data
+    },
+    async exportProductReturnList({ commit }, options) {
+      const data = await finishedProductService.exportProductReturnList(options)
+      return data
+    },
     // spdnPicklist
   }
 }

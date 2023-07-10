@@ -227,7 +227,17 @@ const finishedProduc = {
 				data
 			} = await finishedProductService.sudnShip(options)
 			return data
+
 		},
+		async addProductReturn({
+			commit
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.addProductReturn(options)
+			return data
+		},
+
 	}
 }
 

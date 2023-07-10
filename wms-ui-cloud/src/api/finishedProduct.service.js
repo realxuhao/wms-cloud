@@ -177,6 +177,27 @@ const supnBatchShip = async (ids) => {
   return data
 }
 
+const editBinDownQuantity = async (options) => {
+  const url = `/sudn-pick/editBinDownQuantity`
+  const { data } = await createAuthInstance(baseUrl).post(url,options)
+  return data
+}
+
+const productReturnList = async (options) => {
+  const url = `/product-return/list?${qs.stringify(options)}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const exportProductReturnList = async (options) => {
+  const url = `/product-return/export`
+  const { data } = await createAuthInstance(baseUrl).post(url,options,{
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
 
 export const finishedProductService = {
   planImport,
@@ -206,5 +227,8 @@ export const finishedProductService = {
   sudnPickBatchIssue,
   importSUDN,
   exportSUDNPickExcel,
-  supnBatchShip
+  supnBatchShip,
+  editBinDownQuantity,
+  productReturnList,
+  exportProductReturnList
 }
