@@ -171,6 +171,11 @@ const exportSUDNPickExcel = async (options) => {
   return data
 }
 
+const supnBatchShip = async (ids) => {
+  const url = `/spdn/batchShip/${ids}`
+  const { data } = await createAuthInstance(baseUrl).put(url)
+  return data
+}
 
 
 export const finishedProductService = {
@@ -200,5 +205,6 @@ export const finishedProductService = {
   sudnPickList,
   sudnPickBatchIssue,
   importSUDN,
-  exportSUDNPickExcel
+  exportSUDNPickExcel,
+  supnBatchShip
 }

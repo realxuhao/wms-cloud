@@ -57,6 +57,7 @@
 			this.sudnId = options.id
 		},
 		// mounted() {
+		// 	this.code = '11221025101012358660208716900568763172407093700006000669006391110024502'
 		// 	this.getSample('11221025101012358660208716900568763172407093700006000669006391110024502')
 		// },
 		methods: {
@@ -70,12 +71,12 @@
 					uni.showLoading();
 					const data = await this.$store.dispatch('finishedProduct/sudnPickGetByQrCode', {
 						barCode,
-						sudnId: this.sudnId
+						// sudnId: this.sudnId
 					});
 					if (data && data.status === 1) {
 						this.$refs.submitPopup.open();
 					} else {
-						throw Error('此托已下架或为非下架托，请确认');
+						throw Error('此物料已下架或为非下架物料，请确认');
 					}
 					this.info = data;
 				} catch (e) {
@@ -90,7 +91,7 @@
 					uni.showLoading();
 					await this.$store.dispatch('finishedProduct/sudnBinDown', {
 						barCode: this.code,
-						sudnId: this.sudnId
+						// sudnId: this.sudnId
 					});
 					// await this.$store.dispatch('finishedProduct/sudnBinDown', this.code);
 					this.$refs.message.success('下架成功');

@@ -55,6 +55,7 @@
 	import Bus from '@/utils/bus';
 	import _ from 'lodash';
 
+	const localKey = 'sudn-ship-operation';
 	export default {
 		components: {
 			Message
@@ -88,6 +89,7 @@
 		onLoad(options) {
 			this.form.sudnId = options.sudnId;
 			this.getByMesBarCode(options.sudnId);
+			this.form.carNb = uni.getStorageSync(localKey)
 		},
 
 		methods: {
@@ -128,7 +130,7 @@
 					});
 					this.submitLoading = true;
 
-
+					uni.setStorageSync(localKey, this.form.carNb)
 					const data = await this.$store.dispatch('finishedProduct/sudnShip', this.form);
 					this.$refs.popup.open();
 				} catch (e) {

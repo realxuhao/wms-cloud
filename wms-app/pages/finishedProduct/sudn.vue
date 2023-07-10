@@ -1,9 +1,13 @@
 <template>
 	<my-page nav-title="SUDN">
-		<AloysTab slot="page-main" class="flex flex-column" :tabs="tabs" @change="onTabChange">
-			<Pending @on-click="handleGoto" slot="content0"></Pending>
-			<Completed slot="content1"></Completed>
-		</AloysTab>
+		<view style="height: 100%;width: 100%;" slot="page-main">
+
+			<AloysTab class="flex flex-column" :tabs="tabs" @change="onTabChange">
+				<Pending @on-click="handleGoto" slot="content0"></Pending>
+				<Completed slot="content1"></Completed>
+			</AloysTab>
+		</view>
+
 	</my-page>
 </template>
 
@@ -26,6 +30,7 @@
 				}, {
 					title: '已完成'
 				}],
+				delivery: '',
 				currentTabIndex: 0
 			};
 		},

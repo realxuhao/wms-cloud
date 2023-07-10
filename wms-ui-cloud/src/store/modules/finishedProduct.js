@@ -126,6 +126,13 @@ const finishedProduct = {
 
 
 
+    async supnBatchShip({ commit }, ids) {
+      const data = await finishedProductService.supnBatchShip(ids)
+      return data
+    },
+    
+    
+    
     // spdnPicklist
   }
 }

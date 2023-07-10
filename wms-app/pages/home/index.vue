@@ -245,7 +245,7 @@
 			<uni-section title="成品SUDN" type="line" class="m-b-12">
 				<view class="list header-box">
 
-					<view class="list-item" @click="handleGoto('/pages/finishedProduct/sudn')">
+					<view class="list-item" @click="handleGoto('/pages/finishedProduct/sudnPick')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-wuliufahuo"
 							color="#009A9A"></uni-icons>
 						<view class="text">下架</view>
