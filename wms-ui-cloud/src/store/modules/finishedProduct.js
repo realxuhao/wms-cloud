@@ -139,6 +139,11 @@ const finishedProduct = {
       const data = await finishedProductService.exportProductReturnList(options)
       return data
     },
+    async productShiftexport({ commit }, options) {
+      const data = await finishedProductService.productShiftexport(options)
+      return data
+    },
+    
     // spdnPicklist
   }
 }

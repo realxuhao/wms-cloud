@@ -198,6 +198,17 @@ const exportProductReturnList = async (options) => {
   return data
 }
 
+const productShiftexport = async (options) => {
+  const url = `/product-shift/export`
+  const { data } = await createAuthInstance(baseUrl).post(url,options,{
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
+
+
 
 export const finishedProductService = {
   planImport,
@@ -230,5 +241,6 @@ export const finishedProductService = {
   supnBatchShip,
   editBinDownQuantity,
   productReturnList,
-  exportProductReturnList
+  exportProductReturnList,
+  productShiftexport
 }

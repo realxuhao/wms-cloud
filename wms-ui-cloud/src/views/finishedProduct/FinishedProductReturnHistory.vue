@@ -279,7 +279,7 @@ export default {
     async handleDownload () {
       try {
         this.exportLoading = true
-        this.queryForm.pageSize = 0
+        // this.queryForm.pageSize = 0
         const blobData = await this.$store.dispatch('finishedProduct/exportProductReturnList', this.queryForm)
         download(blobData, '成品退货历史记录.xlsx')
       } catch (error) {

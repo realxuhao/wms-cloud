@@ -365,7 +365,6 @@ export default {
     async handleDownload () {
       try {
         this.exportLoading = true
-        this.queryForm.pageSize = 0
         const blobData = await this.$store.dispatch('finishedProduct/exportSUDNPickExcel', this.queryForm)
         download(blobData, 'SUDN捡配列表')
       } catch (error) {

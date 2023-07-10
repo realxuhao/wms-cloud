@@ -37,7 +37,7 @@
 				uni.showLoading();
 				Bus.$off('scancodedate', this.scanCodeCallback);
 				uni.navigateTo({
-					url: `/pages/finishedProduct/sudnReturnsOperation?barCode=${code}`
+					url: `/pages/finishedProduct/spdnReturnsOperation?barCode=${code}`
 				});
 				uni.hideLoading();
 				Bus.$emit('startScan');

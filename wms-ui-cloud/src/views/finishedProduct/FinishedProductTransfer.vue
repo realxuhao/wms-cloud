@@ -75,7 +75,7 @@
         </a-row>
       </a-form>
       <div class="action-content">
-
+        <a-button type="primary" style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
       </div>
       <a-table
         :columns="columns"
@@ -129,6 +129,7 @@
 import { mixinTableList } from '@/utils/mixin/index'
 import { colorMap } from '@/utils/color'
 import _ from 'lodash'
+import { download } from '@/utils/file'
 
 const columns = [
   {
@@ -316,6 +317,7 @@ export default {
     return {
       tableLoading: false,
       uploadLoading: false,
+      exportLoading:false,
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -332,6 +334,19 @@ export default {
     statusColorMap: () => statusColorMap
   },
   methods: {
+    async handleDownload () {
+      try {
+        this.exportLoading = true
+        // this.queryForm.pageSize = 0
+        const blobData = await this.$store.dispatch('finishedProduct/productShiftexport', this.queryForm)
+        download(blobData, '成品移库.xlsx')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
+      }
+    },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
