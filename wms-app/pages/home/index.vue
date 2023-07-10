@@ -227,36 +227,41 @@
 			<uni-section title="成品SPDN" type="line" class="m-b-12">
 				<view class="list header-box">
 
-					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:shipment'])"
-						@click="handleGoto('/pages/finishedProduct/spdnBinDown')">
+					<view class="list-item" @click="handleGoto('/pages/finishedProduct/spdnBinDown')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-wuliufahuo"
 							color="#009A9A"></uni-icons>
 						<view class="text">下架</view>
 					</view>
-					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:shipment'])"
-						@click="handleGoto('/pages/finishedProduct/spdnShipment')">
+					<view class="list-item" @click="handleGoto('/pages/finishedProduct/spdnShipment')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-wuliufahuo" type="icon-wuliufahuo"
 							color="#009A9A"></uni-icons>
 						<view class="text">发运</view>
 					</view>
-
+					<view class="list-item" @click="handleGoto('/pages/finishedProduct/spdnReturns')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-tuihuo1" type="icon-tuihuo1"
+							color="rgb(248,79,87)"></uni-icons>
+						<view class="text">退货</view>
+					</view>
 				</view>
 			</uni-section>
 			<uni-section title="成品SUDN" type="line" class="m-b-12">
 				<view class="list header-box">
 
-					<view class="list-item" @click="handleGoto('/pages/finishedProduct/sudn')">
+					<view class="list-item" @click="handleGoto('/pages/finishedProduct/sudnPick')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-wuliufahuo"
 							color="#009A9A"></uni-icons>
 						<view class="text">下架</view>
 					</view>
-					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:shipment'])"
-						@click="handleGoto('/pages/finishedProduct/sudnShip')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-wuliufahuo" type="icon-wuliufahuo"
+					<view class="list-item" @click="handleGoto('/pages/finishedProduct/sudnShip')">
+						<uni-icons custom-prefix="iconfont" class="icon" type="icon-wuliufahuo"
 							color="#009A9A"></uni-icons>
 						<view class="text">发运</view>
 					</view>
-
+					<view class="list-item" @click="handleGoto('/pages/finishedProduct/sudnDealerReturns')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-tuihuo1" type="icon-tuihuo1"
+							color="rgb(248,79,87)"></uni-icons>
+						<view class="text">经销商退货</view>
+					</view>
 				</view>
 			</uni-section>
 
@@ -540,6 +545,10 @@
 				&.icon-fenpishangjia {
 					color: rgb(13, 143, 233) !important;
 					font-size: 34px !important;
+				}
+
+				&.icon-tuihuo1 {
+					font-size: 26px !important;
 				}
 			}
 

@@ -24,6 +24,19 @@
               <a-input v-model="queryForm.vendorCode" placeholder="Vendor Code" allow-clear/>
             </a-form-item>
           </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="状态">
+              <a-select
+                placeholder="状态"
+                allow-clear
+                v-model="queryForm.status"
+              >
+                <a-select-option v-for="(value,key) in statusMap" :key="key" :value="value">
+                  {{ value }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
           <a-col :span="8">
             <a-form-item label="Ship_Date">
               <a-range-picker
@@ -85,6 +98,17 @@
             </a-button>
           </a-upload>
         </a-tooltip>
+
+        <a-button
+          type="primary"
+          class="m-r-8"
+          icon="plus"
+          :loading="shipLoading"
+          @click="handleBatchShip"
+          :disabled="!selectedRowKeys.length">
+          发运
+        </a-button>
+
         <a-button
           type="primary"
           icon="plus"
@@ -96,11 +120,7 @@
       </div>
       <a-table
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
-                          getCheckboxProps:record => ({
-                            props: {
-                              disabled: record.status ===1
-                            },
-                          }), }"
+        }"
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
@@ -111,14 +131,9 @@
       >
 
         <template slot="status" slot-scope="text">
-          <div >
-            <a-tag color="orange" v-if="!text">
-              未审批
-            </a-tag>
-            <a-tag color="#87d068" v-if="text===1">
-              已审批
-            </a-tag>
-          </div>
+          <a-tag :color="colorMap[text]">
+            {{ statusMap[text] }}
+          </a-tag>
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
@@ -303,16 +318,32 @@ const queryFormAttr = () => {
 
   }
 }
-const status = [
-  {
-    text: '未审批',
-    value: 0
-  },
-  {
-    text: '已审批',
-    value: 1
-  }
-]
+// const status = [
+//   {
+//     text: '已上传',
+//     value: 0
+//   },
+//   {
+//     text: '已发运',
+//     value: 1
+//   },
+//   {
+//     text: '已审批',
+//     value: 2
+//   }
+// ]
+
+const statusMap = {
+  0:'已上传',
+  1:'已发运',
+  2:'已审批'
+}
+
+const colorMap = {
+  '0': 'orange',
+  '1': 'orange',
+  '2': 'blue',
+}
 export default {
   name: 'Area',
   mixins: [mixinTableList],
@@ -320,6 +351,7 @@ export default {
     return {
       tableLoading: false,
       uploadLoading: false,
+      shipLoading:false,
       genTaskLoading: false,
       queryForm: {
         pageSize: 20,
@@ -337,14 +369,28 @@ export default {
     }
   },
   computed: {
-    status: () => status
+    colorMap: () => colorMap,
+    statusMap:()=>statusMap
   },
   methods: {
+    async handleBatchShip () {
+      try {
+        this.shipLoading = true
+        await this.$store.dispatch('finishedProduct/supnBatchShip', this.selectedRowKeys)
+        this.$message.success('提交成功')
+        this.selectedRowKeys = []
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.shipLoading = false
+      }
+    },
     async handleApproval () {
       try {
         this.approvalLoading = true
         await this.$store.dispatch('finishedProduct/approveSpdnList', this.selectedRowKeys)
-        this.$message.success('审批成功')
+        this.$message.success('提交成功')
         this.selectedRowKeys = []
         this.loadTableList()
       } catch (error) {

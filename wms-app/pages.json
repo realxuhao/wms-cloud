@@ -273,6 +273,18 @@
 		},
 		{
 			"path": "pages/finishedProduct/sudnShipOperation"
+		},
+		{
+			"path": "pages/finishedProduct/sudnDealerReturns"
+		},
+		{
+			"path": "pages/finishedProduct/sudnDealerReturnsOperation"
+		},
+		{
+			"path": "pages/finishedProduct/spdnReturns"
+		},
+		{
+			"path": "pages/finishedProduct/spdnReturnsOperation"
 		}
 
 	],

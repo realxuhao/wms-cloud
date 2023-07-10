@@ -1,16 +1,16 @@
 <template>
-	<my-page nav-title="SUDN发运">
+	<my-page nav-title="SUDN经销商退货">
 		<view class="main" slot="page-main">
 			<view class="header m-b-8">
 				<view class="text-line m-b-8 ">
-					<view class="label">Delivery：</view>
-					{{ info.delivery }}
+					<view class="label">SSCC：</view>
+					{{ info.ssccNb }}
 				</view>
-				<view class="text-line m-b-8 ">
+				<!-- <view class="text-line m-b-8 ">
 					<view class="label">Material：</view>
 					{{ info.material }}
-				</view>
-				<view class="text-line m-b-8 ">
+				</view> -->
+				<!-- 	<view class="text-line m-b-8 ">
 					<view class="label">Item：</view>
 					{{ info.item }}
 				</view>
@@ -18,16 +18,13 @@
 					<view class="label">Deliver quantity：</view>
 					{{ info.deliveryQuantity }}
 				</view>
-
+ -->
 			</view>
 
 			<view class="content">
 				<uni-forms :label-width="80" ref="form" :rules="formRules" :modelValue="form" label-position="left">
-					<uni-forms-item label="车牌号" name="carNb" required>
-						<uni-easyinput v-model="form.carNb" placeholder="请输入车牌号"></uni-easyinput>
-					</uni-forms-item>
-					<uni-forms-item label="发运数量" name="shipQuantity" required>
-						<uni-easyinput type="number" v-model="form.shipQuantity" placeholder="请输入发运数量"></uni-easyinput>
+					<uni-forms-item label="退货数量" name="quantity" required>
+						<uni-easyinput type="number" v-model="form.quantity" placeholder="请输入退货数量"></uni-easyinput>
 					</uni-forms-item>
 					<o-btn block class="submit-btn primary-button" :loading="submitLoading"
 						@click="handlePost">提交</o-btn>
@@ -40,7 +37,7 @@
 					<view class="result-status">
 						<uni-icons custom-prefix="iconfont" class="success-color" type="icon-chenggong"
 							size="32"></uni-icons>
-						<text class=" text success-color">发运成功</text>
+						<text class=" text success-color">提交成功</text>
 					</view>
 					<o-btn block class="primary-button" @click="handleGoBack">返回</o-btn>
 				</view>
@@ -65,31 +62,24 @@
 				submitLoading: false,
 				info: {},
 				formRules: {
-					carNb: {
-						rules: [{
-							required: true,
-							errorMessage: '车牌号'
-						}]
-					},
 					quantity: {
 						rules: [{
 							required: true,
-							errorMessage: '发运数量'
+							errorMessage: '数量'
 						}]
 					}
 				},
 				form: {
-					sudnId: undefined,
-					carNb: undefined,
-					shipQuantity: undefined
+					qrCode: '',
+					quantity: undefined,
+					type: 0
 				},
 
 			};
 		},
 		onLoad(options) {
-			this.form.sudnId = options.sudnId;
-			this.getByMesBarCode(options.sudnId);
-			this.form.carNb = uni.getStorageSync(localKey)
+			this.form.qrCode = options.barCode;
+			this.getByMesBarCode();
 		},
 
 		methods: {
@@ -106,7 +96,7 @@
 			},
 			async getByMesBarCode() {
 				try {
-					const data = await this.$store.dispatch('finishedProduct/sudnShipGetById', this.form);
+					const data = await this.$store.dispatch('material/parsedBarCode', this.form.qrCode);
 
 					this.info = data;
 
@@ -130,8 +120,7 @@
 					});
 					this.submitLoading = true;
 
-					uni.setStorageSync(localKey, this.form.carNb)
-					const data = await this.$store.dispatch('finishedProduct/sudnShip', this.form);
+					await this.$store.dispatch('finishedProduct/addProductReturn', this.form);
 					this.$refs.popup.open();
 				} catch (e) {
 					this.$refs.message.error(e.message);

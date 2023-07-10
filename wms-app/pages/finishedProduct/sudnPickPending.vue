@@ -49,7 +49,8 @@
 				total: 0,
 				pageSize: 10,
 				pageNum: 1,
-				bottomTips: ''
+				bottomTips: '',
+				delivery: ''
 			};
 		},
 		created() {
@@ -61,7 +62,8 @@
 					pageSize: this.pageSize,
 					pageNum: this.pageNum,
 					status: 1,
-					sudnId: this.sudnId
+					sudnId: this.sudnId,
+					delivery: this.delivery
 				};
 				const {
 					rows,
@@ -72,7 +74,8 @@
 					total
 				};
 			},
-			async handleRefresh() {
+			async handleRefresh(delivery) {
+				this.delivery = delivery
 				await this.loadData();
 				this.$refs.hrPullLoad.reSet();
 			},

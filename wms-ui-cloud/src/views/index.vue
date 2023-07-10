@@ -1,9 +1,14 @@
 <template>
-  <ToDoTasks></ToDoTasks>
+  <!-- <ToDoTasks></ToDoTasks> -->
   <!-- <Material></Material> -->
   <!-- <WarehouseLocationUtilizationRate></WarehouseLocationUtilizationRate> -->
   <!-- <WareShift></WareShift> -->
   <!-- <SPDN></SPDN> -->
+  <!-- <SUDN></SUDN> -->
+  <SUDNPick></SUDNPick>
+
+  <!-- <ProcessEfficiency></ProcessEfficiency> -->
+
   <!-- <SPDNStockList></SPDNStockList> -->
   <!-- <SUQAIQCManagement></SUQAIQCManagement> -->
   <!-- <SPDNPickList></SPDNPickList> -->
@@ -12,11 +17,19 @@
 
 <script>
 import ToDoTasks from './dashboard/ToDoTasks.vue'
+import ProcessEfficiency from './dashboard/ProcessEfficiency.vue'
+
 import Material from './dashboard/Material.vue'
 import WareShift from './dashboard/WareShift.vue'
 import SPDN from './finishedProduct/SPDN.vue'
+import SUDN from './finishedProduct/SUDN.vue'
+import SUDNPick from './finishedProduct/SUDNPick.vue'
+
+
+
 import SPDNStockList from './finishedProduct/SPDNStockList.vue'
 import SPDNPickList from './finishedProduct/SPDNPickList.vue'
+
 
 
 
@@ -35,7 +48,10 @@ export default {
     SPDN,
     SPDNStockList,
     SUQAIQCManagement,
-    SPDNPickList
+    SPDNPickList,
+    SUDN,
+    SUDNPick,
+    ProcessEfficiency
   },
   data () {
     return {

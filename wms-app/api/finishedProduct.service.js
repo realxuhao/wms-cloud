@@ -182,7 +182,7 @@ const spdnBinDown = async (barCode) => {
 }
 
 const sudnBinDown = async (options) => {
-	const url = `/product/sudn-pick/binDown/${options.barCode}?sudnId=${options.sudnId}`
+	const url = `/product/sudn-pick/sumBinDown/${options.barCode}`
 	const method = 'PUT'
 
 	return request({
@@ -265,7 +265,7 @@ const sudnShipList = async (data) => {
 
 const sudnPickList = async (data) => {
 	const method = 'GET'
-	const url = `/product/sudn-pick/list`
+	const url = `/product/sudn-pick/binDownlist`
 	return request({
 		url,
 		method,
@@ -276,7 +276,7 @@ const sudnPickList = async (data) => {
 const sudnPickGetByQrCode = async (options) => {
 	console.log(options)
 	const method = 'GET'
-	const url = `/product/sudn-pick/getByQrCode/${options.barCode}?sudnId=${options.sudnId}`
+	const url = `/product/sudn-pick/getOneBinDown/${options.barCode}`
 	return request({
 		url,
 		method,
@@ -301,6 +301,18 @@ const sudnShip = async (options) => {
 		data: options
 	})
 }
+
+const addProductReturn = async (options) => {
+	const method = 'POST'
+	const url = `/product/product-return/addProductReturn`
+	return request({
+		url,
+		method,
+		data: options
+	})
+}
+
+
 
 
 export const finishedProductService = {
@@ -332,5 +344,6 @@ export const finishedProductService = {
 	sudnBinDown,
 	sudnShipList,
 	sudnShipGetById,
-	sudnShip
+	sudnShip,
+	addProductReturn
 }

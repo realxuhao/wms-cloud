@@ -171,6 +171,32 @@ const exportSUDNPickExcel = async (options) => {
   return data
 }
 
+const supnBatchShip = async (ids) => {
+  const url = `/spdn/batchShip/${ids}`
+  const { data } = await createAuthInstance(baseUrl).put(url)
+  return data
+}
+
+const editBinDownQuantity = async (options) => {
+  const url = `/sudn-pick/editBinDownQuantity`
+  const { data } = await createAuthInstance(baseUrl).post(url,options)
+  return data
+}
+
+const productReturnList = async (options) => {
+  const url = `/product-return/list?${qs.stringify(options)}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const exportProductReturnList = async (options) => {
+  const url = `/product-return/export`
+  const { data } = await createAuthInstance(baseUrl).post(url,options,{
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
 
 
 export const finishedProductService = {
@@ -200,5 +226,9 @@ export const finishedProductService = {
   sudnPickList,
   sudnPickBatchIssue,
   importSUDN,
-  exportSUDNPickExcel
+  exportSUDNPickExcel,
+  supnBatchShip,
+  editBinDownQuantity,
+  productReturnList,
+  exportProductReturnList
 }
