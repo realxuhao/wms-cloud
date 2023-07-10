@@ -70,6 +70,13 @@ const comparison = {
       const { data } = await dashboardService.processEfficiency(options)
       return data
     },
+    async proInOutStock
+      ({ commit }, options) {
+      const { data } = await dashboardService.proInOutStock(options)
+      return data
+    },
+
+    
 
   }
 }

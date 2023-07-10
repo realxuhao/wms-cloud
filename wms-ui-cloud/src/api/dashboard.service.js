@@ -86,6 +86,15 @@ const processEfficiency = async (parameter) => {
   return data
 }
 
+const proInOutStock = async (parameter) => {
+  const url = `/report/proInOutStock?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter)
+  return data
+}
+
+
+
+
 export const dashboardService = {
   getBinInSummary,
   getMissionToDoSummary,
@@ -99,6 +108,6 @@ export const dashboardService = {
   exportWorkload,
   getWorkloadPro,
   exportWorkloadPro,
-  processEfficiency
-
+  processEfficiency,
+  proInOutStock
 }
