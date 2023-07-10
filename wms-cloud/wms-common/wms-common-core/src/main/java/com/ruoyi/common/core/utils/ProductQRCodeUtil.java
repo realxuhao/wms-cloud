@@ -19,7 +19,7 @@ public class ProductQRCodeUtil {
 
 
     private static List<String> splitQRCode(String qrCode){
-//        String[] split = qrCode.split("\\r?\\n");
+        String[] split = qrCode.split("\\r?\\n");
 //        if (ArrayUtils.isEmpty(split)||split.length!=3){
 //            throw new ServiceException("成品QR CODE 格式错误");
 //        }
@@ -32,6 +32,7 @@ public class ProductQRCodeUtil {
 //        if (split[2].length()!=20){
 //            throw new ServiceException("成品QR CODE 格式错误");
 //        }
+        qrCode = qrCode.replace("\\r?\\n", "");
         return Arrays.asList(qrCode.substring(0,19),qrCode.substring(19,51),qrCode.substring(51,71));
     }
     public static Date getProductionDate(String qrCode){

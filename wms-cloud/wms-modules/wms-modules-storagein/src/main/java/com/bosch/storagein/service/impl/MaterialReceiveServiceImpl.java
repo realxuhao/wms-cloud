@@ -32,8 +32,8 @@ public class MaterialReceiveServiceImpl extends ServiceImpl<MaterialRecevieMappe
     @Autowired
     private MaterialRecevieMapper materialRecevieMapper;
 
-    @Autowired
-    private IUserOperationLogService userOperationLogService;
+//    @Autowired
+//    private IUserOperationLogService userOperationLogService;
 
 
     @Override

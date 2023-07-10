@@ -11,6 +11,8 @@ import com.bosch.product.api.domain.dto.ProductReceiveQueryDTO;
 import com.bosch.product.api.domain.dto.ShippingPlanDTO;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
 import com.bosch.product.service.IProductReceiveService;
+import com.bosch.storagein.api.domain.MaterialReceive;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
@@ -19,6 +21,9 @@ import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,6 +54,9 @@ public class ProductReceiveController extends BaseController {
 
     @Autowired
     private IProductReceiveService receiveService;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
 
     @GetMapping(value = "/list")
@@ -82,6 +91,7 @@ public class ProductReceiveController extends BaseController {
     @ApiOperation("PDA成品收货")
     public R receive(@PathVariable("qrCode") String qrCode) {
         receiveService.receive(qrCode);
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_STORAGE_IN.getCode(), ProductQRCodeUtil.getSSCC(qrCode));
         return R.ok();
     }
 
@@ -117,7 +127,21 @@ public class ProductReceiveController extends BaseController {
                     return R.fail(400, "存在重复数据");
                 } else {
                     List<ProductReceive> dos = BeanConverUtil.converList(dtos, ProductReceive.class);
+
                     boolean b = receiveService.saveBatch(dos);
+
+                    List<UserOperationLog> userOperationLogList = new ArrayList<>();
+
+                    dtos.stream().forEach(dto->{
+                        UserOperationLog userOperationLog = new UserOperationLog();
+                        userOperationLog.setOperationType(UserOperationType.Import.getCode());
+                        userOperationLog.setCode(dto.getMaterialNb());
+                        userOperationLog.setSsccNumber(dto.getSsccNumber());
+                        userOperationLogList.add(userOperationLog);
+                    });
+
+                    userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(),null,SecurityUtils.getUsername(),UserOperationType.PRODUCT_IMPORT.getCode(),userOperationLogList);
+
                 }
             } else {
                 return R.fail("excel中无数据");
@@ -158,6 +182,20 @@ public class ProductReceiveController extends BaseController {
                             receiveService.save(r);
                         }
                     });
+
+                    List<UserOperationLog> userOperationLogList = new ArrayList<>();
+
+                    dtos.stream().forEach(dto->{
+                        UserOperationLog userOperationLog = new UserOperationLog();
+                        userOperationLog.setOperationType(UserOperationType.Import.getCode());
+                        userOperationLog.setCode(dto.getMaterialNb());
+                        userOperationLog.setSsccNumber(dto.getSsccNumber());
+                        userOperationLogList.add(userOperationLog);
+                    });
+
+                    userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(),null,SecurityUtils.getUsername(),UserOperationType.PRODUCT_IMPORT.getCode(),userOperationLogList);
+
+
                 }
                 return R.ok("导入成功");
             }else {

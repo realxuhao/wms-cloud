@@ -121,4 +121,6 @@ public class WareShift extends BaseEntity {
 
     private String orderNumber;
 
+    private int type;
+
 }

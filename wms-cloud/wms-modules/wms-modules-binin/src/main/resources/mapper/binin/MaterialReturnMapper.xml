@@ -35,10 +35,13 @@
         left join (SELECT * from md_material where delete_flag = '0') mm on mr.material_nb = mm.code
         where mr.delete_flag = 0
         <if test="materialNb != null and materialNb != ''">
-            AND mr.material_nb=#{materialNb}
+            AND mr.material_nb like concat('%', #{materialNb}, '%')
+        </if>
+        <if test="ssccNb != null and ssccNb != ''">
+            AND mr.sscc_number  like concat('%', #{ssccNB}, '%')
         </if>
         <if test="wareCode != null and wareCode != ''">
-            AND mr.ware_code=#{wareCode}
+            AND mr.ware_code like concat('%', #{wareCode}, '%')
         </if>
 
         <if test="type != null ">

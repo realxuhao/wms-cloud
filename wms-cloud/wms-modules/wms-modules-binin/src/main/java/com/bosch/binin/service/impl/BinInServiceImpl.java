@@ -24,6 +24,7 @@ import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.masterdata.api.RemotePalletService;
 import com.bosch.storagein.api.domain.vo.MaterialInVO;
 import com.bosch.storagein.api.domain.vo.MaterialReceiveVO;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
@@ -34,6 +35,9 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import lombok.Synchronized;
 import lombok.extern.slf4j.Slf4j;
@@ -44,6 +48,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.lang.management.OperatingSystemMXBean;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -87,6 +92,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Autowired
     private WareShiftMapper wareShiftMapper;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
     @Lazy
     @Autowired
@@ -368,6 +376,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         this.saveBatch(binIns);
 
+
+        List<UserOperationLog> operationLogs = new ArrayList<>();
+
         //库存
         List<Stock> stockList = new ArrayList<>();
         binIns.stream().forEach(binIn -> {
@@ -393,10 +404,19 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             stock.setAreaCode(binIn.getAreaCode());
             stock.setPalletCode(binIn.getPalletCode());
             stockList.add(stock);
+
+            UserOperationLog userOperationLog = new UserOperationLog();
+            userOperationLog.setCode(binIn.getMaterialNb());
+            userOperationLog.setSsccNumber(binIn.getSsccNumber());
+            operationLogs.add(userOperationLog);
         });
         stockService.saveBatch(stockList);
 
-        dealIQC(mesBarCode, materialCode, batchNb);
+//        dealIQC(mesBarCode, materialCode, batchNb);
+        dealIQCWithBatchBinIn(mesBarCode, materialCode, batchNb,binIns);
+
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.MATERIALBININ.getCode(),operationLogs);
+
 
 
     }
@@ -637,6 +657,13 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         dealIQC(mesBarCode, materialNb, binIn.getBatchNb());
 
+        UserOperationLog userOperationLog = new UserOperationLog();
+        userOperationLog.setSsccNumber(sscc);
+        userOperationLog.setCode(materialNb);
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.MATERIALBININ.getCode(),userOperationLog);
+
+
+
 
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
     }
@@ -672,6 +699,72 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             binInQueryWrapper.eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
             binInQueryWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
             List<BinIn> binInList = binInMapper.selectList(binInQueryWrapper);
+
+            if (CollectionUtils.isEmpty(sameBatchList) || CollectionUtils.isEmpty(binInList) || binInList.size() != sameBatchList.size()) {
+                lastFlag = false;
+            }
+            List<IQCSamplePlan> samplePlanList = new ArrayList<>();
+            if (lastFlag && DeparementEnum.NMD.getCode().equals(materialVO.getCell())) {//NMD
+                samplePlanList = dealNMDIQCProcess(materialVO, batchNb, binInList, sameBatchList);
+            } else if (lastFlag && DeparementEnum.ECN.getCode().equals(materialVO.getCell())) {//ECN
+                samplePlanList = dealECNIQCProcess(materialVO, batchNb, binInList, sameBatchList);
+            } else if (lastFlag && DeparementEnum.FSMP.getCode().equals(materialVO.getCell())) {//FSMP
+                samplePlanList = dealFSMPIQCProces(materialVO, batchNb, binInList, sameBatchList);
+            }
+            //下发的时候去新增外库任务。
+            // 如果是外库的，新增移库任务
+//            if (!CollectionUtils.isEmpty(samplePlanList)) {
+//                if ("7752".equals(samplePlanList.get(0).getPlantNb())) {
+//
+//                    List<String> samplanSsccList = samplePlanList.stream().map(IQCSamplePlan::getSsccNb).collect(Collectors.toList());
+//                    List<BinIn> inList = binInList.stream().filter(item -> samplanSsccList.contains(item.getSsccNumber())).collect(Collectors.toList());
+//                    List<WareShift> wareShiftList = new ArrayList<>();
+//                    inList.stream().forEach(item -> {
+//                        WareShift wareShift = WareShift.builder().sourcePlantNb(item.getPlantNb()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
+//                                .sourceBinCode(item.getActualBinCode()).materialNb(item.getMaterialNb()).batchNb(item.getBatchNb()).expireDate(item.getExpireDate())
+//                                .ssccNb(item.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+//                                .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+//                                .quantity(item.getQuantity())
+//                                .build();
+//                        wareShiftList.add(wareShift);
+//                    });
+//                    wareShiftService.saveBatch(wareShiftList);
+//                }
+//            }
+        }
+    }
+
+
+    private void dealIQCWithBatchBinIn(String mesBarCode, String materialNb, String batchNb,List<BinIn> binInList) {
+        MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
+
+
+        //质检
+        if ("Y".equals(materialVO.getIqc())) {
+
+
+            boolean lastFlag = true;
+
+            //获取收货的同批次信息
+            R<List<MaterialReceiveVO>> sameBatchListR = remoteMaterialInService.getSameBatchList(materialNb, batchNb);
+
+            if (StringUtils.isNull(sameBatchListR) || StringUtils.isNull(sameBatchListR.getData())) {
+                throw new ServiceException("不存在该批次信息");
+            }
+
+
+            if (R.FAIL == sameBatchListR.getCode()) {
+                throw new ServiceException(sameBatchListR.getMsg());
+            }
+            List<MaterialReceiveVO> sameBatchList = sameBatchListR.getData();
+            //获取上架的同批次信息
+//            LambdaQueryWrapper<BinIn> binInQueryWrapper = new LambdaQueryWrapper<>();
+//            binInQueryWrapper.eq(BinIn::getMaterialNb, materialNb);
+//            binInQueryWrapper.eq(BinIn::getBatchNb, batchNb);
+//            binInQueryWrapper.eq(BinIn::getStatus, BinInStatusEnum.FINISH.value());
+//            binInQueryWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+//            List<BinIn> binInList = binInMapper.selectList(binInQueryWrapper);
+
             if (CollectionUtils.isEmpty(sameBatchList) || CollectionUtils.isEmpty(binInList) || binInList.size() != sameBatchList.size()) {
                 lastFlag = false;
             }

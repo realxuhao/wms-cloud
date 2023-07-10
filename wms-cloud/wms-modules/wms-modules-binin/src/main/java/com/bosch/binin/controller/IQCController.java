@@ -15,6 +15,9 @@ import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,6 +46,9 @@ public class IQCController extends BaseController {
 
     @Autowired
     private IIQCSamplePlanService samplePlanService;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
 
     @GetMapping(value = "/sample/list")
@@ -108,6 +114,9 @@ public class IQCController extends BaseController {
     @ApiOperation("IQC抽样计划执行下架接口")
     public R binDown(@PathVariable String mesBarCode) {
         samplePlanService.binDown(MesBarCodeUtil.getSSCC(mesBarCode));
+
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.IQCBINOUT.getCode(), MesBarCodeUtil.getSSCC(mesBarCode));
+
         return R.ok();
     }
 
@@ -130,6 +139,8 @@ public class IQCController extends BaseController {
     @ApiOperation("IQC抽样计划执行上架接口")
     public R performBinIn(@RequestBody BinInDTO binInDTO) {
         samplePlanService.performBinIn(binInDTO);
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.IQCBININ.getCode(), MesBarCodeUtil.getSSCC(binInDTO.getMesBarCode()));
+
         return R.ok();
     }
 

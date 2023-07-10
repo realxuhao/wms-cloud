@@ -12,6 +12,7 @@ import com.bosch.storagein.api.domain.dto.request.EditBean;
 import com.bosch.storagein.api.domain.vo.MaterialReceiveVO;
 import com.bosch.storagein.api.enumeration.ClassType;
 import com.bosch.storagein.service.IMaterialReceiveService;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
@@ -21,6 +22,8 @@ import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
@@ -35,6 +38,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -136,8 +140,25 @@ public class MaterialReceiveCotroller extends BaseController {
 
                         });
 
+
+
+
+
                         materialReceiveService.saveBatch(dtos);
 
+
+                        List<UserOperationLog> userOperationLogList = new ArrayList<>();
+
+                        dtos.stream().map(MaterialReceive::getSsccNumber).collect(Collectors.toList());
+                        dtos.stream().forEach(dto->{
+                            UserOperationLog userOperationLog = new UserOperationLog();
+                            userOperationLog.setOperationType(UserOperationType.Import.getCode());
+                            userOperationLog.setCode(dto.getMaterialNb());
+                            userOperationLog.setSsccNumber(dto.getSsccNumber());
+                            userOperationLogList.add(userOperationLog);
+                        });
+
+                        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(),null,SecurityUtils.getUsername(),UserOperationType.Import.getCode(),userOperationLogList);
 
                     }
                 }
@@ -179,8 +200,21 @@ public class MaterialReceiveCotroller extends BaseController {
                             r.setUpdateTime(null);
                             r.setUpdateUser(null);
                             materialReceiveService.save(r);
+
                         }
                     });
+                    List<UserOperationLog> userOperationLogList = new ArrayList<>();
+
+                    dtos.stream().forEach(dto->{
+                        UserOperationLog userOperationLog = new UserOperationLog();
+                        userOperationLog.setOperationType(UserOperationType.Import.getCode());
+                        userOperationLog.setCode(dto.getMaterialNb());
+                        userOperationLog.setSsccNumber(dto.getSsccNumber());
+                        userOperationLogList.add(userOperationLog);
+                    });
+
+                    userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(),null,SecurityUtils.getUsername(),UserOperationType.Import.getCode(),userOperationLogList);
+
                 }
                 return R.ok("导入成功");
             } else {

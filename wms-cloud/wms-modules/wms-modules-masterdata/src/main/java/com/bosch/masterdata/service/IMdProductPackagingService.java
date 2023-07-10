@@ -64,5 +64,7 @@ public interface IMdProductPackagingService extends IService<ProductPackaging> {
      */
     boolean validData(List<MdProductPackagingDTO> dtos);
 
+    List<String> getNotExistCodeList(List<String> codeList);
+
     //MdProductPackaging getByProductNo(String productNo);
 }

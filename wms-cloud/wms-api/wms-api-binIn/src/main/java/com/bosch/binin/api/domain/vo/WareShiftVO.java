@@ -141,6 +141,10 @@ public class WareShiftVO  {
     @Excel(name = "状态",readConverterExp = "-1=已取消,1=待下架,2=待发运,4=待收货,5=待上架,7=完成")
     private Integer status;
 
+    @ApiModelProperty(value = "类型,0:普通移库，1：IQC移库，2：捡配移库")
+    @Excel(name = "移库类型",readConverterExp = "0=普通移库,1=IQC移库,2=捡配移库")
+    private Integer type;
+
     /**
      * 删除标记1：删除，0:可用
      */
@@ -200,6 +204,8 @@ public class WareShiftVO  {
     /** 备注 */
     @Excel(name = "备注")
     private String remark;
+
+
 
 
 

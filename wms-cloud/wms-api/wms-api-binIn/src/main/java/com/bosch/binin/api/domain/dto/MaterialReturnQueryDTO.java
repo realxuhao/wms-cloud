@@ -18,6 +18,10 @@ public class MaterialReturnQueryDTO extends PageDomain {
     private String wareCode;
     @ApiModelProperty(value = "物料号")
     private String materialNb;
+
+    @ApiModelProperty(value = "ssccNb")
+    private String ssccNb;
+
     @ApiModelProperty(value = "开始创建时间")
     private String areaCode;
     @ApiModelProperty(value = "-1:取消任务,0:待确认,1:待上架,2:完成")

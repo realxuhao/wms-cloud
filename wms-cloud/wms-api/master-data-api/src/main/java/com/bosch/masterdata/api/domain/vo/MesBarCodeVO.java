@@ -16,6 +16,8 @@ import java.util.Date;
 public class MesBarCodeVO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date expireDate;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date productionDate;
     private String ssccNb;
     private String materialNb;
     private String batchNb;

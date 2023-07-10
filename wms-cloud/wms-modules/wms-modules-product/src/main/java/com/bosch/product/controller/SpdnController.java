@@ -79,6 +79,7 @@ public class SpdnController extends BaseController {
         R result = fileService.SPDNFileImport(file, ClassType.SPDNDTO.getDesc());
         if (result.isSuccess()) {
             Object data = result.getData();
+
             List<SPDNDTO> dtos = JSON.parseArray(JSON.toJSONString(data), SPDNDTO.class);
             if (!CollectionUtils.isEmpty(dtos)) {
                 productOutService.validList(dtos);
@@ -172,6 +173,10 @@ public class SpdnController extends BaseController {
     }
 
 
-
+    @PutMapping(value = "/batchShip/{ids}")
+    public R batchShip(@PathVariable("ids")Long[] ids){
+        spdnService.batchShip(ids);
+        return R.ok();
+    }
 
 }

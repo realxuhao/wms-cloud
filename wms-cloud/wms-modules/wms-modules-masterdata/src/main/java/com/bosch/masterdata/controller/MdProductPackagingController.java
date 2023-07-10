@@ -76,6 +76,11 @@ public class MdProductPackagingController extends BaseController {
 
     }
 
+    @GetMapping("/getNotExistCodeList")
+    public R<List<String>> getNotExistCodeList(@RequestParam("codeList")List<String> codeList){
+        return R.ok(mdProductPackagingService.getNotExistCodeList(codeList));
+    }
+
 
     /**
      * 获取详细信息

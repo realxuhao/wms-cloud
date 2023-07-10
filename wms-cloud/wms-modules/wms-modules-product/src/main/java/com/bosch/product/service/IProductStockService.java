@@ -8,6 +8,7 @@ import com.bosch.product.api.domain.ProductReceive;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.ProductWareShift;
 import com.bosch.product.api.domain.dto.*;
+import com.bosch.product.api.domain.vo.ProductReturnVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 
 import java.util.List;
@@ -69,4 +70,6 @@ public interface IProductStockService extends IService<ProductStock> {
     void stockReturn(ProductReturnDTO productReturnDTO);
 
     void trans(ManualBinInDTO binInDTO);
+
+    List<ProductReturnVO> returnList(ProductReturnDTO queryDTO);
 }

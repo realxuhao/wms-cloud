@@ -20,6 +20,7 @@ import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.ruoyi.common.core.constant.AreaListConstants;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
@@ -30,7 +31,11 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import org.apache.catalina.User;
 import org.apache.poi.ss.formula.functions.IDStarAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -80,6 +85,10 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
     @Autowired
     private ITranshipmentOrderService transhipmentOrderService;
+
+
+    @Autowired
+    private IUserOperationLogService operationLogService;
 
     @Override
     public Boolean addShiftRequirement(AddShiftTaskDTO dto) {
@@ -306,6 +315,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             wareShift.setQuantity(item.getTotalStock());
             wareShift.setSplitType(0);
             wareShift.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
+            wareShift.setType(WareShiftTypeEnum.NORMAL.code());
+
             wareShiftList.add(wareShift);
 
             item.setFreezeStock(item.getTotalStock());
@@ -561,6 +572,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
 
         List<Stock> stockList = new ArrayList<>();
+        List<UserOperationLog> operationLogs = new ArrayList<>();
         wareShiftList.stream().forEach(item -> {
             BinIn binIn = new BinIn();
             binIn.setSsccNumber(item.getSsccNb());
@@ -612,6 +624,11 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
             item.setStatus(KanbanStatusEnum.FINISH.value());
 
+            UserOperationLog userOperationLog = new UserOperationLog();
+            userOperationLog.setCode(stock.getMaterialNb());
+            userOperationLog.setSsccNumber(stock.getSsccNumber());
+            operationLogs.add(userOperationLog);
+
         });
 
 
@@ -620,6 +637,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         stockService.saveBatch(stockList);
 
         this.updateBatchById(wareShiftList);
+
+        operationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.SHIFT_BININ.getCode(), operationLogs);
 
     }
 
@@ -679,6 +698,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                     .quantity(item.getTotalStock())
                     .callId(ids)
                     .orderNumber(orders)
+                    .type(WareShiftTypeEnum.PICK.code())
                     .build();
             wareShiftList.add(wareShift);
         });

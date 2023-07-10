@@ -1,13 +1,13 @@
 package com.bosch.product.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
+import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.product.api.domain.ProductPick;
 import com.bosch.product.api.domain.ProductSPDNPick;
-import com.bosch.product.api.domain.dto.EditBinDownQuantityDTO;
-import com.bosch.product.api.domain.dto.ProductPickDTO;
-import com.bosch.product.api.domain.dto.ProductReceiveQueryDTO;
-import com.bosch.product.api.domain.dto.ProductWareShiftQueryDTO;
+import com.bosch.product.api.domain.dto.*;
+import com.bosch.product.api.domain.vo.ProductPickExportVO;
 import com.bosch.product.api.domain.vo.ProductPickVO;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
 import com.bosch.product.service.IProductPickService;
@@ -16,6 +16,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
@@ -24,8 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,6 +56,35 @@ public class ProductPickController extends BaseController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
+    @GetMapping(value = "/binDownlist")
+    @ApiOperation("汇总的下架列表")
+    public R<PageVO<ProductPickVO>> binDownlist(ProductPickDTO queryDTO) {
+        startPage();
+        List<ProductPickVO> list = pickService.binDownlist(queryDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
+    @GetMapping(value = "/getOneBinDown/{qrCode}")
+    @ApiOperation("获取单个汇总后的下架数据")
+    public R<ProductPickVO> getOneBinDown(@PathVariable("qrCode") String qrCode) {
+        ProductPickDTO pickDTO = new ProductPickDTO();
+        pickDTO.setSscc(ProductQRCodeUtil.getSSCC(qrCode));
+        List<ProductPickVO> list = pickService.binDownlist(pickDTO);
+        if (!CollectionUtils.isEmpty(list)) {
+            return R.ok(list.get(0));
+        }
+        return R.ok();
+    }
+
+    @PutMapping(value = "/sumBinDown/{qrCode}")
+    @ApiOperation("SUDN捡配任务汇总下架")
+    @Transactional(rollbackFor = Exception.class)
+    public R binDown(@PathVariable String qrCode) {
+        pickService.sumBinDown(qrCode);
+        return R.ok(qrCode + "下架成功");
+    }
+
+
     @DeleteMapping(value = "/{ids}")
     @ApiOperation("删除pick")
     public R batchDelete(@PathVariable Long[] ids) {
@@ -63,18 +95,18 @@ public class ProductPickController extends BaseController {
     @PutMapping(value = "/binDown/{qrCode}")
     @ApiOperation("SUDN捡配任务下架")
     @Transactional(rollbackFor = Exception.class)
-    public R binDown(@PathVariable String qrCode,@RequestParam("sudnId") Long sudnId) {
-        pickService.binDown(qrCode,sudnId);
+    public R binDown(@PathVariable String qrCode, @RequestParam("sudnId") Long sudnId) {
+        pickService.binDown(qrCode, sudnId);
         return R.ok(qrCode + "下架成功");
     }
 
     @GetMapping(value = "/getByQrCode/{qrCode}")
     @ApiOperation("获取单个")
-    public R batchDelete(@PathVariable String qrCode,@RequestParam Long sudnId){
+    public R batchDelete(@PathVariable String qrCode, @RequestParam Long sudnId) {
         LambdaQueryWrapper<ProductPick> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ProductPick::getSscc, ProductQRCodeUtil.getSSCC(qrCode));
         queryWrapper.eq(ProductPick::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        queryWrapper.eq(ProductPick::getSudnId,sudnId);
+        queryWrapper.eq(ProductPick::getSudnId, sudnId);
         return R.ok(pickService.getOne(queryWrapper));
     }
 
@@ -92,6 +124,17 @@ public class ProductPickController extends BaseController {
     public R batchIssue(@PathVariable Long[] ids) {
         pickService.batchIssue(Arrays.asList(ids));
         return R.ok();
+    }
+
+    /**
+     * 导出列表
+     */
+    @PostMapping("/exportExcel")
+    @ApiOperation("SUDN捡配列表")
+    public void export(HttpServletResponse response, ProductPickDTO queryDTO) {
+        List<ProductPickExportVO> list = pickService.getSUDNPickExportVO(queryDTO);
+        ExcelUtil<ProductPickExportVO> util = new ExcelUtil<>(ProductPickExportVO.class);
+        util.exportExcel(response, list, "SUDN捡配列表");
     }
 
 }

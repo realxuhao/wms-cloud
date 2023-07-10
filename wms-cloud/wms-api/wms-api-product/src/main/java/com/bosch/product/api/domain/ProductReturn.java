@@ -2,6 +2,7 @@ package com.bosch.product.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
@@ -19,29 +20,37 @@ public class ProductReturn extends BaseEntity {
      */
     private Long id;
 
+    @Excel(name = "plantNb")
+    private String plantNb;
+
     /**
      * 料号
      */
+    @Excel(name = "物料号")
     private String materialNb;
 
     /**
      * SSCC码
      */
+    @Excel(name = "SSCC")
     private String ssccNumber;
 
     /**
      * 批次号
      */
+    @Excel(name = "批次号")
     private String batchNb;
 
     /**
      * 退库类型 (0：正常退库,1：异常退库)
      */
+    @Excel(name = "退库类型",readConverterExp = "0=经销商退货，1=退货到工厂")
     private Integer type;
 
     /**
      * 数量
      */
+    @Excel(name = "退库数量")
     private Double quantity;
 
     /**
@@ -58,13 +67,16 @@ public class ProductReturn extends BaseEntity {
     /**
      * 存储区code
      */
+    @Excel(name = "存储区")
     private String areaCode;
 
     /**
      * 仓库编码
      */
+    @Excel(name = "仓库")
     private String wareCode;
 
+    @Excel(name = "过期时间")
     private Date expireDate;
 
     private String cell;

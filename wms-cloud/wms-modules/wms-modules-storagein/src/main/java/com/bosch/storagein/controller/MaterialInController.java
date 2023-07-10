@@ -91,6 +91,7 @@ public class MaterialInController extends BaseController {
         if (checkResultVO != null && checkResultVO.getResponseCode() != null && checkResultVO.getResponseCode() == ResponseConstants.QUANTITY_INVALID) {
             return R.fail(null, ResponseConstants.QUANTITY_INVALID, "抽样件数不符合");
         }
+
         return R.ok(checkResultVO);
     }
 

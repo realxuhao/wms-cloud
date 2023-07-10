@@ -1,7 +1,7 @@
 package com.bosch.masterdata.api.enumeration;
 
 public enum EcnPlanEnum {
-    A("Ⅰ", 1),
+    A("I", 1),
     B("Ⅱ", 2),
     C("Ⅲ", 3);
 

@@ -36,5 +36,4 @@ public class MesBarCodeController {
     public R<MesBarCodeVO> parseMesBarCode(@PathVariable("mesBarCode") String mesBarCode) {
         return R.ok(mesBarCodeService.parseMesBarCode(mesBarCode));
     }
-
 }

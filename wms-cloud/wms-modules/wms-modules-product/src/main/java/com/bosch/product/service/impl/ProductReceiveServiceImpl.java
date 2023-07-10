@@ -2,6 +2,7 @@ package com.bosch.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.RemoteProductService;
 import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
 import com.bosch.product.api.domain.ProductReceive;
 import com.bosch.product.api.domain.dto.ProductReceiveDTO;
@@ -11,6 +12,7 @@ import com.bosch.product.api.domain.vo.ProductReceiveVO;
 import com.bosch.product.mapper.ProductReceiveMapper;
 import com.bosch.product.service.IProductReceiveService;
 import com.bosch.product.service.IProductStockService;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
@@ -18,11 +20,14 @@ import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Queue;
+import java.util.stream.Collectors;
 
 /**
  * @program: wms-cloud
@@ -38,6 +43,9 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
 
     @Autowired
     private IProductStockService stockService;
+
+    @Autowired
+    private RemoteProductService remoteProductService;
 
     @Override
     public List<ProductReceiveVO> list(ProductReceiveQueryDTO queryDTO) {
@@ -97,6 +105,16 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
     }
     @Override
     public boolean validList(List<ProductReceiveDTO> dtos) {
+        //校验料号是否存在。
+        List<String> codeList = dtos.stream().map(ProductReceiveDTO::getMaterialNb).collect(Collectors.toList());
+        R<List<String>> notExistCodeListR = remoteProductService.getNotExistCodeList(codeList);
+        if (notExistCodeListR==null|| !notExistCodeListR.isSuccess()){
+            throw new ServiceException("调用成品主数据失败");
+        }
+        List<String> data = notExistCodeListR.getData();
+        if (!CollectionUtils.isEmpty(data)){
+            throw new ServiceException("以下成品料号主数据中不存在："+data);
+        }
         return receiveMapper.validateRecord(dtos) > 0;
     }
 }

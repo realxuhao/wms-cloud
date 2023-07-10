@@ -5,6 +5,7 @@ import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.storagein.api.constants.Constants;
 import com.bosch.storagein.api.constants.ResponseConstants;
+import com.bosch.storagein.api.domain.MaterialReceive;
 import com.bosch.storagein.api.domain.dto.MaterialInCheckDTO;
 import com.bosch.storagein.api.domain.dto.MaterialInDTO;
 import com.bosch.storagein.api.domain.dto.MaterialQueryDTO;
@@ -19,9 +20,13 @@ import com.bosch.storagein.mapper.MaterialInMapper;
 import com.bosch.storagein.mapper.MaterialRecevieMapper;
 import com.bosch.storagein.service.IMaterialInService;
 import com.bosch.storagein.utils.BeanConverUtil;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +53,9 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
 
     @Autowired
     private MaterialInMapper materialInMapper;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
     @Override
     public MaterialInCheckVO getMaterialCheckInfo(String mesBarCode) {
@@ -117,10 +126,14 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         MaterialCheckResultVO checkResultVO = BeanConverUtil.conver(materialInCheckVO, MaterialCheckResultVO.class);
         checkResultVO.setOperateUser(SecurityUtils.getUsername());
         checkResultVO.setOperateTime(new Date());
+
+
+
         //如果是免检，直接入库。
         if (CheckTypeEnum.FREE.getCode().equals(materialInCheckVO.getCheckType())) {
             batchStorageIn(materialInCheckVO, materialInCheckDTO, checkResultVO.getAverageResult());
             checkResultVO.setCheckFlag(true);
+
             return checkResultVO;
         }
 
@@ -140,11 +153,19 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         }
 
         checkResultVO.setCheckFlag(false);
+
+
+
         return checkResultVO;
     }
 
     private void batchStorageIn(MaterialInCheckVO materialInCheckVO, MaterialInCheckDTO materialInCheckDTO, Double averageResult) {
+
+
+
+        List<UserOperationLog> userOperationLogList = new ArrayList<>();
         List<MaterialReceiveVO> materialReceiveVOS = materialRecevieMapper.selectSameBatchMaterialReceiveVO(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb());
+
         List<MaterialInDTO> materialInDTOList = materialReceiveVOS.stream().map(item -> {
             MaterialInDTO materialInDTO = buildMaterialInDTO(materialInCheckVO);
             materialInDTO.setSsccNumber(item.getSsccNumber());
@@ -161,11 +182,22 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
 
             //调用分配库位接口
 
+
+            UserOperationLog userOperationLog = new UserOperationLog();
+            userOperationLog.setOperationType(UserOperationType.Import.getCode());
+            userOperationLog.setCode(item.getMaterialNb());
+            userOperationLog.setSsccNumber(item.getSsccNumber());
+            userOperationLogList.add(userOperationLog);
+
+
+
             return materialInDTO;
         }).collect(Collectors.toList());
         materialInMapper.batchInsert(materialInDTOList);
         materialRecevieMapper.batchUpdateStatus(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb(), MaterialStatusEnum.IN.getCode(),
                 SecurityUtils.getUsername(), new Date());
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(),null,SecurityUtils.getUsername(),UserOperationType.STORAGEIN.getCode(),userOperationLogList);
+
 
     }
 

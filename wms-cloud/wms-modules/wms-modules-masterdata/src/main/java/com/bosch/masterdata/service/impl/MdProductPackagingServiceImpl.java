@@ -13,9 +13,11 @@ import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
 * @author GUZ1CGD4
@@ -121,6 +123,20 @@ public class MdProductPackagingServiceImpl extends ServiceImpl<MdProductPackagin
         });
 
         return true;
+    }
+
+    @Override
+    public List<String> getNotExistCodeList(List<String> codeList) {
+        if (CollectionUtils.isEmpty(codeList)){
+            throw new ServiceException("参数不能为空");
+        }
+        LambdaQueryWrapper<ProductPackaging> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(ProductPackaging::getProductNo,codeList);
+        queryWrapper.eq(ProductPackaging::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        List<ProductPackaging> list = this.list(queryWrapper);
+        List<String> existCodeList = list.stream().map(ProductPackaging::getProductNo).collect(Collectors.toList());
+        codeList.removeAll(existCodeList);
+        return codeList;
     }
 }
 

@@ -25,4 +25,6 @@ public interface ISPDNService  extends IService<SPDN> {
     void binDown(String qrCode);
 
     void ship(List<String> list, String carNb);
+
+    void batchShip(Long[] ids);
 }

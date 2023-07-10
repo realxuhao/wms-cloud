@@ -24,6 +24,7 @@ import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
 import com.bosch.binin.service.*;
 import com.bosch.binin.utils.BeanConverUtil;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.ruoyi.common.core.constant.AreaListConstants;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
@@ -32,11 +33,16 @@ import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.page.PageDomain;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.OperatorType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
@@ -66,6 +72,9 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     @Autowired
     @Lazy
     private IMaterialCallService callService;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
 
     @Override
@@ -399,6 +408,12 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         //执行下架
         binInService.binDown(ssccNb);
 
+        UserOperationLog userOperationLog = new UserOperationLog();
+        userOperationLog.setSsccNumber(ssccNb);
+        userOperationLog.setCode(kanban.getMaterialCode());
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.BINOUT.getCode(),userOperationLog);
+
+
 
     }
 
@@ -638,6 +653,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
                 stockMapper.updateById(conver);
             }
         }
+
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(),UserOperationType.PALLETSPLIT.getCode(),splitPallet.getSourceSsccNb());
 
 
     }

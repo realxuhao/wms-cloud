@@ -15,12 +15,16 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,6 +51,9 @@ public class WareShiftController extends BaseController {
     @Autowired
     private IWareShiftService shiftService;
 
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
+
 
     @PostMapping(value = "/add")
     @ApiOperation("新增移库任务")
@@ -68,6 +75,8 @@ public class WareShiftController extends BaseController {
     @Transactional(rollbackFor = Exception.class)
     public R binDown(@PathVariable String mesBarCode) {
         shiftService.binDown(mesBarCode);
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.BINOUTOTHER.getCode(), MesBarCodeUtil.getSSCC(mesBarCode));
+
         return R.ok(mesBarCode + "下架成功");
     }
 
@@ -76,6 +85,8 @@ public class WareShiftController extends BaseController {
     @Transactional(rollbackFor = Exception.class)
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         shiftService.splitPallet(splitPallet);
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(), splitPallet.getSourceSsccNb());
+
         return R.ok();
     }
 
@@ -183,6 +194,8 @@ public class WareShiftController extends BaseController {
     @ApiOperation("移库上架接口")
     public R performBinIn(@RequestBody BinInDTO binInDTO) {
         shiftService.performBinIn(binInDTO);
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.SHIFT_BININ.getCode(), MesBarCodeUtil.getSSCC(binInDTO.getMesBarCode()));
+
         return R.ok();
     }
 

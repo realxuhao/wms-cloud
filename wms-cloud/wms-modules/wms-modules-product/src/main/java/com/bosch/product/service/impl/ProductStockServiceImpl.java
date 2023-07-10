@@ -14,6 +14,7 @@ import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.product.api.domain.*;
 import com.bosch.product.api.domain.dto.*;
 import com.bosch.product.api.domain.enumeration.ProductStockBinInEnum;
+import com.bosch.product.api.domain.vo.ProductReturnVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.mapper.ProductStockMapper;
 import com.bosch.product.service.IManualTransferOrderService;
@@ -366,6 +367,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
     public void stockReturn(ProductReturnDTO productReturnDTO) {
         String qrCode = productReturnDTO.getQrCode();
         String sscc = ProductQRCodeUtil.getSSCC(qrCode);
+        String batchNb = ProductQRCodeUtil.getBatchNb(qrCode);
         LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ProductStock::getSsccNumber,sscc);
         queryWrapper.eq(ProductStock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
@@ -391,45 +393,68 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         }
         AreaVO areaVO = areaList.get(0);
 
+        //查询物料号等信息
+        LambdaQueryWrapper<ProductStock> queryWrapper1 = new LambdaQueryWrapper<>();
+        queryWrapper1.eq(ProductStock::getBatchNb,batchNb);
+        queryWrapper1.last("limit 1");
+        ProductStock oldStock = this.getOne(queryWrapper1);
+
+
         ProductStock stock = new ProductStock();
-        //添加为销售库存
-        stock.setPlantNb("7761");
-        stock.setWareCode(SecurityUtils.getWareCode());
-        //获取退获区域
-        stock.setAreaCode(areaVO.getCode());
+        if (productReturnDTO.getType()==0){//经销商退货，是退货到销售库存，7761
+            stock.setSsccNumber(sscc);
+            stock.setPlantNb("7761");
+            stock.setWareCode(SecurityUtils.getWareCode());
+            stock.setAreaCode(areaVO.getCode());
+            if(oldStock!=null){
+                stock.setMaterialNb(oldStock.getMaterialNb());
+                stock.setBatchNb(oldStock.getBatchNb());
+                stock.setExpireDate(oldStock.getExpireDate());
+            }
+            stock.setTotalStock(productReturnDTO.getQuantity());
+            stock.setFreezeStock((double) 0);
+            stock.setAvailableStock(productReturnDTO.getQuantity());
+            stock.setQualityStatus(QualityStatusEnums.BLOCK.getCode());
+            stock.setProductionDate(ProductQRCodeUtil.getProductionDate(qrCode));
+            stock.setBinInFlag(ProductStockBinInEnum.NONE.code());
+            this.save(stock);
+        }else if (productReturnDTO.getType()==1){//退货到工厂。也就是从7761退货到工厂。
+            //获取当前仓库的信息。
+            stock.setSsccNumber(sscc);
+            stock.setPlantNb(areaVO.getPlantNb());
+            stock.setWareCode(areaVO.getWareCode());
+            stock.setAreaCode(areaVO.getCode());
+            if(oldStock!=null){
+                stock.setMaterialNb(oldStock.getMaterialNb());
+                stock.setBatchNb(oldStock.getBatchNb());
+                stock.setExpireDate(oldStock.getExpireDate());
+            }
+            stock.setTotalStock(productReturnDTO.getQuantity());
+            stock.setFreezeStock((double) 0);
+            stock.setAvailableStock(productReturnDTO.getQuantity());
+            stock.setQualityStatus(QualityStatusEnums.BLOCK.getCode());
+            stock.setProductionDate(ProductQRCodeUtil.getProductionDate(qrCode));
+            stock.setBinInFlag(ProductStockBinInEnum.NONE.code());
+            this.save(stock);
 
-//        stock.setMaterialNb(ProductQRCodeUtil.);
-//        stock.setBatchNb(receive.getBatchNb());
-//        stock.setExpireDate(DateUtils.parseDate(receive.getExpireDate()));
-        stock.setTotalStock(productReturnDTO.getQuantity());
-        stock.setFreezeStock((double) 0);
-        stock.setAvailableStock(productReturnDTO.getQuantity());
-        stock.setQualityStatus(QualityStatusEnums.BLOCK.getCode());
-        stock.setProductionDate(ProductQRCodeUtil.getProductionDate(qrCode));
-//        stock.setUnit(receive.getUnit());
-        stock.setBinInFlag(ProductStockBinInEnum.NONE.code());
+        }
 
-        this.save(stock);
 
         ProductReturn productReturn = new ProductReturn();
-//        productReturn.setMaterialNb(stock.getMaterialNb());
-//        productReturn.setStatus(MaterialReturnStatusEnum.WAITING_CONFIRM.value());
-//        productReturn.setBatchNb(stock.getBatchNb());
-//        productReturn.setExpireDate(MesBarCodeUtil.getExpireDate(mesBarCode));
-//        productReturn.setMoveType(MoveTypeEnums.MATERIAL_RETURN.getCode());
-//        productReturn.setSsccNumber(MesBarCodeUtil.getSSCC(mesBarCode));
-//        productReturn.setAreaCode(areaCode);
-//        productReturn.setWareCode(wareCode);
-//        productReturn.setType(type);
-//        productReturn.setQuantity(quantity);
+        productReturn.setPlantNb(stock.getPlantNb());
+        productReturn.setMaterialNb(oldStock.getMaterialNb());
+        productReturn.setStatus(MaterialReturnStatusEnum.FINISH.value());
+        productReturn.setBatchNb(oldStock.getBatchNb());
+        productReturn.setExpireDate(oldStock.getExpireDate());
+        productReturn.setMoveType(MoveTypeEnums.MATERIAL_RETURN.getCode());
+        productReturn.setSsccNumber(sscc);
+        productReturn.setAreaCode(areaVO.getCode());
+        productReturn.setWareCode(areaVO.getWareCode());
+        productReturn.setType(productReturnDTO.getType());
+        productReturn.setQuantity(productReturnDTO.getQuantity());
 //        productReturn.setCell(productReturnDTO.getCell());
 //
         productReturnService.save(productReturn);
-
-
-
-
-
 
     }
 
@@ -472,6 +497,12 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         manualTransferOrderService.save(manualTransferOrder);
 
         this.updateById(stock);
+    }
+
+    @Override
+    public List<ProductReturnVO> returnList(ProductReturnDTO queryDTO) {
+
+        return productReturnService.getReturnList(queryDTO);
     }
 
 }

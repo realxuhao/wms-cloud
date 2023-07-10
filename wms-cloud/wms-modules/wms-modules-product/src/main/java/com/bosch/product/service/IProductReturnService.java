@@ -3,7 +3,10 @@ package com.bosch.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.product.api.domain.ProductReturn;
 import com.bosch.product.api.domain.dto.ProductReturnDTO;
+import com.bosch.product.api.domain.vo.ProductReturnVO;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
 * @author GUZ1CGD4
@@ -14,4 +17,7 @@ import org.springframework.stereotype.Service;
 public interface IProductReturnService extends IService<ProductReturn> {
 
 
+    boolean addProductReturn(ProductReturnDTO productReturnDTO);
+
+    List<ProductReturnVO> getReturnList(ProductReturnDTO returnDTO);
 }

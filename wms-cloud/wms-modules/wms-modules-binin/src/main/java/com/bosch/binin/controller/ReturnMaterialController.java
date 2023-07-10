@@ -9,6 +9,7 @@ import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
@@ -19,9 +20,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,6 +50,31 @@ public class ReturnMaterialController extends BaseController {
         materialReturnService.issueJob(confirmDTO);
         return R.ok("下发成功");
     }
+
+//    @PostMapping(value = "/comfirmOne/{mesBarCode}")
+//    @ApiOperation("批量确认退库任务接口")
+//    @Transactional(rollbackFor = Exception.class)
+//    public R comfirmOne(@PathVariable("mesBarCode") String mesBarCode) {
+//        MaterialReturnConfirmDTO materialReturnConfirmDTO = new MaterialReturnConfirmDTO();
+//        materialReturnConfirmDTO.setSsccNumbers(Arrays.asList(MesBarCodeUtil.getSSCC(mesBarCode)));
+//        materialReturnConfirmDTO.setWareCode(SecurityUtils.getWareCode());
+//        materialReturnService.issueJob(confirmDTO);
+//        return R.ok("下发成功");
+//    }
+
+    @ApiOperation("获取单个退库信息")
+    @GetMapping(value = "/getOne/{mesBarCode}")
+    public R<MaterialReturnVO> getOne(@PathVariable("mesBarCode") String mesBarCode){
+        MaterialReturnQueryDTO materialReturnQueryDTO = new MaterialReturnQueryDTO();
+        materialReturnQueryDTO.setSsccNb(MesBarCodeUtil.getSSCC(mesBarCode));
+        List<MaterialReturnVO> list = materialReturnService.list(materialReturnQueryDTO);
+        if (!CollectionUtils.isEmpty(list)){
+            return R.ok(list.get(0));
+        }
+        return R.ok();
+    }
+
+
 
     @GetMapping(value = "/list")
     @ApiOperation("获取退料列表")

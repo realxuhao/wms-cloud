@@ -40,6 +40,11 @@ public class RemoteProductFallbackFactory implements FallbackFactory<RemoteProdu
             public R<MdProductPackagingVO> getByCode(String code) {
                 return null;
             }
+
+            @Override
+            public R<List<String>> getNotExistCodeList(List<String> codeList) {
+                return null;
+            }
         };
     }
 }

@@ -6,8 +6,10 @@ import com.bosch.product.api.domain.ProductPick;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.dto.EditBinDownQuantityDTO;
 import com.bosch.product.api.domain.dto.ProductPickDTO;
+import com.bosch.product.api.domain.dto.SUDNDTO;
 import com.bosch.product.api.domain.enumeration.ProductPickEnum;
 import com.bosch.product.api.domain.vo.ProductPickBinDownVO;
+import com.bosch.product.api.domain.vo.ProductPickExportVO;
 import com.bosch.product.api.domain.vo.ProductPickVO;
 import com.bosch.product.mapper.ProductPickMapper;
 import com.bosch.product.service.IProductPickService;
@@ -16,9 +18,11 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.sun.corba.se.spi.ior.IORTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -176,14 +180,28 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
         if (productStock == null) {
             throw new ServiceException("该托目前在库存中已经不存在");
         }
-        productStock.setAvailableStock(productStock.getAvailableStock() + diff);
-        productStock.setTotalStock(productStock.getTotalStock() + diff);
-
+        if (productStock != null) {
+            productStock.setAvailableStock(productStock.getAvailableStock() + diff);
+            productStock.setTotalStock(productStock.getTotalStock() + diff);
+            productStockService.updateById(productStock);
+        } else {//如果为空，放到原库位
+            LambdaQueryWrapper<ProductStock> stockWrapper = new LambdaQueryWrapper<>();
+            stockWrapper.eq(ProductStock::getSsccNumber, sscc);
+            stockWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.TRUE.getCode());
+            stockWrapper.orderByDesc(ProductStock::getUpdateTime);
+            stockWrapper.last("limit 1");
+            ProductStock stock = productStockService.getOne(stockWrapper);
+            if (stock == null) {
+                throw new ServiceException("该托不存在于库存中。修改失败");
+            }
+            stock.setDeleteFlag(DeleteFlagStatus.FALSE.getCode());
+            stock.setTotalStock(diff);
+            stock.setFreezeStock(Double.valueOf(0));
+            stock.setAvailableStock(diff);
+            productStockService.updateById(stock);
+        }
         pick.setBinDownQuantity(dto.getNewBinDownQuantity());
-
         this.updateById(pick);
-        productStockService.updateById(productStock);
-
 
     }
 
@@ -198,6 +216,71 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
         });
         this.updateBatchById(pickList);
 
+    }
+
+    @Override
+    public List<ProductPickVO> binDownlist(ProductPickDTO queryDTO) {
+        return productPickMapper.binDownlist(queryDTO);
+    }
+
+    @Override
+    public ProductPickBinDownVO sumBinDown(String qrCode) {
+        String sscc = ProductQRCodeUtil.getSSCC(qrCode);
+        LambdaQueryWrapper<ProductPick> pickQueryWrapper = new LambdaQueryWrapper<>();
+        pickQueryWrapper.eq(ProductPick::getSscc, sscc);
+        pickQueryWrapper.eq(ProductPick::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        pickQueryWrapper.eq(ProductPick::getStatus, ProductPickEnum.WAITTING_DOWN.code());
+        List<ProductPick> productPicks = this.list(pickQueryWrapper);
+        if (CollectionUtils.isEmpty(productPicks)) {
+            throw new ServiceException("该SSCC" + sscc + "不存在捡配任务");
+        }
+        double downSum = productPicks.stream().mapToDouble(ProductPick::getDeliveryQuantity).sum();
+
+
+        LambdaQueryWrapper<ProductStock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.eq(ProductStock::getSsccNumber, sscc);
+        stockQueryWrapper.eq(ProductStock::getPlantNb, "7761");
+        stockQueryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        ProductStock productStock = productStockService.getOne(stockQueryWrapper);
+
+        productStock.setTotalStock(productStock.getTotalStock() - downSum);
+        productStock.setFreezeStock(productStock.getFreezeStock() - downSum);
+
+        productPicks.stream().forEach(item->{
+            item.setBinDownQuantity(item.getDeliveryQuantity());
+            item.setStatus(ProductPickEnum.WAITTING_SHIP.code());
+        });
+
+        ProductPickBinDownVO productPickBinDownVO = new ProductPickBinDownVO();
+        productPickBinDownVO.setSscc(sscc);
+
+        //如果总库存量是0 了，那么久一整托下架就可以了
+        if (productStock.getTotalStock() == 0) {
+            productStock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
+            productPickBinDownVO.setType(0);
+        } else {//如果不是0 ，代表还有，PDA需要提示把原托放到
+            productPickBinDownVO.setType(1);
+        }
+
+        productStockService.updateById(productStock);
+
+
+        this.updateBatchById(productPicks);
+
+        return productPickBinDownVO;
+
+
+
+
+
+
+
+
+    }
+
+    @Override
+    public List<ProductPickExportVO> getSUDNPickExportVO(ProductPickDTO sudndto) {
+        return productPickMapper.getSUDNPickExportVO(sudndto);
     }
 
 

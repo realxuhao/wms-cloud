@@ -7,10 +7,12 @@ package com.bosch.binin.api.enumeration;
  * @create: 2023-06-12 13:59
  **/
 public enum SPDNStatusEnum {
-    //正常
-    WAITING_APPROVE(0, "待审批"),
 
-    //异常
+    WAITING_APPROVE(0, "已上传"),
+
+    SHIPPED(2, "已发运"),
+
+
     APPROVED(1, "已审批");
 
 

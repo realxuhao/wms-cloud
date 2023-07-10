@@ -14,6 +14,7 @@ import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
+import com.bosch.binin.api.enumeration.WareShiftTypeEnum;
 import com.bosch.binin.mapper.IQCSamplePlanMapper;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IIQCSamplePlanService;
@@ -508,6 +509,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
                 .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
                 .targetWareCode(dto.getTargetWareCode())
                 .quantity(stock.getTotalStock())
+                .type(WareShiftTypeEnum.IQC.code())
                 .build();
         wareShiftService.save(wareShift);
 
@@ -587,6 +589,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
                             .sourceBinCode(stock.getBinCode()).materialNb(stock.getMaterialNb()).batchNb(stock.getBatchNb()).expireDate(stock.getExpireDate())
                             .ssccNb(stock.getSsccNumber()).deleteFlag(DeleteFlagStatus.FALSE.getCode()).moveType(MoveTypeEnums.WARE_SHIFT.getCode())
                             .status(KanbanStatusEnum.WAITING_BIN_DOWN.value())
+                            .type(WareShiftTypeEnum.IQC.code())
                             .quantity(stock.getTotalStock())
                             .build();
                     wareShiftList.add(wareShift);

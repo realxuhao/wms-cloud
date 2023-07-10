@@ -30,10 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -229,6 +226,19 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
                 throw new ServiceException("远程调用生成转运单失败，请重试");
             }
         }
+    }
+
+    @Override
+    public void batchShip(Long[] ids) {
+        List<SPDN> spdns = this.listByIds(Arrays.asList(ids));
+        spdns.stream().forEach(spdn -> {
+            if (!"7761".equals(spdn.getPlant())){
+                throw new ServiceException("只能选择7761的数据进行发运");
+            }
+            spdn.setStatus(SPDNStatusEnum.SHIPPED.code());
+        });
+        this.updateBatchById(spdns);
+
     }
 
 

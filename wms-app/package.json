@@ -8,7 +8,11 @@
 	"dependencies": {
 		"lodash": "^4.17.21"
 	},
-	"devDependencies": {},
+	"devDependencies": {
+		"@vue/cli-service": "^5.0.8",
+		"eslint": "^8.37.0",
+		"eslint-plugin-vue": "^9.10.0"
+	},
 	"contributes": {
 		"formator": {
 			"name": "Prettier",

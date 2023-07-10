@@ -68,7 +68,6 @@ services:
       - ./minio/config:/root/.minio/     #映射配置目录
     command: server --console-address ':9001' /data  #指定容器中的目录 /data
     privileged: true
-    restart: always
 
   wms-nginx:
     container_name: wms-nginx
@@ -86,6 +85,7 @@ services:
       - ./nginx/logs:/var/log/nginx
       - ./nginx/conf.d:/etc/nginx/conf.d
       - /etc/letsencrypt:/etc/letsencrypt
+      - /home/wms/excelfile:/home/wms/excelfile
     depends_on:
       - wms-gateway
     links:

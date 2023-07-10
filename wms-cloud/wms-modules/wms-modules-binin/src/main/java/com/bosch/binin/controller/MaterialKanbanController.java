@@ -16,6 +16,7 @@ import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.product.api.domain.ProductWareShift;
 import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
@@ -28,6 +29,9 @@ import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -67,6 +71,9 @@ public class MaterialKanbanController {
 
     @Autowired
     private IStockService stockService;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
     @GetMapping(value = "/list")
     @ApiOperation("查询kanban列表")
@@ -125,6 +132,7 @@ public class MaterialKanbanController {
     @Transactional(rollbackFor = Exception.class)
     public R binDown(@PathVariable String ssccNb) {
         materialKanbanService.binDown(ssccNb);
+
         return R.ok(ssccNb + "下架成功");
     }
 
@@ -552,6 +560,15 @@ public class MaterialKanbanController {
                 throw new ServiceException("sscc在不在kanban任务中");
             }
 
+
+            MaterialKanban kanban = listBySCAndStatus.get(0);
+            UserOperationLog userOperationLog = new UserOperationLog();
+            userOperationLog.setSsccNumber(kanban.getSsccNumber());
+            userOperationLog.setCode(kanban.getMaterialCode());
+            userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), kanban.getOrderNumber(),SecurityUtils.getUsername(), UserOperationType.CALLOVER.getCode(),userOperationLog);
+
+
+
             //更新kanban状态从 待上架  到 产线待收货
             int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs, KanbanStatusEnum.INNER_BIN_IN.value(), KanbanStatusEnum.INNER_DOWN.value());
             //更新移库表从 待上架 到 完成
@@ -618,6 +635,7 @@ public class MaterialKanbanController {
             if (CollectionUtils.isEmpty(listBySCAndStatus)) {
                 throw new ServiceException("包含暂不能收货的数据");
             }
+
             //更新kanban状态从 产线待收货  到 产线已收货
             int updateKanban = materialKanbanService.updateKanbanByIdStatus(ids, KanbanStatusEnum.INNER_DOWN.value(), KanbanStatusEnum.LINE_RECEIVED.value());
 

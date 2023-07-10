@@ -2,9 +2,9 @@ package com.bosch.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.product.api.domain.SUDN;
-import com.bosch.product.api.domain.dto.SPDNDTO;
 import com.bosch.product.api.domain.dto.SUDNDTO;
 import com.bosch.product.api.domain.dto.SUDNShipDTO;
+import com.bosch.product.api.domain.vo.ProductPickExportVO;
 import com.bosch.product.api.domain.vo.SUDNVO;
 
 import java.util.List;
@@ -40,4 +40,6 @@ public interface ISUDNService extends IService<SUDN> {
     List<SUDNVO> getFinishedShipSUDN();
 
     void ship(SUDNShipDTO shipDTO);
+
+
 }

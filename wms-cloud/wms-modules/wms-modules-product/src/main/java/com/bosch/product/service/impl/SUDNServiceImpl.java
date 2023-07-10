@@ -8,12 +8,11 @@ import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.product.api.domain.ProductPick;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.SUDN;
-import com.bosch.product.api.domain.dto.ProductIQCManagementQueryDTO;
-import com.bosch.product.api.domain.dto.SPDNDTO;
 import com.bosch.product.api.domain.dto.SUDNDTO;
 import com.bosch.product.api.domain.dto.SUDNShipDTO;
 import com.bosch.product.api.domain.enumeration.ProductPickEnum;
 import com.bosch.product.api.domain.enumeration.SUDNStatusEnum;
+import com.bosch.product.api.domain.vo.ProductPickExportVO;
 import com.bosch.product.api.domain.vo.SUDNVO;
 import com.bosch.product.mapper.SUDNMapper;
 import com.bosch.product.service.IProductPickService;
@@ -28,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -48,7 +48,7 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
     @Autowired
     private SUDNMapper sudnMapper;
 
-    @Autowired
+    @Resource
     private RemoteProductService remoteProductService;
 
     @Autowired
@@ -141,7 +141,10 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
                     break; // 达到目标值，结束遍历
                 }
             }
+            //箱
             double useSum = useProductStocks.stream().mapToDouble(ProductStock::getAvailableStock).sum();
+            //  转化为PCS
+            useSum= boxSpecification * useSum;
             List<ProductPick> pickList = new ArrayList<>();
             for (ProductStock stock : useProductStocks) {
                 ProductPick productPick = BeanConverUtil.conver(item, ProductPick.class);
@@ -155,11 +158,15 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
                 productPick.setAreaCode(stock.getAreaCode());
                 productPick.setDeliveryQuantity(stock.getAvailableStock());
                 productPick.setBinDownQuantity(stock.getAvailableStock());
+                productPick.setProductionBatch(stock.getProductionDate());
+                productPick.setExpireDate(stock.getExpireDate());
                 if (useProductStocks.get(useProductStocks.size() - 1) == stock) {
-                    double abs = Math.abs(useSum - item.getDeliveryQuantity());
-                    stock.setFreezeStock(stock.getFreezeStock() + (stock.getAvailableStock() - abs));
-                    productPick.setDeliveryQuantity(stock.getAvailableStock() - abs);
-                    productPick.setBinDownQuantity(stock.getAvailableStock() - abs);
+                    double abs = Math.abs(useSum - item.getDeliveryQuantity());//PCS
+                    //对应的箱
+                    double boxDiff = abs / boxSpecification;
+                    stock.setFreezeStock(stock.getFreezeStock() + (stock.getAvailableStock() - boxDiff));
+                    productPick.setDeliveryQuantity(stock.getAvailableStock()*boxSpecification - abs);
+                    productPick.setBinDownQuantity(stock.getAvailableStock()*boxSpecification - abs);
                 } else {
                     stock.setFreezeStock(stock.getFreezeStock() + stock.getAvailableStock());
                 }
@@ -250,6 +257,8 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
 
     }
 
+
+
     private MdProductPackagingVO getProductVO(String code) {
         R<MdProductPackagingVO> byCode = remoteProductService.getByCode(code);
         if (byCode == null || !byCode.isSuccess()) {
@@ -257,6 +266,9 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
         }
         return byCode.getData();
     }
+
+
+
 
 
 }

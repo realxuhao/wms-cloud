@@ -3,11 +3,9 @@ package com.bosch.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.product.api.domain.ProductPick;
 import com.bosch.product.api.domain.ProductReceive;
-import com.bosch.product.api.domain.dto.EditBinDownQuantityDTO;
-import com.bosch.product.api.domain.dto.ProductPickDTO;
-import com.bosch.product.api.domain.dto.ProductReceiveDTO;
-import com.bosch.product.api.domain.dto.ProductReceiveQueryDTO;
+import com.bosch.product.api.domain.dto.*;
 import com.bosch.product.api.domain.vo.ProductPickBinDownVO;
+import com.bosch.product.api.domain.vo.ProductPickExportVO;
 import com.bosch.product.api.domain.vo.ProductPickVO;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
 
@@ -38,4 +36,10 @@ public interface IProductPickService extends IService<ProductPick> {
     void editBinDownQuantity(EditBinDownQuantityDTO dto);
 
     void batchIssue(List<Long> idList);
+
+    List<ProductPickVO> binDownlist(ProductPickDTO queryDTO);
+
+    ProductPickBinDownVO sumBinDown(String qrCode);
+
+    List<ProductPickExportVO> getSUDNPickExportVO(ProductPickDTO sudndto);
 }
