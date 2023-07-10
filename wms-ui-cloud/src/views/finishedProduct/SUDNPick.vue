@@ -101,11 +101,10 @@
           :disabled="!selectedRowKeys.length">
           批量下发
         </a-button>
-      </div>
-
-      <div class="action-content">
         <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
       </div>
+
+      
       <a-table
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
                           getCheckboxProps:record => ({
@@ -272,30 +271,30 @@ const columns = [
     dataIndex: 'carNb',
     width: 120
   },
-  {
-    title: '下架人',
-    key: 'updateBy',
-    dataIndex: 'updateBy',
-    width: 120
-  },
-  {
-    title: '下架日期',
-    key: 'updateTime',
-    dataIndex: 'updateTime',
-    width: 180
-  },
-  {
-    title: '发运人',
-    key: 'createBy',
-    dataIndex: 'createBy',
-    width: 120
-  },
-  {
-    title: '发运时间',
-    key: 'createTime',
-    dataIndex: 'createTime',
-    width: 180
-  },
+  // {
+  //   title: '下架人',
+  //   key: 'updateBy',
+  //   dataIndex: 'updateBy',
+  //   width: 120
+  // },
+  // {
+  //   title: '下架日期',
+  //   key: 'updateTime',
+  //   dataIndex: 'updateTime',
+  //   width: 180
+  // },
+  // {
+  //   title: '发运人',
+  //   key: 'createBy',
+  //   dataIndex: 'createBy',
+  //   width: 120
+  // },
+  // {
+  //   title: '发运时间',
+  //   key: 'createTime',
+  //   dataIndex: 'createTime',
+  //   width: 180
+  // },
   {
     title: '操作',
     key: 'action',
@@ -342,6 +341,7 @@ export default {
       tableLoading: false,
       genTaskLoading: false,
       dispatchLoading:false,
+      exportLoading: false,
       queryForm: {
         pageSize: 20,
         pageNum: 1,
