@@ -40,7 +40,9 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
 
     @Override
     public List<PurchaseOrder> selectSupplierPurchaseOrder(String name, PurchaseOrder purchaseOrder) {
-        purchaseOrder.setSupplier(name);
+        if(!"errorname".equals(name)){
+            purchaseOrder.setSupplier(name);
+        }
         List<PurchaseOrder> purchaseOrders = purchaseOrderMapper.selectSupplierPurchaseOrder(purchaseOrder);
         purchaseOrders.forEach(c -> {
             BigDecimal sum = supplierPorderService.getArriveQuantityByPurchaseId(c.getPurchaseId());
@@ -92,5 +94,10 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
     @Override
     public List<String> getCmsNumberList(String name) {
         return purchaseOrderMapper.getCmsNumberList(name);
+    }
+
+    @Override
+    public List<String> getSupplierName() {
+        return purchaseOrderMapper.getSupplierName();
     }
 }

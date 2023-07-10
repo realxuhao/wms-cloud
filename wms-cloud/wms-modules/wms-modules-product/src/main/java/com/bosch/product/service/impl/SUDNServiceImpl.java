@@ -239,7 +239,7 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
             throw new ServiceException("该SUDN下无捡配任务或无已下架信息");
         }
 
-        double binDownSum = pickList.stream().filter(item -> item.getStatus() == ProductPickEnum.WAITING_ISSUE.code()).mapToDouble(ProductPick::getBinDownQuantity).sum();
+        double binDownSum = pickList.stream().filter(item -> item.getStatus() == ProductPickEnum.WAITTING_SHIP.code()).mapToDouble(ProductPick::getBinDownQuantity).sum();
         double shipQuantity = sudn.getShipQuantity() + shipDTO.getShipQuantity();
         if (shipQuantity > binDownSum) {
             throw new ServiceException("发运数量不能大于已下架数量");

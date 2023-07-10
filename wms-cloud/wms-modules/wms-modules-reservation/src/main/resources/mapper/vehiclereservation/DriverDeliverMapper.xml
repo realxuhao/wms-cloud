@@ -90,4 +90,21 @@
             </otherwise>
         </choose>
     </select>
+
+    <select id="selectDriverDeliverOnTimeList" resultMap="DriverDeliverResult">
+        <include refid="selectDriverDeliver"/>
+        <where>
+            <if test="driver.reserveNoList != null and driver.reserveNoList.size() > 0">
+                and t1.reserve_no in
+                <foreach item="item" index="index" collection="driver.reserveNoList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="driver.selectYear != null ">
+                and year(t1.reserve_date) = #{driver.selectYear}
+            </if>
+            and reserve_type = 1
+        </where>
+        order by reserve_date,time_window
+    </select>
 </mapper>

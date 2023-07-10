@@ -42,6 +42,10 @@ const driverDispatch = {
       const data = await driverDispatchService.sort(options)
       return data
     },
+    async change ({ commit }, id) {
+      const data = await driverDispatchService.change(id)
+      return data
+    },
     async getWxToken ({ commit }) {
       const data = await driverDispatchService.getWxToken()
       return data

@@ -59,16 +59,7 @@ public class ReportServiceImpl implements IReportService {
     @Override
     public List<ReportMaterial> oldMaterial() {
         List<ReportMaterial> reportMaterials = reportMapper.oldMaterial();
-//        //循环reportMaterials，根据batchNb去重,根据createTime排序
-//        Map<String, List<ReportMaterial>> collect = reportMaterials.stream().collect(Collectors.groupingBy
-//        (ReportMaterial::getBatchNb));
-//        //将collect的value取出来，组合成新list
-//        List<ReportMaterial> list=new ArrayList<>();
-//        for (Map.Entry<String, List<ReportMaterial>> entry : collect.entrySet()) {
-//            List<ReportMaterial> value = entry.getValue();
-//            ReportMaterial reportMaterial = value.get(0);
-//            list.add(reportMaterial);
-//        }
+
         return reportMaterials;
     }
 
@@ -92,6 +83,11 @@ public class ReportServiceImpl implements IReportService {
     }
 
     @Override
+    public List<WorkloadVO> workloadPro(WorkloadDTO workloadDTO) {
+        return reportMapper.workloadPro(workloadDTO);
+    }
+
+    @Override
     public List<ProcessEfficiencyVO> processEfficiency(EfficiencyDTO efficiencyDTO) {
         List<ProcessEfficiencyVO> processEfficiencyVOS = new ArrayList<>();
         //收货清单导入List
@@ -99,11 +95,11 @@ public class ReportServiceImpl implements IReportService {
         List<EfficiencyVO> importList = reportMapper.getEfficiencyByOperationType(efficiencyDTO);
         //上架List
         efficiencyDTO.setOperationType(UserOperationType.MATERIALBININ.getCode());
-        List<EfficiencyVO> materialBinInList = reportMapper.getEfficiencyByOperationType(efficiencyDTO);
+        List<EfficiencyVO> materialBinInList = reportMapper.getEfficiencyByOperationTwo(efficiencyDTO);
 
         //IQC下架List
         efficiencyDTO.setOperationType(UserOperationType.IQCBINOUT.getCode());
-        List<EfficiencyVO> iqcBinOutList = reportMapper.getEfficiencyByOperationType(efficiencyDTO);
+        List<EfficiencyVO> iqcBinOutList = reportMapper.getEfficiencyByOperationTwo(efficiencyDTO);
 
         //IQC上架List
         efficiencyDTO.setOperationType(UserOperationType.IQCBININ.getCode());
@@ -112,7 +108,7 @@ public class ReportServiceImpl implements IReportService {
         efficiencyDTO.setOperationType(UserOperationType.CALLOVER.getCode());
         List<EfficiencyVO> callOverList = reportMapper.getCallOver(efficiencyDTO);
         for (EfficiencyVO efficiencyVO : callOverList) {
-            BigDecimal fm=new BigDecimal(60*60);
+            BigDecimal fm=new BigDecimal(60);
             BigDecimal bwtHours=efficiencyVO.getTimeConsuming().divide(fm,2, BigDecimal.ROUND_HALF_UP);
             efficiencyVO.setTimeConsuming(bwtHours);
         }
@@ -128,7 +124,7 @@ public class ReportServiceImpl implements IReportService {
         }
         //获取IQC取样：下架-上架的耗时
         if (!CollectionUtils.isEmpty(iqcBinOutList) && !CollectionUtils.isEmpty(iqcBinInList)) {
-            List<EfficiencyVO> efficiencyVOS = processEfficiency(iqcBinOutList, iqcBinInList);
+            List<EfficiencyVO> efficiencyVOS = processEfficiency(iqcBinInList,iqcBinOutList );
             if (!CollectionUtils.isEmpty(efficiencyVOS)) {
                 processEfficiencyVOS = getProcessEfficiencyList(efficiencyVOS, 1,processEfficiencyVOS);
             }
@@ -146,6 +142,10 @@ public class ReportServiceImpl implements IReportService {
         for (EfficiencyVO vo1 : list1) {
             for (EfficiencyVO vo2 : list2) {
                 if (vo1.getSsccNumber().equals(vo2.getSsccNumber())) {
+                    //第二个操作在第一个之前的不计算，获取离第一个操作最近的时间
+                    if(vo1.getCreateTime().after(vo2.getCreateTime())){
+                        continue;
+                    }
                     EfficiencyVO newVO = new EfficiencyVO();
                     newVO.setCell(vo1.getCell());
                     newVO.setSsccNumber(vo1.getSsccNumber());
@@ -318,6 +318,66 @@ public class ReportServiceImpl implements IReportService {
     }
 
 
+    @Override
+    public List<MissionToDo> selectProReportList(MissionToDo mission) {
+        List<String> codes = new ArrayList<>();
+        List<MissionToDo> list = new ArrayList<>();
+        //获取仓库或者cell
+        if (StringUtils.isNotEmpty(mission.getCell())) {
+            if (!mission.getCell().equals("All")) {
+                codes.add(mission.getCell());
+            } else {
+                codes = reportMapper.getCellCode();
+            }
+            for (String s : codes) {
+                MissionToDo missionToDo = new MissionToDo();
+                missionToDo.setCell(s);
+                list.add(missionToDo);
+            }
+
+
+        } else if (StringUtils.isNotEmpty(mission.getWareCode())) {
+            if (!mission.getWareCode().equals("All")) {
+                codes.add(mission.getWareCode());
+            } else {
+                codes = reportMapper.getWareCode();
+            }
+
+            for (String s : codes) {
+                MissionToDo missionToDo = new MissionToDo();
+                missionToDo.setWareCode(s);
+                list.add(missionToDo);
+            }
+        }
+
+
+        if (CollectionUtils.isEmpty(list)) {
+            return list;
+        }
+        List<MissionMap> beReceived = reportMapper.toBeReceivedPro(mission.getCell(), mission.getWareCode());
+        List<MissionMap> beBin = reportMapper.toBeBinPro(mission.getCell(), mission.getWareCode());
+        List<MissionMap> beMove = reportMapper.toBeMovePro(mission.getCell(), mission.getWareCode());
+        //待入库map
+        Map<String, Integer> receiveMap = getMap(beReceived);
+        //上架map
+        Map<String, Integer> beBinMap = getMap(beBin);
+        //移库map
+        Map<String, Integer> beMoveMap = getMap(beMove);
+        //赋值list
+        for (MissionToDo missionToDo : list) {
+            if (StringUtils.isNotEmpty(mission.getCell())) {
+                missionToDo.setToBeReceived(receiveMap.get(missionToDo.getCell()));
+                missionToDo.setToBeBin(beBinMap.get(missionToDo.getCell()));
+                missionToDo.setToBeMove(beMoveMap.get(missionToDo.getCell()));
+            } else if (StringUtils.isNotEmpty(mission.getWareCode())) {
+                missionToDo.setToBeReceived(receiveMap.get(missionToDo.getWareCode()));
+                missionToDo.setToBeBin(beBinMap.get(missionToDo.getWareCode()));
+                missionToDo.setToBeMove(beMoveMap.get(missionToDo.getWareCode()));
+            }
+
+        }
+        return list;
+    }
     //获取map
     public Map<String, Integer> getMap(List<MissionMap> list) {
         if (CollectionUtils.isEmpty(list)) {
@@ -328,5 +388,10 @@ public class ReportServiceImpl implements IReportService {
         Map<String, Integer> map = filterNull.stream().collect(Collectors.toMap(MissionMap::getCode,
                 MissionMap::getNumber));
         return map;
+    }
+
+    public     Boolean genProStock(){
+
+        return true;
     }
 }

@@ -129,6 +129,47 @@
         <if test="cell != null and cell != ''"> GROUP BY md.code</if>
         <if test="wareCode != null and wareCode != ''">GROUP BY ws.source_ware_code</if>
     </select>
+    <select id="toBeReceivedPro" resultType="com.bosch.masterdata.api.domain.MissionMap">
+        SELECT
+        <if test="cell != null and cell != ''"> pp.cell AS code,  COUNT(pp.cell) as number</if>
+        <if test="wareCode != null and wareCode != ''">count(ware_code) AS number, ware_code AS CODE</if>
+        FROM product_receive pr
+        LEFT JOIN md_product_packaging pp ON pr.material_nb =product_no AND  pr.delete_flag=0 AND  pp.delete_flag=0
+        WHERE
+        pr.status=0
+        <if test="cell != null and cell != ''and cell != 'All'">AND pp.cell=#{cell}</if>
+        <if test="wareCode != null and wareCode != ''and wareCode != 'All'">AND pr.ware_code=#{wareCode}</if>
+        GROUP BY code
+
+    </select>
+
+    <select id="toBeBinPro" resultType="com.bosch.masterdata.api.domain.MissionMap">
+        SELECT
+        <if test="cell != null and cell != ''">  pp.cell AS code,  COUNT(pp.cell) as number </if>
+        <if test="wareCode != null and wareCode != ''"> count(ware_code) AS number, ware_code AS CODE</if>
+        FROM product_stock ps
+        LEFT JOIN md_product_packaging pp ON ps.material_nb =product_no
+        AND  ps.delete_flag=0 AND  pp.delete_flag=0
+        WHERE
+        ps.bin_in_flag=1
+        <if test="cell != null and cell != ''and cell != 'All'">AND pp.cell=#{cell}</if>
+        <if test="wareCode != null and wareCode != ''and wareCode != 'All'">AND ps.ware_code =#{wareCode}</if>
+        GROUP BY code
+    </select>
+
+    <select id="toBeMovePro" resultType="com.bosch.masterdata.api.domain.MissionMap">
+        SELECT
+        <if test="cell != null and cell != ''">   pp.cell AS code,  COUNT(pp.cell) as number</if>
+        <if test="wareCode != null and wareCode != ''"> count(ps.source_ware_code) AS number, ps.source_ware_code AS CODE</if>
+        FROM product_ware_shift ps
+        LEFT JOIN md_product_packaging pp ON ps.material_nb =product_no
+        AND  ps.delete_flag=0 AND  pp.delete_flag=0
+        WHERE
+        ps.status <![CDATA[ <> ]]> -1 AND ps.status <![CDATA[ <> ]]> 3
+        <if test="cell != null and cell != ''and cell != 'All'">AND pp.cell=#{cell}</if>
+        <if test="wareCode != null and wareCode != ''and wareCode != 'All'">AND ps.source_ware_code=#{wareCode}</if>
+        GROUP BY CODE
+    </select>
 
      <select id="oldMaterial" resultType="com.bosch.masterdata.api.domain.ReportMaterial">
          SELECT t1.*
@@ -179,7 +220,33 @@
                          WHEN '5' THEN 'pallet_turnover'
                          ELSE 'other'
                          END AS type_name
-              FROM user_operation_log GROUP BY create_by ,operation_type)AS t
+              FROM user_operation_log where  type='0' GROUP BY create_by ,operation_type )AS t
+        where 1=1
+        <if test="createBy != null and createBy != ''">and create_by like concat('%', #{createBy}, '%')</if>
+        <if test="createTimeStart != null">and create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
+        <if test="createTimeEnd != null">and create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
+        <if test="type != null and type != ''">and type=#{type}</if>
+        GROUP BY create_by
+
+
+    </select>
+
+    <select id="workloadPro" resultType="com.bosch.masterdata.api.domain.vo.WorkloadVO" parameterType="com.bosch.masterdata.api.domain.dto.WorkloadDTO">
+        SELECT
+        create_by ,
+        MAX( CASE operation_type WHEN '9' THEN nb ELSE 0 END ) AS 'bin_in',
+        MAX( CASE operation_type WHEN '10' THEN nb ELSE 0 END ) AS 'bin_out',
+        MAX( CASE operation_type WHEN '11' THEN nb ELSE 0 END ) AS 'bin_out_other'
+
+        FROM (SELECT COUNT(*) AS nb,create_by ,operation_type ,
+        CASE operation_type
+        WHEN '9' THEN 'bin_in'
+        WHEN '10' THEN 'bin_out'
+        WHEN '11' THEN 'bin_out_other'
+
+        ELSE 'other'
+        END AS type_name
+        FROM user_operation_log where  TYPE='1' GROUP BY create_by ,operation_type )AS t
         where 1=1
         <if test="createBy != null and createBy != ''">and create_by like concat('%', #{createBy}, '%')</if>
         <if test="createTimeStart != null">and create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
@@ -192,7 +259,7 @@
 
     <select id="getEfficiencyByOperationType" resultType="com.bosch.masterdata.api.domain.vo.EfficiencyVO" parameterType="com.bosch.masterdata.api.domain.dto.EfficiencyDTO">
         SELECT sscc_number,
-               DATE_FORMAT(max(u.create_time),'%Y-%m-%d %H:%i:%s') AS create_time,
+               u.create_time,
                operation_type, md.code AS cell
 
         FROM user_operation_log u
@@ -208,9 +275,28 @@
         <if test="operationType != null ">AND operation_type=#{operationType}</if>
         <if test="cell != null and cell != ''">AND md.code=#{cell}</if>
         <if test="orderNumber != null and orderNumber != ''">AND order_number =#{orderNumber}</if>
-        GROUP BY sscc_number, md.code
+        GROUP BY sscc_number, md.code,u.create_time
+        ORDER BY create_time
     </select>
+    <select id="getEfficiencyByOperationTwo" resultType="com.bosch.masterdata.api.domain.vo.EfficiencyVO" parameterType="com.bosch.masterdata.api.domain.dto.EfficiencyDTO">
+        SELECT sscc_number,
+        u.create_time,
+        operation_type, md.code AS cell
 
+        FROM user_operation_log u
+        left join md_material mm on u.code = mm.code and mm.delete_flag = 0
+        LEFT JOIN md_material_type mt ON mm.material_type_id = mt.id
+        left join md_department md on mt.department_id = md.id
+
+        WHERE 1=1
+        <if test="type != null and type != ''">and type=#{type}</if>
+        <if test="createBy != null and createBy != ''">and u.create_by like concat('%', #{createBy}, '%')</if>
+        <if test="operationType != null ">AND operation_type=#{operationType}</if>
+        <if test="cell != null and cell != ''">AND md.code=#{cell}</if>
+        <if test="orderNumber != null and orderNumber != ''">AND order_number =#{orderNumber}</if>
+        GROUP BY sscc_number, md.code,u.create_time
+        ORDER BY create_time
+    </select>
     <select id="getCallOver" resultType="com.bosch.masterdata.api.domain.vo.EfficiencyVO" parameterType="com.bosch.masterdata.api.domain.dto.EfficiencyDTO">
         SELECT
         DATE_FORMAT(MIN(u.create_time),'%Y-%m-%d 00:00:00')AS create_time,

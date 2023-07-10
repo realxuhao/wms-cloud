@@ -129,9 +129,9 @@ public class SupplierReserveController extends BaseController {
         return R.ok(supplierReserveService.selectDataByReserveNoForWx(reserveNo));
     }
 
-    @GetMapping(value = "/selectErrorData/{name}")
+    @GetMapping(value = "/selectErrorData")
     @ApiOperation("根据供应商编号查询错误状态订单")
-    public R<List<String>> selectErrorData(@PathVariable String name) {
-        return R.ok(supplierReserveService.selectErrorDataByName(name));
+    public R<List<String>> selectErrorData(SupplierReserveDTO supplierReserveDTO) {
+        return R.ok(supplierReserveService.selectErrorDataByName(supplierReserveDTO.getSupplierCode()));
     }
 }

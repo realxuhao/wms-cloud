@@ -30,8 +30,8 @@ const supplierReserve = {
       const data = await supplierReserveService.getDetailsList(reserveNo)
       return data
     },
-    async getErrorData ({ commit }, name) {
-      const data = await supplierReserveService.getErrorData(name)
+    async getErrorData ({ commit }, options) {
+      const data = await supplierReserveService.getErrorData(options)
       return data
     }
   }

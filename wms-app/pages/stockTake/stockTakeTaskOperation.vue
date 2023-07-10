@@ -90,7 +90,6 @@
 				});
 			},
 
-			async lodaData() {},
 			async getByMesBarCode(barCode) {
 				try {
 					const data = await this.$store.dispatch('stock/getStockTakeDetail', barCode);
@@ -130,8 +129,35 @@
 				}
 			}
 		},
-		mounted() {
-			this.lodaData();
+
+		async handlePost() {
+			this.$refs.binInForm
+				.validate()
+				.then(res => {
+					this.onSubmitBinIn();
+				})
+				.catch(err => {});
+		},
+		async onSubmitBinIn() {
+			try {
+				uni.showLoading({
+					title: '正在提交'
+				});
+				this.submitLoading = true;
+
+				const options = {
+					detailId: this.materialInfo.id,
+					isDiff: this.isDiff ? 0 : 1,
+					pdaTakeQuantity: this.form.pdaTakeQuantity
+				};
+				await this.$store.dispatch('stock/operate', options);
+				this.$refs.popup.open();
+			} catch (e) {
+				this.$refs.message.error(e.message);
+			} finally {
+				uni.hideLoading();
+				this.submitLoading = false;
+			}
 		}
 	};
 </script>

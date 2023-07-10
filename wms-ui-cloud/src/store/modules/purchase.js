@@ -34,16 +34,20 @@ const purchase = {
       const data = await purchaseService.getErrorPoCode()
       return data
     },
-    async getPoCodeList ({ commit }, option) {
-      const data = await purchaseService.getPoCodeList(option)
+    async getPoCodeList ({ commit }, options) {
+      const data = await purchaseService.getPoCodeList(options)
       return data
     },
-    async getPoItemList ({ commit }, option) {
-      const data = await purchaseService.getPoItemList(option)
+    async getPoItemList ({ commit }, options) {
+      const data = await purchaseService.getPoItemList(options)
       return data
     },
-    async getCmsNumberList ({ commit }, option) {
-      const data = await purchaseService.getCmsNumberList(option)
+    async getCmsNumberList ({ commit }, options) {
+      const data = await purchaseService.getCmsNumberList(options)
+      return data
+    },
+    async getSupplierName ({ commit }, option) {
+      const data = await purchaseService.getSupplierName()
       return data
     }
   }

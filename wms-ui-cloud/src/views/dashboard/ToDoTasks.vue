@@ -61,7 +61,6 @@ export default {
 
       type:1,
       list:[],
-
       queryForm:{
         wareCode:'All',
         cell:''
@@ -77,9 +76,6 @@ export default {
       try {
         const data = await this.$store.dispatch('ware/getOptionList')
         this.wareList = [{code:'All',id:-1},...data.data]
-        // if(data.data.length>0){
-        //   this.queryForm.wareCode = data.data[0].code
-        // }
 
         this.getData()
       } catch (error) {
@@ -203,43 +199,18 @@ export default {
 
       myChart.setOption(option)
     },
+
+
     async getData(){
       const data = await this.$store.dispatch('dashboard/getMissionToDoSummary',this.queryForm)
       this.list = data
       this.loadMaterialCharts()
-      // const wareList = _.map(_.uniqBy(data,'wareCode'),'wareCode')
-      // this.wareList = wareList
-      // this.checkedList = wareList
 
-      // const wareDataMap = {}
-      // _.each(wareList,x=>{
-      //   if(!wareDataMap[x]){
-      //     wareDataMap[x] = {
-      //       children:[]
-      //     }
-      //   }
-
-      //   _.each(data,y=>{
-      //     if(x === y.wareCode){
-      //       const createTime = moment(y.createTime)
-      //       const formatString = this.dateType === 1 ? 'YYYY-MM':'YYYY-MM-DD'
-      //       const item = {
-      //         label: createTime.format(formatString),
-      //         total:y.totalBin,
-      //         used:y.materialOccupyBin,
-      //         percent:y.percent
-      //       }
-      //       wareDataMap[x].children.push(item)
-      //     }
-      //   })
-      // })
-
-      // this.wareDataMap = wareDataMap
     }
   },
   mounted(){
     this.getWareList()
-    // this.getData()
+
   },
   watch:{
     type(val){

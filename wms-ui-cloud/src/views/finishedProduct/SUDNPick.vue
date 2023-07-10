@@ -84,6 +84,7 @@
       <div class="action-content">
      
         <a-button
+          class="m-r-8"
           type="primary"
           icon="plus"
           :loading="generateLoading"
@@ -100,6 +101,10 @@
           :disabled="!selectedRowKeys.length">
           批量下发
         </a-button>
+      </div>
+
+      <div class="action-content">
+        <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
       </div>
       <a-table
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
@@ -157,6 +162,7 @@
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
 import { colorMap } from '@/utils/color'
+import { download } from '@/utils/file'
 import EditTableCell from '@/components/EditTableCell'
 
 import _ from 'lodash'
@@ -313,9 +319,10 @@ const queryFormAttr = () => {
 }
 
 const statusMap = {
-  '-1': '待下架',
-  0: '待发运',
-  1: '已完成',
+  '-1': '已取消',
+  0: '待下发',
+  1: '待下架',
+  2: '完成'
 }
 
 const statusColorMap = {
@@ -356,10 +363,23 @@ export default {
     statusColorMap:()=>statusColorMap
   },
   methods: {
+    async handleDownload () {
+      try {
+        this.exportLoading = true
+        this.queryForm.pageSize = 0
+        const blobData = await this.$store.dispatch('finishedProduct/exportSUDNPickExcel', this.queryForm)
+        download(blobData, 'SUDN捡配列表')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
+      }
+    },
     async handleGenerate () {
       try {
         this.generateLoading = true
-        await this.$store.dispatch('finishedProduct/sudnGenerate', this.selectedRowKeys)
+        await this.$store.dispatch('finishedProduct/', this.selectedRowKeys)
         this.$message.success('成功')
         this.selectedRowKeys = []
         this.loadTableList()

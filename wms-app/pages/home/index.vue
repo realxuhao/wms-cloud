@@ -153,6 +153,16 @@
 						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" color="#00ADD4"></uni-icons>
 						<view class="text">上架</view>
 					</view>
+					<!-- <view class="list-item" v-if="$hasPermi(['app:iqc:stockTake'])"
+						@click="handleGoto('/pages/stockTake/stockTake')">
+						<uni-icons size="24" custom-prefix="iconfont" class="icon icon-kucunpandian"
+							color="rgb(46,151,222)"></uni-icons>
+						<view class="text">盘点</view>
+					</view> -->
+				</view>
+			</uni-section>
+			<uni-section title="盘点" v-if="$hasPermi(['app:finishedProduct:packTask'])" type="line" class="m-b-12">
+				<view class="list header-box">
 					<view class="list-item" v-if="$hasPermi(['app:iqc:stockTake'])"
 						@click="handleGoto('/pages/stockTake/stockTake')">
 						<uni-icons size="24" custom-prefix="iconfont" class="icon icon-kucunpandian"

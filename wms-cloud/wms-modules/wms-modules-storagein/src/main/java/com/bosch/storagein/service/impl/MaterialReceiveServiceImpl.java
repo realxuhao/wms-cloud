@@ -13,6 +13,7 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,9 @@ public class MaterialReceiveServiceImpl extends ServiceImpl<MaterialRecevieMappe
 
     @Autowired
     private MaterialRecevieMapper materialRecevieMapper;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
 
     @Override

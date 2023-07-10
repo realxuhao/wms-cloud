@@ -36,4 +36,6 @@ public interface IProductPickService extends IService<ProductPick> {
 
 
     void editBinDownQuantity(EditBinDownQuantityDTO dto);
+
+    void batchIssue(List<Long> idList);
 }

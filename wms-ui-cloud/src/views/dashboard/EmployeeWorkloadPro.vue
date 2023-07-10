@@ -130,7 +130,7 @@ export default {
       try {
         this.downloadLoading = true
 
-        const res  = await this.$store.dispatch('dashboard/exportWorkload')
+        const res  = await this.$store.dispatch('dashboard/exportWorkloadPro')
 
         download(res,'在库时间最长物料')
       } catch (error) {
@@ -154,7 +154,7 @@ export default {
 
         const {
            rows, total
-        } = await this.$store.dispatch('dashboard/getWorkload', options)
+        } = await this.$store.dispatch('dashboard/getWorkloadPro', options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {

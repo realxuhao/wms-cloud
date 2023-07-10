@@ -63,4 +63,19 @@
         </where>
         order by t1.reserve_date desc
     </select>
+
+    <select id="selectReserveOnList" resultType="java.lang.String">
+        select reserve_no from vr_supplier_reserve
+        <where>
+            <if test="supplierCode != null  and supplierCode != ''">
+                and supplier_code = #{supplierCode}
+            </if>
+        </where>
+        group by reserve_no
+    </select>
+
+    <select id="getSupplierName" resultType="java.lang.String">
+        SELECT DISTINCT supplier_code
+        from vr_supplier_reserve
+    </select>
 </mapper>

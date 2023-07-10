@@ -127,13 +127,14 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
                 takePlan.setDiffBinQuantity(takePlan.getDiffBinQuantity() + 1);
             }
         } else {//明盘
-            if (pdaTakeOperateDTO.getIsDiff().equals(Boolean.FALSE)) {
+            if (pdaTakeOperateDTO.getIsDiff().equals(Boolean.TRUE)) {
                 takeDetail.setTakeQuantity(pdaTakeOperateDTO.getPdaTakeQuantity());
                 takeDetail.setIsDiff(1);
                 takePlan.setRemark(pdaTakeOperateDTO.getRemark());
                 takePlan.setDiffBinQuantity(takePlan.getDiffBinQuantity() + 1);
             } else {
                 takeDetail.setIsDiff(0);
+                takeDetail.setTakeQuantity(takeDetail.getStockQuantity());
             }
         }
         takePlan.setTakeBinQuantity(takePlan.getTakeBinQuantity() + 1);

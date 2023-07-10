@@ -27,9 +27,9 @@
 		data() {
 			return {
 				tabs: [{
-					title: '未完成'
+					title: '待下架'
 				}, {
-					title: '已完成'
+					title: '已下架'
 				}],
 				currentTabIndex: 0,
 

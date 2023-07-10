@@ -18,6 +18,7 @@
 					<text class="material-name">{{ item.binCode }}</text>
 					<text class="status">待盘点</text>
 				</view>
+				<view class="card-text m-b-4">物料名称：{{ item.ssccNb }}</view>
 				<view class="card-text m-b-4">物料名称：{{ item.materialName }}</view>
 				<view class="card-text m-b-4">物料编码：{{ item.materialCode }}</view>
 			</view>
@@ -59,7 +60,7 @@ export default {
 	},
 	methods: {
 		async getList() {
-			const options = { pageSize: this.pageSize, pageNum: this.pageNum, state: 1, taskNo: this.taskNo };
+			const options = { pageSize: this.pageSize, pageNum: this.pageNum, status: 1, taskNo: this.taskNo };
 			const { rows, total } = await this.$store.dispatch('stock/getStockTakeDetailList', options);
 			return { rows, total };
 		},

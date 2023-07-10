@@ -87,10 +87,11 @@ public class ProductPickController extends BaseController {
         return R.ok();
     }
 
-
-
-
-
-
+    @PostMapping(value = "/batchIssue/{ids}")
+    @ApiOperation("批量下发")
+    public R batchIssue(@PathVariable Long[] ids) {
+        pickService.batchIssue(Arrays.asList(ids));
+        return R.ok();
+    }
 
 }

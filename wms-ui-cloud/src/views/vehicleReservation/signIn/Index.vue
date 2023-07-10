@@ -98,6 +98,19 @@
             <template slot="dockCode" slot-scope="text">
               <span v-if="text != null">道口 {{ text }}</span>
             </template>
+            <template slot="action" slot-scope="text, record">
+              <div class="action-con" v-if="record.status == 3">
+                <a-popconfirm
+                  v-if="record.status == 3"
+                  title="确认要处理该异常数据，将其状态更改为已完成吗?"
+                  ok-text="确认"
+                  cancel-text="取消"
+                  @confirm="record.status == 3 && handleChange(record)"
+                >
+                  <a class="primary-color"><a-icon class="m-r-4" type="check-square" />处理</a>
+                </a-popconfirm>            
+              </div>
+            </template>
           </a-table>
         </a-tab-pane>
         <a-tab-pane key="2" tab="未签到列表">
@@ -267,6 +280,13 @@ const signColumns = [
     key: 'driverPhone',
     dataIndex: 'driverPhone',
     width: 120
+  },
+  {
+    title: '操作',
+    key: 'action',
+    fixed: 'right',
+    width: 80,
+    scopedSlots: { customRender: 'action' }
   }
 ]
 const notSignColumns = [
@@ -364,6 +384,18 @@ export default {
       this.handleSearch()
     },
     moment,
+    /** 处理异常数据 */
+    async handleChange(record){
+      try {
+        await this.$store.dispatch('driverDispatch/change', record.dispatchId)
+        this.$message.success('处理完成！')
+      this.searchLoading = true
+      await this.loadTableList()
+      this.searchLoading = false
+      } catch (error) {
+        this.$message.error(error.message)
+      }
+    },
     /** 获取仓库List */
     async getWareOptionList () {
       this.wareOptionList = []

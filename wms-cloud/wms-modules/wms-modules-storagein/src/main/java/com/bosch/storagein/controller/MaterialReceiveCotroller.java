@@ -21,6 +21,7 @@ import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -49,6 +50,10 @@ public class MaterialReceiveCotroller extends BaseController {
 
     @Autowired
     private RemoteMasterDataService remoteMasterDataService;
+
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
 
     @GetMapping("/list")
@@ -130,6 +135,7 @@ public class MaterialReceiveCotroller extends BaseController {
                             item.setWareCode(areaVO==null?null:areaVO.getWareCode());
 
                         });
+
                         materialReceiveService.saveBatch(dtos);
 
 

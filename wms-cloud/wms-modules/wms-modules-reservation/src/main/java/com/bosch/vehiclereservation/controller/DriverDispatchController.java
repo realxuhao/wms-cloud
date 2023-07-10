@@ -145,6 +145,19 @@ public class DriverDispatchController extends BaseController {
     }
 
     /**
+     * 异常数据处理（异常 => 已完成）
+     *
+     * @param dispatchId
+     * @return
+     */
+    //@RequiresPermissions("warehouse:dispatch:complete")
+    @GetMapping("/change/{id}")
+    @ApiOperation("处理")
+    public AjaxResult dispatchChange(@PathVariable("id") Long dispatchId) {
+        return toAjax(driverDispatchService.dispatchChange(dispatchId));
+    }
+
+    /**
      * 根据appid及密钥获取access_token
      *
      * @return

@@ -5,7 +5,7 @@
 			<!-- 插入自己的数据-->
 			<view class="card" v-for="item in list" :key="item.id">
 				<view class="card-header">
-					<text class="material-name">{{ item.materialName }}</text>
+					<text class="material-name">{{ item.ssccNumber }}</text>
 					<text class="status">待发运</text>
 				</view>
 				<view class="card-text m-b-4">物料编码：{{ item.materialNb }}</view>

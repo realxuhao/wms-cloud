@@ -141,4 +141,9 @@
         from vr_purchase_order
         where supplier_name = #{name}
     </select>
+
+    <select id="getSupplierName" resultType="java.lang.String">
+        SELECT DISTINCT supplier_name
+        from vr_purchase_order
+    </select>
 </mapper>

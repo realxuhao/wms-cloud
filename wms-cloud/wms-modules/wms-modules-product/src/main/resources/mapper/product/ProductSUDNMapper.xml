@@ -38,7 +38,7 @@
                 SELECT 1
                 FROM product_pick p
                 WHERE p.sudn_id = s.id
-                  AND p.status != 3
+                  AND p.status = 1
             )
           and s.status = 1
           and s.delete_flag = 0
@@ -51,7 +51,7 @@
                 SELECT 1
                 FROM product_pick p
                 WHERE p.sudn_id = s.id
-                  AND p.status != 3
+                  AND p.status = 1
             )
           and s.status = 1
           and s.delete_flag = 0
@@ -68,7 +68,7 @@
         FROM sudn s
         WHERE
             s.delete_flag = 0
-          and s.ship_quantity>s.delivery_quantity
+          and s.ship_quantity>=s.delivery_quantity
     </select>
 
 </mapper>

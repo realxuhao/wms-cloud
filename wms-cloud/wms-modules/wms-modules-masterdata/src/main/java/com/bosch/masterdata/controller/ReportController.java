@@ -44,7 +44,7 @@ public class ReportController extends BaseController {
         return R.ok(reportBinVOS);
     }
     @PostMapping("/getMissionToDo")
-    @ApiOperation("待办任务")
+    @ApiOperation("原材料待办任务")
     public R<List<MissionToDo>> getMissionToDo(@RequestBody MissionToDo mission)
     {
 
@@ -54,7 +54,17 @@ public class ReportController extends BaseController {
         List<MissionToDo> list = reportService.selectReportList(mission);
         return R.ok(list);
     }
+    @PostMapping("/getMissionToDoPro")
+    @ApiOperation("成品待办任务")
+    public R<List<MissionToDo>> getMissionToDoPro(@RequestBody MissionToDo mission)
+    {
 
+        if (mission!=null && StringUtils.isEmpty(mission.getCell())&& StringUtils.isEmpty(mission.getWareCode())){
+            throw new RuntimeException("请选择cell或仓库");
+        }
+        List<MissionToDo> list = reportService.selectProReportList(mission);
+        return R.ok(list);
+    }
     @PostMapping("/oldMaterial")
     @ApiOperation("在库时间最长的物料")
     public R<PageVO<ReportMaterial>> oldMaterial(@RequestBody ReportMaterialDTO reportMaterialDTO)
@@ -111,10 +121,10 @@ public class ReportController extends BaseController {
 
     }
     /**
-     * 员工实际工作量（原材料+成品）-标准单位托盘
+     * 员工实际工作量（原材料）-标准单位托盘
      */
     @PostMapping("/workload")
-    @ApiOperation("员工实际工作量（原材料+成品）-标准单位托盘")
+    @ApiOperation("员工实际工作量（原材料）-标准单位托盘")
     public  R<PageVO<WorkloadVO>> workload(@RequestBody WorkloadDTO workloadDTO) {
 
         startPage();
@@ -123,13 +133,37 @@ public class ReportController extends BaseController {
 
     }
     /**
+     * 员工实际工作量（成品）-标准单位托盘
+     */
+    @PostMapping("/workloadPro")
+    @ApiOperation("员工实际工作量（成品）-标准单位托盘")
+    public  R<PageVO<WorkloadVO>> workloadPro(@RequestBody WorkloadDTO workloadDTO) {
+
+        startPage();
+        List<WorkloadVO> list = reportService.workloadPro(workloadDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+
+    }
+    /**
      * 员工实际工作量（原材料+成品）-标准单位托盘导出
      */
     @PostMapping("/workloadExport")
-    @ApiOperation("员工实际工作量（原材料+成品）-标准单位托盘导出")
+    @ApiOperation("员工实际工作量（原材料）-标准单位托盘导出")
     public  void workloadExport(HttpServletResponse response ) {
         WorkloadDTO workloadDTO=new WorkloadDTO();
         List<WorkloadVO> list = reportService.workload(workloadDTO);
+        ExcelUtil<WorkloadVO> util = new ExcelUtil<>(WorkloadVO.class);
+        util.exportExcel(response, list, "员工实际工作量");
+
+    }
+    /**
+     * 员工实际工作量（原材料+成品）-标准单位托盘导出
+     */
+    @PostMapping("/workloadExportPro")
+    @ApiOperation("员工实际工作量（成品）-标准单位托盘导出")
+    public  void workloadProExport(HttpServletResponse response ) {
+        WorkloadDTO workloadDTO=new WorkloadDTO();
+        List<WorkloadVO> list = reportService.workloadPro(workloadDTO);
         ExcelUtil<WorkloadVO> util = new ExcelUtil<>(WorkloadVO.class);
         util.exportExcel(response, list, "员工实际工作量");
 

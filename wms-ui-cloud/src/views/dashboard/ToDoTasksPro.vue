@@ -1,14 +1,29 @@
 <template>
-  <Card title="流程效率">
+  <Card title="待办任务">
     <template slot="header">
       <a-form-model layout="inline">
-        <a-form-model-item label="时间">
-          <a-range-picker
-            format="YYYY-MM-DD"
-            v-model="queryForm.date"
-          />
+        <a-form-model-item>
+          <a-radio-group buttonStyle="solid" size="small" v-model="type">
+            <a-radio-button :value="1">
+              仓库
+            </a-radio-button>
+            <a-radio-button :value="0">
+              Cell
+            </a-radio-button>
+          </a-radio-group>
         </a-form-model-item>
-  
+        <a-form-model-item label="仓库编码" v-show="type===1">
+          <a-select show-search v-model="queryForm.wareCode" style="width: 200px" placeholder="仓库编码">
+            <a-select-option v-for="item in wareList" :key="item.id" :value="item.code">
+              {{ item.code }}</a-select-option>
+          </a-select>
+        </a-form-model-item>
+        <a-form-model-item label="Cell" v-show="type===0">
+          <a-select show-search v-model="queryForm.cell" style="width: 200px" placeholder="Cell">
+            <a-select-option v-for="item in cellList" :key="item" :value="item">
+              {{ item }}</a-select-option>
+          </a-select>
+        </a-form-model-item>
         <a-form-model-item>
           <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
         </a-form-model-item>
@@ -19,13 +34,7 @@
     <template slot="main">
       <a-row :gutter="[24,24]">
         <a-col :span="24" >
-          <div class="charts" id="process-efficiency-fsmp"></div>
-        </a-col>
-        <a-col :span="24" >
-          <div class="charts" id="process-efficiency-ecn"></div>
-        </a-col>
-        <a-col :span="24" >
-          <div class="charts" id="process-efficiency-nmd"></div>
+          <div class="charts" style="height:480px" id="to-do-tasks-pro"></div>
         </a-col>
       </a-row>
     </template>
@@ -36,7 +45,6 @@
 import * as echarts from 'echarts'
 import Card from './Card.vue'
 import _ from 'lodash'
-import moment from 'moment'
 
 import colorList from '@/utils/echartsColor'
 
@@ -47,8 +55,15 @@ export default {
   },
   data () {
     return {
+      wareDataMap:{},
+      wareList:[],
+      cellList:['All','ECN','NMD','FSMP'],
+
+      type:1,
+      list:[],
       queryForm:{
-        date:[]
+        wareCode:'All',
+        cell:''
       },
       searchLoading:false,
     }
@@ -56,24 +71,36 @@ export default {
   computed: {
   },
   methods: {
+    /** 获取仓库List */
+    async getWareList () {
+      try {
+        const data = await this.$store.dispatch('ware/getOptionList')
+        this.wareList = [{code:'All',id:-1},...data.data]
+
+        this.getData()
+      } catch (error) {
+        this.$message.error(error.message)
+      }
+    },
     async handleSearch(){
       this.searchLoading = true
       await this.getData()
       this.searchLoading = false
     },
 
-    loadCharts(title,list,id){
-      var myChart = echarts.init(document.getElementById(id))
+    loadMaterialCharts(){
+      var myChart = echarts.init(document.getElementById('to-do-tasks-pro'))
 
-      const xData = _.map(list,x=>x.label)
-      const callMaterilList = _.map(list,x=>x.callConsuming||0)
-      const materialInList = _.map(list,x=>x.binInConsuming||0)
-      const sampleList = _.map(list,x=>x.iqcConsuming||0)
+      const xData = _.map(this.list,x=>this.type === 1 ?x.wareCode:x.cell)
+      const toBeReceivedList = _.map(this.list,x=>x.toBeReceived||0)
+      const toBeMovedList = _.map(this.list,x=>x.toBeMove||0)
+      const toBeCallList = _.map(this.list,x=>x.toBeCall||0)
+      const toBeBinList = _.map(this.list,x=>x.toBeBin||0)
 
       const option = {
         color:colorList,
         title: {
-          text: title
+          // text: 'World Population'
         },
         tooltip: {
           trigger: 'axis',
@@ -90,17 +117,16 @@ export default {
           containLabel: true
         },
         xAxis: {
-          type: 'category',
-          boundaryGap: [0, 0.01],
-          data: xData
-
+          type: 'value',
+          boundaryGap: [0, 0.01]
         },
         yAxis: {
-          type: 'value',
+          type: 'category',
+          data: xData
         },
         series: [
           {
-            name: '入库',
+            name: '待入库',
             type: 'bar',
             silent: true,
             barWidth: 16,
@@ -114,13 +140,15 @@ export default {
               },
               
             },
-            data: materialInList
+            stack: 'Ad',
+            data: toBeReceivedList
           },
           {
-            name: '取样',
+            name: '待上架',
             type: 'bar',
             silent: true,
             barWidth: 16,
+            stack: 'Ad',
             tooltip:{
               show:true
             },
@@ -130,13 +158,14 @@ export default {
                 return item.value ? item.value:''
               }
             },
-            data: sampleList
+            data: toBeBinList
           },
           {
-            name: '叫料',
+            name: '待叫料',
             type: 'bar',
             silent: true,
             barWidth: 16,
+            stack: 'Ad',
             tooltip:{
               show:true
             },
@@ -146,48 +175,54 @@ export default {
                 return item.value ? item.value:''
               }
             },
-            data: callMaterilList
+            data: toBeCallList
           },
-   
+          {
+            name: '待移库',
+            type: 'bar',
+            silent: true,
+            barWidth: 16,
+            stack: 'Ad',
+            tooltip:{
+              show:true
+            },
+            label: {
+              show: true,
+              formatter(item){
+                return item.value ? item.value:''
+              }
+            },
+            data: toBeMovedList
+          },
         ]
       }
 
       myChart.setOption(option)
     },
+
+
     async getData(){
-      const { date = [] } = this.queryForm
-      const createTimeStart = date.length > 0 ? date[0].format('YYYY-MM-DD 00:00:00') : undefined
-      const createTimeEnd = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:59') : undefined
-      const options = { ..._.omit(this.queryForm, ['date']), createTimeStart, createTimeEnd }
+      const data = await this.$store.dispatch('dashboard/getProMissionToDoSummary',this.queryForm)
+      this.list = data
+      this.loadMaterialCharts()
 
-      const data = await this.$store.dispatch('dashboard/processEfficiency',options)
-      const cellList = _.map(_.uniqBy(data,'cell'),'cell')
-      const cellDataMap = {
-        'FSMP':{children:[]},
-        'NMD':{children:[]},
-        'ECN':{children:[]}
-      }
-      _.each(cellList,x=>{
-        _.each(data,y=>{
-          if(x === y.cell){
-            const createTime = moment(y.createTime)
-            cellDataMap[x].children.push({...y,label:createTime.format('YYYY-MM-DD')})
-          }
-        })
-      })
 
-      this.loadCharts('FSMP',cellDataMap['FSMP'].children,'process-efficiency-fsmp')
-      this.loadCharts('NMD',cellDataMap['NMD'].children,'process-efficiency-nmd')
-      this.loadCharts('ECN',cellDataMap['ECN'].children,'process-efficiency-ecn')
     }
   },
   mounted(){
-    this.getData()
-
+    this.getWareList()
 
   },
   watch:{
-
+    type(val){
+      if(val===1){
+        this.queryForm.cell = undefined
+        this.queryForm.wareCode = 'All'
+      }else{
+        this.queryForm.wareCode = undefined
+        this.queryForm.cell = 'All'
+      }
+    }
   }
 }
 </script>
