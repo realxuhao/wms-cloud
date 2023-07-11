@@ -208,7 +208,7 @@ export default {
 
     async handleDelete (record) {
       try {
-        await this.$store.dispatch('moveType/destroy', record.id)
+        await this.$store.dispatch('productPackaging/destroy', record.id)
         this.$message.success('删除成功！')
 
         this.loadTableList()
