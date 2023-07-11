@@ -1,5 +1,5 @@
 <template>
-	<my-page nav-title="打包">
+	<my-page nav-title="打包"  :noReturn="true" @returnCallBack="">
 		<view class="main" slot="page-main">
 			<view class="header m-b-8">
 				<view class="text-line m-b-8 ">
@@ -126,6 +126,9 @@ export default {
 		};
 	},
 	computed: {
+		handleReturn(){
+			
+		}
 		prodOrderStr() {
 			const prodOrderStr = _.join(_.map(_.filter(this.taskList, x => x.isDisassembled), x => x.prodOrder), ',');
 			return prodOrderStr;
