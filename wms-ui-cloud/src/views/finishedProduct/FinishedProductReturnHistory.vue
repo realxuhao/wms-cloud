@@ -14,14 +14,10 @@
               <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
             </a-form-item>
           </a-col>
-          <a-col :span="4">
-            <a-form-item label="产品编号" >
-              <a-input v-model="queryForm.productNb" placeholder="产品编号" allow-clear/>
-            </a-form-item>
-          </a-col>
+         
           <a-col :span="4">
             <a-form-item label="物料号" >
-              <a-input v-model="queryForm.materialNb" placeholder="物料号" allow-clear/>
+              <a-input v-model="queryForm.productNb" placeholder="物料号" allow-clear/>
             </a-form-item>
           </a-col>
           <a-col :span="4">
@@ -144,19 +140,7 @@ const columns = [
     dataIndex: 'plantNb',
     width: 120
   },
-  {
-    title: '产品编号',
-    key: 'productNb',
-    dataIndex: 'productNb',
-    width: 120
-  },
-  {
-    title: '退货数量',
-    key: 'quantity',
-    dataIndex: 'quantity',
-    width: 200
-  },
-  {
+ {
     title: '物料名称',
     key: 'materialName',
     dataIndex: 'materialName',
@@ -168,6 +152,13 @@ const columns = [
     dataIndex: 'materialNb',
     width: 200
   },
+  {
+    title: '退货数量',
+    key: 'quantity',
+    dataIndex: 'quantity',
+    width: 200
+  },
+  
   {
     title: '批次号',
     key: 'batchNb',

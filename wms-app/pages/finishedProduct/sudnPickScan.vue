@@ -19,6 +19,10 @@
 						<text>{{ info.material }}</text>
 					</view>
 					<view class="text-align m-b-4">
+						<text class="label m-r-8">物料名称:</text>
+						<text>{{ info.materialName }}</text>
+					</view>
+					<view class="text-align m-b-4">
 						<text class="label m-r-8">库位:</text>
 						<text>{{ info.binCode }}</text>
 					</view>

@@ -83,7 +83,7 @@
       </a-form>
       <div class="action-content">
      
-        <a-button
+        <!-- <a-button
           class="m-r-8"
           type="primary"
           icon="plus"
@@ -91,7 +91,7 @@
           @click="handleGenerate"
           :disabled="!selectedRowKeys.length">
           生成拣配
-        </a-button>
+        </a-button> -->
 
         <a-button
           type="primary"
@@ -320,13 +320,16 @@ const statusMap = {
   '-1': '已取消',
   0: '待下发',
   1: '待下架',
-  2: '完成'
+  2: '待发运',
+  3: '完成'
 }
 
 const statusColorMap = {
   '-1': colorMap['cancel'],
   0: colorMap['warning'],
-  1: colorMap['success'],
+  1: colorMap['warning'],
+  2: colorMap['warning'],
+  3: colorMap['success'],
   
 }
 

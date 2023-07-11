@@ -24,16 +24,7 @@
               <a-input v-model="queryForm.areCode" placeholder="存储区" allow-clear/>
             </a-form-item>
           </a-col>
-          <a-col :span="4">
-            <a-form-item label="库位">
-              <a-input v-model="queryForm.binCode" placeholder="库位" allow-clear/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="4">
-            <a-form-item label="FromProdOrder">
-              <a-input v-model="queryForm.fromProdOrder" placeholder="FromProdOrder" allow-clear/>
-            </a-form-item>
-          </a-col>
+          
          
           <a-col :span="4">
             <a-form-model-item label="状态">
@@ -49,25 +40,7 @@
             </a-form-model-item>
           </a-col>
             
-          <a-col :span="4">
-            <a-form-item label="FromProdOrder">
-              <a-input v-model="queryForm.fromProdOrder" placeholder="FromProdOrder" allow-clear/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="4">
-            <a-form-item label="创建人">
-              <a-input v-model="queryForm.createBy" placeholder="创建人" allow-clear/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="8">
-            <a-form-item label="创建时间" >
-              <a-range-picker
-                format="YYYY-MM-DD HH:mm"
-                :show-time="{ format: 'HH:mm' }"
-                v-model="queryForm.date"
-              />
-            </a-form-item>
-          </a-col>
+         
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>

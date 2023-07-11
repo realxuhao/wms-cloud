@@ -175,13 +175,13 @@ const columns = [
     dataIndex: 'quantity',
     width: 120
   },
-  {
-    title: '移动类型',
-    key: 'moveType',
-    dataIndex: 'moveType',
-    scopedSlots: { customRender: 'moveType' },
-    width: 120
-  },
+  // {
+  //   title: '移动类型',
+  //   key: 'moveType',
+  //   dataIndex: 'moveType',
+  //   scopedSlots: { customRender: 'moveType' },
+  //   width: 120
+  // },
   {
     title: '车牌号',
     key: 'carNb',

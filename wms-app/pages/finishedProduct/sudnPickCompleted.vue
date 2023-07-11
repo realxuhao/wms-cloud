@@ -5,11 +5,13 @@
 			<!-- 插入自己的数据-->
 			<view class="card" v-for="item in list" :key="item.id">
 				<view class="card-header">
-					<text class="material-name">{{ item.delivery }}</text>
+					<text class="material-name">{{ item.sscc }}</text>
 					<text class="status">已完成</text>
 				</view>
+				<view class="card-text m-b-4">Material Name：{{ item.materialName }}</view>
+				
 				<view class="card-text m-b-4">Material：{{ item.material }}</view>
-				<view class="card-text m-b-4">Item：{{ item.item }}</view>
+				<view class="card-text m-b-4">库位：{{ item.binCode }}</view>
 				<view class="card-text m-b-4">Deliver quantity：{{ item.deliveryQuantity }}</view>
 				<view class="card-text sscc">
 					<!-- <text>SSCC码：{{ item.ssccNumber }}</text> -->
