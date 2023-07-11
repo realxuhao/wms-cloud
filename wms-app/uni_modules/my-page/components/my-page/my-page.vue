@@ -37,10 +37,18 @@
 				type:Boolean,
 				default:true,
 				required:false
+			},
+			noReturn:{
+				type:Boolean,
+				default:false,
 			}
 		},
 		methods:{
 			handleBack(){
+				if(this.noReturn){
+					this.$emit('returnCallBack')
+					return
+				}
 				uni.navigateBack({delta:1})
 			}
 		}

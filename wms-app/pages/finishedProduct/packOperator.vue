@@ -1,5 +1,5 @@
 <template>
-	<my-page nav-title="打包"  :noReturn="true" @returnCallBack="">
+	<my-page nav-title="打包"  :noReturn="true" @returnCallBack="handleReturn">
 		<view class="main" slot="page-main">
 			<view class="header m-b-8">
 				<view class="text-line m-b-8 ">
@@ -93,7 +93,7 @@
 				title="通知"
 				content="请确认清空打包任务?"
 				@confirm="handleClean"
-				@close="$refs.cleanDialog.close()"
+				@close="handleCleanDialogClose()"
 			></uni-popup-dialog>
 		</uni-popup>
 	</my-page>
@@ -122,13 +122,14 @@ export default {
 			currentTaskBarCodeList: [],
 			takeDownTaskBarCodeList: [],
 			stepIndex: 1,
-			tagInverted: true
+			tagInverted: true,
+			returnPage: false
 		};
 	},
 	computed: {
 		handleReturn(){
-			
-		}
+			this.$refs.cleanDialog.open()
+		},
 		prodOrderStr() {
 			const prodOrderStr = _.join(_.map(_.filter(this.taskList, x => x.isDisassembled), x => x.prodOrder), ',');
 			return prodOrderStr;
@@ -196,6 +197,16 @@ export default {
 		Bus.$off('scancodedate');
 	},
 	methods: {
+		handleReturn(){
+			this.returnPage = true
+			this.$refs.cleanDialog.open()
+		},
+		handleCleanDialogClose(){
+			this.returnPage = false
+			this.$refs.cleanDialog.close()
+			
+			
+		},
 		onReset() {
 			this.currentTaskBarCodeList = [];
 			this.allScanProdOrderList = [];
@@ -253,8 +264,15 @@ export default {
 				this.$refs.message.success('清空成功');
 				this.onReset();
 				this.onReloadPage();
+				
+				
+				
 			} catch (e) {
-				this.$refs.message.error(e.message);
+				// this.$refs.message.error(e.message);
+			}
+			
+			if(this.returnPage){
+				this.handleGoBack()
 			}
 		},
 		async initScanCode() {
