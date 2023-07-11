@@ -35,14 +35,16 @@
 
     </select>
     <select id="binDownlist" resultType="com.bosch.product.api.domain.vo.ProductPickVO">
-        select pp.sscc, sum(delivery_quantity) as delivery_quantity, pp.material, pp.bin_code,pp.status
-        from product_pick pp
+        select pp.sscc, sum(delivery_quantity) as delivery_quantity, pp.material, pp.bin_code,pp.status,mpp.product_name as materialName
+        from product_pick pp left join md_product_packaging mpp on mpp.product_no = pp.material and mpp.delete_flag = 0
         where pp.delete_flag = 0
         <if test="status != null">and pp.status = #{status}</if>
+        <if test="delivery != null and delivery != ''">and pp.delivery = #{delivery}</if>
+        <if test="wareCode != null and wareCode != ''">and pp.ware_code = #{wareCode}</if>
         <if test="sscc != null and sscc != ''">
             AND pp.sscc like concat('%', #{sscc}, '%')
         </if>
-        group by pp.sscc, pp.material, pp.bin_code,pp.status
+        group by pp.sscc, pp.material, pp.bin_code,pp.status,mpp.product_name
 
     </select>
     <select id="getSUDNPickExportVO" resultType="com.bosch.product.api.domain.vo.ProductPickExportVO">

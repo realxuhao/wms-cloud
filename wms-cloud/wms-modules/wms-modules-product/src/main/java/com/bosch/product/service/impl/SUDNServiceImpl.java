@@ -20,6 +20,7 @@ import com.bosch.product.service.IProductStockService;
 import com.bosch.product.service.ISUDNService;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
@@ -111,8 +112,12 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
         stockWrapper.in(ProductStock::getMaterialNb, materialCodeList);
         stockWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         stockWrapper.eq(ProductStock::getPlantNb, "7761");
+        stockWrapper.eq(ProductStock::getQualityStatus, QualityStatusEnums.USE.getCode());
         stockWrapper.ge(ProductStock::getAvailableStock, Double.valueOf(0));
         List<ProductStock> stockList = productStockService.list(stockWrapper);
+        if (CollectionUtils.isEmpty(stockList)){
+            throw new ServiceException("无可用库存");
+        }
         Map<String, List<ProductStock>> materialStockMap = stockList.stream().collect(Collectors.groupingBy(ProductStock::getMaterialNb));
 
         List<ProductPick> pickInsertList = new ArrayList<>();
@@ -149,6 +154,8 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
             for (ProductStock stock : useProductStocks) {
                 ProductPick productPick = BeanConverUtil.conver(item, ProductPick.class);
                 productPick.setId(null);
+                productPick.setWareCode(stock.getWareCode());
+
                 productPick.setSscc(stock.getSsccNumber());
                 productPick.setBinCode(stock.getBinCode());
                 productPick.setBatch(stock.getBatchNb());
@@ -160,6 +167,7 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
                 productPick.setBinDownQuantity(stock.getAvailableStock());
                 productPick.setProductionBatch(stock.getProductionDate());
                 productPick.setExpireDate(stock.getExpireDate());
+
                 if (useProductStocks.get(useProductStocks.size() - 1) == stock) {
                     double abs = Math.abs(useSum - item.getDeliveryQuantity());//PCS
                     //对应的箱
@@ -167,10 +175,11 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
                     stock.setFreezeStock(stock.getFreezeStock() + (stock.getAvailableStock() - boxDiff));
                     productPick.setDeliveryQuantity(stock.getAvailableStock()*boxSpecification - abs);
                     productPick.setBinDownQuantity(stock.getAvailableStock()*boxSpecification - abs);
+
                 } else {
                     stock.setFreezeStock(stock.getFreezeStock() + stock.getAvailableStock());
                 }
-                stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
+                stock.setAvailableStock(stock.getTotalStock()-stock.getFreezeStock());
                 pickList.add(productPick);
             }
             pickInsertList.addAll(pickList);

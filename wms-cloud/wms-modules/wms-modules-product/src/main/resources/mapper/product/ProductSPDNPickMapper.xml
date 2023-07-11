@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.product.mapper.ProductSPDNPickMapper">
+
+
+    <select id="getList" resultType="com.bosch.product.api.domain.vo.ProductSPDNPickVO">
+        select psp.*,mp.product_name as materialName
+        from `wms-cloud2`.product_spdn_pick psp
+        left join `wms-cloud2`.md_product_packaging mp on psp.material_nb = mp.product_no and mp.delete_flag = 0
+        where psp.delete_flag = 0
+        <if test="plant != null and plant != ''">
+            AND psp.plant_nb like concat('%', #{plant}, '%')
+        </if>
+        <if test="ssccNumber != null and ssccNumber != ''">
+            AND psp.sscc_number concat('%', #{ssccNumber}, '%')
+        </if>
+        <if test="wareCode != null and wareCode != ''">
+            AND psp.ware_code like concat('%', #{wareCode}, '%')
+        </if>
+        <if test="areaCode != null and areaCode != ''">
+            AND psp.area_code like concat('%', #{areaCode}, '%')
+        </if>
+
+        <if test="material != null and material != ''">
+            AND psp.material_nb like concat('%', #{material}, '%')
+        </if>
+        <if test="status != null ">
+            AND psp.status = #{status}
+        </if>
+    </select>
+</mapper>

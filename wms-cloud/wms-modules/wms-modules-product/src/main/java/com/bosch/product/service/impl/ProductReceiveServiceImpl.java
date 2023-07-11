@@ -23,10 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.time.OffsetDateTime;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Queue;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -112,8 +109,9 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
             throw new ServiceException("调用成品主数据失败");
         }
         List<String> data = notExistCodeListR.getData();
-        if (!CollectionUtils.isEmpty(data)){
-            throw new ServiceException("以下成品料号主数据中不存在："+data);
+        Set<String> set= new HashSet<>(data);
+        if (!CollectionUtils.isEmpty(set)){
+            throw new ServiceException("以下成品料号主数据中不存在："+set);
         }
         return receiveMapper.validateRecord(dtos) > 0;
     }

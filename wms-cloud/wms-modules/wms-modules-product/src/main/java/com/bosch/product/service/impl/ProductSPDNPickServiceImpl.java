@@ -10,6 +10,7 @@ import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.product.api.domain.*;
 import com.bosch.product.api.domain.dto.*;
 import com.bosch.product.api.domain.enumeration.ProductStockBinInEnum;
+import com.bosch.product.api.domain.vo.ProductSPDNPickVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.mapper.ProductSPDNPickMapper;
 import com.bosch.product.mapper.ProductStockMapper;
@@ -40,5 +41,11 @@ import java.util.stream.Collectors;
 @Service
 public class ProductSPDNPickServiceImpl extends ServiceImpl<ProductSPDNPickMapper, ProductSPDNPick> implements IProductSPDNPickService {
 
+    @Autowired
+    private ProductSPDNPickMapper pickMapper;
 
+    @Override
+    public List<ProductSPDNPickVO> getList(SPDNDTO queryDTO) {
+        return pickMapper.getList(queryDTO);
+    }
 }

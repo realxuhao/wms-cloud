@@ -37,4 +37,6 @@ public class ProductPickDTO {
     private Date startCreateTime;
     @ApiModelProperty(value = "结束创建时间")
     private Date endCreateTime;
+
+    private String wareCode;
 }

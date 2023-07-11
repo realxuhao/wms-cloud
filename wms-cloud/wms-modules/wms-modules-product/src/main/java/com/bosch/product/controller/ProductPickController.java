@@ -59,6 +59,12 @@ public class ProductPickController extends BaseController {
     @GetMapping(value = "/binDownlist")
     @ApiOperation("汇总的下架列表")
     public R<PageVO<ProductPickVO>> binDownlist(ProductPickDTO queryDTO) {
+        if (queryDTO == null) {
+            queryDTO = new ProductPickDTO();
+        }
+        if (StringUtils.isEmpty(queryDTO.getWareCode())) {
+            queryDTO.setWareCode(SecurityUtils.getWareCode());
+        }
         startPage();
         List<ProductPickVO> list = pickService.binDownlist(queryDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));

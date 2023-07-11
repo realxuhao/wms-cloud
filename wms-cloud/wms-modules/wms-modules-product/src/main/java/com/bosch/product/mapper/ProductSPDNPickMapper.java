@@ -6,6 +6,8 @@ import com.bosch.product.api.domain.ProductSPDNPick;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.dto.ProductIQCManagementQueryDTO;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
+import com.bosch.product.api.domain.dto.SPDNDTO;
+import com.bosch.product.api.domain.vo.ProductSPDNPickVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -23,4 +25,5 @@ import java.util.Map;
 public interface ProductSPDNPickMapper extends BaseMapper<ProductSPDNPick> {
 
 
+    List<ProductSPDNPickVO> getList(SPDNDTO queryDTO);
 }

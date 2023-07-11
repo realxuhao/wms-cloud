@@ -44,7 +44,7 @@ public class ProductReturn extends BaseEntity {
     /**
      * 退库类型 (0：正常退库,1：异常退库)
      */
-    @Excel(name = "退库类型",readConverterExp = "0=经销商退货，1=退货到工厂")
+    @Excel(name = "退库类型",readConverterExp = "0=经销商退货,1=退货到工厂")
     private Integer type;
 
     /**

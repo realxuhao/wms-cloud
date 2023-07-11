@@ -72,6 +72,10 @@ public class SPDNDTO  extends PageDomain {
 
     private Integer status;
 
+    private String wareCode;
+
+    private String areaCode;
+
 
 
 

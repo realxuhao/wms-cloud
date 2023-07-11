@@ -8,8 +8,10 @@ import com.bosch.binin.api.domain.dto.ManualBinInDTO;
 import com.bosch.binin.api.enumeration.ManuTransStatusEnum;
 import com.bosch.binin.api.enumeration.MaterialReturnStatusEnum;
 import com.bosch.masterdata.api.RemoteMasterDataService;
+import com.bosch.masterdata.api.RemoteProductService;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
+import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.product.api.domain.*;
 import com.bosch.product.api.domain.dto.*;
@@ -36,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -51,6 +54,9 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
     @Autowired
     private ProductStockMapper stockMapper;
+
+    @Resource
+    private RemoteProductService remoteProductService;
 
     @Autowired
     private RemoteMasterDataService remoteMasterDataService;
@@ -399,6 +405,8 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         queryWrapper1.last("limit 1");
         ProductStock oldStock = this.getOne(queryWrapper1);
 
+        MdProductPackagingVO productVO = getProductVO(oldStock.getMaterialNb());
+
 
         ProductStock stock = new ProductStock();
         if (productReturnDTO.getType()==0){//经销商退货，是退货到销售库存，7761
@@ -411,9 +419,9 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
                 stock.setBatchNb(oldStock.getBatchNb());
                 stock.setExpireDate(oldStock.getExpireDate());
             }
-            stock.setTotalStock(productReturnDTO.getQuantity());
+            stock.setTotalStock(productReturnDTO.getQuantity()/productVO.getBoxSpecification());
             stock.setFreezeStock((double) 0);
-            stock.setAvailableStock(productReturnDTO.getQuantity());
+            stock.setAvailableStock(productReturnDTO.getQuantity()/productVO.getBoxSpecification());
             stock.setQualityStatus(QualityStatusEnums.BLOCK.getCode());
             stock.setProductionDate(ProductQRCodeUtil.getProductionDate(qrCode));
             stock.setBinInFlag(ProductStockBinInEnum.NONE.code());
@@ -429,9 +437,9 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
                 stock.setBatchNb(oldStock.getBatchNb());
                 stock.setExpireDate(oldStock.getExpireDate());
             }
-            stock.setTotalStock(productReturnDTO.getQuantity());
+            stock.setTotalStock(productReturnDTO.getQuantity()/productVO.getBoxSpecification());
             stock.setFreezeStock((double) 0);
-            stock.setAvailableStock(productReturnDTO.getQuantity());
+            stock.setAvailableStock(productReturnDTO.getQuantity()/productVO.getBoxSpecification());
             stock.setQualityStatus(QualityStatusEnums.BLOCK.getCode());
             stock.setProductionDate(ProductQRCodeUtil.getProductionDate(qrCode));
             stock.setBinInFlag(ProductStockBinInEnum.NONE.code());
@@ -504,5 +512,17 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
         return productReturnService.getReturnList(queryDTO);
     }
+
+
+
+    private MdProductPackagingVO getProductVO(String code) {
+        R<MdProductPackagingVO> byCode = remoteProductService.getByCode(code);
+        if (byCode == null || !byCode.isSuccess()) {
+            throw new ServiceException("调用主数据获取成品失败");
+        }
+        return byCode.getData();
+    }
+
+
 
 }

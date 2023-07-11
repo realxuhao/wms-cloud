@@ -8,6 +8,7 @@ import com.bosch.product.api.domain.ProductSPDNPick;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.ProductWareShift;
 import com.bosch.product.api.domain.dto.*;
+import com.bosch.product.api.domain.vo.ProductSPDNPickVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 
 import java.util.List;
@@ -19,6 +20,8 @@ import java.util.List;
  * @create: 2023-03-29 11:21
  **/
 public interface IProductSPDNPickService extends IService<ProductSPDNPick> {
+
+    List<ProductSPDNPickVO> getList(SPDNDTO queryDTO);
 
 
 }

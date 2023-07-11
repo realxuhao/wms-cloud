@@ -3,6 +3,7 @@ package com.bosch.product.controller;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bosch.binin.api.domain.MaterialCall;
+import com.bosch.binin.api.domain.dto.BinInQueryDTO;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
@@ -12,6 +13,7 @@ import com.bosch.product.api.domain.SPDN;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.dto.ProductWareShiftQueryDTO;
 import com.bosch.product.api.domain.dto.SPDNDTO;
+import com.bosch.product.api.domain.vo.ProductSPDNPickVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.api.domain.vo.SPDNVO;
 import com.bosch.product.service.IProductOutService;
@@ -23,8 +25,10 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -129,12 +133,16 @@ public class SpdnController extends BaseController {
 
     @GetMapping(value = "/spdnPicklist")
     @ApiOperation("spdn捡配任务")
-    public R<PageVO<ProductSPDNPick>> spdnPick(SPDNDTO queryDTO){
+    public R<PageVO<ProductSPDNPickVO>> spdnPick(SPDNDTO queryDTO){
+        if (queryDTO == null) {
+            queryDTO = new SPDNDTO();
+        }
+        if (StringUtils.isEmpty(queryDTO.getWareCode())) {
+            queryDTO.setWareCode(SecurityUtils.getWareCode());
+        }
         startPage();
-        LambdaQueryWrapper<ProductSPDNPick> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProductSPDNPick::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        queryWrapper.eq(ProductSPDNPick::getStatus,queryDTO.getStatus());
-        List<ProductSPDNPick> list = pickService.list(queryWrapper);
+
+        List<ProductSPDNPickVO> list =  pickService.getList(queryDTO);
         return R.ok(new PageVO<>(list,new PageInfo<>(list).getTotal()));
 
     }

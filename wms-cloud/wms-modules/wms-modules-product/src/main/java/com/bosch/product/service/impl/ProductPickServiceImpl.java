@@ -2,6 +2,8 @@ package com.bosch.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bosch.masterdata.api.RemoteProductService;
+import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.product.api.domain.ProductPick;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.dto.EditBinDownQuantityDTO;
@@ -14,6 +16,7 @@ import com.bosch.product.api.domain.vo.ProductPickVO;
 import com.bosch.product.mapper.ProductPickMapper;
 import com.bosch.product.service.IProductPickService;
 import com.bosch.product.service.IProductStockService;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
@@ -24,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +46,9 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
 
     @Autowired
     private IProductStockService productStockService;
+
+    @Resource
+    private RemoteProductService remoteProductService;
 
 
     @Override
@@ -172,6 +179,10 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
 
         String sscc = pick.getSscc();
         Double diff = pick.getBinDownQuantity() - dto.getNewBinDownQuantity();
+        
+        //转化为箱
+        MdProductPackagingVO productVO = getProductVO(pick.getMaterial());
+
         LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ProductStock::getSsccNumber, sscc);
         queryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
@@ -181,8 +192,8 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
             throw new ServiceException("该托目前在库存中已经不存在");
         }
         if (productStock != null) {
-            productStock.setAvailableStock(productStock.getAvailableStock() + diff);
-            productStock.setTotalStock(productStock.getTotalStock() + diff);
+            productStock.setAvailableStock(productStock.getAvailableStock() + diff/productVO.getBoxSpecification());
+            productStock.setTotalStock(productStock.getTotalStock() + diff/productVO.getBoxSpecification());
             productStockService.updateById(productStock);
         } else {//如果为空，放到原库位
             LambdaQueryWrapper<ProductStock> stockWrapper = new LambdaQueryWrapper<>();
@@ -195,9 +206,9 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
                 throw new ServiceException("该托不存在于库存中。修改失败");
             }
             stock.setDeleteFlag(DeleteFlagStatus.FALSE.getCode());
-            stock.setTotalStock(diff);
+            stock.setTotalStock(diff/productVO.getBoxSpecification());
             stock.setFreezeStock(Double.valueOf(0));
-            stock.setAvailableStock(diff);
+            stock.setAvailableStock(diff/productVO.getBoxSpecification());
             productStockService.updateById(stock);
         }
         pick.setBinDownQuantity(dto.getNewBinDownQuantity());
@@ -243,8 +254,13 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
         stockQueryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         ProductStock productStock = productStockService.getOne(stockQueryWrapper);
 
-        productStock.setTotalStock(productStock.getTotalStock() - downSum);
-        productStock.setFreezeStock(productStock.getFreezeStock() - downSum);
+        MdProductPackagingVO productVO = getProductVO(productStock.getMaterialNb());
+
+        //转化为箱
+        double tr = downSum / productVO.getBoxSpecification();
+
+        productStock.setTotalStock(productStock.getTotalStock() - tr);
+        productStock.setFreezeStock(productStock.getFreezeStock() - tr);
 
         productPicks.stream().forEach(item->{
             item.setBinDownQuantity(item.getDeliveryQuantity());
@@ -281,6 +297,15 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
     @Override
     public List<ProductPickExportVO> getSUDNPickExportVO(ProductPickDTO sudndto) {
         return productPickMapper.getSUDNPickExportVO(sudndto);
+    }
+
+
+    private MdProductPackagingVO getProductVO(String code) {
+        R<MdProductPackagingVO> byCode = remoteProductService.getByCode(code);
+        if (byCode == null || !byCode.isSuccess()) {
+            throw new ServiceException("调用主数据获取成品失败");
+        }
+        return byCode.getData();
     }
 
 
