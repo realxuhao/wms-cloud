@@ -77,7 +77,7 @@ const columns = [
     width: 90
   },
   {
-    title: '剩余送货数量',
+    title: '需求数量',
     key: 'surplusQuantity',
     dataIndex: 'surplusQuantity',
     width: 90
