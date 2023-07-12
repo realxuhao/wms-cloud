@@ -5,7 +5,7 @@
         <a-tab-pane key="1" tab="已签到列表">
           <a-form layout="inline" class="search-content">
             <a-row :gutter="16">
-              <a-col :span="4">
+              <a-col :span="6">
                 <a-form-model-item label="仓库编码">
                   <a-select show-search allow-clear v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
                     <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
@@ -13,12 +13,26 @@
                   </a-select>
                 </a-form-model-item>
               </a-col>
-              <a-col span="4">
+              <a-col span="6">
                 <a-form-model-item label="签到日期" style="display: flex;">
                   <a-date-picker
                     v-model="queryForm.signinDate"
                     format="YYYY-MM-DD"
                   />
+                </a-form-model-item>
+              </a-col>
+              <a-col :span="6">
+                <a-form-model-item label="状态">
+                  <a-select
+                    show-search
+                    allow-clear
+                    mode="multiple"
+                    v-model="queryForm.status"
+                    style="width: 100%"
+                    placeholder="状态">
+                    <a-select-option v-for="item in statusList" :key="item.value" :value="item.value">
+                      {{ item.label }}</a-select-option>
+                  </a-select>
                 </a-form-model-item>
               </a-col>
               <a-col span="4">
@@ -116,7 +130,7 @@
         <a-tab-pane key="2" tab="未签到列表">
           <a-form layout="inline" class="search-content">
             <a-row :gutter="16">
-              <a-col span="4">
+              <a-col span="8">
                 <a-form-model-item label="预约时间" style="display: flex;">
                   <a-date-picker
                     v-model="searchNotSignDate"
@@ -150,6 +164,16 @@
                   {{ text }}
                 </a-tag>
                 <a-tag color="#87d068" v-if="record.driverType===1">
+                  {{ text }}
+                </a-tag>
+              </div>
+            </template>
+            <template slot="lateDes" slot-scope="text, record">
+              <div>
+                <a-tag color="green" v-if="record.late===0">
+                  {{ text }}
+                </a-tag>
+                <a-tag color="red" v-if="record.late===1">
                   {{ text }}
                 </a-tag>
               </div>
@@ -305,6 +329,13 @@ const notSignColumns = [
     width: 150
   },
   {
+    title: '是否迟到',
+    key: 'lateDes',
+    dataIndex: 'lateDes',
+    scopedSlots: { customRender: 'lateDes' },
+    width: 100
+  },
+  {
     title: '预约时间',
     key: 'reserveDate',
     dataIndex: 'reserveDate',
@@ -345,7 +376,8 @@ const notSignColumns = [
 const queryFormAttr = () => {
   return {
     wareId: '',
-    signinDate: null
+    signinDate: null,
+    status: []
   }
 }
 export default {
@@ -365,6 +397,12 @@ export default {
         pageNum: 1,
         ...queryFormAttr()
       },
+      statusList: [
+        {label: '等待', value: 0},
+        {label: '进厂', value: 1},
+        {label: '完成', value: 2},
+        {label: '异常', value: 3}
+      ],
       /** 仓库list */
       wareOptionList: [],
       // #region 未签到页面参数
@@ -427,7 +465,8 @@ export default {
         }
         const param = {
           wareId: this.queryForm.wareId,
-          signinDate: this.queryForm.signinDate
+          signinDate: this.queryForm.signinDate,
+          statusList: this.queryForm.status
         }
         const options = {
           parameter: parameter,
@@ -435,6 +474,28 @@ export default {
         }
         const { data: { rows, total } } = await this.$store.dispatch('driverDispatch/getList', options)
         this.list = rows
+        this.list.forEach(x => {
+          if(x.reserveType == 1 && x.late == null && x.reserveDate != null){
+            if(x.driverType == 0){
+              const date = x.reserveDate.split(' ')
+              const timeList = date[1].split('-')
+              const reserveDate = new Date(new Date(date[0]).getFullYear(),new Date(date[0]).getMonth(), new Date(date[0]).getDate(), timeList.length == 2 ? timeList[1].split(':')[0] : 0, 0, 0)
+              if(reserveDate.getTime() < new Date().getTime()){
+                x.late = 1
+                x.lateDes = '迟到'
+              }
+            }
+            if(x.driverType == 1){
+              const date = x.reserveDate.split(' ')
+              const reserveDate = new Date(new Date(date[0]).getFullYear(),new Date(date[0]).getMonth(), new Date(date[0]).getDate() + 1, 0, 0, 0)
+              if(reserveDate.getTime() < new Date().getTime()){
+                x.late = 1
+                x.lateDes = '迟到'
+              }
+            }
+
+          }
+        })
         this.paginationTotal = total
       } catch (error) {
         this.$message.error(error.message)
@@ -448,6 +509,28 @@ export default {
         this.tableLoading = true
         const { data } = await this.$store.dispatch('driverDispatch/getTodayNoSignList', { signinDate: this.searchNotSignDate == null ? null : moment(new Date(this.searchNotSignDate)).format('YYYY-MM-DD') })
         this.notSignList = data
+        this.notSignList.forEach(x => {
+          if(x.reserveType == 1 && x.late == null && x.reserveDate != null){
+            if(x.driverType == 0){
+              const date = x.reserveDate.split(' ')
+              const timeList = date[1].split('-')
+              const reserveDate = new Date(new Date(date[0]).getFullYear(),new Date(date[0]).getMonth(), new Date(date[0]).getDate(), timeList.length == 2 ? timeList[1].split(':')[0] : 0, 0, 0)
+              if(reserveDate.getTime() < new Date().getTime()){
+                x.late = 1
+                x.lateDes = '迟到'
+              }
+            }
+            if(x.driverType == 1){
+              const date = x.reserveDate.split(' ')
+              const reserveDate = new Date(new Date(date[0]).getFullYear(),new Date(date[0]).getMonth(), new Date(date[0]).getDate() + 1, 0, 0, 0)
+              if(reserveDate.getTime() < new Date().getTime()){
+                x.late = 1
+                x.lateDes = '迟到'
+              }
+            }
+
+          }
+        })
       } catch (error) {
         this.$message.error(error.message)
       } finally {

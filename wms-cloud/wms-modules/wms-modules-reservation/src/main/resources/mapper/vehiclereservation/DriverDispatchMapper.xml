@@ -120,6 +120,7 @@
         t1.driver_phone as driverPhone,
         t1.car_num as carNum,
         t1.reserve_type as reserveType,
+        t1.late,
         CONCAT(DATE_FORMAT(t1.reserve_date, '%Y-%m-%d'), ' ', t1.time_window) as reserveDate,
         '' as cell
         from vr_driver_deliver t1
@@ -142,6 +143,7 @@
         t1.driver_phone as driverPhone,
         t1.car_num as carNum,
         t1.reserve_type as reserveType,
+        t1.late,
         DATE_FORMAT(t1.pickup_date, '%Y-%m-%d') as reserveDate,
         t1.cell
         from vr_driver_pickup t1

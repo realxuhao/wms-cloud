@@ -3,7 +3,7 @@
     <div class="table-content">
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
-          <a-col :span="4">
+          <a-col :span="8">
             <a-form-model-item label="仓库编码">
               <a-select show-search allow-clear v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
                 <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">

@@ -4,12 +4,12 @@
     <div class="table-content">
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
-          <a-col :span="4">
+          <a-col :span="6">
             <a-form-model-item label="预约单号">
               <a-input v-model="queryForm.reserveNo" placeholder="预约单号" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
+          <a-col :span="6">
             <a-form-model-item label="预约状态">
               <a-select
                 allow-clear
@@ -22,7 +22,7 @@
               </a-select>
             </a-form-model-item>
           </a-col>
-          <a-col span="4">
+          <a-col span="6">
             <a-form-model-item label="预约日期" style="display: flex;">
               <a-date-picker
                 v-model="queryForm.reserveDate"

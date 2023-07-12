@@ -5,7 +5,7 @@
         <a-tab-pane key="1" tab="今日已签到列表">
           <a-form layout="inline" class="search-content">
             <a-row :gutter="16">
-              <a-col :span="4">
+              <a-col :span="8">
                 <a-form-model-item label="仓库编码">
                   <a-select show-search allow-clear v-model="queryForm.wareId" style="width: 100%" placeholder="仓库编码">
                     <a-select-option v-for="item in wareOptionList" :key="item.id" :value="item.id">
@@ -136,7 +136,7 @@
         <a-tab-pane key="2" tab="未签到列表">
           <a-form layout="inline" class="search-content">
             <a-row :gutter="16">
-              <a-col span="4">
+              <a-col span="8">
                 <a-form-model-item label="预约时间" style="display: flex;">
                   <a-date-picker
                     v-model="searchNotSignDate"
@@ -170,6 +170,16 @@
                   {{ text }}
                 </a-tag>
                 <a-tag color="#87d068" v-if="record.driverType===1">
+                  {{ text }}
+                </a-tag>
+              </div>
+            </template>
+            <template slot="lateDes" slot-scope="text, record">
+              <div>
+                <a-tag color="green" v-if="record.late===0">
+                  {{ text }}
+                </a-tag>
+                <a-tag color="red" v-if="record.late===1">
                   {{ text }}
                 </a-tag>
               </div>
@@ -319,6 +329,13 @@ const notSignColumns = [
     dataIndex: 'reserveTypeDes',
     scopedSlots: { customRender: 'reserveTypeDes' },
     width: 150
+  },
+  {
+    title: '是否迟到',
+    key: 'lateDes',
+    dataIndex: 'lateDes',
+    scopedSlots: { customRender: 'lateDes' },
+    width: 100
   },
   {
     title: '预约时间',
@@ -554,6 +571,28 @@ export default {
         this.tableLoading = true
         const { data } = await this.$store.dispatch('driverDispatch/getTodayNoSignList', { signinDate: this.searchNotSignDate == null ? null : moment(new Date(this.searchNotSignDate)).format('YYYY-MM-DD') })
         this.notSignList = data
+        this.notSignList.forEach(x => {
+          if(x.reserveType == 1 && x.late == null && x.reserveDate != null){
+            if(x.driverType == 0){
+              const date = x.reserveDate.split(' ')
+              const timeList = date[1].split('-')
+              const reserveDate = new Date(new Date(date[0]).getFullYear(),new Date(date[0]).getMonth(), new Date(date[0]).getDate(), timeList.length == 2 ? timeList[1].split(':')[0] : 0, 0, 0)
+              if(reserveDate.getTime() < new Date().getTime()){
+                x.late = 1
+                x.lateDes = '迟到'
+              }
+            }
+            if(x.driverType == 1){
+              const date = x.reserveDate.split(' ')
+              const reserveDate = new Date(new Date(date[0]).getFullYear(),new Date(date[0]).getMonth(), new Date(date[0]).getDate() + 1, 0, 0, 0)
+              if(reserveDate.getTime() < new Date().getTime()){
+                x.late = 1
+                x.lateDes = '迟到'
+              }
+            }
+
+          }
+        })
       } catch (error) {
         this.$message.error(error.message)
       } finally {

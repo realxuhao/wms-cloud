@@ -4,17 +4,17 @@
     <div class="table-content">
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
-          <a-col :span="4">
+          <a-col :span="6">
             <a-form-model-item label="预约单号">
               <a-input v-model="queryForm.reserveNo" placeholder="预约单号" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
+          <a-col :span="6">
             <a-form-model-item label="司机姓名">
               <a-input v-model="queryForm.driverName" placeholder="司机姓名" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col span="4">
+          <a-col span="6">
             <a-form-model-item label="预约日期" style="display: flex;">
               <a-date-picker
                 v-model="queryForm.reserveDate"
@@ -230,6 +230,16 @@ export default {
         this.queryForm = { ...this.queryForm, ...{ supplierName: this.supplierName } }
         const { data: { rows, total } } = await this.$store.dispatch('driverDeliver/getList', this.queryForm)
         this.list = rows
+        this.list.forEach(x => {
+          if(x.reserveType == 1 && x.late == null){
+            const timeList = x.timeWindow.split('-')
+            const reserveDate = new Date(new Date(x.reserveDate).getFullYear(),new Date(x.reserveDate).getMonth(), new Date(x.reserveDate).getDate(), timeList.length == 2 ? timeList[1].split(':')[0] : 0,0,0)
+            if(reserveDate.getTime() < new Date().getTime()){
+              x.late = 1
+              x.lateDes = '迟到'
+            }
+          }
+        })
         this.paginationTotal = total
       } catch (error) {
         this.$message.error(error.message)
