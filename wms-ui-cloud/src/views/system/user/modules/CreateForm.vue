@@ -84,7 +84,7 @@
 <script>
 
 import { getUser, addUser, updateUser } from '@/api/system/user'
-
+import {checkPassword} from '@/utils/util'
 export default {
   name: 'CreateForm',
   props: {
@@ -142,7 +142,8 @@ export default {
         ],
         password: [
           { required: true, message: '密码不能为空', trigger: 'blur' },
-          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
+          { validator: checkPassword }
+          // { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' }
         ],
         email: [
           // { required: true, message: '邮箱不能为空', trigger: 'blur' },

@@ -21,23 +21,24 @@
 </template>
 <script>
 import { updateUserPwd } from '@/api/system/user'
+import {checkPassword} from '@/utils/util'
 
 export default {
   props: {
   },
   data () {
-    const validateNewPass = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入新密码'))
-      } else if (!/^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$)([^\u4e00-\u9fa5\s]){5,20}$/.test(value)) {
-        callback(new Error('请输入5-20位英文字母、数字或者符号（除空格），且字母、数字和标点符号至少包含两种'))
-      } else {
-        if (this.form.confirmPassword !== '') {
-          this.$refs.form.validateField('confirmPassword')
-        }
-        callback()
-      }
-    }
+    // const validateNewPass = (rule, value, callback) => {
+    //   if (value === '') {
+    //     callback(new Error('请输入新密码'))
+    //   } else if (!/^(?![\d]+$)(?![a-zA-Z]+$)(?![^\da-zA-Z]+$)([^\u4e00-\u9fa5\s]){5,20}$/.test(value)) {
+    //     callback(new Error('请输入5-20位英文字母、数字或者符号（除空格），且字母、数字和标点符号至少包含两种'))
+    //   } else {
+    //     if (this.form.confirmPassword !== '') {
+    //       this.$refs.form.validateField('confirmPassword')
+    //     }
+    //     callback()
+    //   }
+    // }
     const validateConfirmPass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入新密码确认'))
@@ -63,7 +64,9 @@ export default {
           { required: true, message: '密码不能为空', trigger: 'blur' }
         ],
         newPassword: [
-          { required: true, validator: validateNewPass, trigger: 'change' }
+          { required: true, message: '请输入新密码', trigger: 'blur' },
+          { validator: checkPassword }
+          // { required: true, validator: validateNewPass, trigger: 'change' }
         ],
         confirmPassword: [
           { required: true, validator: validateConfirmPass, trigger: 'change' }
