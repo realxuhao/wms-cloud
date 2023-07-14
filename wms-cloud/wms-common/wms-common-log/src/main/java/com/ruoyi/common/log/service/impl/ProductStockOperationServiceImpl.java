@@ -5,12 +5,15 @@ import com.bosch.system.api.domain.ProductStockOperation;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.log.service.IProductStockOperationService;
 import com.ruoyi.common.log.mapper.ProductStockOperationMapper;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.SystemUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,9 +28,26 @@ public class ProductStockOperationServiceImpl extends ServiceImpl<ProductStockOp
     @Autowired
     private ProductStockOperationMapper productStockOperationMapper;
     @Override
-    public boolean addProductStockOperation(ProductStockOperation productStockOperation) {
+    public boolean addProductStockOperationByBean(ProductStockOperation productStockOperation) {
         int insert = productStockOperationMapper.insert(productStockOperation);
         return insert>0;
+    }
+
+    @Override
+    public boolean addProductStockOperation(String plantNb, BigDecimal operationStock, String ssccNumber, String materialNb, String batchNb, String operationType) {
+        ProductStockOperation productStockOperation=new ProductStockOperation();
+
+        productStockOperation.setPlantNb(plantNb);
+        productStockOperation.setSsccNumber(ssccNumber);
+        productStockOperation.setMaterialNb(materialNb);
+        productStockOperation.setBatchNb(batchNb);
+        productStockOperation.setOperationStock(operationStock);
+        productStockOperation.setOperationType(operationType);
+        productStockOperation.setCreateBy(SecurityUtils.getUsername());
+        productStockOperation.setCreateTime(new Date());
+        int insert = productStockOperationMapper.insert(productStockOperation);
+        return insert>0;
+
     }
 
     @Override
