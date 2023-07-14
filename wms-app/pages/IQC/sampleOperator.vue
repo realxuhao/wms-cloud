@@ -27,15 +27,15 @@
 					{{ sampleInfo.quantity }}
 				</view>
 				<view class="text-line m-b-8 ">
-					<view class="label">推荐抽样数量：</view>
+					<view class="label">推荐抽样量：</view>
 					{{ sampleInfo.recommendSampleQuantity }} {{ sampleInfo.unit }}
 				</view>
 			</view>
 
 			<view class="content">
 				<uni-forms :label-width="80" ref="form" :rules="rules" :modelValue="form" label-position="left">
-					<uni-forms-item label="抽样数量" name="sampleQuantity" required>
-						<uni-easyinput v-model="form.sampleQuantity" placeholder="请输入抽样数量"></uni-easyinput>
+					<uni-forms-item label="抽样量" name="sampleQuantity" required>
+						<uni-easyinput v-model="form.sampleQuantity" placeholder="请输入抽样量"></uni-easyinput>
 					</uni-forms-item>
 					<o-btn block class="submit-btn primary-button" :loading="submitLoading" @click="handlePost">提交</o-btn>
 				</uni-forms>

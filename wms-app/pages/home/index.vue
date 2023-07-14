@@ -221,6 +221,10 @@
 							color="#1afa29"></uni-icons>
 						<view class="text">库内转储</view>
 					</view>
+					<view class="list-item" @click="handleGoto('/pages/finishedProduct/splitPalletScan')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-chaifen" color="#1afa29"></uni-icons>
+						<view class="text">拆托</view>
+					</view>
 				</view>
 			</uni-section>
 			<!-- 				v-if="$hasPermi(['app:finishedProduct:productIn', 'app:finishedProduct:shipment', 'app:finishedProduct:receiving', 'app:finishedProduct:binIn'])" -->

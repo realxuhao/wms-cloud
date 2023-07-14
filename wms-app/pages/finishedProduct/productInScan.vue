@@ -7,12 +7,10 @@
 		<Message ref="message"></Message>
 
 		<uni-popup ref="submitPopup" type="dialog">
-			<uni-popup-dialog before-close type="info" cancelText="取消" confirmText="确认" title="是否确认入库?" @confirm="handleConfirm" @close="handleCancel">
+			<uni-popup-dialog before-close type="info" cancelText="取消" confirmText="确认" title="是否确认入库?"
+				@confirm="handleConfirm" @close="handleCancel">
 				<view>
-					<!-- <view class="text-align m-b-4">
-						<text class="label m-r-8">批次号:</text>
-						<text>{{ info.batchNb }}</text>
-					</view> -->
+
 					<view class="text-align m-b-4">
 						<text class="label m-r-8">SSCC码:</text>
 						<text>{{ info.ssccNumber }}</text>
@@ -21,6 +19,11 @@
 						<text class="label m-r-8">物料编码:</text>
 						<text>{{ info.materialNb }}</text>
 					</view>
+					<view class="text-align m-b-4">
+						<text class="label m-r-8">入库数量:</text>
+						<!-- <text>{{ info.batchNb }}</text> -->
+						<uni-easyinput v-model="info.quantity" type="number" placeholder="请输入入库数量"></uni-easyinput>
+					</view>
 				</view>
 			</uni-popup-dialog>
 		</uni-popup>
@@ -28,105 +31,124 @@
 </template>
 
 <script>
-import Message from '@/components/Message';
-import Bus from '@/utils/bus';
+	import Message from '@/components/Message';
+	import Bus from '@/utils/bus';
 
-export default {
-	components: {
-		Message
-	},
-	onShow() {
-		Bus.$on('scancodedate', this.scanCodeCallback);
-	},
-	destroyed() {
-		Bus.$off('scancodedate');
-	},
-	data() {
-		return {
-			code: '',
-			info: {}
-		};
-	},
-	// mounted() {
-	// 	this.scanCodeCallback({ code: `11221025101012358660208716900568763172407093700006000369006391113669850` });
-	// },
-	methods: {
-		async scanCodeCallback(data) {
-			Bus.$emit('stopScan');
-			this.code = data.code;
-			this.getSample(data.code);
+	export default {
+		components: {
+			Message
 		},
-		async getSample(barCode) {
-			try {
-				console.log(barCode)
-				uni.showLoading();
-				const data = await this.$store.dispatch('finishedProduct/getOneProductIn', barCode);
-				if (data.status === 0) {
-					this.$refs.submitPopup.open();
-				} else {
-					throw Error('此托已入库或为非入库托，请确认');
+		onShow() {
+			Bus.$on('scancodedate', this.scanCodeCallback);
+		},
+		destroyed() {
+			Bus.$off('scancodedate');
+		},
+		data() {
+			return {
+				code: '',
+				info: {}
+			};
+		},
+		mounted() {
+			this.scanCodeCallback({
+				code: `11221025101012358660208716900568763172407093700006000369006391113669850`
+			});
+		},
+		methods: {
+			async scanCodeCallback(data) {
+				Bus.$emit('stopScan');
+				this.code = data.code;
+				this.getSample(data.code);
+			},
+			async getSample(barCode) {
+				try {
+					console.log(barCode)
+					uni.showLoading();
+					const data = await this.$store.dispatch('finishedProduct/getOneProductIn', barCode);
+					if (data.status === 0) {
+						this.$refs.submitPopup.open();
+					} else {
+						throw Error('此托已入库或为非入库托，请确认');
+					}
+					this.info = data;
+
+				} catch (e) {
+					this.$refs.message.error(e.message);
+				} finally {
+					uni.hideLoading();
+					Bus.$emit('startScan');
 				}
-				this.info = data;
-				
-			} catch (e) {
-				this.$refs.message.error(e.message);
-			} finally {
-				uni.hideLoading();
+			},
+			async handleConfirm() {
+				try {
+					uni.showLoading();
+					await this.$store.dispatch('finishedProduct/postProductIn', {
+						barCode: this.code,
+						quantity: this.info.quantity
+					});
+					this.$refs.message.success('入库成功');
+					this.$refs.submitPopup.close();
+				} catch (e) {
+					this.$refs.message.error(e.message);
+				} finally {
+					uni.hideLoading();
+				}
+			},
+			async handleCancel() {
+				this.$refs.submitPopup.close();
 				Bus.$emit('startScan');
 			}
-		},
-		async handleConfirm() {
-			try {
-				uni.showLoading();
-				await this.$store.dispatch('finishedProduct/postProductIn', this.code);
-				this.$refs.message.success('入库成功');
-				this.$refs.submitPopup.close();
-			} catch (e) {
-				this.$refs.message.error(e.message);
-			} finally {
-				uni.hideLoading();
-			}
-		},
-		async handleCancel() {
-			this.$refs.submitPopup.close();
-			Bus.$emit('startScan');
 		}
-	}
-};
+	};
 </script>
 
 <style lang="scss">
-.wrapper {
-	display: flex;
-	flex-direction: column;
-}
-/deep/.uni-navbar--shadow {
-	box-shadow: none;
-}
-/deep/.uni-navbar--border {
-	border: none;
-}
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+	}
 
-.content {
-	height: 100%;
-	background-color: $primary-color;
-	flex: 1;
-	display: flex;
-	align-items: center;
-	// justify-content: center;
-	flex-direction: column;
-	image {
-		width: 180px;
-		// height: 160px;
-		margin-top: 120px;
-		margin-bottom: 32px;
+	/deep/.uni-navbar--shadow {
+		box-shadow: none;
 	}
-	text {
-		color: #fff;
-		font-size: 16px;
+
+	/deep/.uni-navbar--border {
+		border: none;
 	}
-}
-.label {
-	width: 80px;
-}
+
+	.content {
+		height: 100%;
+		background-color: $primary-color;
+		flex: 1;
+		display: flex;
+		align-items: center;
+		// justify-content: center;
+		flex-direction: column;
+
+		image {
+			width: 180px;
+			// height: 160px;
+			margin-top: 120px;
+			margin-bottom: 32px;
+		}
+
+		text {
+			color: #fff;
+			font-size: 16px;
+		}
+	}
+
+	.label {
+		width: 80px;
+	}
+
+	.text-align {
+		display: flex;
+		align-items: center;
+	}
+
+	/deep/.uni-easyinput__content-input {
+		height: 30px;
+	}
 </style>

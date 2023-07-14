@@ -64,7 +64,7 @@
         </a-row>
       </a-form>
       <div class="action-content">
-    
+        <h3>总库存量：{{ totalStock }}</h3>
       </div>
       <a-table
         table-layout="fixed"
@@ -266,7 +266,10 @@ export default {
     colorMap: () => colorMap,
     hasSelected () {
       return this.selectedRowKeys.length > 0
-    }
+    },
+    totalStock(){
+     return _.sumBy(this.list,'totalStock')
+    },
   },
   methods: {
     onSelectChange (selectedRowKeys) {

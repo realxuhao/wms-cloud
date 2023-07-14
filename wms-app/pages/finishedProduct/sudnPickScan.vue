@@ -1,6 +1,10 @@
 <template>
 	<my-page nav-title="扫描SSCC码" :shadow="false" :border="false">
 		<view class="content" slot="page-main">
+			<view class="scan-input">
+				<uni-easyinput type="textarea" suffixIcon="arrow-right" placeholderStyle="color:#333;font-size:14px"
+					v-model="sscc" placeholder="如果标签损坏或扫码结果为空,请输入标签码" @iconClick="getInfoBySscc"></uni-easyinput>
+			</view>
 			<image src="/static/sku-phone.png" class="m-b-8"></image>
 			<text>请将激光扫描头对准SSCC码区域</text>
 		</view>
@@ -53,6 +57,7 @@
 		data() {
 			return {
 				code: '',
+				sscc: '',
 				sudnId: '',
 				info: {}
 			};
@@ -68,9 +73,27 @@
 			async scanCodeCallback(data) {
 				Bus.$emit('stopScan');
 				this.code = data.code.replace(/\r|\n/gi, '');
-				this.getSample(data.code);
+				this.getInfoByBarCode(data.code);
 			},
-			async getSample(barCode) {
+			async getInfoBySscc() {
+				Bus.$emit('stopScan');
+				try {
+					uni.showLoading();
+					const data = await this.$store.dispatch('finishedProduct/getOneBinDownBySSCC', this.sscc);
+					if (data && data.status === 1) {
+						this.$refs.submitPopup.open();
+					} else {
+						throw Error('此物料已下架或为非下架物料，请确认');
+					}
+					this.info = data;
+				} catch (e) {
+					this.$refs.message.error(e.message);
+				} finally {
+					uni.hideLoading();
+					Bus.$emit('startScan');
+				}
+			},
+			async getInfoByBarCode(barCode) {
 				try {
 					uni.showLoading();
 					const data = await this.$store.dispatch('finishedProduct/sudnPickGetByQrCode', {
@@ -152,5 +175,27 @@
 
 	.label {
 		width: 80px;
+	}
+
+	.scan-input {
+		position: absolute;
+		top: 10%;
+		padding: 0 10px;
+		box-sizing: border-box;
+		width: 100%;
+
+		/deep/.uni-easyinput__content {
+			background: rgba(255, 255, 255, 0.8) !important;
+
+			.uni-easyinput__content-textarea {
+				font-size: 20px;
+			}
+		}
+
+		/deep/.uniui-arrow-right {
+			transform: translateY(16px);
+			font-size: 28px !important;
+			color: rgb(51, 51, 51) !important;
+		}
 	}
 </style>

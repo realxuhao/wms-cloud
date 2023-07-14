@@ -42,7 +42,7 @@
                   <template slot="title">
                     <p>确认提交吗？</p>
                     <a-form layout="inline" class="search-content">
-                      <a-form-model-item label="抽样数量">
+                      <a-form-model-item label="抽样量">
                         <a-input-number style="width:120px" v-model="row.sampleQuantity" :min="0" :max="row.availableStock"></a-input-number>
                       </a-form-model-item>
                     </a-form>

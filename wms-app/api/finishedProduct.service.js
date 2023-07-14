@@ -83,13 +83,14 @@ const getOneProductIn = async (barCode) => {
 	})
 }
 
-const postProductIn = async (barCode) => {
-	const url = `/product/product-receive/receive/${barCode}`
-	const method = 'GET'
+const postProductIn = async (options) => {
+	const url = `/product/product-receive/receive/${options.barCode}`
+	const method = 'PUT'
 
 	return request({
 		url,
 		method,
+		data: options
 	})
 }
 
@@ -312,7 +313,24 @@ const addProductReturn = async (options) => {
 	})
 }
 
+const getOneBinDownBySSCC = async (sscc) => {
+	const method = 'GET'
+	const url = `/product/sudn-pick/getOneBinDownBySSCC/${sscc}`
+	return request({
+		url,
+		method,
+	})
+}
 
+const addSplit = async (options) => {
+	const method = 'POST'
+	const url = `/product/product-stock/addSplit`
+	return request({
+		url,
+		method,
+		data: options
+	})
+}
 
 
 export const finishedProductService = {
@@ -345,5 +363,7 @@ export const finishedProductService = {
 	sudnShipList,
 	sudnShipGetById,
 	sudnShip,
-	addProductReturn
+	addProductReturn,
+	getOneBinDownBySSCC,
+	addSplit
 }

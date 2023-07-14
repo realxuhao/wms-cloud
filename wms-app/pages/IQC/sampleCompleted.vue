@@ -19,8 +19,8 @@
 					<text class="status">已抽样</text>
 				</view>
 				<view class="card-text m-b-4">物料编码：{{ item.materialNb }}</view>
-				<view class="card-text m-b-4">推荐抽样数量：{{ item.recommendSampleQuantity }} {{ item.unit }}</view>
-				<view class="card-text m-b-4">实际抽样数量：{{ item.sampleQuantity }} {{ item.unit }}</view>
+				<view class="card-text m-b-4">推荐抽样量：{{ item.recommendSampleQuantity }} {{ item.unit }}</view>
+				<view class="card-text m-b-4">实际抽样量：{{ item.sampleQuantity }} {{ item.unit }}</view>
 				<view class="card-text m-b-4">抽样人：{{ item.sampleUser }}</view>
 				<view class="card-text sscc">
 					<text class="card-text m-b-4">Cell：{{ item.cell }}</text>

@@ -285,6 +285,12 @@
 		},
 		{
 			"path": "pages/finishedProduct/spdnReturnsOperation"
+		},
+		{
+			"path": "pages/finishedProduct/splitPalletScan"
+		},
+		{
+			"path": "pages/finishedProduct/splitPallet"
 		}
 
 	],

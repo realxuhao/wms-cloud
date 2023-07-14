@@ -3,7 +3,7 @@
     <div class="table-content">
       <a-steps :current="currentStep" @change="handleStepChange" class="m-b-24">
         <a-step title="选择SSCC码"> </a-step>
-        <a-step title="输入抽样数量" />
+        <a-step title="输入抽样量" />
       </a-steps>
       <a-row>
         <a-col :span="24" v-show="currentStep === 0">
@@ -107,7 +107,7 @@
             @change="handleChangeTab"
           >
             <template slot="sampleQuantity" slot-scope="text, record">
-              <a-input-number v-model="record.sampleQuantity" :min="0" :max="record.availableStock" placeholder="抽样数量" allow-clear/>
+              <a-input-number v-model="record.sampleQuantity" :min="0" :max="record.availableStock" placeholder="抽样量" allow-clear/>
             </template>
           </a-table>
           <div class="pagination-con">
@@ -193,7 +193,7 @@ const selectColumns = [
     width: 120
   },
   {
-    title: '抽样数量',
+    title: '抽样量',
     key: 'sampleQuantity',
     dataIndex: 'sampleQuantity',
     width: 80,
