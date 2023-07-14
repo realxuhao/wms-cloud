@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import com.bosch.system.api.RemoteFileService;
 import com.bosch.system.api.model.LoginUser;
+import com.ruoyi.common.core.utils.RegUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -116,6 +117,9 @@ public class SysProfileController extends BaseController
         {
             return AjaxResult.error("新密码不能与旧密码相同");
         }
+        //校验密码
+        RegUtils.passwordStrengthCheck(password);
+
         if (userService.resetUserPwd(username, SecurityUtils.encryptPassword(newPassword)) > 0)
         {
             // 更新缓存用户密码

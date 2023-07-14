@@ -1,5 +1,6 @@
 package com.bosch.masterdata.api.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -30,12 +31,14 @@ public class WorkloadDTO extends PageDomain {
     /**
      * 创建时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "createTimeStart")
     private Date createTimeStart;
 
     /**
      * 创建时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "createTimeEnd")
     private Date createTimeEnd;
     /**

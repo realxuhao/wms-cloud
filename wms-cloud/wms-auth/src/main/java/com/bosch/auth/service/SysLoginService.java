@@ -1,5 +1,6 @@
 package com.bosch.auth.service;
 
+import com.ruoyi.common.core.utils.RegUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.ruoyi.common.core.constant.Constants;
@@ -46,15 +47,15 @@ public class SysLoginService
         if (password.length() < UserConstants.PASSWORD_MIN_LENGTH
                 || password.length() > UserConstants.PASSWORD_MAX_LENGTH)
         {
-            recordLogService.recordLogininfor(username, Constants.LOGIN_FAIL, "用户密码不在指定范围");
-            throw new ServiceException("用户密码不在指定范围");
+            recordLogService.recordLogininfor(username, Constants.LOGIN_FAIL, "用户密码有误");
+            throw new ServiceException("用户密码有误");
         }
         // 用户名不在指定范围内 错误
         if (username.length() < UserConstants.USERNAME_MIN_LENGTH
                 || username.length() > UserConstants.USERNAME_MAX_LENGTH)
         {
-            recordLogService.recordLogininfor(username, Constants.LOGIN_FAIL, "用户名不在指定范围");
-            throw new ServiceException("用户名不在指定范围");
+            recordLogService.recordLogininfor(username, Constants.LOGIN_FAIL, "用户名有误");
+            throw new ServiceException("用户名有误");
         }
         // 查询用户信息
         R<LoginUser> userResult = remoteUserService.getUserInfo(username, SecurityConstants.INNER);
@@ -110,9 +111,10 @@ public class SysLoginService
         if (password.length() < UserConstants.PASSWORD_MIN_LENGTH
                 || password.length() > UserConstants.PASSWORD_MAX_LENGTH)
         {
-            throw new ServiceException("密码长度必须在5到20个字符之间");
+            throw new ServiceException("密码长度必须在13到20个字符之间");
         }
-
+        //校验密码
+        RegUtils.passwordStrengthCheck(password);
         // 注册用户信息
         SysUser sysUser = new SysUser();
         sysUser.setUserName(username);

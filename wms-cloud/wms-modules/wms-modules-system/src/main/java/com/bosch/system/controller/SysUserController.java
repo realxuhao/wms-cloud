@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 import com.bosch.system.api.model.LoginUser;
+import com.ruoyi.common.core.utils.RegUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -215,6 +216,8 @@ public class SysUserController extends BaseController
         {
             return AjaxResult.error("新增用户'" + user.getUserName() + "'失败，邮箱账号已存在");
         }
+        //校验密码
+        RegUtils.passwordStrengthCheck(user.getPassword());
         user.setCreateBy(SecurityUtils.getUsername());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
         return toAjax(userService.insertUser(user));
@@ -271,8 +274,11 @@ public class SysUserController extends BaseController
     @PutMapping("/resetPwd")
     public AjaxResult resetPwd(@RequestBody SysUser user)
     {
+        //校验密码
+        RegUtils.passwordStrengthCheck(user.getPassword());
         userService.checkUserAllowed(user);
         userService.checkUserDataScope(user.getUserId());
+
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
         user.setUpdateBy(SecurityUtils.getUsername());
         return toAjax(userService.resetPwd(user));

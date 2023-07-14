@@ -85,18 +85,6 @@ const columns = [
     key: 'binOutOther',
     dataIndex: 'binOutOther',
     width: 80
-  },
-  {
-    title: '拆托',
-    key: 'palletSplit',
-    dataIndex: 'palletSplit',
-    width: 80
-  },
-  {
-    title: '翻托',
-    key: 'palletTurnover',
-    dataIndex: 'palletTurnover',
-    width: 80
   }
 
 ]

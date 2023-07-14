@@ -220,12 +220,14 @@
                          WHEN '5' THEN 'pallet_turnover'
                          ELSE 'other'
                          END AS type_name
-              FROM user_operation_log where  type='0' GROUP BY create_by ,operation_type )AS t
-        where 1=1
-        <if test="createBy != null and createBy != ''">and create_by like concat('%', #{createBy}, '%')</if>
+              FROM user_operation_log where  type='0'
         <if test="createTimeStart != null">and create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
         <if test="createTimeEnd != null">and create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
-        <if test="type != null and type != ''">and type=#{type}</if>
+                                      GROUP BY create_by ,operation_type )AS t
+        where 1=1
+        <if test="createBy != null and createBy != ''">and create_by like concat('%', #{createBy}, '%')</if>
+
+        <if test="type != null and type != ''">and operation_type=#{type}</if>
         GROUP BY create_by
 
 
@@ -246,12 +248,14 @@
 
         ELSE 'other'
         END AS type_name
-        FROM user_operation_log where  TYPE='1' GROUP BY create_by ,operation_type )AS t
-        where 1=1
-        <if test="createBy != null and createBy != ''">and create_by like concat('%', #{createBy}, '%')</if>
+        FROM user_operation_log where  TYPE='1'
         <if test="createTimeStart != null">and create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
         <if test="createTimeEnd != null">and create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
-        <if test="type != null and type != ''">and type=#{type}</if>
+                                GROUP BY create_by ,operation_type )AS t
+        where 1=1
+        <if test="createBy != null and createBy != ''">and create_by like concat('%', #{createBy}, '%')</if>
+
+
         GROUP BY create_by
 
 

@@ -79,7 +79,7 @@ export function exitFullscreen () {
 
 export function checkPassword(rule, value, callback) {
   if (value && !/^(?![a-zA-Z]+$)(?![A-Z0-9]+$)(?![A-Z\W_]+$)(?![a-z0-9]+$)(?![a-z\W_]+$)(?![0-9\W_]+$)[a-zA-Z0-9\W_]{8,16}$/.test(value)) {
-    callback(new Error('密码为数字，小写字母，大写字母，特殊符号 至少包含三种，长度为 8 - 16位'))
+    callback(new Error('密码必须包含数字、小写字母、大写字母、特殊符号，长度为 8 - 16位'))
   }
   callback()
 }
