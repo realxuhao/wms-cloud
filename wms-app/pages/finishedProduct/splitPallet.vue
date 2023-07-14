@@ -113,11 +113,12 @@
 				Bus.$on('scancodedate', async data => {
 					const code = data.code.trim();
 
-					if (this.editFieldName === 'form.newMesBarCode') {
-						await this.getMesBarCodeInfo(code);
-						this.form.newMesBarCode = this.parsedMesBarCode.ssccNb;
-						// this.form.splitQuantity = this.parsedMesBarCode.quantity;
-					}
+					// if (this.editFieldName === 'form.newMesBarCode') {
+					// 	await this.getMesBarCodeInfo(code);
+					// 	// this.form.newMesBarCode = this.parsedMesBarCode.ssccNb;
+					// 	// this.form.splitQuantity = this.parsedMesBarCode.quantity;
+					// }
+					this.form.newMesBarCode = code
 				});
 			},
 			async getInfo(code) {
