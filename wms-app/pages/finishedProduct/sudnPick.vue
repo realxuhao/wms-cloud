@@ -52,7 +52,7 @@
 			},
 			handleGotoScan() {
 				uni.navigateTo({
-					url: `/pages/finishedProduct/sudnPickScan?id=${this.params.id}`
+					url: `/pages/finishedProduct/sudnPickScan`
 				});
 			},
 			handleSearch() {

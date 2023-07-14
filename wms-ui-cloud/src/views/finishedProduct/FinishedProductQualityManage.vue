@@ -91,6 +91,7 @@
         </a-row>
       </a-form>
       <div class="action-content">
+        <h3>总库存量：{{ totalStock }}</h3>
       </div>
       <a-table
         :columns="columns"
@@ -419,6 +420,9 @@ export default {
     }
   },
   computed: {
+    totalStock(){
+     return _.sumBy(this.list,'totalStock')
+    },
     editSSCCColumns: () => editSSCCColumns,
     qualityStatus: () => qualityStatus,
     changeStatusMap: () => changeStatusMap,

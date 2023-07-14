@@ -227,7 +227,7 @@
 
     <a-modal
       v-model="editVisible"
-      title="修改推荐抽样数量"
+      title="修改推荐抽样量"
       :confirm-loading="confirmLoading"
       ok-text="确认"
       cancel-text="取消"

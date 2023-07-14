@@ -237,6 +237,24 @@ const finishedProduc = {
 			} = await finishedProductService.addProductReturn(options)
 			return data
 		},
+		async getOneBinDownBySSCC({
+			commit
+		}, sscc) {
+			const {
+				data
+			} = await finishedProductService.getOneBinDownBySSCC(sscc)
+			return data
+		},
+		async addSplit({
+			commit,
+
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.addSplit(options)
+			return data
+		},
+
 
 	}
 }
