@@ -16,6 +16,8 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
+import com.ruoyi.common.log.enums.StockOperationType;
+import com.ruoyi.common.log.service.IProductStockOperationService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,6 +46,9 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
     @Autowired
     private RemoteProductService remoteProductService;
 
+    @Autowired
+    private IProductStockOperationService productStockOperationService;
+
     @Override
     public List<ProductReceiveVO> list(ProductReceiveQueryDTO queryDTO) {
         return receiveMapper.list(queryDTO);
@@ -51,7 +56,7 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void receive(String qrCode) {
+    public void receive(String qrCode,Double quantity) {
         String sscc = ProductQRCodeUtil.getSSCC(qrCode);
         Date productionDate = ProductQRCodeUtil.getProductionDate(qrCode);
         String batchNb = ProductQRCodeUtil.getBatchNb(qrCode);
@@ -70,9 +75,16 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
         productReceive.setBatchNb(batchNb);
         productReceive.setProductionDate(productionDate);
         productReceive.setStatus(ProductReceiveEnum.RECEIVED.code());
+        productReceive.setInQuantity(quantity);
         receiveMapper.updateById(productReceive);
         //上架到成品存储区
         stockService.generateStockByReceive(productReceive);
+
+        //记录操作
+
+        productStockOperationService.addProductStockOperation(productReceive.getPlantNb(),productReceive.getInQuantity(),productReceive.getSsccNumber(),productReceive.getMaterialNb(),productReceive.getBatchNb(), StockOperationType.IN.getCode());
+
+
     }
 
     @Override

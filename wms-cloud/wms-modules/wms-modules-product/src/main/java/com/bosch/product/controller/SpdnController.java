@@ -28,6 +28,9 @@ import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -71,6 +74,9 @@ public class SpdnController extends BaseController {
 
     @Autowired
     private IProductSPDNPickService pickService;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
     @PostMapping(value = "/importSPDN")
     @ApiOperation("SPDN导入")
@@ -149,10 +155,12 @@ public class SpdnController extends BaseController {
 
 
     @PutMapping(value = "/binDown/{qrCode}")
-    @ApiOperation("移库任务下架")
+    @ApiOperation("SPDN任务下架")
     @Transactional(rollbackFor = Exception.class)
     public R binDown(@PathVariable String qrCode) {
         spdnService.binDown(qrCode);
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode));
+
         return R.ok(qrCode + "下架成功");
     }
 

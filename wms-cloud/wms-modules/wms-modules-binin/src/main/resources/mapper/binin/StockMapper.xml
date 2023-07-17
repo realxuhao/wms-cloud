@@ -100,7 +100,7 @@ order by bs.batch_nb
         FROM bi_stock
         WHERE change_status = '1'
           AND delete_flag = 0
-          AND id = #{id}
+          AND id = #{id}哦09
     </select>
     <update id="changeStatus" parameterType="IQCChangeStatusDTO">
         update bi_stock b set

@@ -145,7 +145,7 @@ public class StockController extends BaseController {
             }
         }
 
-        return R.fail();
+        return R.fail("该库位暂无库存信息");
     }
 
     @GetMapping(value = "/getBinStockLog/{binCode}")

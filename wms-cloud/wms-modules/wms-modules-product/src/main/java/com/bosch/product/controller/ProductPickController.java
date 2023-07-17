@@ -18,6 +18,9 @@ import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,6 +50,11 @@ public class ProductPickController extends BaseController {
 
     @Autowired
     private IProductPickService pickService;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
+
+
 
     @GetMapping(value = "/list")
     @ApiOperation("SUDN捡配列表")
@@ -82,11 +90,25 @@ public class ProductPickController extends BaseController {
         return R.ok();
     }
 
+    @GetMapping(value = "/getOneBinDownBySSCC/{sscc}")
+    @ApiOperation("根据SSCC获取单个汇总后的下架数据")
+    public R<ProductPickVO> getOneBinDownBySSCC(@PathVariable("sscc") String sscc) {
+        ProductPickDTO pickDTO = new ProductPickDTO();
+        pickDTO.setSscc(sscc);
+        List<ProductPickVO> list = pickService.binDownlist(pickDTO);
+        if (!CollectionUtils.isEmpty(list)) {
+            return R.ok(list.get(0));
+        }
+        return R.ok();
+    }
+
     @PutMapping(value = "/sumBinDown/{qrCode}")
     @ApiOperation("SUDN捡配任务汇总下架")
     @Transactional(rollbackFor = Exception.class)
     public R binDown(@PathVariable String qrCode) {
         pickService.sumBinDown(qrCode);
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode));
+
         return R.ok(qrCode + "下架成功");
     }
 
@@ -103,6 +125,8 @@ public class ProductPickController extends BaseController {
     @Transactional(rollbackFor = Exception.class)
     public R binDown(@PathVariable String qrCode, @RequestParam("sudnId") Long sudnId) {
         pickService.binDown(qrCode, sudnId);
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode));
+
         return R.ok(qrCode + "下架成功");
     }
 

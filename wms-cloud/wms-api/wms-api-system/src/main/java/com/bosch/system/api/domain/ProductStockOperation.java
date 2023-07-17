@@ -57,7 +57,7 @@ public class ProductStockOperation implements Serializable {
      * 操作类型
      */
     @TableField(value = "operation_type")
-    private String operationType;
+    private Integer operationType;
 
     /**
      * 创建人

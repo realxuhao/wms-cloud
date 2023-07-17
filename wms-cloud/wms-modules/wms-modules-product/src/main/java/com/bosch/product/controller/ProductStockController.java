@@ -2,6 +2,7 @@ package com.bosch.product.controller;
 
 import com.bosch.binin.api.domain.dto.AddManualTransDTO;
 import com.bosch.binin.api.domain.dto.ManualBinInDTO;
+import com.bosch.binin.api.domain.dto.SplitPalletDTO;
 import com.bosch.binin.api.domain.dto.StockEditDTO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.masterdata.api.RemoteMaterialService;
@@ -18,6 +19,10 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +47,7 @@ public class ProductStockController extends BaseController {
     private IProductStockService productStockService;
 
     @Autowired
-    private IMaterialStockService materialStockService;
+    private IUserOperationLogService userOperationLogService;
 
     @GetMapping(value = "/list")
     @ApiOperation("库存列表")
@@ -97,6 +102,8 @@ public class ProductStockController extends BaseController {
     @ApiOperation("转储")
     public R trans(@RequestBody ManualBinInDTO binInDTO) {
         productStockService.trans(binInDTO);
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_TRANS.getCode(), ProductQRCodeUtil.getSSCC(binInDTO.getMesBarCode()));
+
         return R.ok("转储成功");
     }
 
@@ -111,6 +118,17 @@ public class ProductStockController extends BaseController {
             return R.ok(list.get(0));
         }
         return R.fail("没有该SSCC" + sscc + "对应的库存");
+    }
+
+
+    @PostMapping(value = "addSplit")
+    @ApiOperation("拆托")
+    @Transactional(rollbackFor = Exception.class)
+    public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
+        productStockService.addSplit(splitPallet);
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(),splitPallet.getSourceSsccNb());
+
+        return R.ok();
     }
 
 

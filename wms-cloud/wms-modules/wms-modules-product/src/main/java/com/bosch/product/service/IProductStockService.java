@@ -3,6 +3,7 @@ package com.bosch.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.dto.IQCChangeStatusDTO;
 import com.bosch.binin.api.domain.dto.ManualBinInDTO;
+import com.bosch.binin.api.domain.dto.SplitPalletDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.product.api.domain.ProductReceive;
 import com.bosch.product.api.domain.ProductStock;
@@ -72,4 +73,6 @@ public interface IProductStockService extends IService<ProductStock> {
     void trans(ManualBinInDTO binInDTO);
 
     List<ProductReturnVO> returnList(ProductReturnDTO queryDTO);
+
+    void addSplit(SplitPalletDTO splitPallet);
 }

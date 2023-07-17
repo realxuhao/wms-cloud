@@ -24,9 +24,9 @@ public interface IProductStockOperationService extends IService<ProductStockOper
      * @param
      * @return
      */
-    boolean addProductStockOperation(String plantNb, BigDecimal operationStock,String ssccNumber,String materialNb,String batchNb, String operationType);
+    boolean addProductStockOperation(String plantNb, Double operationStock,String ssccNumber,String materialNb,String batchNb, Integer operationType);
     /**
      * 批量新增库存操作记录
      */
-    boolean addProductStockOperationBatch(String plantNb, BigDecimal operationStock, String operationType, List<ProductStockOperation> list);
+    boolean addProductStockOperationBatch(String plantNb, BigDecimal operationStock, Integer operationType, List<ProductStockOperation> list);
 }

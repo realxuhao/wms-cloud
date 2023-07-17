@@ -20,7 +20,7 @@ public interface IProductReceiveService extends IService<ProductReceive> {
 
     List<ProductReceiveVO> list(ProductReceiveQueryDTO queryDTO);
 
-    void receive(String qrCode);
+    void receive(String qrCode,Double quantity);
 
     void delete(Long id);
 

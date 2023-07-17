@@ -23,6 +23,7 @@ import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IProductStockOperationService;
 import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
@@ -34,6 +35,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +59,11 @@ public class ProductReceiveController extends BaseController {
 
     @Autowired
     private IUserOperationLogService userOperationLogService;
+
+    @Autowired
+    private IProductStockOperationService productStockOperationService;
+
+
 
 
     @GetMapping(value = "/list")
@@ -87,10 +94,10 @@ public class ProductReceiveController extends BaseController {
         return R.ok(list.get(0));
     }
 
-    @GetMapping(value = "/receive/{qrCode}")
+    @PutMapping(value = "/receive/{qrCode}")
     @ApiOperation("PDA成品收货")
-    public R receive(@PathVariable("qrCode") String qrCode) {
-        receiveService.receive(qrCode);
+    public R receive(@PathVariable("qrCode") String qrCode, @RequestParam("quantity")Double quantity) {
+        receiveService.receive(qrCode,quantity);
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_STORAGE_IN.getCode(), ProductQRCodeUtil.getSSCC(qrCode));
         return R.ok();
     }

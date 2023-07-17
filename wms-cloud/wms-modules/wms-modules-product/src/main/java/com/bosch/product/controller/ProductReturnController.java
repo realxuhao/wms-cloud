@@ -19,6 +19,7 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +44,9 @@ public class ProductReturnController extends BaseController {
     @Autowired
     private IProductStockService productStockService;
 
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
+
 
 
     @PostMapping(value = "/addProductReturn")
@@ -50,6 +54,8 @@ public class ProductReturnController extends BaseController {
     public R save(@RequestBody ProductReturnDTO productReturnDTO) {
 
       productStockService.stockReturn(productReturnDTO);
+
+
         return R.ok();
 
     }

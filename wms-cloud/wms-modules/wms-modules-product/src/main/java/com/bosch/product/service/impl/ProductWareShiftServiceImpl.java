@@ -26,6 +26,7 @@ import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.log.service.IProductStockOperationService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,9 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
     @Autowired
     private IBinAssignmentService binAssignmentService;
+
+    @Autowired
+    private IProductStockOperationService productStockOperationService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -223,6 +227,16 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
         //库存修改
         stockService.generateStockByProductWareShifts(wareShifts);
+
+        //出记录的DTO
+
+
+//        //出记录
+//        productStockOperationService.addProductStockOperationBatch()
+//        //入记录
+//        productStockOperationService.addProductStockOperationBatch()
+
+
 
     }
 

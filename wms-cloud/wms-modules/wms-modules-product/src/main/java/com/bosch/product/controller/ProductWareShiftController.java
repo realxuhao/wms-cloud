@@ -16,9 +16,13 @@ import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.experimental.PackagePrivate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -45,6 +49,9 @@ public class ProductWareShiftController extends BaseController {
 
     @Autowired
     private IProductStockService productStockService;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
 
     @GetMapping(value = "/list")
@@ -113,6 +120,8 @@ public class ProductWareShiftController extends BaseController {
         List<String> list = dto.getSsccList().stream().map(item -> ProductQRCodeUtil.getSSCC(item)).collect(Collectors.toList());
 
         productWareShiftService.ship(list, dto.getCarNb());
+
+
         return R.ok();
     }
 
@@ -139,6 +148,8 @@ public class ProductWareShiftController extends BaseController {
     @ApiOperation("移库上架")
     public R binIn(@RequestBody ProductBinInDTO binInDTO){
         productWareShiftService.wareShiftBinIn(binInDTO);
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBININ.getCode(), binInDTO.getSscc());
+
         return R.ok();
     }
 

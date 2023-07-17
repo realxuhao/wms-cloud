@@ -13,6 +13,7 @@ public enum UserOperationType {
     PRODUCTBININ(9, "成品上架"),
 
     PRODUCTBINOUT(10, "成品拣配下架"),
+
     PROBINOUTOTHER(11, "成品其他下架"),
 
     STORAGEIN(12,"原材料入库"),
@@ -21,7 +22,9 @@ public enum UserOperationType {
 
     PRODUCT_IMPORT(14,"成品入库导入"),
 
-    PRODUCT_STORAGE_IN(15,"成品入库");
+    PRODUCT_STORAGE_IN(15,"成品入库"),
+
+    PRODUCT_TRANS(16,"成品转储");
 
 
     private final Integer code;

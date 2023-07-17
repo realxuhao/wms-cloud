@@ -105,6 +105,7 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
         splitRecord.setSourceSscc(sourceSsccNb);
         splitRecord.setSourceTotalStock(sourceStock.getTotalStock());
         splitRecord.setWareCode(sourceStock.getWareCode());
+        splitRecord.setType(0);//原材料
         save(splitRecord);
 
 

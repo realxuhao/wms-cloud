@@ -81,6 +81,10 @@ public class ProductReceive extends BaseEntity {
     @CsvBindByName(column = "Quantity")
     private Double quantity;
 
+
+
+    private Double inQuantity;
+
     /**
      * 单位
      */

@@ -34,14 +34,14 @@ public class ProductStockOperationServiceImpl extends ServiceImpl<ProductStockOp
     }
 
     @Override
-    public boolean addProductStockOperation(String plantNb, BigDecimal operationStock, String ssccNumber, String materialNb, String batchNb, String operationType) {
+    public boolean addProductStockOperation(String plantNb, Double operationStock, String ssccNumber, String materialNb, String batchNb, Integer operationType) {
         ProductStockOperation productStockOperation=new ProductStockOperation();
 
         productStockOperation.setPlantNb(plantNb);
         productStockOperation.setSsccNumber(ssccNumber);
         productStockOperation.setMaterialNb(materialNb);
         productStockOperation.setBatchNb(batchNb);
-        productStockOperation.setOperationStock(operationStock);
+        productStockOperation.setOperationStock(new BigDecimal(operationStock));
         productStockOperation.setOperationType(operationType);
         productStockOperation.setCreateBy(SecurityUtils.getUsername());
         productStockOperation.setCreateTime(new Date());
@@ -51,7 +51,7 @@ public class ProductStockOperationServiceImpl extends ServiceImpl<ProductStockOp
     }
 
     @Override
-    public boolean addProductStockOperationBatch(String plantNb, BigDecimal operationStock, String operationType, List<ProductStockOperation> list) {
+    public boolean addProductStockOperationBatch(String plantNb, BigDecimal operationStock, Integer operationType, List<ProductStockOperation> list) {
         if (CollectionUtils.isEmpty(list)){
             return false;
         }
@@ -62,7 +62,7 @@ public class ProductStockOperationServiceImpl extends ServiceImpl<ProductStockOp
          if (productStockOperation.getOperationStock()!=null){
              productStockOperation.setOperationStock(operationStock);
          }
-         if (StringUtils.isEmpty(productStockOperation.getOperationType())){
+         if (productStockOperation.getOperationType()==null){
              productStockOperation.setOperationType(operationType);
          }
 

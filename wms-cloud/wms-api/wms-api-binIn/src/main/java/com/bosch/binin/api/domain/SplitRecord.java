@@ -63,4 +63,7 @@ public class SplitRecord extends BaseEntity {
      *状态
      */
     private Integer status;
+
+
+    private int type;
 }
