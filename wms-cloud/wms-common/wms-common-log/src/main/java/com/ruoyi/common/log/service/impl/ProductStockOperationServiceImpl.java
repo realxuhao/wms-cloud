@@ -68,7 +68,8 @@ public class ProductStockOperationServiceImpl extends ServiceImpl<ProductStockOp
 
         });
 
-        return false;
+        boolean b = this.saveBatch(list);
+        return b;
     }
 }
 

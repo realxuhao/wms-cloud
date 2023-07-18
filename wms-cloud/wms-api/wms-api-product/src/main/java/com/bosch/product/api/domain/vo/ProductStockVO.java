@@ -21,6 +21,12 @@ public class ProductStockVO {
     @ApiModelProperty(value = "id")
     private Long id;
 
+
+    /**
+     * 箱 Tr 对应包装规格
+     */
+    @ApiModelProperty(value = "箱 Tr 对应包装规格")
+    private String boxSpecification;
     /**
      * SSCC码
      */

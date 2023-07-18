@@ -31,10 +31,17 @@ const updateBySsccList = async (parameter) => {
   const { data } = await createAuthInstance(baseUrl).post(url, parameter.ssccList)
   return data
 }
+const updateByIdList = async (parameter) => {
+  console.log(parameter)
+  const url = `/rm_comparison/updateByIdList`
+  const { data } = await createAuthInstance(baseUrl).post(url, parameter.ids)
+  return data
+}
 export const comparisonService = {
   getList,
   upload,
   updateBySsccList,
+  updateByIdList,
   uploadPro,
   getProList
 }

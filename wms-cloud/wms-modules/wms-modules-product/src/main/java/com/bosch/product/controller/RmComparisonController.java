@@ -104,7 +104,28 @@ public class RmComparisonController extends BaseController {
             return AjaxResult.error(e.getMessage());
         }
     }
-
+    /**
+     * 通过idlist修改库存对比表信息
+     *
+     * @param List<String> ssccList
+     * @return
+     * @throws Exception
+     */
+    @ApiOperation("通过idlist修改库存对比表信息")
+    @PostMapping(value = "/updateByIdList")
+    @Transactional(rollbackFor = Exception.class)
+    public AjaxResult updateByIdList(@RequestBody List<String> ids) throws Exception {
+        try {
+            if (CollectionUtils.isEmpty(ids)) {
+                throw new Exception("请勾选数据");
+            }
+            boolean b = proComparisonService.updateByIdList(ids);
+            return toAjax(b);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return AjaxResult.error(e.getMessage());
+        }
+    }
 
     /**
      * 批量上传

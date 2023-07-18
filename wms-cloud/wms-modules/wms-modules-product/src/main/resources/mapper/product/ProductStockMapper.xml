@@ -32,6 +32,8 @@
         <result property="cell" column="cell"/>
         <result property="productionDate" column="production_date"/>
         <result property="binInFlag" column="bin_in_flag"/>
+        <result property="boxSpecification" column="box_specification"/>
+
     </resultMap>
     <update id="changeStatus">
         update product_stock b set
@@ -94,6 +96,7 @@
         ps.unit as unit,
         ps.production_date as production_date,
         pp.cell as cell,
+        pp.box_specification as boxSpecification,
         ps.bin_in_flag as bin_in_flag,
         ps.recommend_bin_code as recommend_bin_code
         from product_stock ps

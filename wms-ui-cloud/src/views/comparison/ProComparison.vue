@@ -126,6 +126,7 @@
 import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
+
   {
     title: '工厂编码',
     key: 'plantNb',
@@ -294,9 +295,10 @@ export default {
     async changeStatus () {
       try {
         this.submitLoading = true
-        const options = { ssccList: this.selectedRowKeys }
+        const options = { ids: this.selectedRowKeys }
 
-        await this.$store.dispatch('comparison/updateBySsccList', options)
+        console.log(options)
+        await this.$store.dispatch('comparison/updateByIdList', options)
 
         this.selectedRowKeys = []
         this.loadTableList()

@@ -1,9 +1,11 @@
 package com.bosch.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.product.api.domain.ProComparison;
 import com.bosch.product.api.domain.dto.ProComparisonDTO;
+import com.bosch.product.api.domain.enumeration.ComparisonEnum;
 import com.bosch.product.api.domain.vo.ProComparisonVO;
 import com.bosch.product.service.IProComparisonService;
 import com.bosch.product.mapper.ProComparisonMapper;
@@ -46,6 +48,19 @@ public class ProComparisonServiceImpl extends ServiceImpl<ProComparisonMapper, P
         List<ProComparison> proComparisons = proComparisonMapper.selectList(queryWrapper);
 
         return proComparisons;
+    }
+
+    @Override
+    public boolean updateByIdList(List<String> ids) {
+        //根据ids更新status为已调整
+        LambdaUpdateWrapper<ProComparison> lambdaUpdateWrapper =new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.in(ProComparison::getId,ids);
+        lambdaUpdateWrapper.eq(ProComparison::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        lambdaUpdateWrapper.eq(ProComparison::getStatus, ComparisonEnum.DIFF.code());
+        lambdaUpdateWrapper.set(ProComparison::getStatus,ComparisonEnum.CHANGED.code());
+
+        boolean update = this.update(lambdaUpdateWrapper);
+        return update;
     }
 }
 

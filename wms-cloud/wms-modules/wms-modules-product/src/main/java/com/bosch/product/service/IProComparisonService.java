@@ -15,4 +15,6 @@ import java.util.List;
 public interface IProComparisonService extends IService<ProComparison> {
 
    List<ProComparison> getList(ProComparisonDTO dto);
+
+   boolean updateByIdList(List<String> ids);
 }

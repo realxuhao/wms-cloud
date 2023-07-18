@@ -33,6 +33,11 @@ const comparison = {
     async updateBySsccList ({ commit }, formdata) {
       const data = await comparisonService.updateBySsccList(formdata)
       return data
+    },
+    async updateByIdList ({ commit }, options) {
+      console.log('1234',options)
+      const data = await comparisonService.updateByIdList(options)
+      return data
     }
 
   }

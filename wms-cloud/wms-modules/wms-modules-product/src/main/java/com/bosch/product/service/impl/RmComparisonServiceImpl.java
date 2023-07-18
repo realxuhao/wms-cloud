@@ -157,6 +157,7 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
         return update;
     }
 
+
     @Override
     public List<ProComparison> insertProComparison(List<ProComparison> proComparisons) {
 
@@ -200,7 +201,14 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
                                 productStockVO.getMaterialNb().equals(r.getMaterialNb()) &&
                                         productStockVO.getExpireDate().equals(finalDate)).collect(Collectors.toList());
                 //productStockVOs的totalstock累加
-                Double reduce = productStockVOs.stream().map(ProductStockVO::getTotalStock).reduce(0d, Double::sum);
+//                Double reduce = productStockVOs.stream().map(ProductStockVO::getTotalStock).reduce(0d, Double::sum);
+                Double reduce = productStockVOs.stream().map(item -> item.getTotalStock() * Double.valueOf(item.getBoxSpecification())).reduce(0d, Double::sum);
+
+                //箱 Tr 对应包装规格
+                //String boxSpecification = productStockVOs.get(0).getBoxSpecification();
+                //boxSpecification转double
+                //Double boxSpecificationDouble = Double.valueOf(boxSpecification);
+
                 r.setStockQuantity(reduce);
                 r.setStatus(ComparisonEnum.DIFF.code());
                 //判断库存值是否相等
