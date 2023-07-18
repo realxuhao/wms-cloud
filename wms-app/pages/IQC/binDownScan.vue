@@ -7,7 +7,8 @@
 		<Message ref="message"></Message>
 
 		<uni-popup ref="submitPopup" type="dialog">
-			<uni-popup-dialog before-close type="info" cancelText="取消" confirmText="确认" title="是否确认下架?" @confirm="handleBinDown" @close="handleCancel">
+			<uni-popup-dialog before-close type="info" cancelText="取消" confirmText="确认" title="是否确认下架?"
+				@confirm="handleBinDown" @close="handleCancel">
 				<view>
 					<view class="text-align m-b-4">
 						<text class="label m-r-8">SSCC码:</text>
@@ -28,103 +29,108 @@
 </template>
 
 <script>
-import Message from '@/components/Message';
-import Bus from '@/utils/bus';
+	import Message from '@/components/Message';
+	import Bus from '@/utils/bus';
 
-export default {
-	components: {
-		Message
-	},
-	onShow() {
-		Bus.$on('scancodedate', this.scanCodeCallback);
-	},
-	destroyed() {
-		Bus.$off('scancodedate');
-	},
-	data() {
-		return {
-			code: '',
-			info: {}
-		};
-	},
-	// mounted() {
-	// 	this.getSample('20230213669006391113695972103025192112271124000800')
-	// },
-	methods: {
-		async scanCodeCallback(data) {
-			Bus.$emit('stopScan');
-			this.code = data.code;
-			this.getSample(data.code);
+	export default {
+		components: {
+			Message
 		},
-		async getSample(barCode) {
-			try {
-				uni.showLoading();
-				const data = await this.$store.dispatch('IQC/getSample', barCode);
-				if (data.status === 0) {
-					this.$refs.submitPopup.open();
-				} else {
-					throw Error('此托已下架或为非抽样托，请确认');
+		onShow() {
+			Bus.$on('scancodedate', this.scanCodeCallback);
+		},
+		destroyed() {
+			Bus.$off('scancodedate');
+		},
+		data() {
+			return {
+				code: '',
+				info: {}
+			};
+		},
+		// mounted() {
+		// 	this.getSample('20230213669006391114244798103025669006391114244798')
+		// },
+		methods: {
+			async scanCodeCallback(data) {
+				Bus.$emit('stopScan');
+				this.code = data.code;
+				this.getSample(data.code);
+			},
+			async getSample(barCode) {
+				try {
+					uni.showLoading();
+					const data = await this.$store.dispatch('IQC/getSample', barCode);
+					if (data.status === 0) {
+						this.$refs.submitPopup.open();
+					} else {
+						throw Error('此托已下架或为非抽样托，请确认');
+					}
+					this.info = data;
+				} catch (e) {
+					this.$refs.message.error(e.message);
+				} finally {
+					uni.hideLoading();
+					Bus.$emit('startScan');
 				}
-				this.info = data;
-			} catch (e) {
-				this.$refs.message.error(e.message);
-			} finally {
-				uni.hideLoading();
+			},
+			async handleBinDown(data) {
+				try {
+					uni.showLoading();
+					await this.$store.dispatch('IQC/binDown', this.code);
+					this.$refs.message.success('下架成功');
+					this.$refs.submitPopup.close();
+				} catch (e) {
+					this.$refs.message.error(e.message);
+				} finally {
+					uni.hideLoading();
+				}
+			},
+			async handleCancel() {
+				this.$refs.submitPopup.close();
 				Bus.$emit('startScan');
 			}
-		},
-		async handleBinDown(data) {
-			try {
-				uni.showLoading();
-				await this.$store.dispatch('IQC/binDown', this.code);
-				this.$refs.message.success('下架成功');
-				this.$refs.submitPopup.close();
-			} catch (e) {
-				this.$refs.message.error(e.message);
-			} finally {
-				uni.hideLoading();
-			}
-		},
-		async handleCancel() {
-			this.$refs.submitPopup.close();
-			Bus.$emit('startScan');
 		}
-	}
-};
+	};
 </script>
 
 <style lang="scss">
-.wrapper {
-	display: flex;
-	flex-direction: column;
-}
-/deep/.uni-navbar--shadow {
-	box-shadow: none;
-}
-/deep/.uni-navbar--border {
-	border: none;
-}
+	.wrapper {
+		display: flex;
+		flex-direction: column;
+	}
 
-.content {
-	height: 100%;
-	background-color: $primary-color;
-	flex: 1;
-	display: flex;
-	align-items: center;
-	// justify-content: center;
-	flex-direction: column;
-	image {
-		width: 180px;
-		// height: 160px;
-		margin-top: 120px;
-		margin-bottom: 32px;
+	/deep/.uni-navbar--shadow {
+		box-shadow: none;
 	}
-	text {
-		color: #fff;
-		font-size: 16px;
+
+	/deep/.uni-navbar--border {
+		border: none;
 	}
-}
-.label {
-	width: 80px;
-}
+
+	.content {
+		height: 100%;
+		background-color: $primary-color;
+		flex: 1;
+		display: flex;
+		align-items: center;
+		// justify-content: center;
+		flex-direction: column;
+
+		image {
+			width: 180px;
+			// height: 160px;
+			margin-top: 120px;
+			margin-bottom: 32px;
+		}
+
+		text {
+			color: #fff;
+			font-size: 16px;
+		}
+	}
+
+	.label {
+		width: 80px;
+	}
 </style>
