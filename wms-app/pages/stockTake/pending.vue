@@ -52,7 +52,7 @@ export default {
 	},
 	methods: {
 		async getList() {
-			const options = { pageSize: this.pageSize, pageNum: this.pageNum, state: 1 };
+			const options = { pageSize: this.pageSize, pageNum: this.pageNum, status: 1 };
 			const { rows, total } = await this.$store.dispatch('stock/getStockTakeList', options);
 			return { rows, total };
 		},

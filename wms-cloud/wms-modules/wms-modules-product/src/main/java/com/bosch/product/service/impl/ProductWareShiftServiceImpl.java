@@ -20,12 +20,14 @@ import com.bosch.product.service.IBinAssignmentService;
 import com.bosch.product.service.IProductStockService;
 import com.bosch.product.service.IProductWareShiftService;
 import com.bosch.product.service.ITranshipmentOrderService;
+import com.bosch.system.api.domain.ProductStockOperation;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.log.enums.StockOperationType;
 import com.ruoyi.common.log.service.IProductStockOperationService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -217,24 +220,51 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         wareShiftWrapper.eq(ProductWareShift::getStatus, ProductWareShiftEnum.WAITTING_RECEIVING.code());
         List<ProductWareShift> wareShifts = this.list(wareShiftWrapper);
         AreaVO areaVO = stockService.getAreaByType(SecurityUtils.getWareCode(), AreaTypeEnum.PRO.getCode());
+
+        List<ProductStockOperation> outOperationList = new ArrayList<>();
+        List<ProductStockOperation> inOperationList = new ArrayList<>();
+
+
         wareShifts.forEach(item -> {
             item.setStatus(ProductWareShiftEnum.WAITTING_BIN_IN.code());
             item.setTargetWareCode(SecurityUtils.getWareCode());
             item.setTargetAreaCode(areaVO.getCode());
             item.setTargetPlant(areaVO.getPlantNb());
+
+            ProductStockOperation outOperation = new ProductStockOperation();
+            outOperation.setPlantNb(item.getSourcePlantNb());
+            outOperation.setSsccNumber(item.getSsccNb());
+            outOperation.setOperationType(StockOperationType.OTHEROUT.getCode());
+            outOperation.setOperationStock(new BigDecimal(item.getQuantity()));
+            outOperation.setBatchNb(item.getBatchNb());
+            outOperation.setMaterialNb(item.getMaterialNb());
+            outOperationList.add(outOperation);
+
+
+            ProductStockOperation inOperation = new ProductStockOperation();
+            inOperation.setPlantNb(item.getTargetPlant());
+            inOperation.setSsccNumber(item.getSsccNb());
+            inOperation.setOperationType(StockOperationType.OTHEROUT.getCode());
+            inOperation.setOperationStock(new BigDecimal(item.getQuantity()));
+            inOperation.setBatchNb(item.getBatchNb());
+            inOperation.setMaterialNb(item.getMaterialNb());
+            inOperationList.add(inOperation);
+
+
         });
         this.updateBatchById(wareShifts);
 
         //库存修改
         stockService.generateStockByProductWareShifts(wareShifts);
 
-        //出记录的DTO
+
 
 
 //        //出记录
-//        productStockOperationService.addProductStockOperationBatch()
+        productStockOperationService.addProductStockOperationBatch(null,null,null,outOperationList);
+
 //        //入记录
-//        productStockOperationService.addProductStockOperationBatch()
+        productStockOperationService.addProductStockOperationBatch(null,null,null,outOperationList);
 
 
 

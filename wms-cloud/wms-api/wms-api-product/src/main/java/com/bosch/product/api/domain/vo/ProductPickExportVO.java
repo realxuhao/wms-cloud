@@ -1,7 +1,10 @@
 package com.bosch.product.api.domain.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.annotation.Excel;
 import lombok.Data;
+
+import java.util.Date;
 
 /**
  * @program: wms-cloud
@@ -20,6 +23,7 @@ public class ProductPickExportVO {
     @Excel(name = "Name of the ship-to party")
     private String nameOfShipToParty;
     @Excel(name = "Deliv.date(From/to)")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private String deliveryDate;
     @Excel(name = "Item")
     private String item;
@@ -27,8 +31,9 @@ public class ProductPickExportVO {
     private String material;
     @Excel(name = "Batch")
     private String batch;
-    @Excel(name = "Production batch")
-    private String productionBatch;
+    @Excel(name = "Production batch",dateFormat = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date productionBatch;
     @Excel(name = "Delivery Quantity")
     private Double deliveryQuantity;
     @Excel(name = "Sales Unit")

@@ -115,6 +115,24 @@ public class ProductStockVO {
     @ApiModelProperty(value = "可用库存")
     private Double availableStock;
 
+    /**
+     * 总库存
+     */
+    @ApiModelProperty(value = "库存量")
+    private Double pcsTotalStock;
+
+    /**
+     * 冻结库存
+     */
+    @ApiModelProperty(value = "冻结库存")
+    private Double pcsFreezeStock;
+
+    /**
+     * 可用库存
+     */
+    @ApiModelProperty(value = "可用库存")
+    private Double pcsAvailableStock;
+
     /** 创建者 */
     @ApiModelProperty(value = "创建者")
     private String createBy;

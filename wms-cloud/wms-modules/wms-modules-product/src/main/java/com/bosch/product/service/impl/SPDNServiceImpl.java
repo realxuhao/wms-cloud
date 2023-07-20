@@ -122,12 +122,13 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
                     productStock.setPlantNb(item.getPlant());
                     productStock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
                     productStock.setChangeStatus(0);
+
                 }
             } else {//如果不是7761的，生成对应的发运装车任务
                 if (productStock != null) {
                     productStock.setPlantNb(item.getPlant());
                     productStock.setFreezeStock(productStock.getTotalStock());
-                    productStock.setAvailableStock(Double.valueOf(0));
+                    productStock.setAvailableStock((double) 0);
                     ProductSPDNPick spdnPick = BeanConverUtil.conver(productStock, ProductSPDNPick.class);
                     spdnPick.setSpdnId(item.getId());
                     spdnPick.setStatus(ProductSPDNPickEnum.WAITTING_DOWN.code());

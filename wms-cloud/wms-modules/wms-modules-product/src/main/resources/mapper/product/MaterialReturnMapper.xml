@@ -8,7 +8,7 @@
     <select id="list" resultType="com.bosch.product.api.domain.vo.ProductReturnVO">
         select pr.*,mp.product_name as materialName
         from product_return pr
-                 left join `wms-cloud2`.md_product_packaging mp on pr.material_nb = mp.product_no and mp.delete_flag = 0
+                 left join md_product_packaging mp on pr.material_nb = mp.product_no and mp.delete_flag = 0
         where 1 = 1 and mp.delete_flag = 0
         <if test="plantNb != null  and plantNb != ''">and pr.plant_nb like concat('%', #{plantNb}, '%')</if>
         <if test="ssccNumber != null  and ssccNumber != ''">and pr.sscc_number like concat('%', #{ssccNumber}, '%')</if>

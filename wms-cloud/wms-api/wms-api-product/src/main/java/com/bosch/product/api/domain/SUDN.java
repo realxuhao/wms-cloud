@@ -28,6 +28,7 @@ public class SUDN extends BaseEntity {
     private int status;
     private Double shipQuantity;
     private String carNb;
+    private double sumBinDownQuantity;
 
     /**
      * 删除标记1：删除，0:可用

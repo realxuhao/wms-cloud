@@ -84,7 +84,7 @@ order by d.create_time desc,d.update_time desc
         HAVING COUNT(*) = (
         SELECT COUNT(*)
         FROM stock_take_detail AS t2
-        WHERE t2.task_no = t1.task_no
+        WHERE t2.task_no = t1.task_no and t2.ware_code = #{wareCode}  <if test="status != null">and t2.status =#{status}</if>
         )
     </select>
 </mapper>

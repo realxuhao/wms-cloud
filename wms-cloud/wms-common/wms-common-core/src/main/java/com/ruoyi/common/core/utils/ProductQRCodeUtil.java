@@ -84,7 +84,7 @@ public class ProductQRCodeUtil {
         String batchNb = "101207530";
         String expireDate = "240709";
         String quantity = "000060";
-        String sscc="669006391110024501";
+        String sscc="369006391113669805";
 
 
         String s1="11"+productDate+"10"+batchNb;
