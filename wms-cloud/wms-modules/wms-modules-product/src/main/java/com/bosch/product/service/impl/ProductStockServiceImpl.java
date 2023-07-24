@@ -31,6 +31,8 @@ import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.*;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.log.enums.StockOperationType;
+import com.ruoyi.common.log.service.IProductStockOperationService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -71,6 +73,9 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
     @Autowired
     private IProductSplitService productSplitService;
+
+    @Autowired
+    private IProductStockOperationService productStockOperationService;
 
     @Override
     public void generateStockByReceive(ProductReceive receive) {
@@ -299,6 +304,8 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             if (stock.getAvailableStock() == Double.valueOf(0)) {
                 stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
             }
+            productStockOperationService.addProductStockOperation(stock.getPlantNb(), stockEditDTO.getStockUse(), stock.getSsccNumber(),
+                    stock.getMaterialNb(), stock.getBatchNb(), StockOperationType.OTHEROUT.getCode());
             this.updateById(stock);
 
 
@@ -334,6 +341,9 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
                 stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
             }
 
+            productStockOperationService.addProductStockOperation(stock.getPlantNb(), stockEditDTO.getStockUse(), stock.getSsccNumber(),
+                    stock.getMaterialNb(), stock.getBatchNb(), StockOperationType.OTHEROUT.getCode());
+
             this.updateById(stock);
 
         } else if (stockEditDTO.getType() == 3) {//整托出库
@@ -341,6 +351,8 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
                 throw new ServiceException("该库存存在执行任务，暂时不可以整托出库");
             }
             stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
+            productStockOperationService.addProductStockOperation(stock.getPlantNb(), stock.getTotalStock(), stock.getSsccNumber(),
+                    stock.getMaterialNb(), stock.getBatchNb(), StockOperationType.OTHEROUT.getCode());
             this.updateById(stock);
         } else {
             if (stockEditDTO.getSsccNumber() == null || stockEditDTO.getAvailableStock() == null || stockEditDTO.getFreezeStock() == null || stockEditDTO.getTotalStock() == null) {
@@ -349,9 +361,17 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             if (!stockEditDTO.getTotalStock().equals(stockEditDTO.getFreezeStock() + stockEditDTO.getAvailableStock())) {
                 throw new ServiceException("总库存必须等于冻结库存+可用库存");
             }
+            double diff = stock.getTotalStock() - stockEditDTO.getTotalStock();
             stock.setAvailableStock(stockEditDTO.getAvailableStock());
             stock.setFreezeStock(stockEditDTO.getFreezeStock());
             stock.setTotalStock(stockEditDTO.getTotalStock());
+            if (diff > 0) {
+                productStockOperationService.addProductStockOperation(stock.getPlantNb(), diff, stock.getSsccNumber(),
+                        stock.getMaterialNb(), stock.getBatchNb(), StockOperationType.IN.getCode());
+            } else {
+                productStockOperationService.addProductStockOperation(stock.getPlantNb(), diff, stock.getSsccNumber(),
+                        stock.getMaterialNb(), stock.getBatchNb(), StockOperationType.OTHEROUT.getCode());
+            }
             this.updateById(stock);
 
         }
@@ -570,10 +590,24 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         productSplitService.save(splitRecord);
 
 
+        productStockOperationService.addProductStockOperation(sourceStock.getPlantNb(), DoubleMathUtil.doubleMathCalculation(sourceStock.getTotalStock(), splitQuantity, "-"), sourceStock.getSsccNumber(), sourceStock.getMaterialNb(),
+                sourceStock.getBatchNb(), StockOperationType.IN.getCode());
+
         sourceStock.setTotalStock(DoubleMathUtil.doubleMathCalculation(sourceStock.getTotalStock(), splitQuantity, "-"));
         sourceStock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(sourceStock.getTotalStock(), sourceStock.getFreezeStock(), "-"));
         sourceStock.setWholeFlag(StockWholeFlagEnum.NOT_WHOLE.code());
         this.updateById(sourceStock);
+
+
+        ProductStock newStock = BeanConverUtil.conver(sourceStock, ProductStock.class);
+        newStock.setTotalStock(splitRecord.getSplitQuantity());
+        newStock.setAvailableStock(splitRecord.getSplitQuantity());
+        newStock.setFreezeStock(Double.valueOf(0));
+        newStock.setSsccNumber(ProductQRCodeUtil.getSSCC(splitRecord.getNewMesBarCode()));
+        newStock.setId(null);
+        productStockOperationService.addProductStockOperation(newStock.getPlantNb(), newStock.getTotalStock(), newStock.getSsccNumber(), newStock.getMaterialNb(),
+                newStock.getBatchNb(), StockOperationType.IN.getCode());
+        this.save(newStock);
     }
 
 

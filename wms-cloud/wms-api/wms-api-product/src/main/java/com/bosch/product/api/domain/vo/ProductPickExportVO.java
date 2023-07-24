@@ -29,11 +29,11 @@ public class ProductPickExportVO {
     private String item;
     @Excel(name = "Material")
     private String material;
-    @Excel(name = "Batch")
-    private String batch;
-    @Excel(name = "Production batch",dateFormat = "yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date productionBatch;
+    @Excel(name = "Batch",dateFormat = "yyyy.MM.dd")
+    @JsonFormat(pattern = "yyyy.MM.dd")
+    private Date batch;
+    @Excel(name = "Production batch")
+    private String productionBatch;
     @Excel(name = "Delivery Quantity")
     private Double deliveryQuantity;
     @Excel(name = "Sales Unit")

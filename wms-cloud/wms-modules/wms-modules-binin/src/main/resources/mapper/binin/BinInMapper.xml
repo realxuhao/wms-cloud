@@ -37,7 +37,7 @@
         sm.batch_nb,
         STR_TO_DATE(smr.expire_date, '%d/%m/%Y') AS expire_date,
         bi.ware_code,
-               bi.area_code,
+        bi.area_code,
         bi.recommend_bin_code,
         bi.actual_bin_code,
         bi.quantity,
@@ -132,14 +132,12 @@
                         si.operate_time as create_time
                  FROM si_material_in si
                           left join bi_in bi
-                                    on si.sscc_number = bi.sscc_number and bi.status = 0 and bi.delete_flag = 0 and
-                                       bi.ware_code = #{wareCode}
+                                    on si.sscc_number = bi.sscc_number and bi.status = 0 and bi.delete_flag = 0
                  WHERE si.delete_flag = 0
                    and si.ware_code = #{wareCode}
                    and si.sscc_number NOT IN (SELECT sscc_number
                                               FROM bi_in
-                                              WHERE ware_code = #{wareCode}
-                                                AND `status` = 1)) t,
+                                              WHERE `status` = 1)) t,
              md_material mm
         where mm.delete_flag = 0
           and mm.`code` = t.material_nb

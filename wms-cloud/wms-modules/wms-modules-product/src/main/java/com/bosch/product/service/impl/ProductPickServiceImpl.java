@@ -9,9 +9,7 @@ import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.SUDN;
 import com.bosch.product.api.domain.dto.EditBinDownQuantityDTO;
 import com.bosch.product.api.domain.dto.ProductPickDTO;
-import com.bosch.product.api.domain.dto.SUDNDTO;
 import com.bosch.product.api.domain.enumeration.ProductPickEnum;
-import com.bosch.product.api.domain.enumeration.SUDNStatusEnum;
 import com.bosch.product.api.domain.vo.ProductPickBinDownVO;
 import com.bosch.product.api.domain.vo.ProductPickExportVO;
 import com.bosch.product.api.domain.vo.ProductPickVO;
@@ -24,7 +22,8 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
-import com.sun.corba.se.spi.ior.IORTemplate;
+import com.ruoyi.common.log.enums.StockOperationType;
+import com.ruoyi.common.log.service.IProductStockOperationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -35,6 +34,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -59,6 +59,9 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
     @Autowired
     @Lazy
     private ISUDNService sudnService;
+
+    @Autowired
+    private IProductStockOperationService productStockOperationService;
 
 
     @Override
@@ -163,6 +166,7 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
         productPick.setStatus(ProductPickEnum.WAITTING_SHIP.code());
         this.updateById(productPick);
 
+
         return productPickBinDownVO;
 
 
@@ -222,6 +226,13 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
             productStockService.updateById(stock);
         }
         pick.setBinDownQuantity(dto.getNewBinDownQuantity());
+
+
+        productStockOperationService.addProductStockOperation(productStock.getPlantNb(), diff,
+                productStock.getSsccNumber(), productStock.getMaterialNb(), productStock.getBatchNb(), StockOperationType.SALESOUT.getCode());
+
+
+
         this.updateById(pick);
 
     }
@@ -296,12 +307,19 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
 
         Map<Long, List<ProductPick>> groupBySudn = productPicks.stream().collect(Collectors.groupingBy(ProductPick::getSudnId));
 
+        AtomicReference<Double> total = new AtomicReference<>((double) 0);
+
         groupBySudn.forEach((sudnID, picks) -> {
             SUDN sudn = sudnService.getById(sudnID);
             double sum = picks.stream().mapToDouble(ProductPick::getBinDownQuantity).sum();
+            total.set(total.get() + sum);
             sudn.setSumBinDownQuantity(sudn.getSumBinDownQuantity() + sum);
             sudnService.updateById(sudn);
         });
+
+
+        productStockOperationService.addProductStockOperation(productStock.getPlantNb(),total.get(),
+                productStock.getSsccNumber(),productStock.getMaterialNb(),productStock.getBatchNb(), StockOperationType.SALESOUT.getCode());
 
 
         return productPickBinDownVO;
