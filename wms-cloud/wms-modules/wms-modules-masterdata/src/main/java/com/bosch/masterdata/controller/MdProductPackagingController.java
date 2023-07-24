@@ -48,8 +48,14 @@ public class MdProductPackagingController extends BaseController {
     @ApiOperation("查询列表")
     @PostMapping("/list")
     public R<PageVO<MdProductPackagingVO>> list(@RequestBody MdProductPackagingDTO dTO) {
-        startPage();
-        List<MdProductPackagingVO> list = mdProductPackagingService.selectList(dTO);
+        List<MdProductPackagingVO> list =new ArrayList<>();
+        if(dTO!=null&&dTO.getPageSize().equals(0)){
+            list = mdProductPackagingService.selectList(dTO);
+        }else {
+            startPage();
+             list = mdProductPackagingService.selectList(dTO);
+        }
+
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 

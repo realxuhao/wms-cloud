@@ -112,9 +112,9 @@ public class ProductFrameController extends BaseController {
      * 查询物料库位分配策略列表
      */
     //@RequiresPermissions("masterdata:bin:list")
-    @PostMapping("/list")
+    @GetMapping("/list/getList")
     @ApiOperation("查询物料库位规则列表")
-    public R<PageVO<ProductFrameVO>> list(@RequestBody ProductFrameDTO productFrameDTO) {
+    public R<PageVO<ProductFrameVO>> list( ProductFrameDTO productFrameDTO) {
         startPage();
         List<ProductFrameVO> list = productFrameService.selectProductFrameList(productFrameDTO);
 

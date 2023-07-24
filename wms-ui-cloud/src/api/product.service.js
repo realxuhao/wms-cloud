@@ -1,12 +1,12 @@
 import config from '@/config/api.config'
 import { createAuthInstance } from './general'
-// import qs from 'qs'
+ import qs from 'qs'
 
 const baseUrl = `${config.apiHost}/masterdata`
 
-const getList = async (options) => {
-  const url = `/productFrame/list`
-  const { data } = await createAuthInstance(baseUrl).post(url, options)
+const getList = async (parameter) => {
+  const url = `/productFrame/list/getList?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url, parameter)
   return data
 }
 const getReceivIngList = async (options) => {

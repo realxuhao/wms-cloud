@@ -3,11 +3,12 @@ package com.bosch.masterdata.api.domain.dto;
 import com.alibaba.excel.annotation.ExcelIgnore;
 import com.alibaba.excel.annotation.ExcelProperty;
 import com.ruoyi.common.core.annotation.Excel;
+import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class ProductFrameDTO {
+public class ProductFrameDTO extends PageDomain {
     /** id */
     @ExcelIgnore
     @ApiModelProperty(value = "ID")

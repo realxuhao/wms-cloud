@@ -73,7 +73,7 @@
             <if test="materialId != null and materialId != 0">and mf.material_id = #{materialId}</if>
             <if test="priorityLevel != null and priorityLevel != ''">and mf.priority_level = #{priorityLevel}</if>
             <if test="frameTypeCode != null and frameTypeCode != ''">and mf.frame_type_code = #{frameTypeCode}</if>
-            <if test="materialCode != null and materialCode != ''">and m.code = #{materialCode}</if>
+            <if test="materialCode != null and materialCode != ''">and m.product_no = #{materialCode}</if>
             <if test="id != null">and mf.id = #{id}</if>
         </where>
     </select>
