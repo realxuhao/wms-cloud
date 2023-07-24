@@ -10,7 +10,7 @@ public class RegUtils {
     /**
      * 正则-密码强度-基础要求, 必须字母+数字，长度检测不在此处
      */
-    public static final String REGEX_PASSWORD_STRENGTH_BASIC = "^(?![0-9]+$)(?![a-zA-Z]+$).{1,}$";
+    public static final String REGEX_PASSWORD_STRENGTH_BASIC = "^(?=.*[0-9]).+$";
     /**
      * 正则-密码强度-至少一位大写字母
      */
