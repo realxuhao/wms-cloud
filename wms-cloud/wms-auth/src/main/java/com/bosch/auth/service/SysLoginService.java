@@ -111,7 +111,7 @@ public class SysLoginService
         if (password.length() < UserConstants.PASSWORD_MIN_LENGTH
                 || password.length() > UserConstants.PASSWORD_MAX_LENGTH)
         {
-            throw new ServiceException("密码长度必须在13到20个字符之间");
+            throw new ServiceException("密码长度必须在8到20个字符之间");
         }
         //校验密码
         RegUtils.passwordStrengthCheck(password);
