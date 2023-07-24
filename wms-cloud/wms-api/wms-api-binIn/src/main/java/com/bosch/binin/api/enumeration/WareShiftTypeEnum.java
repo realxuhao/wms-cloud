@@ -7,11 +7,9 @@ package com.bosch.binin.api.enumeration;
  * @create: 2022-11-22 15:09
  **/
 public enum WareShiftTypeEnum {
-    //已取消
     NORMAL(0, "正常移库"),
-    //完成
     IQC(1, "IQC移库"),
-    PICK(0, "捡配移库");
+    PICK(2, "捡配移库");
 
     private Integer code;
 

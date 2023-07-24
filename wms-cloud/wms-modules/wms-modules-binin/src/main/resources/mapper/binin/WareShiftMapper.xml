@@ -40,7 +40,7 @@
             AND (ws.status = #{status})
         </if>
         <if test="type != null ">
-            AND (ws.type = #{status})
+            AND (ws.type = #{type})
         </if>
         <if test="createBy != null and createBy != ''">and ws.create_by like concat('%', #{createBy}, '%')</if>
         <if test="startCreateTime != null">and ws.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>

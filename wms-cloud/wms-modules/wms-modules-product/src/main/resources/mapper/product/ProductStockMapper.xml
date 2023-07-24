@@ -157,6 +157,11 @@
         <if test="startCreateTime != null and endCreateTime != null">and str_to_date(ps.create_time, '%d/%m/%Y') between
             #{startCreateTime} and #{endCreateTime}
         </if>
+        <if test="qualityStatus != null and qualityStatus != ''">and ps.quality_status = #{qualityStatus}</if>
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(ps.expire_date, '%d/%m/%Y')
+            between
+            #{startExpireDate} and #{endExpireDate}
+        </if>
         order by ps.update_time desc,ps.create_time desc
 
     </select>
@@ -206,6 +211,11 @@
         <if test="createBy != null  and createBy != ''">and ps.create_by like concat('%', #{createBy}, '%')</if>
         <if test="startCreateTime != null and endCreateTime != null">and str_to_date(ps.create_time, '%d/%m/%Y') between
             #{startCreateTime} and #{endCreateTime}
+        </if>
+        <if test="qualityStatus != null and qualityStatus != ''">and bs.quality_status = #{qualityStatus}</if>
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(ps.expire_date, '%d/%m/%Y')
+            between
+            #{startExpireDate} and #{endExpireDate}
         </if>
         order by ps.update_time desc,ps.create_time desc
 
@@ -259,6 +269,10 @@
         </if>
         <if test="qualityStatus != null and qualityStatus != ''">and ps.quality_status = #{qualityStatus}</if>
         <if test="changeStatus != null and changeStatus != ''">and ps.change_status = #{changeStatus}</if>
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(ps.expire_date, '%d/%m/%Y')
+            between
+            #{startExpireDate} and #{endExpireDate}
+        </if>
         order by ps.create_time desc,ps.update_time desc
 
     </select>
@@ -318,6 +332,10 @@
         </if>
         <if test="qualityStatus != null and qualityStatus != ''">and ps.quality_status = #{qualityStatus}</if>
         <if test="changeStatus != null and changeStatus != ''">and ps.change_status = #{changeStatus}</if>
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(ps.expire_date, '%d/%m/%Y')
+            between
+            #{startExpireDate} and #{endExpireDate}
+        </if>
         order by ps.create_time desc,ps.update_time desc
     </select>
     <select id="validateSUQAStatus"  resultType="int">
@@ -372,6 +390,11 @@
             #{fromProdOrder}, '%')
         </if>
         <if test="createBy != null  and createBy != ''">and ps.create_by like concat('%', #{createBy}, '%')</if>
+        <if test="qualityStatus != null and qualityStatus != ''">and ps.quality_status = #{qualityStatus}</if>
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(ps.expire_date, '%d/%m/%Y')
+            between
+            #{startExpireDate} and #{endExpireDate}
+        </if>
         <if test="startCreateTime != null and endCreateTime != null">and str_to_date(ps.create_time, '%d/%m/%Y') between
             #{startCreateTime} and #{endCreateTime}
         </if>
