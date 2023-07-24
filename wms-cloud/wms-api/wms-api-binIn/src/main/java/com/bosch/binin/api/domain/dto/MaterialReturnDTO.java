@@ -19,4 +19,8 @@ public class MaterialReturnDTO {
     @ApiModelProperty(value = "部门cell")
     private String cell;
 
+
+    @ApiModelProperty(value = "sscc")
+    private String ssccNb;
+
 }

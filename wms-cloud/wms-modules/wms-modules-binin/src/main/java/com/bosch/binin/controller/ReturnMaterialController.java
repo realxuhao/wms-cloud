@@ -119,6 +119,13 @@ public class ReturnMaterialController extends BaseController {
         return R.ok();
     }
 
+    @PostMapping(value = "/modifyQuantity")
+    @ApiOperation("修改退货数量")
+    public R modifyQuantity(@RequestBody MaterialReturnDTO dto) {
+        materialReturnService.modifyQuantity(dto);
+        return R.ok();
+    }
+
 
     /**
      * 导出叫料需求列表

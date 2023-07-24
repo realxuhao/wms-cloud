@@ -30,4 +30,6 @@ public interface IMaterialReturnService extends IService<MaterialReturn> {
     BinInVO allocateBin(String mesBarCode, String wareCode);
 
     void performBinIn(ManualBinInDTO binInDTO);
+
+    void modifyQuantity(MaterialReturnDTO dto);
 }

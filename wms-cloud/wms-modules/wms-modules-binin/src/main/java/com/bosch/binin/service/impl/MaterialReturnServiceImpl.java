@@ -257,7 +257,12 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
             stock.setBinInId(binIn.getId());
             stock.setCreateBy(SecurityUtils.getUsername());
             stock.setCreateTime(new Date());
-            stock.setQualityStatus(StringUtils.isEmpty(lastOneBySSCC.getQualityStatus()) ? QualityStatusEnums.WAITING_QUALITY.getCode() : QualityStatusEnums.USE.getCode());
+            if (lastOneBySSCC != null) {
+                stock.setQualityStatus(StringUtils.isEmpty(lastOneBySSCC.getQualityStatus()) ? QualityStatusEnums.WAITING_QUALITY.getCode() : QualityStatusEnums.USE.getCode());
+            } else {
+                stock.setQualityStatus(QualityStatusEnums.USE.getCode());
+
+            }
             stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
             stock.setAreaCode(binIn.getAreaCode());
             stock.setPalletCode(binIn.getPalletCode());
@@ -269,10 +274,33 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
             dto.setActualBinCode(binInDTO.getActualCode());
             dto.setPalletCode(binInDTO.getPalletCode());
             dto.setMesBarCode(binInDTO.getMesBarCode());
-            BinInVO binInVO = binInService.performBinIn(dto, StringUtils.isEmpty(lastOneBySSCC.getQualityStatus()) ? QualityStatusEnums.WAITING_QUALITY.getCode() : QualityStatusEnums.USE.getCode());
+            if (lastOneBySSCC != null) {
+                BinInVO binInVO = binInService.performBinIn(dto, StringUtils.isEmpty(lastOneBySSCC.getQualityStatus()) ? QualityStatusEnums.WAITING_QUALITY.getCode() : QualityStatusEnums.USE.getCode());
+            } else {
+                BinInVO binInVO = binInService.performBinIn(dto, QualityStatusEnums.USE.getCode());
+
+            }
         }
         materialReturn.setStatus(MaterialReturnStatusEnum.FINISH.value());
         this.updateById(materialReturn);
+    }
+
+    @Override
+    public void modifyQuantity(MaterialReturnDTO dto) {
+        LambdaQueryWrapper<MaterialReturn> qw = new LambdaQueryWrapper<>();
+        qw.eq(MaterialReturn::getSsccNumber, dto.getSsccNb());
+        qw.ne(MaterialReturn::getStatus, MaterialReturnStatusEnum.FINISH.value());
+        qw.ne(MaterialReturn::getStatus, MaterialReturnStatusEnum.CANCEL.value());
+        qw.eq(MaterialReturn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.last("limit 1");
+        qw.last("for update");
+        MaterialReturn materialReturn = materialReturnMapper.selectOne(qw);
+        if (materialReturn == null) {
+            throw new ServiceException("该sscc" + dto.getSsccNb() + "不存在退货任务");
+        }
+        materialReturn.setQuantity(dto.getQuantity());
+        this.updateById(materialReturn);
+
     }
 }
 
