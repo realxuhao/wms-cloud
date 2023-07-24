@@ -193,7 +193,7 @@
         ORDER BY batch_nb
     </select>
     <select id="reportWareShift" resultType="com.bosch.masterdata.api.domain.ReportWareShift" parameterType="com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO">
-        SELECT t.car_nb,ws.* from ware_shift ws
+        SELECT t.car_nb,t.order_number as order_Nb,ws.* from ware_shift ws
                                       LEFT JOIN transhipment_order t ON ws.id=t.ware_shift_id AND t.delete_flag=0
         WHERE ws.delete_flag=0
         <if test="sourceWareCode != null and sourceWareCode != ''">and source_ware_code LIKE   concat('%', #{sourceWareCode}, '%')</if>
