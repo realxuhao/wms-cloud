@@ -24,6 +24,8 @@ import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.log.enums.StockOperationType;
+import com.ruoyi.common.log.service.IProductStockOperationService;
 import org.hibernate.validator.internal.util.privilegedactions.NewSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,6 +58,11 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
 
     @Autowired
     private RemoteBinInService remoteBinInService;
+
+
+    @Autowired
+    private IProductStockOperationService productStockOperationService;
+
 
 
     @Override
@@ -178,6 +185,13 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
 
         spdnPick.setStatus(ProductSPDNPickEnum.WAITTING_SHIP.code());
         spdnPickService.updateById(spdnPick);
+
+//        String plantNb, Double operationStock,String ssccNumber,String materialNb,String batchNb, Integer operationType
+        productStockOperationService.addProductStockOperation(spdnPick.getPlantNb(),spdnPick.getTotalStock(),
+                spdnPick.getSsccNumber(),spdnPick.getMaterialNb(),spdnPick.getBatchNb(), StockOperationType.SALESOUT.getCode());
+
+
+
 
 
     }

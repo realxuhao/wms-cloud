@@ -55,8 +55,9 @@
         pp.delivery_date as deliveryDate,
         pp.item as item,
         pp.material as material,
-        pp.expire_date as batch,
-        STR_TO_DATE(pp.production_batch, '%Y-%m-%d') as productionBatch,
+        STR_TO_DATE(pp.expire_date, '%Y-%m-%d') as batch,
+#         STR_TO_DATE(pp.batch, '%Y-%m-%d') as production_batch,
+               pp.batch as production_batch,
         pp.sales_unit as salesUnit,
         sum(delivery_quantity) as deliveryQuantity
         from product_pick pp
@@ -84,6 +85,6 @@
         <if test="startCreateTime != null">and pp.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
         <if test="endCreateTime != null">and pp.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
         group by pp.delivery, pp.plant, pp.ship_to_party, pp.name_of_ship_to_party, pp.delivery_date, pp.item,
-        pp.material, pp.expire_date, pp.production_batch, pp.sales_unit
+        pp.material, pp.expire_date, pp.production_batch, pp.sales_unit,pp.batch
     </select>
 </mapper>

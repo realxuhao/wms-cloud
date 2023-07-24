@@ -60,8 +60,6 @@ public class ProductReceiveController extends BaseController {
     @Autowired
     private IUserOperationLogService userOperationLogService;
 
-    @Autowired
-    private IProductStockOperationService productStockOperationService;
 
 
 

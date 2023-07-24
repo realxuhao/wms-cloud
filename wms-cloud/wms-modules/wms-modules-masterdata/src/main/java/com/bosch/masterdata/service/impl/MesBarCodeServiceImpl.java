@@ -40,8 +40,10 @@ public class MesBarCodeServiceImpl implements IMesBarCodeService {
             mesBarCodeVO.setQuantity(Double.valueOf(quantity));
             MaterialVO materialVO = materialService.selectMaterialVOBymaterialCode(materialNb);
 //        mesBarCodeVO.setMaterialVO(materialVO);
-            mesBarCodeVO.setMaterialName(materialVO.getName());
-            mesBarCodeVO.setUnit(materialVO.getUnit());
+            if (materialVO!=null) {
+                mesBarCodeVO.setMaterialName(materialVO.getName());
+                mesBarCodeVO.setUnit(materialVO.getUnit());
+            }
         }else {
 
             mesBarCodeVO.setSsccNb(ProductQRCodeUtil.getSSCC(mesBarCode));

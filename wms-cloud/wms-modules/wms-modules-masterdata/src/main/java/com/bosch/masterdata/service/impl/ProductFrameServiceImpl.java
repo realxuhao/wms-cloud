@@ -11,6 +11,7 @@ import com.bosch.masterdata.mapper.FrameMapper;
 import com.bosch.masterdata.mapper.MdProductPackagingMapper;
 import com.bosch.masterdata.mapper.ProductFrameMapper;
 import com.bosch.masterdata.service.IProductFrameService;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -143,6 +144,7 @@ public class ProductFrameServiceImpl extends ServiceImpl<ProductFrameMapper, Pro
         } else {
             LambdaQueryWrapper<ProductPackaging> queryWrapper = new LambdaQueryWrapper<ProductPackaging>();
             queryWrapper.in(ProductPackaging::getProductNo, codes);
+            queryWrapper.eq(ProductPackaging::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
             List<ProductPackaging> productPackagings = productPackagingMapper.selectList(queryWrapper);
             if (CollectionUtils.isNotEmpty(productPackagings)) {
                 collect = productPackagings.stream().collect(Collectors.toMap(ProductPackaging::getProductNo, ProductPackaging::getId));
