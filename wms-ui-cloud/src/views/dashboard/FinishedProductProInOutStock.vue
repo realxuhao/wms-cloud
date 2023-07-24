@@ -66,7 +66,7 @@ import { download } from '@/utils/file'
 
 const columns = [
   {
-    title: '操作类型',
+    title: '类型',
     key: 'operationType',
     dataIndex: 'operationType',
     scopedSlots: { customRender: 'operationType' },
