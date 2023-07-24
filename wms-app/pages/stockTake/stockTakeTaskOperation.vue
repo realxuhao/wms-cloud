@@ -16,11 +16,11 @@
 						label="库存量">{{ materialInfo.type === 1 ? '***' : materialInfo.stockQuantity }}</uni-forms-item>
 					<uni-forms-item v-if="materialInfo.type === 0" label="是否一致" required><uni-data-checkbox
 							v-model="form.isDiff" :localdata="diffList" /></uni-forms-item>
-					<uni-forms-item v-if="materialInfo.type === 1 || !form.isDiff" label="盘点量" name="pdaTakeQuantity"
+					<uni-forms-item v-if="materialInfo.type === 1 || form.isDiff" label="盘点量" name="pdaTakeQuantity"
 						required>
 						<uni-easyinput v-model="form.pdaTakeQuantity" placeholder="请输入盘点量"></uni-easyinput>
 					</uni-forms-item>
-					<uni-forms-item v-if="!form.isDiff" label="备注" name="remark">
+					<uni-forms-item v-if="form.isDiff" label="备注" name="remark">
 						<uni-easyinput type="textarea" v-model="form.remark" placeholder="请输入备注"></uni-easyinput>
 					</uni-forms-item>
 					<o-btn block class="submit-btn primary-button" :loading="submitLoading"
@@ -56,11 +56,11 @@
 			return {
 				diffList: [{
 						text: '是',
-						value: 1
+						value: 0
 					},
 					{
 						text: '否',
-						value: 0
+						value: 1
 					}
 				],
 				submitLoading: false,
@@ -75,7 +75,7 @@
 				},
 				form: {
 					pdaTakeQuantity: undefined,
-					isDiff: 1
+					isDiff: 0
 				}
 			};
 		},
@@ -116,9 +116,10 @@
 
 					const options = {
 						detailId: this.materialInfo.id,
-						isDiff: this.isDiff ? 1 : 0,
+						isDiff: this.isDiff ? true : false,
 						pdaTakeQuantity: this.pdaTakeQuantity
 					};
+					console.log(options)
 					await this.$store.dispatch('stock/operate', options);
 					this.$refs.popup.open();
 				} catch (e) {
@@ -130,35 +131,8 @@
 			}
 		},
 
-		async handlePost() {
-			this.$refs.binInForm
-				.validate()
-				.then(res => {
-					this.onSubmitBinIn();
-				})
-				.catch(err => {});
-		},
-		async onSubmitBinIn() {
-			try {
-				uni.showLoading({
-					title: '正在提交'
-				});
-				this.submitLoading = true;
 
-				const options = {
-					detailId: this.materialInfo.id,
-					isDiff: this.isDiff ? 0 : 1,
-					pdaTakeQuantity: this.form.pdaTakeQuantity
-				};
-				await this.$store.dispatch('stock/operate', options);
-				this.$refs.popup.open();
-			} catch (e) {
-				this.$refs.message.error(e.message);
-			} finally {
-				uni.hideLoading();
-				this.submitLoading = false;
-			}
-		}
+		
 	};
 </script>
 

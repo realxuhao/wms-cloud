@@ -7,7 +7,7 @@
 
     <select id="list" resultType="com.bosch.product.api.domain.vo.ProductPickVO">
         SELECT pp.*,mp.product_name as materialName
-        FROM product_pick AS pp left join `wms-cloud2`.md_product_packaging mp on pp.material = mp.product_no and mp.delete_flag = 0
+        FROM product_pick AS pp left join md_product_packaging mp on pp.material = mp.product_no and mp.delete_flag = 0
         where pp.delete_flag = 0
         <if test="sudnId != null">and pp.sudn_id = #{sudnId}</if>
         <if test="status != null">and pp.status = #{status}</if>
@@ -56,7 +56,7 @@
         pp.item as item,
         pp.material as material,
         pp.expire_date as batch,
-        pp.production_batch as productionBatch,
+        STR_TO_DATE(pp.production_batch, '%Y-%m-%d') as productionBatch,
         pp.sales_unit as salesUnit,
         sum(delivery_quantity) as deliveryQuantity
         from product_pick pp

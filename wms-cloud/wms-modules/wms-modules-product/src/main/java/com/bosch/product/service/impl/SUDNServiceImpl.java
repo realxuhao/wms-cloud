@@ -67,7 +67,7 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
     @Override
     public void validList(List<SUDNDTO> dtos) {
         dtos.stream().forEach(item -> {
-            setQty(item.getDeliveryQuantityString(),item);
+            setQty(item.getDeliveryQuantityString(), item);
             item.setStatus(SPDNStatusEnum.WAITING_APPROVE.code());
         });
     }
@@ -78,7 +78,7 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
                 sudndto.setDeliveryQuantity(new DecimalFormat().parse(qty).doubleValue());
             }
 
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new ServiceException("Qty列格式不正确");
         }
     }
@@ -115,7 +115,7 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
         stockWrapper.eq(ProductStock::getQualityStatus, QualityStatusEnums.USE.getCode());
         stockWrapper.ge(ProductStock::getAvailableStock, Double.valueOf(0));
         List<ProductStock> stockList = productStockService.list(stockWrapper);
-        if (CollectionUtils.isEmpty(stockList)){
+        if (CollectionUtils.isEmpty(stockList)) {
             throw new ServiceException("无可用库存");
         }
         Map<String, List<ProductStock>> materialStockMap = stockList.stream().collect(Collectors.groupingBy(ProductStock::getMaterialNb));
@@ -149,7 +149,7 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
             //箱
             double useSum = useProductStocks.stream().mapToDouble(ProductStock::getAvailableStock).sum();
             //  转化为PCS
-            useSum= boxSpecification * useSum;
+            useSum = boxSpecification * useSum;
             List<ProductPick> pickList = new ArrayList<>();
             for (ProductStock stock : useProductStocks) {
                 ProductPick productPick = BeanConverUtil.conver(item, ProductPick.class);
@@ -173,13 +173,13 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
                     //对应的箱
                     double boxDiff = abs / boxSpecification;
                     stock.setFreezeStock(stock.getFreezeStock() + (stock.getAvailableStock() - boxDiff));
-                    productPick.setDeliveryQuantity(stock.getAvailableStock()*boxSpecification - abs);
-                    productPick.setBinDownQuantity(stock.getAvailableStock()*boxSpecification - abs);
+                    productPick.setDeliveryQuantity(stock.getAvailableStock() * boxSpecification - abs);
+                    productPick.setBinDownQuantity(stock.getAvailableStock() * boxSpecification - abs);
 
                 } else {
                     stock.setFreezeStock(stock.getFreezeStock() + stock.getAvailableStock());
                 }
-                stock.setAvailableStock(stock.getTotalStock()-stock.getFreezeStock());
+                stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
                 pickList.add(productPick);
             }
             pickInsertList.addAll(pickList);
@@ -255,17 +255,18 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
             throw new ServiceException("该SUDN下无捡配任务或无已下架信息");
         }
 
-        double binDownSum = pickList.stream().filter(item -> item.getStatus() == ProductPickEnum.WAITTING_SHIP.code()).mapToDouble(ProductPick::getBinDownQuantity).sum();
+//        double binDownSum = pickList.stream().filter(item -> item.getStatus() == ProductPickEnum.WAITTING_SHIP.code()).mapToDouble(ProductPick::getBinDownQuantity).sum();
+        double binDownSum = sudn.getSumBinDownQuantity();
         double shipQuantity = sudn.getShipQuantity() + shipDTO.getShipQuantity();
         if (shipQuantity > binDownSum) {
             throw new ServiceException("发运数量不能大于已下架数量");
         }
+        sudn.setSumBinDownQuantity(sudn.getSumBinDownQuantity() - shipQuantity);
         sudn.setShipQuantity(shipQuantity);
         this.updateById(sudn);
 
 
     }
-
 
 
     private MdProductPackagingVO getProductVO(String code) {
@@ -275,9 +276,6 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
         }
         return byCode.getData();
     }
-
-
-
 
 
 }

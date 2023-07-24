@@ -24,15 +24,15 @@
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">总库存：</view>
-					{{ materialInfo.totalStock }}
+					{{ materialInfo.pcsTotalStock }} PCS 
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">冻结库存：</view>
-					{{ materialInfo.freezeStock }}
+					{{ materialInfo.pcsFreezeStock }} PCS 
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">可用库存：</view>
-					{{ materialInfo.availableStock }}
+					{{ materialInfo.pcsAvailableStock }} PCS 
 				</view>
 			</view>
 

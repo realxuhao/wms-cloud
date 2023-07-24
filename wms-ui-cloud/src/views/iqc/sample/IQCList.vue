@@ -120,11 +120,13 @@
           <a-button
             :loading="exportLoading"
             @click="handleDownload"
+            class="m-r-8"
             v-hasPermi="['iqc:list:export']"><a-icon type="download" />导出结果</a-button>
           <a-button
             v-hasPermi="['iqc:list:add']"
             type="primary"
             icon="plus"
+            class="m-r-8"
             @click="handleAddIqcSample">
             新建抽样计划
           </a-button>

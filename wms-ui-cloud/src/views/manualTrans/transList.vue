@@ -54,7 +54,7 @@
         </a-row>
       </a-form>
       <div class="action-content">
-        <a-button
+        <!-- <a-button
           class="m-r-8"
           type="primary"
           :loading="submitLoading"
@@ -65,17 +65,21 @@
           type="primary"
           :loading="confirmMaterialLoading"
           @click="handleAddTrans"
-        >新增仓内转储单</a-button>
+        >新增仓内转储单</a-button> -->
+      
       </div>
-      <a-table
-        table-layout="fixed"
-        :row-selection="{
+
+      <!-- :row-selection="{
           selectedRowKeys: selectedRowKeys, onChange: onSelectChange ,
           getCheckboxProps:record => ({
             props: {
               disabled: [-1,1,2,3].includes(record.status)
             },
-          }),}"
+          }),}" -->
+
+      <a-table
+        table-layout="fixed"
+       
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
@@ -176,13 +180,13 @@ const columns = [
     dataIndex: 'materialName',
     width: 120
   },
-  {
-    title: '状态',
-    key: 'status',
-    dataIndex: 'status',
-    scopedSlots: { customRender: 'status' },
-    width: 120
-  },
+  // {
+  //   title: '状态',
+  //   key: 'status',
+  //   dataIndex: 'status',
+  //   scopedSlots: { customRender: 'status' },
+  //   width: 120
+  // },
   {
     title: '源工厂',
     key: 'sourcePlantNb',
@@ -226,13 +230,13 @@ const columns = [
     scopedSlots: { customRender: 'moveType' },
     width: 140
   },
-  {
-    title: '转储类型',
-    key: 'type',
-    dataIndex: 'type',
-    scopedSlots: { customRender: 'type' },
-    width: 140
-  },
+  // {
+  //   title: '转储类型',
+  //   key: 'type',
+  //   dataIndex: 'type',
+  //   scopedSlots: { customRender: 'type' },
+  //   width: 140
+  // },
   {
     title: '创建人',
     key: 'createBy',
@@ -257,13 +261,13 @@ const columns = [
     dataIndex: 'updateTime',
     width: 200
   },
-  {
-    title: '操作',
-    key: 'action',
-    fixed: 'right',
-    width: 200,
-    scopedSlots: { customRender: 'action' }
-  }
+  // {
+  //   title: '操作',
+  //   key: 'action',
+  //   fixed: 'right',
+  //   width: 200,
+  //   scopedSlots: { customRender: 'action' }
+  // }
 ]
 
 const status = [

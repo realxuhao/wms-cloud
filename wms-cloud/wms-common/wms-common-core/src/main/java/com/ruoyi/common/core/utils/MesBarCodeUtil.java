@@ -95,14 +95,14 @@ public class MesBarCodeUtil {
         System.out.println(ceil1);
 
         String date = DateUtils.parseDateToStr("yyyyMMdd", new Date());
-        String barCode = generateMesBarCode(new Date(), "669006391114289683", "10304986", "2307051457", Double.valueOf(15000));
+        String barCode = generateMesBarCode(new Date(), "669006391113850891", "10304986", "2307051457", Double.valueOf(15000));
         System.out.println(barCode);
 
         System.out.println("669006391114201586".length());
 
         System.out.println(mesBarCode.length());
 
-        System.out.println(Long.valueOf("669006391110024752"));
+        System.out.println(Long.valueOf("669006391113925957"));
 
 
         System.out.println("Nisdjhsai\nFnaisdofjsadionidsafn\nNini");

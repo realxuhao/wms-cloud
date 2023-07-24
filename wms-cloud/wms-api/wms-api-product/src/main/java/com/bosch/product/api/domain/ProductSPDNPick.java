@@ -1,6 +1,7 @@
 package com.bosch.product.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
@@ -64,6 +65,7 @@ public class ProductSPDNPick extends BaseEntity {
     /**
      * 过期时间
      */
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date expireDate;
 
     /**
