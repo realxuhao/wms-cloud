@@ -13,6 +13,11 @@
                   <a-input v-model="queryForm.wareCode" placeholder="仓库编码" allow-clear />
                 </a-form-model-item>
               </a-col>
+              <a-col :span="4">
+                <a-form-model-item label="SSCC">
+                  <a-input v-model="queryForm.ssccNumber" placeholder="SSCC" allow-clear />
+                </a-form-model-item>
+              </a-col>
               <a-col span="4">
                 <span class="table-page-search-submitButtons">
                   <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
@@ -72,6 +77,7 @@
 <script>
 import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin'
+import ArticleListContent from '../../../components/ArticleListContent/ArticleListContent.vue'
 
 const labelCol = {
   span: 5
@@ -138,6 +144,7 @@ const columns = [
   }
 ]
 export default {
+  components: { ArticleListContent },
   name: 'IqcSample',
   mixins: [mixinTableList],
   props: {
@@ -160,6 +167,7 @@ export default {
       queryForm: {
         pageSize: 40,
         pageNum: 1,
+        ssccNumber: '',
         ...queryFormAttr()
       },
       form: this.$form.createForm(this),
