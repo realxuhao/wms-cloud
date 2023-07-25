@@ -532,7 +532,16 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         MaterialKanbanVO conver = BeanConverUtil.conver(materialKanban, MaterialKanbanVO.class);
         return conver;
     }
-
+    @Override
+    public MaterialKanbanVO getKanbanBySSCCAndStatus(String sscc,KanbanStatusEnum kanbanStatusEnum) {
+        LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
+        queryWrapper.eq(MaterialKanban::getStatus, kanbanStatusEnum.value());
+        queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryWrapper);
+        MaterialKanbanVO conver = BeanConverUtil.conver(materialKanban, MaterialKanbanVO.class);
+        return conver;
+    }
     @Override
     public void splitPallet(SplitPalletDTO splitPallet) {
 
