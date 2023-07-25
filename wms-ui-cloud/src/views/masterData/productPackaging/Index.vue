@@ -130,6 +130,12 @@ const columns = [
     width: 200
   },
   {
+    title: 'type',
+    key: 'type',
+    dataIndex: 'type',
+    width: 180
+  },
+  {
     title: '运输单位(Tr)',
     key: 'transportUnit',
     dataIndex: 'transportUnit',

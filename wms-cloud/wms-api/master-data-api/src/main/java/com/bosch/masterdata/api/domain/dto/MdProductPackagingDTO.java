@@ -46,6 +46,12 @@ public class MdProductPackagingDTO extends PageDomain {
     @ExcelProperty(value = "成品料号")
     private String productNo;
 
+    /**
+     * type
+     */
+    @ExcelProperty(value = "类别")
+    private String type;
+
     @ExcelProperty(value = "名称")
     private String productName;
 

@@ -1,5 +1,6 @@
 package com.bosch.masterdata.api.domain;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -61,6 +62,10 @@ public class ProductPackaging extends BaseEntity {
      */
     private Double boxSpecification;
 
+    /**
+     * type
+     */
+    private String type;
     /**
      * 标准 Tr/托
      */

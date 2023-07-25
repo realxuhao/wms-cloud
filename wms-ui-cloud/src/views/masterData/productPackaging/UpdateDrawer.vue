@@ -71,6 +71,14 @@
             { rules: [{ required: true, message: '请输入体积 (Tr)!' }] }
           ]" />
       </a-form-item>
+      <a-form-item label="类别">
+        <a-input
+          placeholder="类别"
+          v-decorator="[
+            'type',
+            { rules: [{ required: true, message: '请输入类别!' }] }
+          ]" />
+      </a-form-item>
     </a-form>
 
     <div class="action">
@@ -144,7 +152,7 @@ export default {
     },
     async getAndUpdateForm () {
       const { data } = await this.$store.dispatch('productPackaging/getOne', this.id)
-      this.form.setFieldsValue(_.pick(data, ['productNo', 'productName', 'cell', 'transportUnit', 'boxSpecification', 'standardUnits', 'weight', 'volume']))
+      this.form.setFieldsValue(_.pick(data, ['productNo', 'productName', 'cell', 'transportUnit', 'boxSpecification', 'standardUnits', 'weight', 'volume','type']))
     },
     async loadData () {
 
