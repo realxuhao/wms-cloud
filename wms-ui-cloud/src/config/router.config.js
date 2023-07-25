@@ -21,7 +21,7 @@ export const indexRouterMap = [
     path: '/index',
     name: 'Index',
     component: 'Index',
-    meta: { title: '报表', noCache: false, hidden: true, icon: 'dashboard', hiddenHeaderContent: true }
+    meta: { title: '首页', noCache: false, hidden: true, icon: 'dashboard', hiddenHeaderContent: true }
   },
   {
     path: '/account/center',
