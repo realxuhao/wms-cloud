@@ -1,5 +1,6 @@
 package com.bosch.masterdata.api.domain.vo;
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -30,6 +31,10 @@ public class MdProductPackagingVO extends BaseEntity {
      */
     private String remark;
 
+    /**
+     * type
+     */
+    private String type;
     /**
      * 删除标记1：删除，0:可用
      */
