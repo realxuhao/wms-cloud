@@ -33,6 +33,7 @@
 							<MyRadio class="m-r-8" v-model="item.checked">
 								<view class="order-content">
 									<view class="title m-b-4">{{ item.materialName }}</view>
+									
 									<view class="desc m-b-4">
 										<text class="label">物料编码:</text>
 										{{ item.materialNb }}
@@ -49,10 +50,14 @@
 										<text class="label">SSCC码:</text>
 										{{ item.ssccNumber }}
 									</view>
-									<!-- <view class="desc">
-										<text class="label">状态:</text>
-										<uni-tag :text="typeMap[item.type].text" :type="typeMap[item.type].color" size="mini" />
-									</view> -->
+									<view class="desc m-b-4">
+										<text class="label">数量:</text>
+										{{ item.quantity }}
+									</view>
+									<view class="desc">
+										<text class="label">批次号:</text>
+										{{item.batchNb}}
+									</view>
 								</view>
 							</MyRadio>
 						</view>
@@ -147,6 +152,7 @@
 			this.lodaData();
 		},
 		methods: {
+
 			async getWareList() {
 				const data = await this.$store.dispatch('wareShift/getWareList', {
 					wareCode: this.form.wareCode
@@ -291,7 +297,7 @@
 
 		.desc {
 			color: #999;
-			font-size: 12px;
+			font-size: 14px;
 			display: flex;
 
 			.label {

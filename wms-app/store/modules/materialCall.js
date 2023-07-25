@@ -1,32 +1,58 @@
-import { materialCallService } from '@/api'
+import {
+	materialCallService
+} from '@/api'
 
 const materialCall = {
- namespaced: true,
-  state: {
-  },
+	namespaced: true,
+	state: {},
 
-  mutations: {
-  },
+	mutations: {},
 
-  actions: {
-    async waitingBinDownList ({ commit }, parameter) {
-      const {data} = await materialCallService.waitingBinDownList({...parameter})
-      return data
-    },
-	async binDownList ({ commit }, parameter) {
-      const {data} = await materialCallService.binDownList(parameter)
-      return data
-    },
-	async binDown ({ commit }, ssccNumber) {
-	  const {data} = await materialCallService.binDown(ssccNumber)
-	  return data
-	},
-	async confirmMaterial({ commit }, options) {
-	  const {data} = await materialCallService.confirmMaterial(options)
-	  return data
-	},
-  }
+	actions: {
+		async waitingBinDownList({
+			commit
+		}, parameter) {
+			const {
+				data
+			} = await materialCallService.waitingBinDownList({
+				...parameter
+			})
+			return data
+		},
+		async binDownList({
+			commit
+		}, parameter) {
+			const {
+				data
+			} = await materialCallService.binDownList(parameter)
+			return data
+		},
+		async binDown({
+			commit
+		}, ssccNumber) {
+			const {
+				data
+			} = await materialCallService.binDown(ssccNumber)
+			return data
+		},
+		async confirmMaterial({
+			commit
+		}, options) {
+			const {
+				data
+			} = await materialCallService.confirmMaterial(options)
+			return data
+		},
+		async getBarCodeInfo({
+			commit
+		}, barCode) {
+			const {
+				data
+			} = await materialCallService.getBarCodeInfo(barCode)
+			return data
+		},
+
+	}
 }
 
 export default materialCall
-
