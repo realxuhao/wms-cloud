@@ -1,8 +1,8 @@
 {
     "name" : "WMS应用",
     "appid" : "__UNI__25FD3F1",
-    "description" : "扫描枪错误修改",
-    "versionName" : "1.0.7",
+    "description" : "成品",
+    "versionName" : "1.1.0",
     "versionCode" : "100",
     "transformPx" : false,
     "app-plus" : {
