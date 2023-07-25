@@ -59,7 +59,7 @@
 				</view>
 			</uni-section>
 			<uni-section title="仓内管理"
-				v-if="$hasPermi(['app:manualTrans:binDown', 'app:manualTrans:binIn', 'app:manualTrans:scan', 'app:splitPallet:binIn', 'app:scan:scan', 'app:location:scan'])"
+				v-if="$hasPermi(['app:manualTrans', 'app:manualTrans:scan', 'app:splitPallet:binIn', 'app:scan:scan', 'app:location:scan'])"
 				type="line" class="m-b-12">
 				<view class="list header-box">
 					<!-- <view class="list-item" v-if="$hasPermi(['app:manualTrans:binDown'])" @click="handleGoto('/pages/manualTrans/binDown')">
@@ -136,8 +136,7 @@
 				</view>
 			</uni-section>
 
-			<uni-section title="IQC质检"
-				v-if="$hasPermi(['app:iqc:binDown', 'app:iqc:sample', 'app:iqc:binIn', 'app:iqc:stockTake'])"
+			<uni-section title="IQC质检" v-if="$hasPermi(['app:iqc:binDown', 'app:iqc:sample', 'app:iqc:binIn'])"
 				type="line" class="m-b-12">
 				<view class="list header-box" v-if="$hasPermi(['app:iqc:binDown'])">
 					<view class="list-item" @click="handleGoto('/pages/IQC/binDown')">
@@ -153,12 +152,6 @@
 						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia" color="#00ADD4"></uni-icons>
 						<view class="text">上架</view>
 					</view>
-					<!-- <view class="list-item" v-if="$hasPermi(['app:iqc:stockTake'])"
-						@click="handleGoto('/pages/stockTake/stockTake')">
-						<uni-icons size="24" custom-prefix="iconfont" class="icon icon-kucunpandian"
-							color="rgb(46,151,222)"></uni-icons>
-						<view class="text">盘点</view>
-					</view> -->
 				</view>
 			</uni-section>
 			<uni-section title="盘点" v-if="$hasPermi(['app:finishedProduct:packTask'])" type="line" class="m-b-12">
@@ -182,9 +175,15 @@
 				</view>
 			</uni-section>
 
-			<uni-section title="成品"
-				v-if="$hasPermi(['app:finishedProduct:productIn', 'app:finishedProduct:shipment', 'app:finishedProduct:receiving', 'app:finishedProduct:binIn'])"
-				type="line" class="m-b-12">
+			<uni-section title="成品" v-if="$hasPermi([
+					'app:finishedProduct:productIn', 
+					'app:finishedProduct:shipment', 
+					'app:finishedProduct:receiving', 
+					'app:finishedProduct:binIn',
+					'app:finishedProduct:adjust',
+					'app:finishedProduct:manualTrans',
+					'app:finishedProduct:splitPallet'
+					])" type="line" class="m-b-12">
 				<view class="list header-box">
 					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:productIn'])"
 						@click="handleGoto('/pages/finishedProduct/productIn')">
@@ -209,59 +208,74 @@
 							color="#1afa29"></uni-icons>
 						<view class="text">移库上架</view>
 					</view>
-					<view class="list-item" v-if="$hasPermi(['app:location:adjust'])"
+					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:adjust'])"
 						@click="handleGoto('/pages/finishedProduct/adjustScan')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-kucuntiaozheng" type="icon-kucuntiaozheng"
 							color="#2664CB"></uni-icons>
 						<view class="text">库存调整</view>
 					</view>
-					<view class="list-item" v-if="$hasPermi(['app:manualTrans'])"
+					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:manualTrans'])"
 						@click="handleGoto('/pages/finishedProduct/manualTransScan')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2"
 							color="#1afa29"></uni-icons>
 						<view class="text">库内转储</view>
 					</view>
-					<view class="list-item" @click="handleGoto('/pages/finishedProduct/splitPalletScan')">
+					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:splitPallet'])"
+						@click="handleGoto('/pages/finishedProduct/splitPalletScan')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-chaifen" color="#1afa29"></uni-icons>
 						<view class="text">拆托</view>
 					</view>
 				</view>
 			</uni-section>
 			<!-- 				v-if="$hasPermi(['app:finishedProduct:productIn', 'app:finishedProduct:shipment', 'app:finishedProduct:receiving', 'app:finishedProduct:binIn'])" -->
-			<uni-section title="成品SPDN" type="line" class="m-b-12">
+			<uni-section title="成品SPDN" v-if="$hasPermi([
+					'app:spdn:binin', 
+					'app:spdn:spdnShipment', 
+					'app:spdn:spdnReturns', 
+					])" type="line" class="m-b-12">
 				<view class="list header-box">
 
-					<view class="list-item" @click="handleGoto('/pages/finishedProduct/spdnBinDown')">
+					<view class="list-item" v-if="$hasPermi(['app:spdn:binin'])"
+						@click="handleGoto('/pages/finishedProduct/spdnBinDown')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-wuliufahuo"
 							color="#009A9A"></uni-icons>
 						<view class="text">下架</view>
 					</view>
-					<view class="list-item" @click="handleGoto('/pages/finishedProduct/spdnShipment')">
+					<view class="list-item" v-if="$hasPermi(['app:spdn:spdnShipment'])"
+						@click="handleGoto('/pages/finishedProduct/spdnShipment')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-wuliufahuo" type="icon-wuliufahuo"
 							color="#009A9A"></uni-icons>
 						<view class="text">发运</view>
 					</view>
-					<view class="list-item" @click="handleGoto('/pages/finishedProduct/spdnReturns')">
+					<view class="list-item" v-if="$hasPermi(['app:spdn:spdnReturns'])"
+						@click="handleGoto('/pages/finishedProduct/spdnReturns')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-tuihuo1" type="icon-tuihuo1"
 							color="rgb(248,79,87)"></uni-icons>
 						<view class="text">退货</view>
 					</view>
 				</view>
 			</uni-section>
-			<uni-section title="成品SUDN" type="line" class="m-b-12">
+			<uni-section title="成品SUDN" v-if="$hasPermi([
+					'app:sudn:binin', 
+					'app:sudn:shipment', 
+					'app:sudn:returns', 
+					])" type="line" class="m-b-12">
 				<view class="list header-box">
 
-					<view class="list-item" @click="handleGoto('/pages/finishedProduct/sudnPick')">
+					<view class="list-item" v-if="$hasPermi(['app:sudn:binin' ])"
+						@click="handleGoto('/pages/finishedProduct/sudnPick')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-wuliufahuo"
 							color="#009A9A"></uni-icons>
 						<view class="text">下架</view>
 					</view>
-					<view class="list-item" @click="handleGoto('/pages/finishedProduct/sudnShip')">
+					<view class="list-item" v-if="$hasPermi(['app:sudn:shipment'])"
+						@click="handleGoto('/pages/finishedProduct/sudnShip')">
 						<uni-icons custom-prefix="iconfont" class="icon" type="icon-wuliufahuo"
 							color="#009A9A"></uni-icons>
 						<view class="text">发运</view>
 					</view>
-					<view class="list-item" @click="handleGoto('/pages/finishedProduct/sudnDealerReturns')">
+					<view class="list-item" v-if="$hasPermi(['app:sudn:returns'])"
+						@click="handleGoto('/pages/finishedProduct/sudnDealerReturns')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-tuihuo1" type="icon-tuihuo1"
 							color="rgb(248,79,87)"></uni-icons>
 						<view class="text">经销商退货</view>

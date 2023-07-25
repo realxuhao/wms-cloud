@@ -541,7 +541,29 @@ public class MaterialKanbanController {
             return R.fail(ex.getMessage());
         }
     }
+    @GetMapping(value = "/getKanbanBySSCCAndStatus")
+    @ApiOperation("根据barcode的sscc和状态获取kanban数据")
+    public R getKanbanBySSCCAndStatus(@RequestParam(value = "mesBarCode") String mesBarCode) {
+        try {
+            String sscc = mesBarCode;
+            if (sscc.length() > 18) {
+                sscc = MesBarCodeUtil.getSSCC(mesBarCode);
+            }
 
+            if (StringUtils.isEmpty(sscc)) {
+                throw new ServiceException("请选择数据");
+            }
+            //根据sscc获取kanban
+            MaterialKanbanVO kanbanBySSCC = materialKanbanService.getKanbanBySSCCAndStatus(sscc,KanbanStatusEnum.INNER_DOWN);
+            if (kanbanBySSCC == null) {
+                return R.fail("没有该SSCC"+sscc+"对应的任务");
+            }
+            return R.ok(kanbanBySSCC);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return R.fail(ex.getMessage());
+        }
+    }
     @GetMapping(value = "/deliver")
     @ApiOperation("整托下架配送接口")
     @Transactional(rollbackFor = Exception.class)

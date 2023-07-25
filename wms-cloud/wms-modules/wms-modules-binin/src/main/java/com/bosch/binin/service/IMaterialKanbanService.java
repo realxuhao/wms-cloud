@@ -10,6 +10,7 @@ import com.bosch.binin.api.domain.dto.SplitPalletDTO;
 import com.bosch.binin.api.domain.vo.MaterialInfoVO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.ruoyi.common.core.web.page.PageDomain;
 import org.apache.ibatis.annotations.Param;
 
@@ -120,6 +121,7 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
 
     MaterialKanbanVO getKanbanBySSCC(String sscc);
 
+    MaterialKanbanVO getKanbanBySSCCAndStatus(String sscc, KanbanStatusEnum kanbanStatusEnum);
     void splitPallet(SplitPalletDTO splitPallet);
 
     void cancelKanban(Long id);

@@ -85,6 +85,7 @@
       </a-form>
       <div class="action-content">
         <a-button
+          class="m-r-8"
           v-hasPermi="['ware:shift:add']"
           type="primary"
           @click="handleAddWareShift"
