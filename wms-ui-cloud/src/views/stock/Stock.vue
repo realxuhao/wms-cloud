@@ -113,6 +113,7 @@
 
       <div class="pagination-con">
         <a-pagination
+          :show-total="total =>`总共${total}条`"
           show-size-changer
           :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
           show-less-items

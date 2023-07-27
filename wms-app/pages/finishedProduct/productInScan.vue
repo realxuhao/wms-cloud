@@ -10,7 +10,6 @@
 			<uni-popup-dialog before-close type="info" cancelText="取消" confirmText="确认" title="是否确认入库?"
 				@confirm="handleConfirm" @close="handleCancel">
 				<view>
-
 					<view class="text-align m-b-4">
 						<text class="label m-r-8">SSCC码:</text>
 						<text>{{ info.ssccNumber }}</text>
@@ -51,9 +50,9 @@
 			};
 		},
 		mounted() {
-			this.scanCodeCallback({
-				code: `11221025101012358660208716900568763172407093700006000369006391113669850`
-			});
+			// this.scanCodeCallback({
+			// 	code: `11221025101012358660208716900568763172407093700006000369006391113669850`
+			// });
 		},
 		methods: {
 			async scanCodeCallback(data) {
@@ -63,7 +62,7 @@
 			},
 			async getSample(barCode) {
 				try {
-					console.log(barCode)
+					console.log(barCode);
 					uni.showLoading();
 					const data = await this.$store.dispatch('finishedProduct/getOneProductIn', barCode);
 					if (data.status === 0) {
@@ -72,7 +71,6 @@
 						throw Error('此托已入库或为非入库托，请确认');
 					}
 					this.info = data;
-
 				} catch (e) {
 					this.$refs.message.error(e.message);
 				} finally {

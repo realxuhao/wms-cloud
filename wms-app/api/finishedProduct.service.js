@@ -84,7 +84,7 @@ const getOneProductIn = async (barCode) => {
 }
 
 const postProductIn = async (options) => {
-	const url = `/product/product-receive/receive/${options.barCode}`
+	const url = `/product/product-receive/receive/${options.barCode}?quantity=${options.quantity}`
 	const method = 'PUT'
 
 	return request({
