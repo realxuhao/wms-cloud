@@ -48,4 +48,16 @@ public class ProductStockQueryDTO {
 
     @ApiModelProperty(value = "质检状态")
     private String qualityStatus;
+
+    /**
+     * 过期时间
+     */
+    @ApiModelProperty(value = "过期开始时间")
+    private Date startExpireDate;
+
+    /**
+     * 过期时间
+     */
+    @ApiModelProperty(value = "过期结束时间")
+    private Date endExpireDate;
 }

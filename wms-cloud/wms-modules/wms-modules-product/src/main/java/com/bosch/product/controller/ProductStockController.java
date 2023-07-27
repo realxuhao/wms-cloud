@@ -19,6 +19,8 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IUserOperationLogService;
@@ -91,6 +93,7 @@ public class ProductStockController extends BaseController {
 
     @PostMapping(value = "/editStock")
     @ApiOperation("修改库存")
+    @Log(title = "成品库存调整修改库存", businessType = BusinessType.UPDATE)
     public R editStock(@RequestBody ProductStockEditDTO stockEditDTO) {
 
         productStockService.adjustStock(stockEditDTO);
@@ -100,6 +103,7 @@ public class ProductStockController extends BaseController {
 
     @PostMapping(value = "/trans")
     @ApiOperation("转储")
+    @Log(title = "成品库存转储", businessType = BusinessType.UPDATE)
     public R trans(@RequestBody ManualBinInDTO binInDTO) {
         productStockService.trans(binInDTO);
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_TRANS.getCode(), ProductQRCodeUtil.getSSCC(binInDTO.getMesBarCode()));
@@ -123,6 +127,7 @@ public class ProductStockController extends BaseController {
 
     @PostMapping(value = "addSplit")
     @ApiOperation("拆托")
+    @Log(title = "成品库存拆托", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         productStockService.addSplit(splitPallet);

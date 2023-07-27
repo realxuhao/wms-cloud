@@ -16,6 +16,8 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -65,7 +67,8 @@ public class SudnController extends BaseController {
 
 
     @DeleteMapping(value = "/{ids}")
-    @ApiOperation("删除spdn")
+    @ApiOperation("删除SUDN")
+    @Log(title = "删除SUDN", businessType = BusinessType.DELETE)
     public R batchDelete(@PathVariable Long[] ids) {
         sudnService.batchDelete(Arrays.asList(ids));
         return R.ok();
@@ -74,6 +77,7 @@ public class SudnController extends BaseController {
 
     @PutMapping(value = "/{ids}")
     @ApiOperation("SUDN生成PICK")
+    @Log(title = "SUDN生成PICK", businessType = BusinessType.INSERT)
     public R generatePick(@PathVariable Long[] ids) {
         sudnService.generate(Arrays.asList(ids));
         return R.ok();
@@ -82,6 +86,7 @@ public class SudnController extends BaseController {
 
     @PostMapping(value = "/modifyQuantity")
     @ApiOperation("修改需求量")
+    @Log(title = "SUDN修改需求量", businessType = BusinessType.UPDATE)
     public R modifyQuantity(@RequestBody SUDNDTO sudndto) {
         sudnService.modifyQuantity(sudndto.getId(), sudndto.getNewQuantity());
         return R.ok();
@@ -89,6 +94,7 @@ public class SudnController extends BaseController {
 
     @PostMapping(value = "/ship")
     @ApiOperation("sudn发运")
+    @Log(title = "SUDN发运", businessType = BusinessType.UPDATE)
     public R ship(@RequestBody SUDNShipDTO shipDTO) {
         sudnService.ship(shipDTO);
         return R.ok();
@@ -138,6 +144,7 @@ public class SudnController extends BaseController {
             @ApiImplicitParam(value = "文件", name = "file", dataType = "File")
     })
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "SUDN导入", businessType = BusinessType.IMPORT)
     public R importSPDN(@RequestParam(value = "file") MultipartFile file) {
 
         R result = fileService.SUDNFileImport(file, ClassType.SUDNDTO.getDesc());

@@ -35,6 +35,7 @@ public class WeightController {
 
     @PostMapping(value = "/add")
     @ApiOperation("新增称重数据")
+
     public R add(@RequestBody WeightDTO dto) {
         weightService.addWeight(dto);
         return R.ok();

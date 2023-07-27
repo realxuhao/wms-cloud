@@ -46,6 +46,7 @@ public class ReturnMaterialController extends BaseController {
     @PostMapping(value = "/confirm")
     @ApiOperation("批量确认退库任务接口")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "批量确认退库任务", businessType = BusinessType.UPDATE)
     public R confirmJob(@RequestBody MaterialReturnConfirmDTO confirmDTO) {
         materialReturnService.issueJob(confirmDTO);
         return R.ok("下发成功");
@@ -93,6 +94,7 @@ public class ReturnMaterialController extends BaseController {
     }
 
     @PostMapping(value = "/addMaterialReturn")
+    @Log(title = "新增退库", businessType = BusinessType.INSERT)
     @ApiOperation("新增退库")
     public R save(@RequestBody MaterialReturnDTO materialReturnDTO) {
 
@@ -106,6 +108,7 @@ public class ReturnMaterialController extends BaseController {
 
     @GetMapping(value = "/allocateBin/{mesBarCode}")
     @ApiOperation("退库上架分配库位")
+    @Log(title = "退库上架分配库位", businessType = BusinessType.INSERT)
     @Transactional(rollbackFor = Exception.class)
     public R<BinInVO> allocateBin(@PathVariable("mesBarCode") String mesBarCode) {
 
@@ -114,6 +117,7 @@ public class ReturnMaterialController extends BaseController {
 
     @PostMapping(value = "/in")
     @ApiOperation("退库任务上架")
+    @Log(title = "退库任务上架", businessType = BusinessType.INSERT)
     public R in(@RequestBody ManualBinInDTO binInDTO) {
         materialReturnService.performBinIn(binInDTO);
         return R.ok();
@@ -121,6 +125,7 @@ public class ReturnMaterialController extends BaseController {
 
     @PostMapping(value = "/modifyQuantity")
     @ApiOperation("修改退货数量")
+    @Log(title = "修改退货数量", businessType = BusinessType.UPDATE)
     public R modifyQuantity(@RequestBody MaterialReturnDTO dto) {
         materialReturnService.modifyQuantity(dto);
         return R.ok();
@@ -130,9 +135,9 @@ public class ReturnMaterialController extends BaseController {
     /**
      * 导出叫料需求列表
      */
-    @Log(title = "叫料需求", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @ApiOperation("退库记录导出")
+    @Log(title = "退库记录导出", businessType = BusinessType.EXPORT)
     public void export(HttpServletResponse response, @RequestBody MaterialReturnQueryDTO queryDTO) {
         List<MaterialReturnVO> materialReturnVOS = materialReturnService.list(queryDTO);
         ExcelUtil<MaterialReturnVO> util = new ExcelUtil<>(MaterialReturnVO.class);

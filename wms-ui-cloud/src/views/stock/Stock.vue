@@ -5,6 +5,15 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           <a-col :span="4">
+            <a-form-model-item label="Cell">
+              <a-select allow-clear v-model="queryForm.cell">
+                <a-select-option v-for="item in departmentList" :key="item.id" :value="item.code">
+                  {{ item.code }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
             <a-form-model-item label="工厂编码">
               <a-input v-model="queryForm.plantNb" placeholder="工厂编码" allow-clear/>
             </a-form-model-item>
@@ -143,6 +152,12 @@ const columns = [
     width: 120
   },
   {
+    title: 'Cell',
+    key: 'cell',
+    dataIndex: 'cell',
+    width: 100
+  },
+  {
     title: '仓库编码',
     key: 'wareCode',
     dataIndex: 'wareCode',
@@ -243,6 +258,7 @@ export default {
     return {
       tableLoading: false,
       uploadLoading: false,
+      departmentList: [],
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -261,6 +277,10 @@ export default {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
     },
+    async loadDepartmentList () {
+      const departmentList = await this.$store.dispatch('materialFeeding/getDepartmentList')
+      this.departmentList = departmentList
+    },
     async loadTableList () {
       try {
         this.tableLoading = true
@@ -277,6 +297,7 @@ export default {
       }
     },
     async loadData () {
+       this.loadDepartmentList()
       this.loadTableList()
     }
   },

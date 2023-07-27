@@ -18,6 +18,8 @@ import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IUserOperationLogService;
@@ -104,6 +106,7 @@ public class ProductPickController extends BaseController {
 
     @PutMapping(value = "/sumBinDown/{qrCode}")
     @ApiOperation("SUDN捡配任务汇总下架")
+    @Log(title = "SUDN捡配任务汇总下架", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     public R binDown(@PathVariable String qrCode) {
         pickService.sumBinDown(qrCode);
@@ -114,7 +117,8 @@ public class ProductPickController extends BaseController {
 
 
     @DeleteMapping(value = "/{ids}")
-    @ApiOperation("删除pick")
+    @ApiOperation("删除SUDN捡配任务")
+    @Log(title = "删除捡配", businessType = BusinessType.DELETE)
     public R batchDelete(@PathVariable Long[] ids) {
         pickService.batchCancel(Arrays.asList(ids));
         return R.ok();
@@ -123,6 +127,7 @@ public class ProductPickController extends BaseController {
     @PutMapping(value = "/binDown/{qrCode}")
     @ApiOperation("SUDN捡配任务下架")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "SUDN捡配任务下架", businessType = BusinessType.UPDATE)
     public R binDown(@PathVariable String qrCode, @RequestParam("sudnId") Long sudnId) {
         pickService.binDown(qrCode, sudnId);
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode));
@@ -143,6 +148,7 @@ public class ProductPickController extends BaseController {
 
     @PostMapping(value = "/editBinDownQuantity")
     @ApiOperation("修改下架量")
+    @Log(title = "SUDN捡配修改下架量", businessType = BusinessType.UPDATE)
     public R ship(@RequestBody EditBinDownQuantityDTO dto) {
 
         pickService.editBinDownQuantity(dto);
@@ -150,6 +156,7 @@ public class ProductPickController extends BaseController {
     }
 
     @PostMapping(value = "/batchIssue/{ids}")
+    @Log(title = "SUDN捡配批量下发", businessType = BusinessType.UPDATE)
     @ApiOperation("批量下发")
     public R batchIssue(@PathVariable Long[] ids) {
         pickService.batchIssue(Arrays.asList(ids));

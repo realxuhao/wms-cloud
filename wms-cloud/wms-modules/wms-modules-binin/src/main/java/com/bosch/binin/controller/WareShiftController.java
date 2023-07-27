@@ -57,6 +57,7 @@ public class WareShiftController extends BaseController {
 
     @PostMapping(value = "/add")
     @ApiOperation("新增移库任务")
+    @Log(title = "新增移库任务", businessType = BusinessType.INSERT)
     @Transactional(rollbackFor = Exception.class)
     public R<Boolean> add(@RequestBody AddShiftTaskDTO dto) {
         return R.ok(shiftService.add(dto));
@@ -64,6 +65,7 @@ public class WareShiftController extends BaseController {
 
     @PostMapping(value = "/addShiftTask")
     @ApiOperation("外库新增需求接口")
+
     @Transactional(rollbackFor = Exception.class)
     public R<Boolean> addShiftTask(@RequestBody AddShiftTaskDTO dto) {
         return R.ok(shiftService.addShiftRequirement(dto));
@@ -73,6 +75,7 @@ public class WareShiftController extends BaseController {
     @PutMapping(value = "/binDown/{mesBarCode}")
     @ApiOperation("移库任务下架")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "移库任务下架", businessType = BusinessType.UPDATE)
     public R binDown(@PathVariable String mesBarCode) {
         shiftService.binDown(mesBarCode);
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.BINOUTOTHER.getCode(), MesBarCodeUtil.getSSCC(mesBarCode));
@@ -82,6 +85,7 @@ public class WareShiftController extends BaseController {
 
     @PostMapping(value = "splitPallet")
     @ApiOperation("移库任务拆托")
+    @Log(title = "移库任务拆托", businessType = BusinessType.INSERT)
     @Transactional(rollbackFor = Exception.class)
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         shiftService.splitPallet(splitPallet);
@@ -99,6 +103,7 @@ public class WareShiftController extends BaseController {
 
     @PostMapping(value = "generateWareShiftByCall")
     @ApiOperation("根据call生成移库任务")
+    @Log(title = "根据叫料需求生成移库任务", businessType = BusinessType.INSERT)
     @Transactional(rollbackFor = Exception.class)
     public R generateWareShiftByCall(@RequestBody List<CallWareShiftDTO> dtos){
         shiftService.generateWareShiftByCall(dtos);
@@ -163,6 +168,7 @@ public class WareShiftController extends BaseController {
 
     @GetMapping(value = "/allocateBin/{mesBarCode}")
     @ApiOperation("移库任务上架分配库位")
+    @Log(title = "移库任务分配库位", businessType = BusinessType.INSERT)
     @Transactional(rollbackFor = Exception.class)
     public R<BinInVO> allocateBin(@PathVariable("mesBarCode") String mesBarCode) {
 
@@ -183,6 +189,7 @@ public class WareShiftController extends BaseController {
     @ApiOperation("取消移库任务")
     @PutMapping(value = "/cancel/{id}")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "移库取消", businessType = BusinessType.INSERT)
     public R cancelWareShift(@PathVariable("id") Long id) {
         shiftService.cancelWareShift(id);
         return R.ok();
@@ -192,6 +199,7 @@ public class WareShiftController extends BaseController {
 
     @PostMapping(value = "/binIn")
     @ApiOperation("移库上架接口")
+    @Log(title = "移库上架", businessType = BusinessType.INSERT)
     public R performBinIn(@RequestBody BinInDTO binInDTO) {
         shiftService.performBinIn(binInDTO);
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.SHIFT_BININ.getCode(), MesBarCodeUtil.getSSCC(binInDTO.getMesBarCode()));
@@ -201,6 +209,7 @@ public class WareShiftController extends BaseController {
 
     @PostMapping(value = "/batchBinIn")
     @ApiOperation("批量上架到区域")
+    @Log(title = "移库批量上架到区域", businessType = BusinessType.INSERT)
     public R batchPerformBinIn(@RequestBody WareShiftBatchBinInDTO dto) {
         shiftService.batchPerformBinIn(dto);
         return R.ok();
@@ -213,7 +222,8 @@ public class WareShiftController extends BaseController {
      */
     @PostMapping("/exportExcel")
     @ApiOperation("移库列表导出")
-    public void export(HttpServletResponse response, WareShiftQueryDTO queryDTO) {
+    @Log(title = "移库列表导出", businessType = BusinessType.EXPORT)
+    public void export(HttpServletResponse response, @RequestBody WareShiftQueryDTO queryDTO) {
         List<WareShiftVO> wareShiftList = shiftService.getWareShiftList(queryDTO);
         ExcelUtil<WareShiftVO> util = new ExcelUtil<>(WareShiftVO.class);
         util.exportExcel(response, wareShiftList, "移库任务列表");

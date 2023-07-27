@@ -109,6 +109,7 @@ public class MaterialReceiveCotroller extends BaseController {
      * 批量上传
      */
     @ApiOperation("批量上传")
+    @Log(title = "上传收货信息", businessType = BusinessType.IMPORT)
     @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
     @Transactional(rollbackFor = Exception.class)
     public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
@@ -177,6 +178,7 @@ public class MaterialReceiveCotroller extends BaseController {
      * 批量更新
      */
     @ApiOperation("批量更新")
+    @Log(title = "批量上传更新收货信息", businessType = BusinessType.IMPORT)
     @PostMapping(value = "/saveBatch", headers = "content-type=multipart/form-data")
     @Transactional(rollbackFor = Exception.class)
     public R saveBatch(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {

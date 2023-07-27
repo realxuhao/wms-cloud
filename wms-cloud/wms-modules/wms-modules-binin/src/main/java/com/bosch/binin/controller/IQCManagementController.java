@@ -15,6 +15,8 @@ import com.bosch.masterdata.api.enumeration.ClassType;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,6 +72,7 @@ public class IQCManagementController extends BaseController {
     }
 
     @PostMapping(value = "/changeStatus")
+    @Log(title = "修改质检状态", businessType = BusinessType.UPDATE)
     @ApiOperation("修改质检状态")
     public R changeStatus(@Valid @RequestBody IQCChangeStatusDTO iqcChangeStatusDTO) {
         try {
@@ -88,6 +91,7 @@ public class IQCManagementController extends BaseController {
      */
     @ApiOperation("批量上传")
     @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
+    @Log(title = "IQC批量上传质检状态", businessType = BusinessType.INSERT)
 
     public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws IOException {
         //解析文件服务
@@ -118,6 +122,8 @@ public class IQCManagementController extends BaseController {
     @PostMapping(value = "/excelChangeStatus")
     @ApiOperation("上传完excel修改质检状态")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "IQC上传完excel修改质检状态", businessType = BusinessType.UPDATE)
+
     public R<List<IQCVO>> excelChangeStatus(@RequestBody List<IQCDTO> iqcdtos) {
         try {
             List<IQCVO> result = stockService.excelChangeStatus(iqcdtos);

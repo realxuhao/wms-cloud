@@ -17,6 +17,8 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -49,6 +51,7 @@ public class BinInController extends BaseController {
     private RemoteMasterDataService remoteMasterDataService;
 
     @PostMapping(value = "/allocate")
+    @Log(title = "原材料上架分配库位", businessType = BusinessType.INSERT)
     @ApiOperation("分配库位编码")
     public R<BinAllocationVO> allocate(@RequestBody BinAllocationDTO binAllocationDTO) {
 
@@ -74,6 +77,7 @@ public class BinInController extends BaseController {
 //    }
 
     @PostMapping(value = "/in")
+    @Log(title = "原材料实际上架", businessType = BusinessType.INSERT)
     @ApiOperation("实际上架")
     public R<BinInVO> in(@RequestBody BinInDTO binInDTO) {
 
@@ -145,6 +149,7 @@ public class BinInController extends BaseController {
 
 
     @ApiOperation("逻辑删除上架任务")
+    @Log(title = "删除原材料上架任务", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ssccNumber}")
     public AjaxResult remove(@PathVariable String ssccNumber) {
         return toAjax(binInService.deleteBinInBySscc(ssccNumber));
@@ -152,6 +157,7 @@ public class BinInController extends BaseController {
 
     @ApiOperation("按照批次批量上架")
     @PutMapping("/batchBinIn")
+    @Log(title = "原材料批量上架", businessType = BusinessType.INSERT)
     @Synchronized
     public R batchBinIn(@RequestParam("mesBarCode") String mesBarCode,
                         @RequestParam("areaCode") String areaCode) {

@@ -9,6 +9,8 @@ import com.bosch.product.service.IProductStockService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,6 +60,7 @@ public class ProductIQCManagementController extends BaseController {
     }
 
     @PostMapping(value = "/changeStatus")
+    @Log(title = "成品修改质检状态", businessType = BusinessType.UPDATE)
     @ApiOperation("修改质检状态")
     public R changeStatus(@Valid @RequestBody IQCChangeStatusDTO iqcChangeStatusDTO) {
         try {

@@ -21,6 +21,8 @@ import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IProductStockOperationService;
@@ -94,6 +96,7 @@ public class ProductReceiveController extends BaseController {
 
     @PutMapping(value = "/receive/{qrCode}")
     @ApiOperation("PDA成品收货")
+    @Log(title = "PDA成品收货", businessType = BusinessType.INSERT)
     public R receive(@PathVariable("qrCode") String qrCode, @RequestParam("quantity")Double quantity) {
         receiveService.receive(qrCode,quantity);
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_STORAGE_IN.getCode(), ProductQRCodeUtil.getSSCC(qrCode));
@@ -103,6 +106,7 @@ public class ProductReceiveController extends BaseController {
 
     @DeleteMapping(value = "/{id}")
     @ApiOperation("删除")
+    @Log(title = "PDA成品收货取消", businessType = BusinessType.UPDATE)
     public R receive(@PathVariable("id") Long id) {
         receiveService.delete(id);
         return R.ok();
@@ -114,6 +118,7 @@ public class ProductReceiveController extends BaseController {
      * 批量上传
      */
     @ApiOperation("批量上传")
+    @Log(title = "PDA成品收货上传文件", businessType = BusinessType.IMPORT)
     @PostMapping(value = "/import", headers = "content-type=multipart/form-data")
     public R importExcel(@RequestPart(value = "file", required = true) MultipartFile file) throws Exception {
 
@@ -164,6 +169,7 @@ public class ProductReceiveController extends BaseController {
     @ApiOperation("批量更新")
     @PostMapping(value = "/saveBatch" , headers = "content-type=multipart/form-data")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "PDA成品收货上传文件批量更新", businessType = BusinessType.UPDATE)
     public R saveBatch(@RequestPart(value = "file" , required = true) MultipartFile file) throws IOException {
 
         try {

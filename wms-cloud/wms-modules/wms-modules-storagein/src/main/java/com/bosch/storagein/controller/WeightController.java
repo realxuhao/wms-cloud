@@ -38,6 +38,7 @@ public class WeightController {
      * 添加称重数据
      */
     @PostMapping(value = "/add")
+    @Log(title = "添加称重数据", businessType = BusinessType.INSERT)
     @ApiOperation("添加称重数据")
     public R add(@RequestBody Weight weight) {
         if (Objects.isNull(weight)) {

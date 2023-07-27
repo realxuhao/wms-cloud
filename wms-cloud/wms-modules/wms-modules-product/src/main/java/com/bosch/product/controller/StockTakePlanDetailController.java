@@ -12,6 +12,8 @@ import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -39,6 +41,7 @@ public class StockTakePlanDetailController extends BaseController {
 
     @PostMapping(value = "/issue")
     @ApiOperation("下发")
+    @Log(title = "下发盘点明细", businessType = BusinessType.UPDATE)
     public R issue(@RequestBody StockTakeDetailQueryDTO dto) {
         detailService.issue(dto);
         return R.ok();
@@ -79,7 +82,7 @@ public class StockTakePlanDetailController extends BaseController {
     @ApiOperation("扫码获取单个")
     public R<StockTakeDetailVO> getByBarCode(@PathVariable("barCode") String barCode) {
         String sscc = "";
-        if (barCode.length() == 50) {
+        if (barCode.length() <=55) {
             sscc = MesBarCodeUtil.getSSCC(barCode);
         } else if (barCode.length() == 71) {
             sscc = ProductQRCodeUtil.getSSCC(barCode);
@@ -89,6 +92,7 @@ public class StockTakePlanDetailController extends BaseController {
 
     @PostMapping(value = "/operate")
     @ApiOperation("PDA盘点操作接口")
+    @Log(title = "PDA盘点操作接口", businessType = BusinessType.UPDATE)
     public R operate(@RequestBody PdaTakeOperateDTO pdaTakeOperateDTO){
         detailService.operate(pdaTakeOperateDTO);
         return R.ok();
@@ -97,6 +101,7 @@ public class StockTakePlanDetailController extends BaseController {
 
     @PostMapping(value = "/confirm")
     @ApiOperation("库存确认接口")
+    @Log(title = "盘点库存确认", businessType = BusinessType.UPDATE)
     public R confirm(@RequestBody StockTakeDetailQueryDTO queryDTO){
         detailService.confirm(queryDTO);
         return R.ok();
@@ -105,6 +110,7 @@ public class StockTakePlanDetailController extends BaseController {
 
     @PostMapping(value = "/editTakeQuantity")
     @ApiModelProperty("修改盘点数量")
+    @Log(title = "修改盘点数量", businessType = BusinessType.UPDATE)
     public R editTakeQuantity(@RequestBody PdaTakeOperateDTO operateDTO){
         detailService.editTakeQuantity(operateDTO);
         return R.ok();
@@ -112,6 +118,7 @@ public class StockTakePlanDetailController extends BaseController {
 
     @PostMapping("/export")
     @ApiOperation("导出盘点明细")
+    @Log(title = "导出盘点明细", businessType = BusinessType.EXPORT)
     public void export(HttpServletResponse response, StockTakeDetailQueryDTO dto) {
         List<StockTakeDetailVO> detailVOS = detailService.getDetailList(dto);
         ExcelUtil<StockTakeDetailVO> util = new ExcelUtil<>(StockTakeDetailVO.class);

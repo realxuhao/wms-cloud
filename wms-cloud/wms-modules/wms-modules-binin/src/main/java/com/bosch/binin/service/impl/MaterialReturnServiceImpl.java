@@ -221,7 +221,7 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
             wrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
             wrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
             MaterialKanban kanban = kanbanService.getOne(wrapper);
-            if (kanban.getParentId() != null) {
+            if (kanban != null && kanban.getParentId() != null) {
                 MaterialKanban materialKanban = kanbanService.getById(kanban.getParentId());
                 lastOneBySSCC = stockService.getRecentOneBySSCC(materialKanban.getSsccNumber());
             }

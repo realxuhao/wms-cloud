@@ -214,7 +214,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
 
         MaterialCall call = BeanConverUtil.conver(callDTO, MaterialCall.class);
 
-        if (callDTO.getQuantity()==0){
+        if (callDTO.getQuantity() == 0) {
             call.setStatus(CallStatusEnum.CANCEL.code());
         }
 
@@ -321,6 +321,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         qw.eq(MaterialCall::getOrderNb, kanban.getOrderNumber());
         qw.eq(MaterialCall::getMaterialNb, kanban.getMaterialCode());
         qw.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.ne(MaterialCall::getStatus,CallStatusEnum.CANCEL.code());
         qw.last("for update");
         MaterialCall materialCall = materialCallMapper.selectOne(qw);
         if (materialCall == null) {
@@ -348,7 +349,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         if (materialCall == null) {
             throw new ServiceException("该条目不存在");
         }
-        if (materialCall.getStatus()>CallStatusEnum.ISSUED.code()) {
+        if (materialCall.getStatus() > CallStatusEnum.ISSUED.code()) {
             throw new ServiceException("只可以取消未下发状态的数据");
         }
         materialCall.setStatus(MaterialCallStatusEnum.CANCEL.code());
@@ -386,7 +387,6 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             runCallVO.setShiftFlag(call.getShiftFlag() == 1 ? true : false);
 
 
-
             runCallVOS.add(runCallVO);
 
 
@@ -419,7 +419,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
     public void deleteCall(List<Long> idList) {
         List<MaterialCall> materialCalls = this.listByIds(idList);
         materialCalls.stream().forEach(item -> {
-            if (item.getStatus()>CallStatusEnum.ISSUED.code()) {
+            if (item.getStatus() > CallStatusEnum.ISSUED.code()) {
                 throw new ServiceException("存在已跑或已下发的需求。不可删除");
             }
             item.setStatus(CallStatusEnum.CANCEL.code());
@@ -450,7 +450,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             List<Stock> stockList = stockService.list(lambdaQueryWrapper);
             List<Stock> sortedStockList = new ArrayList<>();
             sortedStockList =
-                    stockList.stream().filter(item -> item.getAvailableStock() != 0 && AreaListConstants.mainAreaList.contains(item.getAreaCode())&&!AreaListConstants.noQualifiedAreaList.contains(item.getAreaCode())).
+                    stockList.stream().filter(item -> item.getAvailableStock() != 0 && AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).
                             sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder()).thenComparing(Stock::getAvailableStock)).collect(Collectors.toList());
             double sum = sortedStockList.stream().mapToDouble(Stock::getAvailableStock).sum();
 //            if (sum < call.getUnIssuedQuantity()) {
@@ -467,7 +467,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             }
             if (count == 0) {
                 call.setIssuedQuantity(call.getIssuedQuantity());
-                throw new ServiceException("无可用库存量");
+                throw new ServiceException(call.getMaterialNb()+"无可用库存量");
             }
 //            if (count == 0) {
 //                call.setIssuedQuantity(call.getIssuedQuantity());
@@ -501,7 +501,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         queryWrapper.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.ne(MaterialCall::getStatus, CallStatusEnum.CANCEL.code());
         queryWrapper.eq(MaterialCall::getOrderNb, orderNb);
-        queryWrapper.eq(MaterialCall::getMaterialNb,materialNb);
+        queryWrapper.eq(MaterialCall::getMaterialNb, materialNb);
         List<MaterialCall> list = this.list(queryWrapper);
         if (!CollectionUtils.isEmpty(list)) {
             throw new ServiceException(orderNb + "订单下已经存在" + materialNb + "的需求");
@@ -569,6 +569,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             kanban.setMaterialCode(stock.getMaterialNb());
             kanban.setSsccNumber(stock.getSsccNumber());
             kanban.setCell(call.getCell());
+            kanban.setExpireDate(stock.getExpireDate());
             kanban.setType(KanbanActionTypeEnum.FULL_BIN_DOWN.value());
             kanban.setQuantity(stock.getAvailableStock());
             kanban.setStatus(KanbanStatusEnum.WAITING_ISSUE.value());

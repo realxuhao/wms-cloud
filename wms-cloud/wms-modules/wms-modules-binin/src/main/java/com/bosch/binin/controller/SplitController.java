@@ -15,6 +15,8 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IUserOperationLogService;
@@ -50,6 +52,7 @@ public class SplitController extends BaseController {
     @PostMapping(value = "add")
     @ApiOperation("普通拆托")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "PDA普通拆托", businessType = BusinessType.INSERT)
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         splitService.add(splitPallet);
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(),splitPallet.getSourceSsccNb());
@@ -95,7 +98,8 @@ public class SplitController extends BaseController {
 
 
     @PostMapping(value = "/binIn")
-    @ApiOperation("IQC抽样计划执行上架接口")
+    @ApiOperation("PDA普通拆托上架")
+    @Log(title = "PDA普通拆托上架", businessType = BusinessType.INSERT)
     public R performBinIn(@RequestBody BinInDTO binInDTO) {
         splitService.performBinIn(binInDTO);
         return R.ok();

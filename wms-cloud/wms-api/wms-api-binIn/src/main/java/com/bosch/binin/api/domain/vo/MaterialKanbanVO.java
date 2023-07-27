@@ -90,6 +90,15 @@ public class MaterialKanbanVO extends BaseEntity {
     @Excel(name = "物料号")
     private String materialCode;
 
+    /**
+     * 过期时间
+     */
+    @ExcelProperty(value = "过期时间")
+    @ApiModelProperty(value = "过期时间")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Excel(name = "过期时间",dateFormat = "yyyy-MM-dd")
+    private Date expireDate;
+
 
     /**
      * 批次号

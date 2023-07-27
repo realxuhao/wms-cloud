@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 @TableName("material_kanban")
 public class MaterialKanban extends BaseEntity {
@@ -97,4 +99,7 @@ public class MaterialKanban extends BaseEntity {
      * 父id
      */
     private Long parentId;
+
+
+    private Date expireDate;
 }

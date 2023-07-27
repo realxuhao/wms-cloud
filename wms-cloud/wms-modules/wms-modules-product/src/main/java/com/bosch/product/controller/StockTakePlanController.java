@@ -14,6 +14,8 @@ import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -39,6 +41,7 @@ public class StockTakePlanController extends BaseController {
 
     @PostMapping(value = "/add")
     @ApiOperation("新增盘点计划")
+    @Log(title = "新增盘点计划", businessType = BusinessType.INSERT)
     public R add(@RequestBody StockTakeAddDTO dto) {
         stockTakePlanService.addStockTakePlan(dto);
         return R.ok();
@@ -46,6 +49,7 @@ public class StockTakePlanController extends BaseController {
 
     @DeleteMapping(value = "/delete/{id}")
     @ApiOperation("删除盘点计划")
+    @Log(title = "删除盘点计划", businessType = BusinessType.DELETE)
     public R delete(@PathVariable("id") Long id) {
         stockTakePlanService.delete(id);
         return R.ok();
@@ -62,6 +66,7 @@ public class StockTakePlanController extends BaseController {
     }
 
     @PostMapping("/export")
+    @Log(title = "导出盘点计划", businessType = BusinessType.EXPORT)
     @ApiOperation("导出盘点计划")
     public void export(HttpServletResponse response, StockTakePlanDTO dto) {
         List<StockTakePlan> list = stockTakePlanService.list(dto);

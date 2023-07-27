@@ -10,6 +10,8 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,6 +52,8 @@ public class ManualTransferOrderController extends BaseController {
 
     @PostMapping(value = "/add")
     @ApiOperation("新增手工创建转储单")
+    @Log(title = "新增手工创建转储单", businessType = BusinessType.INSERT)
+
     @Transactional(rollbackFor = Exception.class)
     public R<Boolean> add(@RequestBody AddManualTransDTO dto) {
         return R.ok(manualTransferOrderService.add(dto));
@@ -74,6 +78,7 @@ public class ManualTransferOrderController extends BaseController {
 
     @PutMapping(value = "/issue/{ids}")
     @ApiOperation("下发")
+    @Log(title = "转储下发", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     public R issueJob(@PathVariable Long[] ids) {
         manualTransferOrderService.issueJob(ids);
@@ -82,6 +87,7 @@ public class ManualTransferOrderController extends BaseController {
 
     @PutMapping(value = "/cancel/{ssccNumbers}")
     @ApiOperation("取消")
+    @Log(title = "转储取消", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     public R cancel(@PathVariable String[] ssccNumbers) {
         manualTransferOrderService.cancel(ssccNumbers);
@@ -91,6 +97,7 @@ public class ManualTransferOrderController extends BaseController {
 
     @PutMapping(value = "/binDown/{mesBarCode}")
     @ApiOperation("转储单任务下架")
+    @Log(title = "转储单任务下架", businessType = BusinessType.DELETE)
     @Transactional(rollbackFor = Exception.class)
     public R binDown(@PathVariable String mesBarCode) {
         manualTransferOrderService.binDown(mesBarCode);
@@ -100,6 +107,7 @@ public class ManualTransferOrderController extends BaseController {
 
     @PostMapping(value = "/in")
     @ApiOperation("转储单任务实际上架")
+    @Log(title = "转储单任务实际上架", businessType = BusinessType.INSERT)
     public R<BinInVO> in(@RequestBody ManualBinInDTO binInDTO) {
 
         return R.ok(manualTransferOrderService.performBinIn(binInDTO));
@@ -107,6 +115,7 @@ public class ManualTransferOrderController extends BaseController {
 
 
     @PostMapping(value = "/trans")
+    @Log(title = "PDA实际转储", businessType = BusinessType.INSERT)
     @ApiOperation("转储")
     public R trans(@RequestBody ManualBinInDTO binInDTO) {
         manualTransferOrderService.trans(binInDTO);

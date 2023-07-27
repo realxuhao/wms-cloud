@@ -60,6 +60,6 @@
             AND tr.car_nb like concat('%', #{carNb}, '%')
         </if>
 
-        order by create_time desc
+        order by ws.source_area_code,ws.source_bin_code
     </select>
 </mapper>

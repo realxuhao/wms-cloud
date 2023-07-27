@@ -69,12 +69,14 @@ public class IQCController extends BaseController {
     @PutMapping(value = "/issueJob/{ids}")
     @ApiOperation("批量下发任务接口")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "批量下发IQC任务", businessType = BusinessType.UPDATE)
     public R issueJob(@PathVariable Long[] ids) {
         samplePlanService.issueJob(ids);
         return R.ok("下发成功");
     }
 
     @PostMapping(value = "/sample/manualAdd")
+    @Log(title = "手工添加IQC抽样计划", businessType = BusinessType.INSERT)
     @ApiOperation("手工添加IQC抽样计划")
     public R manualAdd(@RequestBody @Validated List<IQCSamplePlanDTO> dtos) {
         samplePlanService.manualAdd(dtos);
@@ -88,6 +90,7 @@ public class IQCController extends BaseController {
     }
 
     @PostMapping(value = "/sample/modifySscc")
+    @Log(title = "修改抽样SSCC", businessType = BusinessType.UPDATE)
     @ApiOperation("修改抽样SSCC")
     public R modifySscc(@RequestBody @Validated IQCSamplePlanDTO dto) {
         samplePlanService.modifySscc(dto);
@@ -95,6 +98,7 @@ public class IQCController extends BaseController {
     }
 
     @PutMapping(value = "/sample/modifyQuantity")
+    @Log(title = "修改抽样数量", businessType = BusinessType.UPDATE)
     @ApiOperation("修改抽样数量")
     public R modifyQuantity(@RequestParam("ssccNb") String ssccNb, @RequestParam("quantity") Double quantity) {
         samplePlanService.modifyQuantity(ssccNb, quantity);
@@ -111,6 +115,7 @@ public class IQCController extends BaseController {
 //    }
 
     @PutMapping(value = "/binDown/{mesBarCode}")
+    @Log(title = "IQC抽样计划执行下架", businessType = BusinessType.UPDATE)
     @ApiOperation("IQC抽样计划执行下架接口")
     public R binDown(@PathVariable String mesBarCode) {
         samplePlanService.binDown(MesBarCodeUtil.getSSCC(mesBarCode));
@@ -121,6 +126,7 @@ public class IQCController extends BaseController {
     }
 
     @PutMapping(value = "/sample/cancel/{id}")
+    @Log(title = "IQC抽样计划执行取消", businessType = BusinessType.DELETE)
     @ApiOperation("IQC抽样计划执行取消接口")
     public R binDown(@PathVariable("id") Long id) {
         samplePlanService.cancel(id);
@@ -128,6 +134,7 @@ public class IQCController extends BaseController {
     }
 
     @GetMapping(value = "/binIn/{mesBarCode}")
+    @Log(title = "IQC抽样计划分配库位", businessType = BusinessType.INSERT)
     @ApiOperation("IQC抽样计划分配库位接口")
     public R<BinInVO> getBinInInfo(@PathVariable String mesBarCode) {
         BinInVO binInVO = samplePlanService.getBinInInfo(MesBarCodeUtil.getSSCC(mesBarCode));
@@ -136,6 +143,7 @@ public class IQCController extends BaseController {
 
 
     @PostMapping(value = "/binIn")
+    @Log(title = "IQC抽样计划执行上架", businessType = BusinessType.INSERT)
     @ApiOperation("IQC抽样计划执行上架接口")
     public R performBinIn(@RequestBody BinInDTO binInDTO) {
         samplePlanService.performBinIn(binInDTO);
@@ -145,6 +153,7 @@ public class IQCController extends BaseController {
     }
 
     @PostMapping(value = "/sample/confirm")
+    @Log(title = "IQC抽样确认", businessType = BusinessType.UPDATE)
     @ApiOperation("IQC抽样确认")
     public R confirm(@RequestBody IQCSamplePlanDTO dto) {
         samplePlanService.confirm(dto);
@@ -156,6 +165,7 @@ public class IQCController extends BaseController {
      * 导出列表
      */
     @PostMapping("/sampleExport")
+    @Log(title = "IQC列表导出", businessType = BusinessType.UPDATE)
     @ApiOperation("列表导出")
     public void export(HttpServletResponse response, @RequestBody IQCSamplePlanQueryDTO queryDTO) {
         List<IQCSamplePlanVO> iqcSamplePlanVOS = samplePlanService.getSamplePlan(queryDTO);
@@ -169,6 +179,7 @@ public class IQCController extends BaseController {
      * IQC 外库的可以增加移库
      */
     @PostMapping(value = "/sample/addShift")
+    @Log(title = "IQC外库增加移库", businessType = BusinessType.UPDATE)
     @ApiOperation("IQC外库增加移库接口")
     public R addShift(@Valid @RequestBody IQCWareShiftDTO dto) {
         samplePlanService.addShift(dto);
@@ -180,6 +191,7 @@ public class IQCController extends BaseController {
      */
     @ApiOperation("IQC此库抽样，取消移库")
     @PutMapping(value = "/sample/cancelWareShift/{ssccNb}")
+    @Log(title = "IQC此库抽样,取消移库", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     public R cancelWareShift(@PathVariable("ssccNb") String ssccNb) {
 

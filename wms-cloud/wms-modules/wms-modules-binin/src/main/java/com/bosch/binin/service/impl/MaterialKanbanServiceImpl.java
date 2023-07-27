@@ -191,6 +191,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             conver.setQuantity(dto.getQuantity());
             conver.setMoveType(MoveTypeEnums.CALL.getCode());
             conver.setCell(dto.getCell());
+            conver.setExpireDate(r.getExpireDate());
             conver.setType(dto.getQuantity() - r.getAvailableStock() == 0 ?
                     KanbanActionTypeEnum.FULL_BIN_DOWN.value() : KanbanActionTypeEnum.PART_BIN_DOWN.value());
             conver.setStatus(KanbanStatusEnum.WAITING_ISSUE.value());
@@ -272,7 +273,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
         List<WareShift> wareShiftList = new ArrayList<>();
 
-        List<String> outWareSsccList = kanbanList.stream().filter(item -> !AreaListConstants.mainAreaList.contains(item.getAreaCode())).map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
+        List<String> outWareSsccList = kanbanList.stream().filter(item -> !AreaListConstants.mainArea(item.getAreaCode())).map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
 
         //查询外库的库存
         Map<String, List<Stock>> stockMap = new HashMap<>();
@@ -292,7 +293,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             //修改任务状态
             item.setStatus(KanbanStatusEnum.WAITING_BIN_DOWN.value());
 //            //如果是7752的，需要生成一个移库任务，移库任务是  生成
-//            if (!AreaListConstants.mainAreaList.contains(item.getAreaCode())) {
+//            if (!AreaListConstants.mainArea(item.getAreaCode())) {
 //                String ssccNumber = item.getSsccNumber();
 //                Stock stock = finalStockMap.get(ssccNumber).get(0);
 //                WareShift wareShift = WareShift.builder().sourcePlantNb(item.getFactoryCode()).sourceWareCode(item.getWareCode()).sourceAreaCode(item.getAreaCode())
@@ -629,6 +630,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             newKanban.setCreateTime(new Date());
             newKanban.setMoveType(MoveTypeEnums.CALL.getCode());
             newKanban.setParentId(materialKanban.getId());
+            newKanban.setExpireDate(materialKanban.getExpireDate());
             materialKanbanMapper.insert(newKanban);
 
             //如果有正在上架中的任务，需要删除掉
@@ -687,7 +689,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         callService.updateCallQuantity(materialKanban);
         //sscc库存可用 冻结修改
         if (materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_ISSUE.value()) || materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN.value())) {
-            if (AreaListConstants.mainAreaList.contains(materialKanban.getAreaCode())) {
+            if (AreaListConstants.mainArea(materialKanban.getAreaCode())) {
                 updateStockBySSCC(materialKanban.getSsccNumber(),
                         materialKanban.getQuantity());
             }

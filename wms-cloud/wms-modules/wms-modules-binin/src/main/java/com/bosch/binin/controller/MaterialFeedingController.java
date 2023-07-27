@@ -73,6 +73,7 @@ public class MaterialFeedingController extends BaseController {
             @ApiImplicitParam(value = "排序类型,0基于有效期，1、基于先主库后外库", name = "sortType", dataType = "Integer"),
             @ApiImplicitParam(value = "cell", name = "cell", dataType = "String")
     })
+    @Log(title = "上传叫料需求", businessType = BusinessType.IMPORT)
     @Transactional(rollbackFor = Exception.class)
     public R call(@RequestParam(value = "file") MultipartFile file,
                   @RequestParam("cell") String cell) {
@@ -147,6 +148,7 @@ public class MaterialFeedingController extends BaseController {
     @PostMapping(value = "/call/add")
     @ApiOperation("新增叫料需求")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "新增叫料需求", businessType = BusinessType.INSERT)
     public R add(@RequestBody MaterialCall call) {
         if (call.getQuantity() <= 0) {
             throw new ServiceException("需求量必须大于0");
@@ -158,6 +160,7 @@ public class MaterialFeedingController extends BaseController {
 
     @PutMapping(value = "/call/{id}")
     @ApiOperation("更新需求量")
+    @Log(title = "更新需求量", businessType = BusinessType.UPDATE)
     public R updateCallQuantity(@PathVariable Long id, @RequestBody MaterialCallDTO callDTO) {
         if (Objects.isNull(id)) {
             throw new ServiceException("id不能为空");
@@ -169,6 +172,7 @@ public class MaterialFeedingController extends BaseController {
     @ApiOperation("删除需求")
     @DeleteMapping("/call/{ids}")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "删除叫料需求", businessType = BusinessType.DELETE)
     public R cancelRequirement(@PathVariable Long[] ids) {
         if (ids == null || ids.length == 0) {
             throw new ServiceException("ids不能为空");
@@ -219,9 +223,9 @@ public class MaterialFeedingController extends BaseController {
     /**
      * 导出叫料需求列表
      */
-    @Log(title = "叫料需求", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @ApiOperation("叫料需求列表导出")
+    @Log(title = "叫料需求列表导出", businessType = BusinessType.EXPORT)
     public void export(HttpServletResponse response, @RequestBody MaterialCallQueryDTO queryDTO) {
         List<MaterialCallVO> materialCallVOS = materialCallService.getCallList(queryDTO);
 //        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
@@ -236,6 +240,7 @@ public class MaterialFeedingController extends BaseController {
     @ApiOperation("取消叫料需求")
     @PutMapping(value = "/cancel/{id}")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "取消叫料需求", businessType = BusinessType.DELETE)
     public R cancelCall(@PathVariable("id") Long id) {
         materialCallService.cancelCall(id);
         return R.ok();
@@ -243,6 +248,7 @@ public class MaterialFeedingController extends BaseController {
 
     @ApiOperation("跑需求")
     @GetMapping("/runCall/{ids}")
+    @Log(title = "跑需求", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     public R<List<RunCallVO>> runCall(@PathVariable Long[] ids) {
         if (ids == null || ids.length == 0) {
@@ -254,6 +260,7 @@ public class MaterialFeedingController extends BaseController {
     @ApiOperation("下发需求")
     @GetMapping("/issueCall/{ids}")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "下发需求", businessType = BusinessType.UPDATE)
     public R issueCall(@PathVariable Long[] ids) {
         if (ids == null || ids.length == 0) {
             throw new ServiceException("ids不能为空");
@@ -264,6 +271,7 @@ public class MaterialFeedingController extends BaseController {
 
     @ApiOperation("删除需求")
     @DeleteMapping("/deleteCall/{ids}")
+    @Log(title = "删除需求", businessType = BusinessType.DELETE)
     @Transactional(rollbackFor = Exception.class)
     public R deleteCall(@PathVariable Long[] ids) {
         if (ids == null || ids.length == 0) {
@@ -275,6 +283,7 @@ public class MaterialFeedingController extends BaseController {
 
     @ApiOperation("生成简配任务")
     @PutMapping("/generateJobByCall/{ids}")
+    @Log(title = "生成捡配任务", businessType = BusinessType.INSERT)
     @Transactional(rollbackFor = Exception.class)
     public R generateJobByCall(@PathVariable Long[] ids) {
         if (ids == null || ids.length == 0) {

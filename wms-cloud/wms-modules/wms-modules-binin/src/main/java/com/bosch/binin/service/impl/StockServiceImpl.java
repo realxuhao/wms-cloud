@@ -272,7 +272,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         if (CollectionUtils.isEmpty(list)){
             return Double.valueOf(0);
         }
-        double sum = list.stream().filter(item -> AreaListConstants.mainAreaList.contains(item.getAreaCode())&&!AreaListConstants.noQualifiedAreaList.contains(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
+        double sum = list.stream().filter(item -> AreaListConstants.mainArea(item.getAreaCode())&&!AreaListConstants.noQualifiedArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
         return sum;
     }
 
@@ -288,7 +288,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         if (CollectionUtils.isEmpty(list)){
             return Double.valueOf(0);
         }
-        double sum = list.stream().filter(item -> AreaListConstants.mainAreaList.contains(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
+        double sum = list.stream().filter(item -> AreaListConstants.mainArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
         return sum;
     }
 
@@ -303,7 +303,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         if (CollectionUtils.isEmpty(list)){
             return Double.valueOf(0);
         }
-        double sum = list.stream().filter(item -> !AreaListConstants.mainAreaList.contains(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
+        double sum = list.stream().filter(item -> !AreaListConstants.mainArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
 
         return sum;
     }

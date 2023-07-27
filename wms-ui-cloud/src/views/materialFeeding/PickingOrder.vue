@@ -292,6 +292,12 @@ const columns = [
     dataIndex: 'materialName',
     width: 120
   },
+  {
+    title: '过期时间',
+    key: 'expireDate',
+    dataIndex: 'expireDate',
+    width: 160
+  },
 {
     title: '批次号',
     key: 'batchNb',

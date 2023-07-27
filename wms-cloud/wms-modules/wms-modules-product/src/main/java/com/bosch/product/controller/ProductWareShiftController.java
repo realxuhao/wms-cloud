@@ -16,6 +16,8 @@ import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IUserOperationLogService;
@@ -60,15 +62,16 @@ public class ProductWareShiftController extends BaseController {
         if (queryDTO == null) {
             queryDTO = new ProductWareShiftQueryDTO();
         }
-        if (!StringUtils.isEmpty(SecurityUtils.getWareCode())) {
-            if(queryDTO.getStatus().equals(ProductWareShiftEnum.WAITTING_BIN_IN.code())) {
-                queryDTO.setTargetWareCode(SecurityUtils.getWareCode());
-            }else if (queryDTO.getStatus().equals(ProductWareShiftEnum.FINISH.code())){
-                queryDTO.setTargetWareCode(SecurityUtils.getWareCode());
-            }else {
-                queryDTO.setSourceWareCode(SecurityUtils.getWareCode());
-            }
-        }
+//        if (!StringUtils.isEmpty(SecurityUtils.getWareCode())) {
+//            if(queryDTO.getStatus().equals(ProductWareShiftEnum.WAITTING_BIN_IN.code())) {
+//                queryDTO.setTargetWareCode(SecurityUtils.getWareCode());
+//            }else if (queryDTO.getStatus().equals(ProductWareShiftEnum.FINISH.code())){
+//                queryDTO.setTargetWareCode(SecurityUtils.getWareCode());
+//            }else if (queryDTO.getStatus().equals(ProductWareShiftEnum.WAITTING_RECEIVING.code())){
+//            } else {
+//                queryDTO.setSourceWareCode(SecurityUtils.getWareCode());
+//            }
+//        }
 
         startPage();
         List<ProductWareShiftVO> list = productWareShiftService.list(queryDTO);
@@ -90,6 +93,7 @@ public class ProductWareShiftController extends BaseController {
 
     @PutMapping(value = "/generateShift/{stockId}")
     @ApiOperation("根据库存id生成移库任务")
+    @Log(title = "根据成品库存id生成移库任务", businessType = BusinessType.INSERT)
     public R add(@PathVariable("stockId") Long stockId) {
         productWareShiftService.addByStockId(stockId);
         return R.ok();
@@ -97,6 +101,7 @@ public class ProductWareShiftController extends BaseController {
 
     @PostMapping(value = "/batchGenerateShift")
     @ApiOperation("根据库存ids批量生成移库任务")
+    @Log(title = "根据成品库存ids批量生成移库任务", businessType = BusinessType.INSERT)
     public R add(@RequestBody List<Long> stockIds) {
         productWareShiftService.addBatchByStockIds(stockIds);
         return R.ok();
@@ -104,6 +109,7 @@ public class ProductWareShiftController extends BaseController {
 
     @PutMapping(value = "/cancel/{id}")
     @ApiOperation("取消移库任务")
+    @Log(title = "取消成品移库任务", businessType = BusinessType.DELETE)
     public R cancel(@PathVariable("id") Long id){
         productWareShiftService.cancel(id);
         return R.ok();
@@ -112,6 +118,7 @@ public class ProductWareShiftController extends BaseController {
 
     @PostMapping(value = "/ship")
     @ApiOperation("发运")
+    @Log(title = "成品移库发运", businessType = BusinessType.DELETE)
     public R ship(@RequestBody ProductWareShiftQueryDTO dto) {
         Assert.notNull(dto,"参数不可以为空");
         Assert.noNullElements(dto.getSsccList(),"ssccList不可以为空");
@@ -138,6 +145,7 @@ public class ProductWareShiftController extends BaseController {
     }
 
     @PutMapping(value = "/receive/{qrCode}")
+    @Log(title = "成品移库收货", businessType = BusinessType.UPDATE)
     @ApiOperation("移库收货")
     public R receive(@PathVariable("qrCode") String qrCode) {
         productWareShiftService.receive(qrCode);
@@ -146,6 +154,7 @@ public class ProductWareShiftController extends BaseController {
 
     @PostMapping(value = "/binIn")
     @ApiOperation("移库上架")
+    @Log(title = "成品移库上架", businessType = BusinessType.UPDATE)
     public R binIn(@RequestBody ProductBinInDTO binInDTO){
         productWareShiftService.wareShiftBinIn(binInDTO);
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBININ.getCode(), binInDTO.getSscc());
@@ -164,6 +173,7 @@ public class ProductWareShiftController extends BaseController {
      */
     @PostMapping("/export")
     @ApiOperation("移库列表导出")
+    @Log(title = "成品移库列表导出", businessType = BusinessType.EXPORT)
     public void export(HttpServletResponse response, ProductWareShiftQueryDTO queryDTO) {
         List<ProductWareShiftVO> wareShiftList = productWareShiftService.list(queryDTO);
 //        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
@@ -175,6 +185,7 @@ public class ProductWareShiftController extends BaseController {
 
     @PostMapping(value = "/mainReceiveConfirm")
     @ApiOperation("确认并入库")
+    @Log(title = "成品移库确认并入库", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     public R confirmOrder(@RequestBody List<String> ssccList){
         productWareShiftService.mainReceiveConfirm(ssccList);

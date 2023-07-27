@@ -561,9 +561,9 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         }
 
 
-        if (newMesBarCode.length() > 50 && ProductQRCodeUtil.getSSCC(newMesBarCode).equals(splitPallet.getSourceSsccNb())) {
+        if (newMesBarCode.length() > 55 && ProductQRCodeUtil.getSSCC(newMesBarCode).equals(splitPallet.getSourceSsccNb())) {
             throw new ServiceException("拆托SSCC不可以和源SSCC一致");
-        } else if (newMesBarCode.length() < 50 && newMesBarCode.equals(splitPallet.getSourceSsccNb())) {
+        } else if (newMesBarCode.length() <= 55 && newMesBarCode.equals(splitPallet.getSourceSsccNb())) {
             throw new ServiceException("拆托SSCC不可以和源SSCC一致");
         }
 

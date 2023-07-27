@@ -28,6 +28,8 @@ import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IUserOperationLogService;
@@ -83,6 +85,7 @@ public class SpdnController extends BaseController {
     @ApiImplicitParams({
             @ApiImplicitParam(value = "文件", name = "file", dataType = "File")
     })
+    @Log(title = "SPDN导入", businessType = BusinessType.IMPORT)
     @Transactional(rollbackFor = Exception.class)
     public R importSPDN(@RequestParam(value = "file") MultipartFile file) {
 
@@ -116,6 +119,7 @@ public class SpdnController extends BaseController {
 
     @DeleteMapping(value = "/{ids}")
     @ApiOperation("删除spdn")
+    @Log(title = "删除spdn", businessType = BusinessType.DELETE)
     public R batchDelete(@PathVariable Long[] ids){
         spdnService.batchDelete(Arrays.asList(ids));
         return R.ok();
@@ -123,6 +127,7 @@ public class SpdnController extends BaseController {
 
     @PutMapping(value = "/approve/{ids}")
     @ApiOperation("审批SPDN")
+    @Log(title = "审批SPDN", businessType = BusinessType.UPDATE)
     public R approve(@PathVariable Long[] ids){
         spdnService.approve(Arrays.asList(ids));
         return R.ok();
@@ -156,6 +161,7 @@ public class SpdnController extends BaseController {
 
     @PutMapping(value = "/binDown/{qrCode}")
     @ApiOperation("SPDN任务下架")
+    @Log(title = "SPDN任务下架", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     public R binDown(@PathVariable String qrCode) {
         spdnService.binDown(qrCode);
@@ -167,6 +173,7 @@ public class SpdnController extends BaseController {
 
     @PostMapping(value = "/ship")
     @ApiOperation("SPDN发运")
+    @Log(title = "SPDN发运", businessType = BusinessType.UPDATE)
     public R ship(@RequestBody ProductWareShiftQueryDTO dto) {
         Assert.notNull(dto,"参数不可以为空");
         Assert.noNullElements(dto.getSsccList(),"ssccList不可以为空");
@@ -190,6 +197,7 @@ public class SpdnController extends BaseController {
 
 
     @PutMapping(value = "/batchShip/{ids}")
+    @Log(title = "成品移库批量发运", businessType = BusinessType.UPDATE)
     public R batchShip(@PathVariable("ids")Long[] ids){
         spdnService.batchShip(ids);
         return R.ok();

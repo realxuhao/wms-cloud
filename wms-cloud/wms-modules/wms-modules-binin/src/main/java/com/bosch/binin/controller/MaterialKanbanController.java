@@ -122,6 +122,7 @@ public class MaterialKanbanController {
     @PutMapping(value = "/issueJob/{ids}")
     @ApiOperation("批量下发任务接口")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "批量下发捡配任务接口", businessType = BusinessType.UPDATE)
     public R issueJob(@PathVariable Long[] ids) {
         materialKanbanService.issueJob(ids);
         return R.ok("下发成功");
@@ -129,6 +130,7 @@ public class MaterialKanbanController {
 
     @PutMapping(value = "/binDown/{ssccNb}")
     @ApiOperation("看板任务下架")
+    @Log(title = "捡配任务下架", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     public R binDown(@PathVariable String ssccNb) {
         materialKanbanService.binDown(ssccNb);
@@ -139,6 +141,7 @@ public class MaterialKanbanController {
     @PostMapping(value = "splitPallet")
     @ApiOperation("看板任务拆托")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "捡配任务拆托", businessType = BusinessType.UPDATE)
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         materialKanbanService.splitPallet(splitPallet);
         return R.ok();
@@ -155,6 +158,7 @@ public class MaterialKanbanController {
 
     @PostMapping(value = "/picking")
     @ApiOperation("人工拣配")
+    @Log(title = "新增人工捡配", businessType = BusinessType.INSERT)
     @Transactional(rollbackFor = Exception.class)
     public R pickingByMan(@RequestBody List<MaterialKanbanDTO> materialKanbanDTOS) {
 
@@ -203,8 +207,8 @@ public class MaterialKanbanController {
     /**
      * 删除kanban
      */
-    @Log(title = "kanban", businessType = BusinessType.DELETE)
     @ApiOperation("删除kanban")
+    @Log(title = "取消捡配任务", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public R remove(@PathVariable Long[] ids) {
         int i = 0;
@@ -219,7 +223,7 @@ public class MaterialKanbanController {
     /**
      * 修改kanban
      */
-    @Log(title = "kanban", businessType = BusinessType.UPDATE)
+    @Log(title = "修改捡配任务", businessType = BusinessType.UPDATE)
     @ApiOperation("修改kanban")
     @PutMapping("/{ids}")
     @Transactional(rollbackFor = Exception.class)
@@ -269,10 +273,10 @@ public class MaterialKanbanController {
     /**
      * 取消kanban
      */
-    @Log(title = "kanban", businessType = BusinessType.CLEAN)
     @ApiOperation("取消kanban")
     @PutMapping(value = "/cancel/{id}")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "取消捡配任务", businessType = BusinessType.DELETE)
     public R cancelKanban(@PathVariable("id") Long id) {
 
         try {
@@ -338,6 +342,7 @@ public class MaterialKanbanController {
     @PostMapping(value = "/genOrderAndSetStatus/{carNb}")
     @ApiOperation("生成转运单号,修改对应任务状态为主库待收货")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "转运发运", businessType = BusinessType.INSERT)
     public R genTranshipmentOrder(@RequestBody List<String> mesbarCodes, @PathVariable("carNb") String carNb) {
         try {
             List<TranshipmentOrder> transhipmentOrders = new ArrayList<>();
@@ -567,6 +572,7 @@ public class MaterialKanbanController {
     @GetMapping(value = "/deliver")
     @ApiOperation("整托下架配送接口")
     @Transactional(rollbackFor = Exception.class)
+    @Log(title = "捡配任务整托下架", businessType = BusinessType.UPDATE)
     public R deliver(@RequestParam(value = "sscc") String sscc) {
         try {
             //String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
@@ -609,6 +615,7 @@ public class MaterialKanbanController {
 
     @GetMapping(value = "/confirmMaterial")
     @ApiOperation("收货确认")
+    @Log(title = "捡配任务产线收货", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     public R confirmMaterial(@RequestParam(value = "mesBarCodes") List<String> mesBarCodes) {
         try {
@@ -641,6 +648,7 @@ public class MaterialKanbanController {
 
     @GetMapping(value = "/confirmMaterialBySSCCs")
     @ApiOperation("多个sscc收货确认")
+    @Log(title = "PC端产线收货确认", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     public R confirmMaterialBySSCCs(@RequestParam(value = "ids") List<Long> ids) {
         try {
@@ -675,7 +683,7 @@ public class MaterialKanbanController {
     /**
      * 导出叫料需求列表
      */
-    @Log(title = "看板", businessType = BusinessType.EXPORT)
+    @Log(title = "捡配任务列表导出", businessType = BusinessType.EXPORT)
     @PostMapping("/export")
     @ApiOperation("叫料需求列表导出")
     public void export(HttpServletResponse response, @RequestBody MaterialKanbanDTO queryDTO) {

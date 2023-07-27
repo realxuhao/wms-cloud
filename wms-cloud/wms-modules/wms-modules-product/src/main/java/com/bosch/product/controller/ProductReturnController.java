@@ -19,6 +19,8 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.log.service.IUserOperationLogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,6 +53,7 @@ public class ProductReturnController extends BaseController {
 
     @PostMapping(value = "/addProductReturn")
     @ApiOperation("新增退库")
+    @Log(title = "PDA成品新增退库", businessType = BusinessType.INSERT)
     public R save(@RequestBody ProductReturnDTO productReturnDTO) {
 
       productStockService.stockReturn(productReturnDTO);
@@ -77,6 +80,7 @@ public class ProductReturnController extends BaseController {
     }
 
     @PostMapping("/export")
+    @Log(title = "成品退库记录导出", businessType = BusinessType.EXPORT)
     @ApiOperation("退库记录导出")
     public void export(HttpServletResponse response, @RequestBody ProductReturnDTO queryDTO) {
         List<ProductReturnVO> materialReturnVOS = productStockService.returnList(queryDTO);

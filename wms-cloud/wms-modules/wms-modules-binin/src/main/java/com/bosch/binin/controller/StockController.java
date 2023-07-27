@@ -22,6 +22,8 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import feign.Headers;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -206,6 +208,7 @@ public class StockController extends BaseController {
 
     @PostMapping(value = "/editStock")
     @ApiOperation("修改库存")
+    @Log(title = "库存调整修改库存", businessType = BusinessType.INSERT)
     public R editStock(@RequestBody StockEditDTO stockEditDTO) {
         stockService.editStock(stockEditDTO);
         return R.ok();

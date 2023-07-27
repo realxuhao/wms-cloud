@@ -248,7 +248,8 @@
         mk.update_by,
         mk.create_time,
         mk.update_time,
-               mk.batch_nb
+               mk.batch_nb,
+               mk.expire_date
         FROM material_kanban mk
         LEFT JOIN (SELECT * from md_material where delete_flag='0' )mm ON mk.material_code=mm.code
         WHERE 1=1 AND mk.delete_flag='0'

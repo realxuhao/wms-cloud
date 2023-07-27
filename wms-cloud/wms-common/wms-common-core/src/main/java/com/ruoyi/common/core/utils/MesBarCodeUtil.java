@@ -74,7 +74,7 @@ public class MesBarCodeUtil {
     public static String getQuantity(String mesBarCode) {
         String quantity = "";
         try {
-            quantity = mesBarCode.substring(44, 50);
+            quantity = mesBarCode.substring(44);
         } catch (Exception e) {
             throw new ServiceException("mesBarCode格式错误");
         }
@@ -82,7 +82,7 @@ public class MesBarCodeUtil {
     }
 
     public static void main(String[] args) {
-        String mesBarCode = "20240322669006391110024752103110422203291126000050";
+        String mesBarCode = "202403226690063911100247521031104222032911260050.2666666";
         System.out.println(mesBarCode.length());
         System.out.println(getExpireDate(mesBarCode));
         System.out.println(getSSCC(mesBarCode));
@@ -95,7 +95,7 @@ public class MesBarCodeUtil {
         System.out.println(ceil1);
 
         String date = DateUtils.parseDateToStr("yyyyMMdd", new Date());
-        String barCode = generateMesBarCode(new Date(), "669006391113850891", "10304986", "2307051457", Double.valueOf(15000));
+        String barCode = generateMesBarCode(new Date(), "669006391114289683", "10304986", "2307051457", Double.valueOf(15000));
         System.out.println(barCode);
 
         System.out.println("669006391114201586".length());

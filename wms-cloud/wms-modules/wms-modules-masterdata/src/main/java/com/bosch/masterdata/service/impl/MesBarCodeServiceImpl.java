@@ -27,7 +27,7 @@ public class MesBarCodeServiceImpl implements IMesBarCodeService {
     @Override
     public MesBarCodeVO parseMesBarCode(String mesBarCode) {
         MesBarCodeVO mesBarCodeVO = new MesBarCodeVO();
-        if (mesBarCode.length()<=50) {
+        if (mesBarCode.length()<=55) {
             String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
             String batchNb = MesBarCodeUtil.getBatchNb(mesBarCode);
             String quantity = MesBarCodeUtil.getQuantity(mesBarCode);
