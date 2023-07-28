@@ -8,6 +8,7 @@ import com.bosch.masterdata.api.domain.ReportWareShift;
 import com.bosch.masterdata.api.domain.dto.*;
 import com.bosch.masterdata.api.domain.vo.*;
 import com.bosch.masterdata.service.IReportService;
+import com.bosch.masterdata.utils.BeanConverUtil;
 import com.bosch.system.api.domain.SysUser;
 import com.bosch.system.api.domain.UserOperationLog;
 import com.github.pagehelper.PageInfo;
@@ -15,6 +16,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -69,7 +71,8 @@ public class ReportController extends BaseController {
     @ApiOperation("在库时间最长的物料")
     public R<PageVO<ReportMaterial>> oldMaterial(@RequestBody ReportMaterialDTO reportMaterialDTO)
     {
-        startPage();
+        PageDomain pageDomain= BeanConverUtil.conver(reportMaterialDTO,PageDomain.class);
+        startPage(pageDomain);
         List<ReportMaterial> reportMaterials = reportService.oldMaterial();
         return R.ok(new PageVO<>(reportMaterials, new PageInfo<>(reportMaterials).getTotal()));
     }
@@ -90,7 +93,8 @@ public class ReportController extends BaseController {
     @ApiOperation("有效期30天")
     public R<PageVO<ReportMaterial>> expiredMaterial(@RequestBody ReportMaterialDTO reportMaterialDTO)
     {
-        startPage();
+        PageDomain pageDomain= BeanConverUtil.conver(reportMaterialDTO,PageDomain.class);
+        startPage(pageDomain);
         List<ReportMaterial> reportMaterials = reportService.expiredMaterial();
         return R.ok(new PageVO<>(reportMaterials, new PageInfo<>(reportMaterials).getTotal()));
     }
@@ -113,7 +117,8 @@ public class ReportController extends BaseController {
     @ApiOperation("移库列表")
     public  R<PageVO<ReportWareShift>> wareShift(@RequestBody ReportWareShiftDTO reportWareShiftDTO) {
 
-        startPage();
+        PageDomain pageDomain= BeanConverUtil.conver(reportWareShiftDTO,PageDomain.class);
+        startPage(pageDomain);
 
         List<ReportWareShift> reportWareShifts = reportService.reportWareShift(reportWareShiftDTO);
 
@@ -127,7 +132,8 @@ public class ReportController extends BaseController {
     @ApiOperation("员工实际工作量（原材料）-标准单位托盘")
     public  R<PageVO<WorkloadVO>> workload(@RequestBody WorkloadDTO workloadDTO) {
 
-        startPage();
+        PageDomain pageDomain= BeanConverUtil.conver(workloadDTO,PageDomain.class);
+        startPage(pageDomain);
         List<WorkloadVO> list = reportService.workload(workloadDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
 
@@ -139,7 +145,8 @@ public class ReportController extends BaseController {
     @ApiOperation("员工实际工作量（成品）-标准单位托盘")
     public  R<PageVO<WorkloadVO>> workloadPro(@RequestBody WorkloadDTO workloadDTO) {
 
-        startPage();
+        PageDomain pageDomain= BeanConverUtil.conver(workloadDTO,PageDomain.class);
+        startPage(pageDomain);
         List<WorkloadVO> list = reportService.workloadPro(workloadDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
 
@@ -186,7 +193,8 @@ public class ReportController extends BaseController {
     @PostMapping("/proInOutStock")
     @ApiOperation("成品报表-进销存量")
     public  R<PageVO<ProInOutStockVO>> proInOutStock(@RequestBody ProInOutStockDTO proInOutStockDTO) {
-
+        PageDomain pageDomain= BeanConverUtil.conver(proInOutStockDTO,PageDomain.class);
+        startPage(pageDomain);
         List<ProInOutStockVO> list = reportService.proInOutStock(proInOutStockDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
 

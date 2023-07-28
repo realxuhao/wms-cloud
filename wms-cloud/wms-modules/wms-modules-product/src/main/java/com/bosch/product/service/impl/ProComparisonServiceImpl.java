@@ -1,9 +1,11 @@
 package com.bosch.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.product.api.domain.ProComparison;
+import com.bosch.product.api.domain.RmComparison;
 import com.bosch.product.api.domain.dto.ProComparisonDTO;
 import com.bosch.product.api.domain.enumeration.ComparisonEnum;
 import com.bosch.product.api.domain.vo.ProComparisonVO;
@@ -11,6 +13,7 @@ import com.bosch.product.service.IProComparisonService;
 import com.bosch.product.mapper.ProComparisonMapper;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +48,8 @@ public class ProComparisonServiceImpl extends ServiceImpl<ProComparisonMapper, P
         if (dto.getStatus()!=null) {
             queryWrapper.eq(ProComparison::getStatus, dto.getStatus());
         }
+        //根据登陆人查询
+        queryWrapper.eq(ProComparison::getCreateBy, SecurityUtils.getUsername());
         List<ProComparison> proComparisons = proComparisonMapper.selectList(queryWrapper);
 
         return proComparisons;
@@ -58,9 +63,19 @@ public class ProComparisonServiceImpl extends ServiceImpl<ProComparisonMapper, P
         lambdaUpdateWrapper.eq(ProComparison::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
         lambdaUpdateWrapper.eq(ProComparison::getStatus, ComparisonEnum.DIFF.code());
         lambdaUpdateWrapper.set(ProComparison::getStatus,ComparisonEnum.CHANGED.code());
-
+        //根据登陆人查询
+        lambdaUpdateWrapper.eq(ProComparison::getCreateBy, SecurityUtils.getUsername());
         boolean update = this.update(lambdaUpdateWrapper);
         return update;
+    }
+
+    @Override
+    public boolean deleteProComparisonByCreat() {
+        String username = SecurityUtils.getUsername();
+        QueryWrapper<ProComparison> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("create_by", username);
+        int delete = proComparisonMapper.delete(queryWrapper);
+        return delete >= 0;
     }
 }
 

@@ -26,6 +26,7 @@ import com.bosch.masterdata.utils.BeanConverUtil;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -104,7 +105,9 @@ public class MaterialBinController extends BaseController {
     @PostMapping("/list")
     @ApiOperation("查询物料库位规则列表")
     public R<PageVO<MaterialBinVO>> list(@RequestBody MaterialBinDTO materialBinDTO) {
-        startPage();
+        PageDomain pageDomain=BeanConverUtil.conver(materialBinDTO,PageDomain.class);
+
+        startPage(pageDomain);
         List<MaterialBinVO> list = materialBinService.selectMaterialBinList(materialBinDTO);
 
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));

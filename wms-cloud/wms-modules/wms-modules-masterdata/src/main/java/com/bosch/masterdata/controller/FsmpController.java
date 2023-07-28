@@ -19,6 +19,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
+import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import io.swagger.annotations.Api;
@@ -50,7 +51,9 @@ public class FsmpController extends BaseController {
     @ApiOperation("查询列表")
     @PostMapping("/list")
     public R<PageVO<FsmpVO>> list(@RequestBody FsmpDTO dto) {
-        startPage();
+        PageDomain pageDomain=BeanConverUtil.conver(dto,PageDomain.class);
+
+        startPage(pageDomain);
         List<FsmpVO> list = fsmpService.selectList(dto);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }

@@ -30,6 +30,7 @@ import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
+import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.annotation.RequiresPermissions;
@@ -72,7 +73,9 @@ public class NmdController extends BaseController {
     @ApiOperation("查询列表")
     @PostMapping("/list")
     public R<PageVO<NmdVO>> list(@RequestBody NmdDTO nmdDTO) {
-        startPage();
+        PageDomain pageDomain=BeanConverUtil.conver(nmdDTO,PageDomain.class);
+
+        startPage(pageDomain);
         List<NmdVO> list = nmdService.selectList(nmdDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }

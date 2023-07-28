@@ -19,6 +19,7 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
+import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import io.swagger.annotations.ApiOperation;
@@ -52,7 +53,9 @@ public class MdProductPackagingController extends BaseController {
         if(dTO!=null&&dTO.getPageSize().equals(0)){
             list = mdProductPackagingService.selectList(dTO);
         }else {
-            startPage();
+            PageDomain pageDomain=BeanConverUtil.conver(dTO,PageDomain.class);
+
+            startPage(pageDomain);
              list = mdProductPackagingService.selectList(dTO);
         }
 
@@ -155,6 +158,7 @@ public class MdProductPackagingController extends BaseController {
                     return R.fail(400, "存在重复成品料号和cell的数据");
                 } else {
 
+                    boolean b = mdProductPackagingService.validData(list);
                     List<ProductPackaging> dos = BeanConverUtil.converList(list, ProductPackaging.class);
                     mdProductPackagingService.saveBatch(dos);
                 }
@@ -184,6 +188,7 @@ public class MdProductPackagingController extends BaseController {
                 if (CollectionUtils.isNotEmpty(list)) {
                     //校验
                     boolean valid = mdProductPackagingService.validMdProductPackagingList(list);
+                    boolean b = mdProductPackagingService.validData(list);
                     //转换DO
                     List<ProductPackaging> dos = BeanConverUtil.converList(list, ProductPackaging.class);
                     dos.forEach(r -> {

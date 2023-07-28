@@ -185,6 +185,11 @@ public class RmComparisonController extends BaseController {
 
                     //保存数据
                     List<ProComparison> proComparisons = BeanConverUtil.converList(dtoList, ProComparison.class);
+                    //删除当前人上传的数据
+                    boolean b = proComparisonService.deleteProComparisonByCreat();
+                    if (!b) {
+                        return R.fail("删除当前人上传的数据失败");
+                    }
                     proComparisonList = rmComparisonService.insertProComparison(proComparisons);
 
                 } else {

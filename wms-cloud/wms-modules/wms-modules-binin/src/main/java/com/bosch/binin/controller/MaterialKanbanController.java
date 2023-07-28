@@ -25,6 +25,7 @@ import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.log.annotation.Log;
@@ -311,7 +312,9 @@ public class MaterialKanbanController {
         String wareCode = SecurityUtils.getWareCode();
 
         dto.setWareCode(wareCode);
-        startPage();
+        PageDomain pageDomain= BeanConverUtil.conver(dto,PageDomain.class);
+
+        startPage(pageDomain);
         List<MaterialKanbanVO> list = materialKanbanService.receivingMaterialList(dto);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
@@ -322,7 +325,9 @@ public class MaterialKanbanController {
         String wareCode = SecurityUtils.getWareCode();
 
         dto.setWareCode(wareCode);
-        startPage();
+        PageDomain pageDomain=BeanConverUtil.conver(dto,PageDomain.class);
+
+        startPage(pageDomain);
         List<MaterialKanbanVO> list = materialKanbanService.receivedMaterialList(dto);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
@@ -333,7 +338,7 @@ public class MaterialKanbanController {
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         String wareCode = SecurityUtils.getWareCode();
 
-        startPage();
+        //startPage();
         List<MaterialInfoVO> materialInfoVOS = materialKanbanService.materialInfoList(sscc, wareCode);
 
         return R.ok(new PageVO<>(materialInfoVOS, new PageInfo<>(materialInfoVOS).getTotal()));

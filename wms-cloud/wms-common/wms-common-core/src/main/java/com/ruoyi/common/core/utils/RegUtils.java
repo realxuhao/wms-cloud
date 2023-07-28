@@ -41,25 +41,24 @@ public class RegUtils {
             boolean lowCharMatches = Pattern.compile(REGEX_PASSWORD_STRENGTH_LOWER_CHAR).matcher(password).matches();
 
 
-            if (!basicMatches) {
 
-                throw new Exception("密码必须包含字母和数字");
-            }
             //强检查，字母和数字、大写字母、特殊符号
             if (!basicMatches) {
-                throw new Exception("密码必须包含字母和数字");
+                throw new Exception("密码必须包含数字");
             }
-
-            if (!upperCharMatches) {
-                throw new Exception("密码必须包含至少一个大写字母");
+            if (!upperCharMatches&&!lowCharMatches) {
+                throw new Exception("密码必须包含至少一个字母");
             }
-
-            if (!lowCharMatches){
-                throw new Exception("密码必须包含至少一个小写字母");
-            }
-            if (!charsMatches) {
-                throw new Exception("密码必须包含至少一个特殊符号");
-            }
+//            if (!upperCharMatches) {
+//                throw new Exception("密码必须包含至少一个大写字母");
+//            }
+//
+//            if (!lowCharMatches){
+//                throw new Exception("密码必须包含至少一个小写字母");
+//            }
+//            if (!charsMatches) {
+//                throw new Exception("密码必须包含至少一个特殊符号");
+//            }
         } catch (Exception e) {
 
             throw new ServiceException(e.getMessage());

@@ -86,39 +86,39 @@ public class MdProductPackagingServiceImpl extends ServiceImpl<MdProductPackagin
     @Override
     public boolean validData(List<MdProductPackagingDTO> dtos) {
         dtos.forEach(r -> {
-            // Check cell
-            if (StringUtils.isEmpty(r.getCell())) {
-                throw new ServiceException("Cell 不能为空");
-            }
-
+            String text="Excel中料号："+r.getProductNo()+" 的 ";
             // Check product No
             if (StringUtils.isEmpty(r.getProductNo())) {
                 throw new ServiceException("成品料号 不能为空");
             }
+            // Check cell
+            if (StringUtils.isEmpty(r.getCell())) {
+                throw new ServiceException(text+"Cell 不能为空");
+            }
 
             // Check 名称
             if (StringUtils.isEmpty(r.getProductName())) {
-                throw new ServiceException("名称 不能为空");
+                throw new ServiceException(text+"名称 不能为空");
             }
             // Check 运输单位(Tr)
             if (StringUtils.isEmpty(r.getTransportUnit())) {
-                throw new ServiceException("运输单位(Tr) 不能为空");
+                throw new ServiceException(text+"运输单位(Tr) 不能为空");
             }
             // Check 箱 Tr 对应包装规格
             if (r.getBoxSpecification()==null) {
-                throw new ServiceException("箱 Tr 对应包装规格 不能为空");
+                throw new ServiceException(text+"箱 Tr 对应包装规格 不能为空");
             }
             // Check 标准 Tr/托
             if (StringUtils.isEmpty(r.getStandardUnits())) {
-                throw new ServiceException("标准 Tr/托 不能为空");
+                throw new ServiceException(text+"标准 Tr/托 不能为空");
             }
             // Check 重量(Tr)
             if (StringUtils.isEmpty(r.getWeight())) {
-                throw new ServiceException("重量(Tr) 不能为空");
+                throw new ServiceException(text+"重量(Tr) 不能为空");
             }
             // Check 体积 (Tr)
             if (StringUtils.isEmpty(r.getVolume())) {
-                throw new ServiceException("体积 (Tr) 不能为空");
+                throw new ServiceException(text+"体积 (Tr) 不能为空");
             }
         });
 

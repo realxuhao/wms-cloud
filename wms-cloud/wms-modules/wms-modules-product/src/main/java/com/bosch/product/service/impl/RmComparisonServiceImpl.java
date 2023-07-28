@@ -78,6 +78,8 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
         if (StringUtils.isNotNull(rmComparisonDTO.getStatus())) {
             lambdaQueryWrapper.eq(RmComparison::getStatus, rmComparisonDTO.getStatus());
         }
+        //根据登陆人查询
+        lambdaQueryWrapper.eq(RmComparison::getCreateBy, SecurityUtils.getUsername());
         lambdaQueryWrapper.eq(RmComparison::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<RmComparison> rmComparisons = rmComparisonMapper.selectList(lambdaQueryWrapper);
 
@@ -152,6 +154,8 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
         lambdaUpdateWrapper.in(RmComparison::getSsccNumber, ssccList);
         lambdaUpdateWrapper.eq(RmComparison::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         lambdaUpdateWrapper.eq(RmComparison::getStatus, ComparisonEnum.DIFF.code());
+        //根据登陆人查询
+        lambdaUpdateWrapper.eq(RmComparison::getCreateBy, SecurityUtils.getUsername());
         lambdaUpdateWrapper.set(RmComparison::getStatus, ComparisonEnum.CHANGED.code());
         boolean update = this.update(lambdaUpdateWrapper);
         return update;

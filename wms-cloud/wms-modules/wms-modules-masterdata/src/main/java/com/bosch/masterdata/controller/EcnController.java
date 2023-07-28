@@ -24,6 +24,7 @@ import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
+import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -61,7 +62,9 @@ public class EcnController extends BaseController {
     @ApiOperation("查询列表")
     @PostMapping("/list")
     public R<PageVO<EcnVO>> list(@RequestBody EcnDTO ecnDTO) {
-        startPage();
+        PageDomain pageDomain=BeanConverUtil.conver(ecnDTO,PageDomain.class);
+
+        startPage(pageDomain);
         List<EcnVO> list = ecnService.selectList(ecnDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }

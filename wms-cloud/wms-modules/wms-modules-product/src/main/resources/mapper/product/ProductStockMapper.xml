@@ -99,7 +99,7 @@
         ps.unit as unit,
         ps.production_date as production_date,
         pp.cell as cell,
-        pp.box_specification as boxSpecification,
+        pp.box_specification as box_specification,
         ps.bin_in_flag as bin_in_flag,
         ps.recommend_bin_code as recommend_bin_code
         from product_stock ps
