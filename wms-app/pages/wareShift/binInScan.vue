@@ -87,20 +87,20 @@ export default {
 				}
 				console.log('111111111111111111111111111')
 				if (data.status === 5) {
-					if(data.splitType===1){
-						const { type, ssccNb, splitQuality } = this.barCodeInfo;
-						Bus.$off('scancodedate', this.scanCodeCallback);
-						uni.redirectTo({
-							url: `/pages/splitPallet/splitPallet?ssccNumber=${ssccNb}&quantity=${splitQuality}&mesBarCode=${this.code}`
-						});
-						Bus.$emit('startScan');
-					}else{
+					// if(data.splitType===1){
+					// 	const { type, ssccNb, splitQuality } = this.barCodeInfo;
+					// 	Bus.$off('scancodedate', this.scanCodeCallback);
+					// 	uni.redirectTo({
+					// 		url: `/pages/splitPallet/splitPallet?ssccNumber=${ssccNb}&quantity=${splitQuality}&mesBarCode=${this.code}`
+					// 	});
+					// 	Bus.$emit('startScan');
+					// }else{
 						Bus.$off('scancodedate', this.scanCodeCallback);
 						uni.navigateTo({
 							url: `/pages/wareShift/binInOperation?barCode=${this.code}`
 						});
 						Bus.$emit('startScan');
-					}
+					// }
 				} else {
 					throw Error('此托不在待上架清单中，请检查');
 				}
