@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @program: wms-cloud
@@ -94,12 +95,22 @@ public class WareShiftController extends BaseController {
         return R.ok();
     }
 
-//    @GetMapping(value = "/{mesBarCode}")
-//    @ApiOperation("获取移库任务详情")
-//    public R<WareShiftVO> info(@PathVariable String mesBarCode) {
-//        WareShiftVO wareShiftVO = shiftService.info(mesBarCode);
-//        return R.ok(mesBarCode + "下架成功");
-//    }
+    @GetMapping(value = "/getOne/{mesBarCode}")
+    @ApiOperation("获取移库任务详情")
+    public R<WareShiftVO> info(@PathVariable String mesBarCode) {
+        WareShiftQueryDTO queryDTO = new WareShiftQueryDTO();
+        queryDTO.setSsccNb(MesBarCodeUtil.getSSCC(mesBarCode));
+        List<WareShiftVO> wareShiftList = shiftService.getWareShiftList(queryDTO);
+        if (CollectionUtils.isEmpty(wareShiftList)){
+            throw new ServiceException("该SSCC"+MesBarCodeUtil.getSSCC(mesBarCode)+"下没有移库任务");
+        }
+        List<WareShiftVO> collect = wareShiftList.stream().filter(item -> item.getStatus() != KanbanStatusEnum.CANCEL.value()
+                && item.getStatus() != KanbanStatusEnum.FINISH.value()).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(collect)){
+            throw new ServiceException("该SSCC"+MesBarCodeUtil.getSSCC(mesBarCode)+"下没有进行中的移库任务");
+        }
+        return R.ok(collect.get(0));
+    }
 
     @PostMapping(value = "generateWareShiftByCall")
     @ApiOperation("根据call生成移库任务")

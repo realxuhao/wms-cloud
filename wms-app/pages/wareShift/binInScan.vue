@@ -9,17 +9,17 @@
 			<uni-popup-dialog before-close type="info" cancelText="上架" confirmText="配送产线" title="是否配送产线？" @confirm="handleToLine" @close="handleGoto">
 				<view>
 					<view class="text-align m-b-4">
-						<text class="label m-r-8">订单号:</text>
-						<text>{{ barCodeInfo.orderNumber }}</text>
+						<text class="label m-r-8">SSCC:</text>
+						<text>{{ barCodeInfo.ssccNb }}</text>
 					</view>
 					<view class="text-align m-b-4">
 						<text class="label m-r-8">动作类型:</text>
-						<text>{{ moveTypeMap[barCodeInfo.type] }}</text>
+						<text>{{ moveTypeMap[barCodeInfo.splitType] }}</text>
 					</view>
-					<view class="text-align">
+					<!-- <view class="text-align">
 						<text class="label m-r-8">Cell:</text>
 						<text>{{ barCodeInfo.cell }}</text>
-					</view>
+					</view> -->
 				</view>
 			</uni-popup-dialog>
 		</uni-popup>
@@ -65,6 +65,7 @@ export default {
 		async scanCodeCallback(data) {
 			Bus.$emit('stopScan');
 			this.code = data.code;
+			this.code = '20250213669006391114282042103025072202141190001000'
 			this.checkTask(data.code);
 		},
 		handleGoBack() {
@@ -79,10 +80,27 @@ export default {
 		async checkTask(barCode) {
 			try {
 				uni.showLoading();
-				const data = await this.$store.dispatch('kanban/checkKanbanTask', { mesBarCode: barCode });
+				const data = await this.$store.dispatch('wareShift/getOne', barCode);
 				this.barCodeInfo = data;
+				if(data === null){
+					throw Error('空');
+				}
+				console.log('111111111111111111111111111')
 				if (data.status === 5) {
-					this.$refs.distributionLine.open();
+					if(data.splitType===1){
+						const { type, ssccNb, splitQuality } = this.barCodeInfo;
+						Bus.$off('scancodedate', this.scanCodeCallback);
+						uni.redirectTo({
+							url: `/pages/splitPallet/splitPallet?ssccNumber=${ssccNb}&quantity=${splitQuality}&mesBarCode=${this.code}`
+						});
+						Bus.$emit('startScan');
+					}else{
+						Bus.$off('scancodedate', this.scanCodeCallback);
+						uni.navigateTo({
+							url: `/pages/wareShift/binInOperation?barCode=${this.code}`
+						});
+						Bus.$emit('startScan');
+					}
 				} else {
 					throw Error('此托不在待上架清单中，请检查');
 				}
@@ -113,7 +131,7 @@ export default {
 		},
 		async handleToLine() {
 			const { type, ssccNumber, quantity } = this.barCodeInfo;
-			if (this.barCodeInfo.type === 0) {
+			if (this.barCodeInfo.splitType === 0) {
 				this.submitDeliver();
 			} else {
 				Bus.$off('scancodedate', this.scanCodeCallback);

@@ -436,7 +436,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             return;
         }
         dtos.forEach(item -> {
-            if (item.getShiftQuality() <= 0) {
+            if (item.getShiftQuality()==null||item.getShiftQuality() <= 0) {
                 throw new ServiceException("移库数量必须大于0");
             }
         });
@@ -656,7 +656,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         }
         List<Stock> sortedStockList = new ArrayList<>();
         sortedStockList =
-                stockList.stream().filter(item -> item.getAvailableStock() != 0).
+                stockList.stream().filter(item -> item.getAvailableStock() != 0
+                        &&!AreaListConstants.mainArea(item.getAreaCode())).
                         sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder())).collect(Collectors.toList());
         double count = 0;
         List<Stock> useMaterialStockList = new ArrayList<>();

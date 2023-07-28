@@ -85,8 +85,9 @@
         </a-row>
       </a-form>
       <div class="action-content">
-
+        <a-button type="primary" style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
       </div>
+      
       <a-table
         :columns="columns"
         :data-source="list"
@@ -131,6 +132,8 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+import _ from 'lodash'
+import { download } from '@/utils/file'
 const qualityStatus = [
   {
     text: 'U',
@@ -259,6 +262,7 @@ export default {
     return {
       tableLoading: false,
       uploadLoading: false,
+       exportLoading: false,
       departmentList: [],
       queryForm: {
         pageSize: 20,
@@ -300,7 +304,20 @@ export default {
     async loadData () {
        this.loadDepartmentList()
       this.loadTableList()
-    }
+    },
+    async handleDownload () {
+      try {
+        this.exportLoading = true
+        // this.queryForm.pageSize = 0
+        const blobData = await this.$store.dispatch('stock/exportExcel', this.queryForm)
+        download(blobData, '库存列表.xlsx')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
+      }
+    },
   },
   mounted () {
     this.loadData()

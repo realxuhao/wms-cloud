@@ -18,7 +18,11 @@ const stock = {
       console.log('111')
       const data = await stockService.getList(options)
       return data
-    }
+    },
+    async exportExcel ({ commit }, options) {
+      const data = await stockService.exportExcel(options)
+      return data
+    },
   }
 }
 

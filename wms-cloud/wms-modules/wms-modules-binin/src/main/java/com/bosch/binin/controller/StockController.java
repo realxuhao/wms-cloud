@@ -5,7 +5,9 @@ import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.InitStockDTO;
 import com.bosch.binin.api.domain.dto.StockEditDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
+import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.file.api.FileService;
@@ -21,6 +23,7 @@ import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
@@ -34,6 +37,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.swing.plaf.ProgressBarUI;
 import java.io.IOException;
 import java.util.*;
@@ -213,5 +217,18 @@ public class StockController extends BaseController {
         stockService.editStock(stockEditDTO);
         return R.ok();
     }
+
+    /**
+     * 导出列表
+     */
+    @PostMapping("/exportExcel")
+    @ApiOperation("库存列表导出")
+    @Log(title = "库存列表导出", businessType = BusinessType.EXPORT)
+    public void export(HttpServletResponse response, @RequestBody StockQueryDTO queryDTO) {
+        List<StockVO> stockVOList = stockService.selectStockVOList(queryDTO);
+        ExcelUtil<StockVO> util = new ExcelUtil<>(StockVO.class);
+        util.exportExcel(response, stockVOList, "移库任务列表");
+    }
+
 
 }
