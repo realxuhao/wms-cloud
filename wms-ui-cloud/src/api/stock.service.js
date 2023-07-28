@@ -10,6 +10,16 @@ const getList = async (parameter) => {
   return data
 }
 
+const exportExcel = async (options) => {
+  const url = `/stock/exportExcel`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
 export const stockService = {
-  getList
+  getList,
+  exportExcel
 }

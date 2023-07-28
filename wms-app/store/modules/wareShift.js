@@ -144,12 +144,21 @@ const wareShift = {
 			} = await wareShiftService.splitPallet(options)
 			return data
 		},
+		
 		async getTransInfo({
 			commit
 		}, barCode) {
 			const {
 				data
 			} = await wareShiftService.getTransInfo(barCode)
+			return data
+		},
+		async getOne({
+			commit
+		}, barCode) {
+			const {
+				data
+			} = await wareShiftService.getOne(barCode)
 			return data
 		},
 		async batchBinIn({

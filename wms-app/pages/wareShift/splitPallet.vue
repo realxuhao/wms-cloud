@@ -132,7 +132,7 @@ export default {
 
 				const options = {
 					...this.form,
-					sourceSsccNb: this.params.ssccNumber
+					sourceSsccNb: this.params.ssccNumber,
 				};
 				await this.$store.dispatch('wareShift/splitPallet', options);
 				this.$refs.message.success('拆托完成！');

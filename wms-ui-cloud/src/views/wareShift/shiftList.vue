@@ -5,6 +5,11 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           <a-col :span="4">
+            <a-form-model-item label="SSCC">
+              <a-input v-model="queryForm.ssccNb" placeholder="SSCC" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
             <a-form-model-item label="物料号">
               <a-input v-model="queryForm.materialNb" placeholder="物料号" allow-clear/>
             </a-form-model-item>
@@ -364,7 +369,8 @@ const queryFormAttr = () => {
     materialNb: '',
     batchNb: '',
     carNb: '',
-    orderNb: ''
+    orderNb: '',
+    ssccNb: ''
   }
 }
 

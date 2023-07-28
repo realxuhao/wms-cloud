@@ -31,6 +31,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -321,7 +322,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         qw.eq(MaterialCall::getOrderNb, kanban.getOrderNumber());
         qw.eq(MaterialCall::getMaterialNb, kanban.getMaterialCode());
         qw.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        qw.ne(MaterialCall::getStatus,CallStatusEnum.CANCEL.code());
+        qw.ne(MaterialCall::getStatus, CallStatusEnum.CANCEL.code());
         qw.last("for update");
         MaterialCall materialCall = materialCallMapper.selectOne(qw);
         if (materialCall == null) {
@@ -363,35 +364,84 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         List<MaterialCallVO> materialCallList = this.getList(queryDTO);
 //        List<MaterialCall> materialCallList = this.listByIds(callIds);
         List<RunCallVO> runCallVOS = new ArrayList<>();
-        materialCallList.stream().forEach(call -> {
-            RunCallVO runCallVO = new RunCallVO();
-            runCallVO.setCallId(call.getId());
-            runCallVO.setMaterialNb(call.getMaterialNb());
-            runCallVO.setIssuedQuantity(call.getIssuedQuantity());
-            runCallVO.setMaterialName(call.getMaterialName());
-            runCallVO.setQuantity(call.getQuantity());
-            runCallVO.setOrderNb(call.getOrderNb());
 
-            Double mainStockCount = stockService.getMainStockCount(call.getMaterialNb());
-            Double outStockCount = stockService.getOutStockCount(call.getMaterialNb());
-            Double inTransitCount = wareShiftService.getInTransitCount(call.getMaterialNb());
-            Double noAvailableStockCount = stockService.getNoAvailableStockCount(call.getMaterialNb());
+        Map<String, List<MaterialCallVO>> materialCallMap = materialCallList.stream().collect(Collectors.groupingBy(MaterialCallVO::getMaterialNb));
 
-            runCallVO.setMainStock(mainStockCount);
-            runCallVO.setOutStock(outStockCount);
-            runCallVO.setInTransStock(inTransitCount);
-            runCallVO.setEnough(mainStockCount >= (call.getQuantity() - call.getIssuedQuantity()));
-            runCallVO.setNoAvailableStockCount(noAvailableStockCount);
-            double temp = call.getQuantity() - call.getIssuedQuantity() - runCallVO.getMainStock();
-            runCallVO.setRecommendShiftQuantity(temp >= 0 ? temp : 0);
-            runCallVO.setShiftFlag(call.getShiftFlag() == 1 ? true : false);
+        materialCallMap.forEach((materialCode, callList) -> {
+            AtomicReference<Double> mainStockCount = new AtomicReference<>(stockService.getMainStockCount(materialCode));
+            Double outStockCount = stockService.getOutStockCount(materialCode);
+            Double inTransitCount = wareShiftService.getInTransitCount(materialCode);
+            Double noAvailableStockCount = stockService.getNoAvailableStockCount(materialCode);
+
+            List<MaterialCallVO> sortedCallList = callList.stream().sorted(Comparator.comparing(MaterialCallVO::getOrderNb)).collect(Collectors.toList());
+
+            sortedCallList.stream().forEach(call->{
+                RunCallVO runCallVO = new RunCallVO();
+                runCallVO.setCallId(call.getId());
+                runCallVO.setMaterialNb(call.getMaterialNb());
+                runCallVO.setIssuedQuantity(call.getIssuedQuantity());
+                runCallVO.setMaterialName(call.getMaterialName());
+                runCallVO.setQuantity(call.getQuantity());
+                runCallVO.setOrderNb(call.getOrderNb());
+
+                runCallVO.setMainStock(mainStockCount.get());
+                runCallVO.setOutStock(outStockCount);
+                runCallVO.setInTransStock(inTransitCount);
+
+                runCallVO.setEnough(mainStockCount.get() >= (call.getQuantity() - call.getIssuedQuantity()));
+                runCallVO.setNoAvailableStockCount(noAvailableStockCount);
+
+                double temp = call.getQuantity() - call.getIssuedQuantity() - mainStockCount.get();
+                if (!runCallVO.isEnough()) {
+                    runCallVO.setRecommendShiftQuantity(temp >= 0 ? temp : 0);
+                }
+                runCallVO.setShiftFlag(call.getShiftFlag() == 1 ? true : false);
+
+                runCallVOS.add(runCallVO);
+
+                call.setStatus(CallStatusEnum.RUNNED.code());
+
+                mainStockCount.set(mainStockCount.get() - call.getQuantity() - call.getIssuedQuantity());
+                if (mainStockCount.get()<0){
+                    mainStockCount.set(Double.valueOf(0));
+                }
 
 
-            runCallVOS.add(runCallVO);
+            });
 
 
-            call.setStatus(CallStatusEnum.RUNNED.code());
         });
+
+
+//        materialCallList.stream().forEach(call -> {
+//            RunCallVO runCallVO = new RunCallVO();
+//            runCallVO.setCallId(call.getId());
+//            runCallVO.setMaterialNb(call.getMaterialNb());
+//            runCallVO.setIssuedQuantity(call.getIssuedQuantity());
+//            runCallVO.setMaterialName(call.getMaterialName());
+//            runCallVO.setQuantity(call.getQuantity());
+//            runCallVO.setOrderNb(call.getOrderNb());
+//
+//            Double mainStockCount = stockService.getMainStockCount(call.getMaterialNb());
+//            Double outStockCount = stockService.getOutStockCount(call.getMaterialNb());
+//            Double inTransitCount = wareShiftService.getInTransitCount(call.getMaterialNb());
+//            Double noAvailableStockCount = stockService.getNoAvailableStockCount(call.getMaterialNb());
+//
+//            runCallVO.setMainStock(mainStockCount);
+//            runCallVO.setOutStock(outStockCount);
+//            runCallVO.setInTransStock(inTransitCount);
+//            runCallVO.setEnough(mainStockCount >= (call.getQuantity() - call.getIssuedQuantity()));
+//            runCallVO.setNoAvailableStockCount(noAvailableStockCount);
+//            double temp = call.getQuantity() - call.getIssuedQuantity() - runCallVO.getMainStock();
+//            runCallVO.setRecommendShiftQuantity(temp >= 0 ? temp : 0);
+//            runCallVO.setShiftFlag(call.getShiftFlag() == 1 ? true : false);
+//
+//
+//            runCallVOS.add(runCallVO);
+//
+//
+//            call.setStatus(CallStatusEnum.RUNNED.code());
+//        });
         List<MaterialCall> materialCalls = BeanConverUtil.converList(materialCallList, MaterialCall.class);
         this.updateBatchById(materialCalls);
         return runCallVOS;
@@ -467,7 +517,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             }
             if (count == 0) {
                 call.setIssuedQuantity(call.getIssuedQuantity());
-                throw new ServiceException(call.getMaterialNb()+"无可用库存量");
+                throw new ServiceException(call.getMaterialNb() + "无可用库存量");
             }
 //            if (count == 0) {
 //                call.setIssuedQuantity(call.getIssuedQuantity());

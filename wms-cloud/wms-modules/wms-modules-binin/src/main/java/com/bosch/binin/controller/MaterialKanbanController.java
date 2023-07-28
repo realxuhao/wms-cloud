@@ -421,7 +421,7 @@ public class MaterialKanbanController {
 
         try {
             String sscc = "";
-            if (mesbarCode.length() == 50||mesbarCode.contains(".")) {
+            if (mesbarCode.length() <=60||mesbarCode.contains(".")) {
                  sscc = MesBarCodeUtil.getSSCC(mesbarCode);
             }else{
                 sscc= ProductQRCodeUtil.getSSCC(mesbarCode);
