@@ -283,6 +283,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         qw.eq(MaterialCall::getOrderNb, materialCallNew.getOrderNb());
         qw.eq(MaterialCall::getMaterialNb, materialCallNew.getMaterialNb());
         qw.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.ne(MaterialCall::getStatus, CallStatusEnum.CANCEL.code());
         qw.last("for update");
         MaterialCall materialCallDB = materialCallMapper.selectOne(qw);
         if (materialCallDB == null) {
