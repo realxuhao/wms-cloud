@@ -506,7 +506,7 @@ export default {
         // 没有检验过
         this.submitVisible = true
       }
-      this.modalRecord = record
+      this.modalRecord = _.clone(record)
       this.radioStatus = record.qualityStatus
     },
     notQuality () {
