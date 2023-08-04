@@ -30,7 +30,10 @@
         order BY ware_code,create_time
     </select>
     <select id="selectCellReportByMonth" parameterType="com.bosch.masterdata.api.domain.dto.ReportBinDTO" resultType="com.bosch.masterdata.api.domain.vo.ReportBinVO">
-        SELECT SUM(material_occupy_bin) AS material_occupy_bin,SUM(product_occupy_bin) AS product_occupy_bin,SUM(total_bin) AS total_bin
+        SELECT
+                    ROUND(AVG(material_occupy_bin), 0) AS material_occupy_bin,
+                    ROUND(AVG(product_occupy_bin),0) AS product_occupy_bin,
+                    ROUND(AVG(total_bin),0) AS total_bin
 
         ,DATE_FORMAT(create_time, '%Y-%m') AS new_date,ware_code
         FROM report_bin WHERE 1=1
