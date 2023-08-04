@@ -30,7 +30,9 @@ import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
@@ -63,9 +65,6 @@ public class ProductReceiveController extends BaseController {
     private IUserOperationLogService userOperationLogService;
 
 
-
-
-
     @GetMapping(value = "/list")
     @ApiOperation("成品收货列表")
     public R<PageVO<ProductReceiveVO>> list(ProductReceiveQueryDTO queryDTO) {
@@ -96,6 +95,8 @@ public class ProductReceiveController extends BaseController {
 
     @PutMapping(value = "/receive/{qrCode}")
     @ApiOperation("PDA成品收货")
+    @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     @Log(title = "PDA成品收货", businessType = BusinessType.INSERT)
     public R receive(@PathVariable("qrCode") String qrCode, @RequestParam("quantity")Double quantity) {
         receiveService.receive(qrCode,quantity);

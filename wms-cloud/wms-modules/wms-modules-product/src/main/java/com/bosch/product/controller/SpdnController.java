@@ -38,6 +38,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
@@ -163,6 +164,7 @@ public class SpdnController extends BaseController {
     @ApiOperation("SPDN任务下架")
     @Log(title = "SPDN任务下架", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public R binDown(@PathVariable String qrCode) {
         spdnService.binDown(qrCode);
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode));
@@ -174,6 +176,8 @@ public class SpdnController extends BaseController {
     @PostMapping(value = "/ship")
     @ApiOperation("SPDN发运")
     @Log(title = "SPDN发运", businessType = BusinessType.UPDATE)
+    @Synchronized
+    @Transactional(rollbackFor = Exception.class)
     public R ship(@RequestBody ProductWareShiftQueryDTO dto) {
         Assert.notNull(dto,"参数不可以为空");
         Assert.noNullElements(dto.getSsccList(),"ssccList不可以为空");

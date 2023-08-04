@@ -3,7 +3,11 @@ package com.bosch.product.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.RemoteBinInService;
+import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.TranshipmentOrder;
+import com.bosch.binin.api.domain.WareShift;
+import com.bosch.binin.api.domain.dto.WareShiftBatchBinInDTO;
+import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.product.api.domain.ProductStock;
@@ -21,14 +25,20 @@ import com.bosch.product.service.IProductStockService;
 import com.bosch.product.service.IProductWareShiftService;
 import com.bosch.product.service.ITranshipmentOrderService;
 import com.bosch.system.api.domain.ProductStockOperation;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
+import com.ruoyi.common.core.enums.StatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.StockOperationType;
+import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IProductStockOperationService;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,6 +80,10 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
     @Autowired
     private IProductStockOperationService productStockOperationService;
+
+
+    private IUserOperationLogService userOperationLogService;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -416,6 +430,73 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
         //库存修改
         stockService.generateStockByProductWareShifts(wareShiftList);
+
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchPerformBinIn(WareShiftBatchBinInDTO dto) {
+        LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
+        qw.eq(TranshipmentOrder::getSsccNumber, MesBarCodeUtil.getSSCC(dto.getMesBarCode()));
+        qw.eq(TranshipmentOrder::getStatus, StatusEnums.TRUE.getCode());
+        qw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.orderByDesc(TranshipmentOrder::getCreateTime);
+        qw.last("limit 1");
+        TranshipmentOrder transhipmentOrder = transhipmentOrderService.getOne(qw);
+        if (transhipmentOrder.getStatus() == 0) {
+            throw new ServiceException("当前车次货物还没有收货");
+        }
+        LambdaQueryWrapper<TranshipmentOrder> tqw = new LambdaQueryWrapper<>();
+        tqw.eq(TranshipmentOrder::getOrderNumber, transhipmentOrder.getOrderNumber());
+        tqw.eq(TranshipmentOrder::getStatus, StatusEnums.TRUE.getCode());
+        tqw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<TranshipmentOrder> ssccByOrder = transhipmentOrderService.list(tqw);
+        if (CollectionUtils.isEmpty(ssccByOrder)) {
+            throw new ServiceException("当前车次没有待上架的信息");
+        }
+        List<String> ssccList = ssccByOrder.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
+
+
+        LambdaQueryWrapper<ProductWareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
+        wareShiftQueryWrapper.in(ProductWareShift::getSsccNb, ssccList);
+        wareShiftQueryWrapper.eq(ProductWareShift::getStatus, ProductWareShiftEnum.WAITTING_BIN_IN.code());
+        wareShiftQueryWrapper.eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<ProductWareShift> wareShiftList = this.list(wareShiftQueryWrapper);
+
+        wareShiftList.stream().forEach(productWareShift->{
+            productWareShift.setTargetAreaCode(dto.getAreaCode());
+            productWareShift.setStatus(ProductWareShiftEnum.FINISH.code());
+        });
+
+
+
+        LambdaQueryWrapper<ProductStock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.in(ProductStock::getSsccNumber, ssccList);
+        stockQueryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<ProductStock> productStocks = stockService.list(stockQueryWrapper);
+
+
+        List<UserOperationLog> operationLogs = new ArrayList<>();
+
+
+        productStocks.stream().forEach(stock->{
+            stock.setBinInFlag(ProductStockBinInEnum.FINISH.code());
+            stock.setAreaCode(dto.getAreaCode());
+
+            UserOperationLog userOperationLog = new UserOperationLog();
+            userOperationLog.setCode(stock.getMaterialNb());
+            userOperationLog.setSsccNumber(stock.getSsccNumber());
+            operationLogs.add(userOperationLog);
+
+
+        });
+
+        this.updateBatchById(wareShiftList);
+
+        stockService.updateBatchById(productStocks);
+
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBININ.getCode(), operationLogs);
+
 
     }
 }

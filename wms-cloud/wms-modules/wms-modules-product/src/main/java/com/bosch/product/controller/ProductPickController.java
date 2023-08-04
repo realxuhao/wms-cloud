@@ -26,6 +26,7 @@ import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -108,6 +109,7 @@ public class ProductPickController extends BaseController {
     @ApiOperation("SUDN捡配任务汇总下架")
     @Log(title = "SUDN捡配任务汇总下架", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public R binDown(@PathVariable String qrCode) {
         pickService.sumBinDown(qrCode);
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode));
@@ -128,6 +130,7 @@ public class ProductPickController extends BaseController {
     @ApiOperation("SUDN捡配任务下架")
     @Transactional(rollbackFor = Exception.class)
     @Log(title = "SUDN捡配任务下架", businessType = BusinessType.UPDATE)
+    @Synchronized
     public R binDown(@PathVariable String qrCode, @RequestParam("sudnId") Long sudnId) {
         pickService.binDown(qrCode, sudnId);
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode));

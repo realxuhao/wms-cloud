@@ -151,7 +151,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     }
 
     @Override
-    public List<IQCVO> mapToMaterial(List<IQCVO> result){
+    public List<IQCVO> mapToMaterial(List<IQCVO> result) {
         List<String> ssccList = result.stream().map(IQCVO::getSsccnumber).collect(Collectors.toList());
         List<StockVO> stockVOS = stockMapper.selectMaterialBySSCC(ssccList);
         // 构建哈希映射
@@ -169,8 +169,9 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         }
         return result;
     }
+
     @Override
-    public List<IQCDTO> iqcDTOSToMaterial(List<IQCDTO> result){
+    public List<IQCDTO> iqcDTOSToMaterial(List<IQCDTO> result) {
         List<String> ssccList = result.stream().map(IQCDTO::getSsccnumber).collect(Collectors.toList());
         List<StockVO> stockVOS = stockMapper.selectMaterialBySSCC(ssccList);
         // 构建哈希映射
@@ -188,6 +189,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         }
         return result;
     }
+
     @Override
     public List<StockVO> selectStockVOBySortType(StockQueryDTO stockQuerySTO) {
         List<StockVO> stockVOList = stockMapper.selectStockVOBySortType(stockQuerySTO);
@@ -269,10 +271,10 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                 .eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode())
                 .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<Stock> list = this.list(queryWrapper);
-        if (CollectionUtils.isEmpty(list)){
+        if (CollectionUtils.isEmpty(list)) {
             return Double.valueOf(0);
         }
-        double sum = list.stream().filter(item -> AreaListConstants.mainArea(item.getAreaCode())&&!AreaListConstants.noQualifiedArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
+        double sum = list.stream().filter(item -> AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
         return sum;
     }
 
@@ -281,14 +283,14 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Stock::getMaterialNb, materialNb)
                 .ne(Stock::getFreezeStock, Double.valueOf(0))
-                .ne(Stock::getAvailableStock,Double.valueOf(0))
+                .ne(Stock::getAvailableStock, Double.valueOf(0))
                 .eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode())
                 .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<Stock> list = this.list(queryWrapper);
-        if (CollectionUtils.isEmpty(list)){
+        if (CollectionUtils.isEmpty(list)) {
             return Double.valueOf(0);
         }
-        double sum = list.stream().filter(item -> AreaListConstants.mainArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
+        double sum = list.stream().filter(item -> AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.mainArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
         return sum;
     }
 
@@ -300,10 +302,10 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                 .eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode())
                 .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<Stock> list = this.list(queryWrapper);
-        if (CollectionUtils.isEmpty(list)){
+        if (CollectionUtils.isEmpty(list)) {
             return Double.valueOf(0);
         }
-        double sum = list.stream().filter(item -> !AreaListConstants.mainArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
+        double sum = list.stream().filter(item -> !AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
 
         return sum;
     }
@@ -398,11 +400,10 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             stock.setAvailableStock(stock.getAvailableStock() - stockEditDTO.getStockUse());
             stock.setTotalStock(stock.getTotalStock() - stockEditDTO.getStockUse());
             stock.setFreezeStock(stock.getTotalStock() - stock.getAvailableStock());
-            if (stock.getAvailableStock()==Double.valueOf(0)) {
+            if (stock.getAvailableStock() == Double.valueOf(0)) {
                 binInService.binDown(stock.getSsccNumber());
             }
             this.updateById(stock);
-
 
 
         } else if (stockEditDTO.getType() == 1) {//报废
@@ -411,7 +412,13 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             }
             binInService.binDown(stock.getSsccNumber());
 
-        }else {
+        } else if (stockEditDTO.getType() == 3) {//配送到产线（玻璃瓶）//
+            if (!"10310969".equals(stock.getMaterialNb())) {
+                throw new ServiceException("配送到产线仅限玻璃瓶！10310969");
+            }
+            binInService.binDown(stock.getSsccNumber());
+
+        } else {
             if (stockEditDTO.getSsccNumber() == null || stockEditDTO.getAvailableStock() == null || stockEditDTO.getFreezeStock() == null || stockEditDTO.getTotalStock() == null) {
                 throw new ServiceException("所有参数都不能为空");
             }

@@ -20,6 +20,15 @@ public class ProductStockQueryDTO {
     @ApiModelProperty(value = "sscc")
     private String ssccNumber;
 
+    @ApiModelProperty(value = "物料编码")
+    private String materialNb;
+
+    @ApiModelProperty(value = "物料类型")
+    private String materialType;
+
+    @ApiModelProperty(value = "批次号")
+    private String batchNb;
+
     @ApiModelProperty(value = "仓库编码")
     private String wareCode;
 

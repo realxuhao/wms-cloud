@@ -62,6 +62,8 @@
             <a-pagination
               show-size-changer
               show-less-items
+              :page-size-options="[10,20,30,40,100,150,300,500]"
+
               :current="queryForm.pageNum"
               :page-size.sync="queryForm.pageSize"
               :total="paginationTotal"

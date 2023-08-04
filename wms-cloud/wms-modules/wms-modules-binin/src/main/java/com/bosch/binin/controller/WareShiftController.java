@@ -28,6 +28,7 @@ import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -66,7 +67,6 @@ public class WareShiftController extends BaseController {
 
     @PostMapping(value = "/addShiftTask")
     @ApiOperation("外库新增需求接口")
-
     @Transactional(rollbackFor = Exception.class)
     public R<Boolean> addShiftTask(@RequestBody AddShiftTaskDTO dto) {
         return R.ok(shiftService.addShiftRequirement(dto));
@@ -76,6 +76,7 @@ public class WareShiftController extends BaseController {
     @PutMapping(value = "/binDown/{mesBarCode}")
     @ApiOperation("移库任务下架")
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     @Log(title = "移库任务下架", businessType = BusinessType.UPDATE)
     public R binDown(@PathVariable String mesBarCode) {
         shiftService.binDown(mesBarCode);
@@ -88,6 +89,7 @@ public class WareShiftController extends BaseController {
     @ApiOperation("移库任务拆托")
     @Log(title = "移库任务拆托", businessType = BusinessType.INSERT)
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         shiftService.splitPallet(splitPallet);
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(), splitPallet.getSourceSsccNb());
@@ -181,6 +183,7 @@ public class WareShiftController extends BaseController {
     @ApiOperation("移库任务上架分配库位")
     @Log(title = "移库任务分配库位", businessType = BusinessType.INSERT)
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public R<BinInVO> allocateBin(@PathVariable("mesBarCode") String mesBarCode) {
 
         return R.ok(shiftService.allocateBin(mesBarCode, SecurityUtils.getWareCode()));
@@ -211,6 +214,7 @@ public class WareShiftController extends BaseController {
     @PostMapping(value = "/binIn")
     @ApiOperation("移库上架接口")
     @Log(title = "移库上架", businessType = BusinessType.INSERT)
+    @Synchronized
     public R performBinIn(@RequestBody BinInDTO binInDTO) {
         shiftService.performBinIn(binInDTO);
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.SHIFT_BININ.getCode(), MesBarCodeUtil.getSSCC(binInDTO.getMesBarCode()));
@@ -220,6 +224,7 @@ public class WareShiftController extends BaseController {
 
     @PostMapping(value = "/batchBinIn")
     @ApiOperation("批量上架到区域")
+    @Synchronized
     @Log(title = "移库批量上架到区域", businessType = BusinessType.INSERT)
     public R batchPerformBinIn(@RequestBody WareShiftBatchBinInDTO dto) {
         shiftService.batchPerformBinIn(dto);
@@ -239,7 +244,5 @@ public class WareShiftController extends BaseController {
         ExcelUtil<WareShiftVO> util = new ExcelUtil<>(WareShiftVO.class);
         util.exportExcel(response, wareShiftList, "移库任务列表");
     }
-
-
 
 }

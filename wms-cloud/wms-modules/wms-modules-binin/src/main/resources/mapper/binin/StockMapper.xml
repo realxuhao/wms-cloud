@@ -91,7 +91,7 @@
         </if>
         <if test="qualityStatus != null and qualityStatus != ''">and bs.quality_status = #{qualityStatus}</if>
         <if test="changeStatus != null and changeStatus != ''">and bs.change_status = #{changeStatus}</if>
-order by bs.batch_nb
+order by bs.batch_nb,bs.expire_date
 
     </select>
 
@@ -173,7 +173,7 @@ order by bs.batch_nb
         </if>
         <if test="qualityStatus != null and qualityStatus != ''">and bs.quality_status = #{qualityStatus}</if>
 
-        order by bs.batch_nb
+        order by bs.expire_date,bs.batch_nb
     </select>
     <select id="selectStockVOListBySSCC" resultMap="StockVOResult">
         select bs.id as id,
@@ -209,7 +209,7 @@ order by bs.batch_nb
         <foreach collection="ssccList" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
-        order by bs.batch_nb
+        order by bs.expire_date,bs.batch_nb
 
     </select>
     <select id="selectMaterialBySSCC" resultMap="StockVOResult">
@@ -223,7 +223,7 @@ order by bs.batch_nb
         <foreach collection="ssccList" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
-        order by bs.batch_nb
+        order by bs.expire_date,bs.batch_nb
 
     </select>
     <select id="selectStockVOListBySSCCList" resultMap="StockVOResult">
@@ -257,7 +257,7 @@ order by bs.batch_nb
         <foreach collection="ssccList" index="index" item="item" open="(" separator="," close=")">
             #{item}
         </foreach>
-        order by bs.batch_nb
+        order by bs.expire_date,bs.batch_nb
 
     </select>
     <select id="selectStockVOBySortType" resultMap="StockVOResult">
@@ -302,7 +302,7 @@ order by bs.batch_nb
         <foreach collection="dtos" index="index" item="item" open="(" separator="or" close=")">
             (sscc_number = #{item.ssccNumber} AND <![CDATA[available_stock >= #{item.quantity}]]>)
         </foreach>
-        order by batch_nb
+        order by expire_date,batch_nb
     </select>
 
     <select id="selectStockList" resultType="com.bosch.binin.api.domain.Stock">
@@ -311,7 +311,7 @@ order by bs.batch_nb
         <foreach collection="dtos" index="index" item="item" open="(" separator="or" close=")">
             (sscc_number = #{item.ssccNumber} AND <![CDATA[available_stock >= #{item.quantity}]]>)
         </foreach>
-        order by batch_nb
+        order by expire_date,batch_nb
     </select>
     <select id="getBinStockLog" resultMap="StockVOResult">
         select bs.id                  as id,
@@ -341,6 +341,6 @@ order by bs.batch_nb
                            on mw.code = bs.ware_code
                  left join md_material mm on bs.material_nb = mm.code and mm.delete_flag = 0
         where bs.bin_code like concat('%', #{binCode}, '%')
-        order by bs.batch_nb
+        order by bs.expire_date,bs.batch_nb
     </select>
 </mapper>

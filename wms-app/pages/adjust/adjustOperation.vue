@@ -102,6 +102,10 @@
 					{
 						text: '其它',
 						value: 2
+					},
+					{
+						text: '玻璃瓶配送到产线',
+						value: 3
 					}
 				],
 				submitLoading: false,

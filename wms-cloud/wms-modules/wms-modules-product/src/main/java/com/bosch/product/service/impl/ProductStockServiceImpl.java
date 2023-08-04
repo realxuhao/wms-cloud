@@ -20,6 +20,7 @@ import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.product.api.domain.*;
 import com.bosch.product.api.domain.dto.*;
 import com.bosch.product.api.domain.enumeration.ProductStockBinInEnum;
+import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
 import com.bosch.product.api.domain.vo.ProductReturnVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.mapper.ProductStockMapper;
@@ -35,6 +36,7 @@ import com.ruoyi.common.log.enums.StockOperationType;
 import com.ruoyi.common.log.service.IProductStockOperationService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,6 +79,10 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
     @Autowired
     private IProductStockOperationService productStockOperationService;
 
+    @Autowired
+    @Lazy
+    private IProductWareShiftService wareShiftService;
+
     @Override
     public void generateStockByReceive(ProductReceive receive) {
         LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
@@ -106,7 +112,32 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         stock.setProductionDate(receive.getProductionDate());
         stock.setUnit(receive.getUnit());
 
+
+
+
+        if (stock.getPlantNb().equals("7751")) {
+
+            ProductWareShift wareShift = ProductWareShift.builder().sourcePlantNb(stock.getPlantNb())
+                    .sourceWareCode(stock.getWareCode())
+                    .sourceAreaCode(stock.getAreaCode())
+                    .sourceBinCode(stock.getBinCode())
+                    .quantity(stock.getTotalStock())
+                    .moveType(MoveTypeEnums.WARE_SHIFT.getCode())
+                    .ssccNb(stock.getSsccNumber())
+                    .materialNb(stock.getMaterialNb())
+                    .batchNb(stock.getBatchNb())
+                    .expireDate(stock.getExpireDate())
+                    .productionDate(stock.getProductionDate())
+                    .unit(stock.getUnit())
+                    .status(ProductWareShiftEnum.WAITTING_SHIPPING.code())
+                    .build();
+            wareShiftService.save(wareShift);
+            stock.setFreezeStock(stock.getTotalStock());
+            stock.setAvailableStock(Double.valueOf(0));
+        }
+
         stockMapper.insert(stock);
+
 
     }
 

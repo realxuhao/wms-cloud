@@ -27,6 +27,7 @@ import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -104,6 +105,8 @@ public class ProductStockController extends BaseController {
     @PostMapping(value = "/trans")
     @ApiOperation("转储")
     @Log(title = "成品库存转储", businessType = BusinessType.UPDATE)
+    @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public R trans(@RequestBody ManualBinInDTO binInDTO) {
         productStockService.trans(binInDTO);
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_TRANS.getCode(), ProductQRCodeUtil.getSSCC(binInDTO.getMesBarCode()));
@@ -129,6 +132,7 @@ public class ProductStockController extends BaseController {
     @ApiOperation("拆托")
     @Log(title = "成品库存拆托", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         productStockService.addSplit(splitPallet);
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(),splitPallet.getSourceSsccNb());

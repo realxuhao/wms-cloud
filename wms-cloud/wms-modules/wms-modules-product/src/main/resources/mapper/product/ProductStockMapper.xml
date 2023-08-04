@@ -121,6 +121,7 @@
         ps.bin_code as bin_code,
         ps.material_nb as material_nb,
         pp.product_name as material_name,
+               pp.type as material_type,
         ps.batch_nb as batch_nb,
         ps.expire_date as expire_date,
         ps.total_stock as total_stock,
@@ -146,6 +147,8 @@
         where ps.delete_flag = 0 and ps.plant_nb != '7701' and ps.plant_nb != '7761'
 
         <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
+        <if test="materialType != null  and materialType != ''">and pp.type like concat('%', #{materialType}, '%')</if>
+
         <if test="ssccNumber != null  and ssccNumber != ''">and ps.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="wareCode != null  and wareCode != ''">and ps.ware_code like concat('%', #{wareCode}, '%')</if>
         <if test="areaCode != null  and areaCode != ''">and ps.area_code like concat('%', #{areaCode}, '%')</if>
@@ -176,6 +179,7 @@
         ps.bin_code as bin_code,
         ps.material_nb as material_nb,
         pp.product_name as material_name,
+               pp.type as material_type,
         ps.batch_nb as batch_nb,
         ps.expire_date as expire_date,
         ps.total_stock as total_stock,
@@ -201,6 +205,8 @@
         where ps.delete_flag = 0
 
         <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
+        <if test="materialType != null  and materialType != ''">and pp.type like concat('%', #{materialType}, '%')</if>
+
         <if test="ssccNumber != null  and ssccNumber != ''">and ps.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="wareCode != null  and wareCode != ''">and ps.ware_code like concat('%', #{wareCode}, '%')</if>
         <if test="areaCode != null  and areaCode != ''">and ps.area_code like concat('%', #{areaCode}, '%')</if>
@@ -231,6 +237,7 @@
         ps.bin_code as bin_code,
         ps.material_nb as material_nb,
         pp.product_name as material_name,
+               pp.type as material_type,
         ps.batch_nb as batch_nb,
         ps.expire_date as expire_date,
         ps.total_stock as total_stock,
@@ -256,6 +263,8 @@
         where ps.delete_flag = 0 and ps.plant_nb != '7701' and ps.plant_nb != '7761'
 
         <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
+        <if test="materialType != null  and materialType != ''">and pp.type like concat('%', #{materialType}, '%')</if>
+
         <if test="ssccNumber != null  and ssccNumber != ''">and ps.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="wareCode != null  and wareCode != ''">and ps.ware_code like concat('%', #{wareCode}, '%')</if>
         <if test="areaCode != null  and areaCode != ''">and ps.area_code like concat('%', #{areaCode}, '%')</if>
@@ -294,6 +303,7 @@
         ps.bin_code as bin_code,
         ps.material_nb as material_nb,
         pp.product_name as material_name,
+               pp.type as material_type,
         ps.batch_nb as batch_nb,
         ps.expire_date as expire_date,
         ps.total_stock as total_stock,
@@ -319,6 +329,8 @@
         where ps.delete_flag = 0 and ps.plant_nb = '7761'
 
         <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
+        <if test="materialType != null  and materialType != ''">and pp.type like concat('%', #{materialType}, '%')</if>
+
         <if test="ssccNumber != null  and ssccNumber != ''">and ps.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="wareCode != null  and wareCode != ''">and ps.ware_code like concat('%', #{wareCode}, '%')</if>
         <if test="areaCode != null  and areaCode != ''">and ps.area_code like concat('%', #{areaCode}, '%')</if>
@@ -357,6 +369,7 @@
         ps.bin_code as bin_code,
         ps.material_nb as material_nb,
         pp.product_name as material_name,
+               pp.type as material_type,
         ps.batch_nb as batch_nb,
         ps.expire_date as expire_date,
         ps.total_stock as total_stock,
@@ -382,6 +395,8 @@
         where ps.delete_flag = 0 and ps.plant_nb = '7761'
 
         <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
+        <if test="materialType != null  and materialType != ''">and pp.type like concat('%', #{materialType}, '%')</if>
+
         <if test="ssccNumber != null  and ssccNumber != ''">and ps.sscc_number like concat('%', #{ssccNumber}, '%')</if>
         <if test="wareCode != null  and wareCode != ''">and ps.ware_code like concat('%', #{wareCode}, '%')</if>
         <if test="areaCode != null  and areaCode != ''">and ps.area_code like concat('%', #{areaCode}, '%')</if>

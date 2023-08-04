@@ -36,6 +36,7 @@ import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -133,6 +134,7 @@ public class MaterialKanbanController {
     @ApiOperation("看板任务下架")
     @Log(title = "捡配任务下架", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public R binDown(@PathVariable String ssccNb) {
         materialKanbanService.binDown(ssccNb);
 
@@ -348,6 +350,7 @@ public class MaterialKanbanController {
     @ApiOperation("生成转运单号,修改对应任务状态为主库待收货")
     @Transactional(rollbackFor = Exception.class)
     @Log(title = "转运发运", businessType = BusinessType.INSERT)
+    @Synchronized
     public R genTranshipmentOrder(@RequestBody List<String> mesbarCodes, @PathVariable("carNb") String carNb) {
         try {
             List<TranshipmentOrder> transhipmentOrders = new ArrayList<>();
@@ -421,10 +424,10 @@ public class MaterialKanbanController {
 
         try {
             String sscc = "";
-            if (mesbarCode.length() <=60||mesbarCode.contains(".")) {
-                 sscc = MesBarCodeUtil.getSSCC(mesbarCode);
-            }else{
-                sscc= ProductQRCodeUtil.getSSCC(mesbarCode);
+            if (mesbarCode.length() <= 60 || mesbarCode.contains(".")) {
+                sscc = MesBarCodeUtil.getSSCC(mesbarCode);
+            } else {
+                sscc = ProductQRCodeUtil.getSSCC(mesbarCode);
             }
             String order = transhipmentOrderService.getOrderBySSCC(sscc);
             //根据运单号获取相关sscc
@@ -437,7 +440,7 @@ public class MaterialKanbanController {
                     ssccByOrder.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
             //*根据sscc获取kanban信息
             //根据sscc获取stock信息
-            if (mesbarCode.length() == 50||mesbarCode.contains(".")) {
+            if (mesbarCode.length() <= 60 || mesbarCode.contains(".")) {
                 LambdaQueryWrapper<WareShift> queryWrapper = new LambdaQueryWrapper<>();
                 queryWrapper.in(WareShift::getSsccNb, collect);
                 queryWrapper.eq(WareShift::getStatus, KanbanStatusEnum.INNER_RECEIVING.value());
@@ -507,6 +510,7 @@ public class MaterialKanbanController {
     @PostMapping(value = "/confirmOrder")
     @ApiOperation("确认并入库")
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public R confirmOrder(@RequestBody List<String> ssccs) {
         try {
             if (CollectionUtils.isEmpty(ssccs)) {
@@ -578,6 +582,7 @@ public class MaterialKanbanController {
     @ApiOperation("整托下架配送接口")
     @Transactional(rollbackFor = Exception.class)
     @Log(title = "捡配任务整托下架", businessType = BusinessType.UPDATE)
+    @Synchronized
     public R deliver(@RequestParam(value = "sscc") String sscc) {
         try {
             //String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
@@ -622,6 +627,7 @@ public class MaterialKanbanController {
     @ApiOperation("收货确认")
     @Log(title = "捡配任务产线收货", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public R confirmMaterial(@RequestParam(value = "mesBarCodes") List<String> mesBarCodes) {
         try {
             //String sscc = MesBarCodeUtil.getSSCC(mesBarCode);

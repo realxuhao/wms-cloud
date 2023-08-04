@@ -20,6 +20,11 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
+            <a-form-model-item label="物料类型">
+              <a-input v-model="queryForm.materialType" placeholder="物料类型" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
             <a-form-model-item label="状态">
               <a-select
                 allow-clear
@@ -157,6 +162,12 @@ const columns = [
     width: 200
   },
   {
+    title: '物料类型',
+    key: 'materialType',
+    dataIndex: 'materialType',
+    width: 200
+  },
+  {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
@@ -222,6 +233,7 @@ const queryFormAttr = () => {
     status: '',
     fromProdOrder: '',
     createBy: '',
+    materialType: '',
     date: []
   }
 }

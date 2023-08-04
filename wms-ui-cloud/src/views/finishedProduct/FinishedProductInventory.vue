@@ -20,6 +20,38 @@
             </a-form-item>
           </a-col>
           <a-col :span="4">
+            <a-form-item label="质检状态" >
+              <a-select
+                allow-clear
+                v-model="queryForm.qualityStatus"
+              >
+                <a-select-option v-for="item in qualityStatus" :key="item.value" :value="item.text">
+                  {{ item.text }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="物料号">
+              <a-input v-model="queryForm.materialNb" placeholder="物料号" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="物料类型">
+              <a-input v-model="queryForm.materialType" placeholder="物料类型" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="批次号">
+              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="批次号">
+              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
             <a-form-item label="存储区">
               <a-input v-model="queryForm.areCode" placeholder="存储区" allow-clear/>
             </a-form-item>
@@ -111,6 +143,20 @@
 <script>
 import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
+const qualityStatus = [
+  {
+    text: 'U',
+    value: 0
+  },
+  {
+    text: 'B',
+    value: 1
+  },
+  {
+    text: 'Q',
+    value: 2
+  }
+]
 const columns = [
   {
     title: 'plantNb',
@@ -128,6 +174,12 @@ const columns = [
     title: '物料编码',
     key: 'materialNb',
     dataIndex: 'materialNb',
+    width: 200
+  },
+  {
+    title: '物料类型',
+    key: 'materialType',
+    dataIndex: 'materialType',
     width: 200
   },
   {
@@ -236,6 +288,7 @@ const queryFormAttr = () => {
     binCode: '',
     fromProdOrder: '',
     createBy: '',
+     qualityStatus: '',
     date: []
   }
 }

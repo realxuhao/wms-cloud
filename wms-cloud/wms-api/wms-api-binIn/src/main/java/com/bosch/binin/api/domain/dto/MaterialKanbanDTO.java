@@ -102,12 +102,12 @@ public class MaterialKanbanDTO extends PageDomain {
     /** 创建时间 */
     @ApiModelProperty(value = "创建时间起")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTimeStart;
+    private String createTimeStart;
 
     /** 创建时间 */
     @ApiModelProperty(value = "创建时间止")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTimeEnd;
+    private String createTimeEnd;
     /** 更新者 */
     @ApiModelProperty(value = "更新者")
     private String updateBy;
@@ -115,11 +115,11 @@ public class MaterialKanbanDTO extends PageDomain {
     /** 更新时间 */
     @ApiModelProperty(value = "更新时间起")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updateTimeStart;
+    private String updateTimeStart;
     /** 更新时间 */
     @ApiModelProperty(value = "更新时间止")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date updateTimeEnd;
+    private String updateTimeEnd;
 
     /**
      * 数量

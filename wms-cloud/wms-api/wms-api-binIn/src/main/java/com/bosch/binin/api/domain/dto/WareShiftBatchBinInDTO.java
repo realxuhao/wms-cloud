@@ -15,4 +15,6 @@ public class WareShiftBatchBinInDTO {
 
     private String areaCode;
 
+    private String qrCode;
+
 }

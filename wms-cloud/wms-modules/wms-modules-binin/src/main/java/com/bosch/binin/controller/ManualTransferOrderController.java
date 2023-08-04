@@ -15,6 +15,7 @@ import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -53,7 +54,6 @@ public class ManualTransferOrderController extends BaseController {
     @PostMapping(value = "/add")
     @ApiOperation("新增手工创建转储单")
     @Log(title = "新增手工创建转储单", businessType = BusinessType.INSERT)
-
     @Transactional(rollbackFor = Exception.class)
     public R<Boolean> add(@RequestBody AddManualTransDTO dto) {
         return R.ok(manualTransferOrderService.add(dto));
@@ -62,6 +62,7 @@ public class ManualTransferOrderController extends BaseController {
     @GetMapping(value = "/allocateBin/{mesBarCode}")
     @ApiOperation("分配库位")
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public R<BinInVO> allocateBin(@PathVariable("mesBarCode") String mesBarCode) {
 
         return R.ok(manualTransferOrderService.generateBinInJob(mesBarCode, SecurityUtils.getWareCode()));
@@ -107,6 +108,7 @@ public class ManualTransferOrderController extends BaseController {
 
     @PostMapping(value = "/in")
     @ApiOperation("转储单任务实际上架")
+    @Synchronized
     @Log(title = "转储单任务实际上架", businessType = BusinessType.INSERT)
     public R<BinInVO> in(@RequestBody ManualBinInDTO binInDTO) {
 
@@ -117,6 +119,7 @@ public class ManualTransferOrderController extends BaseController {
     @PostMapping(value = "/trans")
     @Log(title = "PDA实际转储", businessType = BusinessType.INSERT)
     @ApiOperation("转储")
+    @Synchronized
     public R trans(@RequestBody ManualBinInDTO binInDTO) {
         manualTransferOrderService.trans(binInDTO);
         return R.ok("转储成功");

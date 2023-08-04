@@ -294,6 +294,8 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         kanbanqw.eq(MaterialKanban::getSsccNumber, dto.getSsccNumber());
         kanbanqw.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
         kanbanqw.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+        kanbanqw.ne(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+
 
         kanbanqw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         kanbanqw.last("for update");
@@ -502,7 +504,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             List<Stock> sortedStockList = new ArrayList<>();
             sortedStockList =
                     stockList.stream().filter(item -> item.getAvailableStock() != 0 && AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).
-                            sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder()).thenComparing(Stock::getAvailableStock)).collect(Collectors.toList());
+                            sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getBatchNb).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder()).thenComparing(Stock::getAvailableStock)).collect(Collectors.toList());
             double sum = sortedStockList.stream().mapToDouble(Stock::getAvailableStock).sum();
 //            if (sum < call.getUnIssuedQuantity()) {
 //                throw new ServiceException("主库库存不足，请先手动创建移库");

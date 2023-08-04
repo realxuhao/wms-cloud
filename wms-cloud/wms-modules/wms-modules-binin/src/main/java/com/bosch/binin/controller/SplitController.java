@@ -23,6 +23,7 @@ import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -53,6 +54,7 @@ public class SplitController extends BaseController {
     @ApiOperation("普通拆托")
     @Transactional(rollbackFor = Exception.class)
     @Log(title = "PDA普通拆托", businessType = BusinessType.INSERT)
+    @Synchronized
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         splitService.add(splitPallet);
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(),splitPallet.getSourceSsccNb());
@@ -91,6 +93,7 @@ public class SplitController extends BaseController {
     @GetMapping(value = "/allocateBin/{mesBarCode}")
     @ApiOperation("移库任务上架分配库位")
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public R<BinInVO> allocateBin(@PathVariable("mesBarCode") String mesBarCode) {
 
         return R.ok(splitService.allocateBin(mesBarCode, SecurityUtils.getWareCode()));
@@ -100,6 +103,7 @@ public class SplitController extends BaseController {
     @PostMapping(value = "/binIn")
     @ApiOperation("PDA普通拆托上架")
     @Log(title = "PDA普通拆托上架", businessType = BusinessType.INSERT)
+    @Synchronized
     public R performBinIn(@RequestBody BinInDTO binInDTO) {
         splitService.performBinIn(binInDTO);
         return R.ok();

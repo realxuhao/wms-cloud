@@ -327,6 +327,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+
     public void performBinIn(BinInDTO binInDTO) {
 
         String mesBarCode = binInDTO.getMesBarCode();
@@ -422,7 +424,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                 item.setQuantity(item.getSplitQuality());
             }
         });
-        if (CollectionUtils.isEmpty(list)){
+        if (CollectionUtils.isEmpty(list)) {
             return Double.valueOf(0);
         }
         double sum = list.stream().mapToDouble(WareShift::getQuantity).sum();
@@ -436,7 +438,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             return;
         }
         dtos.forEach(item -> {
-            if (item.getShiftQuality()==null||item.getShiftQuality() <= 0) {
+            if (item.getShiftQuality() == null || item.getShiftQuality() <= 0) {
                 throw new ServiceException("移库数量必须大于0");
             }
         });
@@ -456,24 +458,24 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         Map<String, List<MaterialCall>> matrialCallMap = callList.stream().collect(Collectors.groupingBy(MaterialCall::getMaterialNb));
 
         Map<String, Double> materialCountMap = new HashMap<>();
-        Map<String,String> materialCallIds = new HashMap<>();
-        Map<String,String> materialCallOrders = new HashMap<>();
+        Map<String, String> materialCallIds = new HashMap<>();
+        Map<String, String> materialCallOrders = new HashMap<>();
 
         matrialCallMap.forEach((materialNb, list) -> {
             double sum = list.stream().mapToDouble(item -> callQuantityMap.get(item.getId())).sum();
-            materialCountMap.put(materialNb,sum);
-            List<String> ids=new ArrayList<>();
-            list.stream().forEach(item->ids.add(item.getId().toString()));
+            materialCountMap.put(materialNb, sum);
+            List<String> ids = new ArrayList<>();
+            list.stream().forEach(item -> ids.add(item.getId().toString()));
             String join = String.join(",", ids);
-            materialCallIds.put(materialNb,join);
+            materialCallIds.put(materialNb, join);
 
 
-            List<String> orderList=new ArrayList<>();
-            list.stream().forEach(item->orderList.add(item.getOrderNb().toString()));
-            materialCallOrders.put(materialNb,String.join(",", orderList));
+            List<String> orderList = new ArrayList<>();
+            list.stream().forEach(item -> orderList.add(item.getOrderNb().toString()));
+            materialCallOrders.put(materialNb, String.join(",", orderList));
 
 
-            List<WareShift> wareShifts = gennerateWareShift(materialNb, materialCountMap.get(materialNb), materialCallIds.get(materialNb),materialCallOrders.get(materialNb));
+            List<WareShift> wareShifts = gennerateWareShift(materialNb, materialCountMap.get(materialNb), materialCallIds.get(materialNb), materialCallOrders.get(materialNb));
             wareShiftList.addAll(wareShifts);
         });
 
@@ -506,7 +508,10 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         stockWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         Stock stock = stockService.getOne(stockWrapper);
         stock.setTotalStock(stock.getTotalStock() - splitPallet.getSplitQuantity());
-        stock.setFreezeStock(stock.getFreezeStock() - splitPallet.getSplitQuantity());
+        stock.setFreezeStock(Double.valueOf(0));
+        stock.setAvailableStock(stock.getTotalStock());
+        stock.setWholeFlag(StockWholeFlagEnum.NOT_WHOLE.code());
+
         if (stock.getTotalStock().equals(Double.valueOf(0))) {
             stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
         }
@@ -562,11 +567,11 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
 
         LambdaQueryWrapper<BinIn> binInQueryWrapper = new LambdaQueryWrapper<>();
-        binInQueryWrapper.in(BinIn::getSsccNumber,ssccList);
-        binInQueryWrapper.eq(BinIn::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        binInQueryWrapper.in(BinIn::getSsccNumber, ssccList);
+        binInQueryWrapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<BinIn> list = binInService.list(binInQueryWrapper);
-        if (!CollectionUtils.isEmpty(list)){
-            list.stream().forEach(item->item.setDeleteFlag(DeleteFlagStatus.TRUE.getCode()));
+        if (!CollectionUtils.isEmpty(list)) {
+            list.stream().forEach(item -> item.setDeleteFlag(DeleteFlagStatus.TRUE.getCode()));
             binInService.updateBatchById(list);
         }
 
@@ -615,7 +620,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
             stock.setCreateBy(SecurityUtils.getUsername());
             stock.setCreateTime(new Date());
-            stock.setQualityStatus(StringUtils.isEmpty(lastOneBySSCC.getQualityStatus())?QualityStatusEnums.WAITING_QUALITY.getCode():lastOneBySSCC.getQualityStatus());
+            stock.setQualityStatus(StringUtils.isEmpty(lastOneBySSCC.getQualityStatus()) ? QualityStatusEnums.WAITING_QUALITY.getCode() : lastOneBySSCC.getQualityStatus());
             stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
             stock.setAreaCode(binIn.getAreaCode());
             stock.setPalletCode(binIn.getPalletCode());
@@ -638,11 +643,11 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
         this.updateBatchById(wareShiftList);
 
-        operationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.SHIFT_BININ.getCode(), operationLogs);
+        operationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.SHIFT_BININ.getCode(), operationLogs);
 
     }
 
-    private List<WareShift> gennerateWareShift(String materialNb,Double shiftQuality,String ids,String orders){
+    private List<WareShift> gennerateWareShift(String materialNb, Double shiftQuality, String ids, String orders) {
         LambdaQueryWrapper<Stock> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(Stock::getMaterialNb, materialNb);
         lambdaQueryWrapper.eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode());
@@ -657,7 +662,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         List<Stock> sortedStockList = new ArrayList<>();
         sortedStockList =
                 stockList.stream().filter(item -> item.getAvailableStock() != 0
-                        &&!AreaListConstants.mainArea(item.getAreaCode())).
+                        && !AreaListConstants.mainArea(item.getAreaCode())
+                        && !AreaListConstants.noQualifiedArea(item.getAreaCode())).
                         sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder())).collect(Collectors.toList());
         double count = 0;
         List<Stock> useMaterialStockList = new ArrayList<>();
@@ -806,7 +812,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                     //直接上架到IQC虚拟区域
                     StockVO lastOneBySSCC = stockService.getLastOneBySSCC(samplePlan.getSsccNb());
                     String mesBarCode = MesBarCodeUtil.generateMesBarCode(lastOneBySSCC.getExpireDate(), lastOneBySSCC.getSsccNumber(), lastOneBySSCC.getMaterialNb(), lastOneBySSCC.getBatchNb(), lastOneBySSCC.getTotalStock());
-                    BinInVO binInVO = binInService.performToAreaType(mesBarCode, lastOneBySSCC.getTotalStock(),AreaTypeEnum.IQC.getCode());
+                    BinInVO binInVO = binInService.performToAreaType(mesBarCode, lastOneBySSCC.getTotalStock(), AreaTypeEnum.IQC.getCode());
                     //修改IQC抽样状态
                     samplePlan.setStatus(IQCStatusEnum.WAITING_SAMPLE.code());
                     samplePlan.setWareCode(SecurityUtils.getWareCode());

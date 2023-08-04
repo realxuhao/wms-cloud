@@ -528,6 +528,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         queryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
         queryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
         queryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+        queryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+
         queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryWrapper);
         MaterialKanbanVO conver = BeanConverUtil.conver(materialKanban, MaterialKanbanVO.class);
@@ -553,6 +555,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, splitPallet.getSourceSsccNb());
             kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
             kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+            kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+
             kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
             kanbanQueryWrapper.last("limit 1");
             kanbanQueryWrapper.last("for update");
@@ -596,6 +600,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, splitPallet.getSourceSsccNb());
             kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
             kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+            kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+
             kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
             kanbanQueryWrapper.last("limit 1");
             kanbanQueryWrapper.last("for update");
@@ -676,6 +682,11 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         LambdaQueryWrapper<MaterialKanban> qw = new LambdaQueryWrapper<>();
         qw.eq(MaterialKanban::getId, id);
         qw.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+        qw.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+        qw.ne(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+
+
         qw.last("for update ");
         MaterialKanban materialKanban = getOne(qw);
         if (KanbanStatusEnum.FINISH.value().equals(materialKanban.getStatus()) ||

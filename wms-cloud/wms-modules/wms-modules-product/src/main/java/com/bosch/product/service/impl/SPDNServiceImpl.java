@@ -14,12 +14,10 @@ import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
 import com.bosch.product.api.domain.vo.SPDNVO;
 import com.bosch.product.mapper.SPDNMapper;
 import com.bosch.product.mapper.ShippingTaskMapper;
-import com.bosch.product.service.IProductSPDNPickService;
-import com.bosch.product.service.IProductStockService;
-import com.bosch.product.service.ISPDNService;
-import com.bosch.product.service.IShippingTaskService;
+import com.bosch.product.service.*;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
@@ -28,10 +26,12 @@ import com.ruoyi.common.log.enums.StockOperationType;
 import com.ruoyi.common.log.service.IProductStockOperationService;
 import org.hibernate.validator.internal.util.privilegedactions.NewSchema;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -62,6 +62,10 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
 
     @Autowired
     private IProductStockOperationService productStockOperationService;
+
+    @Resource
+    @Lazy
+    private IProductWareShiftService wareShiftService;
 
 
 
@@ -141,6 +145,12 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
                     spdnPick.setStatus(ProductSPDNPickEnum.WAITTING_DOWN.code());
                     spdnPick.setId(null);
                     spdnPickList.add(spdnPick);
+
+
+
+
+
+
                 }
             }
 
@@ -155,6 +165,9 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         }
         ArrayList<ProductStock> list = new ArrayList<>(ssccStockMap.values());
         productStockService.updateBatchById(list);
+
+
+
 
         this.updateBatchById(spdnList);
 

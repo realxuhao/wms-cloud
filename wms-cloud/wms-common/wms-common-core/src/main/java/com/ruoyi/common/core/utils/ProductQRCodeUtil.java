@@ -3,6 +3,7 @@ package com.ruoyi.common.core.utils;
 
 import com.ruoyi.common.core.exception.ServiceException;
 import org.apache.commons.lang3.ArrayUtils;
+import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 
 
 import java.util.Arrays;
@@ -32,7 +33,10 @@ public class ProductQRCodeUtil {
 //        if (split[2].length()!=20){
 //            throw new ServiceException("成品QR CODE 格式错误");
 //        }
-        qrCode = qrCode.replace("\\r?\\n", "");
+
+        qrCode = qrCode.replace("\\r?\\n", "").replace("(","").replace(")","");
+
+
         return Arrays.asList(qrCode.substring(0,19),qrCode.substring(19,51),qrCode.substring(51,71));
     }
     public static Date getProductionDate(String qrCode){
@@ -55,9 +59,43 @@ public class ProductQRCodeUtil {
         return parseDate;
     }
 
+//    public static String getBatchNb(String qrCode){
+//        return splitQRCode(qrCode).get(0).substring(10);
+//    }
+
     public static String getBatchNb(String qrCode){
+        Date expireDate = getExpireDate(qrCode);
+        DateUtils.parseDateToStr("yyyy-MM-dd",expireDate);
+        return DateUtils.parseDateToStr("yyyy-MM-dd",expireDate);
+    }
+
+    //生产订单号
+    public static String getLot(String qrCode){
         return splitQRCode(qrCode).get(0).substring(10);
     }
+
+
+
+    public static Date getExpireDate(String qrCode){
+        String date = "";
+        try {
+            date = qrCode.substring(2, 10);
+        } catch (Exception e) {
+            throw new ServiceException("mesBarCode格式错误");
+        }
+        Date parseDate = null;
+        String format = "yyyy-MM-dd";
+
+        try {
+            parseDate = org.apache.commons.lang3.time.DateUtils.parseDate(date, format, "yyyyMMdd");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return parseDate;
+    }
+
+
+
 
     public static String getSSCC(String qrCode){
         return splitQRCode(qrCode).get(2).substring(2);
@@ -84,7 +122,7 @@ public class ProductQRCodeUtil {
         String batchNb = "101207530";
         String expireDate = "240709";
         String quantity = "000060";
-        String sscc="369006391113669805";
+        String sscc="369006391113872175";
 
 
         String s1="11"+productDate+"10"+batchNb;

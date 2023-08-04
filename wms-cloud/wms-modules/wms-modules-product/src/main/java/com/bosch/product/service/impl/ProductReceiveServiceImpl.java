@@ -115,16 +115,17 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
     @Override
     public boolean validList(List<ProductReceiveDTO> dtos) {
         //校验料号是否存在。
-        List<String> codeList = dtos.stream().map(ProductReceiveDTO::getMaterialNb).collect(Collectors.toList());
-        R<List<String>> notExistCodeListR = remoteProductService.getNotExistCodeList(codeList);
-        if (notExistCodeListR==null|| !notExistCodeListR.isSuccess()){
-            throw new ServiceException("调用成品主数据失败");
-        }
-        List<String> data = notExistCodeListR.getData();
-        Set<String> set= new HashSet<>(data);
-        if (!CollectionUtils.isEmpty(set)){
-            throw new ServiceException("以下成品料号主数据中不存在："+set);
-        }
-        return receiveMapper.validateRecord(dtos) > 0;
+//        List<String> codeList = dtos.stream().map(ProductReceiveDTO::getMaterialNb).collect(Collectors.toList());
+//        R<List<String>> notExistCodeListR = remoteProductService.getNotExistCodeList(codeList);
+//        if (notExistCodeListR==null|| !notExistCodeListR.isSuccess()){
+//            throw new ServiceException("调用成品主数据失败");
+//        }
+//        List<String> data = notExistCodeListR.getData();
+//        Set<String> set= new HashSet<>(data);
+//        if (!CollectionUtils.isEmpty(set)){
+//            throw new ServiceException("以下成品料号主数据中不存在："+set);
+//        }
+//        return receiveMapper.validateRecord(dtos) > 0;
+        return  true;
     }
 }

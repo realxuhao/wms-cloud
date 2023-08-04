@@ -39,7 +39,7 @@ public class IQCSamplePlanVO {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date expireDate;
     @ApiModelProperty(value = "状态")
-    @Excel(name = "状态")
+    @Excel(name = "状态",readConverterExp = "-1=已取消,0=待下架,1=待抽样,2=待上架,3=完成,4=移库中,5=待下发")
     private Integer status;
     @ApiModelProperty(value = "仓库编码")
     @Excel(name = "仓库编码")

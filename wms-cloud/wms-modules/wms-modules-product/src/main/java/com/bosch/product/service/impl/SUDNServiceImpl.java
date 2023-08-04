@@ -139,7 +139,7 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
             List<ProductStock> useProductStocks = new ArrayList<>();
             for (ProductStock stock : productSortedStockList) {
                 Double availableStock = stock.getAvailableStock();
-                availableStock = boxSpecification * availableStock;
+                availableStock = (double)Math.round((boxSpecification * availableStock*100)/100.0);
                 currentQty += availableStock;
                 useProductStocks.add(stock);
                 if (currentQty >= item.getDeliveryQuantity()) {
@@ -149,7 +149,7 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
             //箱
             double useSum = useProductStocks.stream().mapToDouble(ProductStock::getAvailableStock).sum();
             //  转化为PCS
-            useSum = boxSpecification * useSum;
+            useSum=(double)Math.round(( boxSpecification * useSum*100)/100.0);
             List<ProductPick> pickList = new ArrayList<>();
             for (ProductStock stock : useProductStocks) {
                 ProductPick productPick = BeanConverUtil.conver(item, ProductPick.class);
@@ -163,18 +163,19 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
                 productPick.setFrameCode(stock.getFrameCode());
                 productPick.setSudnId(item.getId());
                 productPick.setAreaCode(stock.getAreaCode());
-                productPick.setDeliveryQuantity(stock.getAvailableStock());
-                productPick.setBinDownQuantity(stock.getAvailableStock());
+                productPick.setDeliveryQuantity((double)Math.round(stock.getAvailableStock() * boxSpecification*100/100.0));
+                productPick.setBinDownQuantity((double)Math.round(stock.getAvailableStock() * boxSpecification*100/100.0));
                 productPick.setProductionBatch(stock.getProductionDate());
                 productPick.setExpireDate(stock.getExpireDate());
 
                 if (useProductStocks.get(useProductStocks.size() - 1) == stock) {
-                    double abs = Math.abs(useSum - item.getDeliveryQuantity());//PCS
+
+                    double abs =(double)Math.round(Math.abs(useSum - item.getDeliveryQuantity())*100/100.0);//PCS
                     //对应的箱
                     double boxDiff = abs / boxSpecification;
                     stock.setFreezeStock(stock.getFreezeStock() + (stock.getAvailableStock() - boxDiff));
-                    productPick.setDeliveryQuantity(stock.getAvailableStock() * boxSpecification - abs);
-                    productPick.setBinDownQuantity(stock.getAvailableStock() * boxSpecification - abs);
+                    productPick.setDeliveryQuantity((double)Math.round((stock.getAvailableStock() * boxSpecification - abs)*100/100.0));
+                    productPick.setBinDownQuantity((double)Math.round((stock.getAvailableStock() * boxSpecification - abs)*100/100.0));
 
                 } else {
                     stock.setFreezeStock(stock.getFreezeStock() + stock.getAvailableStock());

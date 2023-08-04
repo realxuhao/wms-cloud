@@ -21,6 +21,7 @@ import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -117,6 +118,7 @@ public class IQCController extends BaseController {
     @PutMapping(value = "/binDown/{mesBarCode}")
     @Log(title = "IQC抽样计划执行下架", businessType = BusinessType.UPDATE)
     @ApiOperation("IQC抽样计划执行下架接口")
+    @Synchronized
     public R binDown(@PathVariable String mesBarCode) {
         samplePlanService.binDown(MesBarCodeUtil.getSSCC(mesBarCode));
 
@@ -128,6 +130,7 @@ public class IQCController extends BaseController {
     @PutMapping(value = "/sample/cancel/{id}")
     @Log(title = "IQC抽样计划执行取消", businessType = BusinessType.DELETE)
     @ApiOperation("IQC抽样计划执行取消接口")
+    @Synchronized
     public R binDown(@PathVariable("id") Long id) {
         samplePlanService.cancel(id);
         return R.ok();
@@ -136,6 +139,7 @@ public class IQCController extends BaseController {
     @GetMapping(value = "/binIn/{mesBarCode}")
     @Log(title = "IQC抽样计划分配库位", businessType = BusinessType.INSERT)
     @ApiOperation("IQC抽样计划分配库位接口")
+    @Synchronized
     public R<BinInVO> getBinInInfo(@PathVariable String mesBarCode) {
         BinInVO binInVO = samplePlanService.getBinInInfo(MesBarCodeUtil.getSSCC(mesBarCode));
         return R.ok(binInVO);
@@ -145,6 +149,7 @@ public class IQCController extends BaseController {
     @PostMapping(value = "/binIn")
     @Log(title = "IQC抽样计划执行上架", businessType = BusinessType.INSERT)
     @ApiOperation("IQC抽样计划执行上架接口")
+    @Synchronized
     public R performBinIn(@RequestBody BinInDTO binInDTO) {
         samplePlanService.performBinIn(binInDTO);
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.IQCBININ.getCode(), MesBarCodeUtil.getSSCC(binInDTO.getMesBarCode()));
@@ -155,6 +160,7 @@ public class IQCController extends BaseController {
     @PostMapping(value = "/sample/confirm")
     @Log(title = "IQC抽样确认", businessType = BusinessType.UPDATE)
     @ApiOperation("IQC抽样确认")
+    @Synchronized
     public R confirm(@RequestBody IQCSamplePlanDTO dto) {
         samplePlanService.confirm(dto);
         return R.ok();

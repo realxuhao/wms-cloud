@@ -1,6 +1,7 @@
 package com.bosch.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.binin.api.domain.dto.WareShiftBatchBinInDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.ProductWareShift;
@@ -35,4 +36,6 @@ public interface IProductWareShiftService extends IService<ProductWareShift> {
     void addBatchByStockIds(List<Long> stockIds);
 
     void mainReceiveConfirm(List<String> ssccList);
+
+    void batchPerformBinIn(WareShiftBatchBinInDTO dto);
 }

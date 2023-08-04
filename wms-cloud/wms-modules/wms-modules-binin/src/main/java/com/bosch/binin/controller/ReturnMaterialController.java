@@ -18,6 +18,7 @@ import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -110,6 +111,7 @@ public class ReturnMaterialController extends BaseController {
     @ApiOperation("退库上架分配库位")
     @Log(title = "退库上架分配库位", businessType = BusinessType.INSERT)
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public R<BinInVO> allocateBin(@PathVariable("mesBarCode") String mesBarCode) {
 
         return R.ok(materialReturnService.allocateBin(mesBarCode, SecurityUtils.getWareCode()));
@@ -118,6 +120,7 @@ public class ReturnMaterialController extends BaseController {
     @PostMapping(value = "/in")
     @ApiOperation("退库任务上架")
     @Log(title = "退库任务上架", businessType = BusinessType.INSERT)
+    @Synchronized
     public R in(@RequestBody ManualBinInDTO binInDTO) {
         materialReturnService.performBinIn(binInDTO);
         return R.ok();

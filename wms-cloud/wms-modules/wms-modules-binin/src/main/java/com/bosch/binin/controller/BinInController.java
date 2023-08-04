@@ -79,6 +79,7 @@ public class BinInController extends BaseController {
     @PostMapping(value = "/in")
     @Log(title = "原材料实际上架", businessType = BusinessType.INSERT)
     @ApiOperation("实际上架")
+    @Synchronized
     public R<BinInVO> in(@RequestBody BinInDTO binInDTO) {
 
         return R.ok(binInService.performBinInWithIQC(binInDTO));
@@ -133,6 +134,7 @@ public class BinInController extends BaseController {
     @GetMapping(value = "/getByMesBarCode/{mesBarCode}")
     @ApiOperation("扫码查询上架信息")
     @Synchronized
+    @Log(title = "原材料上架分配库位", businessType = BusinessType.INSERT)
     public R<BinInVO> getByMesBarCode(@PathVariable("mesBarCode") String mesBarCode) {
         BinInVO binInVO = binInService.getByMesBarCode(mesBarCode);
         return R.ok(binInVO);

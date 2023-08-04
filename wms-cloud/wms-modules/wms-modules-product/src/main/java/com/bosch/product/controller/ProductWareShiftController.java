@@ -1,5 +1,6 @@
 package com.bosch.product.controller;
 
+import com.bosch.binin.api.domain.dto.WareShiftBatchBinInDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
@@ -24,6 +25,7 @@ import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.Synchronized;
 import lombok.experimental.PackagePrivate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,16 +64,16 @@ public class ProductWareShiftController extends BaseController {
         if (queryDTO == null) {
             queryDTO = new ProductWareShiftQueryDTO();
         }
-//        if (!StringUtils.isEmpty(SecurityUtils.getWareCode())) {
-//            if(queryDTO.getStatus().equals(ProductWareShiftEnum.WAITTING_BIN_IN.code())) {
-//                queryDTO.setTargetWareCode(SecurityUtils.getWareCode());
-//            }else if (queryDTO.getStatus().equals(ProductWareShiftEnum.FINISH.code())){
-//                queryDTO.setTargetWareCode(SecurityUtils.getWareCode());
-//            }else if (queryDTO.getStatus().equals(ProductWareShiftEnum.WAITTING_RECEIVING.code())){
-//            } else {
-//                queryDTO.setSourceWareCode(SecurityUtils.getWareCode());
-//            }
-//        }
+        if (!StringUtils.isEmpty(SecurityUtils.getWareCode())) {
+            if(queryDTO.getStatus().equals(ProductWareShiftEnum.WAITTING_BIN_IN.code())) {
+                queryDTO.setTargetWareCode(SecurityUtils.getWareCode());
+            }else if (queryDTO.getStatus().equals(ProductWareShiftEnum.FINISH.code())){
+                queryDTO.setTargetWareCode(SecurityUtils.getWareCode());
+            }else if (queryDTO.getStatus().equals(ProductWareShiftEnum.WAITTING_RECEIVING.code())){
+            } else {
+                queryDTO.setSourceWareCode(SecurityUtils.getWareCode());
+            }
+        }
 
         startPage();
         List<ProductWareShiftVO> list = productWareShiftService.list(queryDTO);
@@ -119,6 +121,8 @@ public class ProductWareShiftController extends BaseController {
     @PostMapping(value = "/ship")
     @ApiOperation("发运")
     @Log(title = "成品移库发运", businessType = BusinessType.DELETE)
+    @Synchronized
+    @Transactional(rollbackFor = Exception.class)
     public R ship(@RequestBody ProductWareShiftQueryDTO dto) {
         Assert.notNull(dto,"参数不可以为空");
         Assert.noNullElements(dto.getSsccList(),"ssccList不可以为空");
@@ -147,6 +151,8 @@ public class ProductWareShiftController extends BaseController {
     @PutMapping(value = "/receive/{qrCode}")
     @Log(title = "成品移库收货", businessType = BusinessType.UPDATE)
     @ApiOperation("移库收货")
+    @Synchronized
+    @Transactional(rollbackFor = Exception.class)
     public R receive(@PathVariable("qrCode") String qrCode) {
         productWareShiftService.receive(qrCode);
         return R.ok();
@@ -155,10 +161,22 @@ public class ProductWareShiftController extends BaseController {
     @PostMapping(value = "/binIn")
     @ApiOperation("移库上架")
     @Log(title = "成品移库上架", businessType = BusinessType.UPDATE)
+    @Synchronized
+    @Transactional(rollbackFor = Exception.class)
     public R binIn(@RequestBody ProductBinInDTO binInDTO){
         productWareShiftService.wareShiftBinIn(binInDTO);
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBININ.getCode(), binInDTO.getSscc());
 
+        return R.ok();
+    }
+
+
+    @PostMapping(value = "/batchBinIn")
+    @ApiOperation("成品移库批量上架到区域")
+    @Synchronized
+    @Log(title = "成品移库批量上架到区域", businessType = BusinessType.INSERT)
+    public R batchPerformBinIn(@RequestBody WareShiftBatchBinInDTO dto) {
+        productWareShiftService.batchPerformBinIn(dto);
         return R.ok();
     }
 
@@ -187,10 +205,12 @@ public class ProductWareShiftController extends BaseController {
     @ApiOperation("确认并入库")
     @Log(title = "成品移库确认并入库", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
+    @Synchronized
     public R confirmOrder(@RequestBody List<String> ssccList){
         productWareShiftService.mainReceiveConfirm(ssccList);
         return R.ok();
     }
+
 
 
 }

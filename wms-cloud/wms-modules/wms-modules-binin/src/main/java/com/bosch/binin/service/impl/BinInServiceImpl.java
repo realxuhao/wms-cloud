@@ -415,6 +415,11 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         stockService.saveBatch(stockList);
 
 //        dealIQC(mesBarCode, materialCode, batchNb);
+        //这个时候，binIns只是未上架的集合。
+        //需要合并一下已上架的
+        if (!CollectionUtils.isEmpty(finishedBinInList)) {
+            binIns.addAll(finishedBinInList);
+        }
         dealIQCWithBatchBinIn(mesBarCode, materialCode, batchNb, binIns);
 
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.MATERIALBININ.getCode(), operationLogs);
@@ -1173,6 +1178,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         kanbanQueryWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
         kanbanQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+        kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+
         kanbanQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
 
         kanbanQueryWrapper.last("limit 1");
@@ -1246,24 +1253,28 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         bininQueryMapper.eq(BinIn::getSsccNumber, ssccNumber);
         bininQueryMapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         BinIn binIn = binInMapper.selectOne(bininQueryMapper);
-        if (binIn == null || binIn.getStatus().equals(BinInStatusEnum.PROCESSING.value())) {
-            throw new ServiceException("上架信息不存在或者正在上架中，不可下架");
+//        if (binIn == null || binIn.getStatus().equals(BinInStatusEnum.PROCESSING.value())) {
+//            throw new ServiceException("上架信息不存在或者正在上架中，不可下架");
+//        }
+        if (binIn!=null) {
+            binIn.setUpdateBy(SecurityUtils.getUsername());
+            binIn.setUpdateTime(new Date());
+            binIn.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
         }
-        binIn.setUpdateBy(SecurityUtils.getUsername());
-        binIn.setUpdateTime(new Date());
-        binIn.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
         //更新库存
         LambdaQueryWrapper<Stock> stockQuertMapper = new LambdaQueryWrapper<>();
         stockQuertMapper.eq(Stock::getSsccNumber, ssccNumber);
         stockQuertMapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         Stock stock = stockMapper.selectOne(stockQuertMapper);
         if (stock == null) {
-            throw new ServiceException("对应库存不存在");
+            throw new ServiceException("对应库存不存在,不可下架");
         }
         stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
         stock.setUpdateBy(SecurityUtils.getUsername());
         stock.setUpdateTime(new Date());
-        binInMapper.updateById(binIn);
+        if (binIn!=null) {
+            binInMapper.updateById(binIn);
+        }
         stockMapper.updateById(stock);
     }
 
@@ -1645,7 +1656,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setMoveType(MoveTypeEnums.SPLIT_IN.getCode());
         binIn.setFromPurchaseOrder(oldStock.getFromPurchaseOrder());
         binIn.setPlantNb(getWareInfo(SecurityUtils.getWareCode()).getFactoryCode());
-        this.saveOrUpdate(binIn);
+        this.save(binIn);
         return binInMapper.selectBySsccNumber(sscc);
 
     }
