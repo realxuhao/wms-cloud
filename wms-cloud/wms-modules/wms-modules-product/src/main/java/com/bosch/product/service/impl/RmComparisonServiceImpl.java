@@ -157,6 +157,8 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
         //根据登陆人查询
         lambdaUpdateWrapper.eq(RmComparison::getCreateBy, SecurityUtils.getUsername());
         lambdaUpdateWrapper.set(RmComparison::getStatus, ComparisonEnum.CHANGED.code());
+        lambdaUpdateWrapper.set(RmComparison::getUpdateBy, SecurityUtils.getUsername());
+        lambdaUpdateWrapper.set(RmComparison::getUpdateTime, DateUtils.getNowDate()) ;
         boolean update = this.update(lambdaUpdateWrapper);
         return update;
     }

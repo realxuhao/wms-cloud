@@ -18,6 +18,7 @@ import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.dto.IQCDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.IQCVO;
+import com.bosch.product.api.domain.ProComparison;
 import com.ruoyi.common.core.constant.AreaListConstants;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
@@ -126,6 +127,8 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                     wrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
                     wrapper.set(Stock::getQualityStatus, iqcdto.getFinalSAPStatus());
                     wrapper.set(Stock::getChangeStatus, 1);
+                    wrapper.set(Stock::getUpdateBy, SecurityUtils.getUsername());
+                    wrapper.set(Stock::getUpdateTime, DateUtils.getNowDate()) ;
                     boolean update = this.update(wrapper);
                     IQCVO conver = BeanConverUtil.conver(iqcdto, IQCVO.class);
                     conver.setStatus(update ? 0 : 1);
