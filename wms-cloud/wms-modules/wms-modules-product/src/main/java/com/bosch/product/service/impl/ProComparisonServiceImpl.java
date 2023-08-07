@@ -12,6 +12,7 @@ import com.bosch.product.api.domain.vo.ProComparisonVO;
 import com.bosch.product.service.IProComparisonService;
 import com.bosch.product.mapper.ProComparisonMapper;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +66,8 @@ public class ProComparisonServiceImpl extends ServiceImpl<ProComparisonMapper, P
         lambdaUpdateWrapper.set(ProComparison::getStatus,ComparisonEnum.CHANGED.code());
         //根据登陆人查询
         lambdaUpdateWrapper.eq(ProComparison::getCreateBy, SecurityUtils.getUsername());
+        lambdaUpdateWrapper.set(ProComparison::getUpdateBy, SecurityUtils.getUsername());
+        lambdaUpdateWrapper.set(ProComparison::getUpdateTime, DateUtils.getNowDate()) ;
         boolean update = this.update(lambdaUpdateWrapper);
         return update;
     }

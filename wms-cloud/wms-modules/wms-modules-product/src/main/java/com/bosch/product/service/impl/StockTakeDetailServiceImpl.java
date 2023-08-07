@@ -9,6 +9,7 @@ import com.bosch.binin.api.domain.Stock;
 import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.product.api.domain.ProductStock;
+import com.bosch.product.api.domain.SPDN;
 import com.bosch.product.api.domain.StockTakeDetail;
 import com.bosch.product.api.domain.StockTakePlan;
 import com.bosch.product.api.domain.dto.PdaTakeOperateDTO;
@@ -187,6 +188,8 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
         updateWrapper.in(StockTakeDetail::getId, idList);
         updateWrapper.eq(StockTakeDetail::getStatus, StockTakePlanDetailStatusEnum.WAIT_CONFIRM.getCode());
         updateWrapper.set(StockTakeDetail::getStatus, StockTakePlanDetailStatusEnum.FINISH.getCode());
+        updateWrapper.set(StockTakeDetail::getUpdateBy, SecurityUtils.getUsername());
+        updateWrapper.set(StockTakeDetail::getUpdateTime, DateUtils.getNowDate()) ;
         this.update(updateWrapper);
 
         //如果所在的detial全部完成了，更新plan
