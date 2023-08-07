@@ -20,10 +20,12 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.log.enums.StockOperationType;
 import com.ruoyi.common.log.service.IProductStockOperationService;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.hibernate.validator.internal.util.privilegedactions.NewSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -82,6 +84,8 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         LambdaUpdateWrapper<SPDN> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.in(SPDN::getId, ids);
         updateWrapper.set(SPDN::getDeleteFlag, DeleteFlagStatus.TRUE.getCode());
+        updateWrapper.set(SPDN::getUpdateBy, SecurityUtils.getUsername());
+        updateWrapper.set(SPDN::getUpdateTime, DateUtils.getNowDate()) ;
         this.update(updateWrapper);
     }
 
