@@ -19,6 +19,7 @@ import com.bosch.masterdata.api.domain.dto.IQCDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.IQCVO;
 import com.bosch.product.api.domain.ProComparison;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.ruoyi.common.core.constant.AreaListConstants;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
@@ -27,6 +28,9 @@ import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -98,7 +102,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 //            stockMapper.selectOne(queryWrapper)
 //            i = stockMapper.changeStatus(iqcChangeStatusDTO);
 //        }
-        Integer i = stockMapper.changeStatus(iqcChangeStatusDTO);
+        Integer i = stockMapper.changeStatus(iqcChangeStatusDTO,SecurityUtils.getUsername(), DateUtils.getNowDate());
         return i;
     }
 
@@ -106,6 +110,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     @Transactional(rollbackFor = Exception.class)
     public List<IQCVO> excelChangeStatus(List<IQCDTO> list) {
         List<IQCVO> result = new ArrayList<>();
+        List<UserOperationLog> userOperationLogList = new ArrayList<>();
         // 定义每个线程处理的数据量
         int batchSize = 100;
         // 计算需要启动的线程数
@@ -129,7 +134,10 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                     wrapper.set(Stock::getChangeStatus, 1);
                     wrapper.set(Stock::getUpdateBy, SecurityUtils.getUsername());
                     wrapper.set(Stock::getUpdateTime, DateUtils.getNowDate()) ;
+                    wrapper.set(Stock::getIqcUpdateBy, SecurityUtils.getUsername());
+                    wrapper.set(Stock::getIqcUpdateTime, DateUtils.getNowDate()) ;
                     boolean update = this.update(wrapper);
+
                     IQCVO conver = BeanConverUtil.conver(iqcdto, IQCVO.class);
                     conver.setStatus(update ? 0 : 1);
                     //result.add(conver);
@@ -150,6 +158,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             e.printStackTrace();
         }
         List<IQCVO> stockVOS = mapToMaterial(result);
+
         return stockVOS;
     }
 

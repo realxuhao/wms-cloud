@@ -29,6 +29,8 @@
         <result property="changeStatus" column="change_status"/>
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
+        <result property="iqcUpdateBy" column="iqc_update_by"/>
+        <result property="iqcUpdateTime" column="iqc_update_time"/>
         <result property="unit" column="unit"/>
         <result property="cell" column="cell"/>
     </resultMap>
@@ -52,11 +54,14 @@
         bs.create_time as create_time,
         bs.update_by as update_by,
         bs.update_time as update_time,
+        bs.iqc_update_by as iqc_update_by,
+        bs.iqc_update_time as iqc_update_time,
         bs.quality_status as quality_status,
         bs.area_code as area_code,
         bs.pallet_code as pallet_code,
         bs.whole_flag as whole_flag,
         bs.change_status as change_status,
+
         mm.unit as unit,
         mt.code as cell
         from bi_stock bs
@@ -105,16 +110,20 @@ order by bs.batch_nb,bs.expire_date
     <update id="changeStatus" parameterType="IQCChangeStatusDTO">
         update bi_stock b set
         b.change_status =1 ,
-        b.quality_status=#{qualityStatus}
-        <if test=' type != "" and type=="0" '>
+        b.quality_status=#{dto.qualityStatus},
+        b.update_by=#{updateUser},
+        b.update_time=#{updateTime},
+        b.iqc_update_by=#{updateUser},
+        b.iqc_update_time=#{updateTime}
+        <if test=' dto.type != "" and dto.type=="0" '>
             where b.id =#{id}
         </if>
-        <if test='type != "" and type == "1"'>
+        <if test='dto.type != "" and dto.type == "1"'>
             where b.batch_nb =
             (SELECT a.batch_nb from
-            (SELECT batch_nb from bi_stock where id=#{id}) a )
+            (SELECT batch_nb from bi_stock where id=#{dto.id}) a )
             and b.quality_status in
-            <foreach collection="fromStatusList" index="index" item="item" open="(" separator="," close=")">
+            <foreach collection="dto.fromStatusList" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>

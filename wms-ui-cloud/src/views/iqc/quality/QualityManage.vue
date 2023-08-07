@@ -357,6 +357,18 @@ const columns = [
     width: 200
   },
   {
+    title: 'IQC修改人',
+    key: 'iqcUpdateBy',
+    dataIndex: 'iqcUpdateBy',
+    width: 120
+  },
+  {
+    title: 'IQC修改时间',
+    key: 'iqcUpdateTime',
+    dataIndex: 'iqcUpdateTime',
+    width: 200
+  },
+  {
     title: '质检操作',
     key: 'action',
     fixed: 'right',

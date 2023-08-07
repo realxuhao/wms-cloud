@@ -1,6 +1,9 @@
 package com.bosch.binin.api.domain;
 
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -115,4 +118,9 @@ public class Stock extends BaseEntity {
      */
     private int changeStatus;
 
+    /** iqc更新者 */
+    private String iqcUpdateBy;
+
+    /** iqc更新时间 */
+    private Date iqcUpdateTime;
 }

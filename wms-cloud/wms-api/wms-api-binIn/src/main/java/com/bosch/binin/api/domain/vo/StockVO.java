@@ -186,5 +186,12 @@ public class StockVO {
     private Date updateTime;
 
 
+    /** iqc更新者 */
+    @ApiModelProperty(value = "IQC更新人")
+    private String iqcUpdateBy;
 
+    /** iqc更新时间 */
+    @ApiModelProperty(value = "IQC更新时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date iqcUpdateTime;
 }

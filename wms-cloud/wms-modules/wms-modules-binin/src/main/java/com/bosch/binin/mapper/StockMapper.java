@@ -14,6 +14,7 @@ import org.apache.ibatis.annotations.Update;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,7 +35,7 @@ public interface StockMapper extends BaseMapper<Stock> {
     List<StockVO> selectMaterialBySSCC(@Param("ssccList") List<String> ssccs);
     int validateStatus(Long id);
 
-    Integer changeStatus(IQCChangeStatusDTO iqcChangeStatusDTO);
+    Integer changeStatus(@Param("dto") IQCChangeStatusDTO iqcChangeStatusDTO,@Param("updateUser") String updateUser, @Param("updateTime") Date updateTime);
 
 
     List<StockVO> selectStockVOListBySSCCList(@Param("ssccList") List<String> ssccList);
