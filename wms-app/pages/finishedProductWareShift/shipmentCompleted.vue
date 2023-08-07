@@ -24,6 +24,11 @@
 					<text>SSCC码：{{ item.ssccNb }}</text>
 					<text class="time">{{ item.createTime }}</text>
 				</view>
+				<view class="card-text m-b-4">FromProdOrder：{{ item.fromProdOrder }}</view>
+				<view class="card-text m-b-4">Batch Nb：{{ item.batchNb }}</view>
+				<view class="card-text m-b-4">数量：{{ item.quantity }}</view>
+				<view class="card-text m-b-4">批次总数量：{{ item.totalStockSum }}</view>
+				
 			</view>
 			<Empty v-if="!list.length"></Empty>
 		</hr-pull-load>
