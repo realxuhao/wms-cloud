@@ -20,6 +20,11 @@
                   </a-form-item>
                 </a-col>
                 <a-col :span="4">
+                  <a-form-item label="用户名称">
+                    <a-input v-model="queryParam.nickName" placeholder="请输入" allow-clear />
+                  </a-form-item>
+                </a-col>
+                <a-col :span="4">
                   <a-form-item label="手机号" >
                     <a-input v-model="queryParam.phonenumber" placeholder="请输入" allow-clear />
                   </a-form-item>
@@ -230,7 +235,8 @@ export default {
         userName: undefined,
         phonenumber: undefined,
         status: undefined,
-        deptId: undefined
+        deptId: undefined,
+        nickName:undefined
       },
       columns: [
         {

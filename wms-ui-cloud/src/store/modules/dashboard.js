@@ -51,7 +51,7 @@ const comparison = {
 
     async exportWorkload
       ({ commit }, options) {
-      const { data } = await dashboardService.exportWorkload(options)
+      const  data  = await dashboardService.exportWorkload(options)
       return data
     },
     async getWorkloadPro
@@ -62,7 +62,7 @@ const comparison = {
 
     async exportWorkloadPro
       ({ commit }, options) {
-      const { data } = await dashboardService.exportWorkloadPro(options)
+      const  data  = await dashboardService.exportWorkloadPro(options)
       return data
     },
     async processEfficiency

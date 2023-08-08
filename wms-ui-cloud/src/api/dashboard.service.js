@@ -58,10 +58,11 @@ const getWorkload = async (parameter) => {
   return data
 }
 
-const exportWorkload = async (parameter) => {
+const exportWorkload = async (options) => {
   const url = `/report/workloadExport`
-  const { data } = await createAuthInstance(baseUrl).post(url, parameter, {
-    responseType: 'blob'
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
   })
   return data
 }
@@ -72,10 +73,11 @@ const getWorkloadPro = async (parameter) => {
   return data
 }
 
-const exportWorkloadPro = async (parameter) => {
+const exportWorkloadPro = async (options) => {
   const url = `/report/workloadExportPro`
-  const { data } = await createAuthInstance(baseUrl).post(url, parameter, {
-    responseType: 'blob'
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
   })
   return data
 }

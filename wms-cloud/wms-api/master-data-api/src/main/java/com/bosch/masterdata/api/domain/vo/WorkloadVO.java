@@ -1,6 +1,7 @@
 package com.bosch.masterdata.api.domain.vo;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.ruoyi.common.core.annotation.Excel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -18,24 +19,28 @@ public class WorkloadVO {
      * 创建人
      */
     @ApiModelProperty(value = "create_by")
+    @Excel(name = "操作人")
     private String createBy;
 
     /**
      * 修改人
      */
     @ApiModelProperty(value = "update_by")
+
     private String updateBy;
 
     /**
      * 创建时间
      */
     @ApiModelProperty(value = "create_time")
+
     private Date createTime;
 
     /**
      * 修改时间
      */
     @ApiModelProperty(value = "update_time")
+
     private Date updateTime;
 
 
@@ -62,30 +67,35 @@ public class WorkloadVO {
      * 上架
      */
     @ApiModelProperty(value = "上架")
+    @Excel(name = "上架")
     private Integer binIn;
 
     /**
      * 拣配下架
      */
     @ApiModelProperty(value = "拣配下架")
+    @Excel(name = "拣配下架")
     private Integer binOut;
 
     /**
      * 其他下架
      */
     @ApiModelProperty(value = "其他下架")
+    @Excel(name = "其他下架")
     private Integer binOutOther;
 
     /**
      * 拆托
      */
     @ApiModelProperty(value = "拆托")
+    @Excel(name = "拆托")
     private Integer palletSplit;
 
     /**
      * 翻托
      */
     @ApiModelProperty(value = "翻托")
+    @Excel(name = "翻托")
     private Integer palletTurnover;
 
 }

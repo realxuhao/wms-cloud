@@ -132,7 +132,7 @@ export default {
 
         const res  = await this.$store.dispatch('dashboard/exportWorkload')
 
-        download(res,'在库时间最长物料')
+        download(res,'员工实际工作量（原材料）-标准单位托盘导出')
       } catch (error) {
         this.$message.error(error.message)
       }finally{

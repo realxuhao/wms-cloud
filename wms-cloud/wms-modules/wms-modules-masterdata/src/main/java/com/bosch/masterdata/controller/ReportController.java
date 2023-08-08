@@ -160,7 +160,7 @@ public class ReportController extends BaseController {
         WorkloadDTO workloadDTO=new WorkloadDTO();
         List<WorkloadVO> list = reportService.workload(workloadDTO);
         ExcelUtil<WorkloadVO> util = new ExcelUtil<>(WorkloadVO.class);
-        util.exportExcel(response, list, "员工实际工作量");
+        util.exportExcel(response, list, "员工实际工作量（原材料）-标准单位托盘导出");
 
     }
     /**
@@ -172,7 +172,7 @@ public class ReportController extends BaseController {
         WorkloadDTO workloadDTO=new WorkloadDTO();
         List<WorkloadVO> list = reportService.workloadPro(workloadDTO);
         ExcelUtil<WorkloadVO> util = new ExcelUtil<>(WorkloadVO.class);
-        util.exportExcel(response, list, "员工实际工作量");
+        util.exportExcel(response, list, "员工实际工作量（成品）-标准单位托盘导出");
 
     }
     /**
@@ -208,6 +208,6 @@ public class ReportController extends BaseController {
 
         List<ProInOutStockVO> list = reportService.proInOutStock(proInOutStockDTO);
         ExcelUtil<ProInOutStockVO> util = new ExcelUtil<>(ProInOutStockVO.class);
-        util.exportExcel(response, list, "员工实际工作量");
+        util.exportExcel(response, list, "成品报表-进销存量导出");
     }
 }
