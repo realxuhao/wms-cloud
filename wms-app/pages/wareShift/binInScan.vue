@@ -65,7 +65,7 @@ export default {
 		async scanCodeCallback(data) {
 			Bus.$emit('stopScan');
 			this.code = data.code;
-			this.code = '20250213669006391114282042103025072202141190001000'
+			// this.code = '20250213669006391114282042103025072202141190001000'
 			this.checkTask(data.code);
 		},
 		handleGoBack() {

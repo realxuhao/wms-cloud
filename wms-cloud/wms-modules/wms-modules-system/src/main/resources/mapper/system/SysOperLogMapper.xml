@@ -38,6 +38,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			<if test="title != null and title != ''">
 				AND title like concat('%', #{title}, '%')
 			</if>
+
+			<if test="operParam != null and operParam != ''">
+				AND (oper_param like concat('%', #{operParam}, '%') OR oper_url like concat('%', #{operParam})
+			</if>
 			<if test="businessType != null">
 				AND business_type = #{businessType}
 			</if>

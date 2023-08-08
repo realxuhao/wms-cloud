@@ -192,4 +192,8 @@ public class ProductStockVO {
     @ApiModelProperty(value = "推荐库位编码")
     private String recommendBinCode;
 
+
+    @ApiModelProperty
+    private Double totalStockSum;
+
 }

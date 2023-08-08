@@ -159,13 +159,13 @@ const columns = [
     title: '物料名称',
     key: 'materialName',
     dataIndex: 'materialName',
-    width: 200
+    width: 120
   },
   {
     title: '物料类型',
     key: 'materialType',
     dataIndex: 'materialType',
-    width: 200
+    width: 120
   },
   {
     title: '批次号',
