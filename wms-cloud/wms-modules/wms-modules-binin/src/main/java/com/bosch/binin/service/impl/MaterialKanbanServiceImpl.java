@@ -568,18 +568,32 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
                 throw new ServiceException("当前任务状态不正确");
             }
 
+            LambdaQueryWrapper<Stock> stockQuertMapper = new LambdaQueryWrapper<>();
+            stockQuertMapper.eq(Stock::getSsccNumber, splitPallet.getSourceSsccNb());
+            stockQuertMapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            Stock stock = stockMapper.selectOne(stockQuertMapper);
+            if (stock == null) {
+                throw new ServiceException("对应库存不存在,不可拆托");
+            }
+            materialKanban.setBinDownQuantity(stock.getTotalStock());
+
             materialKanban.setStatus(KanbanStatusEnum.INNER_DOWN.value());
             materialKanban.setUpdateBy(SecurityUtils.getUsername());
             materialKanban.setUpdateTime(new Date());
             materialKanbanMapper.updateById(materialKanban);
             //整托下架
             binInService.binDown(splitPallet.getSourceSsccNb());
+
+
         }else {
 
 
             //校验quantity
             LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
-            stockQueryWrapper.eq(Stock::getSsccNumber, splitPallet.getSourceSsccNb()).eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode()).last("limit 1").last("for update");
+            stockQueryWrapper.eq(Stock::getSsccNumber, splitPallet.getSourceSsccNb())
+                    .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode())
+                    .last("limit 1")
+                    .last("for update");
             Stock stock = stockMapper.selectOne(stockQueryWrapper);
             StockVO stockVO = BeanConverUtil.conver(stock, StockVO.class);
             if (Objects.isNull(stock)) {
@@ -616,6 +630,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             materialKanban.setStatus(KanbanStatusEnum.FINISH.value());
             materialKanban.setUpdateBy(SecurityUtils.getUsername());
             materialKanban.setUpdateTime(new Date());
+            materialKanban.setBinDownQuantity(splitPallet.getSplitQuantity());
             materialKanbanMapper.updateById(materialKanban);
 
             //生成一个新任务
@@ -631,6 +646,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             newKanban.setCell(materialKanban.getCell());
             newKanban.setType(KanbanActionTypeEnum.FULL_BIN_DOWN.value());
             newKanban.setQuantity(splitPallet.getSplitQuantity());
+            newKanban.setBinDownQuantity(splitPallet.getSplitQuantity());
             newKanban.setStatus(KanbanStatusEnum.INNER_DOWN.value());
             newKanban.setCreateBy(SecurityUtils.getUsername());
             newKanban.setCreateTime(new Date());

@@ -65,7 +65,6 @@ public class ProductQRCodeUtil {
 
     public static String getBatchNb(String qrCode){
         Date expireDate = getExpireDate(qrCode);
-        DateUtils.parseDateToStr("yyyy-MM-dd",expireDate);
         return DateUtils.parseDateToStr("yyyy-MM-dd",expireDate);
     }
 
@@ -79,15 +78,15 @@ public class ProductQRCodeUtil {
     public static Date getExpireDate(String qrCode){
         String date = "";
         try {
-            date = qrCode.substring(2, 10);
+            date = qrCode.substring(37, 43);
         } catch (Exception e) {
             throw new ServiceException("mesBarCode格式错误");
         }
         Date parseDate = null;
-        String format = "yyyy-MM-dd";
+        String format = "yy-MM-dd";
 
         try {
-            parseDate = org.apache.commons.lang3.time.DateUtils.parseDate(date, format, "yyyyMMdd");
+            parseDate = org.apache.commons.lang3.time.DateUtils.parseDate(date, format, "yyMMdd");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -133,6 +132,14 @@ public class ProductQRCodeUtil {
         System.out.println((s1+s2+s3).length());
 
         System.out.println(s1+s2+s3);
+
+        String qrCode = s1+s2+s3;
+
+        System.out.println(getBatchNb(qrCode));
+
+        System.out.println("1122102510101207530020871690056876317".length());
+
+        System.out.println("11221025101012075300208716900568763172407093700006000369006391113872175".substring(37,43));
 
 
     }

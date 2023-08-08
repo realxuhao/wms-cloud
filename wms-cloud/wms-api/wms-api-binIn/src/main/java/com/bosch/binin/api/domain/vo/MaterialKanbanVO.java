@@ -118,10 +118,18 @@ public class MaterialKanbanVO extends BaseEntity {
     /**
      * 数量
      */
-    @ExcelProperty(value = "数量")
-    @ApiModelProperty(value = "数量")
-    @Excel(name = "数量")
+    @ExcelProperty(value = "需求数量")
+    @ApiModelProperty(value = "需求数量")
+    @Excel(name = "需求数量")
     private Double quantity;
+
+    /**
+     * 数量
+     */
+    @ExcelProperty(value = "实际下架数量")
+    @ApiModelProperty(value = "实际下架数量")
+    @Excel(name = "实际下架数量")
+    private Double binDownQuantity;
     /**
      * 移动类型
      */

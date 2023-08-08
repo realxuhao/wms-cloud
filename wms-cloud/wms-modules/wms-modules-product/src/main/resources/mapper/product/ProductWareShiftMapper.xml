@@ -6,6 +6,43 @@
 
     <select id="list" resultType="com.bosch.product.api.domain.vo.ProductWareShiftVO">
         select ws.*,
+        (SELECT SUM(quantity) FROM product_ware_shift pws
+        WHERE pws.from_prod_order = ws.from_prod_order
+        and pws.delete_flag = 0
+        <if test="sourcePlantNb != null and sourcePlantNb != ''">
+            AND pws.source_plant_nb like concat('%', #{sourcePlantNb}, '%')
+        </if>
+        <if test="sourceWareCode != null and sourceWareCode != ''">
+            AND pws.source_ware_code like concat('%', #{sourceWareCode}, '%')
+        </if>
+
+        <if test="targetWareCode != null and targetWareCode != ''">
+            AND pws.target_ware_code like concat('%', #{targetWareCode}, '%')
+        </if>
+        <if test="status != null ">
+            AND (pws.status = #{status})
+        </if>
+
+        <if test="ssccNb != null and ssccNb != ''">
+            AND pws.sscc_nb like concat('%', #{ssccNb}, '%')
+        </if>
+        <if test="fromProdOrder != null and fromProdOrder != ''">
+            AND pws.from_prod_order like concat('%', #{fromProdOrder}, '%')
+        </if>
+        <if test="materialNb != null and materialNb != ''">
+            AND pws.material_nb like concat('%', #{materialNb}, '%')
+        </if>
+        <if test="batchNb != null and batchNb != ''">
+            AND pws.batch_nb like concat('%', #{batchNb}, '%')
+        </if>
+        <if test="createBy != null and createBy != ''">and pws.create_by like concat('%', #{createBy}, '%')</if>
+        <if test="startCreateTime != null">and pws.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
+        <if test="endCreateTime != null">and pws.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+        <if test="startUpdateTime != null">and pws.update_time <![CDATA[ >= ]]> #{startUpdateTime}</if>
+        <if test="startUpdateTime != null">and pws.update_time <![CDATA[ <= ]]> #{endUpdateTime}</if>
+
+        ) AS
+        total_stock_sum,
         mm.product_name as material_name,
         tr.order_number as order_nb,tr.car_nb as carNb
         from product_ware_shift ws
@@ -23,7 +60,7 @@
             AND tr.order_number like concat('%', #{orderNb}, '%')
         </if>
         <if test="targetWareCode != null and targetWareCode != ''">
-            AND ws.target_ware_code  like concat('%', #{targetWareCode}, '%')
+            AND ws.target_ware_code like concat('%', #{targetWareCode}, '%')
         </if>
         <if test="status != null ">
             AND (ws.status = #{status})
@@ -34,13 +71,22 @@
         <if test="ssccNb != null and ssccNb != ''">
             AND ws.sscc_nb like concat('%', #{ssccNb}, '%')
         </if>
+        <if test="fromProdOrder != null and fromProdOrder != ''">
+            AND ws.from_prod_order like concat('%', #{fromProdOrder}, '%')
+        </if>
+        <if test="materialNb != null and materialNb != ''">
+            AND ws.material_nb like concat('%', #{materialNb}, '%')
+        </if>
+        <if test="batchNb != null and batchNb != ''">
+            AND ws.batch_nb like concat('%', #{batchNb}, '%')
+        </if>
         <if test="createBy != null and createBy != ''">and ws.create_by like concat('%', #{createBy}, '%')</if>
         <if test="startCreateTime != null">and ws.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
         <if test="endCreateTime != null">and ws.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
         <if test="startUpdateTime != null">and ws.update_time <![CDATA[ >= ]]> #{startUpdateTime}</if>
         <if test="startUpdateTime != null">and ws.update_time <![CDATA[ <= ]]> #{endUpdateTime}</if>
 
-        order by   create_time desc,update_time desc
+        order by create_time desc,update_time desc
     </select>
 
 </mapper>

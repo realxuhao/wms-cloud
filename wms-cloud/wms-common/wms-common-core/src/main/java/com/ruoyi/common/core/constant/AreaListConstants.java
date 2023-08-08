@@ -13,6 +13,7 @@ public class AreaListConstants {
 
     public static final List<String> mainAreaList = Arrays.asList("0100", "0101", "0102", "0103");
 
+    //不合格品区域
     public static final List<String> noQualifiedAreaList = Arrays.asList("0005");
 
 

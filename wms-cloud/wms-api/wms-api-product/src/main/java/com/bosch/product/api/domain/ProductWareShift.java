@@ -107,4 +107,9 @@ public class ProductWareShift extends BaseEntity {
     private Date productionDate;
 
     private String unit;
+
+    /**
+     * PO号
+     */
+    private String fromProdOrder;
 }

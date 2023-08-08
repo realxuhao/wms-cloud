@@ -607,6 +607,7 @@ public class MaterialKanbanController {
 
 
 
+
             //更新kanban状态从 待上架  到 产线待收货
             int updateKanban = materialKanbanService.updateKanbanByStatus(ssccs, KanbanStatusEnum.INNER_BIN_IN.value(), KanbanStatusEnum.INNER_DOWN.value());
             //更新移库表从 待上架 到 完成
@@ -615,6 +616,12 @@ public class MaterialKanbanController {
             if (updateKanban <= 0) {
                 return R.fail("配送失败，请刷新重试");
             }
+
+            kanban.setBinDownQuantity(kanban.getQuantity());
+
+            materialKanbanService.updateById(kanban);
+
+
             return R.ok();
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务

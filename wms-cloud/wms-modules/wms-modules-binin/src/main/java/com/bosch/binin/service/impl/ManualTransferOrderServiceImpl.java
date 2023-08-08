@@ -349,6 +349,10 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
         queryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         Stock stock = stockService.getOne(queryWrapper);
 
+        if (stock == null) {
+            throw new ServiceException("系统无此托的库存信息");
+        }
+
 
         ManualTransferOrder manualTransferOrder = new ManualTransferOrder();
         manualTransferOrder.setSourcePlantNb(stock.getPlantNb());

@@ -439,7 +439,8 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         if (CollectionUtils.isEmpty(samplePlan)) {
             throw new ServiceException("没有该sscc" + MesBarCodeUtil.getSSCC(mesBarCode) + "对应的IQC抽样任务");
         }
-        return samplePlan.get(0);
+        List<IQCSamplePlanVO> collect = samplePlan.stream().filter(item -> item.getStatus() != IQCStatusEnum.CANCEL.code() && item.getStatus() != IQCStatusEnum.FINISH.code()).collect(Collectors.toList());
+        return collect.get(0);
     }
 
     @Override

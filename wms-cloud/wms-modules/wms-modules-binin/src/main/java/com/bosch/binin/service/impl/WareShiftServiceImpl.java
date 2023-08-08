@@ -522,6 +522,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         newWareShift.setSsccNb(MesBarCodeUtil.getSSCC(splitPallet.getNewMesBarCode()));
         newWareShift.setStatus(KanbanStatusEnum.OUT_DOWN.value());
         newWareShift.setSourceSscc(splitPallet.getSourceSsccNb());
+        newWareShift.setQuantity(splitPallet.getSplitQuantity());
         this.save(newWareShift);
 
         //对新的sscc生成一个删除掉的库存
@@ -818,6 +819,9 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                     samplePlan.setWareCode(SecurityUtils.getWareCode());
                     samplePlan.setBinDownCode(binInVO.getActualBinCode());
                     samplePlan.setPlantNb(binInVO.getPlantNb());
+
+
+
                 });
                 samplePlanService.updateBatchById(samplePlanList);
 

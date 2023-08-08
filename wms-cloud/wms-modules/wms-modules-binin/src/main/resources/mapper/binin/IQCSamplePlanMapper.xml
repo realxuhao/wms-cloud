@@ -52,7 +52,7 @@
         <if test="endBinDownTime != null">and isp.bin_down_time <![CDATA[ <= ]]> #{endBinDownTime}</if>
         <if test="startSampleTime != null">and isp.sample_time <![CDATA[ >= ]]> #{startSampleTime}</if>
         <if test="endSampleTime != null">and isp.sample_time <![CDATA[ <= ]]> #{endSampleTime}</if>
-        order by isp.create_time desc,isp.update_time desc
+        order by isp.material_nb
 
     </select>
     <select id="getBinInInfo" resultType="com.bosch.binin.api.domain.vo.IQCSamplePlanVO">

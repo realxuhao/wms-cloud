@@ -102,4 +102,6 @@ public class MaterialKanban extends BaseEntity {
 
 
     private Date expireDate;
+
+    private Double binDownQuantity;
 }

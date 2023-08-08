@@ -23,6 +23,7 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -101,7 +102,7 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
         splitRecord.setSplitQuantity(splitQuantity);
         splitRecord.setMaterialNb(sourceStock.getMaterialNb());
         splitRecord.setNewMesBarCode(newMesBarCode);
-        splitRecord.setSsccNb(newMesBarCode.length() == 50||newMesBarCode.contains(".") ? MesBarCodeUtil.getSSCC(newMesBarCode) : newMesBarCode);
+        splitRecord.setSsccNb(newMesBarCode.length() <= 60||newMesBarCode.contains(".") ? MesBarCodeUtil.getSSCC(newMesBarCode) : newMesBarCode);
         splitRecord.setSourceSscc(sourceSsccNb);
         splitRecord.setSourceTotalStock(sourceStock.getTotalStock());
         splitRecord.setWareCode(sourceStock.getWareCode());
@@ -167,7 +168,13 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
         if (splitRecord.getStatus() != SplitStatusEnum.WAIT_BIN_IN.code()) {
             throw new ServiceException("sscc:" + sscc + "对应任务状态为:" + IQCStatusEnum.getDesc(splitRecord.getStatus()) + ",不可上架");
         }
-        BinInVO binInVO = binInService.performBinIn(binInDTO,null);
+        String sourceSscc = splitRecord.getSourceSscc();
+        LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.eq(Stock::getSsccNumber,sourceSscc);
+        stockQueryWrapper.orderByDesc(Stock::getUpdateTime);
+        stockQueryWrapper.last("limit 1");
+        Stock sourceStock = stockService.getOne(stockQueryWrapper);
+        BinInVO binInVO = binInService.performBinIn(binInDTO, StringUtils.isEmpty(sourceStock.getQualityStatus())?null:sourceStock.getQualityStatus());
         splitRecord.setStatus(SplitStatusEnum.FINISH.code());
         splitMapper.updateById(splitRecord);
     }

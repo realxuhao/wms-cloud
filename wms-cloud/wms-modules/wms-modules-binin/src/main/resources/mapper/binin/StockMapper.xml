@@ -105,7 +105,7 @@ order by bs.batch_nb,bs.expire_date
         FROM bi_stock
         WHERE change_status = '1'
           AND delete_flag = 0
-          AND id = #{id}哦09
+          AND id = #{id}
     </select>
     <update id="changeStatus" parameterType="IQCChangeStatusDTO">
         update bi_stock b set

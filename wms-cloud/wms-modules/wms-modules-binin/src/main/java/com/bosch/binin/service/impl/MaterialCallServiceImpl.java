@@ -503,7 +503,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             List<Stock> stockList = stockService.list(lambdaQueryWrapper);
             List<Stock> sortedStockList = new ArrayList<>();
             sortedStockList =
-                    stockList.stream().filter(item -> item.getAvailableStock() != 0 && AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).
+                    stockList.stream().filter(item->!item.getExpireDate().before(new Date())).filter(item -> item.getAvailableStock() != 0 && AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).
                             sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getBatchNb).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder()).thenComparing(Stock::getAvailableStock)).collect(Collectors.toList());
             double sum = sortedStockList.stream().mapToDouble(Stock::getAvailableStock).sum();
 //            if (sum < call.getUnIssuedQuantity()) {

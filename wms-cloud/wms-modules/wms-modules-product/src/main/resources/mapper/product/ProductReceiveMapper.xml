@@ -22,6 +22,8 @@
         <result property="updateBy" column="update_by"/>
         <result property="updateTime" column="update_time"/>
         <result property="status" column="status"/>
+        <result property="totalStockSum" column="total_stock_sum"/>
+
     </resultMap>
 
 
@@ -42,7 +44,25 @@
         pr.status,
         pr.plant_nb,
         pr.ware_code,
-        pr.production_date
+        pr.production_date,
+        (SELECT SUM(quantity) FROM product_receive p
+        WHERE p.from_prod_order = pr.from_prod_order
+        and p.delete_flag = 0
+        <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
+        <if test="materialNb != null  and materialNb != ''">and p.material_nb like concat('%', #{materialNb}, '%')</if>
+        <if test="batchNb != null  and batchNb != ''">and p.batch_nb like concat('%', #{batchNb}, '%')</if>
+        <if test="ssccNumber != null  and ssccNumber != ''">and p.sscc_number like concat('%', #{ssccNumber}, '%')</if>
+        <if test="fromProdOrder != null  and fromProdOrder != ''">and p.from_prod_order like concat('%',
+            #{fromProdOrder}, '%')
+        </if>
+        <if test="status != null">and p.status = #{status}</if>
+        <if test="createBy != null  and createBy != ''">and p.create_by like concat('%', #{createBy}, '%')</if>
+        <if test="startCreateTime != null and endCreateTime != null">and str_to_date(p.create_time, '%d/%m/%Y') between
+            #{startCreateTime} and #{endCreateTime}
+        </if>
+
+        ) AS
+        total_stock_sum
 
         from product_receive pr left join (select * from md_product_packaging where delete_flag=0 )p on pr.material_nb =
         p.product_no

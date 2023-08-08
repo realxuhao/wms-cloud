@@ -130,6 +130,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
                     .productionDate(stock.getProductionDate())
                     .unit(stock.getUnit())
                     .status(ProductWareShiftEnum.WAITTING_SHIPPING.code())
+                    .fromProdOrder(stock.getFromProdOrder())
                     .build();
             wareShiftService.save(wareShift);
             stock.setFreezeStock(stock.getTotalStock());

@@ -50,9 +50,17 @@ public class ProductWareShiftVO {
     private Date productionDate;
 
     /**
+     * PO号
+     */
+    @ApiModelProperty(value = "from_prod_order")
+    @Excel(name = "from_prod_order")
+    private String fromProdOrder;
+
+    /**
      * 单位
      */
     @ApiModelProperty(value = "unit")
+    @Excel(name = "unit")
     private String unit;
 
     /**
@@ -201,6 +209,8 @@ public class ProductWareShiftVO {
      */
     @Excel(name = "备注")
     private String remark;
+
+    private Double totalStockSum;
 
 
 }

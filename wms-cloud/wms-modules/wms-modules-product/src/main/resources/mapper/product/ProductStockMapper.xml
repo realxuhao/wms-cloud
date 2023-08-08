@@ -33,6 +33,8 @@
         <result property="productionDate" column="production_date"/>
         <result property="binInFlag" column="bin_in_flag"/>
         <result property="boxSpecification" column="box_specification"/>
+        <result property="totalStockSum" column="total_stock_sum"/>
+
 
     </resultMap>
     <update id="changeStatus">
@@ -141,7 +143,30 @@
         ps.production_date as production_date,
         pp.cell as cell,
         ps.bin_in_flag as bin_in_flag,
-        ps.recommend_bin_code as recommend_bin_code
+        ps.recommend_bin_code as recommend_bin_code,
+        (SELECT SUM(p.total_stock) FROM product_stock p
+        WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
+        and p.plant_nb != '7701' and p.plant_nb != '7761'
+
+        <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
+
+        <if test="ssccNumber != null  and ssccNumber != ''">and p.sscc_number like concat('%', #{ssccNumber}, '%')</if>
+        <if test="wareCode != null  and wareCode != ''">and p.ware_code like concat('%', #{wareCode}, '%')</if>
+        <if test="areaCode != null  and areaCode != ''">and p.area_code like concat('%', #{areaCode}, '%')</if>
+        <if test="binCode != null  and binCode != ''">and p.bin_code like concat('%', #{binCode}, '%')</if>
+        <if test="fromProdOrder != null  and fromProdOrder != ''">and p.from_prod_order like concat('%',
+            #{fromProdOrder}, '%')
+        </if>
+        <if test="createBy != null  and createBy != ''">and p.create_by like concat('%', #{createBy}, '%')</if>
+
+        <if test="qualityStatus != null and qualityStatus != ''">and p.quality_status = #{qualityStatus}</if>
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(p.expire_date, '%d/%m/%Y')
+            between
+            #{startExpireDate} and #{endExpireDate}
+        </if>
+
+        ) AS
+        total_stock_sum
         from product_stock ps
         left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
         where ps.delete_flag = 0 and ps.plant_nb != '7701' and ps.plant_nb != '7761'
@@ -157,9 +182,7 @@
             #{fromProdOrder}, '%')
         </if>
         <if test="createBy != null  and createBy != ''">and ps.create_by like concat('%', #{createBy}, '%')</if>
-        <if test="startCreateTime != null and endCreateTime != null">and str_to_date(ps.create_time, '%d/%m/%Y') between
-            #{startCreateTime} and #{endCreateTime}
-        </if>
+
         <if test="qualityStatus != null and qualityStatus != ''">and ps.quality_status = #{qualityStatus}</if>
         <if test="startExpireDate != null and endExpireDate != null">and str_to_date(ps.expire_date, '%d/%m/%Y')
             between
@@ -199,8 +222,32 @@
         ps.production_date as production_date,
         pp.cell as cell,
         ps.bin_in_flag as bin_in_flag,
-        ps.recommend_bin_code as recommend_bin_code
+        ps.recommend_bin_code as recommend_bin_code,
+        (SELECT SUM(p.total_stock) FROM product_stock p
+        WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
+
+
+        <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
+
+        <if test="ssccNumber != null  and ssccNumber != ''">and p.sscc_number like concat('%', #{ssccNumber}, '%')</if>
+        <if test="wareCode != null  and wareCode != ''">and p.ware_code like concat('%', #{wareCode}, '%')</if>
+        <if test="areaCode != null  and areaCode != ''">and p.area_code like concat('%', #{areaCode}, '%')</if>
+        <if test="binCode != null  and binCode != ''">and p.bin_code like concat('%', #{binCode}, '%')</if>
+        <if test="fromProdOrder != null  and fromProdOrder != ''">and p.from_prod_order like concat('%',
+            #{fromProdOrder}, '%')
+        </if>
+        <if test="createBy != null  and createBy != ''">and p.create_by like concat('%', #{createBy}, '%')</if>
+
+        <if test="qualityStatus != null and qualityStatus != ''">and p.quality_status = #{qualityStatus}</if>
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(p.expire_date, '%d/%m/%Y')
+            between
+            #{startExpireDate} and #{endExpireDate}
+        </if>
+
+        ) AS
+        total_stock_sum
         from product_stock ps
+
         left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
         where ps.delete_flag = 0
 
@@ -257,7 +304,30 @@
         ps.production_date as production_date,
         pp.cell as cell,
         ps.bin_in_flag as bin_in_flag,
-        ps.recommend_bin_code as recommend_bin_code
+        ps.recommend_bin_code as recommend_bin_code,
+        (SELECT SUM(p.total_stock) FROM product_stock p
+        WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
+        and p.plant_nb != '7701' and p.plant_nb != '7761'
+
+        <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
+
+        <if test="ssccNumber != null  and ssccNumber != ''">and p.sscc_number like concat('%', #{ssccNumber}, '%')</if>
+        <if test="wareCode != null  and wareCode != ''">and p.ware_code like concat('%', #{wareCode}, '%')</if>
+        <if test="areaCode != null  and areaCode != ''">and p.area_code like concat('%', #{areaCode}, '%')</if>
+        <if test="binCode != null  and binCode != ''">and p.bin_code like concat('%', #{binCode}, '%')</if>
+        <if test="fromProdOrder != null  and fromProdOrder != ''">and p.from_prod_order like concat('%',
+            #{fromProdOrder}, '%')
+        </if>
+        <if test="createBy != null  and createBy != ''">and p.create_by like concat('%', #{createBy}, '%')</if>
+
+        <if test="qualityStatus != null and qualityStatus != ''">and p.quality_status = #{qualityStatus}</if>
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(p.expire_date, '%d/%m/%Y')
+            between
+            #{startExpireDate} and #{endExpireDate}
+        </if>
+
+        ) AS
+        total_stock_sum
         from product_stock ps
         left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
         where ps.delete_flag = 0 and ps.plant_nb != '7701' and ps.plant_nb != '7761'
@@ -323,7 +393,30 @@
         ps.production_date as production_date,
         pp.cell as cell,
         ps.bin_in_flag as bin_in_flag,
-        ps.recommend_bin_code as recommend_bin_code
+        ps.recommend_bin_code as recommend_bin_code,
+        (SELECT SUM(p.total_stock) FROM product_stock p
+        WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
+        and  p.plant_nb = '7761'
+
+        <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
+
+        <if test="ssccNumber != null  and ssccNumber != ''">and p.sscc_number like concat('%', #{ssccNumber}, '%')</if>
+        <if test="wareCode != null  and wareCode != ''">and p.ware_code like concat('%', #{wareCode}, '%')</if>
+        <if test="areaCode != null  and areaCode != ''">and p.area_code like concat('%', #{areaCode}, '%')</if>
+        <if test="binCode != null  and binCode != ''">and p.bin_code like concat('%', #{binCode}, '%')</if>
+        <if test="fromProdOrder != null  and fromProdOrder != ''">and p.from_prod_order like concat('%',
+            #{fromProdOrder}, '%')
+        </if>
+        <if test="createBy != null  and createBy != ''">and p.create_by like concat('%', #{createBy}, '%')</if>
+
+        <if test="qualityStatus != null and qualityStatus != ''">and p.quality_status = #{qualityStatus}</if>
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(p.expire_date, '%d/%m/%Y')
+            between
+            #{startExpireDate} and #{endExpireDate}
+        </if>
+
+        ) AS
+        total_stock_sum
         from product_stock ps
         left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
         where ps.delete_flag = 0 and ps.plant_nb = '7761'
@@ -389,7 +482,30 @@
         ps.production_date as production_date,
         pp.cell as cell,
         ps.bin_in_flag as bin_in_flag,
-        ps.recommend_bin_code as recommend_bin_code
+        ps.recommend_bin_code as recommend_bin_code,
+        (SELECT SUM(p.total_stock) FROM product_stock p
+        WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
+        and p.plant_nb = '7761'
+
+        <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
+
+        <if test="ssccNumber != null  and ssccNumber != ''">and p.sscc_number like concat('%', #{ssccNumber}, '%')</if>
+        <if test="wareCode != null  and wareCode != ''">and p.ware_code like concat('%', #{wareCode}, '%')</if>
+        <if test="areaCode != null  and areaCode != ''">and p.area_code like concat('%', #{areaCode}, '%')</if>
+        <if test="binCode != null  and binCode != ''">and p.bin_code like concat('%', #{binCode}, '%')</if>
+        <if test="fromProdOrder != null  and fromProdOrder != ''">and p.from_prod_order like concat('%',
+            #{fromProdOrder}, '%')
+        </if>
+        <if test="createBy != null  and createBy != ''">and p.create_by like concat('%', #{createBy}, '%')</if>
+
+        <if test="qualityStatus != null and qualityStatus != ''">and p.quality_status = #{qualityStatus}</if>
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(p.expire_date, '%d/%m/%Y')
+            between
+            #{startExpireDate} and #{endExpireDate}
+        </if>
+
+        ) AS
+        total_stock_sum
         from product_stock ps
         left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
         where ps.delete_flag = 0 and ps.plant_nb = '7761'

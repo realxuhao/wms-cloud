@@ -110,4 +110,6 @@ public class ProductReceiveVO {
     @ApiModelProperty(value = "物料流转状态:0:待入库，1：已入库")
     private Integer status;
 
+    private Double totalStockSum;
+
 }

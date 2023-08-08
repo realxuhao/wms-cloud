@@ -388,6 +388,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
                     .productionDate(item.getProductionDate())
                     .unit(item.getUnit())
                     .status(ProductWareShiftEnum.WAITTING_SHIPPING.code())
+                    .fromProdOrder(item.getFromProdOrder())
                     .build();
             wareShifts.add(wareShift);
 

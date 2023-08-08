@@ -149,6 +149,15 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     public BinInVO getByMesBarCode(String mesBarCode) {
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
 
+        //先看一下有没有存在过。存在过库存的话，就报错。
+        LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.eq(Stock::getSsccNumber, sscc);
+        List<Stock> stockList = stockMapper.selectList(stockQueryWrapper);
+        if (!CollectionUtils.isEmpty(stockList)) {
+            throw new ServiceException("该SSCC：" + sscc + "存在过库存。不可原材料上架");
+        }
+
+
         BinInVO binInVO = binInMapper.selectBySsccNumber(sscc);
         if (binInVO != null) {
             return binInVO;
@@ -158,9 +167,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         materialInVO.getMaterialNb();
 
         String materialNb = materialInVO.getMaterialNb();
-        ;
         String batchNb = materialInVO.getBatchNb();
-        ;
         MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
         if (binInVO == null) {
@@ -349,7 +356,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         // 先删除待上架的
         if (!CollectionUtils.isEmpty(processingBinInList)) {
             processingBinInList.stream().forEach(item -> {
-                item.setStatus(DeleteFlagStatus.TRUE.getCode());
+                item.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
             });
             this.updateBatchById(processingBinInList);
         }
@@ -564,6 +571,16 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         if (BinInStatusEnum.FINISH.value() == binIn.getStatus()) {
             throw new ServiceException("物料号" + materialNb + "已经上架");
         }
+
+
+        //先看一下有没有存在过。存在过库存的话，就报错。
+        LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.eq(Stock::getSsccNumber, sscc);
+        List<Stock> stockList = stockMapper.selectList(stockQueryWrapper);
+        if (!CollectionUtils.isEmpty(stockList)) {
+            throw new ServiceException("该SSCC：" + sscc + "存在过库存。不可原材料上架");
+        }
+
 
         if (StringUtils.isEmpty(binIn.getPalletCode()) && StringUtils.isEmpty(binInDTO.getPalletCode())) {
             throw new ServiceException("实物托盘码不能为空");
