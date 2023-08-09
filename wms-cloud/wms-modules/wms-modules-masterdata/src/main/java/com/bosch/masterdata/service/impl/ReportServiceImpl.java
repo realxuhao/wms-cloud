@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class ReportServiceImpl implements IReportService {
@@ -122,7 +123,7 @@ public class ReportServiceImpl implements IReportService {
         }
         //获取IQC取样：下架-上架的耗时
         if (!CollectionUtils.isEmpty(iqcBinOutList) && !CollectionUtils.isEmpty(iqcBinInList)) {
-            List<EfficiencyVO> efficiencyVOS = processEfficiency(iqcBinInList,iqcBinOutList );
+            List<EfficiencyVO> efficiencyVOS = processEfficiency(iqcBinOutList,iqcBinInList );
             if (!CollectionUtils.isEmpty(efficiencyVOS)) {
                 processEfficiencyVOS = getProcessEfficiencyList(efficiencyVOS, 1,processEfficiencyVOS);
             }
@@ -171,8 +172,8 @@ public class ReportServiceImpl implements IReportService {
     public List<ProcessEfficiencyVO> getProcessEfficiencyList(List<EfficiencyVO> newList, Integer type,List<ProcessEfficiencyVO> vos) {
 
 
-
-        Map<String, Map<Date, List<EfficiencyVO>>> groupedData = newList.stream()
+        List<EfficiencyVO> collect = newList.stream().filter(r ->!( r.getCreateTime() == null||StringUtils.isEmpty(r.getCell()))).collect(Collectors.toList());
+        Map<String, Map<Date, List<EfficiencyVO>>> groupedData = collect.stream()
                 .collect(Collectors.groupingBy(EfficiencyVO::getCell,
                         Collectors.groupingBy(vo -> truncateToDay(vo.getCreateTime()))));
         for (Map.Entry<String, Map<Date, List<EfficiencyVO>>> cellEntry : groupedData.entrySet()) {
