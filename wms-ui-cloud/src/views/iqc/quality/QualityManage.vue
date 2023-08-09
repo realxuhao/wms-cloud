@@ -188,7 +188,7 @@
 
     <a-modal
       v-model="editSSCCVisible"
-      :width="800"
+      :width="1300"
       title="确认质检状态"
       :ok-button-props="{ props: { disabled: confirmDisable } }"
       @cancel="handleCancel"
@@ -421,13 +421,15 @@ const editSSCCColumns = [
 const statusTextMap = {
   '0': '成功',
   '1': '失败',
-  '2': '待确认'
+  '2': '待确认',
+  '3': '存在IQC抽样待下发'
 }
 
 const statusColroMap = {
   '0': 'green',
   '1': 'red',
-  '2': 'orange'
+  '2': 'orange',
+  '3': 'red'
 }
 
 const queryFormAttr = () => {

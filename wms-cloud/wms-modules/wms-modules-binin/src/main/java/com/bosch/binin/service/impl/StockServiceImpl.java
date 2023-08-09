@@ -183,7 +183,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         if (!CollectionUtils.isEmpty(issueSSCCList)) {
             result.stream().forEach(r -> {
                 if (issueSSCCList.contains(r.getSsccnumber())) {
-                    r.setStatus(2);
+                    r.setStatus(3);
                 }
             });
         }
