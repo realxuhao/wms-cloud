@@ -485,6 +485,7 @@ export default {
     // #endregion
     /** 如果供应商精确查询后有数据，则可以进行页面中的筛选查询 */
     async loadTableList () {
+    console.info(this.supplierName)
       if (this.paginationTotal > 0) {
         this.selectedRowKeys = []
         this.selectedRowList = []
@@ -509,6 +510,7 @@ export default {
     },
     /** 获取了供应商名称后精确查询，采购订单列表 */
     async initTableList () {
+    console.info(this.supplierName)
       try {
         this.selectedRowKeys = []
         this.selectedRowList = []
@@ -550,9 +552,7 @@ export default {
       this.loadData()
     },
     reloadPurchase (val) {
-      if (this.supplierName) {
         this.loadData()
-      }
     }
   }
 }

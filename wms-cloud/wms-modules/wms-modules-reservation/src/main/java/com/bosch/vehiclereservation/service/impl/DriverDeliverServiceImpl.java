@@ -60,9 +60,13 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
 
 
     @Override
-    public List<DriverDeliverVO> selectDriverDeliverVO(DriverDeliverDTO driverDeliverDTO) {
+    public List<DriverDeliver> selectDriverDeliverVO(DriverDeliverDTO driverDeliverDTO) {
         if (StringUtils.isEmpty(driverDeliverDTO.getSupplierName()) && StringUtils.isEmpty(driverDeliverDTO.getWechatId())) {
             throw new ServiceException("无权限查看数据");
+        }
+        if("admin".equals(driverDeliverDTO.getSupplierName())){
+            driverDeliverDTO.setReserveType(1);
+            driverDeliverDTO.setSupplierName("");
         }
         DriverDeliver driverDeliver = BeanConverUtil.conver(driverDeliverDTO, DriverDeliver.class);
         // 供应商查看司机预约的信息
@@ -75,15 +79,14 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
             if (!CollectionUtils.isEmpty(reserveNoList)) {
                 driverDeliver.setReserveNoList(reserveNoList);
             } else {
-                List<DriverDeliverVO> driverDeliverVOS = new ArrayList<>();
-                return driverDeliverVOS;
+                List<DriverDeliver> driverDeliverS = new ArrayList<>();
+                return driverDeliverS;
             }
         }
         startPage();
         driverDeliver.setSelectType(1);
         List<DriverDeliver> driverDelivers = driverDeliverMapper.selectDriverDeliverList(driverDeliver);
-        List<DriverDeliverVO> driverDeliverVOS = BeanConverUtil.converList(driverDelivers, DriverDeliverVO.class);
-        return driverDeliverVOS;
+        return driverDelivers;
     }
 
     @Override

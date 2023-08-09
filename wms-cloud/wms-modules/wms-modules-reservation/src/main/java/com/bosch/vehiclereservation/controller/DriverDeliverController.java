@@ -1,6 +1,7 @@
 package com.bosch.vehiclereservation.controller;
 
 
+import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierOnTimeDTO;
 import com.bosch.vehiclereservation.api.domain.vo.DriverDeliverVO;
@@ -9,6 +10,7 @@ import com.bosch.vehiclereservation.api.domain.vo.SupplierOnTimeVO;
 import com.bosch.vehiclereservation.service.IDriverDeliverService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
@@ -46,8 +48,9 @@ public class DriverDeliverController extends BaseController {
     @GetMapping("/list")
     @ApiOperation("查询司机送货信息列表")
     public R<PageVO<DriverDeliverVO>> list(DriverDeliverDTO driverDeliverDTO) {
-        List<DriverDeliverVO> list = driverDeliverService.selectDriverDeliverVO(driverDeliverDTO);
-        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+        List<DriverDeliver> list = driverDeliverService.selectDriverDeliverVO(driverDeliverDTO);
+        List<DriverDeliverVO> driverDeliverVOS = BeanConverUtil.converList(list, DriverDeliverVO.class);
+        return R.ok(new PageVO<>(driverDeliverVOS, new PageInfo<>(list).getTotal()));
     }
 
     /**

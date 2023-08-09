@@ -127,19 +127,31 @@
     <select id="getPoCodeList" resultType="java.lang.String">
         SELECT DISTINCT po_code
         from vr_purchase_order
-        where supplier_name = #{name}
+        <where>
+            <if test="supplier != null and supplier != ''">
+                and supplier_name = #{name}
+            </if>
+        </where>
     </select>
 
     <select id="getPoItemList" resultType="java.lang.String">
         SELECT DISTINCT po_item
         from vr_purchase_order
-        where supplier_name = #{name}
+        <where>
+            <if test="supplier != null and supplier != ''">
+                and supplier_name = #{name}
+            </if>
+        </where>
     </select>
 
     <select id="getCmsNumberList" resultType="java.lang.String">
         SELECT DISTINCT cms_number
         from vr_purchase_order
-        where supplier_name = #{name}
+        <where>
+            <if test="supplier != null and supplier != ''">
+                and supplier_name = #{name}
+            </if>
+        </where>
     </select>
 
     <select id="getSupplierName" resultType="java.lang.String">

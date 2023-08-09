@@ -43,6 +43,9 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         if(!"errorname".equals(name)){
             purchaseOrder.setSupplier(name);
         }
+        if("admin".equals(purchaseOrder.getSupplier())){
+            purchaseOrder.setSupplier("");
+        }
         List<PurchaseOrder> purchaseOrders = purchaseOrderMapper.selectSupplierPurchaseOrder(purchaseOrder);
         purchaseOrders.forEach(c -> {
             BigDecimal sum = supplierPorderService.getArriveQuantityByPurchaseId(c.getPurchaseId());
@@ -83,17 +86,17 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
 
     @Override
     public List<String> getPoCodeList(String name) {
-        return purchaseOrderMapper.getPoCodeList(name);
+        return purchaseOrderMapper.getPoCodeList("admin".equals(name) ? "" : name);
     }
 
     @Override
     public List<String> getPoItemList(String name) {
-        return purchaseOrderMapper.getPoItemList(name);
+        return purchaseOrderMapper.getPoItemList("admin".equals(name) ? "" : name);
     }
 
     @Override
     public List<String> getCmsNumberList(String name) {
-        return purchaseOrderMapper.getCmsNumberList(name);
+        return purchaseOrderMapper.getCmsNumberList("admin".equals(name) ? "" : name);
     }
 
     @Override

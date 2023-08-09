@@ -17,7 +17,7 @@ public interface IDriverDeliverService extends IService<DriverDeliver> {
      * @param driverDeliverDTO 查询条件
      * @return 司机送货信息列表
      */
-    public List<DriverDeliverVO> selectDriverDeliverVO(DriverDeliverDTO driverDeliverDTO);
+    public List<DriverDeliver> selectDriverDeliverVO(DriverDeliverDTO driverDeliverDTO);
 
     /**
      * 查询供应商准时率（单个供应商数据）

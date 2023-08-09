@@ -159,30 +159,18 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
     }
 
     @Override
-    public List<SupplierReserveVO> selectSupplierReserveVO(SupplierReserveDTO supplierReserveDTO) {
+    public List<SupplierReserve> selectSupplierReserveVO(SupplierReserveDTO supplierReserveDTO) {
         if (StringUtils.isEmpty(supplierReserveDTO.getSupplierCode())) {
             //用户信息中获取供应商code
             //supplierReserveDTO.setSupplierCode("code");
         }
+        if("admin".equals(supplierReserveDTO.getSupplierCode())){
+            supplierReserveDTO.setSupplierCode("");
+        }
         SupplierReserve supplierReserve = BeanConverUtil.conver(supplierReserveDTO, SupplierReserve.class);
         List<SupplierReserve> selectSupplierReserveList = supplierReserveMapper.selectSupplierReserveList(supplierReserve);
-        List<SupplierReserveVO> supplierReserveVOS = BeanConverUtil.converList(selectSupplierReserveList, SupplierReserveVO.class);
-        Map<Long, Ware> wareMap = new HashMap<>();
-        supplierReserveVOS.forEach(c -> {
-            if (!wareMap.keySet().contains(c.getWareId())) {
-                Ware wareInfo = remoteMasterDataService.getWareInfo(c.getWareId().toString()).getData();
-                if (wareInfo != null) {
-                    wareMap.put(c.getWareId(), wareInfo);
-                }
-            }
-            if (wareMap.get(c.getWareId()) != null) {
-                c.setWareName(wareMap.get(c.getWareId()).getName());
-                c.setWareLocation(wareMap.get(c.getWareId()).getLocation());
-                c.setWareUser(wareMap.get(c.getWareId()).getWareUser());
-                c.setWareUserPhone(wareMap.get(c.getWareId()).getWareUserPhone());
-            }
-        });
-        return supplierReserveVOS;
+
+        return selectSupplierReserveList;
     }
 
     @Override
@@ -280,7 +268,9 @@ public class SupplierReserveServiceImpl extends ServiceImpl<SupplierReserveMappe
     @Override
     public List<String> selectErrorDataByName(String name) {
         QueryWrapper<SupplierReserve> supplierReserveQueryWrapper = new QueryWrapper<>();
-        supplierReserveQueryWrapper.eq("supplier_code", name);
+        if(!"admin".equals(name)){
+            supplierReserveQueryWrapper.eq("supplier_code", name);
+        }
         supplierReserveQueryWrapper.eq("status", ReserveStatusEnum.ERROR.getCode());
         List<String> collect = supplierReserveMapper.selectList(supplierReserveQueryWrapper).stream().map(c -> c.getReserveNo())
                 .collect(Collectors.toList());

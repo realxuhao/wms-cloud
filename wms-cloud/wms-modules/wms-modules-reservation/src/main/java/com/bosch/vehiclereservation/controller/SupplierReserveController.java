@@ -1,5 +1,7 @@
 package com.bosch.vehiclereservation.controller;
 
+import com.bosch.masterdata.api.RemoteMasterDataService;
+import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.vo.TimeWindowVO;
 import com.bosch.vehiclereservation.api.domain.SupplierReserve;
 import com.bosch.vehiclereservation.api.domain.dto.SupplierDTO;
@@ -11,6 +13,7 @@ import com.bosch.vehiclereservation.service.ISupplierReserveService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
@@ -22,7 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 供应商预约Controller
@@ -37,6 +42,9 @@ public class SupplierReserveController extends BaseController {
 
     @Autowired
     private ISupplierReserveService supplierReserveService;
+
+    @Autowired
+    private RemoteMasterDataService remoteMasterDataService;
 
 
     /**
@@ -81,8 +89,25 @@ public class SupplierReserveController extends BaseController {
     @ApiOperation("查询供应商预约单列表(已预约记录)")
     public R<PageVO<SupplierReserveVO>> list(SupplierReserveDTO supplierReserveDTO) {
         startPage();
-        List<SupplierReserveVO> list = supplierReserveService.selectSupplierReserveVO(supplierReserveDTO);
-        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+        List<SupplierReserve> list = supplierReserveService.selectSupplierReserveVO(supplierReserveDTO);
+        List<SupplierReserveVO> supplierReserveVOS = BeanConverUtil.converList(list, SupplierReserveVO.class);
+        Map<Long, Ware> wareMap = new HashMap<>();
+        supplierReserveVOS.forEach(c -> {
+            if (!wareMap.keySet().contains(c.getWareId())) {
+                Ware wareInfo = remoteMasterDataService.getWareInfo(c.getWareId().toString()).getData();
+                if (wareInfo != null) {
+                    wareMap.put(c.getWareId(), wareInfo);
+                }
+            }
+            if (wareMap.get(c.getWareId()) != null) {
+                c.setWareName(wareMap.get(c.getWareId()).getName());
+                c.setWareLocation(wareMap.get(c.getWareId()).getLocation());
+                c.setWareUser(wareMap.get(c.getWareId()).getWareUser());
+                c.setWareUserPhone(wareMap.get(c.getWareId()).getWareUserPhone());
+            }
+        });
+        PageVO<SupplierReserveVO> supplierReserveVOPageVO = new PageVO<>(supplierReserveVOS, new PageInfo<>(list).getTotal());
+        return R.ok(supplierReserveVOPageVO);
     }
 
     /**

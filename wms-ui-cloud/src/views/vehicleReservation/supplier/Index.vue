@@ -80,7 +80,7 @@ export default {
       /** 输入供应商名称弹窗是否显示 */
       isVisibleSupplierName: false,
       /** 输入的供应商名称，后续需要做精确查询 */
-      supplierName: '',
+      supplierName: null,
       /** 重新加载可预约订单列表参数 */
       reloadPurchase: false,
       /** 重新加载已预约参数 */
@@ -96,7 +96,12 @@ export default {
   model: {},
   computed: {},
   mounted () {
-    this.supplierName = this.$store.getters.nickname.replace(/(^\s*)|(\s*$)/g,'')
+    const role = this.$store.getters.roles
+    if(role.length > 0){
+      this.supplierName = role[0] == 'admin' ? 'admin' : this.$store.getters.nickname.replace(/(^\s*)|(\s*$)/g,'')      
+    }else{
+      this.supplierName =  this.$store.getters.nickname.replace(/(^\s*)|(\s*$)/g,'')
+    }
     this.getErrorList()
   },
   methods: {
@@ -104,10 +109,6 @@ export default {
       this.isVisibleSupplierName = false
     },
     handleSubmitSupplierName () {
-      if (this.supplierName === '') {
-        this.$message.error('请输入供应商名称！')
-        return
-      }
       this.isVisibleSupplierName = false
     },
     async handleSearchErrorNo(){
