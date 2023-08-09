@@ -72,6 +72,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     private IStockAdjustService stockAdjustService;
 
     @Autowired
+    @Lazy
     private IIQCSamplePlanService iiqcSamplePlanService;
 
     @Override

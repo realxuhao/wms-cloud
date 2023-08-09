@@ -10,5 +10,6 @@ import lombok.Data;
  **/
 @Data
 public class JobVO {
-
+    private String jobDesc;
+    private String statusDesc;
 }

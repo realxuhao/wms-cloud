@@ -2,17 +2,14 @@ package com.bosch.binin.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bosch.binin.api.domain.IQCSamplePlan;
 import com.bosch.binin.api.domain.SplitRecord;
 import com.bosch.binin.api.domain.Stock;
-import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.BinInDTO;
 import com.bosch.binin.api.domain.dto.SplitPalletDTO;
 import com.bosch.binin.api.domain.dto.SplitQuertDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.SplitRecordVO;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
-import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.api.enumeration.SplitStatusEnum;
 import com.bosch.binin.api.enumeration.StockWholeFlagEnum;
 import com.bosch.binin.mapper.SplitMapper;
@@ -24,14 +21,10 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
-import javax.naming.ldap.SortKey;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,7 +48,7 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
 
     @Autowired
     @Lazy
-    private IJobServiceImpl jobService;
+    private JobServiceImpl jobService;
 
     @Override
     public void add(SplitPalletDTO splitPallet) {

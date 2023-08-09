@@ -1,5 +1,7 @@
 package com.bosch.binin.service;
 
+import com.bosch.binin.api.domain.vo.JobVO;
+
 /**
  * @program: wms-cloud
  * @description:
@@ -9,6 +11,9 @@ package com.bosch.binin.service;
 public interface IJobService {
 
     void validStockStatus(String ssccNb);
+
+
+    JobVO getJobDescBySSCC(String ssccNb);
 
 
 

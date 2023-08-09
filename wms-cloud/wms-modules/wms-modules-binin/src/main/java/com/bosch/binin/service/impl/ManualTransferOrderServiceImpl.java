@@ -1,6 +1,5 @@
 package com.bosch.binin.service.impl;
 
-import com.alibaba.druid.sql.ast.statement.SQLIfStatement;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.*;
@@ -26,9 +25,7 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
-import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import io.swagger.annotations.ApiModelProperty;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -63,7 +60,7 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
 
     @Autowired
     @Lazy
-    private IJobServiceImpl jobService;
+    private JobServiceImpl jobService;
 
     @Override
     public List<ManualTransferOrderVO> list(ManualTransQueryDTO queryDTO) {

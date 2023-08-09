@@ -6,6 +6,7 @@ import com.bosch.binin.api.domain.dto.InitStockDTO;
 import com.bosch.binin.api.domain.dto.StockEditDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
+import com.bosch.binin.api.domain.vo.JobVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.service.IJobService;
@@ -97,7 +98,7 @@ public class StockController extends BaseController {
     @GetMapping(value = "/getByMesBarCode/{mesBarCode}")
     @ApiOperation("扫码查询某个物料的库存信息")
     public R<StockVO> getByMesBarCode(@PathVariable("mesBarCode") String mesBarCode) {
-        if (mesBarCode.length()>=44 && mesBarCode.length()<=55){
+        if (mesBarCode.length()>=44 && mesBarCode.length()<=60){
 //        mesBarCode.length() == 50||mesBarCode.contains(".")) {
             String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
             R<StockVO> stockVOR = getBySscc(sscc);
@@ -111,9 +112,16 @@ public class StockController extends BaseController {
                     stockVO.setMaterialName(mesBarCodeVO.getMaterialName());
                     stockVO.setExpireDate(mesBarCodeVO.getExpireDate());
                     stockVO.setBatchNb(mesBarCodeVO.getBatchNb());
+                    JobVO jobDescBySSCC = jobService.getJobDescBySSCC(sscc);
+                    stockVO.setJobDesc(jobDescBySSCC.getJobDesc());
+                    stockVO.setJobStatus(jobDescBySSCC.getStatusDesc());
+
+
                     stockVOR.setData(stockVO);
+
                 }
             }
+
             return stockVOR;
         } else if (mesBarCode.length() == 71) {
             R<ProductStockVO> productStockVOR = remoteProductStockService.getByBarCode(mesBarCode);
