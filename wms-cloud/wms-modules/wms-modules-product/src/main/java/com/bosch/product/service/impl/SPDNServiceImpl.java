@@ -23,8 +23,11 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.StockOperationType;
+import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IProductStockOperationService;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.hibernate.validator.internal.util.privilegedactions.NewSchema;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,6 +71,9 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
     @Resource
     @Lazy
     private IProductWareShiftService wareShiftService;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
 
 
@@ -208,6 +214,7 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
                 spdnPick.getSsccNumber(),spdnPick.getMaterialNb(),spdnPick.getBatchNb(), StockOperationType.SALESOUT.getCode());
 
 
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode),spdnPick.getMaterialNb());
 
 
 

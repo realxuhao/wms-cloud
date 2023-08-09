@@ -22,8 +22,12 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.StockOperationType;
+import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IProductStockOperationService;
+import com.ruoyi.common.log.service.IUserOperationLogService;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -62,6 +66,9 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
 
     @Autowired
     private IProductStockOperationService productStockOperationService;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
 
     @Override
@@ -165,6 +172,8 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
 
         productPick.setStatus(ProductPickEnum.WAITTING_SHIP.code());
         this.updateById(productPick);
+
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode),productPick.getMaterial());
 
 
         return productPickBinDownVO;
@@ -320,6 +329,8 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
 
         productStockOperationService.addProductStockOperation(productStock.getPlantNb(),total.get(),
                 productStock.getSsccNumber(),productStock.getMaterialNb(),productStock.getBatchNb(), StockOperationType.SALESOUT.getCode());
+
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode),productPicks.get(0).getMaterial());
 
 
         return productPickBinDownVO;

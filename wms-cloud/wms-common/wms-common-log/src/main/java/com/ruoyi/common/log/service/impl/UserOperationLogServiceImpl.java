@@ -45,7 +45,7 @@ public class UserOperationLogServiceImpl extends ServiceImpl<UserOperationLogMap
 
 
     @Override
-    public Boolean insertUserOperationLog(Integer type,String orderNumber,String userName,Integer operationType,String ssccs) {
+    public Boolean insertUserOperationLog(Integer type,String orderNumber,String userName,Integer operationType,String ssccs,String code) {
         UserOperationLog userOperationLog = new UserOperationLog();
         userOperationLog.setSsccNumber(ssccs);
         userOperationLog.setType(type);
@@ -53,6 +53,7 @@ public class UserOperationLogServiceImpl extends ServiceImpl<UserOperationLogMap
         userOperationLog.setCreateBy(userName);
         userOperationLog.setCreateTime(new Date());
         userOperationLog.setOperationType(operationType);
+        userOperationLog.setCode(code);
         boolean save = this.save(userOperationLog);
         return save;
     }

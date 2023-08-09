@@ -57,5 +57,5 @@ public interface IUserOperationLogService extends IService<UserOperationLog> {
      * @param orderNumber 订单号
      * @return
      */
-    Boolean insertUserOperationLog(Integer type,String orderNumber,String userName,Integer operationType,String ssccs);
+    Boolean insertUserOperationLog(Integer type,String orderNumber,String userName,Integer operationType,String ssccs,String code);
 }

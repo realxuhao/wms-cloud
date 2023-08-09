@@ -21,6 +21,10 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
+import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -49,6 +53,10 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
     @Autowired
     @Lazy
     private JobServiceImpl jobService;
+
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
     @Override
     public void add(SplitPalletDTO splitPallet) {
@@ -115,6 +123,10 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
         sourceStock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(sourceStock.getTotalStock(), sourceStock.getFreezeStock(), "-"));
         sourceStock.setWholeFlag(StockWholeFlagEnum.NOT_WHOLE.code());
         stockService.updateById(sourceStock);
+
+
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(),splitPallet.getSourceSsccNb(),sourceStock.getMaterialNb());
+
     }
 
     @Override

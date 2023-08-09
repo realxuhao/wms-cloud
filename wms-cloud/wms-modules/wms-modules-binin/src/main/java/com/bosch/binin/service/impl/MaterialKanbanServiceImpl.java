@@ -589,6 +589,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             materialKanbanMapper.updateById(materialKanban);
             //整托下架
             binInService.binDown(splitPallet.getSourceSsccNb());
+            userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(),UserOperationType.BINOUT.getCode(),splitPallet.getSourceSsccNb(),materialKanban.getMaterialCode());
 
 
         }else {
@@ -691,9 +692,10 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
                 stockMapper.updateById(conver);
             }
+            userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(),UserOperationType.PALLETSPLIT.getCode(),splitPallet.getSourceSsccNb(),materialKanban.getMaterialCode());
+
         }
 
-        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(),UserOperationType.PALLETSPLIT.getCode(),splitPallet.getSourceSsccNb());
 
 
     }

@@ -32,8 +32,11 @@ import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.*;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.StockOperationType;
+import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IProductStockOperationService;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -82,6 +85,9 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
     @Autowired
     @Lazy
     private IProductWareShiftService wareShiftService;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
     @Override
     public void generateStockByReceive(ProductReceive receive) {
@@ -565,6 +571,8 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
         manualTransferOrderService.save(manualTransferOrder);
 
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_TRANS.getCode(), ProductQRCodeUtil.getSSCC(binInDTO.getMesBarCode()),manualTransferOrder.getMaterialNb());
+
         this.updateById(stock);
     }
 
@@ -640,6 +648,9 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         productStockOperationService.addProductStockOperation(newStock.getPlantNb(), newStock.getTotalStock(), newStock.getSsccNumber(), newStock.getMaterialNb(),
                 newStock.getBatchNb(), StockOperationType.IN.getCode());
         this.save(newStock);
+
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(),splitPallet.getSourceSsccNb(),newStock.getMaterialNb());
+
     }
 
 

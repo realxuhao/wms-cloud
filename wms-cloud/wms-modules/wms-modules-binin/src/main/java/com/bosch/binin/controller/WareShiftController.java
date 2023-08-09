@@ -80,7 +80,7 @@ public class WareShiftController extends BaseController {
     @Log(title = "移库任务下架", businessType = BusinessType.UPDATE)
     public R binDown(@PathVariable String mesBarCode) {
         shiftService.binDown(mesBarCode);
-        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.BINOUTOTHER.getCode(), MesBarCodeUtil.getSSCC(mesBarCode));
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.BINOUTOTHER.getCode(), MesBarCodeUtil.getSSCC(mesBarCode),MesBarCodeUtil.getMaterialNb(mesBarCode));
 
         return R.ok(mesBarCode + "下架成功");
     }
@@ -92,7 +92,6 @@ public class WareShiftController extends BaseController {
     @Synchronized
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         shiftService.splitPallet(splitPallet);
-        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(), splitPallet.getSourceSsccNb());
 
         return R.ok();
     }
@@ -217,7 +216,7 @@ public class WareShiftController extends BaseController {
     @Synchronized
     public R performBinIn(@RequestBody BinInDTO binInDTO) {
         shiftService.performBinIn(binInDTO);
-        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.SHIFT_BININ.getCode(), MesBarCodeUtil.getSSCC(binInDTO.getMesBarCode()));
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.SHIFT_BININ.getCode(), MesBarCodeUtil.getSSCC(binInDTO.getMesBarCode()),MesBarCodeUtil.getMaterialNb(binInDTO.getMesBarCode()));
 
         return R.ok();
     }

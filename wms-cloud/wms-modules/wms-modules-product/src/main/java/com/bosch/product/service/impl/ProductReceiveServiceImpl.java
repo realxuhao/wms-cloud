@@ -16,8 +16,11 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
+import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.StockOperationType;
+import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IProductStockOperationService;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -48,6 +51,9 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
 
     @Autowired
     private IProductStockOperationService productStockOperationService;
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
     @Override
     public List<ProductReceiveVO> list(ProductReceiveQueryDTO queryDTO) {
@@ -84,6 +90,7 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
 
         productStockOperationService.addProductStockOperation(productReceive.getPlantNb(),productReceive.getInQuantity(),productReceive.getSsccNumber(),productReceive.getMaterialNb(),productReceive.getBatchNb(), StockOperationType.IN.getCode());
 
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_STORAGE_IN.getCode(), ProductQRCodeUtil.getSSCC(qrCode),productReceive.getMaterialNb());
 
     }
 

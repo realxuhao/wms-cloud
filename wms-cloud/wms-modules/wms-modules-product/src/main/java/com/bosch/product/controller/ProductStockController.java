@@ -49,8 +49,6 @@ public class ProductStockController extends BaseController {
     @Autowired
     private IProductStockService productStockService;
 
-    @Autowired
-    private IUserOperationLogService userOperationLogService;
 
     @GetMapping(value = "/list")
     @ApiOperation("库存列表")
@@ -109,7 +107,6 @@ public class ProductStockController extends BaseController {
     @Synchronized
     public R trans(@RequestBody ManualBinInDTO binInDTO) {
         productStockService.trans(binInDTO);
-        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_TRANS.getCode(), ProductQRCodeUtil.getSSCC(binInDTO.getMesBarCode()));
 
         return R.ok("转储成功");
     }
@@ -135,7 +132,6 @@ public class ProductStockController extends BaseController {
     @Synchronized
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         productStockService.addSplit(splitPallet);
-        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(),splitPallet.getSourceSsccNb());
 
         return R.ok();
     }

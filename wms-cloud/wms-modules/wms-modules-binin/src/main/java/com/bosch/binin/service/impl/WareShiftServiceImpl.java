@@ -534,6 +534,9 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         conver.setId(null);
         conver.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
         stockService.save(conver);
+
+        operationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(), splitPallet.getSourceSsccNb(),wareShift.getMaterialNb());
+
     }
 
     @Override

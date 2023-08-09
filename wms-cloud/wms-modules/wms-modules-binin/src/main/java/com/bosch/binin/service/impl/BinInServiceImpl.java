@@ -431,6 +431,10 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.MATERIALBININ.getCode(), operationLogs);
 
+        if ("G".equals(materialVO.getPalletType()) || "H".equals(materialVO.getPalletType()) || "I".equals(materialVO.getPalletType())) {
+            userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PALLETTURNOVER.getCode(), operationLogs);
+
+        }
 
     }
 
@@ -682,6 +686,14 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         userOperationLog.setCode(materialNb);
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.MATERIALBININ.getCode(), userOperationLog);
 
+        if ("G".equals(binIn.getPalletType()) ||
+                "H".equals(binIn.getPalletType()) ||
+                "I".equals(binIn.getPalletType())) {
+            UserOperationLog userOperationLogFantuo = new UserOperationLog();
+            userOperationLogFantuo.setSsccNumber(sscc);
+            userOperationLogFantuo.setCode(materialNb);
+            userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PALLETTURNOVER.getCode(), userOperationLog);
+        }
 
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
     }

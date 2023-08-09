@@ -122,7 +122,7 @@ public class IQCController extends BaseController {
     public R binDown(@PathVariable String mesBarCode) {
         samplePlanService.binDown(MesBarCodeUtil.getSSCC(mesBarCode));
 
-        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.IQCBINOUT.getCode(), MesBarCodeUtil.getSSCC(mesBarCode));
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.IQCBINOUT.getCode(), MesBarCodeUtil.getSSCC(mesBarCode),MesBarCodeUtil.getMaterialNb(mesBarCode));
 
         return R.ok();
     }
@@ -152,7 +152,7 @@ public class IQCController extends BaseController {
     @Synchronized
     public R performBinIn(@RequestBody BinInDTO binInDTO) {
         samplePlanService.performBinIn(binInDTO);
-        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.IQCBININ.getCode(), MesBarCodeUtil.getSSCC(binInDTO.getMesBarCode()));
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.IQCBININ.getCode(), MesBarCodeUtil.getSSCC(binInDTO.getMesBarCode()),MesBarCodeUtil.getMaterialNb(binInDTO.getMesBarCode()));
 
         return R.ok();
     }

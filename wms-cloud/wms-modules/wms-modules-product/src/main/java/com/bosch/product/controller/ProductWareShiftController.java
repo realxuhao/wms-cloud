@@ -165,7 +165,6 @@ public class ProductWareShiftController extends BaseController {
     @Transactional(rollbackFor = Exception.class)
     public R binIn(@RequestBody ProductBinInDTO binInDTO){
         productWareShiftService.wareShiftBinIn(binInDTO);
-        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBININ.getCode(), binInDTO.getSscc());
 
         return R.ok();
     }

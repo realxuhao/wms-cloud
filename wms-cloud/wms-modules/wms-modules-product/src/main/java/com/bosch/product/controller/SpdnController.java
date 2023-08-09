@@ -78,8 +78,7 @@ public class SpdnController extends BaseController {
     @Autowired
     private IProductSPDNPickService pickService;
 
-    @Autowired
-    private IUserOperationLogService userOperationLogService;
+
 
     @PostMapping(value = "/importSPDN")
     @ApiOperation("SPDN导入")
@@ -167,7 +166,6 @@ public class SpdnController extends BaseController {
     @Synchronized
     public R binDown(@PathVariable String qrCode) {
         spdnService.binDown(qrCode);
-        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode));
 
         return R.ok(qrCode + "下架成功");
     }

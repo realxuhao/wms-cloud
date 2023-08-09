@@ -100,7 +100,6 @@ public class ProductReceiveController extends BaseController {
     @Log(title = "PDA成品收货", businessType = BusinessType.INSERT)
     public R receive(@PathVariable("qrCode") String qrCode, @RequestParam("quantity")Double quantity) {
         receiveService.receive(qrCode,quantity);
-        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_STORAGE_IN.getCode(), ProductQRCodeUtil.getSSCC(qrCode));
         return R.ok();
     }
 

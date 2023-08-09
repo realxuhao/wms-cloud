@@ -325,6 +325,10 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         this.updateById(productWareShift);
 
 
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBININ.getCode(), binInDTO.getSscc(),productWareShift.getMaterialNb());
+
+
+
     }
 
     @Override

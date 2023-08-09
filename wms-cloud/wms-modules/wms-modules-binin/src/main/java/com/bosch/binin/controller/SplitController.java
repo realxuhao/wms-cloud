@@ -46,8 +46,6 @@ public class SplitController extends BaseController {
     @Autowired
     private ISplitService splitService;
 
-    @Autowired
-    private IUserOperationLogService userOperationLogService;
 
 
     @PostMapping(value = "add")
@@ -57,7 +55,6 @@ public class SplitController extends BaseController {
     @Synchronized
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         splitService.add(splitPallet);
-        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(),splitPallet.getSourceSsccNb());
 
         return R.ok();
     }

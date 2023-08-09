@@ -96,6 +96,7 @@
         :pagination="false"
         size="middle"
         :scroll="tableScroll"
+        @change="pageChange"
       >
         <template slot="checkType" slot-scope="text">
           <div >
@@ -153,25 +154,29 @@ const columns = [
     title: '工厂编码',
     key: 'plantNb',
     dataIndex: 'plantNb',
-    width: 120
+    width: 120,
+      sorter: true
   },
   {
     title: 'Cell',
     key: 'cell',
     dataIndex: 'cell',
-    width: 100
+    width: 100,
+      sorter: true
   },
   {
     title: '仓库编码',
     key: 'wareCode',
     dataIndex: 'wareCode',
-    width: 120
+    width: 120,
+      sorter: true
   },
   {
     title: '存储区编码',
     key: 'areaCode',
     dataIndex: 'areaCode',
-    width: 120
+    width: 120,
+      sorter: true
   },
   {
     title: 'SSCC码',
@@ -183,7 +188,8 @@ const columns = [
     title: '库位编码',
     key: 'binCode',
     dataIndex: 'binCode',
-    width: 140
+    width: 140,
+        sorter: true
   },
   {
     title: '托盘编码',
@@ -195,19 +201,34 @@ const columns = [
     title: '物料编码',
     key: 'materialNb',
     dataIndex: 'materialNb',
-    width: 120
+    width: 120,
+      sorter: true
   },
   {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
-    width: 120
+    width: 120,
+        sorter: true
   },
   {
     title: '质检状态',
     key: 'qualityStatus',
     dataIndex: 'qualityStatus',
-    width: 80
+    width: 80,
+      sorter: true
+  },
+  {
+    title: '当前任务',
+    key: 'jobDesc',
+    dataIndex: 'jobDesc',
+    width: 120
+  },
+  {
+    title: '任务状态',
+    key: 'jobStatus',
+    dataIndex: 'jobStatus',
+    width: 120
   },
   {
     title: '库存量',
@@ -225,7 +246,8 @@ const columns = [
     title: '有效期',
     key: 'expireDate',
     dataIndex: 'expireDate',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '操作人',
@@ -278,6 +300,11 @@ export default {
     
   },
   methods: {
+    async pageChange(page, filters, sorter){
+        this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc'
+        this.queryForm.orderByColumn= sorter.columnKey
+        this.loadTableList()
+    },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()

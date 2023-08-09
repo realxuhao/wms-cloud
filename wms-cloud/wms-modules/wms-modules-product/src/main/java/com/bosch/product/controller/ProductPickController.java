@@ -54,8 +54,6 @@ public class ProductPickController extends BaseController {
     @Autowired
     private IProductPickService pickService;
 
-    @Autowired
-    private IUserOperationLogService userOperationLogService;
 
 
 
@@ -112,7 +110,6 @@ public class ProductPickController extends BaseController {
     @Synchronized
     public R binDown(@PathVariable String qrCode) {
         pickService.sumBinDown(qrCode);
-        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode));
 
         return R.ok(qrCode + "下架成功");
     }
@@ -133,7 +130,6 @@ public class ProductPickController extends BaseController {
     @Synchronized
     public R binDown(@PathVariable String qrCode, @RequestParam("sudnId") Long sudnId) {
         pickService.binDown(qrCode, sudnId);
-        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode));
 
         return R.ok(qrCode + "下架成功");
     }
