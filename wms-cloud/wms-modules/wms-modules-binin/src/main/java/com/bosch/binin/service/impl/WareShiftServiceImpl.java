@@ -821,7 +821,6 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
                     samplePlan.setPlantNb(binInVO.getPlantNb());
 
 
-
                 });
                 samplePlanService.updateBatchById(samplePlanList);
 

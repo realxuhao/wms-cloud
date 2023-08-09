@@ -2,6 +2,7 @@ package com.bosch.binin.api.factory;
 
 import com.bosch.binin.api.RemoteBinInService;
 import com.bosch.binin.api.domain.TranshipmentOrder;
+import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
 import com.ruoyi.common.core.domain.R;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,11 @@ public class RemoteBinInFallbackFactory implements FallbackFactory<RemoteBinInSe
             @Override
             public R listBySSCC(List<String> ssccList) {
                 return R.fail("通过sscc获取库存列表失败");
+            }
+
+            @Override
+            public R<List<MaterialKanbanVO>> getKanbanListBySSCC(String ssccNb) {
+                return R.fail("根据SSCC获取捡配任务失败");
             }
         };
     }

@@ -1,6 +1,8 @@
 package com.bosch.system.api.domain;
 
 import java.util.Date;
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.annotation.Excel.ColumnType;
@@ -82,6 +84,16 @@ public class SysOperLog extends BaseEntity
     /** 操作时间 */
     @Excel(name = "方法返回码")
     private Integer methodReturnCode;
+
+    private List<Long> KanbanIdList;
+
+    public List<Long> getKanbanIdList() {
+        return KanbanIdList;
+    }
+
+    public void setKanbanIdList(List<Long> kanbanIdList) {
+        KanbanIdList = kanbanIdList;
+    }
 
     public Long getOperId()
     {

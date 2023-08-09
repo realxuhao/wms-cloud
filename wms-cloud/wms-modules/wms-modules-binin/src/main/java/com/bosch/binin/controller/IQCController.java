@@ -163,6 +163,7 @@ public class IQCController extends BaseController {
     @Synchronized
     public R confirm(@RequestBody IQCSamplePlanDTO dto) {
         samplePlanService.confirm(dto);
+
         return R.ok();
     }
 

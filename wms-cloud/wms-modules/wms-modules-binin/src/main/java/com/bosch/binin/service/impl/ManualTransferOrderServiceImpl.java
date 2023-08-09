@@ -30,6 +30,7 @@ import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -59,6 +60,10 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
 
     @Autowired
     private IStockService stockService;
+
+    @Autowired
+    @Lazy
+    private IJobServiceImpl jobService;
 
     @Override
     public List<ManualTransferOrderVO> list(ManualTransQueryDTO queryDTO) {
@@ -321,7 +326,6 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
         manualTransferOrderMapper.updateById(manualTransferOrder);
 
 
-
         return binInMapper.selectBySsccNumber(binIn.getSsccNumber());
     }
 
@@ -352,6 +356,11 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
         if (stock == null) {
             throw new ServiceException("系统无此托的库存信息");
         }
+
+        jobService.validStockStatus(stock.getSsccNumber());
+//        if (stock.getFreezeStock() > Double.valueOf(0)) {
+//            throw new ServiceException("该托有冻结库存，暂时不能转储！");
+//        }
 
 
         ManualTransferOrder manualTransferOrder = new ManualTransferOrder();

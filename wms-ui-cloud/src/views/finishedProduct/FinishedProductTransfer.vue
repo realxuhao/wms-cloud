@@ -36,6 +36,21 @@
               <a-input v-model="queryForm.ssccNb" placeholder="SSCC码" allow-clear/>
             </a-form-model-item>
           </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="物料号">
+              <a-input v-model="queryForm.materialNb" placeholder="物料号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="fromProdOrder">
+              <a-input v-model="queryForm.fromProdOrder" placeholder="fromProdOrder" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="批次号">
+              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
           <template v-if="advanced">
             <a-col :span="4">
               <a-form-model-item label="车牌号">
@@ -175,6 +190,12 @@ const columns = [
     dataIndex: 'quantity',
     width: 120
   },
+   {
+    title: '批次总数量',
+    key: 'quantity',
+    dataIndex: 'quantity',
+    width: 120
+  },
   // {
   //   title: '移动类型',
   //   key: 'moveType',
@@ -198,6 +219,12 @@ const columns = [
     title: '物料号',
     key: 'materialNb',
     dataIndex: 'materialNb',
+    width: 120
+  },
+  {
+    title: 'from_prod_order',
+    key: 'fromProdOrder',
+    dataIndex: 'fromProdOrder',
     width: 120
   },
   {
@@ -304,6 +331,9 @@ const queryFormAttr = () => {
     carNb: '',
     targetWareCode: '',
     date: [],
+    fromProdOrder: '',
+    batchNb: '',
+    materialNb: '',
     createBy: ''
   }
 }

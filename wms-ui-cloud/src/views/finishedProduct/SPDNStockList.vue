@@ -20,8 +20,40 @@
             </a-form-item>
           </a-col>
           <a-col :span="4">
+            <a-form-item label="质检状态" >
+              <a-select
+                allow-clear
+                v-model="queryForm.qualityStatus"
+              >
+                <a-select-option v-for="item in qualityStatus" :key="item.value" :value="item.text">
+                  {{ item.text }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="物料号">
+              <a-input v-model="queryForm.materialNb" placeholder="物料号" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="物料类型">
+              <a-input v-model="queryForm.materialType" placeholder="物料类型" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="批次号">
+              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="批次号">
+              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
             <a-form-item label="存储区">
-              <a-input v-model="queryForm.areCode" placeholder="存储区" allow-clear/>
+              <a-input v-model="queryForm.areaCode" placeholder="存储区" allow-clear/>
             </a-form-item>
           </a-col>
           <a-col :span="4">
@@ -34,18 +66,12 @@
               <a-input v-model="queryForm.fromProdOrder" placeholder="FromProdOrder" allow-clear/>
             </a-form-item>
           </a-col>
-         
-          <a-col :span="4">
-            <a-form-item label="FromProdOrder">
-              <a-input v-model="queryForm.fromProdOrder" placeholder="FromProdOrder" allow-clear/>
-            </a-form-item>
-          </a-col>
           <a-col :span="4">
             <a-form-item label="创建人">
               <a-input v-model="queryForm.createBy" placeholder="创建人" allow-clear/>
             </a-form-item>
           </a-col>
-          <a-col :span="8">
+          <!-- <a-col :span="8">
             <a-form-item label="创建时间" >
               <a-range-picker
                 format="YYYY-MM-DD HH:mm"
@@ -53,7 +79,7 @@
                 v-model="queryForm.date"
               />
             </a-form-item>
-          </a-col>
+          </a-col> -->
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
@@ -104,6 +130,21 @@
 <script>
 import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
+
+const qualityStatus = [
+  {
+    text: 'U',  
+    value: 0
+  },
+  {
+    text: 'B',
+    value: 1
+  },
+  {
+    text: 'Q',
+    value: 2
+  }
+]
 const columns = [
   {
     title: 'plantNb',
@@ -151,6 +192,12 @@ const columns = [
     title: '库位',
     key: 'binCode',
     dataIndex: 'binCode',
+    width: 120
+  },
+  {
+    title: '批次总库存',
+    key: 'totalStockSum',
+    dataIndex: 'totalStockSum',
     width: 120
   },
   {
@@ -229,7 +276,8 @@ const queryFormAttr = () => {
     binCode: '',
     fromProdOrder: '',
     createBy: '',
-    date: []
+    qualityStatus: '',
+    materialType: ''
   }
 }
 
@@ -264,6 +312,7 @@ export default {
   computed: {
     status: () => status,
     colorMap: () => colorMap,
+    qualityStatus: () => qualityStatus,
     hasSelected () {
       return this.selectedRowKeys.length > 0
     },

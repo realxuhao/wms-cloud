@@ -2,6 +2,8 @@ package com.bosch.system.controller;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.bosch.binin.api.RemoteBinInService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,12 +35,22 @@ public class SysOperlogController extends BaseController
     @Autowired
     private ISysOperLogService operLogService;
 
+
+
     //@RequiresPermissions("system:operlog:list")
     @GetMapping("/list")
     public TableDataInfo list(SysOperLog operLog)
     {
         startPage();
         List<SysOperLog> list = operLogService.selectOperLogList(operLog);
+        return getDataTable(list);
+    }
+
+    @GetMapping("/ssccOperLogList")
+    public TableDataInfo ssccOperLogList(SysOperLog operLog)
+    {
+        startPage();
+        List<SysOperLog> list = operLogService.selectSsccOperLogList(operLog);
         return getDataTable(list);
     }
 

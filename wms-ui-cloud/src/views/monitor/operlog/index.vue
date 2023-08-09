@@ -5,9 +5,14 @@
       <div class="table-page-search-wrapper">
         <a-form layout="inline">
           <a-row :gutter="48">
-            <a-col :md="8" :sm="24">
+            <!-- <a-col :md="8" :sm="24">
               <a-form-item label="系统模块">
                 <a-input v-model="queryParam.title" placeholder="请输入系统模块" allow-clear/>
+              </a-form-item>
+            </a-col> -->
+            <a-col :md="8" :sm="24">
+              <a-form-item label="请求参数">
+                <a-input v-model="queryParam.operParam" placeholder="请输入请求参数" allow-clear/>
               </a-form-item>
             </a-col>
             <a-col :md="8" :sm="24">
@@ -51,12 +56,12 @@
       </div>
       <!-- 操作 -->
       <div class="table-operations">
-        <a-button type="danger" :disabled="multiple" @click="handleDelete" v-hasPermi="['monitor:operlog:remove']">
+        <!-- <a-button type="danger" :disabled="multiple" @click="handleDelete" v-hasPermi="['monitor:operlog:remove']">
           <a-icon type="delete" />删除
         </a-button>
         <a-button type="danger" @click="handleClean" v-hasPermi="['monitor:operlog:remove']">
           <a-icon type="delete" />清空
-        </a-button>
+        </a-button> -->
         <a-button type="primary" @click="handleExport" v-hasPermi="['system:config:export']">
           <a-icon type="download" />导出
         </a-button>
@@ -141,7 +146,8 @@ export default {
         title: undefined,
         operName: undefined,
         businessType: undefined,
-        status: undefined
+        status: undefined,
+        operParam: undefined
       },
       columns: [
         {
@@ -286,25 +292,25 @@ export default {
       })
     },
     /** 清空按钮操作 */
-    handleClean () {
-      var that = this
-      this.$confirm({
-        title: '是否确认清空?',
-        content: '此操作将会清空所有操作日志数据项',
-        onOk () {
-          return cleanOperlog()
-            .then(() => {
-              that.onSelectChange([], [])
-              that.getList()
-              that.$message.success(
-                '清空成功',
-                3
-              )
-          })
-        },
-        onCancel () {}
-      })
-    },
+    // handleClean () {
+    //   var that = this
+    //   this.$confirm({
+    //     title: '是否确认清空?',
+    //     content: '此操作将会清空所有操作日志数据项',
+    //     onOk () {
+    //       return cleanOperlog()
+    //         .then(() => {
+    //           that.onSelectChange([], [])
+    //           that.getList()
+    //           that.$message.success(
+    //             '清空成功',
+    //             3
+    //           )
+    //       })
+    //     },
+    //     onCancel () {}
+    //   })
+    // },
     /** 导出按钮操作 */
     handleExport () {
       var that = this
@@ -312,7 +318,7 @@ export default {
         title: '是否确认导出?',
         content: '此操作将导出当前条件下所有数据而非选中数据',
         onOk () {
-          that.download('monitor/operlog/export', {
+          that.download('system/operlog/export', {
             ...that.queryParam
           }, `operlog_${new Date().getTime()}.xlsx`)
         },

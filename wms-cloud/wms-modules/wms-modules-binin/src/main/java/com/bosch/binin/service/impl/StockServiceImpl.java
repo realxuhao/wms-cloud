@@ -4,13 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.BinIn;
+import com.bosch.binin.api.domain.IQCSamplePlan;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.StockAdjust;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
+import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.service.IBinInService;
+import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.binin.service.IStockAdjustService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.utils.BeanConverUtil;
@@ -68,6 +71,9 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     @Autowired
     private IStockAdjustService stockAdjustService;
 
+    @Autowired
+    private IIQCSamplePlanService iiqcSamplePlanService;
+
     @Override
     public List<StockVO> selectStockVOList(StockQueryDTO stockQueryDTO) {
 
@@ -111,6 +117,17 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     public List<IQCVO> excelChangeStatus(List<IQCDTO> list) {
         List<IQCVO> result = new ArrayList<>();
         List<UserOperationLog> userOperationLogList = new ArrayList<>();
+
+        List<String> ssccList = list.stream().map(IQCDTO::getSsccnumber).collect(Collectors.toList());
+        LambdaQueryWrapper<IQCSamplePlan> iqcSampleQueryWrapper = new LambdaQueryWrapper<>();
+        iqcSampleQueryWrapper.in(IQCSamplePlan::getSsccNb,ssccList);
+        iqcSampleQueryWrapper.eq(IQCSamplePlan::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        List<IQCSamplePlan> iqcSamplePlans = iiqcSamplePlanService.list(iqcSampleQueryWrapper);
+        List<String> issueSSCCList = iqcSamplePlans.stream().filter(iqcSamplePlan -> iqcSamplePlan.getStatus().equals(IQCStatusEnum.WAAITTING_ISSUE.code())).map(IQCSamplePlan::getSsccNb).collect(Collectors.toList());
+
+
+
+
         // 定义每个线程处理的数据量
         int batchSize = 100;
         // 计算需要启动的线程数
@@ -130,6 +147,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                     LambdaUpdateWrapper<Stock> wrapper = new LambdaUpdateWrapper<>();
                     wrapper.eq(Stock::getSsccNumber, iqcdto.getSsccnumber());
                     wrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+                    wrapper.notIn(!CollectionUtils.isEmpty(issueSSCCList),Stock::getSsccNumber,issueSSCCList);
                     wrapper.set(Stock::getQualityStatus, iqcdto.getFinalSAPStatus());
                     wrapper.set(Stock::getChangeStatus, 1);
                     wrapper.set(Stock::getUpdateBy, SecurityUtils.getUsername());
@@ -148,6 +166,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             });
         }
 
+
 // 关闭线程池
         executorService.shutdown();
         try {
@@ -157,7 +176,22 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             // 处理线程被中断的异常
             e.printStackTrace();
         }
+
+
+
+        if (!CollectionUtils.isEmpty(issueSSCCList)) {
+            result.stream().forEach(r -> {
+                if (issueSSCCList.contains(r.getSsccnumber())) {
+                    r.setStatus(2);
+                }
+            });
+        }
+
+
         List<IQCVO> stockVOS = mapToMaterial(result);
+
+
+
 
         return stockVOS;
     }
@@ -279,7 +313,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     public Double getMainStockCount(String materialNb) {
         LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Stock::getMaterialNb, materialNb)
-                .eq(Stock::getFreezeStock, Double.valueOf(0))
+//                .eq(Stock::getFreezeStock, Double.valueOf(0))
                 .eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode())
                 .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<Stock> list = this.list(queryWrapper);

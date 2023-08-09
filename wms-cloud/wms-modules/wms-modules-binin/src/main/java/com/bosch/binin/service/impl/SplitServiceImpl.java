@@ -26,6 +26,7 @@ import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -52,6 +53,10 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
     @Autowired
     private IBinInService binInService;
 
+    @Autowired
+    @Lazy
+    private IJobServiceImpl jobService;
+
     @Override
     public void add(SplitPalletDTO splitPallet) {
         String sourceSsccNb = splitPallet.getSourceSsccNb();
@@ -64,6 +69,9 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
         if (Objects.isNull(sourceStock)) {
             throw new ServiceException("SSCC: " + sourceSsccNb + ",无库存，不可拆托");
         }
+
+        jobService.validStockStatus(sourceSsccNb);
+
         String newMesBarCode = splitPallet.getNewMesBarCode();
 
         if (splitPallet.getSplitQuantity() <= 0) {
@@ -75,14 +83,14 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
         }
 
         //校验物料号
-        if (newMesBarCode.length() == 50||newMesBarCode.contains(".")) {
+        if (newMesBarCode.length() == 50 || newMesBarCode.contains(".")) {
             String materialNb = MesBarCodeUtil.getMaterialNb(newMesBarCode);
             if (!materialNb.equals(sourceStock.getMaterialNb())) {
                 throw new ServiceException("拆托物料号:" + materialNb + "和源物料号不一致，不可拆托");
             }
         }
 
-        String newSscc = newMesBarCode.length() == 50||newMesBarCode.contains(".") ? MesBarCodeUtil.getSSCC(newMesBarCode) : newMesBarCode;
+        String newSscc = newMesBarCode.length() == 50 || newMesBarCode.contains(".") ? MesBarCodeUtil.getSSCC(newMesBarCode) : newMesBarCode;
         //校验sscc是否已经存在拆托中
         LambdaQueryWrapper<SplitRecord> splitQueryWrapper = new LambdaQueryWrapper<>();
         splitQueryWrapper.eq(SplitRecord::getSsccNb, newSscc).eq(SplitRecord::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
@@ -102,7 +110,7 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
         splitRecord.setSplitQuantity(splitQuantity);
         splitRecord.setMaterialNb(sourceStock.getMaterialNb());
         splitRecord.setNewMesBarCode(newMesBarCode);
-        splitRecord.setSsccNb(newMesBarCode.length() <= 60||newMesBarCode.contains(".") ? MesBarCodeUtil.getSSCC(newMesBarCode) : newMesBarCode);
+        splitRecord.setSsccNb(newMesBarCode.length() <= 60 || newMesBarCode.contains(".") ? MesBarCodeUtil.getSSCC(newMesBarCode) : newMesBarCode);
         splitRecord.setSourceSscc(sourceSsccNb);
         splitRecord.setSourceTotalStock(sourceStock.getTotalStock());
         splitRecord.setWareCode(sourceStock.getWareCode());
@@ -150,7 +158,7 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
         Stock sourceStock = stockService.getOne(stockQueryWrapper);
         //分配库位信息
         String newMesBarCode = MesBarCodeUtil.generateMesBarCode(sourceStock.getExpireDate(), sscc, sourceStock.getMaterialNb(), sourceStock.getBatchNb(), splitRecord.getSplitQuantity());
-        BinInVO binInVO = binInService.generateInTaskByMesBarCode(newMesBarCode,splitRecord.getSplitQuantity());
+        BinInVO binInVO = binInService.generateInTaskByMesBarCode(newMesBarCode, splitRecord.getSplitQuantity());
         return binInVO;
     }
 
@@ -170,11 +178,11 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
         }
         String sourceSscc = splitRecord.getSourceSscc();
         LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
-        stockQueryWrapper.eq(Stock::getSsccNumber,sourceSscc);
+        stockQueryWrapper.eq(Stock::getSsccNumber, sourceSscc);
         stockQueryWrapper.orderByDesc(Stock::getUpdateTime);
         stockQueryWrapper.last("limit 1");
         Stock sourceStock = stockService.getOne(stockQueryWrapper);
-        BinInVO binInVO = binInService.performBinIn(binInDTO, StringUtils.isEmpty(sourceStock.getQualityStatus())?null:sourceStock.getQualityStatus());
+        BinInVO binInVO = binInService.performBinIn(binInDTO, StringUtils.isEmpty(sourceStock.getQualityStatus()) ? null : sourceStock.getQualityStatus());
         splitRecord.setStatus(SplitStatusEnum.FINISH.code());
         splitMapper.updateById(splitRecord);
     }

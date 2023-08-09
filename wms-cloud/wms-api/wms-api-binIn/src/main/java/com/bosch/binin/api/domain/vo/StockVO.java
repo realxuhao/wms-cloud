@@ -137,6 +137,15 @@ public class StockVO {
     private Double availableStock;
 
 
+    @ApiModelProperty(value = "任务描述")
+    @Excel(name = "任务描述")
+    private String jobDesc;
+
+    @ApiModelProperty(value = "任务状态")
+    @Excel(name = "任务状态")
+    private String jobStatus;
+
+
     /**
      * 上架id
      */
@@ -194,4 +203,5 @@ public class StockVO {
     @ApiModelProperty(value = "IQC更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date iqcUpdateTime;
+
 }

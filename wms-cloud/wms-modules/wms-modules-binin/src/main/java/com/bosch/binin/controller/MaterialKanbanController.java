@@ -94,6 +94,14 @@ public class MaterialKanbanController {
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
+    @GetMapping("/getKanbanListBySSCC/{ssccNb}")
+    public R<List<MaterialKanbanVO>> getKanbanListBySSCC(@PathVariable("ssccNb") String ssccNb){
+        MaterialKanbanDTO dto = new MaterialKanbanDTO();
+        dto.setSsccNumber(ssccNb);
+        List<MaterialKanbanVO> list = materialKanbanService.getKanbanList(dto);
+        return R.ok(list);
+    }
+
     @GetMapping(value = "/waitingBinDownList")
     @ApiOperation("查询kanban待下架列表")
     public R<PageVO<MaterialKanbanVO>> waitingBinDownList(PageDomain pageDomain) {
@@ -656,6 +664,11 @@ public class MaterialKanbanController {
             if (updateKanban <= 0) {
                 return R.fail("确认收货失败，请刷新重试");
             }
+
+
+
+
+
             return R.ok();
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务

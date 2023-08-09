@@ -414,6 +414,12 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         userOperationLog.setCode(kanban.getMaterialCode());
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.BINOUT.getCode(),userOperationLog);
 
+        UserOperationLog userOperationLogFinish = new UserOperationLog();
+        userOperationLogFinish.setSsccNumber(ssccNb);
+        userOperationLogFinish.setCode(kanban.getMaterialCode());
+
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), kanban.getOrderNumber(),SecurityUtils.getUsername(), UserOperationType.CALLOVER.getCode(),userOperationLog);
+
 
 
     }

@@ -40,7 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			</if>
 
 			<if test="operParam != null and operParam != ''">
-				AND (oper_param like concat('%', #{operParam}, '%') OR oper_url like concat('%', #{operParam})
+				AND (oper_param like concat('%', #{operParam}, '%') OR oper_url like concat('%', #{operParam}))
 			</if>
 			<if test="businessType != null">
 				AND business_type = #{businessType}
@@ -62,6 +62,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			</if>
 			<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
 				and date_format(oper_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+			</if>
+			<if test="KanbanIdList != null and KanbanIdList.length > 0">
+				AND
+				<foreach collection="KanbanIdList" item="kanbanId" open="(" separator="OR" close=")">
+					oper_url like concat('%/', #{kanbanId}, '%') or oper_url like concat('%,', #{kanbanId}, '%')
+				</foreach>
 			</if>
 		</where>
 		order by oper_id desc

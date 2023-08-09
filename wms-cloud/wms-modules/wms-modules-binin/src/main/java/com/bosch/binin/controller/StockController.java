@@ -8,6 +8,7 @@ import com.bosch.binin.api.domain.dto.StockQueryDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
+import com.bosch.binin.service.IJobService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.file.api.FileService;
@@ -33,6 +34,7 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -66,12 +68,21 @@ public class StockController extends BaseController {
     @Autowired
     private FileService fileService;
 
+    @Autowired
+    @Lazy
+    private IJobService jobService;
+
 
     @GetMapping(value = "/list")
     @ApiOperation("库存列表")
     public R<PageVO<StockVO>> list(StockQueryDTO stockQuerySTO) {
         startPage();
         List<StockVO> list = stockService.selectStockVOList(stockQuerySTO);
+        list.stream().forEach(stockVO -> {
+            if (stockVO.getFreezeStock()>0){
+
+            }
+        });
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
