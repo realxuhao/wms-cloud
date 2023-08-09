@@ -6,7 +6,10 @@
 					<view class="label">SSCC码：</view>
 					{{ info.ssccNumber }}
 				</view>
-
+				<view class="text-line m-b-8 ">
+					<view class="label">质检状态：</view>
+					{{ info.qualityStatus }}
+				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">物料名称：</view>
 					{{ info.materialName }}
@@ -27,21 +30,45 @@
 					<view class="label">有效期：</view>
 					{{ info.expireDate }}
 				</view>
-
-				<view>
-					<view class="text-line m-b-8 ">
-						<view class="label">托盘编码：</view>
-						{{ info.palletCode }}
-					</view>
-					<view class="text-line m-b-8 ">
-						<view class="label">所在库位：</view>
-						{{ info.binCode }}
-					</view>
-					<view class="text-line m-b-8 ">
-						<view class="label">所在仓库：</view>
-						{{ info.wareCode }}
-					</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">当前任务：</view>
+					{{ info.jobDesc }}
 				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">任务状态：</view>
+					{{ info.jobStatus }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">总库存：</view>
+					{{ info.totalStock }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">冻结库存：</view>
+					{{ info.freezeStock }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">可用库存：</view>
+					{{ info.availableStock }}
+				</view>
+
+				<view class="text-line m-b-8 ">
+					<view class="label">托盘编码：</view>
+					{{ info.palletCode }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">所在库位：</view>
+					{{ info.binCode }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">所在区域：</view>
+					{{ info.areaCode }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">所在仓库：</view>
+					{{ info.wareCode }}
+				</view>
+
+
 			</view>
 		</view>
 		<Message ref="message"></Message>
@@ -49,97 +76,104 @@
 </template>
 
 <script>
-import Message from '@/components/Message';
-import Bus from '@/utils/bus';
-import _ from 'lodash';
+	import Message from '@/components/Message';
+	import Bus from '@/utils/bus';
+	import _ from 'lodash';
 
-export default {
-	components: {
-		Message
-	},
-	data() {
-		return {
-			info: false
-		};
-	},
-	onLoad(options) {
-		console.log(options);
-		this.getByMesBarCode(options.barCode);
-	},
-	onLaunch() {
-		Bus.$off('scancodedate');
-	},
-	methods: {
-		async getByMesBarCode(barCode) {
-			try {
-				const data = await this.$store.dispatch('stock/getByMesBarCode', barCode);
-				if (!data) {
-					throw error({ message: '系统未找到此SSCC信息，请检查' });
+	export default {
+		components: {
+			Message
+		},
+		data() {
+			return {
+				info: false
+			};
+		},
+		onLoad(options) {
+			console.log(options);
+			this.getByMesBarCode(options.barCode);
+		},
+		onLaunch() {
+			Bus.$off('scancodedate');
+		},
+		methods: {
+			async getByMesBarCode(barCode) {
+				try {
+					const data = await this.$store.dispatch('stock/getByMesBarCode', barCode);
+					if (!data) {
+						throw error({
+							message: '系统未找到此SSCC信息，请检查'
+						});
+					}
+					this.info = data;
+				} catch (e) {
+					this.$refs.message.error(e.message);
 				}
-				this.info = data;
-			} catch (e) {
-				this.$refs.message.error(e.message);
 			}
-		}
-	},
-	mounted() {},
-	watch: {}
-};
+		},
+		mounted() {},
+		watch: {}
+	};
 </script>
 
 <style lang="scss">
-.main {
-	height: 100%;
-	padding: 8px;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: column;
-}
-
-.header {
-	background: #fff;
-	padding: 8px;
-	border-radius: 4px;
-}
-
-.content {
-	background: #fff;
-	padding: 8px 8px 40px;
-	border-radius: 4px;
-}
-
-/deep/.uni-data-tree {
-	background: #fff;
-}
-
-.result-content {
-	width: 324px;
-	padding: 12px;
-	box-sizing: border-box;
-	background: #fff;
-	border-radius: 4px;
-	.result-status {
-		color: $uni-color-success;
+	.main {
+		height: 100%;
+		padding: 8px;
+		box-sizing: border-box;
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		margin-bottom: 16px;
-		.text {
-			margin-left: 8px;
-			font-size: 14px;
+		flex-direction: column;
+	}
+
+	.header {
+		background: #fff;
+		padding: 8px;
+		border-radius: 4px;
+	}
+
+	.content {
+		background: #fff;
+		padding: 8px 8px 40px;
+		border-radius: 4px;
+	}
+
+	/deep/.uni-data-tree {
+		background: #fff;
+	}
+
+	.result-content {
+		width: 324px;
+		padding: 12px;
+		box-sizing: border-box;
+		background: #fff;
+		border-radius: 4px;
+
+		.result-status {
+			color: $uni-color-success;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-bottom: 16px;
+
+			.text {
+				margin-left: 8px;
+				font-size: 14px;
+			}
+		}
+
+		.label {
+			width: 120px;
+		}
+
+		.data-box {
+			margin-bottom: 16px;
+			padding: 0px 8px;
 		}
 	}
-	.label {
-		width: 100px;
+
+	.flex {
+		.custom-input {
+			flex: 1;
+		}
 	}
-	.data-box {
-		margin-bottom: 16px;
-		padding: 0px 8px;
-	}
-}
-.flex {
-	.custom-input {
-		flex: 1;
-	}
-}
 </style>

@@ -81,7 +81,9 @@ public class StockController extends BaseController {
         List<StockVO> list = stockService.selectStockVOList(stockQuerySTO);
         list.stream().forEach(stockVO -> {
             if (stockVO.getFreezeStock()>0){
-
+                JobVO jobDescBySSCC = jobService.getJobDescBySSCC(stockVO.getSsccNumber());
+                stockVO.setJobStatus(jobDescBySSCC.getStatusDesc());
+                stockVO.setJobDesc(jobDescBySSCC.getJobDesc());
             }
         });
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
@@ -120,6 +122,12 @@ public class StockController extends BaseController {
                     stockVOR.setData(stockVO);
 
                 }
+            }else {
+                StockVO stockVO = stockVOR.getData();
+                JobVO jobDescBySSCC = jobService.getJobDescBySSCC(sscc);
+                stockVO.setJobDesc(jobDescBySSCC.getJobDesc());
+                stockVO.setJobStatus(jobDescBySSCC.getStatusDesc());
+                stockVOR.setData(stockVO);
             }
 
             return stockVOR;
