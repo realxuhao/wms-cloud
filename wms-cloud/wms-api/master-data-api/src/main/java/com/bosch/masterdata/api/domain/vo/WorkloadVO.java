@@ -97,5 +97,24 @@ public class WorkloadVO {
     @ApiModelProperty(value = "翻托")
     @Excel(name = "翻托")
     private Integer palletTurnover;
+    /**
+     * 移库上架
+     */
+    @ApiModelProperty(value = "移库上架")
+    @Excel(name = "移库上架")
+    private Integer shiftBinIn;
 
+    /**
+     * IQC上架
+     */
+    @ApiModelProperty(value = "IQC上架")
+    @Excel(name = "IQC上架")
+    private Integer iqcBinIn;
+
+    /**
+     * IQC下架
+     */
+    @ApiModelProperty(value = "IQC下架")
+    @Excel(name = "IQC下架")
+    private Integer iqcBinOut;
 }

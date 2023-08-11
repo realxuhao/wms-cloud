@@ -176,9 +176,9 @@ export default {
         })
       })
 
-      this.loadCharts('FSMP',cellDataMap['FSMP'].children,'process-efficiency-fsmp')
-      this.loadCharts('NMD',cellDataMap['NMD'].children,'process-efficiency-nmd')
-      this.loadCharts('ECN',cellDataMap['ECN'].children,'process-efficiency-ecn')
+      this.loadCharts('FSMP(min)',cellDataMap['FSMP'].children,'process-efficiency-fsmp')
+      this.loadCharts('NMD(min)',cellDataMap['NMD'].children,'process-efficiency-nmd')
+      this.loadCharts('ECN(min)',cellDataMap['ECN'].children,'process-efficiency-ecn')
     }
   },
   mounted(){

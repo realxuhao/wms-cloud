@@ -208,25 +208,31 @@
 
     <select id="workload" resultType="com.bosch.masterdata.api.domain.vo.WorkloadVO" parameterType="com.bosch.masterdata.api.domain.dto.WorkloadDTO">
         SELECT
-            create_by ,
-                MAX( CASE operation_type WHEN '1' THEN nb ELSE 0 END ) AS 'bin_in',
-                MAX( CASE operation_type WHEN '2' THEN nb ELSE 0 END ) AS 'bin_out',
-                MAX( CASE operation_type WHEN '3' THEN nb ELSE 0 END ) AS 'bin_out_other',
-                MAX( CASE operation_type WHEN '4' THEN nb ELSE 0 END ) AS 'pallet_split',
-                MAX( CASE operation_type WHEN '5' THEN nb ELSE 0 END ) AS 'pallet_turnover'
+        create_by ,
+        MAX( CASE operation_type WHEN '1' THEN nb ELSE 0 END ) AS 'bin_in',
+        MAX( CASE operation_type WHEN '2' THEN nb ELSE 0 END ) AS 'bin_out',
+        MAX( CASE operation_type WHEN '3' THEN nb ELSE 0 END ) AS 'bin_out_other',
+        MAX( CASE operation_type WHEN '4' THEN nb ELSE 0 END ) AS 'pallet_split',
+        MAX( CASE operation_type WHEN '5' THEN nb ELSE 0 END ) AS 'pallet_turnover',
+        MAX( CASE operation_type WHEN '13' THEN nb ELSE 0 END ) AS 'shift_bin_in',
+        MAX( CASE operation_type WHEN '7' THEN nb ELSE 0 END ) AS 'iqc_bin_in',
+        MAX( CASE operation_type WHEN '6' THEN nb ELSE 0 END ) AS 'iqc_bin_out'
         FROM (SELECT COUNT(*) AS nb,create_by ,operation_type ,
-                     CASE operation_type
-                         WHEN '1' THEN 'bin_in'
-                         WHEN '2' THEN 'bin_out'
-                         WHEN '3' THEN 'bin_out_other'
-                         WHEN '4' THEN 'pallet_split'
-                         WHEN '5' THEN 'pallet_turnover'
-                         ELSE 'other'
-                         END AS type_name
-              FROM user_operation_log where  type='0'
+        CASE operation_type
+        WHEN '1' THEN 'bin_in'
+        WHEN '2' THEN 'bin_out'
+        WHEN '3' THEN 'bin_out_other'
+        WHEN '4' THEN 'pallet_split'
+        WHEN '5' THEN 'pallet_turnover'
+        WHEN '13' THEN 'shift_bin_in'
+        WHEN '7' THEN 'iqc_bin_in'
+        WHEN '6' THEN 'iqc_bin_out'
+        ELSE 'other'
+        END AS type_name
+        FROM user_operation_log where type='0'
         <if test="createTimeStart != null">and create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
         <if test="createTimeEnd != null">and create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
-                                      GROUP BY create_by ,operation_type )AS t
+        GROUP BY create_by ,operation_type )AS t
         where 1=1
         <if test="createBy != null and createBy != ''">and create_by like concat('%', #{createBy}, '%')</if>
 

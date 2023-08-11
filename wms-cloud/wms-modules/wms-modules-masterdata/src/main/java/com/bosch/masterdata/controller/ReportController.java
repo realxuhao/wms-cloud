@@ -1,5 +1,6 @@
 package com.bosch.masterdata.controller;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 
 import com.bosch.masterdata.api.domain.MissionToDo;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/report")
@@ -184,7 +186,10 @@ public class ReportController extends BaseController {
 
 //            startPage();
             List<ProcessEfficiencyVO> list = reportService.processEfficiency(processEfficiencyDTO);
-            return R.ok(list);
+        List<ProcessEfficiencyVO> sortedList = list.stream()
+                .sorted(Comparator.comparing(ProcessEfficiencyVO::getCreateTime))
+                .collect(Collectors.toList());
+            return R.ok(sortedList);
 
     }
     /**

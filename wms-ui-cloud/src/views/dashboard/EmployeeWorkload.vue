@@ -97,6 +97,24 @@ const columns = [
     key: 'palletTurnover',
     dataIndex: 'palletTurnover',
     width: 80
+  },
+  {
+    title: '原材料移库上架',
+    key: 'shiftBinIn',
+    dataIndex: 'shiftBinIn',
+    width: 80
+  },
+  {
+    title: 'IQC取样下架',
+    key: 'iqcBinOut',
+    dataIndex: 'iqcBinOut',
+    width: 80
+  },
+  {
+    title: 'IQC取样上架',
+    key: 'iqcBinIn',
+    dataIndex: 'iqcBinIn',
+    width: 80
   }
 
 ]
