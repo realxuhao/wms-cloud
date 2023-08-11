@@ -63,4 +63,14 @@ public class NmdDTO extends PageDomain {
     @ExcelProperty(value = "")
     @ApiModelProperty(value = "备注")
     private String remark;
+
+    /**
+     * aql
+     */
+    /**
+     * 备注
+     */
+    @ExcelProperty(value = "AQL")
+    @ApiModelProperty(value = "aql")
+    private Double aql;
 }

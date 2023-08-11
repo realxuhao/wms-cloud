@@ -18,4 +18,9 @@ public class NMDIQCRuleDTO {
     @ApiModelProperty(value = "水平类型，1：正常，2：加严，3：放宽")
     private Integer levelType;
 
+    @ApiModelProperty(value = "1：正常，2：加严，3：放宽")
+    private Integer plan;
+
+    @ApiModelProperty(value = "aql")
+    private Double aql;
 }

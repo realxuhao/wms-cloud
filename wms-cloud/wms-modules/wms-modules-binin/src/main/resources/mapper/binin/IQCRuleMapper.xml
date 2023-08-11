@@ -12,4 +12,17 @@
           and nir.min_total_quantity <![CDATA[ <= ]]> #{quantity}
           and nir.check_level = #{checkLevel}
     </select>
+
+    <select id="getNMDIQCNumber" resultType="com.bosch.binin.api.domain.NMDIQCRule">
+        SELECT r.min_total_quantity, r.max_total_quantity, r.check_level, a.code, a.plan, a.aql, a.number
+        from nmd_iqc_rule r
+                 LEFT JOIN nmd_iqc_aql a
+                           ON r.code = a.code
+        where r.max_total_quantity <![CDATA[ >= ]]> #{quantity}
+        and r.min_total_quantity <![CDATA[ <= ]]> #{quantity}
+        and r.check_level = #{checkLevel}
+        AND a.aql=#{aql}
+        AND a.plan=#{plan}
+    </select>
+
 </mapper>

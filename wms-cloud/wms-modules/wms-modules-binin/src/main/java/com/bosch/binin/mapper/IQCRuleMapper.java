@@ -15,5 +15,5 @@ public interface IQCRuleMapper {
 
     NMDIQCRule getNMDIQCRule(NMDIQCRuleDTO dto);
 
-
+    NMDIQCRule getNMDIQCNumber(NMDIQCRuleDTO dto);
 }

@@ -23,4 +23,9 @@ public class IQCRuleServiceImpl implements IIQCRuleService {
     public NMDIQCRule getNMDIQCRule(NMDIQCRuleDTO dto) {
         return ruleMapper.getNMDIQCRule(dto);
     }
+
+    @Override
+    public NMDIQCRule getNMDIQCNumber(NMDIQCRuleDTO dto) {
+        return ruleMapper.getNMDIQCNumber(dto);
+    }
 }

@@ -88,4 +88,10 @@ public class NmdVO implements Serializable {
     @ApiModelProperty(value = "抽样方案（1：正常,2：加严,3：放宽）")
     private Integer plan;
 
+    /**
+     * aql
+     */
+    @ApiModelProperty(value = "aql")
+    private Double aql;
+
 }

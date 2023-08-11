@@ -116,7 +116,7 @@
         b.iqc_update_by=#{updateUser},
         b.iqc_update_time=#{updateTime}
         <if test=' dto.type != "" and dto.type=="0" '>
-            where b.id =#{id}
+            where b.id =#{dto.id}
         </if>
         <if test='dto.type != "" and dto.type == "1"'>
             where b.batch_nb =

@@ -46,6 +46,11 @@
               </a-select>
             </a-form-model-item>
           </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="AQL">
+              <a-input v-model="queryForm.aql" placeholder="AQL" allow-clear/>
+            </a-form-model-item>
+          </a-col>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button v-hasPermi="['nmd:sample:rule:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
@@ -235,6 +240,12 @@ const columns = [
     width: 140
   },
   {
+    title: 'AQL',
+    key: 'aql',
+    dataIndex: 'aql',
+    width: 80
+  },
+  {
     title: '操作人',
     key: 'updateBy',
     dataIndex: 'updateBy',
@@ -245,7 +256,7 @@ const columns = [
     title: '操作时间',
     key: 'updateTime',
     dataIndex: 'updateTime',
-    width: 200,
+    width: 120,
     scopedSlots: { customRender: 'updateTime' }
   },
   {

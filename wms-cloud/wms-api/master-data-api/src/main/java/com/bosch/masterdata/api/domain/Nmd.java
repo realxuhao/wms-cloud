@@ -41,6 +41,10 @@ public class Nmd extends BaseEntity {
     private Integer classification;
 
     /**
+     * AQL
+     */
+    private Double aql;
+    /**
      * 检验水平级别
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)

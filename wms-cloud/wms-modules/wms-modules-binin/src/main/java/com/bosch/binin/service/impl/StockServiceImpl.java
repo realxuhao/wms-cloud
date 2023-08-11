@@ -168,7 +168,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         }
 
 
-// 关闭线程池
+        // 关闭线程池
         executorService.shutdown();
         try {
             // 等待所有线程执行完毕
@@ -177,8 +177,6 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             // 处理线程被中断的异常
             e.printStackTrace();
         }
-
-
 
         if (!CollectionUtils.isEmpty(issueSSCCList)) {
             result.stream().forEach(r -> {

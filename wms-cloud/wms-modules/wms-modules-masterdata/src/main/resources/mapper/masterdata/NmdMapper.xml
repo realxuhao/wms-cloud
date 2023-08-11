@@ -16,13 +16,14 @@
         <result property="classification" column="classification" jdbcType="INTEGER"/>
         <result property="level" column="level" jdbcType="VARCHAR"/>
         <result property="plan" column="plan" jdbcType="INTEGER"/>
+        <result property="aql" column="aql" />
         <result property="deleteFlag" column="delete_flag" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         id,material_code,create_by,update_by,
         create_time,update_time,status,
-        remark,classification,level,
+        remark,classification,level,aql,
         plan,delete_flag
     </sql>
 
@@ -39,6 +40,7 @@
             <if test="status != null ">and status = #{status}</if>
             <if test="classification != null ">and classification = #{classification}</if>
             <if test="plan != null ">and plan = #{plan}</if>
+            <if test="aql != null ">and aql = #{plan}</if>
         </where>
     </select>
 
@@ -53,7 +55,8 @@
             <if test="classification != null ">and classification = #{classification}</if>
             <if test="plan != null ">and plan = #{plan}</if>
             <if test="status != null">status = #{status}</if>
-            <if test="remark != null">remark = #{remark}</if>
+            <if test="plan != null ">and plan = #{plan}</if>
+            <if test="aql != null ">and aql = #{aql}</if>
         </trim>
         where id = #{id}
     </update>

@@ -32,6 +32,15 @@
           </a-select-option>
         </a-select>
       </a-form-item>
+      <a-form-item label="AQL">
+        <a-input-number
+          :min="0"
+          placeholder="AQL"
+          v-decorator="[
+            'aql',
+
+          ]" />
+      </a-form-item>
       <a-form-item label="检验水平级别">
         <a-select
           allowClear
@@ -151,7 +160,7 @@ export default {
     },
     async getAndUpdateForm () {
       const { data } = await this.$store.dispatch('nmdRule/getOne', this.id)
-      const columns = ['materialCode', 'classification', 'level', 'plan']
+      const columns = ['materialCode', 'classification', 'level', 'plan','aql']
       this.form.setFieldsValue(_.pick(data, columns))
     },
     async loadNMDRuleList () {

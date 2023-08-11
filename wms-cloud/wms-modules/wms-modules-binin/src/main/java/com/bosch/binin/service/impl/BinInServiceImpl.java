@@ -700,7 +700,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
 
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    private void dealIQC(String mesBarCode, String materialNb, String batchNb) {
+    public void dealIQC(String mesBarCode, String materialNb, String batchNb) {
         MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
 
 
@@ -1138,17 +1138,23 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             NMDIQCRuleDTO ruleDTO = new NMDIQCRuleDTO();
             ruleDTO.setQuantity(quantity);
             ruleDTO.setCheckLevel(nmd.getLevel());
-            NMDIQCRule nmdiqcRule = ruleService.getNMDIQCRule(ruleDTO);
+            //
+            ruleDTO.setPlan(nmd.getPlan());
+            ruleDTO.setAql(nmd.getAql());
+            //NMDIQCRule nmdiqcRule = ruleService.getNMDIQCRule(ruleDTO);
+            //获取数量
+            NMDIQCRule nmdiqcRule = ruleService.getNMDIQCNumber(ruleDTO);
             if (nmdiqcRule == null) {
                 sampleQuantity = 0;
             } else {
-                if (nmd.getPlan() == 1) {
-                    sampleQuantity = nmdiqcRule.getNormal();
-                } else if (nmd.getPlan() == 2) {
-                    sampleQuantity = nmdiqcRule.getStricture();
-                } else {
-                    sampleQuantity = nmdiqcRule.getRelaxation();
-                }
+//                if (nmd.getPlan() == 1) {
+//                    sampleQuantity = nmdiqcRule.getNormal();
+//                } else if (nmd.getPlan() == 2) {
+//                    sampleQuantity = nmdiqcRule.getStricture();
+//                } else {
+//                    sampleQuantity = nmdiqcRule.getRelaxation();
+//                }
+                sampleQuantity = nmdiqcRule.getNumber();
             }
         } else if (nmd.getClassification() == NmdClassificationEnum.B.getCode()) {
             if ("米".equals(materialVO.getUnit())) {

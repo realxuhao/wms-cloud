@@ -13,4 +13,5 @@ public interface IIQCRuleService {
 
     NMDIQCRule getNMDIQCRule(NMDIQCRuleDTO dto);
 
+    NMDIQCRule getNMDIQCNumber(NMDIQCRuleDTO dto);
 }

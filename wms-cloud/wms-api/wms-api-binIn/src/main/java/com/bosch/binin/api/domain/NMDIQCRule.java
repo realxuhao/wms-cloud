@@ -17,4 +17,6 @@ public class NMDIQCRule {
     private Integer relaxation;
     private Integer stricture;
     private Integer normal;
+    private String code;
+    private Double number;
 }
