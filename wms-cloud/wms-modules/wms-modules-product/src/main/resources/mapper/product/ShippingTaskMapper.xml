@@ -132,7 +132,7 @@
         <if test="palletQuantity != null and palletQuantity !=''">AND shipping_task.pallet_quantity like concat('%',#{palletQuantity},'%')</if>
         <if test="afterPacking != null and afterPacking !=''">AND shipping_task.after_packing like concat('%',#{afterPacking},'%')</if>
 
-        <if test="status != null ">AND shipping_task.status in ('0','-1')</if>
+        <if test="status != null ">AND shipping_task.status in ('0','1')</if>
 
         <if test="stockMovementDateStart != null">and STR_TO_DATE(shipping_task.stock_movement_date, '%Y/%m/%d %H:%i') <![CDATA[ >= ]]> #{stockMovementDateStart}</if>
         <if test="stockMovementDateEnd != null">and STR_TO_DATE(shipping_task.stock_movement_date, '%Y/%m/%d %H:%i') <![CDATA[ <= ]]> #{stockMovementDateEnd}</if>
