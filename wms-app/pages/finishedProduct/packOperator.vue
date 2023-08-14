@@ -205,7 +205,7 @@
 
 					const allScanProdOrderList = []
 					_.each(rows, x => {
-						_.each(_.split(x, ','), y => {
+						_.each(_.split(x.ssccNumbers, ','), y => {
 							const item = {
 								type: '',
 								prodOrder: x.prodOrder,

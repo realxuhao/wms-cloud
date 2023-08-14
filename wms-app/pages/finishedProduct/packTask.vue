@@ -48,9 +48,12 @@
 				bottomTips: ''
 			};
 		},
-		created() {
-			this.loadData();
+		onShow() {
+			this.loadData()
 		},
+		// created() {
+		// 	this.loadData();
+		// },
 		methods: {
 			async getList() {
 				const options = {
