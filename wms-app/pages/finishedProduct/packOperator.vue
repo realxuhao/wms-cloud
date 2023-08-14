@@ -1,5 +1,5 @@
 <template>
-	<my-page nav-title="打包" :noReturn="true" @returnCallBack="handleReturn">
+	<my-page nav-title="打包">
 		<view class="main" slot="page-main">
 			<view class="header m-b-8">
 				<view class="text-line m-b-8 ">
@@ -61,8 +61,8 @@
 								</view>
 							</template>
 							<template v-slot:footer>
-								<uni-icons @click="handleDelete(index)" custom-prefix="custom-icon" type="closeempty"
-									size="18" color="#541b86"></uni-icons>
+								<uni-icons @click="handleDelete(index,item.sscc)" custom-prefix="custom-icon"
+									type="closeempty" size="18" color="#541b86"></uni-icons>
 							</template>
 						</uni-list-item>
 					</uni-list>
@@ -90,9 +90,9 @@
 </template>
 
 <script>
-	import Message from '@/components/Message';
-	import Bus from '@/utils/bus';
-	import _ from 'lodash';
+	import Message from '@/components/Message'
+	import Bus from '@/utils/bus'
+	import _ from 'lodash'
 
 	export default {
 		components: {
@@ -110,85 +110,117 @@
 				taskIndex: 0,
 				allScanProdOrderList: [],
 				currentTaskBarCodeList: [],
-				takeDownTaskBarCodeList: [],
+				// takeDownTaskBarCodeList: [],
 				stepIndex: 1,
 				tagInverted: true,
 				returnPage: false,
-			};
+				params: {}
+			}
 		},
 		computed: {
 			cleanDialogContent() {
 				return this.returnPage ? '退出将会清空打包任务，是否继续?' : '请确认清空打包任务?'
 			},
 			prodOrderStr() {
-				const prodOrderStr = _.join(_.map(_.filter(this.taskList, x => x.isDisassembled), x => x.prodOrder), ',');
-				return prodOrderStr;
+				const prodOrderStr = _.join(_.map(_.filter(this.taskList, x => x.isDisassembled), x => x.prodOrder), ',')
+				return prodOrderStr
 			},
 			allTaskCount() {
-				const count = _.sumBy(_.filter(this.taskList, x => !x.isDisassembled), 'palletQuantity');
-				return count;
+				const count = _.sumBy(_.filter(this.taskList, x => !x.isDisassembled), 'palletQuantity')
+				return count
 			},
 			splitPalletCount() {
-				const count = _.sumBy(_.filter(this.taskList, x => x.isDisassembled), 'palletQuantity');
-				return _.ceil(count);
+				const count = _.sumBy(_.filter(this.taskList, x => x.isDisassembled), 'palletQuantity')
+				return _.ceil(count)
 			},
 			sapCode() {
-				const str = _.join(_.map(_.filter(this.taskList, x => x.isDisassembled), 'sapCode'), ',');
-				return str;
+				const str = _.join(_.map(_.filter(this.taskList, x => x.isDisassembled), 'sapCode'), ',')
+				return str
 			},
 			title({
 				normalTaskList,
 				taskIndex
 			}) {
 				if (!normalTaskList.length) {
-					return '';
+					return ''
 				}
-				return `${normalTaskList[taskIndex].prodOrder}-${normalTaskList[taskIndex].sapCode}`;
+				return `${normalTaskList[taskIndex].prodOrder}-${normalTaskList[taskIndex].sapCode}`
 			},
 			firstTaskInfo() {
 				if (this.taskList.length) {
-					return _.first(this.taskList);
+					return _.first(this.taskList)
 				}
-				return {};
+				return {}
 			},
 			prodOrder() {
-				return _.get(this.firstTaskInfo, 'prodOrder');
+				return _.get(this.firstTaskInfo, 'prodOrder')
 			},
 			shippingMark() {
-				return _.get(this.firstTaskInfo, 'shippingMark');
+				return _.get(this.firstTaskInfo, 'shippingMark')
 			},
 			etoPo() {
-				return _.get(this.firstTaskInfo, 'etoPo');
+				return _.get(this.firstTaskInfo, 'etoPo')
 			},
 			palletQuantityCount() {
-				const count = _.sumBy(this.taskList, item => Number(item.palletQuantity));
-				return _.ceil(count);
+				const count = _.sumBy(this.taskList, item => Number(item.palletQuantity))
+				return _.ceil(count)
 			},
 
 			afterPackingCount() {
-				const count = _.sumBy(this.taskList, item => Number(item.afterPacking));
-				return count;
+				const count = _.sumBy(this.taskList, item => Number(item.afterPacking))
+				return count
 			},
 			taskListCountMap() {
 				return _.reduce(
 					this.taskList,
 					(dict, item) => {
-						dict[item.prodOrder] = item.palletQuantity;
-						return dict;
+						dict[item.prodOrder] = item.palletQuantity
+						return dict
 					}, {}
-				);
+				)
 			}
 		},
 		onLoad(options) {
-			this.taskId = options.id;
-
-			this.initScanCode();
+			this.taskId = options.id
+			// this.shippingMark = options.shippingMark
+			// this.etoPo = options.etoPo
+			this.params = options
+			this.initScanCode()
+			this.getHistoryRecord()
 		},
 		onLaunch(options) {
-			console.log(options);
-			Bus.$off('scancodedate');
+			Bus.$off('scancodedate')
 		},
 		methods: {
+			async getHistoryRecord() {
+				try {
+					const options = {
+						shippingMark: this.params.shippingMark,
+						etoPo: this.params.etoPo,
+						pageSize: 0
+					}
+					const {
+						rows
+					} = await this.$store.dispatch('finishedProduct/getHistoryRecord', options)
+
+					const allScanProdOrderList = []
+					_.each(rows, x => {
+						_.each(_.split(x, ','), y => {
+							const item = {
+								type: '',
+								prodOrder: x.prodOrder,
+								sscc: y
+							}
+							allScanProdOrderList.push(item)
+						})
+					})
+
+					this.allScanProdOrderList = allScanProdOrderList
+					this.stepIndex = rows.length + 1
+				} catch (e) {
+					this.$refs.message.error(e.message)
+				} finally {}
+			},
 			handleReturn() {
 
 				this.returnPage = true
@@ -199,21 +231,20 @@
 				this.$refs.cleanDialog.close()
 			},
 			onReset() {
-				this.currentTaskBarCodeList = [];
-				this.allScanProdOrderList = [];
+				this.currentTaskBarCodeList = []
+				this.allScanProdOrderList = []
 			},
 			onSubmitCheck() {
 				if (!this.currentTaskBarCodeList.length) {
 					throw ({
 						message: `请扫描成品标签二维码`
-					});
+					})
 				}
 
-				if (this.allScanProdOrderList > this.palletQuantityCount || this.allScanProdOrderList < this
-					.palletQuantityCount) {
+				if (_.uniqBy(this.allScanProdOrderList, 'sscc').length < this.palletQuantityCount) {
 					throw ({
 						message: `扫描标签次数未满足要求,请检查`
-					});
+					})
 				}
 
 				// console.log('this.taskListCountMap',this.taskListCountMap)
@@ -240,39 +271,41 @@
 				if (!this.currentTaskBarCodeList.length) {
 					throw {
 						message: '请扫描成品标签二维码'
-					};
+					}
 				}
 
 				const {
 					prodOrder
-				} = this.normalTaskList[this.taskIndex] || {};
+				} = this.normalTaskList[this.taskIndex] || {}
 				if (!_.filter(this.currentTaskBarCodeList, x => x.prodOrder === prodOrder).length) {
 					throw {
 						message: '请扫描当前托码'
-					};
+					}
 				}
 			},
-			handleDelete(index) {
+			handleDelete(index, sscc) {
 				if (this.submitLoading) {
-					this.$refs.message.info('正在提交不允许编辑');
-					return;
+					this.$refs.message.info('正在提交不允许编辑')
+					return
 				}
-				this.currentTaskBarCodeList.splice(index, 1);
-				this.allScanProdOrderList.splice(index, 1)
+				this.currentTaskBarCodeList.splice(index, 1)
+
+				// const all = 
+				const allScanIndex = _.findIndex(this.allScanProdOrderList, x => x.sscc === sscc)
+				this.allScanProdOrderList.splice(index, allScanIndex)
 			},
 			async handleClean() {
 				try {
 					const deleteParam = {
 						id: this.taskId
-					};
-					await this.$store.dispatch('finishedProduct/deleteMultiPackageHistory', deleteParam);
-					this.$refs.message.success('清空成功');
-					this.onReset();
-					this.onReloadPage();
+					}
+					await this.$store.dispatch('finishedProduct/deleteMultiPackageHistory', deleteParam)
+					this.$refs.message.success('清空成功')
+					this.onReset()
+					this.onReloadPage()
 				} catch (e) {
 					// this.$refs.message.error(e.message);
 				} finally {
-					console.log(22222)
 					if (this.returnPage) {
 						this.handleGoBack()
 					}
@@ -283,149 +316,146 @@
 			},
 			async initScanCode() {
 				Bus.$on('scancodedate', data => {
-					data.code = data.code.replace(/\r|\n/gi, '');
-					console.log(data.code);
-					const prodOrder = data.code.substr(10, 9);
-					const sscc = data.code.substr(data.code.length - 18, 18);
-					if (_.find(this.allScanProdOrderList, x => x.sscc === sscc)) {
-						this.$refs.message.error('当前托已存在');
-						return;
+					data.code = data.code.replace(/\r|\n/gi, '')
+					const prodOrder = data.code.substr(10, 9)
+					const sscc = data.code.substr(data.code.length - 18, 18)
+					if (_.find(this.currentTaskBarCodeList, x => x.sscc === sscc)) {
+						this.$refs.message.error('当前托已存在')
+						return
 					}
 
-					const splitProdOrder = _.split(this.prodOrderStr, ',');
+					const splitProdOrder = _.split(this.prodOrderStr, ',')
 					const {
 						prodOrder: currentProdOrder
-					} = this.normalTaskList[this.taskIndex] || {};
-					const currentScanProdOrderList = [currentProdOrder, ...splitProdOrder];
-					console.log(currentScanProdOrderList);
-					console.log(currentScanProdOrderList.includes(prodOrder));
-					console.log(prodOrder);
+					} = this.normalTaskList[this.taskIndex] || {}
+					const currentScanProdOrderList = [currentProdOrder, ...splitProdOrder]
+
 					if (!currentScanProdOrderList.includes(prodOrder)) {
-						this.$refs.message.error('批次号校验错误');
-						return;
+						this.$refs.message.error('批次号校验错误')
+						return
 					}
 
 					const item = {
 						type: '',
 						prodOrder,
 						sscc
-					};
-					if (!this.tagInverted) {
-						item.type = '拆';
-						this.takeDownTaskBarCodeList.push(item);
 					}
-					this.currentTaskBarCodeList.push(item);
-					// this.currentTaskBarCodeList = _.uniqBy(this.currentTaskBarCodeList,'value')
-					this.allScanProdOrderList.push(item);
-				});
+					if (!this.tagInverted) {
+						item.type = '拆'
+						// this.takeDownTaskBarCodeList.push(item);
+					}
+					this.currentTaskBarCodeList.push(item)
+					this.allScanProdOrderList.push(item)
+				})
 			},
 			async handleNext() {
 				try {
-					this.onNextCheck();
+					this.onNextCheck()
 
 					uni.showLoading({
 						title: '提交中'
-					});
-					this.submitLoading = true;
+					})
+					this.submitLoading = true
 
 					const {
 						afterPacking
-					} = this.normalTaskList[this.taskIndex] || {};
+					} = this.normalTaskList[this.taskIndex] || {}
 					if (this.stepIndex > afterPacking) {
-						this.taskIndex += 1;
+						this.taskIndex += 1
 					}
 					//请求 生成记录
-					const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList, x => x.sscc), ',');
-					const lastOne = this.afterPackingCount === this.stepIndex ? 1 : 0;
+					const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList, x => x.sscc), ',')
+					const lastOne = this.afterPackingCount === this.stepIndex ? 1 : 0
 					const options = {
 						ssccNumbers,
 						historyIndex: this.stepIndex,
 						lastOne,
 						shippingTaskId: this.taskId
-					};
-					await this.$store.dispatch('finishedProduct/addPackageHistory', options);
+					}
+					await this.$store.dispatch('finishedProduct/addPackageHistory', options)
 
-					this.onReset();
-					this.stepIndex += 1;
+					// this.onReset()
+					this.currentTaskBarCodeList = []
+					this.stepIndex += 1
 				} catch (e) {
-					console.log(e);
-					this.$refs.message.error(e.message);
+					console.log(e)
+					this.$refs.message.error(e.message)
 				} finally {
-					this.submitLoading = false;
-					uni.hideLoading();
+					this.submitLoading = false
+					uni.hideLoading()
 				}
 			},
 			onReloadPage() {
-				this.stepIndex = 1;
-				this.lodaData();
+				this.stepIndex = 1
+				this.lodaData()
 			},
 			async handleOk() {
 				try {
-					this.onSubmitCheck();
+					this.onSubmitCheck()
 
+					console.log(111)
 					uni.showLoading({
 						title: '提交中'
-					});
-					this.submitLoading = true;
+					})
+					this.submitLoading = true
 
-					const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList, x => x.sscc), ',');
-					const lastOne = 1;
+					const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList, x => x.sscc), ',')
+					const lastOne = 1
 					const options = {
 						ssccNumbers,
 						historyIndex: this.stepIndex,
 						lastOne,
 						shippingTaskId: this.taskId
-					};
-					const result = await this.$store.dispatch('finishedProduct/addPackageHistory', options);
+					}
+					const result = await this.$store.dispatch('finishedProduct/addPackageHistory', options)
 					if (result.code === 200) {
-						this.$refs.message.success('清空成功');
-						this.handleGoBack();
+						this.$refs.message.success('清空成功')
+						this.handleGoBack()
 					} else {
-						this.$refs.message.error(result.msg);
+						this.$refs.message.error(result.msg)
 					}
 					//最后做校验
 
 					//如果失败，页面应该有个弹窗  重新做：掉API删除所有记录，刷新整个页面，返回：返回上一页
 				} catch (e) {
-					console.log(e.message);
+					console.log(e.message)
 					//TODO handle the exception
 					// this.$refs.message.error(e.message);
-					this.$refs.alertDialog.open();
+					this.$refs.alertDialog.open()
 				} finally {
-					this.submitLoading = false;
-					uni.hideLoading();
+					this.submitLoading = false
+					uni.hideLoading()
 				}
 			},
 			async handleGoBack() {
 				uni.navigateBack({
 					delta: 1
-				});
+				})
 			},
 			deleteAll() {
 				const deleteParam = {
 					id: this.taskId
-				};
-				this.deleteData = this.$store.dispatch('finishedProduct/deleteMultiPackageHistory', deleteParam);
+				}
+				this.deleteData = this.$store.dispatch('finishedProduct/deleteMultiPackageHistory', deleteParam)
 			},
 			async lodaData() {
 				const options = {
 					id: this.taskId
-				};
+				}
 				const {
 					data
-				} = await this.$store.dispatch('finishedProduct/getTaskList', options);
-				this.taskList = data;
-				this.normalTaskList = _.filter(data, x => !x.isDisassembled);
+				} = await this.$store.dispatch('finishedProduct/getTaskList', options)
+				this.taskList = data
+				this.normalTaskList = _.filter(data, x => !x.isDisassembled)
 			},
 
 			async onSubmit() {}
 		},
 		mounted() {
-			console.log(this.taskId);
-			this.lodaData();
+			this.lodaData()
 		},
 		watch: {}
-	};
+	}
 </script>
 
 <style lang="scss" scoped>

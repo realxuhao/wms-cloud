@@ -254,6 +254,14 @@ const finishedProduc = {
 			} = await finishedProductService.addSplit(options)
 			return data
 		},
+		async getHistoryRecord({
+			commit,
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.getHistoryRecord(options)
+			return data
+		},
 
 
 	}
