@@ -29,6 +29,8 @@ public interface ShippingTaskMapper extends BaseMapper<ShippingTask> {
     Integer updateStatus(@Param("ids")Long[] ids,@Param("status") Integer status);
 
     List<ShippingTaskVO> getDashboard(ShippingTaskDTO dto);
+
+    List<ShippingTaskVO> getDashboardByStatus(ShippingTaskDTO dto);
 }
 
 

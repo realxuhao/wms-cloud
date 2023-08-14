@@ -148,7 +148,13 @@ public class ShippingTaskServiceImpl extends ServiceImpl<ShippingTaskMapper, Shi
 
     @Override
     public List<ShippingTaskVO> getDashboard(ShippingTaskDTO dto) {
-        return shippingTaskMapper.getDashboard(dto);
+        List<ShippingTaskVO> dashboard =new ArrayList<>();
+        if (new Integer("-1").equals(dto.getStatus())){
+            dashboard= shippingTaskMapper.getDashboardByStatus(dto);
+        }else {
+            dashboard= shippingTaskMapper.getDashboard(dto);
+        }
+        return dashboard;
     }
 
 }
