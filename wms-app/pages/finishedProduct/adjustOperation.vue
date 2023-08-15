@@ -47,6 +47,12 @@
 							<uni-easyinput v-model="form.stockUse" placeholder="取样数量"></uni-easyinput>
 						</uni-forms-item>
 					</template>
+					
+					<template v-if="form.type === 2">
+						<uni-forms-item label="报废数量" name="totalStock" required>
+							<uni-easyinput v-model="form.stockUse" placeholder="报废数量"></uni-easyinput>
+						</uni-forms-item>
+					</template>
 
 					<template v-if="form.type === 4">
 						<uni-forms-item label="总库存" name="totalStock" required>
