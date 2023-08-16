@@ -40,7 +40,7 @@
             <if test="status != null ">and status = #{status}</if>
             <if test="classification != null ">and classification = #{classification}</if>
             <if test="plan != null ">and plan = #{plan}</if>
-            <if test="aql != null ">and aql = #{plan}</if>
+            <if test="aql != null ">and aql = #{aql}</if>
         </where>
     </select>
 
