@@ -35,6 +35,7 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
 
     List<ProductStockVO> listByMaterials(@Param("list") List<Map<String, String>> list);
 
+    List<ProductStockVO> notInListByMaterials(@Param("list") List<Map<String, String>> list);
     List<ProductStockVO> selectSUQAIQCManagementList(ProductIQCManagementQueryDTO queryDTO);
 
     int validateSUQAStatus(Long id);

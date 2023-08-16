@@ -23,7 +23,7 @@ public interface IRmComparisonService extends IService<RmComparison> {
 
     boolean updateBySsccList(List<String> ssccList);
 
-
+    boolean deleteBySsccList(List<String> ssccList);
     List<ProComparison>  insertProComparison (List<ProComparison> proComparisons) ;
 
     boolean deleteRmComparisonByCreat();

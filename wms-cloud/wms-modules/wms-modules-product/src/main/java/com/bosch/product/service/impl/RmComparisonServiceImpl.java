@@ -24,6 +24,7 @@ import com.ruoyi.common.core.utils.CompareUtils;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -163,7 +164,18 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
         return update;
     }
 
-
+    @Override
+    public boolean deleteBySsccList(List<String> ssccList) {
+        //根据ssccList更新status为已调整
+        LambdaQueryWrapper<RmComparison> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(RmComparison::getSsccNumber, ssccList);
+        lambdaQueryWrapper.eq(RmComparison::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        lambdaQueryWrapper.eq(RmComparison::getStatus, ComparisonEnum.DIFF.code());
+        //根据登陆人查询
+        lambdaQueryWrapper.eq(RmComparison::getCreateBy, SecurityUtils.getUsername());
+        boolean update = this.remove(lambdaQueryWrapper);
+        return update;
+    }
     @Override
     public List<ProComparison> insertProComparison(List<ProComparison> proComparisons) {
 
@@ -190,6 +202,9 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
             //查询prolist
             List<ProductStockVO> productStockVOS = productStockMapper.listByMaterials(materialNbAndBatchMapList);
 
+            //存在库存，不存在excel中
+            List<ProductStockVO> inStocks = productStockMapper.notInListByMaterials(materialNbAndBatchMapList);
+
             //proComparisons循环赋值
             proComparisons.forEach(r -> {
                 String replace = r.getBatch().replace(".", "-");
@@ -215,17 +230,27 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
                 //boxSpecification转double
                 //Double boxSpecificationDouble = Double.valueOf(boxSpecification);
 
-                r.setStockQuantity(reduce);
-                r.setStatus(ComparisonEnum.DIFF.code());
+                if (CollectionUtils.isNotEmpty(productStockVOs)){
+                    r.setStockExpireDate(DateFormatUtils.format(productStockVOs.get(0).getExpireDate(), "yyyy.MM.dd"));
+                    r.setStockMaterialNb(productStockVOs.get(0).getMaterialNb());
+                    r.setStockQuantity(reduce);
+                    r.setStatus(ComparisonEnum.DIFF.code());
+                }else {
+                    r.setStockExpireDate(null);
+                    r.setStockMaterialNb(null);
+                    r.setStockQuantity(null);
+                    r.setStatus(ComparisonEnum.DIFF.code());
+                }
+
                 //判断库存值是否相等
 
                 BigDecimal total = null;
                 try {
                     total = new BigDecimal(NumberFormat.getInstance().parse(r.getUnrestricted()).doubleValue())
                             .add(new BigDecimal(NumberFormat.getInstance().parse(r.getInQualityInsp()).doubleValue()))
-                            .add(new BigDecimal(NumberFormat.getInstance().parse(r.getRestrictedUseStock()).doubleValue()))
-                            .add(new BigDecimal(NumberFormat.getInstance().parse(r.getBlocked()).doubleValue()))
-                            .add(new BigDecimal(NumberFormat.getInstance().parse(r.getStockInTransit()).doubleValue()));
+                            //.add(new BigDecimal(NumberFormat.getInstance().parse(r.getRestrictedUseStock()).doubleValue()))
+                            .add(new BigDecimal(NumberFormat.getInstance().parse(r.getBlocked()).doubleValue()));
+                            //.add(new BigDecimal(NumberFormat.getInstance().parse(r.getStockInTransit()).doubleValue()));
                 } catch (ParseException e) {
                     throw new ServiceException("数据格式有误");
                 }

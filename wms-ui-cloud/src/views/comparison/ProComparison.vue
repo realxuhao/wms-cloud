@@ -53,7 +53,7 @@
         </a-row>
       </a-form>
       <div class="action-content">
-        <a-button type="primary" :disabled="!hasSelected" class="m-r-8" icon="plus" @click="changeStatus"> 调整</a-button>
+
         <a-tooltip placement="right">
 
           <template slot="title">
@@ -126,36 +126,34 @@
 import { mixinTableList } from '@/utils/mixin/index'
 
 const columns = [
-
+  {
+    title: 'SAP',
+    children: [
   {
     title: '工厂编码',
     key: 'plantNb',
     dataIndex: 'plantNb',
-    width: 80
+    width: 60
   },
+
   {
-    title: 'materialDescription',
+    title: 'Description',
     key: 'materialDescription',
     dataIndex: 'materialDescription',
-    width: 80
+    width: 85
   },
   {
-    title: 'material',
+    title: 'Code',
     key: 'materialNb',
     dataIndex: 'materialNb',
     width: 80
   },
+
   {
-    title: 'Unrestricted',
-    key: 'unrestricted',
-    dataIndex: 'unrestricted',
-    width: 80
-  },
-  {
-    title: 'Base Unit of Measure',
+    title: 'Unit',
     key: 'unit',
     dataIndex: 'unit',
-    width: 80
+    width: 60
   },
   {
     title: 'Storage Location',
@@ -170,58 +168,43 @@ const columns = [
     width: 80
   },
   {
-    title: 'In Quality Insp.',
+    title: 'U',
+    key: 'unrestricted',
+    dataIndex: 'unrestricted',
+    width: 80
+  },
+  {
+    title: 'Q',
     key: 'inQualityInsp',
     dataIndex: 'inQualityInsp',
     width: 80
   },
+
   {
-    title: 'Restricted-Use Stock',
-    key: 'restrictedUseStock',
-    dataIndex: 'restrictedUseStock',
-    width: 80
-  },
-  {
-    title: 'Blocked',
+    title: 'B',
     key: 'blocked',
     dataIndex: 'blocked',
     width: 80
   },
-  {
-    title: 'Returns',
-    key: 'returns',
-    dataIndex: 'returns',
-    width: 80
-  },
-  {
-    title: 'Stock in Transit',
-    key: 'stockInTransit',
-    dataIndex: 'stockInTransit',
-    width: 80
-  },
-  {
-    title: 'In transfer (plant)',
-    key: 'inTransfer',
-    dataIndex: 'inTransfer',
-    width: 80
-  },
-  {
-    title: 'TEKDAN',
-    children: [
-      {
-        title: 'MaterialCode',
-        dataIndex: 'sapMaterialCode',
-        key: 'sapMaterialCode',
-        width: 85
-      }
+]},
 
-    ]
-  },
   {
     title: 'WMS',
     children: [
       {
-        title: 'stockQuantity',
+        title: 'Code',
+        dataIndex: 'stockMaterialNb',
+        key: 'stockMaterialNb',
+        width: 85
+      },
+      {
+        title: 'Batch',
+        dataIndex: 'stockExpireDate',
+        key: 'stockExpireDate',
+        width: 85
+      },
+      {
+        title: 'Quantity',
         dataIndex: 'stockQuantity',
         key: 'stockQuantity',
         width: 85

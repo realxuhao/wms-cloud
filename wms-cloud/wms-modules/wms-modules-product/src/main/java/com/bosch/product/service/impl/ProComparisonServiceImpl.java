@@ -73,6 +73,21 @@ public class ProComparisonServiceImpl extends ServiceImpl<ProComparisonMapper, P
     }
 
     @Override
+    public boolean deleteByIdList(List<String> ids) {
+        //根据ids更新status为已调整
+        LambdaQueryWrapper<ProComparison> lambdaQueryWrapper =new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(ProComparison::getId,ids);
+        lambdaQueryWrapper.eq(ProComparison::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        lambdaQueryWrapper.eq(ProComparison::getStatus, ComparisonEnum.DIFF.code());
+
+        //根据登陆人查询
+        lambdaQueryWrapper.eq(ProComparison::getCreateBy, SecurityUtils.getUsername());
+
+        boolean remove = this.remove(lambdaQueryWrapper);
+        return remove;
+    }
+
+    @Override
     public boolean deleteProComparisonByCreat() {
         String username = SecurityUtils.getUsername();
         QueryWrapper<ProComparison> queryWrapper = new QueryWrapper<>();

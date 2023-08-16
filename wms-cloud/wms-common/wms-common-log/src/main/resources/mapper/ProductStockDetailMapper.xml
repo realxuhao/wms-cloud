@@ -31,7 +31,15 @@
     </sql>
 
     <select id="getProductStock" resultType="com.bosch.system.api.domain.vo.ProductStockDetailVO" >
-        SELECT batch_nb,material_nb ,SUM(total_stock) AS total_stock,SUM(freeze_stock) AS freeze_stock,SUM(available_stock) AS available_stock
-        FROM product_stock GROUP BY batch_nb,material_nb
+        SELECT batch_nb,material_nb ,
+               CEILING(total_stock*pg.box_specification) as total_stock ,
+               CEILING( freeze_stock*pg.box_specification)as freeze_stock,
+               CEILING(available_stock*pg.box_specification)as available_stock from
+            (SELECT from_prod_order as batch_nb,material_nb ,SUM(total_stock) AS total_stock,SUM(freeze_stock) AS freeze_stock,SUM(available_stock) AS available_stock
+             FROM product_stock
+             WHERE delete_flag='0'
+             GROUP BY from_prod_order,material_nb )ps
+
+                LEFT JOIN md_product_packaging pg ON pg.product_no=ps.material_nb WHERE pg.delete_flag='0'
     </select>
 </mapper>

@@ -18,5 +18,6 @@ public interface IProComparisonService extends IService<ProComparison> {
 
    boolean updateByIdList(List<String> ids);
 
+   boolean deleteByIdList(List<String> ids);
    boolean deleteProComparisonByCreat();
 }

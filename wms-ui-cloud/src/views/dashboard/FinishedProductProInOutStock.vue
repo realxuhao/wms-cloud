@@ -65,18 +65,7 @@ import { mixinTableList } from '@/utils/mixin/index'
 import { download } from '@/utils/file'
 
 const columns = [
-  {
-    title: '类型',
-    key: 'operationType',
-    dataIndex: 'operationType',
-    scopedSlots: { customRender: 'operationType' },
 
-  },
-  {
-    title: '数量',
-    key: 'operationStock',
-    dataIndex: 'operationStock',
-  },
   {
     title: '物料号',
     key: 'materialNb',
@@ -88,9 +77,70 @@ const columns = [
     dataIndex: 'batchNb',
   },
   {
-    title: '创建时间',
+    title: '期初时间',
     key: 'createTime',
     dataIndex: 'createTime',
+  },
+  {
+    title: '类型',
+    key: 'operationType',
+    dataIndex: 'operationType',
+    scopedSlots: { customRender: 'operationType' },
+
+  },
+  {
+    title: '期初数量',
+    key: 'operationStock',
+    dataIndex: 'operationStock',
+  },
+  {
+    title: '期末时间',
+    key: 'bc',
+    dataIndex: 'bc',
+  },
+  {
+    title: '类型',
+    key: 'bt',
+    dataIndex: 'bt',
+    scopedSlots: { customRender: 'operationType' },
+
+  },
+  {
+    title: '期末数量',
+    key: 'bs',
+    dataIndex: 'bs',
+  },
+  {
+    title: '入库数量',
+    key: 'cs',
+    dataIndex: 'cs',
+  },
+  {
+    title: '入库时间',
+    key: 'cc',
+    dataIndex: 'cc',
+  },
+
+  {
+    title: '销售出库数量',
+    key: 'ds',
+    dataIndex: 'ds',
+  },
+  {
+    title: '销售出库时间',
+    key: 'dc',
+    dataIndex: 'dc',
+  },
+
+  {
+    title: '其他出库数量',
+    key: 'ds',
+    dataIndex: 'ds',
+  },
+  {
+    title: '其他出库时间',
+    key: 'dc',
+    dataIndex: 'dc',
   },
 
 ]

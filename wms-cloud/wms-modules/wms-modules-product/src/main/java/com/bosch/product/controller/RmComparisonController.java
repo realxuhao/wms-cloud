@@ -98,6 +98,7 @@ public class RmComparisonController extends BaseController {
                 throw new Exception("请勾选数据");
             }
             boolean b = rmComparisonService.updateBySsccList(ssccList);
+            //boolean b = rmComparisonService.deleteBySsccList(ssccList);
             return toAjax(b);
         } catch (Exception e) {
             logger.error(e.getMessage());
@@ -120,6 +121,7 @@ public class RmComparisonController extends BaseController {
                 throw new Exception("请勾选数据");
             }
             boolean b = proComparisonService.updateByIdList(ids);
+            //boolean b = proComparisonService.deleteByIdList(ids);
             return toAjax(b);
         } catch (Exception e) {
             logger.error(e.getMessage());

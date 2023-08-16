@@ -33,7 +33,9 @@ public class BinScheduleTask  {
     }
     //@Scheduled(cron = "0 0 1 * * ?")
     //每一分执行一次
-    @Scheduled(cron = "0 0 1 * * ?")
+    //@Scheduled(cron = "0 0 1 * * ?")
+    //每天23：59：00执行
+    @Scheduled(cron = "0 59 23 * * ?")
     public void genProStock(){
         try {
             productStockDetailService.genProStock();
