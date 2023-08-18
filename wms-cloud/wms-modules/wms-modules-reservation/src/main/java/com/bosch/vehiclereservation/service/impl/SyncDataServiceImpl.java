@@ -100,8 +100,7 @@ public class SyncDataServiceImpl implements ISyncDataService {
     private void comparePurchaseOrders(List<RecordDTO> recordDTOList) {
         for (RecordDTO recordDTO : recordDTOList) {
             QueryWrapper<PurchaseOrder> wrapper = new QueryWrapper<>();
-            wrapper.eq("po_code", recordDTO.getPoNo());
-            wrapper.eq("po_item", recordDTO.getPoItem());
+            wrapper.eq("po_id", recordDTO.getId());
             Optional<PurchaseOrder> first = purchaseOrderService.list(wrapper).stream().findFirst();
             if (first.isPresent()) {
                 PurchaseOrder purchaseOrder = first.get();
