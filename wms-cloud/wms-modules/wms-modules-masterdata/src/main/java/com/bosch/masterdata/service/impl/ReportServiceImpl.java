@@ -138,7 +138,7 @@ public class ReportServiceImpl implements IReportService {
     @Override
     public List<ProInOutStockVO> proInOutStock(ProInOutStockDTO proInOutStockDTO) {
 
-        List<ProInOutStockVO> inOutStockAll = reportMapper.getInOutStockAll(proInOutStockDTO);
+        List<ProInOutStockVO> inOutStockAll = reportMapper.getInOutStockIn(proInOutStockDTO);
         return inOutStockAll;
     }
 

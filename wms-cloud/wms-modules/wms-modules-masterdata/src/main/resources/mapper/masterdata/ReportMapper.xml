@@ -438,4 +438,48 @@
        <if test="batchNb != null and batchNb != ''">and a.batch_nb  LIKE   concat('%', #{batchNb}, '%')</if>
 
     </select>
+    <select id="getInOutStockIn" resultType="com.bosch.masterdata.api.domain.vo.ProInOutStockVO" parameterType="com.bosch.masterdata.api.domain.dto.ProInOutStockDTO">
+        SELECT
+        a.material_nb  ,a.batch_nb ,a.operation_stock ,a.bs ,a.create_time,a.bc,
+        c.operation_stock AS cs,c.operation_type AS ct,c.create_time AS cc,
+        d.operation_stock AS ds,d.operation_type AS dt,d.create_time AS dc,
+        e.operation_stock AS es,e.operation_type AS et,e.create_time AS ec
+        FROM (SELECT
+        material_nb,
+        batch_nb,
+        MIN(create_time) AS create_time,
+        MAX(create_time) AS bc
+        ,MAX(CASE WHEN  DATE_FORMAT(create_time, '%Y-%m-%d')   <![CDATA[ <= ]]> DATE_FORMAT(#{createTimeStart}, '%Y-%m-%d') THEN total_stock ELSE '0' END) AS operation_stock
+        , MAX(CASE WHEN DATE_FORMAT(create_time, '%Y-%m-%d')   <![CDATA[ >= ]]> DATE_FORMAT(#{createTimeEnd}, '%Y-%m-%d') THEN total_stock ELSE total_stock END) AS bs
+        FROM
+        product_stock_detail
+        WHERE  1=1
+        and create_time BETWEEN #{createTimeStart} AND #{createTimeEnd}
+        <if test="batchNb != null and batchNb != ''">and batch_nb  LIKE   concat('%', #{batchNb}, '%')</if>
+        GROUP BY material_nb, batch_nb)a
+
+        LEFT JOIN
+        ( SELECT material_nb, batch_nb, sum(operation_stock) AS operation_stock, operation_type,MAX(create_time) AS create_time
+        FROM product_stock_operation
+        WHERE 1 = 1
+        AND operation_type ='0'  and create_time BETWEEN #{createTimeStart} AND #{createTimeEnd}
+        GROUP BY material_nb, batch_nb, operation_type)c
+        ON a.material_nb=c.material_nb AND a.batch_nb=c.batch_nb
+        LEFT JOIN
+        ( SELECT material_nb, batch_nb, sum(operation_stock) AS operation_stock, operation_type,MAX(create_time) AS create_time
+        FROM product_stock_operation
+        WHERE 1 = 1
+        AND operation_type  = '1' and create_time BETWEEN #{createTimeStart} AND #{createTimeEnd}
+        GROUP BY material_nb, batch_nb, operation_type)d
+        ON a.material_nb=d.material_nb AND a.batch_nb=d.batch_nb
+        LEFT JOIN
+        ( SELECT material_nb, batch_nb, sum(operation_stock) AS operation_stock, operation_type,MAX(create_time) AS create_time
+        FROM product_stock_operation
+        WHERE 1 = 1
+        AND operation_type = '2' and create_time BETWEEN #{createTimeStart} AND #{createTimeEnd}
+        GROUP BY material_nb, batch_nb, operation_type)e
+        ON a.material_nb=e.material_nb AND a.batch_nb=e.batch_nb
+
+    </select>
+
 </mapper>

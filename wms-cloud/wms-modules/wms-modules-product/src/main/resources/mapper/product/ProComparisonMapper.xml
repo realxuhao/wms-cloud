@@ -43,4 +43,17 @@
         update_time,status,delete_flag,
         remark
     </sql>
+    <select id="getList" resultType="com.bosch.product.api.domain.vo.ProComparisonVO" parameterType="com.bosch.product.api.domain.dto.ProComparisonDTO">
+
+
+         SELECT m.cell,p.* FROM pro_comparison p
+           LEFT JOIN md_product_packaging m on m.product_no= p.material_nb AND m.delete_flag='0'
+          where 1=1
+        <if test="dto.materialNb != null and dto.materialNb != ''">and p.material_nb like concat('%', #{dto.materialNb}, '%')</if>
+        <if test="dto.plantNb != null and dto.plantNb != ''">and p.plant_nb like concat('%', #{dto.plantNb}, '%')</if>
+        <if test="dto.batch != null and dto.batch != ''">and p.batch like concat('%', #{dto.batch}, '%')</if>
+        <if test="dto.status != null ">and p.status = #{dto.status}</if>
+        <if test="dto.cell != null and dto.cell != ''">and m.cell like concat('%', #{dto.cell}, '%')</if>
+        <if test="userName != null and userName != ''">and p.create_by = #{userName}</if>
+    </select>
 </mapper>

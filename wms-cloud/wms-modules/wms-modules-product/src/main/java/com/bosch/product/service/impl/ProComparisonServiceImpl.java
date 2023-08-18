@@ -33,25 +33,10 @@ public class ProComparisonServiceImpl extends ServiceImpl<ProComparisonMapper, P
     @Autowired
     private ProComparisonMapper proComparisonMapper;
     @Override
-    public List<ProComparison> getList(ProComparisonDTO dto) {
+    public List<ProComparisonVO> getList(ProComparisonDTO dto) {
         //根据dto查询数据
-        LambdaQueryWrapper<ProComparison> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProComparison::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        if(StringUtils.isNotEmpty(dto.getMaterialNb())){
-            queryWrapper.like(ProComparison::getMaterialNb, dto.getMaterialNb());
-        }
-        if(StringUtils.isNotEmpty(dto.getMaterialNb())){
-            queryWrapper.like(ProComparison::getMaterialNb, dto.getMaterialNb());
-        }
-        if (StringUtils.isNotEmpty(dto.getBatch())) {
-            queryWrapper.like(ProComparison::getBatch, dto.getBatch());
-        }
-        if (dto.getStatus()!=null) {
-            queryWrapper.eq(ProComparison::getStatus, dto.getStatus());
-        }
-        //根据登陆人查询
-        queryWrapper.eq(ProComparison::getCreateBy, SecurityUtils.getUsername());
-        List<ProComparison> proComparisons = proComparisonMapper.selectList(queryWrapper);
+
+        List<ProComparisonVO> proComparisons = proComparisonMapper.getList(dto,SecurityUtils.getUsername());
 
         return proComparisons;
     }

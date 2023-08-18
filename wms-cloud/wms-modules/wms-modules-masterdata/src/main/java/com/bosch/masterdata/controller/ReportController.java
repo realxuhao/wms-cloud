@@ -1,7 +1,5 @@
 package com.bosch.masterdata.controller;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
+import java.util.*;
 
 import com.bosch.masterdata.api.domain.MissionToDo;
 import com.bosch.masterdata.api.domain.ReportMaterial;
@@ -14,6 +12,7 @@ import com.bosch.system.api.domain.SysUser;
 import com.bosch.system.api.domain.UserOperationLog;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
@@ -27,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
@@ -200,6 +198,14 @@ public class ReportController extends BaseController {
     public  R<PageVO<ProInOutStockVO>> proInOutStock(@RequestBody ProInOutStockDTO proInOutStockDTO) {
         PageDomain pageDomain= BeanConverUtil.conver(proInOutStockDTO,PageDomain.class);
         startPage(pageDomain);
+        //设置前一天
+        Date createTimeStart = proInOutStockDTO.getCreateTimeStart();
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(createTimeStart);
+        calendar.add(Calendar.DAY_OF_MONTH, -1);
+        Date newTime = calendar.getTime();
+        proInOutStockDTO.setCreateTimeStart(newTime);
+
         List<ProInOutStockVO> list = reportService.proInOutStock(proInOutStockDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
 

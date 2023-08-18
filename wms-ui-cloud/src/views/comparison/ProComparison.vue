@@ -4,9 +4,14 @@
     <div class="table-content">
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
-          <a-col :span="4">
+          <a-col :span="2">
             <a-form-model-item label="工厂编码">
               <a-input v-model="queryForm.plantNb" placeholder="工厂编码" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="2">
+            <a-form-model-item label="Cell">
+              <a-input v-model="queryForm.cell" placeholder="Cell" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
@@ -135,7 +140,12 @@ const columns = [
     dataIndex: 'plantNb',
     width: 60
   },
-
+      {
+        title: 'cell',
+        key: 'cell',
+        dataIndex: 'cell',
+        width: 60
+      },
   {
     title: 'Description',
     key: 'materialDescription',
@@ -230,9 +240,10 @@ const queryFormAttr = () => {
   return {
     plantNb: '',
     id: '',
-    sapMaterialCode: '',
+    materialCode: '',
     batch: '',
-    status: ''
+    status: '',
+    cell:''
   }
 }
 const status = [

@@ -178,7 +178,7 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
     }
     @Override
     public List<ProComparison> insertProComparison(List<ProComparison> proComparisons) {
-
+        List<ProComparison> result=new ArrayList<>();
         try {
 
 
@@ -204,13 +204,26 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
 
             //存在库存，不存在excel中
             List<ProductStockVO> inStocks = productStockMapper.notInListByMaterials(materialNbAndBatchMapList);
-
+            for (ProductStockVO inStock : inStocks) {
+                ProComparison proComparison = new ProComparison();
+//                if (StringUtils.isNotEmpty(inStock.getBatchNb())){
+//                    proComparison.setStockExpireDate(DateFormatUtils.format(inStock.getExpireDate(), "yyyy.MM.dd"));
+//                }else {
+//                    proComparison.setStockExpireDate(null);
+//                }
+                proComparison.setStockExpireDate(inStock.getBatchNb());
+                proComparison.setStockMaterialNb(inStock.getMaterialNb());
+                proComparison.setStockQuantity(inStock.getPcsTotalStock());
+                result.add(proComparison);
+            }
             //proComparisons循环赋值
             proComparisons.forEach(r -> {
+
                 String replace = r.getBatch().replace(".", "-");
                 Date date = new Date();
                 //replace转date
                 try {
+
                     date = DateUtils.parseDate(replace, "yyyy-MM-dd");
                 } catch (ParseException e) {
                     throw new RuntimeException(r.getBatch() + "格式出错");
@@ -222,14 +235,7 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
                                 productStockVO.getMaterialNb().equals(r.getMaterialNb()) &&
                                         productStockVO.getExpireDate().equals(finalDate)).collect(Collectors.toList());
                 //productStockVOs的totalstock累加
-//                Double reduce = productStockVOs.stream().map(ProductStockVO::getTotalStock).reduce(0d, Double::sum);
                 Double reduce = productStockVOs.stream().map(item -> item.getTotalStock() * Double.valueOf(item.getBoxSpecification())).reduce(0d, Double::sum);
-
-                //箱 Tr 对应包装规格
-                //String boxSpecification = productStockVOs.get(0).getBoxSpecification();
-                //boxSpecification转double
-                //Double boxSpecificationDouble = Double.valueOf(boxSpecification);
-
                 if (CollectionUtils.isNotEmpty(productStockVOs)){
                     r.setStockExpireDate(DateFormatUtils.format(productStockVOs.get(0).getExpireDate(), "yyyy.MM.dd"));
                     r.setStockMaterialNb(productStockVOs.get(0).getMaterialNb());
@@ -254,15 +260,17 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
                 } catch (ParseException e) {
                     throw new ServiceException("数据格式有误");
                 }
-                if (CompareUtils.isEqual(total, new BigDecimal(reduce))) {
+                if (CompareUtils.isEqual(total, new BigDecimal(reduce))&&CollectionUtils.isNotEmpty(productStockVOs)) {
                     r.setStatus(ComparisonEnum.SAME.code());
                 }
             });
+            result.addAll(proComparisons);
         } catch (Exception e) {
 
             throw new ServiceException(e.getMessage());
         }
-        boolean b = proComparisonService.saveBatch(proComparisons);
+
+        boolean b = proComparisonService.saveBatch(result);
         if (b) {
             return proComparisons;
         }

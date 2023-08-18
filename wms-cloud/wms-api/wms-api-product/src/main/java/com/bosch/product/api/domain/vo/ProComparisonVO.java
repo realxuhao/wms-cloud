@@ -22,6 +22,12 @@ public class ProComparisonVO extends BaseEntity {
     private Long id;
 
     /**
+     * cell
+     */
+    @ExcelProperty(value = "cell")
+    @ApiModelProperty(value = "cell")
+    private String cell;
+    /**
      * plant_nb
      */
     @ExcelProperty(value = "Plant")

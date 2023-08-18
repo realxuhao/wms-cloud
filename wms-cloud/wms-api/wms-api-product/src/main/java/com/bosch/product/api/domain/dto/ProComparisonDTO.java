@@ -160,6 +160,11 @@ public class ProComparisonDTO extends BaseEntity {
     @ExcelIgnore
     private Integer deleteFlag;
 
-
+    /**
+     * cell
+     */
+    @ExcelProperty(value = "Cell")
+    @ApiModelProperty(value = "cell")
+    private String cell;
 
 }

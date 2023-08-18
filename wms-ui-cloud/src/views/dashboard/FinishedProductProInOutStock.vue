@@ -7,7 +7,7 @@
           <a-input v-model="queryForm.batchNb" placeholder="批次" allow-clear/>
         </a-form-model-item>
   
-        <a-form-model-item label="时间">
+        <a-form-model-item label="期初期末时间">
           <a-range-picker
             format="YYYY-MM-DD"
             v-model="queryForm.date"
@@ -64,6 +64,7 @@
 import { mixinTableList } from '@/utils/mixin/index'
 import { download } from '@/utils/file'
 
+
 const columns = [
 
   {
@@ -81,13 +82,7 @@ const columns = [
     key: 'createTime',
     dataIndex: 'createTime',
   },
-  {
-    title: '类型',
-    key: 'operationType',
-    dataIndex: 'operationType',
-    scopedSlots: { customRender: 'operationType' },
 
-  },
   {
     title: '期初数量',
     key: 'operationStock',
@@ -98,13 +93,7 @@ const columns = [
     key: 'bc',
     dataIndex: 'bc',
   },
-  {
-    title: '类型',
-    key: 'bt',
-    dataIndex: 'bt',
-    scopedSlots: { customRender: 'operationType' },
 
-  },
   {
     title: '期末数量',
     key: 'bs',
@@ -203,6 +192,10 @@ export default {
         this.tableLoading = true
 
         const { date = [] } = this.queryForm
+        if(!date.length){
+          throw new Error('请先选择期初期末时间')
+        }
+
         const createTimeStart = date.length > 0 ? date[0].format('YYYY-MM-DD 00:00:00') : undefined
         const createTimeEnd = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:59') : undefined
         const options = { ..._.omit(this.queryForm, ['date']), createTimeStart, createTimeEnd }
@@ -219,7 +212,7 @@ export default {
       }
     },
     async loadData () {
-      this.loadTableList()
+      // this.loadTableList()
     }
   },
   mounted () {

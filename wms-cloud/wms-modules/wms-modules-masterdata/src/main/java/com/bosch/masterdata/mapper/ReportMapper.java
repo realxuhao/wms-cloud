@@ -52,4 +52,6 @@ public interface ReportMapper
     List<EfficiencyVO> getCallOver(EfficiencyDTO efficiencyDTO);
 
     List<ProInOutStockVO> getInOutStockAll(ProInOutStockDTO proInOutStockDTO);
+    List<ProInOutStockVO> getInOutStockIn(ProInOutStockDTO proInOutStockDTO);
+
 }

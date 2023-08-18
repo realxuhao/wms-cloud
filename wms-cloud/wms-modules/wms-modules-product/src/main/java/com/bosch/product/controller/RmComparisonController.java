@@ -73,9 +73,9 @@ public class RmComparisonController extends BaseController {
     public R<PageVO<ProComparisonVO>> getProList(ProComparisonDTO dto) {
         try {
             startPage();
-            List<ProComparison> list = proComparisonService.getList(dto);
-            List<ProComparisonVO> vos = BeanConverUtil.converList(list, ProComparisonVO.class);
-            return R.ok(new PageVO<>(vos, new PageInfo<>(list).getTotal()));
+
+            List<ProComparisonVO> vos = proComparisonService.getList(dto);
+            return R.ok(new PageVO<>(vos, new PageInfo<>(vos).getTotal()));
         } catch (Exception e) {
             logger.error(e.getMessage());
             return R.fail(e.getMessage());
