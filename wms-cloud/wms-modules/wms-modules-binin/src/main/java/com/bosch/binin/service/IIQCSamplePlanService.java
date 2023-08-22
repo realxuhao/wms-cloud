@@ -20,27 +20,27 @@ import java.util.List;
 public interface IIQCSamplePlanService extends IService<IQCSamplePlan> {
     List<IQCSamplePlanVO> getSamplePlan(IQCSamplePlanQueryDTO dto);
 
-    void manualAdd(List<IQCSamplePlanDTO> dto);
+    List<IQCSamplePlan> manualAdd(List<IQCSamplePlanDTO> dto);
 
     void modifySscc(IQCSamplePlanDTO dto);
 
-    void binDown(String ssccNb);
+    IQCSamplePlan binDown(String ssccNb);
 
     BinInVO getBinInInfo(String sscc);
 
-    void performBinIn(BinInDTO binInDTO);
+    BinInVO performBinIn(BinInDTO binInDTO);
 
-    void cancel(Long id);
+    IQCSamplePlan cancel(Long id);
 
     IQCSamplePlanVO info(String mesBarCode);
 
-    void confirm(IQCSamplePlanDTO dto);
+    IQCSamplePlan confirm(IQCSamplePlanDTO dto);
 
     void addShift(IQCWareShiftDTO dto);
 
     void cancelWareShift(String ssccNb);
 
-    void modifyQuantity(String ssccNb, Double quantity);
+    IQCSamplePlan modifyQuantity(String ssccNb, Double quantity);
 
-    void issueJob(Long[] ids);
+    List<IQCSamplePlan> issueJob(Long[] ids);
 }

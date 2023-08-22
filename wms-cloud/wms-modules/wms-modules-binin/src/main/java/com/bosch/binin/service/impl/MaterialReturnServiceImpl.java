@@ -176,7 +176,7 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void performBinIn(ManualBinInDTO binInDTO) {
+    public MaterialReturn performBinIn(ManualBinInDTO binInDTO) {
         String mesBarCode = binInDTO.getMesBarCode();
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
@@ -283,6 +283,8 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         }
         materialReturn.setStatus(MaterialReturnStatusEnum.FINISH.value());
         this.updateById(materialReturn);
+
+        return materialReturn;
     }
 
     @Override

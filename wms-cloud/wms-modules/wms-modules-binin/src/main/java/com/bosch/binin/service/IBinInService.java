@@ -76,7 +76,7 @@ public interface IBinInService extends IService<BinIn> {
 
     public MaterialVO getMaterialVOByCode(String materialNb);
 
-    void batchBinIn(String mesBarCode, String areaCode);
+    List<BinIn> batchBinIn(String mesBarCode, String areaCode);
 
 
     public Ware getWareInfo(String wareCode);

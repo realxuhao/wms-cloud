@@ -1,6 +1,7 @@
 package com.bosch.binin.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
@@ -17,7 +18,7 @@ import java.util.List;
 public interface IWareShiftService extends IService<WareShift> {
     Boolean addShiftRequirement(AddShiftTaskDTO dto);
 
-    void binDown(String mesBarCode);
+    WareShift binDown(String mesBarCode);
 
     /**
      *
@@ -34,7 +35,7 @@ public interface IWareShiftService extends IService<WareShift> {
 
     List<WareShiftVO> getWaitingBinIn();
 
-    void cancelWareShift(Long id);
+    WareShift cancelWareShift(Long id);
 
     WareShift getWareShiftBySsccAndStatus(String sscc);
 
@@ -42,7 +43,7 @@ public interface IWareShiftService extends IService<WareShift> {
 
     Boolean add(AddShiftTaskDTO dto);
 
-    void performBinIn(BinInDTO binInDTO);
+    BinInVO performBinIn(BinInDTO binInDTO);
 
     /**
      * 计算某个物料的在途量
@@ -55,5 +56,5 @@ public interface IWareShiftService extends IService<WareShift> {
 
     void splitPallet(SplitPalletDTO splitPallet);
 
-    void batchPerformBinIn(WareShiftBatchBinInDTO dto);
+    List<BinIn> batchPerformBinIn(WareShiftBatchBinInDTO dto);
 }

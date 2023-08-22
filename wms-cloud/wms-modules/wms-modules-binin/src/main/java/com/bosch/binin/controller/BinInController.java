@@ -1,6 +1,7 @@
 package com.bosch.binin.controller;
 
 
+import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.dto.BatchBinInDTO;
 import com.bosch.binin.api.domain.dto.BinAllocationDTO;
 import com.bosch.binin.api.domain.dto.BinInDTO;
@@ -14,6 +15,7 @@ import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.SSCCLogVO;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
@@ -26,6 +28,7 @@ import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,9 +83,13 @@ public class BinInController extends BaseController {
     @Log(title = "原材料实际上架", businessType = BusinessType.INSERT)
     @ApiOperation("实际上架")
     @Synchronized
-    public R<BinInVO> in(@RequestBody BinInDTO binInDTO) {
+    public R<SSCCLogVO> in(@RequestBody BinInDTO binInDTO) {
 
-        return R.ok(binInService.performBinInWithIQC(binInDTO));
+        BinInVO binInVO = binInService.performBinInWithIQC(binInDTO);
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(binInVO.getSsccNumber());
+        ssccLogVO.setQuantity(binInVO.getQuantity());
+        return R.ok(ssccLogVO);
     }
 
 
@@ -161,10 +168,18 @@ public class BinInController extends BaseController {
     @PutMapping("/batchBinIn")
     @Log(title = "原材料批量上架", businessType = BusinessType.INSERT)
     @Synchronized
-    public R batchBinIn(@RequestParam("mesBarCode") String mesBarCode,
+    public R<List<SSCCLogVO>> batchBinIn(@RequestParam("mesBarCode") String mesBarCode,
                         @RequestParam("areaCode") String areaCode) {
-        binInService.batchBinIn(mesBarCode,areaCode);
-        return R.ok();
+        List<BinIn> binIns = binInService.batchBinIn(mesBarCode, areaCode);
+        ArrayList<SSCCLogVO> logVOS = new ArrayList<>();
+
+        binIns.stream().forEach(binIn -> {
+            SSCCLogVO ssccLogVO = new SSCCLogVO();
+            ssccLogVO.setSsccNumber(binIn.getSsccNumber());
+            ssccLogVO.setQuantity(binIn.getQuantity());
+            logVOS.add(ssccLogVO);
+        });
+        return R.ok(logVOS);
     }
 
 

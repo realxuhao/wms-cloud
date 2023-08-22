@@ -8,7 +8,9 @@ import com.bosch.binin.api.domain.TranshipmentOrder;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.WareShiftBatchBinInDTO;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
+import com.bosch.masterdata.api.RemoteProductService;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
+import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.ProductWareShift;
@@ -46,6 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,7 +85,11 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
     private IProductStockOperationService productStockOperationService;
 
 
+    @Autowired
     private IUserOperationLogService userOperationLogService;
+
+    @Resource
+    private RemoteProductService remoteProductService;
 
 
     @Override
@@ -158,8 +165,16 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
                 .eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode())
                 .eq(ProductWareShift::getStatus, ProductWareShiftEnum.WAITTING_SHIPPING.code());
         List<ProductWareShift> productWareShifts = this.list(queryWrapper);
-        if (CollectionUtils.isEmpty(productWareShifts) || productWareShifts.size() != ssccList.size()) {
-            throw new ServiceException("存在状态不为待发运的数据");
+
+        if (CollectionUtils.isEmpty(productWareShifts)){
+            throw new ServiceException("均是不为待发运的数据");
+        }
+
+
+        if (productWareShifts.size() != ssccList.size()) {
+            List<String> existSSCCList = productWareShifts.stream().map(ProductWareShift::getSsccNb).collect(Collectors.toList());
+            ssccList.removeAll(existSSCCList);
+            throw new ServiceException("存在状态不为待发运的数据" + ssccList);
 
         }
         List<TranshipmentOrder> transhipmentOrderList = new ArrayList<>();
@@ -239,30 +254,33 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         List<ProductStockOperation> inOperationList = new ArrayList<>();
 
 
+
         wareShifts.forEach(item -> {
+            MdProductPackagingVO productVO = getProductVO(item.getMaterialNb());
+
             item.setStatus(ProductWareShiftEnum.WAITTING_BIN_IN.code());
             item.setTargetWareCode(SecurityUtils.getWareCode());
             item.setTargetAreaCode(areaVO.getCode());
             item.setTargetPlant(areaVO.getPlantNb());
 
-            ProductStockOperation outOperation = new ProductStockOperation();
-            outOperation.setPlantNb(item.getSourcePlantNb());
-            outOperation.setSsccNumber(item.getSsccNb());
-            outOperation.setOperationType(StockOperationType.OTHEROUT.getCode());
-            outOperation.setOperationStock(new BigDecimal(item.getQuantity()));
-            outOperation.setBatchNb(item.getBatchNb());
-            outOperation.setMaterialNb(item.getMaterialNb());
-            outOperationList.add(outOperation);
-
-
-            ProductStockOperation inOperation = new ProductStockOperation();
-            inOperation.setPlantNb(item.getTargetPlant());
-            inOperation.setSsccNumber(item.getSsccNb());
-            inOperation.setOperationType(StockOperationType.OTHEROUT.getCode());
-            inOperation.setOperationStock(new BigDecimal(item.getQuantity()));
-            inOperation.setBatchNb(item.getBatchNb());
-            inOperation.setMaterialNb(item.getMaterialNb());
-            inOperationList.add(inOperation);
+//            ProductStockOperation outOperation = new ProductStockOperation();
+//            outOperation.setPlantNb(item.getSourcePlantNb());
+//            outOperation.setSsccNumber(item.getSsccNb());
+//            outOperation.setOperationType(StockOperationType.OTHEROUT.getCode());
+//            outOperation.setOperationStock(new BigDecimal(item.getQuantity() * productVO.getBoxSpecification()));
+//            outOperation.setBatchNb(item.getBatchNb());
+//            outOperation.setMaterialNb(item.getMaterialNb());
+//            outOperationList.add(outOperation);
+//
+//
+//            ProductStockOperation inOperation = new ProductStockOperation();
+//            inOperation.setPlantNb(item.getTargetPlant());
+//            inOperation.setSsccNumber(item.getSsccNb());
+//            inOperation.setOperationType(StockOperationType.OTHEROUT.getCode());
+//            inOperation.setOperationStock(new BigDecimal(item.getQuantity() * productVO.getBoxSpecification()));
+//            inOperation.setBatchNb(item.getBatchNb());
+//            inOperation.setMaterialNb(item.getMaterialNb());
+//            inOperationList.add(inOperation);
 
 
         });
@@ -275,10 +293,10 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
 
 //        //出记录
-        productStockOperationService.addProductStockOperationBatch(null,null,null,outOperationList);
+//        productStockOperationService.addProductStockOperationBatch(null,null,null,outOperationList);
 
 //        //入记录
-        productStockOperationService.addProductStockOperationBatch(null,null,null,outOperationList);
+//        productStockOperationService.addProductStockOperationBatch(null,null,null,outOperationList);
 
 
 
@@ -503,5 +521,14 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBININ.getCode(), operationLogs);
 
 
+    }
+
+
+    private MdProductPackagingVO getProductVO(String code) {
+        R<MdProductPackagingVO> byCode = remoteProductService.getByCode(code);
+        if (byCode == null || !byCode.isSuccess()) {
+            throw new ServiceException("调用主数据获取成品失败");
+        }
+        return byCode.getData();
     }
 }

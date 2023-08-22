@@ -89,8 +89,13 @@
           </a-col>
         </a-row>
       </a-form>
+     
       <div class="action-content">
-        <h3>总库存量：{{ totalStock }}</h3>
+        <a-button type="primary" style="margin-left: 2px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
+        <h3 style="margin-left: 8px">当前页总库存量(TR)：{{ totalStock }}</h3>
+        <h3 style="margin-left: 20px">当前页总库存量(PCS)：{{ totalPCSStock }}</h3>
+        <h3 style="margin-left: 20px">当前页可用库存量(PCS)：{{ totalAvailablePCSStock }}</h3>
+
       </div>
       <a-table
         table-layout="fixed"
@@ -101,6 +106,7 @@
         :pagination="false"
         :scroll="tableScroll"
         size="middle"
+        @change="pageChange"
       >
         <template slot="qualityStatusSlot" slot-scope="text">
           <a-tag :color="colorMap[text]">
@@ -130,7 +136,7 @@
 <script>
 import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
-
+import { download } from '@/utils/file'
 const qualityStatus = [
   {
     text: 'U',  
@@ -147,114 +153,158 @@ const qualityStatus = [
 ]
 const columns = [
   {
+    title: 'cell',
+    key: 'cell',
+    dataIndex: 'cell',
+    width: 100,
+    sorter: true
+  },
+  {
     title: 'plantNb',
     key: 'plantNb',
     dataIndex: 'plantNb',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: 'ssccNumber',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
-    width: 180
+    width: 180,
+    sorter: true
   },
   {
     title: '物料编码',
     key: 'materialNb',
     dataIndex: 'materialNb',
-    width: 200
+    width: 200,
+    sorter: true
   },
   {
     title: '物料名称',
     key: 'materialName',
     dataIndex: 'materialName',
-    width: 200
+    width: 200,
+    sorter: true
   },
   {
     title: '仓库',
     key: 'wareCode',
     dataIndex: 'wareCode',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '存储区',
     key: 'areaCode',
     dataIndex: 'areaCode',
-    width: 120
-  },
-  {
-    title: '过期日期',
-    key: 'expireDate',
-    dataIndex: 'expireDate',
-    width: 120
-  },
-  {
-    title: '库位',
-    key: 'binCode',
-    dataIndex: 'binCode',
-    width: 120
-  },
-  {
-    title: '批次总库存',
-    key: 'totalStockSum',
-    dataIndex: 'totalStockSum',
-    width: 120
-  },
-  {
-    title: '总库存',
-    key: 'totalStock',
-    dataIndex: 'totalStock',
-    width: 120
-  },
-  {
-    title: '冻结库存',
-    key: 'freezeStock',
-    dataIndex: 'freezeStock',
-    width: 120
-  },
-  {
-    title: '可用库存',
-    key: 'availableStock',
-    dataIndex: 'availableStock',
-    width: 120
-  },
-  {
-    title: 'Unit',
-    key: 'unit',
-    dataIndex: 'unit',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: 'FromProdOrder',
     key: 'fromProdOrder',
     dataIndex: 'fromProdOrder',
+    width: 120,
+    sorter: true
+  },
+  {
+    title: '过期日期',
+    key: 'expireDate',
+    dataIndex: 'expireDate',
+    width: 120,
+    sorter: true
+  },
+  {
+    title: '库位',
+    key: 'binCode',
+    dataIndex: 'binCode',
+    width: 120,
+    sorter: true
+  },
+  {
+    title: '批次总库存',
+    key: 'totalStockSum',
+    dataIndex: 'totalStockSum',
+    width: 120,
+    sorter: true
+  },
+  {
+    title: '总库存',
+    key: 'totalStock',
+    dataIndex: 'totalStock',
+    width: 120,
+    sorter: true
+  },
+  {
+    title: '冻结库存',
+    key: 'freezeStock',
+    dataIndex: 'freezeStock',
+    width: 120,
+    sorter: true
+  },
+  {
+    title: '可用库存',
+    key: 'availableStock',
+    dataIndex: 'availableStock',
+    width: 120,
+    sorter: true
+  },
+  {
+    title: 'Unit',
+    key: 'unit',
+    dataIndex: 'unit',
+    width: 120,
+    sorter: true
+  },
+   {
+    title: '包装规格',
+    key: 'boxSpecification',
+    dataIndex: 'boxSpecification',
     width: 120
   },
+   {
+    title: 'PCS总库存',
+    key: 'pcsTotalStock',
+    dataIndex: 'pcsTotalStock',
+    width: 120
+  },
+  {
+    title: 'PCS冻结库存',
+    key: 'pcsFreezeStock',
+    dataIndex: 'pcsFreezeStock',
+    width: 120
+  },
+  {
+    title: 'PCS可用库存',
+    key: 'pcsAvailableStock',
+    dataIndex: 'pcsAvailableStock',
+    width: 120
+  },
+  
   {
     title: '创建人',
     key: 'createBy',
     dataIndex: 'createBy',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '创建时间',
     key: 'createTime',
     dataIndex: 'createTime',
-    width: 200
+    width: 200,
+    sorter: true
   },
   {
     title: '质检状态',
     key: 'qualityStatus',
     dataIndex: 'qualityStatus',
     width: 120,
-    scopedSlots: { customRender: 'qualityStatusSlot' }
-  },
-  {
-    title: 'cell',
-    key: 'cell',
-    dataIndex: 'cell',
-    width: 200
+    scopedSlots: { customRender: 'qualityStatusSlot' },
+    sorter: true
   }
+  
 ]
 
 const colorMap = {
@@ -289,6 +339,7 @@ export default {
   data () {
     return {
       tableLoading: false,
+      exportLoading:false,
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -319,8 +370,32 @@ export default {
     totalStock(){
      return _.sumBy(this.list,'totalStock')
     },
+    totalPCSStock(){
+     return _.sumBy(this.list,'pcsTotalStock')
+    },
+    totalAvailablePCSStock(){
+     return _.sumBy(this.list,'pcsAvailableStock')
+    },
   },
   methods: {
+     async pageChange(page, filters, sorter){
+        this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc'
+        this.queryForm.orderByColumn= sorter.columnKey
+        this.loadTableList()
+    },
+    async handleDownload () {
+      try {
+        this.exportLoading = true
+        // this.queryForm.pageSize = 0
+        const blobData = await this.$store.dispatch('finishedProductInventory/productStockExport', this.queryForm)
+        download(blobData, '成品销售库存.xlsx')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
+      }
+    },
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
     },

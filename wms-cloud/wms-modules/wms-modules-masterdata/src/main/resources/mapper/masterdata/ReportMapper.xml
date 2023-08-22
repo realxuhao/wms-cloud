@@ -79,7 +79,7 @@
         LEFT JOIN md_material_type mt ON mm.material_type_id = mt.id
         left join md_department md on mt.department_id = md.id
         WHERE
-        mr.delete_flag=0
+        mr.delete_flag=0 and mr.status = 0
        <if test="cell != null and cell != ''and cell != 'All'">AND md.code=#{cell}</if>
         <if test="wareCode != null and wareCode != ''and wareCode != 'All'">AND ware_code =#{wareCode}</if>
         <if test="cell != null and cell != ''">GROUP BY code</if>
@@ -168,7 +168,7 @@
         LEFT JOIN md_product_packaging pp ON ps.material_nb =product_no
         AND  ps.delete_flag=0 AND  pp.delete_flag=0
         WHERE
-        ps.status <![CDATA[ <> ]]> -1 AND ps.status <![CDATA[ <> ]]> 3
+        ps.status <![CDATA[ <> ]]> -1 AND ps.status <![CDATA[ <> ]]> 3 AND ps.status <![CDATA[ <> ]]> 2
         <if test="cell != null and cell != ''and cell != 'All'">AND pp.cell=#{cell}</if>
         <if test="wareCode != null and wareCode != ''and wareCode != 'All'">AND ps.source_ware_code=#{wareCode}</if>
         GROUP BY CODE
@@ -209,6 +209,7 @@
     <select id="workload" resultType="com.bosch.masterdata.api.domain.vo.WorkloadVO" parameterType="com.bosch.masterdata.api.domain.dto.WorkloadDTO">
         SELECT
         create_by ,
+               nick_name,
         MAX( CASE operation_type WHEN '1' THEN nb ELSE 0 END ) AS 'bin_in',
         MAX( CASE operation_type WHEN '2' THEN nb ELSE 0 END ) AS 'bin_out',
         MAX( CASE operation_type WHEN '3' THEN nb ELSE 0 END ) AS 'bin_out_other',
@@ -216,8 +217,9 @@
         MAX( CASE operation_type WHEN '5' THEN nb ELSE 0 END ) AS 'pallet_turnover',
         MAX( CASE operation_type WHEN '13' THEN nb ELSE 0 END ) AS 'shift_bin_in',
         MAX( CASE operation_type WHEN '7' THEN nb ELSE 0 END ) AS 'iqc_bin_in',
-        MAX( CASE operation_type WHEN '6' THEN nb ELSE 0 END ) AS 'iqc_bin_out'
-        FROM (SELECT COUNT(*) AS nb,create_by ,operation_type ,
+        MAX( CASE operation_type WHEN '6' THEN nb ELSE 0 END ) AS 'iqc_bin_out',
+        MAX( CASE operation_type WHEN '17' THEN nb ELSE 0 END ) AS 'manual_trans'
+        FROM (SELECT COUNT(*) AS nb,ul.create_by ,su.nick_name as nick_name,ul.operation_type ,
         CASE operation_type
         WHEN '1' THEN 'bin_in'
         WHEN '2' THEN 'bin_out'
@@ -227,17 +229,23 @@
         WHEN '13' THEN 'shift_bin_in'
         WHEN '7' THEN 'iqc_bin_in'
         WHEN '6' THEN 'iqc_bin_out'
+        WHEN '17' THEN 'manual_trans'
         ELSE 'other'
         END AS type_name
-        FROM user_operation_log where type='0'
-        <if test="createTimeStart != null">and create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
-        <if test="createTimeEnd != null">and create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
-        GROUP BY create_by ,operation_type )AS t
+
+
+        FROM user_operation_log ul
+                                  left join sys_user su on su.user_name = ul.create_by and su.del_flag = 0 and su.status = 0
+        where ul.type='0'
+        <if test="createTimeStart != null">and ul.create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
+        <if test="createTimeEnd != null">and ul.create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
+        GROUP BY create_by ,operation_type,nick_name )AS t
         where 1=1
         <if test="createBy != null and createBy != ''">and create_by like concat('%', #{createBy}, '%')</if>
+        <if test="nickName != null and nickName != ''">and nick_name like concat('%', #{nickName}, '%')</if>
 
         <if test="type != null and type != ''">and operation_type=#{type}</if>
-        GROUP BY create_by
+        GROUP BY create_by,nick_name
 
 
     </select>
@@ -245,27 +253,31 @@
     <select id="workloadPro" resultType="com.bosch.masterdata.api.domain.vo.WorkloadVO" parameterType="com.bosch.masterdata.api.domain.dto.WorkloadDTO">
         SELECT
         create_by ,
+               nick_name,
         MAX( CASE operation_type WHEN '9' THEN nb ELSE 0 END ) AS 'bin_in',
         MAX( CASE operation_type WHEN '10' THEN nb ELSE 0 END ) AS 'bin_out',
+        MAX( CASE operation_type WHEN '16' THEN nb ELSE 0 END ) AS 'manual_trans',
         MAX( CASE operation_type WHEN '11' THEN nb ELSE 0 END ) AS 'bin_out_other'
 
-        FROM (SELECT COUNT(*) AS nb,create_by ,operation_type ,
+        FROM (SELECT COUNT(*) AS nb,ul.create_by ,su.nick_name as nick_name, ul.operation_type ,
         CASE operation_type
         WHEN '9' THEN 'bin_in'
         WHEN '10' THEN 'bin_out'
         WHEN '11' THEN 'bin_out_other'
+        WHEN '16' THEN 'manual_trans'
 
         ELSE 'other'
         END AS type_name
-        FROM user_operation_log where  TYPE='1'
-        <if test="createTimeStart != null">and create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
-        <if test="createTimeEnd != null">and create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
-                                GROUP BY create_by ,operation_type )AS t
+        FROM user_operation_log ul left join sys_user su on su.user_name = ul.create_by and su.status = 0 and su.del_flag = 0 where  ul.TYPE='1'
+        <if test="createTimeStart != null">and ul.create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
+        <if test="createTimeEnd != null">and ul.create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
+                                GROUP BY create_by ,operation_type, nick_name )AS t
         where 1=1
         <if test="createBy != null and createBy != ''">and create_by like concat('%', #{createBy}, '%')</if>
+        <if test="nickName != null and nickName != ''">and nick_name like concat('%', #{nickName}, '%')</if>
 
 
-        GROUP BY create_by
+        GROUP BY create_by,nick_name
 
 
     </select>

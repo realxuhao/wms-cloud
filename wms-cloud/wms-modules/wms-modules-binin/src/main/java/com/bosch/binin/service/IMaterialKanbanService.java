@@ -51,7 +51,7 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
      */
     int updateKanban(Long id);
 
-    void issueJob(Long[] ids);
+    List<MaterialKanban> issueJob(Long[] ids);
 
     MaterialKanbanVO getWaitingJob(String mesbarCode);
 
@@ -108,7 +108,7 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
      */
     List<MaterialInfoVO> materialInfoBySSCC(List<String> sscc);
 
-    void binDown(String sscc);
+    MaterialKanban binDown(String sscc);
 
     List<MaterialKanbanVO> binDownList(PageDomain pageDomain, String wareCode);
 
@@ -124,7 +124,7 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     MaterialKanbanVO getKanbanBySSCCAndStatus(String sscc, KanbanStatusEnum kanbanStatusEnum);
     void splitPallet(SplitPalletDTO splitPallet);
 
-    void cancelKanban(Long id);
+    MaterialKanban cancelKanban(Long id);
 
     List<MaterialKanbanVO> waitingBinDownList(PageDomain pageDomain, String wareCode);
 

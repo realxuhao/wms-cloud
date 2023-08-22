@@ -149,6 +149,8 @@
           :pagination="false"
           size="middle"
           :scroll="tableScroll"
+          
+          @change="pageChange"
         >
           <template slot="statusSlot" slot-scope="text">
             <a-tag :color="statusColorMap[text]">
@@ -285,25 +287,29 @@ const columns = [
     title: '工厂',
     key: 'plantNb',
     dataIndex: 'plantNb',
-    width: 55
+    width: 55,
+    sorter: true
   },
   {
     title: '仓库',
     key: 'wareCode',
     dataIndex: 'wareCode',
-    width: 75
+    width: 75,
+    sorter: true
   },
   {
     title: '区域',
     key: 'areaCode',
     dataIndex: 'areaCode',
-    width: 75
+    width: 75,
+    sorter: true
   },
   {
     title: 'SSCC码',
     key: 'ssccNb',
     dataIndex: 'ssccNb',
-    width: 175
+    width: 175,
+    sorter: true
   },
   {
     title: 'cell',
@@ -315,7 +321,8 @@ const columns = [
     title: '物料编码',
     key: 'materialNb',
     dataIndex: 'materialNb',
-    width: 100
+    width: 100,
+    sorter: true
   },
   {
     title: '物料名称',
@@ -333,13 +340,15 @@ const columns = [
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '有效期',
     key: 'expireDate',
     dataIndex: 'expireDate',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '状态',
@@ -370,7 +379,8 @@ const columns = [
     title: '下架库位',
     key: 'binDownCode',
     dataIndex: 'binDownCode',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '创建时间',
@@ -388,7 +398,8 @@ const columns = [
     title: '下架时间',
     key: 'binDownTime',
     dataIndex: 'binDownTime',
-    width: 120
+    width: 120,
+    sorter: true
   },
 
   {
@@ -407,7 +418,8 @@ const columns = [
     title: '抽样时间',
     key: 'sampleTime',
     dataIndex: 'sampleTime',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '上架人',
@@ -419,7 +431,8 @@ const columns = [
     title: '上架时间',
     key: 'binInTime',
     dataIndex: 'binInTime',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '上架库位',
@@ -501,6 +514,11 @@ export default {
     }
   },
   methods: {
+    async pageChange(page, filters, sorter){
+        this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc'
+        this.queryForm.orderByColumn= sorter.columnKey
+        this.loadTableList()
+    },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()

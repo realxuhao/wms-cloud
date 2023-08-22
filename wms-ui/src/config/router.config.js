@@ -215,7 +215,7 @@ export const asyncRouterMap = [
         path: '/feeding',
         name: 'stock',
         component: RouteView,
-        redirect: '/feeding/list',
+        redirect: '/feeding/requirement-record',
         meta: { title: '生产叫料管理', icon: 'hdd', permission: [] },
         children: [
           {

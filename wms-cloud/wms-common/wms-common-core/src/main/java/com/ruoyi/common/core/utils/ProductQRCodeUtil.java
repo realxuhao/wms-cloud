@@ -6,6 +6,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -34,10 +35,10 @@ public class ProductQRCodeUtil {
 //            throw new ServiceException("成品QR CODE 格式错误");
 //        }
 
-        qrCode = qrCode.replace("\\r?\\n", "").replace("(","").replace(")","");
+        qrCode = qrCode.replace("\\r\\n", "").replace("(","").replace(")","");
 
 
-        return Arrays.asList(qrCode.substring(0,19),qrCode.substring(19,51),qrCode.substring(51,71));
+        return Arrays.asList(qrCode.substring(0,19),qrCode.substring(19,51),qrCode.substring(51));
     }
     public static Date getProductionDate(String qrCode){
         List<String> strings = splitQRCode(qrCode);
@@ -97,10 +98,15 @@ public class ProductQRCodeUtil {
 
 
     public static String getSSCC(String qrCode){
-        return splitQRCode(qrCode).get(2).substring(2);
+        String s = splitQRCode(qrCode).get(2);
+        return s.substring(2);
     }
 
     public static void main(String[] args) {
+
+        System.out.println(getSSCC("1123070710101326242\\r\\n02069200639400721724100537000060\\r\\n00369006391113830793"));
+
+
         System.out.println("11221025101012358660208716900568763172407093700006000369006391113669850".length());
         System.out.println(getSSCC("1122102510101235866\n" +
                 "02087169005687631724070937000060\n" +
@@ -112,7 +118,6 @@ public class ProductQRCodeUtil {
                 "02087169005687631724070937000060\n" +
                 "00369006391113669850"));
 
-
         List<String> strings = splitQRCode("11221025101012358660208716900568763172407093700006000369006391113669850");
         System.out.println(strings);
 
@@ -121,7 +126,7 @@ public class ProductQRCodeUtil {
         String batchNb = "101207530";
         String expireDate = "240709";
         String quantity = "000060";
-        String sscc="369006391113872175";
+        String sscc="369006391113888435";
 
 
         String s1="11"+productDate+"10"+batchNb;
@@ -137,9 +142,17 @@ public class ProductQRCodeUtil {
 
         System.out.println(getBatchNb(qrCode));
 
-        System.out.println("1122102510101207530020871690056876317".length());
+        System.out.println("11221025101012075300208716900568763172407093700006000369006391113888435".length());
 
         System.out.println("11221025101012075300208716900568763172407093700006000369006391113872175".substring(37,43));
+
+
+
+        List<String> ssss= new ArrayList<>();
+        ssss.add("aaa");
+        ssss.add("bbb");
+
+        System.out.println("sasasa"+ssss);
 
 
     }

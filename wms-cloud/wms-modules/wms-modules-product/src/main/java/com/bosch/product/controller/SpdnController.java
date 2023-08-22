@@ -13,6 +13,7 @@ import com.bosch.product.api.domain.SPDN;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.dto.ProductWareShiftQueryDTO;
 import com.bosch.product.api.domain.dto.SPDNDTO;
+import com.bosch.product.api.domain.enumeration.ProductPickEnum;
 import com.bosch.product.api.domain.vo.ProductSPDNPickVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.api.domain.vo.SPDNVO;
@@ -125,11 +126,22 @@ public class SpdnController extends BaseController {
         return R.ok();
     }
 
-    @PutMapping(value = "/approve/{ids}")
-    @ApiOperation("审批SPDN")
-    @Log(title = "审批SPDN", businessType = BusinessType.UPDATE)
-    public R approve(@PathVariable Long[] ids){
-        spdnService.approve(Arrays.asList(ids));
+    //7761审批
+    @PutMapping(value = "/approveBy7761/{ids}")
+    @ApiOperation("审批SPDN7761")
+    @Log(title = "审批SPDN77761", businessType = BusinessType.UPDATE)
+    public R approveBy7761(@PathVariable Long[] ids){
+        spdnService.approveBy7761(Arrays.asList(ids));
+        return R.ok();
+    }
+
+    //非7761审批
+
+    @PutMapping(value = "/approveByNo7761/{ids}")
+    @ApiOperation("审批SPDN非7761")
+    @Log(title = "审批SPDN非7761", businessType = BusinessType.UPDATE)
+    public R approveNo7761(@PathVariable Long[] ids){
+        spdnService.approveByNo7761(Arrays.asList(ids));
         return R.ok();
     }
 
@@ -194,12 +206,15 @@ public class SpdnController extends BaseController {
         LambdaQueryWrapper<ProductSPDNPick> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ProductSPDNPick::getSsccNumber,ProductQRCodeUtil.getSSCC(qrCode));
         queryWrapper.eq(ProductSPDNPick::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.ne(ProductSPDNPick::getStatus, ProductPickEnum.CANCEL.code());
+        queryWrapper.ne(ProductSPDNPick::getStatus, ProductPickEnum.FINISH.code());
+
         return R.ok(pickService.getOne(queryWrapper));
     }
 
 
     @PutMapping(value = "/batchShip/{ids}")
-    @Log(title = "成品移库批量发运", businessType = BusinessType.UPDATE)
+    @Log(title = "7761成品移库批量发运", businessType = BusinessType.UPDATE)
     public R batchShip(@PathVariable("ids")Long[] ids){
         spdnService.batchShip(ids);
         return R.ok();

@@ -57,7 +57,7 @@
         pp.material as material,
         STR_TO_DATE(pp.expire_date, '%Y-%m-%d') as batch,
 #         STR_TO_DATE(pp.batch, '%Y-%m-%d') as production_batch,
-               pp.batch as production_batch,
+               pp.production_batch as production_batch,
         pp.sales_unit as salesUnit,
         sum(delivery_quantity) as deliveryQuantity
         from product_pick pp

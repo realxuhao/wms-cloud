@@ -20,7 +20,9 @@ public interface ISPDNService  extends IService<SPDN> {
 
     void batchDelete(List<Long> ids);
 
-    void approve(List<Long> idsList);
+    void approveBy7761(List<Long> idsList);
+
+    void approveByNo7761(List<Long> idsList);
 
     void binDown(String qrCode);
 

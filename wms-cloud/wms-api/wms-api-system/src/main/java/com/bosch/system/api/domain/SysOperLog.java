@@ -1,5 +1,6 @@
 package com.bosch.system.api.domain;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -85,7 +86,39 @@ public class SysOperLog extends BaseEntity
     @Excel(name = "方法返回码")
     private Integer methodReturnCode;
 
+    private String ssccNumber;
+
+    private BigDecimal quantity;
+
+    private String newSSCCNumber;
+
     private List<Long> KanbanIdList;
+
+
+    public BigDecimal getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getNewSSCCNumber() {
+        return newSSCCNumber;
+    }
+
+    public void setNewSSCCNumber(String newSSCCNumber) {
+        this.newSSCCNumber = newSSCCNumber;
+    }
+
+    public String getSsccNumber() {
+        return ssccNumber;
+    }
+
+    public void setSsccNumber(String ssccNumber) {
+        this.ssccNumber = ssccNumber;
+    }
+
 
     public List<Long> getKanbanIdList() {
         return KanbanIdList;

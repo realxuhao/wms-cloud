@@ -232,8 +232,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         double caculateResult = (actualResult - materialVO.getPalletWeight().doubleValue() * weightTimes) / actualQuantity - (materialVO.getPackageWeight().doubleValue() - materialVO.getMinPackageNetWeight().doubleValue());
         double res = caculateResult / materialVO.getTransferWeightRatio().doubleValue();
 
-        caculateResult = Math.round(caculateResult * 1000) / 1000;
-        res = Math.round(res * 1000) /1000;
+//        res = Math.round(res * 1000) /1000;
         checkResultVO.setAverageResult(res);
         checkResultVO.setActualResult(actualResult).setActualQuantity(actualQuantity);
 

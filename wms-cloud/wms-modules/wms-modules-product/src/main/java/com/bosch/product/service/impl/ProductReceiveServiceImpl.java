@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.masterdata.api.RemoteProductService;
 import com.bosch.masterdata.api.domain.dto.MdProductPackagingDTO;
+import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.product.api.domain.ProductReceive;
 import com.bosch.product.api.domain.dto.ProductReceiveDTO;
 import com.bosch.product.api.domain.dto.ProductReceiveQueryDTO;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -54,6 +56,8 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
 
     @Autowired
     private IUserOperationLogService userOperationLogService;
+
+
 
     @Override
     public List<ProductReceiveVO> list(ProductReceiveQueryDTO queryDTO) {
@@ -86,9 +90,11 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
         //上架到成品存储区
         stockService.generateStockByReceive(productReceive);
 
+        MdProductPackagingVO productVO = getProductVO(productReceive.getMaterialNb());
+
         //记录操作
 
-        productStockOperationService.addProductStockOperation(productReceive.getPlantNb(),productReceive.getInQuantity(),productReceive.getSsccNumber(),productReceive.getMaterialNb(),productReceive.getBatchNb(), StockOperationType.IN.getCode());
+        productStockOperationService.addProductStockOperation(productReceive.getPlantNb(),productReceive.getInQuantity() * productVO.getBoxSpecification(),productReceive.getSsccNumber(),productReceive.getMaterialNb(),productReceive.getFromProdOrder(), StockOperationType.IN.getCode());
 
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_STORAGE_IN.getCode(), ProductQRCodeUtil.getSSCC(qrCode),productReceive.getMaterialNb());
 
@@ -132,7 +138,19 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
 //        if (!CollectionUtils.isEmpty(set)){
 //            throw new ServiceException("以下成品料号主数据中不存在："+set);
 //        }
-//        return receiveMapper.validateRecord(dtos) > 0;
-        return  true;
+        return true;
     }
+
+
+    private MdProductPackagingVO getProductVO(String code) {
+        R<MdProductPackagingVO> byCode = remoteProductService.getByCode(code);
+        if (byCode == null || !byCode.isSuccess()) {
+            throw new ServiceException("调用主数据获取成品失败");
+        }
+        return byCode.getData();
+    }
+
+
+
+
 }

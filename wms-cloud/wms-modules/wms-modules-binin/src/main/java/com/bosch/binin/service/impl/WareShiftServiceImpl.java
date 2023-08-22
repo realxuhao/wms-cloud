@@ -130,7 +130,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     }
 
     @Override
-    public void binDown(String mesBarCode) {
+    public WareShift binDown(String mesBarCode) {
         String ssccNb = MesBarCodeUtil.getSSCC(mesBarCode);
         LambdaQueryWrapper<WareShift> wareShiftLambdaQueryWrapper = new LambdaQueryWrapper<>();
         wareShiftLambdaQueryWrapper.eq(WareShift::getSsccNb, ssccNb);
@@ -166,6 +166,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
         //执行下架
         binInService.binDown(ssccNb);
+
+        return wareShift;
     }
 
     @Override
@@ -209,7 +211,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     }
 
     @Override
-    public void cancelWareShift(Long id) {
+    public WareShift cancelWareShift(Long id) {
         LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
         WareShift wareShift = wareShiftMapper.selectById(id);
 
@@ -256,6 +258,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
         wareShift.setStatus(KanbanStatusEnum.CANCEL.value());
         wareShiftMapper.updateById(wareShift);
+
+        return wareShift;
 
 
     }
@@ -329,7 +333,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     @Override
     @Transactional(rollbackFor = Exception.class)
 
-    public void performBinIn(BinInDTO binInDTO) {
+    public BinInVO performBinIn(BinInDTO binInDTO) {
 
         String mesBarCode = binInDTO.getMesBarCode();
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
@@ -364,6 +368,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         wareShift.setTargetAreaCode(binInVO.getAreaCode());
         wareShift.setTargetBinCode(binInVO.getActualBinCode());
         wareShiftMapper.updateById(wareShift);
+        return binInVO;
 
 //        //如果是看板所产生的移库任务，看板任务也要随之更新
 //        //如果是kanban任务
@@ -500,6 +505,22 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         if (wareShift.getQuantity() < splitPallet.getSplitQuantity()) {
             throw new ServiceException("拆托数量不能大于总数量");
         }
+
+        if (splitPallet.getSplitQuantity() == 0) {//拆托数量为0 的话，代表不拆托，直接就是下架
+
+            wareShift.setStatus(KanbanStatusEnum.OUT_DOWN.value());
+            wareShiftMapper.updateById(wareShift);
+
+            //执行下架
+            binInService.binDown(sourceSsccNb);
+
+            operationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.BINOUTOTHER.getCode(), splitPallet.getSourceSsccNb(), wareShift.getMaterialNb());
+
+            return;
+
+        }
+
+
         //老的拆托任务结束。解冻库存
         wareShift.setStatus(KanbanStatusEnum.FINISH.value());
         this.updateById(wareShift);
@@ -535,13 +556,13 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         conver.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
         stockService.save(conver);
 
-        operationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(), splitPallet.getSourceSsccNb(),wareShift.getMaterialNb());
+        operationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(), splitPallet.getSourceSsccNb(), wareShift.getMaterialNb());
 
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void batchPerformBinIn(WareShiftBatchBinInDTO dto) {
+    public List<BinIn> batchPerformBinIn(WareShiftBatchBinInDTO dto) {
         LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
         qw.eq(TranshipmentOrder::getSsccNumber, MesBarCodeUtil.getSSCC(dto.getMesBarCode()));
         qw.eq(TranshipmentOrder::getStatus, StatusEnums.TRUE.getCode());
@@ -568,6 +589,15 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         wareShiftQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<WareShift> wareShiftList = this.list(wareShiftQueryWrapper);
         List<BinIn> binInsInsertList = new ArrayList<>();
+
+        LambdaQueryWrapper<Stock> stockInQueryWrapper = new LambdaQueryWrapper<>();
+        stockInQueryWrapper.in(Stock::getSsccNumber, ssccList);
+        stockInQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<Stock> stockDeleteList = stockService.list(stockInQueryWrapper);
+        if (!CollectionUtils.isEmpty(stockDeleteList)) {
+            stockDeleteList.stream().forEach(item -> item.setDeleteFlag(DeleteFlagStatus.TRUE.getCode()));
+            stockService.updateBatchById(stockDeleteList);
+        }
 
 
         LambdaQueryWrapper<BinIn> binInQueryWrapper = new LambdaQueryWrapper<>();
@@ -649,6 +679,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
         operationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.SHIFT_BININ.getCode(), operationLogs);
 
+        return binInsInsertList;
     }
 
     private List<WareShift> gennerateWareShift(String materialNb, Double shiftQuality, String ids, String orders) {

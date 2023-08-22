@@ -15,6 +15,18 @@
                 </a-form-model-item>
               </a-col>
               <a-col :span="4">
+                <a-form-item label="质检状态" >
+                  <a-select
+                    allow-clear
+                    v-model="queryForm.qualityStatus"
+                  >
+                    <a-select-option v-for="item in qualityStatus" :key="item.value" :value="item.text">
+                      {{ item.text }}
+                    </a-select-option>
+                  </a-select>
+                </a-form-item>
+              </a-col>
+              <a-col :span="4">
                 <a-form-model-item label="物料号">
                   <a-input v-model="queryForm.materialNb" placeholder="物料号" allow-clear />
                 </a-form-model-item>
@@ -55,7 +67,8 @@
             :pagination="false"
             size="middle"
             :scroll="tableScroll"
-            @change="handleChangeTab"
+            @change="pageChange"
+            
           >
           </a-table>
           <div class="pagination-con">
@@ -103,7 +116,20 @@
 <script>
 import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
-
+const qualityStatus = [
+  {
+    text: 'U',
+    value: 0
+  },
+  {
+    text: 'B',
+    value: 1
+  },
+  {
+    text: 'Q',
+    value: 2
+  }
+]
 const labelCol = {
   span: 5
 }
@@ -116,6 +142,7 @@ const queryFormAttr = () => {
     'wareCode': '',
     'materialNb': '',
     'ssccNumber': '',
+    qualityStatus: ''
   }
 }
 
@@ -162,6 +189,7 @@ export default {
     event: 'change'
   },
   computed: {
+    qualityStatus: () => qualityStatus,
     wrapperCol () {
       return wrapperCol
     },
@@ -178,67 +206,85 @@ export default {
           title: '工厂',
           key: 'plantNb',
           dataIndex: 'plantNb',
-          width: 100
+          width: 100,
+          sorter: true
         },
         {
           title: '仓库编码',
           key: 'wareCode',
           dataIndex: 'wareCode',
-          width: 120
+          width: 120,
+          sorter: true
         },
         {
           title: 'SSCC码',
           key: 'ssccNumber',
           dataIndex: 'ssccNumber',
-          width: 120
+          width: 120,
+          sorter: true
         },
         {
           title: '物料编码',
           key: 'materialNb',
           dataIndex: 'materialNb',
-          width: 120
+          width: 120,
+          sorter: true
         },
         {
           title: '物料名称',
           key: 'materialName',
           dataIndex: 'materialName',
-          width: 90
+          width: 90,
+          sorter: true
         },
         {
           title: '批次号',
           key: 'batchNb',
           dataIndex: 'batchNb',
           width: 120,
-          sorter: true,
-          sortDirections: ['descend', 'ascend'],
-          sortOrder: sortMap.batchNb
+          sorter: true
+          // sortDirections: ['descend', 'ascend'],
+          // sortOrder: sortMap.batchNb
+        },
+        {
+          title: '质量状态',
+          key: 'qualityStatus',
+          dataIndex: 'qualityStatus',
+          width: 120,
+          sorter: true
+          // sortDirections: ['descend', 'ascend'],
+          // sortOrder: sortMap.batchNb
         },
         {
           title: '可用库存',
           key: 'availableStock',
           dataIndex: 'availableStock',
           width: 120,
-          sorter: true,
-          sortDirections: ['descend', 'ascend'],
-          sortOrder: sortMap.availableStock
+          sorter: true
+          // sorter: true,
+          // sortDirections: ['descend', 'ascend'],
+          // sortOrder: sortMap.availableStock
         },
         {
           title: '冻结库存',
           key: 'freezeStock',
           dataIndex: 'freezeStock',
-          width: 120
+          width: 120,
+          sorter: true
         },
         {
           title: '库存量',
           key: 'totalStock',
           dataIndex: 'totalStock',
-          width: 80
+          width: 80,
+          sorter: true
         },
         {
           title: '有效期',
           key: 'expireDate',
           dataIndex: 'expireDate',
-          width: 140
+          width: 140,
+          sorter: true
         }
       ]
       return columns
@@ -246,6 +292,11 @@ export default {
 
   },
   methods: {
+    async pageChange(page, filters, sorter){
+        this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc'
+        this.queryForm.orderByColumn= sorter.columnKey
+        this.loadTableList()
+    },
     previousStep () {
       this.currentStep = 0
       this.form.resetFields()
@@ -343,9 +394,9 @@ export default {
     loadData () {
       this.loadTableList()
     },
-    handleChangeTab (p, f, { field, order }) {
-      this.queryForm.sortMap[field] = this.queryForm.sortMap[field] === 'descend' ? 'ascend' : 'descend'
-    }
+    // handleChangeTab (p, f, { field, order }) {
+    //   this.queryForm.sortMap[field] = this.queryForm.sortMap[field] === 'descend' ? 'ascend' : 'descend'
+    // }
   },
   watch: {
     stockListVisible: function (val) {

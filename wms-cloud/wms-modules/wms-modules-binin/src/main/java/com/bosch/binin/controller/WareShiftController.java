@@ -1,6 +1,7 @@
 package com.bosch.binin.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.TranshipmentOrder;
 import com.bosch.binin.api.domain.WareShift;
@@ -13,6 +14,7 @@ import com.bosch.binin.service.IWareShiftService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.SSCCLogVO;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
@@ -36,6 +38,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -79,10 +82,13 @@ public class WareShiftController extends BaseController {
     @Synchronized
     @Log(title = "移库任务下架", businessType = BusinessType.UPDATE)
     public R binDown(@PathVariable String mesBarCode) {
-        shiftService.binDown(mesBarCode);
-        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.BINOUTOTHER.getCode(), MesBarCodeUtil.getSSCC(mesBarCode),MesBarCodeUtil.getMaterialNb(mesBarCode));
+        WareShift wareShift = shiftService.binDown(mesBarCode);
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.BINOUTOTHER.getCode(), MesBarCodeUtil.getSSCC(mesBarCode), MesBarCodeUtil.getMaterialNb(mesBarCode));
 
-        return R.ok(mesBarCode + "下架成功");
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(wareShift.getSsccNb());
+        ssccLogVO.setQuantity(wareShift.getQuantity());
+        return R.ok(ssccLogVO, mesBarCode + "下架成功");
     }
 
     @PostMapping(value = "splitPallet")
@@ -93,7 +99,12 @@ public class WareShiftController extends BaseController {
     public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         shiftService.splitPallet(splitPallet);
 
-        return R.ok();
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(splitPallet.getSourceSsccNb());
+        ssccLogVO.setQuantity(splitPallet.getSplitQuantity());
+        ssccLogVO.setNewSSCCNumber(MesBarCodeUtil.getSSCC(splitPallet.getNewMesBarCode()));
+
+        return R.ok(ssccLogVO);
     }
 
     @GetMapping(value = "/getOne/{mesBarCode}")
@@ -204,8 +215,13 @@ public class WareShiftController extends BaseController {
     @Transactional(rollbackFor = Exception.class)
     @Log(title = "移库取消", businessType = BusinessType.INSERT)
     public R cancelWareShift(@PathVariable("id") Long id) {
-        shiftService.cancelWareShift(id);
-        return R.ok();
+        WareShift wareShift = shiftService.cancelWareShift(id);
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(wareShift.getSsccNb());
+        ssccLogVO.setQuantity(wareShift.getQuantity());
+
+
+        return R.ok(ssccLogVO);
     }
 
 
@@ -215,8 +231,12 @@ public class WareShiftController extends BaseController {
     @Log(title = "移库上架", businessType = BusinessType.INSERT)
     @Synchronized
     public R performBinIn(@RequestBody BinInDTO binInDTO) {
-        shiftService.performBinIn(binInDTO);
+        BinInVO binInVO = shiftService.performBinIn(binInDTO);
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.SHIFT_BININ.getCode(), MesBarCodeUtil.getSSCC(binInDTO.getMesBarCode()),MesBarCodeUtil.getMaterialNb(binInDTO.getMesBarCode()));
+
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(binInVO.getSsccNumber());
+        ssccLogVO.setQuantity(binInVO.getQuantity());
 
         return R.ok();
     }
@@ -226,8 +246,16 @@ public class WareShiftController extends BaseController {
     @Synchronized
     @Log(title = "移库批量上架到区域", businessType = BusinessType.INSERT)
     public R batchPerformBinIn(@RequestBody WareShiftBatchBinInDTO dto) {
-        shiftService.batchPerformBinIn(dto);
-        return R.ok();
+        List<BinIn> binIns = shiftService.batchPerformBinIn(dto);
+        ArrayList<SSCCLogVO> logVOS = new ArrayList<>();
+
+        binIns.stream().forEach(binIn -> {
+            SSCCLogVO ssccLogVO = new SSCCLogVO();
+            ssccLogVO.setSsccNumber(binIn.getSsccNumber());
+            ssccLogVO.setQuantity(binIn.getQuantity());
+            logVOS.add(ssccLogVO);
+        });
+        return R.ok(logVOS);
     }
 
 

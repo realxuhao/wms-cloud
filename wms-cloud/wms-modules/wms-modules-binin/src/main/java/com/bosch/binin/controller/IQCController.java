@@ -1,5 +1,6 @@
 package com.bosch.binin.controller;
 
+import com.bosch.binin.api.domain.IQCSamplePlan;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
@@ -9,6 +10,7 @@ import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.SSCCLogVO;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
@@ -19,6 +21,7 @@ import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import com.sun.org.apache.bcel.internal.generic.NEWARRAY;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.Synchronized;
@@ -29,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -71,17 +75,33 @@ public class IQCController extends BaseController {
     @ApiOperation("批量下发任务接口")
     @Transactional(rollbackFor = Exception.class)
     @Log(title = "批量下发IQC任务", businessType = BusinessType.UPDATE)
-    public R issueJob(@PathVariable Long[] ids) {
-        samplePlanService.issueJob(ids);
-        return R.ok("下发成功");
+    public R<List<SSCCLogVO>> issueJob(@PathVariable Long[] ids) {
+        List<IQCSamplePlan> samplePlanList = samplePlanService.issueJob(ids);
+        List<SSCCLogVO> logVOS = new ArrayList<>();
+        samplePlanList.stream().forEach(samplePlan->{
+            SSCCLogVO ssccLogVO = new SSCCLogVO();
+            ssccLogVO.setSsccNumber(samplePlan.getSsccNb());
+            ssccLogVO.setQuantity(null);
+            logVOS.add(ssccLogVO);
+        });
+        return R.ok(logVOS,"下发成功");
     }
 
     @PostMapping(value = "/sample/manualAdd")
     @Log(title = "手工添加IQC抽样计划", businessType = BusinessType.INSERT)
     @ApiOperation("手工添加IQC抽样计划")
-    public R manualAdd(@RequestBody @Validated List<IQCSamplePlanDTO> dtos) {
-        samplePlanService.manualAdd(dtos);
-        return R.ok();
+    public R<List<SSCCLogVO>> manualAdd(@RequestBody @Validated List<IQCSamplePlanDTO> dtos) {
+        List<IQCSamplePlan> samplePlanList = samplePlanService.manualAdd(dtos);
+
+        List<SSCCLogVO> logVOS = new ArrayList<>();
+        samplePlanList.stream().forEach(samplePlan->{
+            SSCCLogVO ssccLogVO = new SSCCLogVO();
+            ssccLogVO.setSsccNumber(samplePlan.getSsccNb());
+            ssccLogVO.setQuantity(null);
+            logVOS.add(ssccLogVO);
+        });
+
+        return R.ok(logVOS);
     }
 
     @GetMapping(value = "/sample/{mesBarCode}")
@@ -101,9 +121,13 @@ public class IQCController extends BaseController {
     @PutMapping(value = "/sample/modifyQuantity")
     @Log(title = "修改抽样数量", businessType = BusinessType.UPDATE)
     @ApiOperation("修改抽样数量")
-    public R modifyQuantity(@RequestParam("ssccNb") String ssccNb, @RequestParam("quantity") Double quantity) {
-        samplePlanService.modifyQuantity(ssccNb, quantity);
-        return R.ok();
+    public R<SSCCLogVO> modifyQuantity(@RequestParam("ssccNb") String ssccNb, @RequestParam("quantity") Double quantity) {
+        IQCSamplePlan samplePlan = samplePlanService.modifyQuantity(ssccNb, quantity);
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(samplePlan.getSsccNb());
+        ssccLogVO.setQuantity(samplePlan.getRecommendSampleQuantity());
+
+        return R.ok(ssccLogVO);
     }
 
 
@@ -119,20 +143,28 @@ public class IQCController extends BaseController {
     @Log(title = "IQC抽样计划执行下架", businessType = BusinessType.UPDATE)
     @ApiOperation("IQC抽样计划执行下架接口")
     @Synchronized
-    public R binDown(@PathVariable String mesBarCode) {
-        samplePlanService.binDown(MesBarCodeUtil.getSSCC(mesBarCode));
+    public R<SSCCLogVO> binDown(@PathVariable String mesBarCode) {
+        IQCSamplePlan samplePlan = samplePlanService.binDown(MesBarCodeUtil.getSSCC(mesBarCode));
 
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.IQCBINOUT.getCode(), MesBarCodeUtil.getSSCC(mesBarCode),MesBarCodeUtil.getMaterialNb(mesBarCode));
 
-        return R.ok();
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(samplePlan.getSsccNb());
+        ssccLogVO.setQuantity(samplePlan.getQuantity());
+
+        return R.ok(ssccLogVO);
     }
 
     @PutMapping(value = "/sample/cancel/{id}")
     @Log(title = "IQC抽样计划执行取消", businessType = BusinessType.DELETE)
     @ApiOperation("IQC抽样计划执行取消接口")
     @Synchronized
-    public R binDown(@PathVariable("id") Long id) {
-        samplePlanService.cancel(id);
+    public R<SSCCLogVO> binDown(@PathVariable("id") Long id) {
+        IQCSamplePlan samplePlan = samplePlanService.cancel(id);
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(samplePlan.getSsccNb());
+        ssccLogVO.setQuantity(null);
+
         return R.ok();
     }
 
@@ -150,21 +182,30 @@ public class IQCController extends BaseController {
     @Log(title = "IQC抽样计划执行上架", businessType = BusinessType.INSERT)
     @ApiOperation("IQC抽样计划执行上架接口")
     @Synchronized
-    public R performBinIn(@RequestBody BinInDTO binInDTO) {
-        samplePlanService.performBinIn(binInDTO);
+    public R<SSCCLogVO> performBinIn(@RequestBody BinInDTO binInDTO) {
+        BinInVO binInVO = samplePlanService.performBinIn(binInDTO);
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.IQCBININ.getCode(), MesBarCodeUtil.getSSCC(binInDTO.getMesBarCode()),MesBarCodeUtil.getMaterialNb(binInDTO.getMesBarCode()));
 
-        return R.ok();
+
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(binInVO.getSsccNumber());
+        ssccLogVO.setQuantity(binInVO.getQuantity());
+
+        return R.ok(ssccLogVO);
     }
 
     @PostMapping(value = "/sample/confirm")
     @Log(title = "IQC抽样确认", businessType = BusinessType.UPDATE)
     @ApiOperation("IQC抽样确认")
     @Synchronized
-    public R confirm(@RequestBody IQCSamplePlanDTO dto) {
-        samplePlanService.confirm(dto);
+    public R<SSCCLogVO> confirm(@RequestBody IQCSamplePlanDTO dto) {
+        IQCSamplePlan iqcSamplePlan = samplePlanService.confirm(dto);
 
-        return R.ok();
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(iqcSamplePlan.getSsccNb());
+        ssccLogVO.setQuantity(iqcSamplePlan.getQuantity());
+
+        return R.ok(ssccLogVO);
     }
 
 

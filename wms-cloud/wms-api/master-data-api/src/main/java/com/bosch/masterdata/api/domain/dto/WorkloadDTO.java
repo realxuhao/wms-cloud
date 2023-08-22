@@ -22,6 +22,13 @@ public class WorkloadDTO extends PageDomain {
     @ApiModelProperty(value = "create_by")
     private String createBy;
 
+
+    /**
+     * 创建人
+     */
+    @ApiModelProperty(value = "nick_name")
+    private String nickName;
+
     /**
      * 修改人
      */

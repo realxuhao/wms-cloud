@@ -238,7 +238,7 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
 
 
         productStockOperationService.addProductStockOperation(productStock.getPlantNb(), diff,
-                productStock.getSsccNumber(), productStock.getMaterialNb(), productStock.getBatchNb(), StockOperationType.SALESOUT.getCode());
+                productStock.getSsccNumber(), productStock.getMaterialNb(), productStock.getFromProdOrder(), StockOperationType.SALESOUT.getCode());
 
 
 
@@ -328,7 +328,7 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
 
 
         productStockOperationService.addProductStockOperation(productStock.getPlantNb(),total.get(),
-                productStock.getSsccNumber(),productStock.getMaterialNb(),productStock.getBatchNb(), StockOperationType.SALESOUT.getCode());
+                productStock.getSsccNumber(),productStock.getMaterialNb(),productStock.getFromProdOrder(), StockOperationType.SALESOUT.getCode());
 
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode),productPicks.get(0).getMaterial());
 

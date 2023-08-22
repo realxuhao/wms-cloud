@@ -119,9 +119,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         stock.setUnit(receive.getUnit());
 
 
-
-
-        if (stock.getPlantNb().equals("7751")) {
+        if (stock.getPlantNb().contains("7751")) {
 
             ProductWareShift wareShift = ProductWareShift.builder().sourcePlantNb(stock.getPlantNb())
                     .sourceWareCode(stock.getWareCode())
@@ -329,21 +327,35 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         if (stock == null) {
             throw new ServiceException("无此库存信息");
         }
+
         ProductStockAdjust stockAdjust = BeanConverUtil.conver(stock, ProductStockAdjust.class);
+
+        MdProductPackagingVO productVO = getProductVO(stock.getMaterialNb());
+
+        //   PCS/TR
+        Double boxSpecification = productVO.getBoxSpecification();
+
 
         if (stockEditDTO.getType() == 0 || stockEditDTO.getType() == 1) {//质检取样和取样
 
-            if (stockEditDTO.getStockUse() > stock.getAvailableStock()) {
+            Double stockUseTR = stockEditDTO.getStockUse() / boxSpecification;
+
+
+            if (stockUseTR > stock.getAvailableStock()) {
                 throw new ServiceException("领用数量不能大于可用数量");
             }
-            stock.setAvailableStock(stock.getAvailableStock() - stockEditDTO.getStockUse());
-            stock.setTotalStock(stock.getTotalStock() - stockEditDTO.getStockUse());
+
+
+            stock.setAvailableStock(stock.getAvailableStock() - stockUseTR);
+            stock.setTotalStock(stock.getTotalStock() - stockUseTR);
             stock.setFreezeStock(stock.getTotalStock() - stock.getAvailableStock());
             if (stock.getAvailableStock() == Double.valueOf(0)) {
                 stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
             }
+
+
             productStockOperationService.addProductStockOperation(stock.getPlantNb(), stockEditDTO.getStockUse(), stock.getSsccNumber(),
-                    stock.getMaterialNb(), stock.getBatchNb(), StockOperationType.OTHEROUT.getCode());
+                    stock.getMaterialNb(), stock.getFromProdOrder(), StockOperationType.OTHEROUT.getCode());
             this.updateById(stock);
 
 
@@ -369,18 +381,19 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 //            stock.setAreaCode(areaVO.getCode());
 //            stock.setBinCode(null);
 //            stock.setQualityStatus(QualityStatusEnums.BLOCK.getCode());
-            if (stockEditDTO.getStockUse() > stock.getAvailableStock()) {
+            Double stockUseTR = stockEditDTO.getStockUse() / boxSpecification;
+            if (stockUseTR > stock.getAvailableStock()) {
                 throw new ServiceException("报废数量不能大于可用数量");
             }
-            stock.setAvailableStock(stock.getAvailableStock() - stockEditDTO.getStockUse());
-            stock.setTotalStock(stock.getTotalStock() - stockEditDTO.getStockUse());
+            stock.setAvailableStock(stock.getAvailableStock() - stockUseTR);
+            stock.setTotalStock(stock.getTotalStock() - stockUseTR);
             stock.setFreezeStock(stock.getTotalStock() - stock.getAvailableStock());
             if (stock.getAvailableStock() <= 0) {
                 stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
             }
 
             productStockOperationService.addProductStockOperation(stock.getPlantNb(), stockEditDTO.getStockUse(), stock.getSsccNumber(),
-                    stock.getMaterialNb(), stock.getBatchNb(), StockOperationType.OTHEROUT.getCode());
+                    stock.getMaterialNb(), stock.getFromProdOrder(), StockOperationType.OTHEROUT.getCode());
 
             this.updateById(stock);
 
@@ -389,26 +402,34 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
                 throw new ServiceException("该库存存在执行任务，暂时不可以整托出库");
             }
             stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
-            productStockOperationService.addProductStockOperation(stock.getPlantNb(), stock.getTotalStock(), stock.getSsccNumber(),
-                    stock.getMaterialNb(), stock.getBatchNb(), StockOperationType.OTHEROUT.getCode());
+            productStockOperationService.addProductStockOperation(stock.getPlantNb(), stock.getTotalStock() * boxSpecification, stock.getSsccNumber(),
+                    stock.getMaterialNb(), stock.getFromProdOrder(), StockOperationType.OTHEROUT.getCode());
             this.updateById(stock);
         } else {
+
             if (stockEditDTO.getSsccNumber() == null || stockEditDTO.getAvailableStock() == null || stockEditDTO.getFreezeStock() == null || stockEditDTO.getTotalStock() == null) {
                 throw new ServiceException("所有参数都不能为空");
             }
             if (!stockEditDTO.getTotalStock().equals(stockEditDTO.getFreezeStock() + stockEditDTO.getAvailableStock())) {
                 throw new ServiceException("总库存必须等于冻结库存+可用库存");
             }
+
+
             double diff = stock.getTotalStock() - stockEditDTO.getTotalStock();
-            stock.setAvailableStock(stockEditDTO.getAvailableStock());
-            stock.setFreezeStock(stockEditDTO.getFreezeStock());
-            stock.setTotalStock(stockEditDTO.getTotalStock());
+
+            Double diffTR = diff / boxSpecification;
+
+            stock.setAvailableStock(stockEditDTO.getAvailableStock() / boxSpecification);
+            stock.setFreezeStock(stockEditDTO.getFreezeStock() / boxSpecification);
+            stock.setTotalStock(stockEditDTO.getTotalStock() / boxSpecification);
+
+
             if (diff > 0) {
                 productStockOperationService.addProductStockOperation(stock.getPlantNb(), diff, stock.getSsccNumber(),
-                        stock.getMaterialNb(), stock.getBatchNb(), StockOperationType.IN.getCode());
+                        stock.getMaterialNb(), stock.getFromProdOrder(), StockOperationType.IN.getCode());
             } else {
                 productStockOperationService.addProductStockOperation(stock.getPlantNb(), diff, stock.getSsccNumber(),
-                        stock.getMaterialNb(), stock.getBatchNb(), StockOperationType.OTHEROUT.getCode());
+                        stock.getMaterialNb(), stock.getFromProdOrder(), StockOperationType.OTHEROUT.getCode());
             }
             this.updateById(stock);
 
@@ -531,6 +552,11 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 //
         productReturnService.save(productReturn);
 
+
+
+        productStockOperationService.addProductStockOperation(productReturn.getPlantNb(),productReturn.getQuantity(),productReturn.getSsccNumber(),productReturn.getMaterialNb(),stock.getFromProdOrder(), StockOperationType.IN.getCode());
+
+
     }
 
     @Override
@@ -571,7 +597,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
         manualTransferOrderService.save(manualTransferOrder);
 
-        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_TRANS.getCode(), ProductQRCodeUtil.getSSCC(binInDTO.getMesBarCode()),manualTransferOrder.getMaterialNb());
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_TRANS.getCode(), ProductQRCodeUtil.getSSCC(binInDTO.getMesBarCode()), manualTransferOrder.getMaterialNb());
 
         this.updateById(stock);
     }
@@ -630,8 +656,11 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         productSplitService.save(splitRecord);
 
 
-        productStockOperationService.addProductStockOperation(sourceStock.getPlantNb(), DoubleMathUtil.doubleMathCalculation(sourceStock.getTotalStock(), splitQuantity, "-"), sourceStock.getSsccNumber(), sourceStock.getMaterialNb(),
-                sourceStock.getBatchNb(), StockOperationType.IN.getCode());
+        MdProductPackagingVO productVO = getProductVO(splitRecord.getMaterialNb());
+
+
+//        productStockOperationService.addProductStockOperation(sourceStock.getPlantNb(), DoubleMathUtil.doubleMathCalculation(sourceStock.getTotalStock(), splitQuantity, "-") * productVO.getBoxSpecification(), sourceStock.getSsccNumber(), sourceStock.getMaterialNb(),
+//                sourceStock.getBatchNb(), StockOperationType.IN.getCode());
 
         sourceStock.setTotalStock(DoubleMathUtil.doubleMathCalculation(sourceStock.getTotalStock(), splitQuantity, "-"));
         sourceStock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(sourceStock.getTotalStock(), sourceStock.getFreezeStock(), "-"));
@@ -645,11 +674,11 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         newStock.setFreezeStock(Double.valueOf(0));
         newStock.setSsccNumber(ProductQRCodeUtil.getSSCC(splitRecord.getNewMesBarCode()));
         newStock.setId(null);
-        productStockOperationService.addProductStockOperation(newStock.getPlantNb(), newStock.getTotalStock(), newStock.getSsccNumber(), newStock.getMaterialNb(),
-                newStock.getBatchNb(), StockOperationType.IN.getCode());
+//        productStockOperationService.addProductStockOperation(newStock.getPlantNb(), newStock.getTotalStock() * productVO.getBoxSpecification(), newStock.getSsccNumber(), newStock.getMaterialNb(),
+//                newStock.getBatchNb(), StockOperationType.IN.getCode());
         this.save(newStock);
 
-        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(),splitPallet.getSourceSsccNb(),newStock.getMaterialNb());
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(), splitPallet.getSourceSsccNb(), newStock.getMaterialNb());
 
     }
 

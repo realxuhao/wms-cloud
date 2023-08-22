@@ -8,14 +8,12 @@ import com.bosch.binin.api.domain.IQCSamplePlan;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.StockAdjust;
 import com.bosch.binin.api.domain.dto.*;
+import com.bosch.binin.api.domain.vo.JobVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.mapper.StockMapper;
-import com.bosch.binin.service.IBinInService;
-import com.bosch.binin.service.IIQCSamplePlanService;
-import com.bosch.binin.service.IStockAdjustService;
-import com.bosch.binin.service.IStockService;
+import com.bosch.binin.service.*;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.dto.IQCDTO;
@@ -24,6 +22,7 @@ import com.bosch.masterdata.api.domain.vo.IQCVO;
 import com.bosch.product.api.domain.ProComparison;
 import com.bosch.system.api.domain.UserOperationLog;
 import com.ruoyi.common.core.constant.AreaListConstants;
+import com.ruoyi.common.core.constant.DataTranslateAspect;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
@@ -75,6 +74,11 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
     @Lazy
     private IIQCSamplePlanService iiqcSamplePlanService;
 
+
+    @Autowired
+    @Lazy
+    private IJobService jobService;
+
     @Override
     public List<StockVO> selectStockVOList(StockQueryDTO stockQueryDTO) {
 
@@ -109,7 +113,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 //            stockMapper.selectOne(queryWrapper)
 //            i = stockMapper.changeStatus(iqcChangeStatusDTO);
 //        }
-        Integer i = stockMapper.changeStatus(iqcChangeStatusDTO,SecurityUtils.getUsername(), DateUtils.getNowDate());
+        Integer i = stockMapper.changeStatus(iqcChangeStatusDTO, SecurityUtils.getUsername(), DateUtils.getNowDate());
         return i;
     }
 
@@ -121,12 +125,10 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
         List<String> ssccList = list.stream().map(IQCDTO::getSsccnumber).collect(Collectors.toList());
         LambdaQueryWrapper<IQCSamplePlan> iqcSampleQueryWrapper = new LambdaQueryWrapper<>();
-        iqcSampleQueryWrapper.in(IQCSamplePlan::getSsccNb,ssccList);
-        iqcSampleQueryWrapper.eq(IQCSamplePlan::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        iqcSampleQueryWrapper.in(IQCSamplePlan::getSsccNb, ssccList);
+        iqcSampleQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<IQCSamplePlan> iqcSamplePlans = iiqcSamplePlanService.list(iqcSampleQueryWrapper);
         List<String> issueSSCCList = iqcSamplePlans.stream().filter(iqcSamplePlan -> iqcSamplePlan.getStatus().equals(IQCStatusEnum.WAAITTING_ISSUE.code())).map(IQCSamplePlan::getSsccNb).collect(Collectors.toList());
-
-
 
 
         // 定义每个线程处理的数据量
@@ -148,13 +150,13 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                     LambdaUpdateWrapper<Stock> wrapper = new LambdaUpdateWrapper<>();
                     wrapper.eq(Stock::getSsccNumber, iqcdto.getSsccnumber());
                     wrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-                    wrapper.notIn(!CollectionUtils.isEmpty(issueSSCCList),Stock::getSsccNumber,issueSSCCList);
+                    wrapper.notIn(!CollectionUtils.isEmpty(issueSSCCList), Stock::getSsccNumber, issueSSCCList);
                     wrapper.set(Stock::getQualityStatus, iqcdto.getFinalSAPStatus());
                     wrapper.set(Stock::getChangeStatus, 1);
                     wrapper.set(Stock::getUpdateBy, SecurityUtils.getUsername());
-                    wrapper.set(Stock::getUpdateTime, DateUtils.getNowDate()) ;
+                    wrapper.set(Stock::getUpdateTime, DateUtils.getNowDate());
                     wrapper.set(Stock::getIqcUpdateBy, SecurityUtils.getUsername());
-                    wrapper.set(Stock::getIqcUpdateTime, DateUtils.getNowDate()) ;
+                    wrapper.set(Stock::getIqcUpdateTime, DateUtils.getNowDate());
                     boolean update = this.update(wrapper);
 
                     IQCVO conver = BeanConverUtil.conver(iqcdto, IQCVO.class);
@@ -186,10 +188,34 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             });
         }
 
+        result.stream().forEach(r->{
+            if (r.getStatus() == 1){
+                JobVO jobDescBySSCC = jobService.getJobDescBySSCC(r.getSsccnumber());
+                if (!jobDescBySSCC.getJobDesc().equals("无任务")) {
+                    LambdaUpdateWrapper<Stock> wrapper = new LambdaUpdateWrapper<>();
+                    wrapper.eq(Stock::getSsccNumber, r.getSsccnumber());
+                    wrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.TRUE.getCode());
+                    wrapper.orderByDesc(Stock::getUpdateTime);
+                    wrapper.last("limit 1");
+                    wrapper.set(Stock::getQualityStatus, r.getFinalSAPStatus());
+                    wrapper.set(Stock::getChangeStatus, 1);
+                    wrapper.set(Stock::getUpdateBy, SecurityUtils.getUsername());
+                    wrapper.set(Stock::getUpdateTime, DateUtils.getNowDate());
+                    wrapper.set(Stock::getIqcUpdateBy, SecurityUtils.getUsername());
+                    wrapper.set(Stock::getIqcUpdateTime, DateUtils.getNowDate());
+                    boolean update = this.update(wrapper);
+
+
+                    r.setStatus(update ? 4 : 1);
+                }
+            }
+        });
+
+
+
+
 
         List<IQCVO> stockVOS = mapToMaterial(result);
-
-
 
 
         return stockVOS;
@@ -447,8 +473,9 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             stock.setFreezeStock(stock.getTotalStock() - stock.getAvailableStock());
             if (stock.getAvailableStock() == Double.valueOf(0)) {
                 binInService.binDown(stock.getSsccNumber());
+            }else {
+                this.updateById(stock);
             }
-            this.updateById(stock);
 
 
         } else if (stockEditDTO.getType() == 1) {//报废
@@ -470,11 +497,14 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             if (!stockEditDTO.getTotalStock().equals(stockEditDTO.getFreezeStock() + stockEditDTO.getAvailableStock())) {
                 throw new ServiceException("总库存必须等于冻结库存+可用库存");
             }
-            stock.setAvailableStock(stockEditDTO.getAvailableStock());
-            stock.setFreezeStock(stockEditDTO.getFreezeStock());
-            stock.setTotalStock(stockEditDTO.getTotalStock());
-            this.updateById(stock);
-
+            if (stockEditDTO.getTotalStock() == Double.valueOf(0)) {
+                binInService.binDown(stock.getSsccNumber());
+            } else {
+                stock.setAvailableStock(stockEditDTO.getAvailableStock());
+                stock.setFreezeStock(stockEditDTO.getFreezeStock());
+                stock.setTotalStock(stockEditDTO.getTotalStock());
+                this.updateById(stock);
+            }
         }
 
 

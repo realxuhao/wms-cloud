@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.yaml.snakeyaml.events.Event;
 
 import java.lang.management.OperatingSystemMXBean;
 import java.util.*;
@@ -322,7 +323,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void batchBinIn(String mesBarCode, String areaCode) {
+    public List<BinIn> batchBinIn(String mesBarCode, String areaCode) {
         String materialCode = MesBarCodeUtil.getMaterialNb(mesBarCode);
         String batchNb = MesBarCodeUtil.getBatchNb(mesBarCode);
         R<List<MaterialReceiveVO>> sameBatchListR = remoteMaterialInService.getSameBatchList(materialCode, batchNb);
@@ -408,7 +409,11 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
             stock.setCreateBy(SecurityUtils.getUsername());
             stock.setCreateTime(new Date());
-            stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+            if (materialVO.getIqc().equals("Y")) {
+                stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+            } else {
+                stock.setQualityStatus(QualityStatusEnums.USE.getCode());
+            }
             stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
             stock.setAreaCode(binIn.getAreaCode());
             stock.setPalletCode(binIn.getPalletCode());
@@ -435,6 +440,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PALLETTURNOVER.getCode(), operationLogs);
 
         }
+
+        return binIns;
+
 
     }
 
@@ -523,7 +531,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         if (StringUtils.isEmpty(binIn.getPalletCode())) {
             binIn.setPalletCode(binInDTO.getPalletCode());
         }
-        saveOrUpdate(binIn);
+        this.updateById(binIn);
 
         //插入库存
         Stock stock = new Stock();
@@ -647,6 +655,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         }
         saveOrUpdate(binIn);
 
+        MaterialVO materialVO = getMaterialVOByCode(MesBarCodeUtil.getMaterialNb(mesBarCode));
+
         //插入库存
         Stock stock = new Stock();
         stock.setPlantNb(binIn.getPlantNb());
@@ -665,7 +675,13 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         stock.setCreateBy(SecurityUtils.getUsername());
         stock.setCreateTime(new Date());
-        stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+
+        if (materialVO.getIqc().equals("Y")) {
+            stock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
+
+        } else {
+            stock.setQualityStatus(QualityStatusEnums.USE.getCode());
+        }
         stock.setFromPurchaseOrder(binIn.getFromPurchaseOrder());
         stock.setAreaCode(binIn.getAreaCode());
         stock.setPalletCode(binIn.getPalletCode());
@@ -686,8 +702,11 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         userOperationLog.setCode(materialNb);
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.MATERIALBININ.getCode(), userOperationLog);
 
-        if ("G".equals(binIn.getPalletType()) ||
+        if ("D".equals(binIn.getPalletType()) ||
+                "G".equals(binIn.getPalletType()) ||
+                "E".equals(binIn.getPalletType()) ||
                 "H".equals(binIn.getPalletType()) ||
+                "F".equals(binIn.getPalletType()) ||
                 "I".equals(binIn.getPalletType())) {
             UserOperationLog userOperationLogFantuo = new UserOperationLog();
             userOperationLogFantuo.setSsccNumber(sscc);
@@ -871,47 +890,32 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
      * @return
      */
     private List<String> getRandomNonConsecutive(List<String> list) {
-        if (list == null || list.size() < 3) {
-            throw new IllegalArgumentException("List must contain at least three elements.");
+        List<String> result = new ArrayList<>();
+
+        Collections.shuffle(list);
+
+
+
+        if (list.size() < 3) {
+            return result;
         }
+        result.add(list.get(0));
+        result.add(list.get(list.size()-1));
+//        result.add(list.get());
 
-        long[] arr = list.stream().mapToLong(Long::parseLong).sorted().toArray();
-
-        int count = 0;
-        long[] result = new long[3];
-        int index = new Random().nextInt(arr.length);
-        long current = arr[index];
-        result[count] = current;
-        count++;
-
-        while (count < 3) {
-            long next = current + 2;
-            int i = Arrays.binarySearch(arr, next);
-            if (i < 0) {
-                i = -i - 1;
-            }
-            if (i >= arr.length - count) {
-                break;
-            }
-            long temp = arr[i + new Random().nextInt(arr.length - i - count)];
-            if (Math.abs(temp - current) > 1) {
-                result[count] = temp;
-                current = temp;
-                count++;
-            }
+        for (int i = 0; i < list.size() - 2; i++) {
+            result.add(list.get(i));
+            result.add(list.get(i + 1));
+            result.add(list.get(i + 2));
+            break;
         }
-
-        List<String> resList = new ArrayList<>();
-        for (long num : result) {
-            resList.add(String.valueOf(num));
-        }
-        return resList;
+        return result;
     }
 
     private List<IQCSamplePlan> dealECNIQCProcess(MaterialVO materialVO, String batchNb, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
         List<IQCSamplePlan> samplePlanList = new ArrayList<>();
 
-        if ("10310947".equals(materialVO.getCode())) {
+        if ("10310947".equals(materialVO.getCode()) || "10310967".equals(materialVO.getCode())) {
             if (batchNb.endsWith("0")) {
                 Collections.shuffle(binInList);
                 BinIn binIn = binInList.get(0);
@@ -1133,27 +1137,23 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             throw new ServiceException("不存在该物料的IQC信息");
         }
         Nmd nmd = iqcInfoR.getData();
+
         double sampleQuantity = 0;
         if (nmd.getClassification() == NmdClassificationEnum.A.getCode()) {
-            NMDIQCRuleDTO ruleDTO = new NMDIQCRuleDTO();
-            ruleDTO.setQuantity(quantity);
-            ruleDTO.setCheckLevel(nmd.getLevel());
-            //
-            ruleDTO.setPlan(nmd.getPlan());
-            ruleDTO.setAql(nmd.getAql());
-            //NMDIQCRule nmdiqcRule = ruleService.getNMDIQCRule(ruleDTO);
-            //获取数量
-            NMDIQCRule nmdiqcRule = ruleService.getNMDIQCNumber(ruleDTO);
-            if (nmdiqcRule == null) {
+            if (nmd.getAql() == null) {
                 sampleQuantity = 0;
             } else {
-//                if (nmd.getPlan() == 1) {
-//                    sampleQuantity = nmdiqcRule.getNormal();
-//                } else if (nmd.getPlan() == 2) {
-//                    sampleQuantity = nmdiqcRule.getStricture();
-//                } else {
-//                    sampleQuantity = nmdiqcRule.getRelaxation();
-//                }
+                NMDIQCRuleDTO ruleDTO = new NMDIQCRuleDTO();
+                ruleDTO.setQuantity(quantity);
+                if (StringUtils.isEmpty(nmd.getLevel()) || nmd.getPlan() == null) {
+                    throw new ServiceException("NMD 检验水平级别或者抽样方案为空！");
+                }
+                ruleDTO.setCheckLevel(nmd.getLevel());
+                ruleDTO.setAql(nmd.getAql());
+                ruleDTO.setPlan(nmd.getPlan());
+                NMDIQCRule nmdiqcRule = ruleService.getNMDIQCNumber(ruleDTO);
+                //NMDIQCRule nmdiqcRule = ruleService.getNMDIQCRule(ruleDTO);
+                //获取数量
                 sampleQuantity = nmdiqcRule.getNumber();
             }
         } else if (nmd.getClassification() == NmdClassificationEnum.B.getCode()) {
@@ -1291,7 +1291,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 //        if (binIn == null || binIn.getStatus().equals(BinInStatusEnum.PROCESSING.value())) {
 //            throw new ServiceException("上架信息不存在或者正在上架中，不可下架");
 //        }
-        if (binIn!=null) {
+        if (binIn != null) {
             binIn.setUpdateBy(SecurityUtils.getUsername());
             binIn.setUpdateTime(new Date());
             binIn.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
@@ -1307,7 +1307,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
         stock.setUpdateBy(SecurityUtils.getUsername());
         stock.setUpdateTime(new Date());
-        if (binIn!=null) {
+        if (binIn != null) {
             binInMapper.updateById(binIn);
         }
         stockMapper.updateById(stock);

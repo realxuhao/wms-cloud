@@ -1,5 +1,6 @@
 package com.bosch.binin.controller;
 
+import com.bosch.binin.api.domain.MaterialReturn;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.MaterialCallVO;
@@ -8,6 +9,7 @@ import com.bosch.binin.service.IMaterialReturnService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.SSCCLogVO;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
@@ -103,7 +105,10 @@ public class ReturnMaterialController extends BaseController {
             throw new ServiceException("请扫描MesBarCode");
         }
         boolean save = materialReturnService.addMaterialReturn(materialReturnDTO);
-        return R.ok(save);
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(materialReturnDTO.getSsccNb());
+        ssccLogVO.setQuantity(materialReturnDTO.getQuantity());
+        return R.ok(ssccLogVO);
 
     }
 
@@ -122,8 +127,11 @@ public class ReturnMaterialController extends BaseController {
     @Log(title = "退库任务上架", businessType = BusinessType.INSERT)
     @Synchronized
     public R in(@RequestBody ManualBinInDTO binInDTO) {
-        materialReturnService.performBinIn(binInDTO);
-        return R.ok();
+        MaterialReturn materialReturn = materialReturnService.performBinIn(binInDTO);
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(materialReturn.getSsccNumber());
+        ssccLogVO.setQuantity(materialReturn.getQuantity());
+        return R.ok(ssccLogVO);
     }
 
     @PostMapping(value = "/modifyQuantity")

@@ -147,21 +147,21 @@ export default {
           dataIndex: 'ipaddr',
           align: 'center'
         },
-        {
-          title: '登录地点',
-          dataIndex: 'loginLocation',
-          align: 'center'
-        },
-        {
-          title: '浏览器',
-          dataIndex: 'browser',
-          align: 'center'
-        },
-        {
-          title: '操作系统',
-          dataIndex: 'os',
-          align: 'center'
-        },
+        // {
+        //   title: '登录地点',
+        //   dataIndex: 'loginLocation',
+        //   align: 'center'
+        // },
+        // {
+        //   title: '浏览器',
+        //   dataIndex: 'browser',
+        //   align: 'center'
+        // },
+        // {
+        //   title: '操作系统',
+        //   dataIndex: 'os',
+        //   align: 'center'
+        // },
         {
           title: '登录状态',
           dataIndex: 'status',
@@ -316,7 +316,7 @@ export default {
         title: '是否确认导出?',
         content: '此操作将导出当前条件下所有数据而非选中数据',
         onOk () {
-          that.download('monitor/logininfor/export', {
+          that.download('system/logininfor/export', {
             ...that.queryParam
           }, `logininfor_${new Date().getTime()}.xlsx`)
         },

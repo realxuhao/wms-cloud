@@ -13,7 +13,11 @@ const finishedProductInventory = {
     async getInventoryList ({ commit }, options) {
       const data = await finishedProductInventoryService.getInventoryList(options)
       return data
-    }
+    },
+    async productStockExport ({ commit }, options) {
+      const data = await finishedProductInventoryService.productStockExport(options)
+      return data
+    },
   }
 }
 

@@ -25,7 +25,7 @@ public class ProductPick extends BaseEntity {
     private String material;
     private String sscc;
     private String batch;
-    private Date productionBatch;
+    private String productionBatch;
     private Double deliveryQuantity;
     private String salesUnit;
     private Integer status;

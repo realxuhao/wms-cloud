@@ -129,4 +129,17 @@ public class IQCManagementQueryDTO extends PageDomain {
      */
     @ApiModelProperty(value = "结束更新时间")
     private Date endUpdateTime;
+
+
+    /**
+     * 开始更新时间
+     */
+    @ApiModelProperty(value = "开始更新时间")
+    private Date startCreateTime;
+
+    /**
+     * 结束更新时间
+     */
+    @ApiModelProperty(value = "结束更新时间")
+    private Date endCreateTime;
 }

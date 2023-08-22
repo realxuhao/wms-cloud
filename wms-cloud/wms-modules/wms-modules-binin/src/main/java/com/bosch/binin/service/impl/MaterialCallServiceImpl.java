@@ -257,6 +257,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         qw.eq(MaterialCall::getOrderNb, materialCallNew.getOrderNb());
         qw.eq(MaterialCall::getMaterialNb, materialCallNew.getMaterialNb());
         qw.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.ne(MaterialCall::getStatus,CallStatusEnum.CANCEL.code());
         qw.last("for update");
         MaterialCall materialCallDB = materialCallMapper.selectOne(qw);
 
@@ -506,9 +507,9 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
                     stockList.stream().filter(item->!item.getExpireDate().before(new Date())).filter(item -> item.getAvailableStock() != 0 && AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).
                             sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getBatchNb).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder()).thenComparing(Stock::getAvailableStock)).collect(Collectors.toList());
             double sum = sortedStockList.stream().mapToDouble(Stock::getAvailableStock).sum();
-//            if (sum < call.getUnIssuedQuantity()) {
-//                throw new ServiceException("主库库存不足，请先手动创建移库");
-//            }
+            if (sum < call.getUnIssuedQuantity()) {
+                throw new ServiceException("主库库存不足，请先手动创建移库");
+            }
             List<Stock> useMaterialStockList = new ArrayList<>();
             double count = 0;
             for (Stock stock : sortedStockList) {

@@ -43,4 +43,7 @@ public class IQCChangeStatusDTO {
 
 
     private String batchNb;
+
+
+    private String fromProdOrder;
 }

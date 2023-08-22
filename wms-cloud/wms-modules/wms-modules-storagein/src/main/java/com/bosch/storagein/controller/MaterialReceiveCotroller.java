@@ -75,7 +75,7 @@ public class MaterialReceiveCotroller extends BaseController {
     }
 
 
-    @Log(title = "原材料收货", businessType = BusinessType.DELETE)
+    @Log(title = "逻辑删除原材料收货", businessType = BusinessType.DELETE)
     @ApiOperation("逻辑删除原材料收货")
     @DeleteMapping("/{id}")
     public AjaxResult remove(@PathVariable Long id) {

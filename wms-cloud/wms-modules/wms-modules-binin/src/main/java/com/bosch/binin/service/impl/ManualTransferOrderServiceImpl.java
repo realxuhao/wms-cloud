@@ -18,6 +18,7 @@ import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IManualTransferOrderService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.masterdata.api.domain.vo.BinVO;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
@@ -25,6 +26,9 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.log.enums.MaterialType;
+import com.ruoyi.common.log.enums.UserOperationType;
+import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -61,6 +65,10 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
     @Autowired
     @Lazy
     private JobServiceImpl jobService;
+
+
+    @Autowired
+    private IUserOperationLogService userOperationLogService;
 
     @Override
     public List<ManualTransferOrderVO> list(ManualTransQueryDTO queryDTO) {
@@ -387,6 +395,13 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
         this.save(manualTransferOrder);
 
         stockService.updateById(stock);
+
+
+        UserOperationLog userOperationLog = new UserOperationLog();
+        userOperationLog.setSsccNumber(sscc);
+        userOperationLog.setCode(manualTransferOrder.getMaterialNb());
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.MATERIAL_TRANS.getCode(), userOperationLog);
+
 
     }
 }

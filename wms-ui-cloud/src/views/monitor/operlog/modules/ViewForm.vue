@@ -1,5 +1,5 @@
 <template>
-  <a-drawer width="35%" placement="right" :closable="false" :visible="openView" @close="onCloseView">
+  <a-drawer width="50%" placement="right" :closable="false" :visible="openView" @close="onCloseView">
     <a-descriptions title="操作信息" layout="vertical">
       <a-descriptions-item label="操作模块">
         {{ form.title }}
@@ -18,10 +18,10 @@
       </a-descriptions-item>
     </a-descriptions>
     <a-descriptions title="接口信息" layout="vertical">
-      <a-descriptions-item label="请求参数" span="3">
+      <a-descriptions-item label="请求参数" span="6">
         {{ form.operParam }}
       </a-descriptions-item>
-      <a-descriptions-item label="返回参数" span="3">
+      <a-descriptions-item label="返回参数" span="6">
         {{ form.jsonResult }}
       </a-descriptions-item>
       <a-descriptions-item label="操作状态" span="2">

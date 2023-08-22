@@ -10,6 +10,16 @@ const getInventoryList = async (parameter) => {
   return data
 }
 
+const productStockExport = async (options) => {
+  const url = `/product-stock/export`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
 export const finishedProductInventoryService = {
-  getInventoryList
+  getInventoryList,
+  productStockExport
 }

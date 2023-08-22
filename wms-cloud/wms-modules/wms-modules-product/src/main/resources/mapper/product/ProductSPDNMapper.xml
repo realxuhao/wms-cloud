@@ -37,6 +37,9 @@
         WHERE sp.delete_flag = 0
 
 
+        <if test="plant != null and plant != ''">
+            AND sp.plant like concat('%', #{plant}, '%')
+        </if>
         <if test="deliveryNb != null and deliveryNb != ''">
             AND sp.delivery_nb like concat('%', #{deliveryNb}, '%')
         </if>

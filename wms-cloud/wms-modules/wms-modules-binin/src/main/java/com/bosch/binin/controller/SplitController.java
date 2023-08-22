@@ -12,6 +12,7 @@ import com.bosch.binin.service.ISplitService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.SSCCLogVO;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.web.controller.BaseController;
@@ -53,10 +54,14 @@ public class SplitController extends BaseController {
     @Transactional(rollbackFor = Exception.class)
     @Log(title = "PDA普通拆托", businessType = BusinessType.INSERT)
     @Synchronized
-    public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
+    public R<SSCCLogVO> splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         splitService.add(splitPallet);
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(splitPallet.getSourceSsccNb());
+        ssccLogVO.setQuantity(splitPallet.getSplitQuantity());
+        ssccLogVO.setNewSSCCNumber(MesBarCodeUtil.getSSCC(splitPallet.getNewMesBarCode()));
 
-        return R.ok();
+        return R.ok(ssccLogVO);
     }
 
     @GetMapping(value = "/list")

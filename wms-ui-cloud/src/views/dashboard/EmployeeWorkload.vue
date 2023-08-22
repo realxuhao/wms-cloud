@@ -9,8 +9,11 @@
             v-model="queryForm.date"
           />
         </a-form-model-item>
+        <a-form-model-item label="操作账号">
+          <a-input v-model="queryForm.createBy" placeholder="操作账号" allow-clear/>
+        </a-form-model-item>
         <a-form-model-item label="操作人">
-          <a-input v-model="queryForm.createBy" placeholder="操作人" allow-clear/>
+          <a-input v-model="queryForm.nickName" placeholder="操作人" allow-clear/>
         </a-form-model-item>
         <a-form-model-item >
           <span class="table-page-search-submitButtons" >
@@ -61,9 +64,15 @@ import { download } from '@/utils/file'
 const columns = [
 
   {
-    title: '操作人',
+    title: '操作账号',
     key: 'createBy',
     dataIndex: 'createBy',
+    width: 80
+  },
+  {
+    title: '操作人',
+    key: 'nickName',
+    dataIndex: 'nickName',
     width: 80
   },
 
@@ -84,6 +93,12 @@ const columns = [
     title: '其他下架',
     key: 'binOutOther',
     dataIndex: 'binOutOther',
+    width: 80
+  },
+  {
+    title: '转储',
+    key: 'manualTrans',
+    dataIndex: 'manualTrans',
     width: 80
   },
   {
@@ -122,7 +137,8 @@ const columns = [
 const queryFormAttr = () => {
   return {
     date:[],
-    createBy:''
+    createBy:'',
+    nickName: ''
   }
 }
 

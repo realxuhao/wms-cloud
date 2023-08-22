@@ -19,8 +19,15 @@ public class WorkloadVO {
      * 创建人
      */
     @ApiModelProperty(value = "create_by")
-    @Excel(name = "操作人")
+    @Excel(name = "操作账号")
     private String createBy;
+
+    /**
+     * 创建人
+     */
+    @ApiModelProperty(value = "nick_name")
+    @Excel(name = "操作人")
+    private String nickName;
 
     /**
      * 修改人
@@ -117,4 +124,12 @@ public class WorkloadVO {
     @ApiModelProperty(value = "IQC下架")
     @Excel(name = "IQC下架")
     private Integer iqcBinOut;
+
+
+    /**
+     * 转储
+     */
+    @ApiModelProperty(value = "转储")
+    @Excel(name = "转储")
+    private Integer manualTrans;
 }

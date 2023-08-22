@@ -69,4 +69,7 @@ public class ProductStockQueryDTO {
      */
     @ApiModelProperty(value = "过期结束时间")
     private Date endExpireDate;
+
+
+    private String cell;
 }

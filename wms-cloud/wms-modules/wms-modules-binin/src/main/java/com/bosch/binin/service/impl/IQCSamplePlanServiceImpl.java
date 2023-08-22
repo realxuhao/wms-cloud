@@ -12,6 +12,7 @@ import com.bosch.binin.api.domain.dto.IQCSamplePlanQueryDTO;
 import com.bosch.binin.api.domain.dto.IQCWareShiftDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.IQCSamplePlanVO;
+import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.api.enumeration.WareShiftTypeEnum;
@@ -20,6 +21,7 @@ import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.service.IWareShiftService;
+import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.dto.MaterialDTO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
@@ -77,7 +79,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void manualAdd(List<IQCSamplePlanDTO> dto) {
+    public List<IQCSamplePlan> manualAdd(List<IQCSamplePlanDTO> dto) {
         if (Objects.isNull(dto)) {
             throw new ServiceException("请选中数据后重试");
         }
@@ -159,6 +161,8 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
         wareShiftService.saveBatch(wareShiftList);
 
+        return samplePlanList;
+
     }
 
     @Override
@@ -170,8 +174,8 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
         iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, dto.getSourceSsccNb());
         iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.FINISH.code());
-        iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.CANCEL.code());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.FINISH.code());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.CANCEL.code());
 
         IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
         if (iqcSamplePlan == null) {
@@ -240,7 +244,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
             //老的移库任务取消
             LambdaQueryWrapper<WareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
-            wareShiftQueryWrapper.eq(WareShift::getSsccNb, dto.getSourceSsccNb()).eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode()).ne(WareShift::getStatus,KanbanStatusEnum.CANCEL.value()).ne(WareShift::getStatus,KanbanStatusEnum.FINISH.value()).ne(WareShift::getStatus,KanbanStatusEnum.LINE_RECEIVED.value() );
+            wareShiftQueryWrapper.eq(WareShift::getSsccNb, dto.getSourceSsccNb()).eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode()).ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value()).ne(WareShift::getStatus, KanbanStatusEnum.FINISH.value()).ne(WareShift::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
             WareShift shift = wareShiftService.getOne(wareShiftQueryWrapper);
             if (shift == null) {
                 return;
@@ -270,12 +274,12 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void binDown(String ssccNb) {
+    public IQCSamplePlan binDown(String ssccNb) {
         LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
         iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, ssccNb);
         iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.CANCEL.code());
-        iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.FINISH.code());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.CANCEL.code());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.FINISH.code());
 
         IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
         if (iqcSamplePlan == null) {
@@ -302,6 +306,8 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         iqcSamplePlan.setBinDownUser(SecurityUtils.getUsername());
         iqcSamplePlan.setBinDownTime(new Date());
         samplePlanMapper.updateById(iqcSamplePlan);
+
+        return iqcSamplePlan;
     }
 
     @Override
@@ -311,8 +317,8 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
         iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, sscc);
         iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.CANCEL.code());
-        iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.FINISH.code());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.CANCEL.code());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.FINISH.code());
 
         IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
         if (iqcSamplePlan == null) {
@@ -330,14 +336,14 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void performBinIn(BinInDTO binInDTO) {
+    public BinInVO performBinIn(BinInDTO binInDTO) {
         String mesBarCode = binInDTO.getMesBarCode();
         String sscc = MesBarCodeUtil.getSSCC(mesBarCode);
         LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
         iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, sscc);
         iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.CANCEL.code());
-        iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.FINISH.code());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.CANCEL.code());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.FINISH.code());
 
         IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
         if (iqcSamplePlan == null) {
@@ -348,10 +354,10 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         }
         //先把库存表之前的数据删除掉
         LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
-        stockQueryWrapper.eq(Stock::getSsccNumber,sscc);
-        stockQueryWrapper.eq(Stock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        stockQueryWrapper.eq(Stock::getSsccNumber, sscc);
+        stockQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<Stock> stockList = stockService.list(stockQueryWrapper);
-        if(!CollectionUtils.isEmpty(stockList)) {
+        if (!CollectionUtils.isEmpty(stockList)) {
             stockList.stream().forEach(item -> item.setDeleteFlag(DeleteFlagStatus.TRUE.getCode()));
             stockService.updateBatchById(stockList);
         }
@@ -360,7 +366,6 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         LambdaQueryWrapper<BinIn> lambdaQueryWrapper1 = new LambdaQueryWrapper<>();
         lambdaQueryWrapper1.eq(BinIn::getSsccNumber, sscc).eq(BinIn::getDeleteFlag, 0);
         BinIn binIn = binInService.getOne(lambdaQueryWrapper1);
-
 
 
         //删除上架表的历史数据
@@ -373,8 +378,12 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 //            binInService.updateBatchById(binInList);
 //        }
 
+
+        StockVO oneBySSCC = stockService.getLastOneBySSCC(sscc);
+
+
         //再去执行上架
-        BinInVO binInVO = binInService.performBinIn(binInDTO,null);
+        BinInVO binInVO = binInService.performBinIn(binInDTO, oneBySSCC == null ? null : oneBySSCC.getQualityStatus());
 
 
         iqcSamplePlan.setBinInCode(binInVO.getActualBinCode());
@@ -383,11 +392,14 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         iqcSamplePlan.setStatus(IQCStatusEnum.FINISH.code());
         samplePlanMapper.updateById(iqcSamplePlan);
 
+
+        return binInVO;
+
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void cancel(Long id) {
+    public IQCSamplePlan cancel(Long id) {
         IQCSamplePlan samplePlan = getById(id);
         if (samplePlan == null || DeleteFlagStatus.TRUE.getCode().equals(samplePlan.getDeleteFlag())) {
             throw new ServiceException("无该IQC抽样任务");
@@ -428,6 +440,8 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         stock.setAvailableStock(stock.getTotalStock());
         stockService.updateById(stock);
 
+        return samplePlan;
+
 
     }
 
@@ -445,13 +459,13 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void confirm(IQCSamplePlanDTO dto) {
+    public IQCSamplePlan confirm(IQCSamplePlanDTO dto) {
 
         LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
         iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, dto.getSsccNb());
         iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.CANCEL.code());
-        iqcQueryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.FINISH.code());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.CANCEL.code());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.FINISH.code());
 
         IQCSamplePlan iqcSamplePlan = samplePlanMapper.selectOne(iqcQueryWrapper);
         if (iqcSamplePlan == null) {
@@ -470,19 +484,20 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         }
         //因为是外库的，是有库存的，需要把库存量扣减掉
         LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Stock::getSsccNumber,dto.getSsccNb());
-        queryWrapper.eq(Stock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.eq(Stock::getSsccNumber, dto.getSsccNb());
+        queryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.last("limit 1");
 
         Stock stock = stockService.getOne(queryWrapper);
-        if (stock!=null){
-            stock.setTotalStock(stock.getTotalStock()-dto.getSampleQuantity());
-            stock.setAvailableStock(stock.getTotalStock()-stock.getFreezeStock());
+        if (stock != null) {
+            stock.setTotalStock(stock.getTotalStock() - dto.getSampleQuantity());
+            stock.setAvailableStock(stock.getTotalStock() - stock.getFreezeStock());
             stockService.updateById(stock);
             iqcSamplePlan.setStatus(IQCStatusEnum.FINISH.code());
         }
 
         samplePlanMapper.updateById(iqcSamplePlan);
+        return iqcSamplePlan;
     }
 
     @Override
@@ -549,12 +564,12 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void modifyQuantity(String ssccNb, Double quantity) {
+    public IQCSamplePlan modifyQuantity(String ssccNb, Double quantity) {
         LambdaQueryWrapper<IQCSamplePlan> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(IQCSamplePlan::getSsccNb, ssccNb);
         queryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        queryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.CANCEL.code());
-        queryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.FINISH.code());
+        queryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.CANCEL.code());
+        queryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.FINISH.code());
 
         IQCSamplePlan samplePlan = this.getOne(queryWrapper);
         if (samplePlan == null) {
@@ -566,15 +581,16 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         }
         samplePlan.setRecommendSampleQuantity(quantity);
         this.updateById(samplePlan);
+        return samplePlan;
     }
 
     @Override
-    public void issueJob(Long[] ids) {
+    public List<IQCSamplePlan> issueJob(Long[] ids) {
         LambdaQueryWrapper<IQCSamplePlan> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(IQCSamplePlan::getId, ids);
         queryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        queryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.CANCEL.code());
-        queryWrapper.ne(IQCSamplePlan::getStatus,IQCStatusEnum.FINISH.code());
+        queryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.CANCEL.code());
+        queryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.FINISH.code());
 
         List<IQCSamplePlan> samplePlanList = this.list(queryWrapper);
         if (!CollectionUtils.isEmpty(samplePlanList)) {
@@ -605,6 +621,7 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
             }
             this.updateBatchById(samplePlanList);
         }
+        return samplePlanList;
     }
 
 

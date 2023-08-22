@@ -44,48 +44,48 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <template v-if="advanced">
-            <a-col :span="4">
-              <a-form-model-item label="cell部门">
-                <a-select
-                  placeholder="请选择cell部门"
-                  allow-clear
-                  v-model="queryForm.cell"
-                >
-                  <a-select-option v-for="item in cellList" :key="item.id" :value="item.name">
-                    {{ item.name }}
-                  </a-select-option>
-                </a-select>
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-model-item label="批次号">
-                <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
-              </a-form-model-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-item label="修改人">
-                <a-input v-model="queryForm.operateUser" placeholder="修改人" allow-clear/>
-              </a-form-item>
-            </a-col>
-            <a-col :span="4">
-              <a-form-model-item label="更新时间">
-                <a-range-picker
-                  format="YYYY-MM-DD HH:mm"
-                  :show-time="{ format: 'HH:mm' }"
-                  v-model="queryForm.updateTimeList"
-                />
-              </a-form-model-item>
-            </a-col>
-          </template>
+          <a-col :span="4">
+            <a-form-model-item label="cell部门">
+              <a-select
+                placeholder="请选择cell部门"
+                allow-clear
+                v-model="queryForm.cell"
+              >
+                <a-select-option v-for="item in cellList" :key="item.id" :value="item.name">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="批次号">
+              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="FromProdOrder">
+              <a-input v-model="queryForm.fromProdOrder" placeholder="FromProdOrder" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="修改人">
+              <a-input v-model="queryForm.operateUser" placeholder="修改人" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="更新时间">
+              <a-range-picker
+                format="YYYY-MM-DD HH:mm"
+                :show-time="{ format: 'HH:mm' }"
+                v-model="queryForm.updateTimeList"
+              />
+            </a-form-model-item>
+          </a-col>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              <a @click="toggleAdvanced" style="margin-left: 8px">
-                {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'"/>
-              </a>
+              
             </span>
           </a-col>
         </a-row>
@@ -289,21 +289,34 @@ const columns = [
     scopedSlots: { customRender: 'changeStatusSlot' }
   },
   {
-    title: '库存量',
-    key: 'totalStock',
-    dataIndex: 'totalStock',
-    width: 120
-  },
-  {
     title: '单位',
     key: 'unit',
     dataIndex: 'unit',
     width: 80
   },
   {
+    title: '批次总库存',
+    key: 'totalStockSum',
+    dataIndex: 'totalStockSum',
+    width: 120
+  },
+  {
+    title: '库存量',
+    key: 'totalStock',
+    dataIndex: 'totalStock',
+    width: 120
+  },
+  
+  {
     title: '冻结库存',
     key: 'freezeStock',
     dataIndex: 'freezeStock',
+    width: 120
+  },
+  {
+    title: 'fromProdOrder',
+    key: 'fromProdOrder',
+    dataIndex: 'fromProdOrder',
     width: 120
   },
   {
@@ -387,7 +400,8 @@ const queryFormAttr = () => {
     qualityStatus: '',
     cell: undefined,
     changeStatus: undefined,
-    updateTimeList: []
+    updateTimeList: [],
+    fromProdOrder: ''
   }
 }
 
@@ -491,7 +505,7 @@ export default {
     },
     handleUpdate (clickMethod, record) {
       if (clickMethod === '同批次') {
-        this.modalTitle = '物料编码:' + record.materialNb + ',批次号:' + record.batchNb
+        this.modalTitle = '物料编码:' + record.materialNb + ',批次号:' + record.fromProdOrder
         this.qualityType = '1'
       }
       if (clickMethod === '此托') {

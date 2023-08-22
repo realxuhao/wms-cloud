@@ -161,34 +161,54 @@ export default {
           align: 'center'
         },
         {
-          title: '操作类型',
-          dataIndex: 'businessType',
-          scopedSlots: { customRender: 'businessType' },
+          title: '操作SSCC',
+          dataIndex: 'ssccNumber',
           align: 'center'
         },
         {
-          title: '请求方式',
-          dataIndex: 'requestMethod',
+          title: '操作数量',
+          dataIndex: 'quantity',
           align: 'center'
         },
+        // {
+        //   title: '批量参数',
+        //   dataIndex: 'operParam',
+        //   align: 'center',
+        // },
+        // {
+        //   title: '返回结果',
+        //   dataIndex: 'operResult',
+        //   align: 'operResult'
+        // },
+        // {
+        //   title: '操作类型',
+        //   dataIndex: 'businessType',
+        //   scopedSlots: { customRender: 'businessType' },
+        //   align: 'center'
+        // },
+        // {
+        //   title: '请求方式',
+        //   dataIndex: 'requestMethod',
+        //   align: 'center'
+        // },
         {
           title: '操作人员',
           dataIndex: 'operName',
           align: 'center',
           sorter: true
         },
+        // {
+        //   title: '主机',
+        //   dataIndex: 'operIp',
+        //   align: 'center'
+        // },
+        // {
+        //   title: '操作地点',
+        //   dataIndex: 'operLocation',
+        //   align: 'center'
+        // },
         {
-          title: '主机',
-          dataIndex: 'operIp',
-          align: 'center'
-        },
-        {
-          title: '操作地点',
-          dataIndex: 'operLocation',
-          align: 'center'
-        },
-        {
-          title: '登录状态',
+          title: '操作状态',
           dataIndex: 'status',
           scopedSlots: { customRender: 'status' },
           align: 'center'

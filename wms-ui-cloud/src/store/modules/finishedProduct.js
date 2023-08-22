@@ -70,6 +70,10 @@ const finishedProduct = {
       const data = await finishedProductService.approveSpdnList(options)
       return data
     },
+    async approveNo7761SpdnList ({ commit }, options) {
+      const data = await finishedProductService.approveNo7761SpdnList(options)
+      return data
+    },
     async spdnStocklist ({ commit }, options) {
       const data = await finishedProductService.spdnStocklist(options)
       return data
@@ -123,27 +127,27 @@ const finishedProduct = {
       const data = await finishedProductService.exportSUDNPickExcel(options)
       return data
     },
-    async supnBatchShip({ commit }, ids) {
+    async supnBatchShip ({ commit }, ids) {
       const data = await finishedProductService.supnBatchShip(ids)
       return data
     },
-    async editBinDownQuantity({ commit }, options) {
+    async editBinDownQuantity ({ commit }, options) {
       const data = await finishedProductService.editBinDownQuantity(options)
       return data
     },
-    async productReturnList({ commit }, options) {
+    async productReturnList ({ commit }, options) {
       const data = await finishedProductService.productReturnList(options)
       return data
     },
-    async exportProductReturnList({ commit }, options) {
+    async exportProductReturnList ({ commit }, options) {
       const data = await finishedProductService.exportProductReturnList(options)
       return data
     },
-    async productShiftexport({ commit }, options) {
+    async productShiftexport ({ commit }, options) {
       const data = await finishedProductService.productShiftexport(options)
       return data
     },
-    
+
     // spdnPicklist
   }
 }

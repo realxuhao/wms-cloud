@@ -5,11 +5,26 @@ import com.ruoyi.common.core.exception.ServiceException;
 
 import java.math.BigInteger;
 import java.text.ParseException;
-import java.util.Date;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class MesBarCodeUtil {
 
+    private static List<String> getRandomNonConsecutive(List<String> list) {
+        List<String> result = new ArrayList<>();
+        list = list.stream().sorted().collect(Collectors.toList());
+        if (list.size() < 3) {
+            return result;
+        }
 
+        for (int i = 0; i < list.size() - 2; i++) {
+            result.add(list.get(i));
+            result.add(list.get(i + 1));
+            result.add(list.get(i + 2));
+            break;
+        }
+        return result;
+    }
     public static String generateMesBarCode(Date date, String sscc, String materialNb, String batchNb, Double quantity) {
         String dateToStr = DateUtils.parseDateToStr("yyyyMMdd", date);
         String quantityStr = String.valueOf(quantity.intValue());
@@ -95,7 +110,7 @@ public class MesBarCodeUtil {
         System.out.println(ceil1);
 
         String date = DateUtils.parseDateToStr("yyyyMMdd", new Date());
-        String barCode = generateMesBarCode(new Date(), "669006391114359133", "10304986", "2307051457", Double.valueOf(15000));
+        String barCode = generateMesBarCode(new Date(), "669006391114349158", "10326018", "2308021576", Double.valueOf(15000));
         System.out.println(barCode);
 
         System.out.println("202408316690063911132813671045604522061011139.65".length());
@@ -118,6 +133,16 @@ public class MesBarCodeUtil {
         Double aDouble = Double.valueOf(760);
         Double aDouble1 = Double.valueOf(0.6);
         System.out.println(aDouble-aDouble1);
+
+
+        ArrayList<String> list = new ArrayList<>();
+        list.add("669006391113925951");
+        list.add("669006391113925953");
+        list.add("669006391113925954");
+        list.add("669006391113925955");
+        list.add("669006391113925957");
+        List<String> randomNonConsecutive = getRandomNonConsecutive(list);
+        System.out.println(randomNonConsecutive);
 
 
     }

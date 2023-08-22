@@ -99,6 +99,17 @@
           </a-upload>
         </a-tooltip>
 
+
+        <a-button
+          type="primary"
+          icon="plus"
+          class="m-r-8"
+          :loading="approvalNo7761Loading"
+          @click="handleApprovalNo7761"
+          :disabled="!selectedRowKeys.length">
+          非7761审批
+        </a-button>
+
         <a-button
           type="primary"
           class="m-r-8"
@@ -106,17 +117,26 @@
           :loading="shipLoading"
           @click="handleBatchShip"
           :disabled="!selectedRowKeys.length">
-          发运
+          7761发运
         </a-button>
+
+
+        
 
         <a-button
           type="primary"
+          class="m-r-8"
           icon="plus"
           :loading="approvalLoading"
           @click="handleApproval"
           :disabled="!selectedRowKeys.length">
-          审批
+          7761审批
         </a-button>
+
+
+
+
+        <h3>总库存量：{{ totalQty }}</h3>
       </div>
       <a-table
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
@@ -335,8 +355,8 @@ const queryFormAttr = () => {
 
 const statusMap = {
   0:'已上传',
-  1:'已发运',
-  2:'已审批'
+  1:'已审批',
+  2:'已发运'
 }
 
 const colorMap = {
@@ -365,10 +385,14 @@ export default {
       moveDate: [],
 
       selectedRowKeys: [],
-      approvalLoading:false
+      approvalLoading:false,
+      approvalNo7761Loading: false
     }
   },
   computed: {
+    totalQty(){
+     return _.sumBy(this.list,'qty')
+    },
     colorMap: () => colorMap,
     statusMap:()=>statusMap
   },
@@ -397,6 +421,19 @@ export default {
         this.$message.error(error.message)
       } finally {
         this.approvalLoading = false
+      }
+    },
+    async handleApprovalNo7761 () {
+      try {
+        this.approvalNo7761Loading = true
+        await this.$store.dispatch('finishedProduct/approveNo7761SpdnList', this.selectedRowKeys)
+        this.$message.success('提交成功')
+        this.selectedRowKeys = []
+        this.loadTableList()
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.approvalNo7761Loading = false
       }
     },
     onSelectChange (selectedRowKeys) {

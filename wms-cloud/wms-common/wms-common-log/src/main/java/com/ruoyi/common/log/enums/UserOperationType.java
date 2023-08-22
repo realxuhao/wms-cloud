@@ -24,7 +24,9 @@ public enum UserOperationType {
 
     PRODUCT_STORAGE_IN(15,"成品入库"),
 
-    PRODUCT_TRANS(16,"成品转储");
+    PRODUCT_TRANS(16,"成品转储"),
+
+    MATERIAL_TRANS(17,"原材料转储");
 
 
     private final Integer code;

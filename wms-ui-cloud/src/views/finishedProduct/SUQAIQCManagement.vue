@@ -63,6 +63,11 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
+            <a-form-item label="FromProdOrder">
+              <a-input v-model="queryForm.fromProdOrder" placeholder="FromProdOrder" allow-clear/>
+            </a-form-item>
+          </a-col>
+          <a-col :span="4">
             <a-form-item label="修改人">
               <a-input v-model="queryForm.operateUser" placeholder="修改人" allow-clear/>
             </a-form-item>
@@ -78,15 +83,20 @@
           </a-col>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
-              <a-button v-hasPermi="['iqc:quanlity:query']" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-             
+              
             </span>
           </a-col>
         </a-row>
       </a-form>
+
       <div class="action-content">
-      
+   
+        <h3 style="margin-left: 8px">当前页总库存量(TR)：{{ totalStock }}</h3>
+        <h3 style="margin-left: 20px">当前页总库存量(PCS)：{{ totalPCSStock }}</h3>
+        <h3 style="margin-left: 20px">当前页可用库存量(PCS)：{{ totalAvailablePCSStock }}</h3>
+
       </div>
       <a-table
         :columns="columns"
@@ -96,6 +106,7 @@
         :pagination="false"
         size="middle"
         :scroll="tableScroll"
+        @change="pageChange"
       >
         <template slot="qualityStatusSlot" slot-scope="text">
           <a-tag :color="colorMap[text]">
@@ -190,29 +201,40 @@ const changeStatusMap = {
 
 const columns = [
   {
+    title: 'CELL',
+    key: 'cell',
+    dataIndex: 'cell',
+    width: 100,
+    sorter: true
+  },
+  {
     title: '工厂',
     key: 'plantNb',
     dataIndex: 'plantNb',
-    width: 60
+    width: 100,
+    sorter: true
   },
   {
     title: '仓库',
     key: 'wareCode',
     dataIndex: 'wareCode',
-    width: 80
+    width: 80,
+    sorter: true
   },
   {
     title: '存储区',
     key: 'areaCode',
     dataIndex: 'areaCode',
-    width: 60
+    width: 120,
+    sorter: true
   },
   {
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
     width: 175,
-    align: 'center'
+    align: 'center',
+    sorter: true
   },
   // {
   //   title: 'cell部门',
@@ -224,13 +246,15 @@ const columns = [
     title: '库位',
     key: 'binCode',
     dataIndex: 'binCode',
-    width: 120
+    width: 100,
+    sorter: true
   },
   {
     title: '物料',
     key: 'materialNb',
     dataIndex: 'materialNb',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '物料名称',
@@ -242,57 +266,104 @@ const columns = [
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
-    width: 120
+    width: 120,
+    sorter: true
+  },
+    {
+    title: 'fromProdOrder',
+    key: 'fromProdOrder',
+    dataIndex: 'fromProdOrder',
+    width: 130,
+    sorter: true
   },
   {
     title: '质检状态',
     key: 'qualityStatus',
     dataIndex: 'qualityStatus',
-    width: 80,
-    scopedSlots: { customRender: 'qualityStatusSlot' }
+    width: 100,
+    scopedSlots: { customRender: 'qualityStatusSlot' },
+    sorter: true
   },
   {
     title: '状态',
     key: 'changeStatus',
     dataIndex: 'changeStatus',
     width: 80,
-    scopedSlots: { customRender: 'changeStatusSlot' }
+    scopedSlots: { customRender: 'changeStatusSlot' },
+    sorter: true
+  },
+    {
+    title: '单位',
+    key: 'unit',
+    dataIndex: 'unit',
+    width: 80,
+    sorter: true
+  },
+   {
+    title: '批次总库存',
+    key: 'totalStockSum',
+    dataIndex: 'totalStockSum',
+    width: 100
   },
   {
     title: '库存量',
     key: 'totalStock',
     dataIndex: 'totalStock',
-    width: 120
+    width: 100,
+    sorter: true
   },
-  {
-    title: '单位',
-    key: 'unit',
-    dataIndex: 'unit',
-    width: 80
-  },
+
   {
     title: '冻结库存',
     key: 'freezeStock',
     dataIndex: 'freezeStock',
+    width: 100,
+    sorter: true
+  },
+  {
+    title: '包装规格',
+    key: 'boxSpecification',
+    dataIndex: 'boxSpecification',
+    width: 100,
+    sorter: true
+  },
+   {
+    title: 'PCS总库存',
+    key: 'pcsTotalStock',
+    dataIndex: 'pcsTotalStock',
     width: 120
+  },
+  {
+    title: 'PCS冻结库存',
+    key: 'pcsFreezeStock',
+    dataIndex: 'pcsFreezeStock',
+    width: 100
+  },
+  {
+    title: 'PCS可用库存',
+    key: 'pcsAvailableStock',
+    dataIndex: 'pcsAvailableStock',
+    width: 100
   },
   {
     title: '有效期',
     key: 'expireDate',
     dataIndex: 'expireDate',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '修改人',
     key: 'updateBy',
     dataIndex: 'updateBy',
-    width: 120
+    width: 100
   },
   {
     title: '操作时间',
     key: 'createTime',
     dataIndex: 'createTime',
-    width: 200
+    width: 100,
+    sorter: true
   },
   {
     title: '质检操作',
@@ -369,7 +440,8 @@ const queryFormAttr = () => {
     qualityStatus: '',
     cell: undefined,
     changeStatus: undefined,
-    updateTimeList: []
+    updateTimeList: [],
+    fromProdOrder: ''
   }
 }
 
@@ -407,10 +479,23 @@ export default {
     changeStatusMap: () => changeStatusMap,
     colorMap: () => colorMap,
     statusTextMap: () => statusTextMap,
-    statusColroMap: () => statusColroMap
+    statusColroMap: () => statusColroMap,
+     totalStock(){
+     return _.sumBy(this.list,'totalStock')
+    },
+    totalPCSStock(){
+     return _.sumBy(this.list,'pcsTotalStock')
+    },
+    totalAvailablePCSStock(){
+     return _.sumBy(this.list,'pcsAvailableStock')
+    },
   },
   methods: {
-  
+  async pageChange(page, filters, sorter){
+        this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc'
+        this.queryForm.orderByColumn= sorter.columnKey
+        this.loadTableList()
+    },
     async loadCellList () {
       const { data } = await this.$store.dispatch('department/getList')
       this.cellList = data
@@ -459,7 +544,7 @@ export default {
     },
     handleUpdate (clickMethod, record) {
       if (clickMethod === '同批次') {
-        this.modalTitle = '物料编码:' + record.materialNb + ',批次号:' + record.batchNb
+        this.modalTitle = '物料编码:' + record.materialNb + ',批次号:' + record.fromProdOrder
         this.qualityType = '1'
       }
       if (clickMethod === '此托') {

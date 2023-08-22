@@ -69,11 +69,11 @@
             </a-form-item>
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="更新时间">
+            <a-form-model-item label="创建时间">
               <a-range-picker
-                format="YYYY-MM-DD HH:mm"
-                :show-time="{ format: 'HH:mm' }"
-                v-model="queryForm.updateTimeList"
+                format="YYYY-MM-DD"
+               
+                v-model="queryForm.createTimeList"
               />
             </a-form-model-item>
           </a-col>
@@ -114,6 +114,7 @@
         :pagination="false"
         size="middle"
         :scroll="tableScroll"
+        @change="pageChange"
       >
         <template slot="qualityStatusSlot" slot-scope="text">
           <a-tag :color="colorMap[text]">
@@ -255,26 +256,30 @@ const columns = [
     title: '工厂',
     key: 'plantNb',
     dataIndex: 'plantNb',
-    width: 60
+    width: 60,
+    sorter: true
   },
   {
     title: '仓库',
     key: 'wareCode',
     dataIndex: 'wareCode',
-    width: 80
+    width: 80,
+    sorter: true
   },
   {
     title: '存储区',
     key: 'areaCode',
     dataIndex: 'areaCode',
-    width: 60
+    width: 60,
+    sorter: true
   },
   {
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
     width: 175,
-    align: 'center'
+    align: 'center',
+    sorter: true
   },
   // {
   //   title: 'cell部门',
@@ -286,63 +291,73 @@ const columns = [
     title: '库位',
     key: 'binCode',
     dataIndex: 'binCode',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '物料',
     key: 'materialNb',
     dataIndex: 'materialNb',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '物料名称',
     key: 'materialName',
     dataIndex: 'materialName',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '质检状态',
     key: 'qualityStatus',
     dataIndex: 'qualityStatus',
     width: 80,
-    scopedSlots: { customRender: 'qualityStatusSlot' }
+    scopedSlots: { customRender: 'qualityStatusSlot' },
+    sorter: true
   },
   {
     title: '状态',
     key: 'changeStatus',
     dataIndex: 'changeStatus',
     width: 80,
-    scopedSlots: { customRender: 'changeStatusSlot' }
+    scopedSlots: { customRender: 'changeStatusSlot' },
+    sorter: true
   },
   {
     title: '库存量',
     key: 'totalStock',
     dataIndex: 'totalStock',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '单位',
     key: 'unit',
     dataIndex: 'unit',
-    width: 80
+    width: 80,
+    sorter: true
   },
   {
     title: '冻结库存',
     key: 'freezeStock',
     dataIndex: 'freezeStock',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '有效期',
     key: 'expireDate',
     dataIndex: 'expireDate',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '修改人',
@@ -351,22 +366,25 @@ const columns = [
     width: 120
   },
   {
-    title: '操作时间',
+    title: '创建时间',
     key: 'createTime',
     dataIndex: 'createTime',
-    width: 200
+    width: 200,
+    sorter: true
   },
   {
     title: 'IQC修改人',
     key: 'iqcUpdateBy',
     dataIndex: 'iqcUpdateBy',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: 'IQC修改时间',
     key: 'iqcUpdateTime',
     dataIndex: 'iqcUpdateTime',
-    width: 200
+    width: 200,
+    sorter: true
   },
   {
     title: '质检操作',
@@ -422,14 +440,16 @@ const statusTextMap = {
   '0': '成功',
   '1': '失败',
   '2': '待确认',
-  '3': '存在IQC抽样待下发'
+  '3': '失败，存在抽样待下发',
+  '4': '任务结束后变更成功'
 }
 
 const statusColroMap = {
   '0': 'green',
   '1': 'red',
   '2': 'orange',
-  '3': 'red'
+  '3': 'red',
+  '4': 'green'
 }
 
 const queryFormAttr = () => {
@@ -445,7 +465,7 @@ const queryFormAttr = () => {
     qualityStatus: '',
     cell: undefined,
     changeStatus: undefined,
-    updateTimeList: []
+    createTimeList: []
   }
 }
 
@@ -486,6 +506,11 @@ export default {
     statusColroMap: () => statusColroMap
   },
   methods: {
+    async pageChange(page, filters, sorter){
+        this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc'
+        this.queryForm.orderByColumn= sorter.columnKey
+        this.loadTableList()
+    },
     async handleUpload (e) {
       const { file } = e
 
@@ -533,10 +558,10 @@ export default {
     async loadTableList () {
       try {
         this.tableLoading = true
-        const { updateTimeList = [] } = this.queryForm
-        const startUpdateTime = updateTimeList.length > 0 ? updateTimeList[0].format(this.startDateFormat) : undefined
-        const endUpdateTime = updateTimeList.length > 0 ? updateTimeList[1].format(this.endDateFormat) : undefined
-        const options = { ..._.omit(this.queryForm, ['updateTimeList']), startUpdateTime, endUpdateTime }
+        const { createTimeList = [] } = this.queryForm
+        const startCreateTime = createTimeList.length > 0 ? createTimeList[0].format(this.startDateFormat) : undefined
+        const endCreateTime = createTimeList.length > 0 ? createTimeList[1].format(this.endDateFormat) : undefined
+        const options = { ..._.omit(this.queryForm, ['createTimeList']), startCreateTime, endCreateTime }
 
         const {
           data: { rows, total }

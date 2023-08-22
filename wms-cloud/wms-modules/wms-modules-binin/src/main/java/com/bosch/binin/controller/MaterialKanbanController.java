@@ -19,6 +19,7 @@ import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
 import com.bosch.system.api.domain.UserOperationLog;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.domain.SSCCLogVO;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
@@ -133,9 +134,16 @@ public class MaterialKanbanController {
     @ApiOperation("批量下发任务接口")
     @Transactional(rollbackFor = Exception.class)
     @Log(title = "批量下发捡配任务接口", businessType = BusinessType.UPDATE)
-    public R issueJob(@PathVariable Long[] ids) {
-        materialKanbanService.issueJob(ids);
-        return R.ok("下发成功");
+    public R<List<SSCCLogVO>> issueJob(@PathVariable Long[] ids) {
+        List<MaterialKanban> kanbanList = materialKanbanService.issueJob(ids);
+        List<SSCCLogVO> ssccLogVOS = new ArrayList<>();
+        kanbanList.stream().forEach(kanban->{
+            SSCCLogVO ssccLogVO = new SSCCLogVO();
+            ssccLogVO.setSsccNumber(kanban.getSsccNumber());
+            ssccLogVO.setQuantity(null);
+            ssccLogVOS.add(ssccLogVO);
+        });
+        return R.ok(ssccLogVOS,"下发成功");
     }
 
     @PutMapping(value = "/binDown/{ssccNb}")
@@ -143,19 +151,25 @@ public class MaterialKanbanController {
     @Log(title = "捡配任务下架", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     @Synchronized
-    public R binDown(@PathVariable String ssccNb) {
-        materialKanbanService.binDown(ssccNb);
-
-        return R.ok(ssccNb + "下架成功");
+    public R<SSCCLogVO> binDown(@PathVariable String ssccNb) {
+        MaterialKanban kanban = materialKanbanService.binDown(ssccNb);
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(kanban.getSsccNumber());
+        ssccLogVO.setQuantity(kanban.getBinDownQuantity());
+        return R.ok(ssccLogVO,ssccNb + "下架成功");
     }
 
     @PostMapping(value = "splitPallet")
     @ApiOperation("看板任务拆托")
     @Transactional(rollbackFor = Exception.class)
     @Log(title = "捡配任务拆托", businessType = BusinessType.UPDATE)
-    public R splitPallet(@RequestBody SplitPalletDTO splitPallet) {
+    public R<SSCCLogVO> splitPallet(@RequestBody SplitPalletDTO splitPallet) {
         materialKanbanService.splitPallet(splitPallet);
-        return R.ok();
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(splitPallet.getSourceSsccNb());
+        ssccLogVO.setQuantity(splitPallet.getSplitQuantity());
+        ssccLogVO.setNewSSCCNumber(MesBarCodeUtil.getSSCC(splitPallet.getNewMesBarCode()));
+        return R.ok(ssccLogVO);
     }
 
 
@@ -288,8 +302,8 @@ public class MaterialKanbanController {
     @PutMapping(value = "/cancel/{id}")
     @Transactional(rollbackFor = Exception.class)
     @Log(title = "取消捡配任务", businessType = BusinessType.DELETE)
-    public R cancelKanban(@PathVariable("id") Long id) {
-
+    public R<SSCCLogVO> cancelKanban(@PathVariable("id") Long id) {
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
         try {
 //            //查询取消任务详情
 //            LambdaQueryWrapper<MaterialKanban> qw = new LambdaQueryWrapper<>();
@@ -305,14 +319,18 @@ public class MaterialKanbanController {
 //            materialKanbanService.updateStockBySSCC(materialKanban.getSsccNumber(),
 //                    materialKanban.getQuantity());
 
-            materialKanbanService.cancelKanban(id);
+            MaterialKanban kanban = materialKanbanService.cancelKanban(id);
+
+            ssccLogVO.setSsccNumber(kanban.getSsccNumber());
+            ssccLogVO.setQuantity(kanban.getQuantity());
+
 
 
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             return R.fail(ex.getMessage());
         }
-        return R.ok();
+        return R.ok(ssccLogVO);
     }
 
 
@@ -519,6 +537,7 @@ public class MaterialKanbanController {
     @ApiOperation("确认并入库")
     @Transactional(rollbackFor = Exception.class)
     @Synchronized
+    @Log(title = "原材料移库确认并入库", businessType = BusinessType.UPDATE)
     public R confirmOrder(@RequestBody List<String> ssccs) {
         try {
             if (CollectionUtils.isEmpty(ssccs)) {
@@ -532,7 +551,20 @@ public class MaterialKanbanController {
 
 
             Integer updateOrder = transhipmentOrderService.updateBySSCCS(ssccs);
-            return R.ok();
+
+
+            ArrayList<SSCCLogVO> logVOS = new ArrayList<>();
+
+            ssccs.stream().forEach(sscc -> {
+                SSCCLogVO ssccLogVO = new SSCCLogVO();
+                ssccLogVO.setSsccNumber(sscc);
+                ssccLogVO.setQuantity(null);
+                logVOS.add(ssccLogVO);
+            });
+            return R.ok(logVOS);
+
+
+
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             ex.printStackTrace();
@@ -630,7 +662,12 @@ public class MaterialKanbanController {
             materialKanbanService.updateById(kanban);
 
 
-            return R.ok();
+            SSCCLogVO ssccLogVO = new SSCCLogVO();
+            ssccLogVO.setSsccNumber(kanban.getSsccNumber());
+            ssccLogVO.setQuantity(kanban.getQuantity());
+
+
+            return R.ok(ssccLogVO);
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             ex.printStackTrace();

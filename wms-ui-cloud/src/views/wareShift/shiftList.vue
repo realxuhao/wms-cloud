@@ -111,6 +111,7 @@
         :pagination="false"
         size="middle"
         :scroll="tableScroll"
+        @change="pageChange"
       >
         <template slot="moveType" slot-scope="text">
           <div >
@@ -177,31 +178,36 @@ const columns = [
     title: '转运单号',
     key: 'orderNb',
     dataIndex: 'orderNb',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '源工厂',
     key: 'sourcePlantNb',
     dataIndex: 'sourcePlantNb',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '源仓库',
     key: 'sourceWareCode',
     dataIndex: 'sourceWareCode',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '源存储区',
     key: 'sourceAreaCode',
     dataIndex: 'sourceAreaCode',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '源库位',
     key: 'sourceBinCode',
     dataIndex: 'sourceBinCode',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '动作类型',
@@ -215,13 +221,15 @@ const columns = [
     key: 'status',
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '移库数量',
     key: 'quantity',
     dataIndex: 'quantity',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '移动类型',
@@ -234,37 +242,43 @@ const columns = [
     title: '车牌号',
     key: 'carNb',
     dataIndex: 'carNb',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: 'sscc码',
     key: 'ssccNb',
     dataIndex: 'ssccNb',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '物料号',
     key: 'materialNb',
     dataIndex: 'materialNb',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '物料名',
     key: 'materialName',
     dataIndex: 'materialName',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '有效期',
     key: 'expireDate',
     dataIndex: 'expireDate',
-    width: 120
+    width: 120,
+    sorter: true
   },
   // {
   //   title: '目的工厂',
@@ -276,7 +290,8 @@ const columns = [
     title: '目的仓库',
     key: 'targetWareCode',
     dataIndex: 'targetWareCode',
-    width: 120
+    width: 120,
+    sorter: true
   },
   // {
   //   title: '目的存储区',
@@ -301,13 +316,15 @@ const columns = [
     title: '操作人',
     key: 'createBy',
     dataIndex: 'createBy',
-    width: 120
+    width: 120,
+    sorter: true
   },
   {
     title: '操作时间',
     key: 'createTime',
     dataIndex: 'createTime',
-    width: 200
+    width: 200,
+    sorter: true
   },
   {
     title: '操作',
@@ -403,6 +420,11 @@ export default {
     statusColorMap: () => statusColorMap
   },
   methods: {
+    async pageChange(page, filters, sorter){
+        this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc'
+        this.queryForm.orderByColumn= sorter.columnKey
+        this.loadTableList()
+    },
     handleAddWareShift () {
       this.stockListVisible = true
     },

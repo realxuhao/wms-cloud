@@ -38,6 +38,13 @@ public class SplitRecordVO {
     @ApiModelProperty(value = "拆托数量")
     private Double splitQuantity;
 
+
+    /**
+     * 拆托数量
+     */
+    @ApiModelProperty(value = "源数量")
+    private Double sourceTotalStock;
+
     /**
      * sscc编码
      */

@@ -9,8 +9,10 @@ import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.RemoteProductService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.product.api.domain.dto.EditStockDTO;
+import com.bosch.product.api.domain.dto.ProductReturnDTO;
 import com.bosch.product.api.domain.dto.ProductStockEditDTO;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
+import com.bosch.product.api.domain.vo.ProductReturnVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.service.IMaterialStockService;
 import com.bosch.product.service.IProductStockService;
@@ -18,6 +20,7 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
@@ -33,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -134,6 +138,16 @@ public class ProductStockController extends BaseController {
         productStockService.addSplit(splitPallet);
 
         return R.ok();
+    }
+
+
+    @PostMapping("/export")
+    @Log(title = "成品库存记录导出", businessType = BusinessType.EXPORT)
+    @ApiOperation("成品库存记录导出")
+    public void export(HttpServletResponse response, @RequestBody ProductStockQueryDTO queryDTO) {
+        List<ProductStockVO> productStockVOS = productStockService.list(queryDTO);
+        ExcelUtil<ProductStockVO> util = new ExcelUtil<>(ProductStockVO.class);
+        util.exportExcel(response, productStockVOS, "成品库存记录");
     }
 
 

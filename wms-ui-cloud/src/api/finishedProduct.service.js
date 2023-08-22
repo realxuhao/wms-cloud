@@ -82,7 +82,13 @@ const spdnList = async (parameter) => {
 }
 
 const approveSpdnList = async (parameter) => {
-  const url = `/spdn/approve/${parameter}`
+  const url = `/spdn/approveBy7761/${parameter}`
+  const { data } = await createAuthInstance(baseUrl).put(url)
+  return data
+}
+
+const approveNo7761SpdnList = async (parameter) => {
+  const url = `/spdn/approveByNo7761/${parameter}`
   const { data } = await createAuthInstance(baseUrl).put(url)
   return data
 }
@@ -224,6 +230,7 @@ export const finishedProductService = {
   importSPDN,
   spdnList,
   approveSpdnList,
+  approveNo7761SpdnList,
   spdnStocklist,
   deleteSpdn,
   SUQAIQCManagementList,

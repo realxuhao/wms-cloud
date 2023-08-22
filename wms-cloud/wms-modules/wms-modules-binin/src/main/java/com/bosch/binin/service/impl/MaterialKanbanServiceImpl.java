@@ -247,7 +247,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
-    public void issueJob(Long[] ids) {
+    public List<MaterialKanban> issueJob(Long[] ids) {
         List<Long> idList = Arrays.asList(ids);
         if (CollectionUtils.isEmpty(idList)) {
             throw new ServiceException("任务为空，请选择任务后重试");
@@ -317,6 +317,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         //新增移库任务
         wareShiftService.saveBatch(wareShiftList);
 
+        return kanbanList;
+
 
     }
 
@@ -375,7 +377,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
-    public void binDown(String ssccNb) {
+    public MaterialKanban binDown(String ssccNb) {
         LambdaQueryWrapper<MaterialKanban> kanbanLambdaQueryWrapper = new LambdaQueryWrapper<>();
         kanbanLambdaQueryWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
         kanbanLambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
@@ -386,8 +388,12 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
         kanbanLambdaQueryWrapper.last("for update");
         MaterialKanban kanban = materialKanbanMapper.selectOne(kanbanLambdaQueryWrapper);
-        if (Objects.isNull(kanban) || !KanbanStatusEnum.WAITING_BIN_DOWN.value().equals(kanban.getStatus())) {
-            throw new ServiceException("任务状态过期，请刷新后重试");
+        if (Objects.isNull(kanban)) {
+            throw new ServiceException("该SSCC" + ssccNb + "不存在捡配任务");
+        }
+
+        if (!KanbanStatusEnum.WAITING_BIN_DOWN.value().equals(kanban.getStatus())) {
+            throw new ServiceException("该SSCC" + ssccNb + "对应任务状态为：" + KanbanStatusEnum.getDesc(String.valueOf(kanban.getStatus())));
         }
 
 //        //在移库任务中查询
@@ -420,6 +426,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), kanban.getOrderNumber(),SecurityUtils.getUsername(), UserOperationType.CALLOVER.getCode(),userOperationLog);
 
+        return kanban;
 
 
     }
@@ -547,6 +554,11 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         queryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
         queryWrapper.eq(MaterialKanban::getStatus, kanbanStatusEnum.value());
         queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+        queryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+        queryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+
+
         MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryWrapper);
         MaterialKanbanVO conver = BeanConverUtil.conver(materialKanban, MaterialKanbanVO.class);
         return conver;
@@ -701,7 +713,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
-    public void cancelKanban(Long id) {
+    public MaterialKanban cancelKanban(Long id) {
         //查询取消任务详情
         LambdaQueryWrapper<MaterialKanban> qw = new LambdaQueryWrapper<>();
         qw.eq(MaterialKanban::getId, id);
@@ -743,6 +755,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
                 dealCancelSubJob(materialKanban);
             }
         }
+        return materialKanban;
 
 
     }
