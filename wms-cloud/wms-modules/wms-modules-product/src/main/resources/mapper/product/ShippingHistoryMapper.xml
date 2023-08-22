@@ -10,6 +10,7 @@
         <result property="etoPo" column="eto_po" jdbcType="VARCHAR"/>
         <result property="prodOrder" column="prod_order" jdbcType="VARCHAR"/>
         <result property="ssccNumbers" column="sscc_numbers" jdbcType="VARCHAR"/>
+        <result property="prodSscc" column="prod_sscc" jdbcType="VARCHAR"/>
         <result property="createBy" column="create_by" jdbcType="VARCHAR"/>
         <result property="updateBy" column="update_by" jdbcType="VARCHAR"/>
         <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
@@ -37,7 +38,7 @@
     </sql>
     <sql id="History_Base_Column_List">
         sh.id as shipping_history_id,sh.sscc_numbers,sh.history_index,sh.create_by as history_create_by,sh.update_by as history_update_by,
-        sh.create_time as history_create_time,sh.update_time as history_update_time
+        sh.create_time as history_create_time,sh.update_time as history_update_time,sh.prod_sscc AS prod_sscc
 
     </sql>
 
@@ -121,5 +122,10 @@
 
 
             </select>
-
+    <select id="selectPlanByTask" parameterType="Long" resultType="com.bosch.product.api.domain.ShippingPlan">
+        SELECT  shipping_plan.*
+        FROM shipping_task as st
+                 LEFT JOIN shipping_plan ON FIND_IN_SET(shipping_plan.id, st.shipping_plan_id) > 0
+        where st.id =#{id}
+    </select>
 </mapper>

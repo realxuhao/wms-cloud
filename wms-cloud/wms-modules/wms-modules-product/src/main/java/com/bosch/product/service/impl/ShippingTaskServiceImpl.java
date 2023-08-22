@@ -1,6 +1,7 @@
 package com.bosch.product.service.impl;
 
 import com.alibaba.nacos.common.utils.CollectionUtils;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.product.api.domain.ShippingHistory;
 import com.bosch.product.api.domain.ShippingPlan;
@@ -12,15 +13,13 @@ import com.bosch.product.api.domain.vo.ShippingTaskVO;
 import com.bosch.product.mapper.ShippingHistoryMapper;
 import com.bosch.product.service.IShippingTaskService;
 import com.bosch.product.mapper.ShippingTaskMapper;
+import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -145,12 +144,41 @@ public class ShippingTaskServiceImpl extends ServiceImpl<ShippingTaskMapper, Shi
         //同打包任务下所有托数
         boolean checksize = shippingHistories.size() == Integer.parseInt(shippingTask.getAfterPacking());
 
+        //拆托的batchno的数量>=原始值Pallet Quantity
+        //获取计划中batch no 对应的pallet 和 after
+//        List<ShippingPlan> shippingPlans = shippingHistoryMapper.selectPlanByTask(shippingHistoryDTO.getShippingTaskId());
+//        List<ShippingHistory> shippingHistories = shippingHistoryMapper.searchAllFields(dto);
+//        if (CollectionUtils.isEmpty(shippingHistories)){
+//            return true;
+//        }
+        //不拆托的batchno的数量=afterpacking
         if(checktotal&&checksize){
             return true;
         }
         return false;
     }
 
+
+    @Override
+    public boolean checkOneHistory(ShippingHistoryDTO shippingHistoryDTO) {
+        ShippingHistoryDTO dto=new ShippingHistoryDTO();
+        dto.setShippingTaskId(shippingHistoryDTO.getShippingTaskId());
+        //判断该次扫的sscc 在其他任务中是否扫描过 扫描过则throw
+        String ssccNumbers = shippingHistoryDTO.getSsccNumbers();
+        List<String> numbers = splitStringToList(ssccNumbers);
+        for (String number : numbers) {
+            LambdaQueryWrapper<ShippingHistory> lambdaQueryWrapper=new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(ShippingHistory::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            lambdaQueryWrapper.ne(ShippingHistory::getShippingTaskId,shippingHistoryDTO.getShippingTaskId());
+
+            lambdaQueryWrapper.like(ShippingHistory::getSsccNumbers,number);
+            List<ShippingHistory> histories = shippingHistoryMapper.selectList(lambdaQueryWrapper);
+            if(CollectionUtils.isNotEmpty(histories)){
+                throw new ServiceException("在其他打包任务中已扫描过该sscc");
+            }
+        }
+        return true;
+    }
     @Override
     public List<ShippingTaskVO> getDashboard(ShippingTaskDTO dto) {
         List<ShippingTaskVO> dashboard =new ArrayList<>();
@@ -162,6 +190,25 @@ public class ShippingTaskServiceImpl extends ServiceImpl<ShippingTaskMapper, Shi
         return dashboard;
     }
 
+    public static List<String> splitStringToList(String input) {
+        List<String> resultList = new ArrayList<>();
+
+        if (input.contains("，")) { // Check for Chinese comma
+            String[] values = input.split("，");
+            for (String value : values) {
+                resultList.add(value.trim());
+            }
+        } else if (input.contains(",")) { // Check for English comma
+            String[] values = input.split(",");
+            for (String value : values) {
+                resultList.add(value.trim());
+            }
+        } else {
+            resultList.add(input.trim());
+        }
+
+        return resultList;
+    }
 }
 
 

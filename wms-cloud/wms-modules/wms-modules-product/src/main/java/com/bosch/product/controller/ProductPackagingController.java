@@ -78,6 +78,8 @@ public class ProductPackagingController extends BaseController {
     public AjaxResult addPackageHistory(@RequestBody ShippingHistoryDTO dto) {
         try {
             ShippingHistory conver = BeanConverUtil.conver(dto, ShippingHistory.class);
+            //判断该sscc在不在其他任务中
+            shippingTaskService.checkOneHistory(dto);
             //保存记录
             final boolean a = shippingHistoryService.save(conver);
             boolean b = false;

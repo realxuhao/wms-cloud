@@ -27,6 +27,9 @@ public class ShippingHistoryDTO  extends BaseEntity {
     @ApiModelProperty(value = "sscc码合集,用逗号隔开")
     private String ssccNumbers;
 
+    @ApiModelProperty(value = "prodSscc json")
+    private String prodSscc;
+
     @ApiModelProperty(value = "status")
     private Integer status;
 

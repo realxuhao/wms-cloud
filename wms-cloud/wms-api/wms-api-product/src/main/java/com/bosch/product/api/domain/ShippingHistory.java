@@ -44,6 +44,9 @@ public class ShippingHistory extends BaseEntity {
 
     @TableField(value = "sscc_numbers")
     private String ssccNumbers;
+
+    @TableField(value = "prod_sscc")
+    private String prodSscc;
     /**
      * 
      */

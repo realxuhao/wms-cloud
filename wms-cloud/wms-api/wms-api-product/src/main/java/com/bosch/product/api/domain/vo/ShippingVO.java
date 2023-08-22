@@ -92,4 +92,6 @@ public class ShippingVO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date historyUpdateTime;
 
+    @ApiModelProperty(value = "prodSscc json")
+    private String prodSscc;
 }

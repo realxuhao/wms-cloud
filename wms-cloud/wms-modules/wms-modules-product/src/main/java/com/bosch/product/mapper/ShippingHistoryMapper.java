@@ -2,6 +2,7 @@ package com.bosch.product.mapper;
 
 import com.bosch.product.api.domain.ShippingHistory;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.bosch.product.api.domain.ShippingPlan;
 import com.bosch.product.api.domain.dto.ShippingDTO;
 import com.bosch.product.api.domain.dto.ShippingHistoryDTO;
 import com.bosch.product.api.domain.vo.ShippingVO;
@@ -21,6 +22,8 @@ public interface ShippingHistoryMapper extends BaseMapper<ShippingHistory> {
    List<ShippingHistory> searchAllFields(ShippingHistoryDTO dto);
 
    List<ShippingVO>selectShipping(ShippingDTO dto);
+
+   List<ShippingPlan> selectPlanByTask (Long id);
 }
 
 

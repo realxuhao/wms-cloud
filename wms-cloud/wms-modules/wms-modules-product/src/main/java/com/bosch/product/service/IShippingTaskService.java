@@ -4,6 +4,7 @@ import com.bosch.product.api.domain.ShippingPlan;
 import com.bosch.product.api.domain.ShippingTask;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.product.api.domain.dto.ListPair;
+import com.bosch.product.api.domain.dto.ShippingHistoryDTO;
 import com.bosch.product.api.domain.dto.ShippingTaskDTO;
 import com.bosch.product.api.domain.vo.ShippingTaskVO;
 import com.bosch.product.service.impl.ShippingPlanServiceImpl;
@@ -33,5 +34,6 @@ public interface IShippingTaskService extends IService<ShippingTask> {
 
     boolean checkHistory(Long taskId);
 
+    boolean checkOneHistory(ShippingHistoryDTO dto);
     List<ShippingTaskVO> getDashboard(ShippingTaskDTO dto);
 }
