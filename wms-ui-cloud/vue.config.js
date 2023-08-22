@@ -30,10 +30,10 @@ const assetsCDN = {
   css: [],
   // https://unpkg.com/browse/vue@2.6.10/
   js: [
-    '//unpkg.zhimg.com/vue@2.6.10/dist/vue.min.js',
-    '//unpkg.zhimg.com/vue-router@3.1.3/dist/vue-router.min.js',
-    '//unpkg.zhimg.com/vuex@3.1.1/dist/vuex.min.js',
-    '//unpkg.zhimg.com/axios@0.19.0/dist/axios.min.js'
+    // '//unpkg.zhimg.com/vue@2.6.10/dist/vue.min.js',
+    // '//unpkg.zhimg.com/vue-router@3.1.3/dist/vue-router.min.js',
+    // '//unpkg.zhimg.com/vuex@3.1.1/dist/vuex.min.js',
+    // '//unpkg.zhimg.com/axios@0.19.0/dist/axios.min.js'
   ]
 }
 
@@ -54,7 +54,7 @@ const vueConfig = {
       })
     ],
     // if prod, add externals
-    externals: isProd ? assetsCDN.externals : {}
+    // externals: isProd ? assetsCDN.externals : {}
   },
 
   chainWebpack: (config) => {
@@ -79,12 +79,12 @@ const vueConfig = {
 
     // if prod is on
     // assets require on cdn
-    if (isProd) {
-      config.plugin('html').tap(args => {
-        args[0].cdn = assetsCDN
-        return args
-      })
-    }
+    // if (isProd) {
+    //   config.plugin('html').tap(args => {
+    //     args[0].cdn = assetsCDN
+    //     return args
+    //   })
+    // }
   },
 
   css: {
@@ -109,12 +109,12 @@ const vueConfig = {
       // detail: https://cli.vuejs.org/config/#devserver-proxy
       [process.env.VUE_APP_BASE_API]: {
         // target: `http://106.15.121.243:8002`,
-        target: `http://121.37.188.213:8080`,
-        // target: `https://nutricia-home.com`,
+        // target: `http://121.37.188.213:8080`,
+        target: `https://nutricia-home.com`,
         // target: `http://localhost:8080`,
         changeOrigin: true,
         pathRewrite: {
-          ['^' + process.env.VUE_APP_BASE_API]: ''
+          ['^' + process.env.VUE_APP_BASE_API]: '/api'
         }
       }
     }
