@@ -291,12 +291,6 @@ public class ProductPackagingController extends BaseController {
                         })//N/A替换为1
                         .collect(Collectors.toList()); // 收集器：将过滤后的结果收集到列表中
 
-//                //用validate校验filteredShippingPlans
-//                boolean validate = shippingPlanService.validate(filteredShippingPlans);
-//                //如果validate为true，说明excel中数据有重复,返回400和 错误信息“excel中数据有重复”
-//                if (validate) {
-//                    return R.fail(400, "excel中数据有重复");
-//                }
                 List<ShippingPlan> repeatPlan = shippingPlanService.getRepeatPlan(filteredShippingPlans);
                 //如果repeatPlan不为空，说明excel中数据有重复,返回400和 错误信息“excel中数据有重复”
                 if (CollectionUtils.isNotEmpty(repeatPlan)) {

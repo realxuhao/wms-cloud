@@ -86,10 +86,15 @@ public class ShippingTaskServiceImpl extends ServiceImpl<ShippingTaskMapper, Shi
                         .map(String::valueOf)
                         .collect(Collectors.joining(","));
 
-
+                //获取prod
+                String uniqueProdOrders = markAndPoPlans.stream()
+                            .map(ShippingPlan::getProdOrder)
+                            .distinct()
+                            .collect(Collectors.joining(","));
                 // 输出分组后的数据和注释
                 //ShippingTask taskDo = new ShippingTask();
                 ShippingTask conver = BeanConverUtil.conver(markAndPoPlans.get(0), ShippingTask.class);
+                conver.setProdOrder(uniqueProdOrders);
                 conver.setShippingPlanId(idsStr);
                 conver.setPackageNo(markAndPoPlans.get(0).getStockMovementDate().replaceAll("[\\\\:\\s]+", ""));
                 conver.setPalletQuantity(String.valueOf(totalPalletQuantity));
