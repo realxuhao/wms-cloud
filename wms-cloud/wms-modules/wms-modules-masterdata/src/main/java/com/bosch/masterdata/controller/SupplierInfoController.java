@@ -207,4 +207,14 @@ public class SupplierInfoController extends BaseController {
         SupplierInfoVO supplierInfoVO = BeanConverUtil.conver(supplierInfoService.selectSupplierInfoByCode(code), SupplierInfoVO.class);
         return R.ok(supplierInfoVO);
     }
+
+    /**
+     * 根据供应商编号获取供应商详细信息
+     */
+    @ApiOperation("获取供应商详情")
+    @PostMapping(value = "/selectInfo")
+    public R<SupplierInfoVO> getSelectInfoByCode(@RequestParam("code") String code) {
+        SupplierInfoVO supplierInfoVO = BeanConverUtil.conver(supplierInfoService.selectSupplierInfoByCode(code), SupplierInfoVO.class);
+        return R.ok(supplierInfoVO);
+    }
 }

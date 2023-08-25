@@ -80,10 +80,10 @@
         <template slot="status" slot-scope="text">
           <div >
             <a-tag color="green" v-if="text===0">
-              未完成
+              未约满
             </a-tag>
-            <a-tag color="red" v-if="text===1">
-              已完成
+            <a-tag color="blue" v-if="text===1">
+              已约满
             </a-tag>
           </div>
         </template>

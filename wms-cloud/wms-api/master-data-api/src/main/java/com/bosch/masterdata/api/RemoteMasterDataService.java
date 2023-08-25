@@ -66,8 +66,8 @@ public interface RemoteMasterDataService {
     @PostMapping("/driver/save")
     public R<Boolean> saveBlackDriver(@RequestBody BlackDriverDTO blackDriverDTO);
 
-    @GetMapping(value = "/supplierInfo/info/{code}")
-    public R<SupplierInfoVO> getSupplierInfoByCode(@PathVariable("code") String code);
+    @PostMapping(value = "/supplierInfo/selectInfo")
+    public R<SupplierInfoVO> getSupplierInfoByCode(@RequestParam("code") String code);
 
     @GetMapping(value = "/supplierInfo/infoname/{name}")
     public R<SupplierInfoVO> getSupplierInfoByName(@PathVariable("name") String name);
