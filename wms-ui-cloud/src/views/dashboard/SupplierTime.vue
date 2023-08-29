@@ -171,7 +171,7 @@ export default {
       try {
         this.exportLoading = true
         const blobData = await this.$store.dispatch('driverDeliver/exportOnTime', {supplierName: '', searchYear: this.searchYear})
-        download(blobData, '供应商准时率列表')
+        download(blobData, '供应商准时率列表.xlsx')
       } catch (error) {
         console.log(error)
         this.$message.error(error.message)
