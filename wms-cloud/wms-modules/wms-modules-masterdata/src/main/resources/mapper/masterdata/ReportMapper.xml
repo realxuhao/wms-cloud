@@ -192,7 +192,7 @@
                              FROM bi_stock
                              WHERE delete_flag = 0
                              GROUP BY batch_nb) t2 ON t1.batch_nb = t2.batch_nb AND t1.create_time = t2.min_create_time
-        WHERE delete_flag = 0 AND   expire_date &lt;= DATE_SUB(NOW(), INTERVAL 30 DAY)
+        WHERE delete_flag = 0 AND   expire_date &lt;= DATE_ADD(NOW(), INTERVAL 30 DAY)
         ORDER BY batch_nb
     </select>
     <select id="reportWareShift" resultType="com.bosch.masterdata.api.domain.ReportWareShift" parameterType="com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO">
