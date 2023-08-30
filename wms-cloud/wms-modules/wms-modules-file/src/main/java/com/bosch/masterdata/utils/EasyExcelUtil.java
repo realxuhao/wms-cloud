@@ -59,7 +59,7 @@ public class EasyExcelUtil {
         List<String> collect = head.stream().filter(Objects::nonNull).collect(Collectors.toList());
         boolean equals = collect.equals(ClassType.getValue(className));
         if (!equals){
-            throw new ServiceException("excel模板不正确");
+            throw new ServiceException("excel模板不正确,请使用下载的模板");
         }
             // 这里 需要指定读用哪个class去读，然后读取第一个sheet 文件流会自动关闭
             //EasyExcel.read(inputStream, clazz, listener).sheet().doRead();

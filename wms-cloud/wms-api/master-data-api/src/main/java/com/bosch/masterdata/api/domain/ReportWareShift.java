@@ -42,6 +42,9 @@ public class ReportWareShift extends BaseEntity {
     @Excel(name = "车牌号")
     private String carNb;
 
+    @ApiModelProperty(value = "运量")
+    private Integer number;
+
     /**
      * sscc
      */

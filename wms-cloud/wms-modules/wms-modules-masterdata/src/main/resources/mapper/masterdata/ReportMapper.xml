@@ -196,13 +196,17 @@
         ORDER BY batch_nb
     </select>
     <select id="reportWareShift" resultType="com.bosch.masterdata.api.domain.ReportWareShift" parameterType="com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO">
-        SELECT t.car_nb,t.order_number as order_Nb,ws.* from ware_shift ws
-                                      LEFT JOIN transhipment_order t ON ws.id=t.ware_shift_id AND t.delete_flag=0
-        WHERE ws.delete_flag=0
+        SELECT COUNT(*) AS number,t.car_nb,t.create_time,t.order_number as order_nb,MAX(ws.source_ware_code) AS source_ware_code,MAX(ws.target_ware_code) AS target_ware_code FROM transhipment_order  t
+
+        LEFT JOIN ware_shift ws  ON ws.id=t.ware_shift_id AND t.delete_flag=0 AND  ws.delete_flag=0
+        WHERE 1=1
         <if test="sourceWareCode != null and sourceWareCode != ''">and source_ware_code LIKE   concat('%', #{sourceWareCode}, '%')</if>
         <if test="targetWareCode != null and targetWareCode != ''">and target_ware_code LIKE   concat('%', #{targetWareCode}, '%')</if>
+        <if test="orderNb != null and orderNb != ''">and t.order_number LIKE   concat('%', #{orderNb}, '%')</if>
         <if test="carNb != null and carNb != ''">and car_nb LIKE   concat('%', #{carNb}, '%')</if>
-        <if test="ssccNb != null and ssccNb != ''">and sscc_nb LIKE   concat('%', #{ssccNb}, '%')</if>
+        <if test="createTimeStart != null">and t.create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
+        <if test="createTimeEnd != null">and t.create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
+        GROUP BY t.car_nb,t.create_time,t.order_number
         ORDER BY create_time desc
     </select>
 

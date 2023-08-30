@@ -30,6 +30,19 @@ public class ReportWareShiftDTO extends PageDomain {
     private String carNb;
 
     /**
+     * 开始创建时间
+     */
+    @ApiModelProperty(value = "开始时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTimeStart;
+
+    /**
+     * 结束创建时间
+     */
+    @ApiModelProperty(value = "结束时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTimeEnd;
+    /**
      * sscc
      */
     @ApiModelProperty(value = "sscc")
