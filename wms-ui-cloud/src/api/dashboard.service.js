@@ -52,6 +52,15 @@ const getWareShiftList = async (parameter) => {
   const { data } = await createAuthInstance(baseUrl).post(url, parameter)
   return data
 }
+
+const wareShiftExport = async (options) => {
+  const url = `/report/wareShiftExport`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
 const getWorkload = async (parameter) => {
   const url = `/report/workload?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(baseUrl).post(url, parameter)
@@ -112,6 +121,7 @@ export const dashboardService = {
   getExpiredMaterial,
   exportExpiredMaterial,
   getWareShiftList,
+  wareShiftExport,
   getWorkload,
   exportWorkload,
   getWorkloadPro,

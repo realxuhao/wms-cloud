@@ -1,4 +1,4 @@
-import { dashboardService } from '@/api'
+import {dashboardService, wareShiftService} from '@/api'
 
 const comparison = {
   namespaced: true,
@@ -41,6 +41,11 @@ const comparison = {
     },
     async getWareShiftList ({ commit }, options) {
       const { data } = await dashboardService.getWareShiftList(options)
+      return data
+    },
+    async wareShiftExport
+      ({ commit }, options) {
+      const  data  = await dashboardService.wareShiftExport(options)
       return data
     },
     async getWorkload

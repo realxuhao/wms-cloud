@@ -54,10 +54,7 @@ const wareShift = {
       const data = await wareShiftService.generateWareShiftByCall(options)
       return data
     },
-    async exportExcel ({ commit }, options) {
-      const data = await wareShiftService.exportExcel(options)
-      return data
-    },
+
 
   }
 }

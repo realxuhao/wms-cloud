@@ -4,7 +4,7 @@
     <div class="table-content">
       <div class="action-content">
         <a-form-model layout="inline">
-    
+
           <a-form-model-item label="源仓库">
             <a-input v-model="queryForm.sourceWareCode" placeholder="源库位" allow-clear/>
           </a-form-model-item>
@@ -24,16 +24,20 @@
               v-model="queryForm.date"
             />
           </a-form-model-item>
-          <a-form-model-item >
-            <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
-              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+          <a-form-model-item>
+            <span class="table-page-search-submitButtons">
+              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon
+                type="search"/>查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo"/>重置</a-button>
+                        <a-button type="primary" :loading="downloadLoading" @click="handleExport">
+            <a-icon type="download"/>导出
+          </a-button>
             </span>
           </a-form-model-item>
 
-            
-           
+
         </a-form-model>
+
       </div>
       <a-table
         :columns="columns"
@@ -44,7 +48,7 @@
         size="middle"
         :scroll="tableScroll"
       >
-    
+
       </a-table>
 
       <div class="pagination-con">
@@ -65,9 +69,10 @@
 </template>
 
 <script>
-import { mixinTableList } from '@/utils/mixin/index'
+import {mixinTableList} from '@/utils/mixin/index'
 import moment from 'moment'
 import _ from 'lodash'
+import {download} from "@/utils/file";
 
 const columns = [
 
@@ -112,18 +117,18 @@ const columns = [
 
 const queryFormAttr = () => {
   return {
-    sourceWareCode:'',
-    targetWareCode:'',
-    carNb:'',
-    orderNb:'',
-    date:[],
+    sourceWareCode: '',
+    targetWareCode: '',
+    carNb: '',
+    orderNb: '',
+    date: [],
   }
 }
 
 export default {
   name: 'Area',
   mixins: [mixinTableList],
-  data () {
+  data() {
     return {
       tableLoading: false,
       downloadLoading: false,
@@ -137,21 +142,39 @@ export default {
     }
   },
   methods: {
-    handleResetQuery () {
-      this.queryForm = { ...this.queryForm, ...queryFormAttr() }
-      this.handleSearch()
-    },
-    async loadTableList () {
+    async handleExport() {
       try {
-        this.tableLoading = true
-        const { date = [] } = this.queryForm
+        this.downloadLoading = true
+        this.queryForm.pageSize = 0
+        const {date = []} = this.queryForm
         const createTimeStart = date.length > 0 ? date[0].format('YYYY-MM-DD 00:00:00') : undefined
         const createTimeEnd = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:59') : undefined
-        const options = { ..._.omit(this.queryForm, ['date']), createTimeStart, createTimeEnd }
+        const options = {..._.omit(this.queryForm, ['date']), createTimeStart, createTimeEnd}
+
+        const res = await this.$store.dispatch('dashboard/wareShiftExport', options)
+        console.log(res)
+        download(res, '移库列表')
+      } catch (error) {
+        this.$message.error(error.message)
+      } finally {
+        this.downloadLoading = false
+      }
+    },
+    handleResetQuery() {
+      this.queryForm = {...this.queryForm, ...queryFormAttr()}
+      this.handleSearch()
+    },
+    async loadTableList() {
+      try {
+        this.tableLoading = true
+        const {date = []} = this.queryForm
+        const createTimeStart = date.length > 0 ? date[0].format('YYYY-MM-DD 00:00:00') : undefined
+        const createTimeEnd = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:59') : undefined
+        const options = {..._.omit(this.queryForm, ['date']), createTimeStart, createTimeEnd}
 
         const {
-           rows, total
-        } = await this.$store.dispatch('dashboard/getWareShiftList',options)
+          rows, total
+        } = await this.$store.dispatch('dashboard/getWareShiftList', options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -160,14 +183,14 @@ export default {
         this.tableLoading = false
       }
     },
-    async loadData () {
+    async loadData() {
       this.loadTableList()
     }
   },
-  mounted () {
+  mounted() {
     const endDate = moment();
     const startDate = moment().subtract(1, 'months')
-    this.queryForm.date = [startDate,endDate]
+    this.queryForm.date = [startDate, endDate]
     this.loadData()
   }
 }

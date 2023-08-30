@@ -125,6 +125,16 @@ public class ReportController extends BaseController {
         return R.ok(new PageVO<>(reportWareShifts, new PageInfo<>(reportWareShifts).getTotal()));
 
     }
+    @PostMapping("/wareShiftExport")
+    @ApiOperation("移库列表导出")
+    public  void wareShiftExport(HttpServletResponse response,@RequestBody ReportWareShiftDTO reportWareShiftDTO ) {
+
+        List<ReportWareShift> reportWareShifts = reportService.reportWareShift(reportWareShiftDTO);
+        List<ReportWareShiftVO> list = BeanConverUtil.converList(reportWareShifts, ReportWareShiftVO.class);
+        ExcelUtil<ReportWareShiftVO> util = new ExcelUtil<>(ReportWareShiftVO.class);
+        util.exportExcel(response, list, "移库列表导出");
+
+    }
     /**
      * 员工实际工作量（原材料）-标准单位托盘
      */
