@@ -29,8 +29,9 @@
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon
                 type="search"/>查询</a-button>
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo"/>重置</a-button>
-                        <a-button type="primary" :loading="downloadLoading" @click="handleExport">
-            <a-icon type="download"/>导出
+
+              <a-button style="margin-left: 8px" type="primary" :loading="downloadLoading" @click="handleExport">
+           导出
           </a-button>
             </span>
           </a-form-model-item>
@@ -52,6 +53,7 @@
       </a-table>
 
       <div class="pagination-con">
+        <span class="span">共{{paginationTotal}}条记录</span>
         <a-pagination
           show-size-changer
           :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
@@ -122,6 +124,7 @@ const queryFormAttr = () => {
     carNb: '',
     orderNb: '',
     date: [],
+
   }
 }
 
@@ -132,6 +135,7 @@ export default {
     return {
       tableLoading: false,
       downloadLoading: false,
+      paginationTotal:'',//总条数
       queryForm: {
         pageSize: 20,
         pageNum: 1,

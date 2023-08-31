@@ -196,17 +196,32 @@
         ORDER BY batch_nb
     </select>
     <select id="reportWareShift" resultType="com.bosch.masterdata.api.domain.ReportWareShift" parameterType="com.bosch.masterdata.api.domain.dto.ReportWareShiftDTO">
-        SELECT COUNT(*) AS number,t.car_nb,t.create_time,t.order_number as order_nb,MAX(ws.source_ware_code) AS source_ware_code,MAX(ws.target_ware_code) AS target_ware_code FROM transhipment_order  t
-
-        LEFT JOIN ware_shift ws  ON ws.id=t.ware_shift_id AND t.delete_flag=0 AND  ws.delete_flag=0
+        SELECT COUNT(*) AS NUMBER,t1.car_nb,t1.order_number as order_nb,t1.create_time,
+        MAX(ws.source_ware_code) AS source_ware_code,MAX(ws.target_ware_code) AS target_ware_code
+        FROM   ware_shift ws
+        LEFT JOIN transhipment_order  t1 ON ws.id=t1.ware_shift_id AND t1.delete_flag=0 AND  ws.delete_flag=0
         WHERE 1=1
-        <if test="sourceWareCode != null and sourceWareCode != ''">and source_ware_code LIKE   concat('%', #{sourceWareCode}, '%')</if>
-        <if test="targetWareCode != null and targetWareCode != ''">and target_ware_code LIKE   concat('%', #{targetWareCode}, '%')</if>
+        <if test="sourceWareCode != null and sourceWareCode != ''">and ws.source_ware_code LIKE   concat('%', #{sourceWareCode}, '%')</if>
+        <if test="targetWareCode != null and targetWareCode != ''">and ws.target_ware_code LIKE   concat('%', #{targetWareCode}, '%')</if>
+        <if test="orderNb != null and orderNb != ''">and t1.order_number LIKE   concat('%', #{orderNb}, '%')</if>
+        <if test="carNb != null and carNb != ''">and t1.car_nb LIKE   concat('%', #{carNb}, '%')</if>
+        <if test="createTimeStart != null">and t1.create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
+        <if test="createTimeEnd != null">and t1.create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
+        GROUP BY t1.car_nb,t1.create_time,t1.order_number
+        UNION ALL
+        SELECT COUNT(*) AS number,t.car_nb,t.order_number as order_nb,t.create_time,
+        MAX(pws.source_ware_code) AS source_ware_code,MAX(pws.target_ware_code) AS target_ware_code
+        FROM product_ware_shift pws
+        LEFT JOIN transhipment_order  t   ON pws.id=t.product_ware_shift_id AND t.delete_flag=0 AND  pws.delete_flag=0
+        WHERE 1=1
+        <if test="sourceWareCode != null and sourceWareCode != ''">and pws.source_ware_code LIKE   concat('%', #{sourceWareCode}, '%')</if>
+        <if test="targetWareCode != null and targetWareCode != ''">and pws.target_ware_code LIKE   concat('%', #{targetWareCode}, '%')</if>
         <if test="orderNb != null and orderNb != ''">and t.order_number LIKE   concat('%', #{orderNb}, '%')</if>
-        <if test="carNb != null and carNb != ''">and car_nb LIKE   concat('%', #{carNb}, '%')</if>
+        <if test="carNb != null and carNb != ''">and t.car_nb LIKE   concat('%', #{carNb}, '%')</if>
         <if test="createTimeStart != null">and t.create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
         <if test="createTimeEnd != null">and t.create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
         GROUP BY t.car_nb,t.create_time,t.order_number
+
         ORDER BY create_time desc
     </select>
 
