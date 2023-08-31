@@ -48,8 +48,8 @@
 				<uni-section class="mb-10" :title="`当前托${title}`" type="line">
 					<!-- :title="`当前托${title}`" type="line" -->
 					<template v-slot:right>
-						<uni-tag text="拆" :inverted="tagInverted" type="primary"
-							@click="tagInverted = !tagInverted"></uni-tag>
+						<!-- <uni-tag text="拆" :inverted="tagInverted" type="primary"
+							@click="tagInverted = !tagInverted"></uni-tag> -->
 					</template>
 					<uni-list v-show="currentTaskBarCodeList.length">
 						<uni-list-item v-for="(item, index) in currentTaskBarCodeList" :key="item.sscc" ellipsis="1">
@@ -78,7 +78,7 @@
 		</view>
 		<Message ref="message"></Message>
 		<uni-popup ref="alertDialog" type="dialog">
-			<uni-popup-dialog type="error" cancelText="关闭" confirmText="清空打包任务" title="通知" content="扫描标签次数未满足要求,请检查!"
+			<uni-popup-dialog type="error" cancelText="关闭" confirmText="清空打包任务" title="通知" :content="errorMessage"
 				@confirm="handleClean" @close="$refs.alertDialog.close()"></uni-popup-dialog>
 		</uni-popup>
 
@@ -95,6 +95,7 @@
 	import _ from 'lodash'
 
 	export default {
+		name: 'packOperator',
 		components: {
 			Message
 		},
@@ -114,7 +115,9 @@
 				stepIndex: 1,
 				tagInverted: true,
 				returnPage: false,
-				params: {}
+				params: {},
+
+				errorMessage: ''
 			}
 		},
 		computed: {
@@ -128,6 +131,18 @@
 			allTaskCount() {
 				const count = _.sumBy(_.filter(this.taskList, x => !x.isDisassembled), 'palletQuantity')
 				return count
+			},
+			splitPalletCountMap() {
+				const splitPalletList = _.filter(this.taskList, x => x.isDisassembled)
+				const uniqSplitPalletList = _.uniqBy(splitPalletList, 'prodOrder')
+				return _.map(uniqSplitPalletList, x => {
+					return {
+						prodOrder: x.prodOrder,
+						count: _.ceil(_.sumBy(_.filter(splitPalletList, y => x.prodOrder === y.prodOrder),
+							'palletQuantity'))
+
+					}
+				})
 			},
 			splitPalletCount() {
 				const count = _.sumBy(_.filter(this.taskList, x => x.isDisassembled), 'palletQuantity')
@@ -182,11 +197,8 @@
 		},
 		onLoad(options) {
 			this.taskId = options.id
-			// this.shippingMark = options.shippingMark
-			// this.etoPo = options.etoPo
 			this.params = options
 			this.initScanCode()
-			this.getHistoryRecord()
 		},
 		onLaunch(options) {
 			Bus.$off('scancodedate')
@@ -203,21 +215,37 @@
 						rows
 					} = await this.$store.dispatch('finishedProduct/getHistoryRecord', options)
 
+					if (!rows.length) {
+						return
+					}
+
+
 					const allScanProdOrderList = []
 					_.each(rows, x => {
-						_.each(_.split(x.ssccNumbers, ','), y => {
-							const item = {
-								type: '',
-								prodOrder: x.prodOrder,
-								sscc: y
-							}
-							allScanProdOrderList.push(item)
-						})
+						allScanProdOrderList.push(...JSON.parse(x.prodSscc || '[]'))
 					})
 
 					this.allScanProdOrderList = allScanProdOrderList
 					this.stepIndex = rows.length + 1
+
+
+					let taskIndex = 0
+					let afterPackingCount = 0
+					_.each(this.normalTaskList, (x, i) => {
+						if (afterPackingCount === -1) {
+							return
+						}
+
+						afterPackingCount = afterPackingCount + Number(x.afterPacking)
+						console.log('afterPackingCount', afterPackingCount)
+						if (afterPackingCount >= this.stepIndex) {
+							taskIndex = i
+							afterPackingCount = -1
+						}
+					})
+					this.taskIndex = taskIndex
 				} catch (e) {
+					console.log(e)
 					this.$refs.message.error(e.message)
 				} finally {}
 			},
@@ -233,39 +261,56 @@
 			onReset() {
 				this.currentTaskBarCodeList = []
 				this.allScanProdOrderList = []
+				this.taskIndex = 0
 			},
 			onSubmitCheck() {
+				console.log('222', 111)
+
 				if (!this.currentTaskBarCodeList.length) {
+					this.errorMessage = '请扫描成品标签二维码'
 					throw ({
-						message: `请扫描成品标签二维码`
+						message: this.errorMessage
 					})
 				}
 
-				if (_.uniqBy(this.allScanProdOrderList, 'sscc').length < this.palletQuantityCount) {
+
+				if (_.uniqBy(_.filter(this.allScanProdOrderList, x => !x.type), 'sscc').length, 'sscc' < this
+					.palletQuantityCount) {
+					this.errorMessage = '扫描标签次数未满足要求,请检查'
 					throw ({
-						message: `扫描标签次数未满足要求,请检查`
+						message: this.errorMessage
 					})
 				}
 
-				// console.log('this.taskListCountMap',this.taskListCountMap)
-				// const normalAllScanProdOrderMap = _.map(_.filter(this.allScanProdOrderList,x=>x.type !== '拆'), x => x.prodOrder);
-				// _.each(_.uniq(normalAllScanProdOrderMap), item => {
-				// 	const count = _.filter(normalAllScanProdOrderMap, x => x === item & x.type !=='拆').length;
-				// 	if (count < this.taskListCountMap[item] || count > this.taskListCountMap[item]) {
-				// 		throw ({message:`扫描标签次数未满足要求,请检查`});
-				// 	}
-				// 	// if (count > this.taskListCountMap[item]) {
-				// 	// 	throw `编号“${count}”扫描次数不一致`;
-				// 	// }
-				// });
 
-				// const splitAllScanProdOrderMap = _.map(_.filter(this.allScanProdOrderList,x=>x.type === '拆'), x => x.prodOrder);
-				// _.each(_.uniq(splitAllScanProdOrderMap), item => {
-				// 	const count = _.filter(splitAllScanProdOrderMap, x => x === item & x.type ==='拆').length;
-				// 	if (count < this.taskListCountMap[item]) {
-				// 		throw ({message:`扫描标签次数未满足要求,请检查`});
-				// 	}
-				// });
+
+				if (this.prodOrderStr) {
+					_.each(this.splitPalletCountMap, x => {
+						const splitPalletSsccList = _.filter(this.allScanProdOrderList, y => y.prodOrder ===
+							x.prodOrder)
+						if (splitPalletSsccList.length < x.count) {
+							this.errorMessage = '扫描拆托标签次数未满足要求,请检查'
+							throw ({
+								message: this.errorMessage
+							})
+						}
+					})
+				}
+
+				const noSplitPalletSsccList = _.filter(this.allScanProdOrderList, x => !x.type)
+				if (noSplitPalletSsccList.length !== this.afterPackingCount) {
+
+					if (noSplitPalletSsccList.length > this.afterPackingCount) {
+						this.errorMessage = '扫描非拆托标签次数大于目标次数,请检查'
+					} else {
+						this.errorMessage = '扫描非拆托标签次数小于目标次数,请检查'
+					}
+
+					throw ({
+						message: this.errorMessage
+					})
+				}
+
 			},
 			onNextCheck() {
 				if (!this.currentTaskBarCodeList.length) {
@@ -290,9 +335,10 @@
 				}
 				this.currentTaskBarCodeList.splice(index, 1)
 
-				// const all = 
+				console.log('sscc', sscc)
 				const allScanIndex = _.findIndex(this.allScanProdOrderList, x => x.sscc === sscc)
-				this.allScanProdOrderList.splice(index, allScanIndex)
+				console.log('allScanIndex', allScanIndex)
+				this.allScanProdOrderList.splice(allScanIndex, 1)
 			},
 			async handleClean() {
 				try {
@@ -317,12 +363,30 @@
 			async initScanCode() {
 				Bus.$on('scancodedate', data => {
 					data.code = data.code.replace(/\r|\n/gi, '')
+					console.log('data.code', data.code)
 					const prodOrder = data.code.substr(10, 9)
+					console.log('prodOrder', prodOrder)
+					console.log(data.code.indexOf('36900639'))
+					if (!prodOrder || data.code.indexOf('36900639') < 0) {
+						this.$refs.message.error('请扫描正确的成品二维码')
+						return
+					}
+
+
 					const sscc = data.code.substr(data.code.length - 18, 18)
+
+					// 判断当前托不能重复
 					if (_.find(this.currentTaskBarCodeList, x => x.sscc === sscc)) {
 						this.$refs.message.error('当前托已存在')
 						return
 					}
+
+					// 判断拆托的SSCC不能重复
+					if (_.find(this.allScanProdOrderList, x => x.sscc === sscc && !x.type)) {
+						this.$refs.message.error('当前托已扫描')
+						return
+					}
+
 
 					const splitProdOrder = _.split(this.prodOrderStr, ',')
 					const {
@@ -330,20 +394,20 @@
 					} = this.normalTaskList[this.taskIndex] || {}
 					const currentScanProdOrderList = [currentProdOrder, ...splitProdOrder]
 
+
 					if (!currentScanProdOrderList.includes(prodOrder)) {
-						this.$refs.message.error('批次号校验错误')
+						this.$refs.message.error('请扫描该批次二维码')
 						return
 					}
 
+					const type = _.filter(splitProdOrder, x => x === prodOrder).length > 0 ? '拆' : ''
+					console.log('type', type)
 					const item = {
-						type: '',
+						type,
 						prodOrder,
 						sscc
 					}
-					if (!this.tagInverted) {
-						item.type = '拆'
-						// this.takeDownTaskBarCodeList.push(item);
-					}
+
 					this.currentTaskBarCodeList.push(item)
 					this.allScanProdOrderList.push(item)
 				})
@@ -357,26 +421,36 @@
 					})
 					this.submitLoading = true
 
-					const {
-						afterPacking
-					} = this.normalTaskList[this.taskIndex] || {}
-					if (this.stepIndex > afterPacking) {
-						this.taskIndex += 1
-					}
-					//请求 生成记录
+
+					// //请求 生成记录
 					const ssccNumbers = _.join(_.map(this.currentTaskBarCodeList, x => x.sscc), ',')
 					const lastOne = this.afterPackingCount === this.stepIndex ? 1 : 0
 					const options = {
 						ssccNumbers,
 						historyIndex: this.stepIndex,
 						lastOne,
-						shippingTaskId: this.taskId
+						shippingTaskId: this.taskId,
+						prodSscc: JSON.stringify(this.currentTaskBarCodeList)
 					}
 					await this.$store.dispatch('finishedProduct/addPackageHistory', options)
 
-					// this.onReset()
+					this.onReset()
+
 					this.currentTaskBarCodeList = []
 					this.stepIndex += 1
+
+					let allAfterPacking = 0
+					for (var i = 0; i < this.taskIndex + 1; i++) {
+						const {
+							afterPacking
+						} = this.normalTaskList[i] || {}
+						allAfterPacking += Number(afterPacking)
+					}
+
+					if (this.stepIndex > allAfterPacking) {
+						this.taskIndex += 1
+					}
+
 				} catch (e) {
 					console.log(e)
 					this.$refs.message.error(e.message)
@@ -405,7 +479,8 @@
 						ssccNumbers,
 						historyIndex: this.stepIndex,
 						lastOne,
-						shippingTaskId: this.taskId
+						shippingTaskId: this.taskId,
+						prodSscc: JSON.stringify(this.currentTaskBarCodeList)
 					}
 					const result = await this.$store.dispatch('finishedProduct/addPackageHistory', options)
 					if (result.code === 200) {
@@ -447,6 +522,8 @@
 				} = await this.$store.dispatch('finishedProduct/getTaskList', options)
 				this.taskList = data
 				this.normalTaskList = _.filter(data, x => !x.isDisassembled)
+
+				this.getHistoryRecord()
 			},
 
 			async onSubmit() {}

@@ -31,8 +31,8 @@
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo"/>重置</a-button>
 
               <a-button style="margin-left: 8px" type="primary" :loading="downloadLoading" @click="handleExport">
-           导出
-          </a-button>
+                导出
+              </a-button>
             </span>
           </a-form-model-item>
 
@@ -53,9 +53,9 @@
       </a-table>
 
       <div class="pagination-con">
-        <span class="span">共{{paginationTotal}}条记录</span>
         <a-pagination
           show-size-changer
+          :show-total="total => `总共 ${total} 条`"
           :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
           show-less-items
           :current="queryForm.pageNum"
@@ -74,7 +74,7 @@
 import {mixinTableList} from '@/utils/mixin/index'
 import moment from 'moment'
 import _ from 'lodash'
-import {download} from "@/utils/file";
+import {download} from '@/utils/file'
 
 const columns = [
 
@@ -192,7 +192,7 @@ export default {
     }
   },
   mounted() {
-    const endDate = moment();
+    const endDate = moment()
     const startDate = moment().subtract(1, 'months')
     this.queryForm.date = [startDate, endDate]
     this.loadData()
