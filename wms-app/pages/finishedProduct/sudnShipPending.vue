@@ -40,7 +40,8 @@
 				total: 0,
 				pageSize: 10,
 				pageNum: 1,
-				bottomTips: ''
+				bottomTips: '',
+				delivery: ''
 			};
 		},
 		created() {
@@ -51,7 +52,8 @@
 				const options = {
 					pageSize: this.pageSize,
 					pageNum: this.pageNum,
-					type: 0
+					type: 0,
+					delivery: this.delivery
 				};
 				const {
 					rows,
@@ -62,7 +64,8 @@
 					total
 				};
 			},
-			async handleRefresh() {
+			async handleRefresh(delivery) {
+				this.delivery = delivery
 				await this.loadData();
 				this.$refs.hrPullLoad.reSet();
 			},

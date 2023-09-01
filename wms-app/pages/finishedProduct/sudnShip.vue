@@ -1,9 +1,15 @@
 <template>
 	<my-page nav-title="SUDN发运">
-		<AloysTab slot="page-main" class="flex flex-column" :tabs="tabs" @change="onTabChange">
-			<Pending @on-click="handleGoto" slot="content0"></Pending>
-			<Completed slot="content1"></Completed>
-		</AloysTab>
+		<view slot="page-main" style="height: 100%;width: 100%;">
+			<uni-easyinput class="easyinput" suffixIcon="search" v-model="delivery" placeholder="Deliver搜索"
+				@iconClick="handleSearch"></uni-easyinput>
+
+			<AloysTab class="flex flex-column" :tabs="tabs" @change="onTabChange">
+				<Pending ref="pending" @on-click="handleGoto" slot="content0"></Pending>
+				<Completed ref="complete" slot="content1"></Completed>
+			</AloysTab>
+		</view>
+
 	</my-page>
 </template>
 
@@ -21,6 +27,7 @@
 		},
 		data() {
 			return {
+				delivery: '',
 				tabs: [{
 					title: '待发运'
 				}, {
@@ -37,6 +44,10 @@
 				uni.navigateTo({
 					url: `/pages/finishedProduct/sudnShipOperation?sudnId=${item.id}`
 				});
+			},
+			handleSearch() {
+				this.$refs.pending.handleRefresh(this.delivery)
+				this.$refs.complete.handleRefresh(this.delivery)
 			}
 		}
 	};
@@ -69,5 +80,12 @@
 		right: 40px;
 		background: rgba(84, 27, 134, 0.7);
 		box-shadow: 0 1px 3px 2px rgba(0, 0, 0, 0.5);
+	}
+
+	.easyinput {
+		padding: 0px 8px;
+		box-sizing: border-box;
+		margin-top: 8px;
+		margin-bottom: 8px;
 	}
 </style>
