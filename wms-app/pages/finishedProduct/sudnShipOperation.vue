@@ -6,6 +6,8 @@
 					<view class="label">Delivery：</view>
 					{{ info.delivery }}
 				</view>
+				
+				
 				<view class="text-line m-b-8 ">
 					<view class="label">Material：</view>
 					{{ info.material }}
@@ -17,6 +19,10 @@
 				<view class="text-line m-b-8 ">
 					<view class="label">Deliver quantity：</view>
 					{{ info.deliveryQuantity }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">发货单位：</view>
+					PCS
 				</view>
 
 			</view>

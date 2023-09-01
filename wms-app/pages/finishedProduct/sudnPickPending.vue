@@ -9,6 +9,8 @@
 					<text class="material-name">{{ item.sscc }}</text>
 					<text class="status">待下架</text>
 				</view>
+				<view class="card-text m-b-4">Prod Order：{{ item.productionBatch }}</view>
+				
 				<view class="card-text m-b-4">Material Name：{{ item.materialName }}</view>
 				
 				<view class="card-text m-b-4">Material：{{ item.material }}</view>

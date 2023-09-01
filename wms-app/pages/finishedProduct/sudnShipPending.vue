@@ -8,9 +8,12 @@
 					<text class="material-name">{{ item.delivery }}</text>
 					<text class="status">未完成</text>
 				</view>
-				<view class="card-text m-b-4">Material：{{ item.material }}</view>
 				<view class="card-text m-b-4">Item：{{ item.item }}</view>
+				<view class="card-text m-b-4">Prod Orders：{{ item.productionBatchs }}</view>
+				<view class="card-text m-b-4">Material：{{ item.material }}</view>
 				<view class="card-text m-b-4">Deliver quantity：{{ item.deliveryQuantity }}</view>
+				<view class="card-text m-b-4">发货单位：PCS</view>
+				
 				<view class="card-text sscc">
 					<!-- <text>SSCC码：{{ item.ssccNumber }}</text> -->
 					<text class="time">{{ item.createTime }}</text>

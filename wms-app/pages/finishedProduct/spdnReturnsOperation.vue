@@ -6,6 +6,10 @@
 					<view class="label">SSCC：</view>
 					{{ info.ssccNb }}
 				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">退货单位：</view>
+					PCS
+				</view>
 				<!-- <view class="text-line m-b-8 ">
 					<view class="label">Material：</view>
 					{{ info.material }}
