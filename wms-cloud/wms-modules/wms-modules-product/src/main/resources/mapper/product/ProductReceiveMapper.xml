@@ -64,8 +64,8 @@
         ) AS
         total_stock_sum
 
-        from product_receive pr left join (select * from md_product_packaging where delete_flag=0 )p on pr.material_nb =
-        p.product_no
+        from product_receive pr
+        left join  md_product_packaging p   on pr.material_nb = p.product_no AND p.delete_flag=0
         where pr.delete_flag=0
         <if test="plantNb != null  and plantNb != ''">and pr.plant_nb like concat('%', #{plantNb}, '%')</if>
         <if test="materialNb != null  and materialNb != ''">and pr.material_nb like concat('%', #{materialNb}, '%')</if>

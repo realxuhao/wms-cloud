@@ -196,7 +196,7 @@ export default {
           throw new Error('请先选择期初期末时间')
         }
 
-        const createTimeStart = date.length > 0 ? date[0].format('YYYY-MM-DD 00:00:00') : undefined
+        const createTimeStart = date.length > 0 ? date[0].format('YYYY-MM-DD 23:59:00') : undefined
         const createTimeEnd = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:59') : undefined
         const options = { ..._.omit(this.queryForm, ['date']), createTimeStart, createTimeEnd }
 

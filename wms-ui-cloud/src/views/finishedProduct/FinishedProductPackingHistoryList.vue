@@ -46,17 +46,11 @@
         size="middle"
         :scroll="tableScroll"
       >
-        <template slot="checkType" slot-scope="text">
-          <div >
-            <a-tag color="orange" v-if="text===0">
-              称重
-            </a-tag>
-            <a-tag color="blue" v-if="text===1">
-              数数
-            </a-tag>
-            <a-tag color="#87d068" v-if="text===2">
-              免检
-            </a-tag>
+        <template slot="prodSscc" slot-scope="text, record">
+          <div class="list-item" v-for="item in record.prodSsccMap" :key="item.sscc">
+            <span class="list-item-sscc" style="margin-right: 8px">sscc：<span class="label">{{item.sscc}}</span></span>
+            <span class="list-item-batch" style="margin-right: 8px">prod-order：<span class="label">{{item.prodOrder}}</span></span>
+            <span class="list-item-type">操作类型：<span class="label">{{item.type?'拆托':'非拆托'}}</span></span>
           </div>
         </template>
       </a-table>
@@ -87,31 +81,45 @@ const columns = [
     title: 'Shipping Mark',
     key: 'shippingMark',
     dataIndex: 'shippingMark',
-    width: 120
+    width: 100
   },
   {
     title: 'ETO PO',
     key: 'etoPo',
     dataIndex: 'etoPo',
-    width: 120
+    width: 100
   },
   {
     title: '打包总托数',
     key: 'afterPacking',
     dataIndex: 'afterPacking',
-    width: 120
+    width: 80
   },
   {
     title: '序号',
     key: 'index',
     dataIndex: 'historyIndex',
-    width: 140
+    width: 40
   },
+  // {
+  //   title: '订单号',
+  //   key: 'prodOrder',
+  //   dataIndex: 'prodOrder',
+  //   width: 140
+  // },
+  //
+  // {
+  //   title: 'SSCC',
+  //   key: 'ssccNumbers',
+  //   dataIndex: 'ssccNumbers',
+  //   width: 140
+  // },
   {
-    title: 'SSCC',
-    key: 'ssccNumbers',
-    dataIndex: 'ssccNumbers',
-    width: 140
+    title: 'SSCC详细',
+    key: 'prodSscc',
+    dataIndex: 'prodSscc',
+    scopedSlots: { customRender: 'prodSscc' },
+    width: 400
   },
   {
     title: '打包时间',
@@ -166,7 +174,12 @@ export default {
         const {
           data: { rows, total }
         } = await this.$store.dispatch('finishedProduct/getHistoryRecord', this.queryForm)
-        this.list = rows
+        this.list = _.map(rows,x=>{
+          return{
+            ...x,
+            prodSsccMap:JSON.parse(x.prodSscc)||[]
+          }
+        })
         this.paginationTotal = total
       } catch (error) {
         this.$message.error(error.message)
@@ -185,4 +198,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
+
+.list-item{
+  margin-bottom: 4px;
+}
+
+.label{
+  color: #333;
+  font-size: 14px;
+  font-weight: bold;
+}
 </style>

@@ -53,9 +53,11 @@
       </a-table>
 
       <div class="pagination-con">
+      <a class="pagination-total">总车次数：{{paginationTotal}}</a>
+
         <a-pagination
           show-size-changer
-          :show-total="total => `总共 ${total} 条`"
+
           :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
           show-less-items
           :current="queryForm.pageNum"
@@ -201,4 +203,14 @@ export default {
 </script>
 
 <style lang="less" scoped>
+
+.pagination-con{
+  justify-content: space-between;
+  align-items: center;
+  .pagination-total{
+    font-weight: bold;
+    font-size: 16px;
+    margin-left: 8px;
+  }
+}
 </style>
