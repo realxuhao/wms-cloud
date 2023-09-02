@@ -36,6 +36,13 @@
 				currentTabIndex: 0
 			};
 		},
+		watch: {
+			delivery(val) {
+				if (!val) {
+					this.handleSearch()
+				}
+			}
+		},
 		methods: {
 			onTabChange(id) {
 				console.log(id);
@@ -46,8 +53,8 @@
 				});
 			},
 			handleSearch() {
-				this.$refs.pending.handleRefresh(this.delivery)
-				this.$refs.complete.handleRefresh(this.delivery)
+				this.$refs.pending.handleSearch(this.delivery)
+				this.$refs.complete.handleSearch(this.delivery)
 			}
 		}
 	};

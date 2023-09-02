@@ -11,7 +11,7 @@
 				<view class="card-text m-b-4">Prod Order：{{ item.productionBatch }}</view>
 				
 				<view class="card-text m-b-4">Material Name：{{ item.materialName }}</view>
-				
+
 				<view class="card-text m-b-4">Material：{{ item.material }}</view>
 				<view class="card-text m-b-4">库位：{{ item.binCode }}</view>
 				<view class="card-text m-b-4">Deliver quantity：{{ item.deliveryQuantity }}</view>
@@ -87,11 +87,16 @@
 					this.$refs.message.error(e.message);
 				}
 			},
-			async handleRefresh(delivery) {
+			async handleRefresh() {
+				await this.loadData();
+				this.$refs.hrPullLoad.reSet();
+			},
+			async handleSearch(delivery) {
 				this.delivery = delivery
 				await this.loadData();
 				this.$refs.hrPullLoad.reSet();
 			},
+
 
 			async handleLoadMore() {
 				try {

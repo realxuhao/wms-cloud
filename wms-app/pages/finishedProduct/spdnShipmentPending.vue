@@ -62,12 +62,15 @@
 					total
 				};
 			},
-			async handleRefresh(delivery) {
+			async handleRefresh() {
+				await this.loadData();
+				this.$refs.hrPullLoad.reSet();
+			},
+			async handleSearch(delivery) {
 				this.delivery = delivery
 				await this.loadData();
 				this.$refs.hrPullLoad.reSet();
 			},
-
 			async handleLoadMore() {
 				try {
 					const length = this.list.length;

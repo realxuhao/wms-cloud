@@ -48,15 +48,16 @@
 				<uni-section class="mb-10" :title="`当前托${title}`" type="line">
 					<!-- :title="`当前托${title}`" type="line" -->
 					<template v-slot:right>
-						<!-- <uni-tag text="拆" :inverted="tagInverted" type="primary"
-							@click="tagInverted = !tagInverted"></uni-tag> -->
+						<uni-tag :text="tagInverted?'扫描非拆托':'扫描拆托'" :inverted="tagInverted" type="primary"
+							@click="tagInverted = !tagInverted"></uni-tag>
 					</template>
 					<uni-list v-show="currentTaskBarCodeList.length">
 						<uni-list-item v-for="(item, index) in currentTaskBarCodeList" :key="item.sscc" ellipsis="1">
 							<template v-slot:body>
 								<view class="list-item">
-									<view class="tag-box"><uni-tag v-show="item.type === '拆'" text="拆" :inverted="true"
-											type="primary"></uni-tag></view>
+									<view class="tag-box">
+										<uni-tag v-show="item.type === '拆'" text="拆托" type="primary"></uni-tag>
+									</view>
 									<view class="ellipsis">{{ item.sscc }}</view>
 								</view>
 							</template>
@@ -199,6 +200,7 @@
 			this.taskId = options.id
 			this.params = options
 			this.initScanCode()
+
 		},
 		onLaunch(options) {
 			Bus.$off('scancodedate')
@@ -264,8 +266,6 @@
 				this.taskIndex = 0
 			},
 			onSubmitCheck() {
-				console.log('222', 111)
-
 				if (!this.currentTaskBarCodeList.length) {
 					this.errorMessage = '请扫描成品标签二维码'
 					throw ({
@@ -298,6 +298,7 @@
 				}
 
 				const noSplitPalletSsccList = _.filter(this.allScanProdOrderList, x => !x.type)
+
 				if (noSplitPalletSsccList.length !== this.afterPackingCount) {
 
 					if (noSplitPalletSsccList.length > this.afterPackingCount) {
@@ -335,9 +336,7 @@
 				}
 				this.currentTaskBarCodeList.splice(index, 1)
 
-				console.log('sscc', sscc)
 				const allScanIndex = _.findIndex(this.allScanProdOrderList, x => x.sscc === sscc)
-				console.log('allScanIndex', allScanIndex)
 				this.allScanProdOrderList.splice(allScanIndex, 1)
 			},
 			async handleClean() {
@@ -356,61 +355,80 @@
 						this.handleGoBack()
 					}
 				}
-
-
-
 			},
-			async initScanCode() {
-				Bus.$on('scancodedate', data => {
-					data.code = data.code.replace(/\r|\n/gi, '')
-					console.log('data.code', data.code)
-					const prodOrder = data.code.substr(10, 9)
-					console.log('prodOrder', prodOrder)
-					console.log(data.code.indexOf('36900639'))
-					if (!prodOrder || data.code.indexOf('36900639') < 0) {
-						this.$refs.message.error('请扫描正确的成品二维码')
+
+
+			onScanning(data) {
+				data.code = data.code.replace(/\r|\n/gi, '')
+
+				const prodOrder = data.code.substr(10, 9)
+
+				if (!prodOrder || data.code.indexOf('36900639') < 0) {
+					this.$refs.message.error('请扫描正确的成品二维码')
+					return
+				}
+
+				const sscc = data.code.substr(data.code.length - 18, 18)
+
+				// 判断当前托不能重复
+				if (_.find(this.currentTaskBarCodeList, x => x.sscc === sscc)) {
+					this.$refs.message.error('当前托已存在')
+					return
+				}
+
+				const splitProdOrder = _.split(this.prodOrderStr, ',')
+				const {
+					prodOrder: currentProdOrder
+				} = this.normalTaskList[this.taskIndex] || {}
+				const currentScanProdOrderList = [currentProdOrder, ...splitProdOrder]
+				if (!currentScanProdOrderList.includes(prodOrder)) {
+					this.$refs.message.error('请扫描该批次二维码')
+					return
+				}
+
+				let type = ''
+				// 判断
+				if (!this.tagInverted) {
+					type = '拆'
+					if (_.findIndex(splitProdOrder, x => x === prodOrder) === -1) {
+						this.$refs.message.error('当前状态为“扫描拆托”，请扫描拆托二维码')
 						return
 					}
+				} else {
+					console.log('已进入')
 
-
-					const sscc = data.code.substr(data.code.length - 18, 18)
-
-					// 判断当前托不能重复
-					if (_.find(this.currentTaskBarCodeList, x => x.sscc === sscc)) {
-						this.$refs.message.error('当前托已存在')
-						return
-					}
-
-					// 判断拆托的SSCC不能重复
-					if (_.find(this.allScanProdOrderList, x => x.sscc === sscc && !x.type)) {
+					console.log(_.find(this.allScanProdOrderList, x => x.sscc === sscc))
+					if (_.find(this.allScanProdOrderList, x => x.sscc === sscc)) {
 						this.$refs.message.error('当前托已扫描')
 						return
 					}
+				}
 
+				// // 判断当前批次是否存在有拆托和非拆托
+				// if (_.filter(splitProdOrder, x => x === prodOrder).length > 0 && _.findIndex(this.normalTaskList, x => x
+				// 		.prodOrder === prodOrder) > -
+				// 	1) {
 
-					const splitProdOrder = _.split(this.prodOrderStr, ',')
-					const {
-						prodOrder: currentProdOrder
-					} = this.normalTaskList[this.taskIndex] || {}
-					const currentScanProdOrderList = [currentProdOrder, ...splitProdOrder]
+				// 	// 如果拆托批次扫描字数大于等于1次，默认将扫描的数据都变成拆托
+				// 	const sameBatch = _.filter(this.currentTaskBarCodeList, x => x.prodOrder === prodOrder)
 
+				// 	if (sameBatch.length >= 1) {
+				// 		type = '拆'
+				// 	}
+				// }
 
-					if (!currentScanProdOrderList.includes(prodOrder)) {
-						this.$refs.message.error('请扫描该批次二维码')
-						return
-					}
+				const item = {
+					type,
+					prodOrder,
+					sscc
+				}
 
-					const type = _.filter(splitProdOrder, x => x === prodOrder).length > 0 ? '拆' : ''
-					console.log('type', type)
-					const item = {
-						type,
-						prodOrder,
-						sscc
-					}
+				this.currentTaskBarCodeList.push(item)
+				this.allScanProdOrderList.push(item)
+			},
 
-					this.currentTaskBarCodeList.push(item)
-					this.allScanProdOrderList.push(item)
-				})
+			async initScanCode() {
+				Bus.$on('scancodedate', this.onScanning)
 			},
 			async handleNext() {
 				try {
@@ -434,8 +452,6 @@
 					}
 					await this.$store.dispatch('finishedProduct/addPackageHistory', options)
 
-					this.onReset()
-
 					this.currentTaskBarCodeList = []
 					this.stepIndex += 1
 
@@ -450,6 +466,8 @@
 					if (this.stepIndex > allAfterPacking) {
 						this.taskIndex += 1
 					}
+
+					this.tagInverted = true
 
 				} catch (e) {
 					console.log(e)
@@ -493,9 +511,6 @@
 
 					//如果失败，页面应该有个弹窗  重新做：掉API删除所有记录，刷新整个页面，返回：返回上一页
 				} catch (e) {
-					console.log(e.message)
-					//TODO handle the exception
-					// this.$refs.message.error(e.message);
 					this.$refs.alertDialog.open()
 				} finally {
 					this.submitLoading = false
@@ -590,7 +605,7 @@
 			min-width: 0;
 
 			.tag-box {
-				width: 28px;
+				width: 42px;
 				margin-right: 4px;
 			}
 
