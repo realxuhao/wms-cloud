@@ -77,21 +77,11 @@ const columns = [
     key: 'batchNb',
     dataIndex: 'batchNb',
   },
-  {
-    title: '期初时间',
-    key: 'createTime',
-    dataIndex: 'createTime',
-  },
 
   {
     title: '期初数量',
     key: 'operationStock',
     dataIndex: 'operationStock',
-  },
-  {
-    title: '期末时间',
-    key: 'bc',
-    dataIndex: 'bc',
   },
 
   {
@@ -104,32 +94,17 @@ const columns = [
     key: 'cs',
     dataIndex: 'cs',
   },
-  {
-    title: '入库时间',
-    key: 'cc',
-    dataIndex: 'cc',
-  },
 
   {
     title: '销售出库数量',
     key: 'ds',
     dataIndex: 'ds',
   },
-  {
-    title: '销售出库时间',
-    key: 'dc',
-    dataIndex: 'dc',
-  },
 
   {
     title: '其他出库数量',
-    key: 'ds',
-    dataIndex: 'ds',
-  },
-  {
-    title: '其他出库时间',
-    key: 'dc',
-    dataIndex: 'dc',
+    key: 'es',
+    dataIndex: 'es',
   },
 
 ]
@@ -170,6 +145,8 @@ export default {
     }
   },
   methods: {
+
+
     async handleExport(){
       try {
         this.downloadLoading = true
