@@ -9,6 +9,7 @@
   
         <a-form-model-item label="期初期末时间">
           <a-range-picker
+            :disabled-date="disabledDate"
             format="YYYY-MM-DD"
             v-model="queryForm.date"
           />
@@ -26,6 +27,7 @@
         <a-button type="primary" :loading="downloadLoading" @click="handleExport" >
           <a-icon type="download" />导出
         </a-button>
+        <a class="pagination-total">库存统计不包含当日，当日库存会在每日23:59统计</a>
       </div>
       <a-table
         :columns="columns"
@@ -63,7 +65,7 @@
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
 import { download } from '@/utils/file'
-
+import moment from 'moment';
 
 const columns = [
 
@@ -132,6 +134,8 @@ export default {
   mixins: [mixinTableList],
   data () {
     return {
+      // 允许选择的最大日期是今天
+      maxDate: moment().subtract(1, 'day'),
       tableLoading: false,
       downloadLoading: false,
       queryForm: {
@@ -145,7 +149,11 @@ export default {
     }
   },
   methods: {
-
+    disabledDate(date) {
+      // 将日期转换为 moment 对象以进行比较
+      const currentDate = moment(date);
+      return currentDate.isAfter(this.maxDate, 'day');
+    },
 
     async handleExport(){
       try {
@@ -199,4 +207,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.pagination-total{
+  font-weight: bold;
+  font-size: 16px;
+  margin-left: 10px;
+}
 </style>
