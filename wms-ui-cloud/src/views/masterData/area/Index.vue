@@ -69,7 +69,7 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a class="warning-color"v-hasPermi="['area:info:编辑']" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
+            <a class="warning-color" v-hasPermi="['area:info:编辑']" @click="handleEdit(record)"><a-icon class="m-r-4" type="edit" />编辑</a>
             <a-divider type="vertical" />
             <a-popconfirm title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
               <a v-hasPermi="['area:info:delete']" class="danger-color"><a-icon class="m-r-4" type="delete" />删除</a>
