@@ -213,7 +213,14 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
 //                }
                 proComparison.setStockExpireDate(inStock.getBatchNb());
                 proComparison.setStockMaterialNb(inStock.getMaterialNb());
-                proComparison.setStockQuantity(inStock.getPcsTotalStock());
+                Double pcsTotalStock = inStock.getPcsTotalStock();
+                // pcsTotalStock四舍五入不需要小数
+                if(pcsTotalStock!=null){
+                    pcsTotalStock = new BigDecimal(pcsTotalStock).setScale(0, BigDecimal.ROUND_HALF_UP).doubleValue();
+                }else {
+                    pcsTotalStock=0d;
+                }
+                proComparison.setStockQuantity(pcsTotalStock);
                 result.add(proComparison);
             }
             //proComparisons循环赋值
@@ -236,6 +243,12 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
                                         productStockVO.getExpireDate().equals(finalDate)).collect(Collectors.toList());
                 //productStockVOs的totalstock累加
                 Double reduce = productStockVOs.stream().map(item -> item.getTotalStock() * Double.valueOf(item.getBoxSpecification())).reduce(0d, Double::sum);
+                //把reduce 四舍五入保留整数
+                if(reduce!=null){
+                    reduce = new BigDecimal(reduce).setScale(0, BigDecimal.ROUND_HALF_UP).doubleValue();
+                }else {
+                    reduce=0d;
+                }
                 if (CollectionUtils.isNotEmpty(productStockVOs)){
                     r.setStockExpireDate(DateFormatUtils.format(productStockVOs.get(0).getExpireDate(), "yyyy.MM.dd"));
                     r.setStockMaterialNb(productStockVOs.get(0).getMaterialNb());
