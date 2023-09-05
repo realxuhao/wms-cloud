@@ -198,6 +198,17 @@
               </div>
             </template>
           </a-table>
+          <div class="pagination-con">
+            <a-pagination
+              show-size-changer
+              :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
+              show-less-items
+              :current="notQueryForm.pageNum"
+              :page-size.sync="notQueryForm.pageSize"
+              :total="paginationTotal"
+              @showSizeChange="onNotShowSizeChange"
+              @change="changeNotPagination" />
+          </div>
         </a-tab-pane>
       </a-tabs>
     </div>
@@ -411,6 +422,10 @@ export default {
       queryForm: {
         wareId: null
       },
+      notQueryForm:{        
+        pageSize: 20,
+        pageNum: 1,
+      },
       /** 仓库list */
       wareOptionList: []
     }
@@ -419,6 +434,14 @@ export default {
   computed: {},
   methods: {
     moment,
+    onNotShowSizeChange () {
+      this.notQueryForm.pageNum = 1
+      this.loadNotSignTableList()
+    },    
+    changeNotPagination (page) {
+      this.notQueryForm.pageNum = page
+      this.loadNotSignTableList()
+    },
     /** 获取仓库List */
     async getWareOptionList () {
       this.wareOptionList = []
@@ -569,8 +592,20 @@ export default {
     async loadNotSignTableList () {
       try {
         this.tableLoading = true
-        const { data } = await this.$store.dispatch('driverDispatch/getTodayNoSignList', { signinDate: this.searchNotSignDate == null ? null : moment(new Date(this.searchNotSignDate)).format('YYYY-MM-DD') })
-        this.notSignList = data
+        const parameter = {
+          pageSize: this.notQueryForm.pageSize,
+          pageNum: this.notQueryForm.pageNum
+        }
+        const param = {
+          signinDate: this.searchNotSignDate == null ? null : moment(new Date(this.searchNotSignDate)).format('YYYY-MM-DD')
+        }
+        const options = {
+          parameter: parameter,
+          param: param
+        }
+        const { data: { rows, total } } = await this.$store.dispatch('driverDispatch/getTodayNoSignList', options)
+        this.notSignList = rows
+        this.paginationTotal = total
         this.notSignList.forEach(x => {
           if(x.reserveType == 1 && x.late == null && x.reserveDate != null){
             if(x.driverType == 0){
