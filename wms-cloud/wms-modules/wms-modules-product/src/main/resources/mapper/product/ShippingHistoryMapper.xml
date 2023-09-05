@@ -85,7 +85,7 @@
     </select>
 
 
-            <select id="selectShipping" resultType="com.bosch.product.api.domain.vo.ShippingVO" parameterType="com.bosch.product.api.domain.dto.ShippingDTO">
+    <select id="selectShipping" resultType="com.bosch.product.api.domain.vo.ShippingVO" parameterType="com.bosch.product.api.domain.dto.ShippingDTO">
                 SELECT
                 <include refid="Task_Base_Column_List"/>,<include refid="History_Base_Column_List"/>
 
@@ -122,6 +122,45 @@
 
 
             </select>
+    <select id="selectShippingNotLike" resultType="com.bosch.product.api.domain.vo.ShippingVO" parameterType="com.bosch.product.api.domain.dto.ShippingDTO">
+        SELECT
+        <include refid="Task_Base_Column_List"/>,<include refid="History_Base_Column_List"/>
+
+        FROM shipping_task as st left join shipping_history as sh
+        ON sh.shipping_task_id=st.id
+        WHERE st.delete_flag=0 and sh.delete_flag=0
+
+        <if test="shippingMark != null and shippingMark != '' ">
+            AND st.shipping_mark = #{shippingMark}
+        </if>
+
+        <if test="historyIndex != null  ">
+            AND sh.history_index = #{historyIndex}
+        </if>
+        <if test="shippingTaskId != null  ">
+            AND sh.shipping_task_id = #{shippingTaskId}
+        </if>
+
+        <if test="etoPo != null and etoPo != ''  ">
+            AND st.eto_po = #{etoPo}
+        </if>
+
+        <if test="startCreateTime != null">and sh.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
+        <if test="endCreateTime != null">and sh.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+        <if test="historyCreateBy != null and historyCreateBy != ''  ">
+            AND sh.create_by = #{historyCreateBy}
+        </if>
+        <if test="afterPacking != null and afterPacking != '' ">
+            AND st.after_packing = #{afterPacking}
+        </if>
+        <if test="ssccNumbers != null and ssccNumbers != '' ">
+            AND sh.sscc_numbers like concat('%',#{ssccNumbers},'%')
+        </if>
+
+
+    </select>
+
+
     <select id="selectPlanByTask" parameterType="Long" resultType="com.bosch.product.api.domain.ShippingPlan">
         SELECT  shipping_plan.*
         FROM shipping_task as st

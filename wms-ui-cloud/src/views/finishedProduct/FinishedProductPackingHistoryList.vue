@@ -48,9 +48,9 @@
       >
         <template slot="prodSscc" slot-scope="text, record">
           <div class="list-item" v-for="item in record.prodSsccMap" :key="item.sscc">
-            <span class="list-item-sscc" style="margin-right: 8px">sscc：<span class="label">{{item.sscc}}</span></span>
-            <span class="list-item-batch" style="margin-right: 8px">prod-order：<span class="label">{{item.prodOrder}}</span></span>
-            <span class="list-item-type">操作类型：<span class="label">{{item.type?'拆托':'非拆托'}}</span></span>
+            <span class="list-item-sscc" style="margin-right: 8px">sscc：<span class="label">{{ item.sscc }}</span></span>
+            <span class="list-item-batch" style="margin-right: 8px">prod-order：<span class="label">{{ item.prodOrder }}</span></span>
+            <span class="list-item-type">操作类型：<span class="label">{{ item.type?'拆托':'非拆托' }}</span></span>
           </div>
         </template>
       </a-table>

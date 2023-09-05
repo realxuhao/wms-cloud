@@ -135,7 +135,22 @@ public class ProductPackagingController extends BaseController {
             return R.fail(e.getMessage());
         }
     }
-
+    /**
+     * 获取打包历史记录
+     */
+    ////@RequiresPermissions("masterdata:pallet:list")
+    @GetMapping(value = "/getHistoryRecordNotLike")
+    @ApiOperation("获取打包历史记录")
+    public R<PageVO<ShippingVO>> getHistoryRecordNotLike( ShippingDTO dto) {
+        try {
+            startPage();
+            List<ShippingVO> shippingVOS = shippingHistoryService.selectShippingNotLike(dto);
+            return R.ok(new PageVO<>(shippingVOS, new PageInfo<>(shippingVOS).getTotal()));
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return R.fail(e.getMessage());
+        }
+    }
     /**
      * 删除
      */
