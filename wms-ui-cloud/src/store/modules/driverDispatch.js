@@ -10,6 +10,14 @@ const driverDispatch = {
   },
 
   actions: {
+    async exportSign ({ commit }, options) {
+      const data = await driverDispatchService.exportSign(options)
+      return data
+    },
+    async exportNotSign ({ commit }, options) {
+      const data = await driverDispatchService.exportNotSign(options)
+      return data
+    },
     async getList ({ commit }, options) {
       const data = await driverDispatchService.getList(options.parameter, options.param)
       return data
@@ -19,7 +27,7 @@ const driverDispatch = {
       return data
     },
     async getTodayNoSignList ({ commit }, options) {
-      const data = await driverDispatchService.getTodayNoSignList(options)
+      const data = await driverDispatchService.getTodayNoSignList(options.parameter, options.param)
       return data
     },
     async importDock ({ commit }, options) {

@@ -1,15 +1,13 @@
 package com.bosch.vehiclereservation.controller;
 
-import com.bosch.vehiclereservation.api.domain.dto.DispatchSendWxDTO;
-import com.bosch.vehiclereservation.api.domain.dto.DriverDeliverDTO;
-import com.bosch.vehiclereservation.api.domain.dto.DriverDispatchDTO;
-import com.bosch.vehiclereservation.api.domain.dto.DriverSortDTO;
-import com.bosch.vehiclereservation.api.domain.vo.DriverDeliverVO;
-import com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO;
-import com.bosch.vehiclereservation.api.domain.vo.PageVO;
+import com.bosch.vehiclereservation.api.domain.DriverDispatch;
+import com.bosch.vehiclereservation.api.domain.dto.*;
+import com.bosch.vehiclereservation.api.domain.vo.*;
 import com.bosch.vehiclereservation.service.IDriverDispatchService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
+import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.core.web.page.PageDomain;
@@ -19,6 +17,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,6 +53,30 @@ public class DriverDispatchController extends BaseController {
     }
 
     /**
+     * 导出供应商签到数据
+     */
+    @PostMapping("/exportSign")
+    @ApiOperation("导出签到记录")
+    public void exportSign(HttpServletResponse response, @RequestBody DriverDispatchDTO driverDispatchDTO) {
+        driverDispatchDTO.setToday(false);
+        List<DriverDispatchVO> list = driverDispatchService.selectTodaySignData(driverDispatchDTO);
+        ExcelUtil<DriverDispatchVO> util = new ExcelUtil<>(DriverDispatchVO.class);
+        util.exportExcel(response, list, "车辆预约已签到数据");
+    }
+
+    /**
+     * 导出供应商未签到数据
+     */
+    @PostMapping("/exportNotSign")
+    @ApiOperation("导出未签到记录")
+    public void exportNotSign(HttpServletResponse response, @RequestBody DriverDispatchDTO driverDispatchDTO) {
+        List<DriverDispatchVO> list = driverDispatchService.selectTodayNotSignData(driverDispatchDTO);;
+        List<DriverDispatchNotSignVO> notList = BeanConverUtil.converList(list, DriverDispatchNotSignVO.class);
+        ExcelUtil<DriverDispatchNotSignVO> util = new ExcelUtil<>(DriverDispatchNotSignVO.class);
+        util.exportExcel(response, notList, "车辆预约未签到数据");
+    }
+
+    /**
      * 获取今天签到车辆数据
      *
      * @param driverDispatchDTO 查询条件
@@ -75,9 +99,10 @@ public class DriverDispatchController extends BaseController {
     ////@RequiresPermissions("vehiclereservation:driverdispatch:nosignlist")
     @PostMapping("/nosignlist")
     @ApiOperation("获取今天未签到车辆数据")
-    public R<List<DriverDispatchVO>> getTodayNoSignData(@RequestBody DriverDispatchDTO driverDispatchDTO) {
+    public R<PageVO<DriverDispatchVO>> getTodayNoSignData(@RequestBody DriverDispatchDTO driverDispatchDTO, PageDomain pageDomain) {
+        startPage();
         List<DriverDispatchVO> list = driverDispatchService.selectTodayNotSignData(driverDispatchDTO);
-        return R.ok(list);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 
     /**
