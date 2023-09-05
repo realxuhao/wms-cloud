@@ -44,6 +44,10 @@ public class ShippingHistoryServiceImpl extends ServiceImpl<ShippingHistoryMappe
     public List<ShippingVO> selectShipping(ShippingDTO dto) {
         return shippingHistoryMapper.selectShipping(dto);
     }
+    @Override
+    public List<ShippingVO> selectShippingNotLike(ShippingDTO dto) {
+        return shippingHistoryMapper.selectShippingNotLike(dto);
+    }
 
     @Override
     public Integer deleteNewestByTaskId(Long id) {

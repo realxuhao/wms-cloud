@@ -23,6 +23,8 @@ public interface ShippingHistoryMapper extends BaseMapper<ShippingHistory> {
 
    List<ShippingVO>selectShipping(ShippingDTO dto);
 
+   List<ShippingVO>selectShippingNotLike(ShippingDTO dto);
+
    List<ShippingPlan> selectPlanByTask (Long id);
 }
 
