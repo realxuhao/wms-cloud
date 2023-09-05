@@ -53,7 +53,7 @@
       </a-table>
 
       <div class="pagination-con">
-      <a class="pagination-total">总车次数：{{paginationTotal}}</a>
+        <a class="pagination-total">总车次数：{{ paginationTotal }}</a>
 
         <a-pagination
           show-size-changer
