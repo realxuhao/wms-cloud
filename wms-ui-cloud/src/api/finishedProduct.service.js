@@ -142,6 +142,12 @@ const sudnDelete = async (parameter) => {
   return data
 }
 
+const sudnPickBatchDelete = async (ids) => {
+  const url = `/sudn-pick/batchDelete/${ids}`
+  const { data } = await createAuthInstance(baseUrl).post(url)
+  return data
+}
+
 const sudnGenerate = async (ids) => {
   const url = `/SUDN/${ids}`
   const { data } = await createAuthInstance(baseUrl).put(url)
@@ -185,7 +191,7 @@ const supnBatchShip = async (ids) => {
 
 const editBinDownQuantity = async (options) => {
   const url = `/sudn-pick/editBinDownQuantity`
-  const { data } = await createAuthInstance(baseUrl).post(url,options)
+  const { data } = await createAuthInstance(baseUrl).post(url, options)
   return data
 }
 
@@ -197,7 +203,7 @@ const productReturnList = async (options) => {
 
 const exportProductReturnList = async (options) => {
   const url = `/product-return/export`
-  const { data } = await createAuthInstance(baseUrl).post(url,options,{
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
     responseType: 'blob',
     headers: { 'Content-Type': 'application/json' }
   })
@@ -206,7 +212,7 @@ const exportProductReturnList = async (options) => {
 
 const productShiftexport = async (options) => {
   const url = `/product-shift/export`
-  const { data } = await createAuthInstance(baseUrl).post(url,options,{
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
     responseType: 'blob',
     headers: { 'Content-Type': 'application/json' }
   })
@@ -239,6 +245,7 @@ export const finishedProductService = {
   spdnPicklist,
   sudnList,
   sudnDelete,
+  sudnPickBatchDelete,
   sudnGenerate,
   sudnUpdateQuantity,
   sudnPickList,

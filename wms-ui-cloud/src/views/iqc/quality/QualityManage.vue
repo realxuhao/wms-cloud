@@ -128,9 +128,9 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a v-hasPermi="['iqc:list:updateBatch']" :disabled="record.freezeStock > 0" @click="handleUpdate('同批次', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />同批次</a>
+            <a v-hasPermi="['iqc:list:updateBatch']" @click="handleUpdate('同批次', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />同批次</a>
             <a-divider type="vertical" />
-            <a v-hasPermi="['iqc:list:updatePallet']" :disabled="record.freezeStock > 0" @click="handleUpdate('此托', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />此托</a>
+            <a v-hasPermi="['iqc:list:updatePallet']" @click="handleUpdate('此托', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />此托</a>
           </div>
         </template>
       </a-table>

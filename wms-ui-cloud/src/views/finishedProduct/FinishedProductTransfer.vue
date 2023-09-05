@@ -193,7 +193,7 @@ const columns = [
    {
     title: '批次总数量',
     key: 'quantity',
-    dataIndex: 'quantity',
+    dataIndex: 'totalStockSum',
     width: 120
   },
   // {

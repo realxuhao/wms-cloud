@@ -188,6 +188,13 @@ const columns = [
     sorter: true
   },
   {
+    title: '物料类型',
+    key: 'materialType',
+    dataIndex: 'materialType',
+    width: 200,
+    sorter: true
+  },
+  {
     title: '仓库',
     key: 'wareCode',
     dataIndex: 'wareCode',
@@ -228,6 +235,12 @@ const columns = [
     dataIndex: 'totalStockSum',
     width: 120,
     sorter: true
+  },
+  {
+    title: '批次总托数',
+    key: 'sameProdOrderCount',
+    dataIndex: 'sameProdOrderCount',
+    width: 120
   },
   {
     title: '总库存',

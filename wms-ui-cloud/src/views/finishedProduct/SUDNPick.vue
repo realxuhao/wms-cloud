@@ -40,6 +40,14 @@
               <a-input v-model="queryForm.productionBatch" placeholder="Production batch" allow-clear/>
             </a-form-item>
           </a-col>
+          <a-col :span="8">
+            <a-form-item label="创建时间" >
+              <a-range-picker
+                format="YYYY-MM-DD"
+                v-model="queryForm.date"
+              />
+            </a-form-item>
+          </a-col>
           <!-- <a-col :span="8">
             <a-form-item label="Ship_Date">
               <a-range-picker
@@ -102,6 +110,7 @@
           批量下发
         </a-button>
         <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
+        <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleBatchCancel"><a-icon type="download" />批量删除</a-button>
       </div>
 
       
@@ -311,7 +320,7 @@ const queryFormAttr = () => {
     shipToParty: '',
     material: '',
     materialName: '',
-    
+    date: [],
     status:undefined
   }
 }
@@ -368,7 +377,13 @@ export default {
     async handleDownload () {
       try {
         this.exportLoading = true
-        const blobData = await this.$store.dispatch('finishedProduct/exportSUDNPickExcel', this.queryForm)
+        const { date = [] } = this.queryForm
+
+        const startCreateTime = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
+        const endCreateTime = date.length > 0 ? date[1].format(this.endDateFormat) : undefined
+        const options = { ..._.omit(this.queryForm, ['date']), startCreateTime, endCreateTime }
+
+        const blobData = await this.$store.dispatch('finishedProduct/exportSUDNPickExcel', options)
         download(blobData, 'SUDN捡配列表')
       } catch (error) {
         console.log(error)
@@ -423,13 +438,24 @@ export default {
     },
     async handleDelete (record) {
       try {
-        await this.$store.dispatch('finishedProduct/sudnDelete', record.id)
+        await this.$store.dispatch('finishedProduct/sudnPickBatchDelete', record.id)
         this.$message.success('删除成功！')
 
         this.loadTableList()
       } catch (error) {
         console.log(error)
-        this.$message.error('删除失败，请联系系统管理员！')
+        this.$message.error(error.message)
+      }
+    },
+    async handleBatchCancel (record) {
+      try {
+        await this.$store.dispatch('finishedProduct/sudnPickBatchDelete', this.selectedRowKeys)
+        this.$message.success('删除成功！')
+
+        this.loadTableList()
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
       }
     },
   
@@ -437,10 +463,11 @@ export default {
     async loadTableList () {
       try {
         this.tableLoading = true
-        const { shipDate = [] } = this.queryForm
-        const shipDateStart = shipDate.length > 0 ? shipDate[0].format('YYYY-MM-DD 00:00:00') : undefined
-        const shipDateEnd = shipDate.length > 0 ? shipDate[1].format('YYYY-MM-DD 23:59:59') : undefined
-        const options = { ..._.omit(this.queryForm, ['shipDate']), shipDateStart, shipDateEnd }
+        const { date = [] } = this.queryForm
+        const startCreateTime = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
+        const endCreateTime = date.length > 0 ? date[1].format(this.endDateFormat) : undefined
+        const options = { ..._.omit(this.queryForm, ['date']), startCreateTime, endCreateTime }
+
         const {
           data: { rows, total }
         } = await this.$store.dispatch('finishedProduct/sudnPickList', options)

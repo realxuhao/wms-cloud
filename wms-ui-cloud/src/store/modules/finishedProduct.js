@@ -106,6 +106,10 @@ const finishedProduct = {
       const data = await finishedProductService.sudnDelete(options)
       return data
     },
+    async sudnPickBatchDelete ({ commit }, options) {
+      const data = await finishedProductService.sudnPickBatchDelete(options)
+      return data
+    },
     async sudnGenerate ({ commit }, options) {
       const data = await finishedProductService.sudnGenerate(options)
       return data

@@ -238,6 +238,12 @@ const columns = [
     sorter: true
   },
   {
+    title: '批次总托数',
+    key: 'sameProdOrderCount',
+    dataIndex: 'sameProdOrderCount',
+    width: 120
+  },
+  {
     title: '批次总库存',
     key: 'totalStockSum',
     dataIndex: 'totalStockSum',

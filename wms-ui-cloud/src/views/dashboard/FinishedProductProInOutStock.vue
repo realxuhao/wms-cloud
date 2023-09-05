@@ -65,7 +65,7 @@
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
 import { download } from '@/utils/file'
-import moment from 'moment';
+import moment from 'moment'
 
 const columns = [
 
@@ -151,8 +151,8 @@ export default {
   methods: {
     disabledDate(date) {
       // 将日期转换为 moment 对象以进行比较
-      const currentDate = moment(date);
-      return currentDate.isAfter(this.maxDate, 'day');
+      const currentDate = moment(date)
+      return currentDate.isAfter(this.maxDate, 'day')
     },
 
     async handleExport(){

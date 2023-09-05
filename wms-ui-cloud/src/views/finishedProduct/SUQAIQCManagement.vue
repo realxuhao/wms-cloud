@@ -120,9 +120,9 @@
         </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
-            <a :disabled="record.freezeStock > 0" @click="handleUpdate('同批次', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />同批次</a>
+            <a @click="handleUpdate('同批次', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />同批次</a>
             <a-divider type="vertical" />
-            <a :disabled="record.freezeStock > 0" @click="handleUpdate('此托', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />此托</a>
+            <a @click="handleUpdate('此托', record)"><a-icon class="m-r-4" type="right-circle" theme="twoTone" />此托</a>
           </div>
         </template>
       </a-table>
@@ -298,6 +298,12 @@ const columns = [
     dataIndex: 'unit',
     width: 80,
     sorter: true
+  },
+  {
+    title: '批次总托数',
+    key: 'sameProdOrderCount',
+    dataIndex: 'sameProdOrderCount',
+    width: 120
   },
    {
     title: '批次总库存',
