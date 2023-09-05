@@ -134,4 +134,32 @@ public class JobServiceImpl implements IJobService {
         return jobVO;
 
     }
+
+    public void validStockStatusWithoutIQC(String ssccNb) {
+        //查询看板
+        LambdaQueryWrapper<MaterialKanban> kanbanLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        kanbanLambdaQueryWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
+        kanbanLambdaQueryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        kanbanLambdaQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.CANCEL.value());
+        kanbanLambdaQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.FINISH.value());
+        kanbanLambdaQueryWrapper.ne(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+
+        kanbanLambdaQueryWrapper.last("for update ");
+        MaterialKanban materialKanban = kanbanService.getOne(kanbanLambdaQueryWrapper);
+        if (materialKanban != null) {
+            throw new ServiceException("该SSCC" + ssccNb + "存在捡配任务," + "状态为:" + KanbanStatusEnum.getDesc(String.valueOf(materialKanban.getStatus())));
+        }
+
+        //查询移库
+        LambdaQueryWrapper<WareShift> shiftQueryWrapper = new LambdaQueryWrapper<>();
+        shiftQueryWrapper.eq(WareShift::getSsccNb, ssccNb);
+        shiftQueryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.FINISH.value());
+        shiftQueryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
+        shiftQueryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+        shiftQueryWrapper.last("for update");
+        WareShift wareShift = wareShiftService.getOne(shiftQueryWrapper);
+        if (wareShift != null) {
+            throw new ServiceException("该SSCC" + ssccNb + "存在移库任务," + "状态为:" + KanbanStatusEnum.getDesc(String.valueOf(wareShift.getStatus())));
+        }
+    }
 }

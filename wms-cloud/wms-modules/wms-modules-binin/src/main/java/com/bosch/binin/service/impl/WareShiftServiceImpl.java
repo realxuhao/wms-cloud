@@ -423,6 +423,7 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         queryWrapper.eq(WareShift::getMaterialNb, materialNb);
         queryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.CANCEL.value());
         queryWrapper.ne(WareShift::getStatus, KanbanStatusEnum.FINISH.value());
+//        queryWrapper.eq(WareShift::getType,WareShiftTypeEnum.PICK.code());
         List<WareShift> list = this.list(queryWrapper);
         list.stream().forEach(item -> {
             if (item.getSplitType() == 1) {
@@ -520,6 +521,14 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
         }
 
+        //校验新托是否已经存在过库存了
+        LambdaQueryWrapper<Stock> stockWrapperTemp = new LambdaQueryWrapper<>();
+        stockWrapperTemp.eq(Stock::getSsccNumber, MesBarCodeUtil.getSSCC(splitPallet.getNewMesBarCode()));
+        stockWrapperTemp.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        Stock stockTemp = stockService.getOne(stockWrapperTemp);
+        if (stockTemp != null) {
+            throw new ServiceException("新SSCC:" + MesBarCodeUtil.getSSCC(splitPallet.getNewMesBarCode()) + "已经存在库存");
+        }
 
         //老的拆托任务结束。解冻库存
         wareShift.setStatus(KanbanStatusEnum.FINISH.value());
@@ -588,6 +597,13 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         wareShiftQueryWrapper.eq(WareShift::getStatus, KanbanStatusEnum.INNER_BIN_IN.value());
         wareShiftQueryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<WareShift> wareShiftList = this.list(wareShiftQueryWrapper);
+
+        if (CollectionUtils.isEmpty(wareShiftList)) {
+            throw new ServiceException("当前车次都已经上架完成");
+        }
+
+        ssccList = wareShiftList.stream().map(WareShift::getSsccNb).collect(Collectors.toList());
+
         List<BinIn> binInsInsertList = new ArrayList<>();
 
         LambdaQueryWrapper<Stock> stockInQueryWrapper = new LambdaQueryWrapper<>();
@@ -663,10 +679,6 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
             item.setStatus(KanbanStatusEnum.FINISH.value());
 
-            UserOperationLog userOperationLog = new UserOperationLog();
-            userOperationLog.setCode(stock.getMaterialNb());
-            userOperationLog.setSsccNumber(stock.getSsccNumber());
-            operationLogs.add(userOperationLog);
 
         });
 
@@ -829,6 +841,8 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     public int updateStatusByStatus(List<String> ssccs, Integer queryStatus, Integer status) {
         ArrayList<Object> ssccList = new ArrayList<>();
         ssccList.addAll(ssccs);
+
+
 
         if (queryStatus.equals(KanbanStatusEnum.INNER_RECEIVING.value())) {
 

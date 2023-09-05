@@ -1,5 +1,7 @@
 package com.bosch.product.api.domain.dto;
 
+import com.alibaba.excel.annotation.format.DateTimeFormat;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -34,9 +36,14 @@ public class ProductPickDTO {
     private Date shippingTime;
     private Long sudnId;
     @ApiModelProperty(value = "开始创建时间")
+    @DateTimeFormat("yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date startCreateTime;
     @ApiModelProperty(value = "结束创建时间")
+    @DateTimeFormat("yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date endCreateTime;
 
     private String wareCode;
+    private String ssccNb;
 }

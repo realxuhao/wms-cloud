@@ -1,16 +1,20 @@
 package com.bosch.product.controller;
 
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
 import com.bosch.product.api.domain.SPDN;
 import com.bosch.product.api.domain.SUDN;
+import com.bosch.product.api.domain.dto.ProductPickDTO;
 import com.bosch.product.api.domain.dto.SPDNDTO;
 import com.bosch.product.api.domain.dto.SUDNDTO;
 import com.bosch.product.api.domain.dto.SUDNShipDTO;
+import com.bosch.product.api.domain.vo.ProductPickVO;
 import com.bosch.product.api.domain.vo.SPDNVO;
 import com.bosch.product.api.domain.vo.SUDNVO;
+import com.bosch.product.service.IProductPickService;
 import com.bosch.product.service.ISUDNService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
@@ -28,9 +32,12 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @program: wms-cloud
@@ -46,8 +53,11 @@ public class SudnController extends BaseController {
     @Autowired
     private ISUDNService sudnService;
 
-    @Autowired
+    @Resource
     private FileService fileService;
+
+    @Autowired
+    private IProductPickService pickService;
 
     @GetMapping(value = "/sudnList")
     @ApiOperation("sudn列表")
@@ -110,9 +120,9 @@ public class SudnController extends BaseController {
 
         List<SUDNVO> list = new ArrayList<>();
         if (sudndto.getType()==0) {
-            list=sudnService.getUnFinishedSUDN();
+            list=sudnService.getUnFinishedSUDN(sudndto);
         }else {
-            list = sudnService.getFinishedSUDN();
+            list = sudnService.getFinishedSUDN(sudndto);
         }
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
@@ -125,13 +135,40 @@ public class SudnController extends BaseController {
         if (sudndto.getType()==0) {
             startPage();
 
-            List<SUDNVO> unFinishedShipSUDN = sudnService.getUnFinishedShipSUDN();
+            List<SUDNVO> unFinishedShipSUDN = sudnService.getUnFinishedShipSUDN(sudndto);
+            unFinishedShipSUDN.stream().forEach(item->{
+                String delivery = item.getDelivery();
+                ProductPickDTO pickDTO = new ProductPickDTO();
+                pickDTO.setDelivery(delivery);
+                pickDTO.setItem(item.getItem());
+                pickDTO.setSudnId(item.getId());
+                List<ProductPickVO> list = pickService.list(pickDTO);
+                if (!CollectionUtils.isEmpty(list)){
+                    List<String> collect = list.stream().map(ProductPickVO::getProductionBatch).collect(Collectors.toList());
+                    item.setProductionBatchs(new HashSet<>(collect));
+                }
+
+            });
             return R.ok(new PageVO<>(unFinishedShipSUDN, new PageInfo<>(unFinishedShipSUDN).getTotal()));
 
         }else {
             startPage();
 
-            List<SUDNVO> finishedShipSUDN = sudnService.getFinishedShipSUDN();
+            List<SUDNVO> finishedShipSUDN = sudnService.getFinishedShipSUDN(sudndto);
+            finishedShipSUDN.stream().forEach(item->{
+                String delivery = item.getDelivery();
+                ProductPickDTO pickDTO = new ProductPickDTO();
+                pickDTO.setDelivery(delivery);
+                pickDTO.setItem(item.getItem());
+                pickDTO.setSudnId(item.getId());
+
+                List<ProductPickVO> list = pickService.list(pickDTO);
+                if (!CollectionUtils.isEmpty(list)){
+                    List<String> collect = list.stream().map(ProductPickVO::getProductionBatch).collect(Collectors.toList());
+                    item.setProductionBatchs(new HashSet<>(collect));
+                }
+
+            });
             return R.ok(new PageVO<>(finishedShipSUDN, new PageInfo<>(finishedShipSUDN).getTotal()));
 
         }

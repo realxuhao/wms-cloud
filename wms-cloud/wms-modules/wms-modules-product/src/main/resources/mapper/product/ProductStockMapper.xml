@@ -42,10 +42,10 @@
         b.change_status =1 ,
         b.quality_status=#{qualityStatus}
         <if test=' type != "" and type=="0" '>
-            where b.id =#{id} and b.freeze_stock = 0 and b.plant_nb != '7701' and b.plant_nb != '7761'
+            where b.id =#{id}  and b.plant_nb != '7701' and b.plant_nb != '7761'
         </if>
         <if test='type != "" and type == "1"'>
-            where  b.freeze_stock = 0 and b.plant_nb != '7701' and b.plant_nb != '7761' and b.from_prod_order =
+            where  b.plant_nb != '7701' and b.plant_nb != '7761' and b.from_prod_order =
             (SELECT a.from_prod_order from
             (SELECT from_prod_order from product_stock where id=#{id}) a )
             and b.quality_status in
@@ -60,10 +60,10 @@
         b.change_status =1 ,
         b.quality_status=#{qualityStatus}
         <if test=' type != "" and type=="0" '>
-            where b.id =#{id} and b.freeze_stock = 0  and b.plant_nb = '7761'
+            where b.id =#{id}  and b.plant_nb = '7761'
         </if>
         <if test='type != "" and type == "1"'>
-            where  b.freeze_stock = 0 and  b.plant_nb = '7761' and b.from_prod_order =
+            where  b.plant_nb = '7761' and b.from_prod_order =
             (SELECT a.from_prod_order from
             (SELECT from_prod_order from product_stock where id=#{id}) a )
             and b.quality_status in
@@ -116,17 +116,17 @@
     </select>
     <select id="notInListByMaterials" resultMap="StockVOResult">
         select ps.material_nb,ps.batch_nb as batch_nb ,
-        SUM(  ps.total_stock)*max(pp.box_specification) as pcs_total_stock
+        SUM( ps.total_stock)*max(pp.box_specification) as pcs_total_stock
 
 
         from product_stock ps
         left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
-        WHERE   ps.delete_flag = 0
+        WHERE ps.delete_flag = 0
         and (ps.material_nb,ps.batch_nb) not in
         <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
             (#{item.materialNb},#{item.batch})
         </foreach>
-        GROUP BY  ps.material_nb,ps.batch_nb
+        GROUP BY ps.material_nb,ps.batch_nb
 
 
     </select>
@@ -140,7 +140,7 @@
         ps.bin_code as bin_code,
         ps.material_nb as material_nb,
         pp.product_name as material_name,
-               pp.type as material_type,
+        pp.type as material_type,
         ps.batch_nb as batch_nb,
         ps.expire_date as expire_date,
         ps.total_stock as total_stock,
@@ -162,12 +162,12 @@
         ps.bin_in_flag as bin_in_flag,
         ps.recommend_bin_code as recommend_bin_code,
         pp.box_specification as box_specification,
+        temp.c as same_prod_order_count,
         (SELECT SUM(p.total_stock) FROM product_stock p
         WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
         and p.plant_nb != '7701' and p.plant_nb != '7761'
 
         <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
-        <if test="cell != null  and cell != ''">and pp.cell like concat('%', #{cell}, '%')</if>
 
         <if test="materialNb != null  and materialNb != ''">and p.material_nb like concat('%', #{materialNb}, '%')</if>
         <if test="batchNb != null  and batchNb != ''">and p.batch_nb like concat('%', #{batchNb}, '%')</if>
@@ -191,6 +191,11 @@
         total_stock_sum
         from product_stock ps
         left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
+        left join (
+            select from_prod_order,count(*) c from product_stock
+            where delete_flag = 0 and plant_nb != '7701' and plant_nb != '7761'
+            group by from_prod_order
+            )temp on temp.from_prod_order = ps.from_prod_order
         where ps.delete_flag = 0 and ps.plant_nb != '7701' and ps.plant_nb != '7761'
 
         <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
@@ -228,7 +233,7 @@
         ps.bin_code as bin_code,
         ps.material_nb as material_nb,
         pp.product_name as material_name,
-               pp.type as material_type,
+        pp.type as material_type,
         ps.batch_nb as batch_nb,
         ps.expire_date as expire_date,
         ps.total_stock as total_stock,
@@ -319,7 +324,7 @@
         ps.bin_code as bin_code,
         ps.material_nb as material_nb,
         pp.product_name as material_name,
-               pp.type as material_type,
+        pp.type as material_type,
         ps.batch_nb as batch_nb,
         ps.expire_date as expire_date,
         ps.total_stock as total_stock,
@@ -341,6 +346,7 @@
         ps.bin_in_flag as bin_in_flag,
         ps.recommend_bin_code as recommend_bin_code,
         pp.box_specification as box_specification,
+        temp.c as same_prod_order_count,
         (SELECT SUM(p.total_stock) FROM product_stock p
         WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
         and p.plant_nb != '7701' and p.plant_nb != '7761'
@@ -370,6 +376,11 @@
         total_stock_sum
         from product_stock ps
         left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
+        left join (
+        select from_prod_order,count(*) c from product_stock
+        where delete_flag = 0 and plant_nb != '7701' and plant_nb != '7761'
+        group by from_prod_order
+        )temp on temp.from_prod_order = ps.from_prod_order
         where ps.delete_flag = 0 and ps.plant_nb != '7701' and ps.plant_nb != '7761'
 
         <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
@@ -405,7 +416,8 @@
         WHERE ps.change_status = '1'
           AND ps.delete_flag = 0
           AND ps.id = #{id}
-            and  ps.plant_nb != '7701' and ps.plant_nb != '7761'
+          and ps.plant_nb != '7701'
+          and ps.plant_nb != '7761'
     </select>
     <select id="selectSUQAIQCManagementList" resultType="com.bosch.product.api.domain.vo.ProductStockVO">
         select ps.id as id,
@@ -417,7 +429,7 @@
         ps.bin_code as bin_code,
         ps.material_nb as material_nb,
         pp.product_name as material_name,
-               pp.type as material_type,
+        pp.type as material_type,
         ps.batch_nb as batch_nb,
         ps.expire_date as expire_date,
         ps.total_stock as total_stock,
@@ -439,104 +451,7 @@
         ps.bin_in_flag as bin_in_flag,
         ps.recommend_bin_code as recommend_bin_code,
         pp.box_specification as box_specification,
-        (SELECT SUM(p.total_stock) FROM product_stock p
-        WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
-        and  p.plant_nb = '7761'
-
-        <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
-        <if test="cell != null  and cell != ''">and pp.cell like concat('%', #{cell}, '%')</if>
-
-        <if test="materialNb != null  and materialNb != ''">and p.material_nb like concat('%', #{materialNb}, '%')</if>
-        <if test="batchNb != null  and batchNb != ''">and p.batch_nb like concat('%', #{batchNb}, '%')</if>
-
-        <if test="ssccNumber != null  and ssccNumber != ''">and p.sscc_number like concat('%', #{ssccNumber}, '%')</if>
-        <if test="wareCode != null  and wareCode != ''">and p.ware_code like concat('%', #{wareCode}, '%')</if>
-        <if test="areaCode != null  and areaCode != ''">and p.area_code like concat('%', #{areaCode}, '%')</if>
-        <if test="binCode != null  and binCode != ''">and p.bin_code like concat('%', #{binCode}, '%')</if>
-        <if test="fromProdOrder != null  and fromProdOrder != ''">and p.from_prod_order like concat('%',
-            #{fromProdOrder}, '%')
-        </if>
-        <if test="createBy != null  and createBy != ''">and p.create_by like concat('%', #{createBy}, '%')</if>
-
-        <if test="qualityStatus != null and qualityStatus != ''">and p.quality_status = #{qualityStatus}</if>
-        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(p.expire_date, '%d/%m/%Y')
-            between
-            #{startExpireDate} and #{endExpireDate}
-        </if>
-
-        ) AS
-        total_stock_sum
-        from product_stock ps
-        left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
-        where ps.delete_flag = 0 and ps.plant_nb = '7761'
-
-        <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
-        <if test="materialType != null  and materialType != ''">and pp.type like concat('%', #{materialType}, '%')</if>
-        <if test="cell != null  and cell != ''">and pp.cell like concat('%', #{cell}, '%')</if>
-
-        <if test="materialNb != null  and materialNb != ''">and ps.material_nb like concat('%', #{materialNb}, '%')</if>
-        <if test="batchNb != null  and batchNb != ''">and ps.batch_nb like concat('%', #{batchNb}, '%')</if>
-
-        <if test="ssccNumber != null  and ssccNumber != ''">and ps.sscc_number like concat('%', #{ssccNumber}, '%')</if>
-        <if test="wareCode != null  and wareCode != ''">and ps.ware_code like concat('%', #{wareCode}, '%')</if>
-        <if test="areaCode != null  and areaCode != ''">and ps.area_code like concat('%', #{areaCode}, '%')</if>
-        <if test="binCode != null  and binCode != ''">and ps.bin_code like concat('%', #{binCode}, '%')</if>
-        <if test="fromProdOrder != null  and fromProdOrder != ''">and ps.from_prod_order like concat('%',
-            #{fromProdOrder}, '%')
-        </if>
-        <if test="createBy != null  and createBy != ''">and ps.create_by like concat('%', #{createBy}, '%')</if>
-        <if test="startCreateTime != null and endCreateTime != null">and str_to_date(ps.create_time, '%d/%m/%Y') between
-            #{startCreateTime} and #{endCreateTime}
-        </if>
-        <if test="qualityStatus != null and qualityStatus != ''">and ps.quality_status = #{qualityStatus}</if>
-        <if test="changeStatus != null and changeStatus != ''">and ps.change_status = #{changeStatus}</if>
-        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(ps.expire_date, '%d/%m/%Y')
-            between
-            #{startExpireDate} and #{endExpireDate}
-        </if>
-        order by ps.create_time desc,ps.update_time desc
-    </select>
-    <select id="validateSUQAStatus"  resultType="int">
-        SELECT COUNT(*)
-        FROM product_stock ps
-        WHERE ps.change_status = '1'
-          AND ps.delete_flag = 0
-          AND ps.id = #{id}
-          and  ps.plant_nb = '7761'
-
-    </select>
-    <select id="spdnStocklist" resultType="com.bosch.product.api.domain.vo.ProductStockVO">
-        select ps.id as id,
-        ps.sscc_number as sscc_number,
-        ps.plant_nb as plant_nb,
-        ps.from_prod_order as from_prod_order,
-        ps.ware_code as ware_code,
-        ps.frame_code as frame_code,
-        ps.bin_code as bin_code,
-        ps.material_nb as material_nb,
-        pp.product_name as material_name,
-               pp.type as material_type,
-        ps.batch_nb as batch_nb,
-        ps.expire_date as expire_date,
-        ps.total_stock as total_stock,
-        ROUND(ps.total_stock * pp.box_specification) as pcsTotalStock,
-        ps.freeze_stock as freeze_stock,
-        ROUND(ps.freeze_stock * pp.box_specification) as pcsFreezeStock,
-        ps.available_stock as available_stock,
-        ROUND(ps.available_stock * pp.box_specification) as pcsAvailableStock,
-        ps.create_by as create_by,
-        ps.create_time as create_time,
-        ps.quality_status as quality_status,
-        ps.area_code as area_code,
-        ps.pallet_code as pallet_code,
-        ps.whole_flag as whole_flag,
-        ps.change_status as change_status,
-        ps.unit as unit,
-        ps.production_date as production_date,
-        pp.cell as cell,
-        ps.bin_in_flag as bin_in_flag,
-        ps.recommend_bin_code as recommend_bin_code,
-        pp.box_specification as box_specification,
+        temp.c as same_prod_order_count,
         (SELECT SUM(p.total_stock) FROM product_stock p
         WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
         and p.plant_nb = '7761'
@@ -566,6 +481,115 @@
         total_stock_sum
         from product_stock ps
         left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
+        left join (
+        select from_prod_order,count(*) c from product_stock
+        where delete_flag = 0 and plant_nb = '7761'
+        group by from_prod_order
+        )temp on temp.from_prod_order = ps.from_prod_order
+        where ps.delete_flag = 0 and ps.plant_nb = '7761'
+
+        <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
+        <if test="materialType != null  and materialType != ''">and pp.type like concat('%', #{materialType}, '%')</if>
+        <if test="cell != null  and cell != ''">and pp.cell like concat('%', #{cell}, '%')</if>
+
+        <if test="materialNb != null  and materialNb != ''">and ps.material_nb like concat('%', #{materialNb}, '%')</if>
+        <if test="batchNb != null  and batchNb != ''">and ps.batch_nb like concat('%', #{batchNb}, '%')</if>
+
+        <if test="ssccNumber != null  and ssccNumber != ''">and ps.sscc_number like concat('%', #{ssccNumber}, '%')</if>
+        <if test="wareCode != null  and wareCode != ''">and ps.ware_code like concat('%', #{wareCode}, '%')</if>
+        <if test="areaCode != null  and areaCode != ''">and ps.area_code like concat('%', #{areaCode}, '%')</if>
+        <if test="binCode != null  and binCode != ''">and ps.bin_code like concat('%', #{binCode}, '%')</if>
+        <if test="fromProdOrder != null  and fromProdOrder != ''">and ps.from_prod_order like concat('%',
+            #{fromProdOrder}, '%')
+        </if>
+        <if test="createBy != null  and createBy != ''">and ps.create_by like concat('%', #{createBy}, '%')</if>
+        <if test="startCreateTime != null and endCreateTime != null">and str_to_date(ps.create_time, '%d/%m/%Y') between
+            #{startCreateTime} and #{endCreateTime}
+        </if>
+        <if test="qualityStatus != null and qualityStatus != ''">and ps.quality_status = #{qualityStatus}</if>
+        <if test="changeStatus != null and changeStatus != ''">and ps.change_status = #{changeStatus}</if>
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(ps.expire_date, '%d/%m/%Y')
+            between
+            #{startExpireDate} and #{endExpireDate}
+        </if>
+        order by ps.create_time desc,ps.update_time desc
+    </select>
+    <select id="validateSUQAStatus" resultType="int">
+        SELECT COUNT(*)
+        FROM product_stock ps
+        WHERE ps.change_status = '1'
+          AND ps.delete_flag = 0
+          AND ps.id = #{id}
+          and ps.plant_nb = '7761'
+
+    </select>
+    <select id="spdnStocklist" resultType="com.bosch.product.api.domain.vo.ProductStockVO">
+        select ps.id as id,
+        ps.sscc_number as sscc_number,
+        ps.plant_nb as plant_nb,
+        ps.from_prod_order as from_prod_order,
+        ps.ware_code as ware_code,
+        ps.frame_code as frame_code,
+        ps.bin_code as bin_code,
+        ps.material_nb as material_nb,
+        pp.product_name as material_name,
+        pp.type as material_type,
+        ps.batch_nb as batch_nb,
+        ps.expire_date as expire_date,
+        ps.total_stock as total_stock,
+        ROUND(ps.total_stock * pp.box_specification) as pcsTotalStock,
+        ps.freeze_stock as freeze_stock,
+        ROUND(ps.freeze_stock * pp.box_specification) as pcsFreezeStock,
+        ps.available_stock as available_stock,
+        ROUND(ps.available_stock * pp.box_specification) as pcsAvailableStock,
+        ps.create_by as create_by,
+        ps.create_time as create_time,
+        ps.quality_status as quality_status,
+        ps.area_code as area_code,
+        ps.pallet_code as pallet_code,
+        ps.whole_flag as whole_flag,
+        ps.change_status as change_status,
+        ps.unit as unit,
+        ps.production_date as production_date,
+        pp.cell as cell,
+        ps.bin_in_flag as bin_in_flag,
+        ps.recommend_bin_code as recommend_bin_code,
+        pp.box_specification as box_specification,
+        temp.c as sameProdOrderCount,
+        (SELECT SUM(p.total_stock) FROM product_stock p
+        WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
+        and p.plant_nb = '7761'
+
+        <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
+        <if test="cell != null  and cell != ''">and pp.cell like concat('%', #{cell}, '%')</if>
+
+        <if test="materialNb != null  and materialNb != ''">and p.material_nb like concat('%', #{materialNb}, '%')</if>
+        <if test="batchNb != null  and batchNb != ''">and p.batch_nb like concat('%', #{batchNb}, '%')</if>
+
+        <if test="ssccNumber != null  and ssccNumber != ''">and p.sscc_number like concat('%', #{ssccNumber}, '%')</if>
+        <if test="wareCode != null  and wareCode != ''">and p.ware_code like concat('%', #{wareCode}, '%')</if>
+        <if test="areaCode != null  and areaCode != ''">and p.area_code like concat('%', #{areaCode}, '%')</if>
+        <if test="binCode != null  and binCode != ''">and p.bin_code like concat('%', #{binCode}, '%')</if>
+        <if test="fromProdOrder != null  and fromProdOrder != ''">and p.from_prod_order like concat('%',
+            #{fromProdOrder}, '%')
+        </if>
+        <if test="createBy != null  and createBy != ''">and p.create_by like concat('%', #{createBy}, '%')</if>
+
+        <if test="qualityStatus != null and qualityStatus != ''">and p.quality_status = #{qualityStatus}</if>
+        <if test="startExpireDate != null and endExpireDate != null">and str_to_date(p.expire_date, '%d/%m/%Y')
+            between
+            #{startExpireDate} and #{endExpireDate}
+        </if>
+
+        ) AS
+        total_stock_sum
+        from product_stock ps
+        left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
+        left join (
+        select from_prod_order,count(*) c from product_stock
+        where delete_flag = 0 and  plant_nb = '7761'
+        group by from_prod_order
+        )temp on temp.from_prod_order = ps.from_prod_order
         where ps.delete_flag = 0 and ps.plant_nb = '7761'
 
         <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>

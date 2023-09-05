@@ -88,7 +88,7 @@ public class ProductWareShiftVO {
      */
     @JsonFormat(pattern = "yyyy-MM-dd")
     @ApiModelProperty(value = "bbd过期时间")
-    @Excel(name = "bbd过期时间")
+    @Excel(name = "bbd过期时间",dateFormat = "yyyy-MM-dd")
     private Date expireDate;
 
     /**
@@ -144,7 +144,7 @@ public class ProductWareShiftVO {
      * 状态：待下架（来自于②）、待发运（外库pda下架）、待收货（外库发运扫描）、已收货（目的仓库收货扫描）、已上架（pda扫描上架
      */
     @ApiModelProperty(value = "状态：待下架（来自于②）、待发运（外库pda下架）、待收货（外库发运扫描）、已收货（目的仓库收货扫描）、已上架（pda扫描上架")
-    @Excel(name = "状态", readConverterExp = "1=待下架,2=待发运,4=待收货,5=待上架,7=完成")
+    @Excel(name = "状态", readConverterExp = "-1=已取消,0=待发运,1=待收货,2=待上架,3=完成")
     private Integer status;
 
     /**
@@ -184,7 +184,7 @@ public class ProductWareShiftVO {
     @TableField(fill = FieldFill.INSERT)
     @ApiModelProperty(value = "创建时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Excel(name = "创建时间")
+    @Excel(name = "创建时间",dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     /**
@@ -201,7 +201,7 @@ public class ProductWareShiftVO {
     @TableField(fill = FieldFill.UPDATE)
     @ApiModelProperty(value = "更新时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Excel(name = "更新时间")
+    @Excel(name = "更新时间",dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**

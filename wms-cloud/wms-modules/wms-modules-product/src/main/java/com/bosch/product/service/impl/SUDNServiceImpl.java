@@ -85,12 +85,22 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
 
     @Override
     public void batchDelete(List<Long> ids) {
-        List<SUDN> sudns = this.listByIds(ids);
-        List<SUDN> sudnList = sudns.stream().filter(sudn -> sudn.getStatus() == SUDNStatusEnum.WAITING_GEN.code()).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(sudnList)) {
-            throw new ServiceException("无待生成的数据，请选择数据后重试。");
-        }
+        List<SUDN> sudnList = this.listByIds(ids);
+//        List<SUDN> sudnList = sudns.stream().filter(sudn -> sudn.getStatus() == SUDNStatusEnum.WAITING_GEN.code()).collect(Collectors.toList());
+//        if (CollectionUtils.isEmpty(sudnList)) {
+//            throw new ServiceException("无待生成的数据，请选择数据后重试。");
+//        }
         sudnList.stream().forEach(item -> item.setDeleteFlag(DeleteFlagStatus.TRUE.getCode()));
+
+        List<Long> sudnIds = sudnList.stream().map(SUDN::getId).collect(Collectors.toList());
+        LambdaQueryWrapper<ProductPick> pickQueryWrapper = new LambdaQueryWrapper<>();
+        pickQueryWrapper.in(ProductPick::getSudnId,sudnIds);
+        pickQueryWrapper.eq(ProductPick::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        List<ProductPick> list = pickService.list(pickQueryWrapper);
+        if (!CollectionUtils.isEmpty(list)){
+            List<Long> pickIds = list.stream().map(ProductPick::getId).collect(Collectors.toList());
+            pickService.batchCancel(pickIds);
+        }
 
         this.updateBatchById(sudnList);
     }
@@ -130,17 +140,20 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
 
             //查询库存
             List<ProductStock> productStocks = materialStockMap.get(material);
-            List<ProductStock> productSortedStockList = productStocks.stream().sorted(Comparator.comparing(ProductStock::getExpireDate)).collect(Collectors.toList());
+            if (CollectionUtils.isEmpty(productStocks)){
+                throw new ServiceException("当前没有物料号为"+material+"的库存");
+            }
+            List<ProductStock> productSortedStockList = productStocks.stream().sorted(Comparator.comparing(ProductStock::getExpireDate).thenComparing(ProductStock::getTotalStock).thenComparing(ProductStock::getSsccNumber)).collect(Collectors.toList());
             //如果有指定批次的，需要筛选指定批次的库存信息
-            if (StringUtils.isNotEmpty(item.getBatch())) {
-                productSortedStockList = productSortedStockList.stream().filter(stock -> stock.getBatchNb().equals(item.getBatch())).collect(Collectors.toList());
+            if (StringUtils.isNotEmpty(item.getStorageLocation())) {
+                productSortedStockList = productSortedStockList.stream().filter(stock -> stock.getFromProdOrder().equals(item.getStorageLocation())).collect(Collectors.toList());
             }
             double currentQty = 0.0;
             List<ProductStock> useProductStocks = new ArrayList<>();
             //判断库存是否还能满足
             double sum = productSortedStockList.stream().mapToDouble(ProductStock::getAvailableStock).sum();
             if ((double) Math.round((boxSpecification * sum * 100) / 100.0) < item.getDeliveryQuantity()) {
-                continue;
+                throw new ServiceException("DN" + item.getDelivery() + ",item:" + item.getItem() + ",Material:" + item.getMaterial() + "当前库存已不满足");
             }
             for (ProductStock stock : productSortedStockList) {
                 if (stock.getAvailableStock() <= 0) {
@@ -228,23 +241,23 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
     }
 
     @Override
-    public List<SUDNVO> getUnFinishedSUDN() {
-        return sudnMapper.getUnFinishedSUDN();
+    public List<SUDNVO> getUnFinishedSUDN(SUDNDTO sudndto) {
+        return sudnMapper.getUnFinishedSUDN(sudndto);
     }
 
     @Override
-    public List<SUDNVO> getFinishedSUDN() {
-        return sudnMapper.getFinishedSUDN();
+    public List<SUDNVO> getFinishedSUDN(SUDNDTO sudndto) {
+        return sudnMapper.getFinishedSUDN(sudndto);
     }
 
     @Override
-    public List<SUDNVO> getUnFinishedShipSUDN() {
-        return sudnMapper.getUnFinishedShipSUDN();
+    public List<SUDNVO> getUnFinishedShipSUDN(SUDNDTO sudndto) {
+        return sudnMapper.getUnFinishedShipSUDN(sudndto);
     }
 
     @Override
-    public List<SUDNVO> getFinishedShipSUDN() {
-        return sudnMapper.getFinishedShipSUDN();
+    public List<SUDNVO> getFinishedShipSUDN(SUDNDTO sudndto) {
+        return sudnMapper.getFinishedShipSUDN(sudndto);
     }
 
     @Override
@@ -272,7 +285,7 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
             throw new ServiceException("发运数量不能大于已下架数量");
         }
         sudn.setSumBinDownQuantity(sudn.getSumBinDownQuantity() - shipQuantity);
-        sudn.setShipQuantity(shipQuantity);
+        sudn.setShipQuantity(sudn.getShipQuantity() == null ? shipQuantity : sudn.getShipQuantity() + shipQuantity);
         this.updateById(sudn);
 
 

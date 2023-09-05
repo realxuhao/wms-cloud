@@ -4,6 +4,9 @@ import com.bosch.product.api.domain.SUDN;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+import java.util.Set;
+
 /**
  * @program: wms-cloud
  * @description:
@@ -17,6 +20,8 @@ public class SUDNVO extends SUDN {
      */
     @ApiModelProperty(value = "物料名称")
     private String materialName;
+
+    private Set<String> productionBatchs;
 
 
 }

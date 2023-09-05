@@ -891,18 +891,11 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
      */
     private List<String> getRandomNonConsecutive(List<String> list) {
         List<String> result = new ArrayList<>();
-
         Collections.shuffle(list);
-
-
 
         if (list.size() < 3) {
             return result;
         }
-        result.add(list.get(0));
-        result.add(list.get(list.size()-1));
-//        result.add(list.get());
-
         for (int i = 0; i < list.size() - 2; i++) {
             result.add(list.get(i));
             result.add(list.get(i + 1));
@@ -921,6 +914,8 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
                 BinIn binIn = binInList.get(0);
                 IQCSamplePlan samplePlan = convertToSamplePlan(binIn, Double.valueOf(30), materialVO);
                 samplePlanList.add(samplePlan);
+            }else {
+                return Collections.emptyList();
             }
         } else {
             R<Ecn> ecnR = remoteIQCService.getEcnByMaterialNb(materialVO.getCode());

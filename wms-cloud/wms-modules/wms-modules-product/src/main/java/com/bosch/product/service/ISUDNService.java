@@ -30,14 +30,14 @@ public interface ISUDNService extends IService<SUDN> {
     void  modifyQuantity(Long id,Double quantity);
 
 
-    List<SUDNVO> getUnFinishedSUDN();
+    List<SUDNVO> getUnFinishedSUDN(SUDNDTO sudndto);
 
-    List<SUDNVO> getFinishedSUDN();
+    List<SUDNVO> getFinishedSUDN(SUDNDTO sudndto);
 
 
-    List<SUDNVO> getUnFinishedShipSUDN();
+    List<SUDNVO> getUnFinishedShipSUDN(SUDNDTO sudndto);
 
-    List<SUDNVO> getFinishedShipSUDN();
+    List<SUDNVO> getFinishedShipSUDN(SUDNDTO sudndto);
 
     void ship(SUDNShipDTO shipDTO);
 

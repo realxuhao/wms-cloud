@@ -32,4 +32,6 @@ public interface IMaterialReturnService extends IService<MaterialReturn> {
     MaterialReturn performBinIn(ManualBinInDTO binInDTO);
 
     void modifyQuantity(MaterialReturnDTO dto);
+
+    MaterialReturn cancel(Long id);
 }

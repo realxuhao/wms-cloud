@@ -124,7 +124,8 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
             LambdaQueryWrapper<ProductStock> productStockQueryWrapper = new LambdaQueryWrapper<>();
             productStockQueryWrapper.eq(StringUtils.isNotEmpty(dto.getWareCode()), ProductStock::getWareCode, dto.getWareCode())
                     .eq(StringUtils.isNotEmpty(dto.getAreaCode()), ProductStock::getAreaCode, dto.getAreaCode())
-                    .eq(ProductStock::getFreezeStock, (double) 0)
+//                    .eq(ProductStock::getFreezeStock, (double) 0)
+                    .eq(ProductStock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode())
                     .in(!CollectionUtils.isEmpty(materialCodeList), ProductStock::getMaterialNb, materialCodeList);
 
             List<ProductStock> productStockList = productStockService.list(productStockQueryWrapper);

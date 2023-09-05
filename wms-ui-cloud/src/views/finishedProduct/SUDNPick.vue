@@ -118,7 +118,7 @@
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
                           getCheckboxProps:record => ({
                             props: {
-                              disabled: record.status ===1
+                              
                             },
                           }), }"
         :columns="columns"

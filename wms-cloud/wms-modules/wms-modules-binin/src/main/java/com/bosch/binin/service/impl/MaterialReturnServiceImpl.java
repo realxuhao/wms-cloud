@@ -304,6 +304,18 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         this.updateById(materialReturn);
 
     }
+
+    @Override
+    public MaterialReturn cancel(Long id) {
+        MaterialReturn materialReturn = this.getById(id);
+        if (materialReturn == null) {
+            throw new ServiceException("不存在该SSCC的退库任务");
+        }
+        if (!materialReturn.getStatus().equals(MaterialReturnStatusEnum.WAITING_CONFIRM.value())) {
+            throw new ServiceException("状态为:" + MaterialReturnStatusEnum.getDesc(String.valueOf(materialReturn.getStatus())) + ",不可取消");
+        }
+        return materialReturn;
+    }
 }
 
 

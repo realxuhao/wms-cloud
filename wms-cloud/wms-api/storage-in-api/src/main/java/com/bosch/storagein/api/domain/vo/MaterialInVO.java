@@ -63,25 +63,25 @@ public class MaterialInVO {
      * 应检查数量
      */
     @ApiModelProperty(value = "目标抽样件数")
-    private Integer checkQuantity;
+    private Double checkQuantity;
 
     /**
      * 最小标准
      */
     @ApiModelProperty(value = "最小标准")
-    private Integer minStandard;
+    private Double minStandard;
 
     /**
      * 最大标准
      */
     @ApiModelProperty(value = "最大标准")
-    private Integer maxStandard;
+    private Double maxStandard;
 
     /**
      * 实际数量
      */
     @ApiModelProperty(value = "实际抽样数量")
-    private Integer actualQuantity;
+    private Double actualQuantity;
 
     /**
      * 实际称重、数数结果

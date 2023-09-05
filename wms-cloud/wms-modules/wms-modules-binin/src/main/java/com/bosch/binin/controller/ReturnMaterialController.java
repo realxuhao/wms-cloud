@@ -1,5 +1,6 @@
 package com.bosch.binin.controller;
 
+import com.bosch.binin.api.domain.IQCSamplePlan;
 import com.bosch.binin.api.domain.MaterialReturn;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
@@ -153,6 +154,19 @@ public class ReturnMaterialController extends BaseController {
         List<MaterialReturnVO> materialReturnVOS = materialReturnService.list(queryDTO);
         ExcelUtil<MaterialReturnVO> util = new ExcelUtil<>(MaterialReturnVO.class);
         util.exportExcel(response, materialReturnVOS, "退库记录");
+    }
+
+    @PutMapping(value = "/cancel/{id}")
+    @Log(title = "退库记录取消", businessType = BusinessType.DELETE)
+    @ApiOperation("退库记录取消")
+    @Synchronized
+    public R<SSCCLogVO> binDown(@PathVariable("id") Long id) {
+        MaterialReturn materialReturn = materialReturnService.cancel(id);
+        SSCCLogVO ssccLogVO = new SSCCLogVO();
+        ssccLogVO.setSsccNumber(materialReturn.getSsccNumber());
+        ssccLogVO.setQuantity(null);
+
+        return R.ok();
     }
 
 }

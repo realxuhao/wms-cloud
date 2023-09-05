@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,8 +54,6 @@ public class ProductPickController extends BaseController {
 
     @Autowired
     private IProductPickService pickService;
-
-
 
 
     @GetMapping(value = "/list")
@@ -114,12 +113,33 @@ public class ProductPickController extends BaseController {
         return R.ok(qrCode + "下架成功");
     }
 
+    @PutMapping(value = "/sumBatchBinDown/{qrCodeList}")
+    @ApiOperation("SUDN捡配任务汇总下架")
+    @Log(title = "SUDN捡配任务汇总下架", businessType = BusinessType.UPDATE)
+    @Transactional(rollbackFor = Exception.class)
+    @Synchronized
+    public R batchBinDown(@PathVariable List<String> qrCodeList) {
+        qrCodeList.stream().forEach(qrCode->{
+            pickService.sumBinDown(qrCode);
+        });
 
-    @DeleteMapping(value = "/{ids}")
+        return R.ok("下架成功");
+    }
+
+
+    @PostMapping(value = "/batchDelete/{ids}")
     @ApiOperation("删除SUDN捡配任务")
-    @Log(title = "删除捡配", businessType = BusinessType.DELETE)
+    @Log(title = "批量删除捡配", businessType = BusinessType.DELETE)
     public R batchDelete(@PathVariable Long[] ids) {
         pickService.batchCancel(Arrays.asList(ids));
+        return R.ok();
+    }
+
+    @DeleteMapping(value = "/{id}")
+    @ApiOperation("删除SUDN捡配任务")
+    @Log(title = "单个删除捡配", businessType = BusinessType.DELETE)
+    public R delete(@PathVariable Long id) {
+        pickService.cancel(id);
         return R.ok();
     }
 
@@ -167,8 +187,21 @@ public class ProductPickController extends BaseController {
      */
     @PostMapping("/exportExcel")
     @ApiOperation("SUDN捡配列表")
-    public void export(HttpServletResponse response, ProductPickDTO queryDTO) {
+    public void export(HttpServletResponse response,@RequestBody ProductPickDTO queryDTO) {
+        if (queryDTO.getStartCreateTime()!=null){
+            Calendar instance = Calendar.getInstance();
+            instance.setTime(queryDTO.getStartCreateTime());
+            instance.set(Calendar.HOUR_OF_DAY,0);
+            instance.set(Calendar.MINUTE,0);
+            instance.set(Calendar.SECOND,0);
+            queryDTO.setStartCreateTime(instance.getTime());
+
+        }
         List<ProductPickExportVO> list = pickService.getSUDNPickExportVO(queryDTO);
+        list.stream().forEach(item -> {
+            item.setItem("0000" + item.getItem());
+            item.setDeliveryQuantityString(String.valueOf(item.getDeliveryQuantity().intValue()));
+        });
         ExcelUtil<ProductPickExportVO> util = new ExcelUtil<>(ProductPickExportVO.class);
         util.exportExcel(response, list, "SUDN捡配列表");
     }

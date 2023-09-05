@@ -89,7 +89,7 @@ public class MaterialReceive {
      */
     @ExcelProperty(value = "Quantity")
     @CsvBindByName(column = "Quantity")
-    private Integer quantity;
+    private Double quantity;
 
     /**
      * 单位

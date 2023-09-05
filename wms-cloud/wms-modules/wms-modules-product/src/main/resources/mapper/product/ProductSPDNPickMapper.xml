@@ -14,7 +14,7 @@
             AND psp.plant_nb like concat('%', #{plant}, '%')
         </if>
         <if test="ssccNumber != null and ssccNumber != ''">
-            AND psp.sscc_number concat('%', #{ssccNumber}, '%')
+            AND psp.sscc_number like concat('%', #{ssccNumber}, '%')
         </if>
         <if test="wareCode != null and wareCode != ''">
             AND psp.ware_code like concat('%', #{wareCode}, '%')

@@ -229,6 +229,10 @@ public class ProductStockVO {
 
 
     @ApiModelProperty
+    @Excel(name = "批次总数量")
     private Double totalStockSum;
+
+    @Excel(name = "批次总托数")
+    private Double sameProdOrderCount;
 
 }

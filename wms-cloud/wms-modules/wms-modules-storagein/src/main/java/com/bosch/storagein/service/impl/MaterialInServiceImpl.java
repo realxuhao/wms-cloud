@@ -336,7 +336,11 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         //计算最小包装数量
         Double totalPackage = Math.ceil(Double.valueOf(total) / Double.valueOf(minPackageNumber));
         materialInCheckVO.setTotalQuantity(total);
-        materialInCheckVO.setCheckQuantity(getCheckQuantity(totalPackage));
+        //如果是10件的话，保留小数点
+
+        double v = Double.valueOf(total) / Double.valueOf(minPackageNumber);
+
+        materialInCheckVO.setCheckQuantity(getCheckQuantity(v));
 
     }
 

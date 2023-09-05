@@ -9,12 +9,14 @@ import com.bosch.binin.api.domain.dto.ManualTransQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
 import com.bosch.binin.api.domain.vo.ManualTransferOrderVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
+import com.bosch.binin.api.enumeration.IQCStatusEnum;
 import com.bosch.binin.api.enumeration.ManuTransStatusEnum;
 import com.bosch.binin.api.enumeration.MaterialTransTypeEnum;
 import com.bosch.binin.mapper.BinInMapper;
 import com.bosch.binin.mapper.ManualTransferOrderMapper;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.service.IBinInService;
+import com.bosch.binin.service.IIQCSamplePlanService;
 import com.bosch.binin.service.IManualTransferOrderService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.masterdata.api.domain.vo.BinVO;
@@ -65,6 +67,10 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
     @Autowired
     @Lazy
     private JobServiceImpl jobService;
+
+
+    @Autowired
+    private IIQCSamplePlanService samplePlanService;
 
 
     @Autowired
@@ -362,7 +368,7 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
             throw new ServiceException("系统无此托的库存信息");
         }
 
-        jobService.validStockStatus(stock.getSsccNumber());
+        jobService.validStockStatusWithoutIQC(stock.getSsccNumber());
 //        if (stock.getFreezeStock() > Double.valueOf(0)) {
 //            throw new ServiceException("该托有冻结库存，暂时不能转储！");
 //        }
@@ -395,6 +401,23 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
         this.save(manualTransferOrder);
 
         stockService.updateById(stock);
+
+
+        //查询IQC
+        LambdaQueryWrapper<IQCSamplePlan> iqcQueryWrapper = new LambdaQueryWrapper<>();
+        iqcQueryWrapper.eq(IQCSamplePlan::getSsccNb, stock.getSsccNumber());
+        iqcQueryWrapper.eq(IQCSamplePlan::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.CANCEL.code());
+        iqcQueryWrapper.ne(IQCSamplePlan::getStatus, IQCStatusEnum.FINISH.code());
+        iqcQueryWrapper.last("for update");
+        IQCSamplePlan samplePlan = samplePlanService.getOne(iqcQueryWrapper);
+        if (samplePlan != null) {
+            samplePlan.setPlantNb(stock.getPlantNb());
+            samplePlan.setWareCode(stock.getWareCode());
+            samplePlan.setAreaCode(stock.getAreaCode());
+            samplePlan.setBinDownCode(stock.getBinCode());
+            samplePlanService.updateById(samplePlan);
+        }
 
 
         UserOperationLog userOperationLog = new UserOperationLog();

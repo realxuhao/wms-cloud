@@ -7,6 +7,7 @@ import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.product.api.domain.ProductPick;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.SUDN;
+import com.bosch.product.api.domain.ShippingPlan;
 import com.bosch.product.api.domain.dto.EditBinDownQuantityDTO;
 import com.bosch.product.api.domain.dto.ProductPickDTO;
 import com.bosch.product.api.domain.enumeration.ProductPickEnum;
@@ -30,6 +31,7 @@ import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.scheduling.support.SimpleTriggerContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -79,13 +81,34 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
     @Override
     public void batchCancel(List<Long> idList) {
         List<ProductPick> productPicks = this.listByIds(idList);
+        List<String> sscccList = productPicks.stream().map(ProductPick::getSscc).collect(Collectors.toList());
+        LambdaQueryWrapper<ProductStock> stockWrapper = new LambdaQueryWrapper<>();
+        stockWrapper.in(ProductStock::getSsccNumber,sscccList);
+        stockWrapper.eq(ProductStock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        List<ProductStock> productStocks = productStockService.list(stockWrapper);
+        Map<String, List<ProductStock>> ssccStockMap = productStocks.stream()
+                .collect(Collectors.groupingBy(ProductStock::getSsccNumber));
+
+
         productPicks.stream().forEach(item -> {
             if (item.getStatus() != ProductPickEnum.WAITING_ISSUE.code() || item.getStatus().equals(ProductPickEnum.WAITTING_DOWN.code())) {
-                throw new ServiceException("该状态下不可以取消" + ProductPickEnum.getDesc(item.getStatus()));
+                throw new ServiceException("该状态下不可以取消:" + ProductPickEnum.getDesc(item.getStatus()));
             }
             item.setStatus(ProductPickEnum.CANCEL.code());
+
+            ProductStock productStock = ssccStockMap.get(item.getSscc()).get(0);
+            MdProductPackagingVO productVO = getProductVO(productStock.getMaterialNb());
+            Double binDownQuantity = item.getBinDownQuantity();
+            //转换为TR
+            double v = binDownQuantity / productVO.getBoxSpecification();
+            productStock.setAvailableStock(productStock.getAvailableStock()+v);
+            productStock.setFreezeStock(productStock.getFreezeStock()-v);
+
+
         });
         this.updateBatchById(productPicks);
+        //删除后还要恢复库存
+        productStockService.updateBatchById(productStocks);
     }
 
     @Override
@@ -266,7 +289,11 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
 
     @Override
     public ProductPickBinDownVO sumBinDown(String qrCode) {
-        String sscc = ProductQRCodeUtil.getSSCC(qrCode);
+
+        String sscc = qrCode;
+        if (qrCode.length() != 18) {
+            sscc = ProductQRCodeUtil.getSSCC(qrCode);
+        }
         LambdaQueryWrapper<ProductPick> pickQueryWrapper = new LambdaQueryWrapper<>();
         pickQueryWrapper.eq(ProductPick::getSscc, sscc);
         pickQueryWrapper.eq(ProductPick::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());

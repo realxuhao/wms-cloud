@@ -51,6 +51,9 @@ public class SUDNDTO extends PageDomain {
     @ExcelProperty(value = "Batch")
     private String batch;
 
+    @ExcelProperty(value = "Storage Location")
+    private String storageLocation;
+
     @ApiModelProperty(value = "0:待生成，1：已生成")
     private Integer status;
 

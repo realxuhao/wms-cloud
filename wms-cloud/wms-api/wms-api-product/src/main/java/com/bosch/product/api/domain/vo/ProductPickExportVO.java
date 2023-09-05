@@ -34,8 +34,10 @@ public class ProductPickExportVO {
     private Date batch;
     @Excel(name = "Production batch")
     private String productionBatch;
-    @Excel(name = "Delivery Quantity")
+//    @Excel(name = "Delivery Quantity")
     private Double deliveryQuantity;
+    @Excel(name = "Delivery Quantity")
+    private String deliveryQuantityString;
     @Excel(name = "Sales Unit")
     private String salesUnit;
 }

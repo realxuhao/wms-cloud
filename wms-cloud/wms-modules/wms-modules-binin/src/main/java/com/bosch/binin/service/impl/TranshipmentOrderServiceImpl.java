@@ -19,6 +19,7 @@ import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -85,6 +86,15 @@ public class TranshipmentOrderServiceImpl extends ServiceImpl<TranshipmentOrderM
 
     @Override
     public Integer updateBySSCCS(List<String> ssccs) {
+        LambdaQueryWrapper<TranshipmentOrder> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(TranshipmentOrder::getSsccNumber, ssccs);
+        queryWrapper.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.eq(TranshipmentOrder::getStatus, StatusEnums.FALSE.getCode());
+        List<TranshipmentOrder> transhipmentOrderList = transhipmentOrderMapper.selectList(queryWrapper);
+        if (CollectionUtils.isEmpty(transhipmentOrderList)) {
+            throw new ServiceException("该车次都已收货或不存在待收货");
+        }
+
         TranshipmentOrder transhipmentOrder = new TranshipmentOrder();
         transhipmentOrder.setStatus(StatusEnums.TRUE.getCode());
         LambdaUpdateWrapper<TranshipmentOrder> uw = new LambdaUpdateWrapper<>();

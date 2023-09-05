@@ -191,7 +191,7 @@ public class ProductWareShiftController extends BaseController {
     @PostMapping("/export")
     @ApiOperation("移库列表导出")
     @Log(title = "成品移库列表导出", businessType = BusinessType.EXPORT)
-    public void export(HttpServletResponse response, ProductWareShiftQueryDTO queryDTO) {
+    public void export(HttpServletResponse response, @RequestBody ProductWareShiftQueryDTO queryDTO) {
         List<ProductWareShiftVO> wareShiftList = productWareShiftService.list(queryDTO);
 //        List<MaterialCallVO> materialCallVOS = BeanConverUtil.converList(list, MaterialCallVO.class);
 

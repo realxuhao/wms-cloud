@@ -14,8 +14,11 @@
         <if test="delivery != null and delivery != ''">
             AND pp.delivery like concat('%', #{delivery}, '%')
         </if>
-        <if test="sscc != null and sscc != ''">
-            AND pp.sscc like concat('%', #{sscc}, '%')
+        <if test="item != null and item != ''">
+            AND pp.item like concat('%', #{item}, '%')
+        </if>
+        <if test="ssccNb != null and ssccNb != ''">
+            AND pp.sscc like concat('%', #{ssccNb}, '%')
         </if>
         <if test="material != null and material != ''">
             AND pp.material like concat('%', #{material}, '%')
@@ -35,7 +38,7 @@
 
     </select>
     <select id="binDownlist" resultType="com.bosch.product.api.domain.vo.ProductPickVO">
-        select pp.sscc, sum(delivery_quantity) as delivery_quantity, pp.material, pp.bin_code,pp.status,mpp.product_name as materialName
+        select pp.sscc, sum(delivery_quantity) as delivery_quantity, pp.material, pp.bin_code,pp.status,mpp.product_name as materialName,pp.production_batch
         from product_pick pp left join md_product_packaging mpp on mpp.product_no = pp.material and mpp.delete_flag = 0
         where pp.delete_flag = 0
         <if test="status != null">and pp.status = #{status}</if>
@@ -44,7 +47,7 @@
         <if test="sscc != null and sscc != ''">
             AND pp.sscc like concat('%', #{sscc}, '%')
         </if>
-        group by pp.sscc, pp.material, pp.bin_code,pp.status,mpp.product_name
+        group by pp.sscc, pp.material, pp.bin_code,pp.status,mpp.product_name,pp.production_batch
 
     </select>
     <select id="getSUDNPickExportVO" resultType="com.bosch.product.api.domain.vo.ProductPickExportVO">
@@ -61,7 +64,7 @@
         pp.sales_unit as salesUnit,
         sum(delivery_quantity) as deliveryQuantity
         from product_pick pp
-        where pp.delete_flag = 0
+        where pp.delete_flag = 0 and DATE(pp.create_time) = CURDATE() and pp.status != -1
         <if test="sudnId != null">and pp.sudn_id = #{sudnId}</if>
         <if test="status != null">and pp.status = #{status}</if>
         <if test="delivery != null and delivery != ''">
@@ -82,8 +85,9 @@
         <if test="shipper != null and shipper != ''">
             AND pp.shipper like concat('%', #{shipper}, '%')
         </if>
-        <if test="startCreateTime != null">and pp.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
-        <if test="endCreateTime != null">and pp.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+
+
+
         group by pp.delivery, pp.plant, pp.ship_to_party, pp.name_of_ship_to_party, pp.delivery_date, pp.item,
         pp.material, pp.expire_date, pp.production_batch, pp.sales_unit,pp.batch
     </select>

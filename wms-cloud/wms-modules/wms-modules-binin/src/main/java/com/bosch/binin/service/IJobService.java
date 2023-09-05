@@ -16,5 +16,8 @@ public interface IJobService {
     JobVO getJobDescBySSCC(String ssccNb);
 
 
+    void validStockStatusWithoutIQC(String ssccNb);
+
+
 
 }
