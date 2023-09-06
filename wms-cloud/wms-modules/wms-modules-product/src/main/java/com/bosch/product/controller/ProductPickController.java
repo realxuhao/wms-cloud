@@ -59,6 +59,15 @@ public class ProductPickController extends BaseController {
     @GetMapping(value = "/list")
     @ApiOperation("SUDN捡配列表")
     public R<PageVO<ProductPickVO>> list(ProductPickDTO queryDTO) {
+        if (queryDTO!=null&&queryDTO.getStartCreateTime()!=null){
+            Calendar instance = Calendar.getInstance();
+            instance.setTime(queryDTO.getStartCreateTime());
+            instance.set(Calendar.HOUR_OF_DAY,0);
+            instance.set(Calendar.MINUTE,0);
+            instance.set(Calendar.SECOND,0);
+            queryDTO.setStartCreateTime(instance.getTime());
+
+        }
         startPage();
         List<ProductPickVO> list = pickService.list(queryDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
@@ -188,7 +197,7 @@ public class ProductPickController extends BaseController {
     @PostMapping("/exportExcel")
     @ApiOperation("SUDN捡配列表")
     public void export(HttpServletResponse response,@RequestBody ProductPickDTO queryDTO) {
-        if (queryDTO.getStartCreateTime()!=null){
+        if (queryDTO!=null&&queryDTO.getStartCreateTime()!=null){
             Calendar instance = Calendar.getInstance();
             instance.setTime(queryDTO.getStartCreateTime());
             instance.set(Calendar.HOUR_OF_DAY,0);

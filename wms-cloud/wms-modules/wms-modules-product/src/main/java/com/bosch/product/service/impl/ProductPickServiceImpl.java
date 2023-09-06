@@ -91,8 +91,8 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
 
 
         productPicks.stream().forEach(item -> {
-            if (item.getStatus() != ProductPickEnum.WAITING_ISSUE.code() || item.getStatus().equals(ProductPickEnum.WAITTING_DOWN.code())) {
-                throw new ServiceException("该状态下不可以取消:" + ProductPickEnum.getDesc(item.getStatus()));
+            if (!(item.getStatus().equals(ProductPickEnum.WAITING_ISSUE.code()) || item.getStatus().equals(ProductPickEnum.WAITTING_DOWN.code()))) {
+                throw new ServiceException("存在对应捡配任务该状态下不可以取消:" + ProductPickEnum.getDesc(item.getStatus()));
             }
             item.setStatus(ProductPickEnum.CANCEL.code());
 

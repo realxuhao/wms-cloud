@@ -36,12 +36,12 @@ public class ProductPickDTO {
     private Date shippingTime;
     private Long sudnId;
     @ApiModelProperty(value = "开始创建时间")
-    @DateTimeFormat("yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat("yyyy-MM-dd mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd mm:ss",timezone = "GMT+8")
     private Date startCreateTime;
     @ApiModelProperty(value = "结束创建时间")
-    @DateTimeFormat("yyyy-MM-dd")
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat("yyyy-MM-dd mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd mm:ss",timezone = "GMT+8")
     private Date endCreateTime;
 
     private String wareCode;

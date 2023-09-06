@@ -32,8 +32,8 @@
         <if test="shipper != null and shipper != ''">
             AND pp.shipper like concat('%', #{shipper}, '%')
         </if>
-        <if test="startCreateTime != null">and pp.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
-        <if test="endCreateTime != null">and pp.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+        <if test="startCreateTime != null">and DATE(pp.create_time) <![CDATA[ >= ]]> DATE(#{startCreateTime})</if>
+        <if test="endCreateTime != null">and DATE(pp.create_time) <![CDATA[ <= ]]> DATE(#{endCreateTime})</if>
 
 
     </select>
@@ -59,12 +59,11 @@
         pp.item as item,
         pp.material as material,
         STR_TO_DATE(pp.expire_date, '%Y-%m-%d') as batch,
-#         STR_TO_DATE(pp.batch, '%Y-%m-%d') as production_batch,
                pp.production_batch as production_batch,
         pp.sales_unit as salesUnit,
         sum(delivery_quantity) as deliveryQuantity
         from product_pick pp
-        where pp.delete_flag = 0 and DATE(pp.create_time) = CURDATE() and pp.status != -1
+        where pp.delete_flag = 0  and pp.status != -1
         <if test="sudnId != null">and pp.sudn_id = #{sudnId}</if>
         <if test="status != null">and pp.status = #{status}</if>
         <if test="delivery != null and delivery != ''">
@@ -86,6 +85,8 @@
             AND pp.shipper like concat('%', #{shipper}, '%')
         </if>
 
+        <if test="startCreateTime != null">and DATE(pp.create_time) <![CDATA[ >= ]]> DATE(#{startCreateTime})</if>
+        <if test="endCreateTime != null">and DATE(pp.create_time) <![CDATA[ <= ]]> DATE(#{endCreateTime})</if>
 
 
         group by pp.delivery, pp.plant, pp.ship_to_party, pp.name_of_ship_to_party, pp.delivery_date, pp.item,

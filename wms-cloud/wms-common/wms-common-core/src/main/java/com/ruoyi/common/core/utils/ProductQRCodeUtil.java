@@ -126,7 +126,7 @@ public class ProductQRCodeUtil {
         String batchNb = "101207530";
         String expireDate = "240709";
         String quantity = "000060";
-        String sscc="369006391113888435";
+        String sscc="369006391113767471";
 
 
         String s1="11"+productDate+"10"+batchNb;
@@ -154,6 +154,11 @@ public class ProductQRCodeUtil {
 
         System.out.println("sasasa"+ssss);
 
+
+        System.out.println(String.valueOf(Integer.valueOf((int) 11.0)));
+
+
+        System.out.println("369006391113935306".length());
 
     }
 

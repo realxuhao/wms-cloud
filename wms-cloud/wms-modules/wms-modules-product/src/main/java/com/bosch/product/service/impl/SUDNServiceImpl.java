@@ -96,6 +96,7 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
         LambdaQueryWrapper<ProductPick> pickQueryWrapper = new LambdaQueryWrapper<>();
         pickQueryWrapper.in(ProductPick::getSudnId,sudnIds);
         pickQueryWrapper.eq(ProductPick::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        pickQueryWrapper.ne(ProductPick::getStatus,ProductPickEnum.CANCEL.code());
         List<ProductPick> list = pickService.list(pickQueryWrapper);
         if (!CollectionUtils.isEmpty(list)){
             List<Long> pickIds = list.stream().map(ProductPick::getId).collect(Collectors.toList());

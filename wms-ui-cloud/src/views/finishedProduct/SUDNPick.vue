@@ -43,8 +43,9 @@
           <a-col :span="8">
             <a-form-item label="创建时间" >
               <a-range-picker
-                format="YYYY-MM-DD"
                 v-model="queryForm.date"
+                format="YYYY-MM-DD"
+            
               />
             </a-form-item>
           </a-col>
@@ -451,7 +452,7 @@ export default {
       try {
         await this.$store.dispatch('finishedProduct/sudnPickBatchDelete', this.selectedRowKeys)
         this.$message.success('删除成功！')
-
+this.selectedRowKeys = []
         this.loadTableList()
       } catch (error) {
         console.log(error)

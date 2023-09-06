@@ -390,7 +390,7 @@ export default {
         this.loadTableList()
       } catch (error) {
         console.log(error)
-        this.$message.error('删除失败，请联系系统管理员！')
+        this.$message.error(error.message)
       }
     },
   
