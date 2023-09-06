@@ -40,7 +40,7 @@
 
     <select id="selectTodaySignData"  resultType="com.bosch.vehiclereservation.api.domain.vo.DriverDispatchVO">
         SELECT t.dispatchId,t.wareId,t.dockCode,t.driverType,t.sortNo,t.comeinDate,t.completeDate,t.status,t.reserveNo,t.supplierCode,t.driverName,
-        t.driverPhone,t.carNum,t.reserveType,t.late,t.signinDate,t.driverStatus,t.wechatId,t.reserveDate,t.cell
+        t.driverPhone,t.carNum,t.reserveType,t.late,t.signinDate,t.driverStatus,t.wechatId,t.supplierName,t.reserveDate,t.cell
         from (SELECT t1.dispatch_id as dispatchId,
         t1.ware_id as wareId,
         t1.dock_code as dockCode,
@@ -59,6 +59,7 @@
         t2.signin_date as signinDate,
         t2.`status` as driverStatus,
         t2.`wechat_id` as wechatId,
+        t2.`miniapp_supplier_name` as supplierName,
         CONCAT(DATE_FORMAT(t2.reserve_date, '%Y-%m-%d'), ' ', t2.time_window) as reserveDate,
         '' as cell
         from vr_driver_dispatch t1
@@ -83,6 +84,7 @@
         t2.signin_date as signinDate,
         t2.`status` as driverStatus,
         t2.`wechat_id` as wechatId,
+        "" as supplierName,
         DATE_FORMAT(t2.pickup_date, '%Y-%m-%d') as reserveDate,
         t2.cell
         from vr_driver_dispatch t1

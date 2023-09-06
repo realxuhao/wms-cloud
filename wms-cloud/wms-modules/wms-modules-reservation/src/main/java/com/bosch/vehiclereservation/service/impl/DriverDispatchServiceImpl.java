@@ -86,15 +86,18 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
                 dispatchVO.setWareCode(wareMap.get(dispatchVO.getWareId()));
                 dispatchVO.setWareName(wareMap.get(dispatchVO.getWareId() + 1));
             }
-            if (StringUtils.isNotEmpty(dispatchVO.getSupplierCode())) {
-                if (!supplierMap.keySet().contains(dispatchVO.getSupplierCode())) {
-                    SupplierInfoVO supplierInfoVO = remoteMasterDataService.getSupplierInfoByCode(dispatchVO.getSupplierCode()).getData();
-                    if (supplierInfoVO != null) {
-                        supplierMap.put(dispatchVO.getSupplierCode(), supplierInfoVO.getName());
-                    }
-                }
-                dispatchVO.setSupplierName(supplierMap.get(dispatchVO.getSupplierCode()));
+            if (StringUtils.isNotEmpty(dispatchVO.getSupplierName())) {
+                dispatchVO.setSupplierCode(dispatchVO.getSupplierName());
             }
+//            if (StringUtils.isNotEmpty(dispatchVO.getSupplierCode())) {
+//                if (!supplierMap.keySet().contains(dispatchVO.getSupplierCode())) {
+//                    SupplierInfoVO supplierInfoVO = remoteMasterDataService.getSupplierInfoByCode(dispatchVO.getSupplierCode()).getData();
+//                    if (supplierInfoVO != null) {
+//                        supplierMap.put(dispatchVO.getSupplierCode(), supplierInfoVO.getName());
+//                    }
+//                }
+//                dispatchVO.setSupplierName(supplierMap.get(dispatchVO.getSupplierCode()));
+//            }
         }
         return driverDispatchVOS;
     }

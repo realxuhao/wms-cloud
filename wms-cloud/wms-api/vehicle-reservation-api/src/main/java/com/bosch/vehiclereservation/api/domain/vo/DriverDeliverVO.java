@@ -116,6 +116,12 @@ public class DriverDeliverVO {
     @ApiModelProperty(value = "迟到描述")
     private String lateDes;
 
+    /**
+     * 小程序中录入的供应商名称
+     */
+    @ApiModelProperty(value = "小程序中录入的供应商名称")
+    private String miniappSupplierName;
+
 
     public void setStatus(Integer status) {
         this.status = status;

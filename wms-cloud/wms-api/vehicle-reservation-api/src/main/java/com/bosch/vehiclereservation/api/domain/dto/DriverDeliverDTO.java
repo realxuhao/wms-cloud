@@ -95,4 +95,10 @@ public class DriverDeliverDTO extends PageDomain {
 
     @ApiModelProperty(value = "供应商姓名")
     private String supplierName;
+
+    /**
+     * 小程序中录入的供应商名称
+     */
+    @ApiModelProperty(value = "小程序中录入的供应商名称")
+    private String miniappSupplierName;
 }

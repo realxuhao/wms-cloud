@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
@@ -81,6 +82,12 @@ public class DriverDeliver extends BaseEntity {
      * 状态：0：未签到 1：已签到
      */
     private Integer status;
+
+    /**
+     * 小程序中录入的供应商名称
+     */
+    @ApiModelProperty(value = "小程序中录入的供应商名称")
+    private String miniappSupplierName;
 
 
     @TableField(exist = false)
