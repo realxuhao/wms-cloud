@@ -102,6 +102,12 @@ public class DriverDispatchVO {
     private String supplierCode;
 
     /**
+     * 供应商名称
+     */
+    @ApiModelProperty(value = "供应商名称")
+    private String supplierName;
+
+    /**
      * 司机姓名
      */
     @ApiModelProperty(value = "司机姓名")
@@ -171,12 +177,6 @@ public class DriverDispatchVO {
      */
     @ApiModelProperty(value = "预约单号")
     private String reserveNo;
-
-    /**
-     * 供应商名称
-     */
-    @ApiModelProperty(value = "供应商名称")
-    private String supplierName;
 
     /**
      * 预约类型： 0：未预约 1：已预约
