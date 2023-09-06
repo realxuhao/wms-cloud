@@ -4,6 +4,24 @@ import qs from 'qs'
 
 const baseUrl = `${config.apiHost}/vehiclereservation`
 
+const exportSign = async (options) => {
+  const url = `/driverDispatch/exportSign`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
+const exportNotSign = async (options) => {
+  const url = `/driverDispatch/exportNotSign`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
 /** 获取分页数据 */
 const getList = async (parameter, options) => {
   const url = `/driverDispatch/pagelist?${qs.stringify(parameter)}`
@@ -19,9 +37,9 @@ const getTodaySignlist = async (options) => {
 }
 
 /** 获取今天已预约未签到车辆数据 */
-const getTodayNoSignList = async (options) => {
-  const url = `/driverDispatch/nosignlist`
-  const { data } = await createAuthInstance(baseUrl).post(url, options)
+const getTodayNoSignList = async (parameter, options) => {
+  const url = `/driverDispatch/nosignlist?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).post(url, { ...options, parameter })
   return data
 }
 
@@ -81,6 +99,8 @@ const sendMsgToWx = async (options) => {
 }
 
 export const driverDispatchService = {
+  exportSign,
+  exportNotSign,
   getList,
   getTodaySignlist,
   getTodayNoSignList,

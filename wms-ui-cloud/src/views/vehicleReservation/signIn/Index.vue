@@ -42,6 +42,7 @@
                     @click="handleSearch"
                     :loading="searchLoading"
                   ><a-icon type="search" />查询</a-button>
+                  <a-button style="margin-left: 8px" type="primary" @click="downloadSignExcel" :loading="exportLoading"><a-icon type="download" />导出结果</a-button>
                   <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
                 </span>
               </a-col>
@@ -126,6 +127,17 @@
               </div>
             </template>
           </a-table>
+          <div class="pagination-con">
+            <a-pagination
+              show-size-changer
+              :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
+              show-less-items
+              :current="queryForm.pageNum"
+              :page-size.sync="queryForm.pageSize"
+              :total="paginationTotal"
+              @showSizeChange="onShowSizeChange"
+              @change="changePagination" />
+          </div>
         </a-tab-pane>
         <a-tab-pane key="2" tab="未签到列表">
           <a-form layout="inline" class="search-content">
@@ -145,6 +157,7 @@
                     @click="handleSearchNot"
                     :loading="searchLoading"
                   ><a-icon type="search" />查询</a-button>
+                  <a-button style="margin-left: 8px" type="primary" @click="downloadNotSignExcel" :loading="exportLoading"><a-icon type="download" />导出结果</a-button>
                 </span>
               </a-col>
             </a-row>
@@ -192,20 +205,20 @@
               </div>
             </template>
           </a-table>
+          <div class="pagination-con">
+            <a-pagination
+              show-size-changer
+              :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
+              show-less-items
+              :current="queryForm.pageNum"
+              :page-size.sync="queryForm.pageSize"
+              :total="paginationTotal"
+              @showSizeChange="onNotShowSizeChange"
+              @change="changeNotPagination" />
+          </div>
         </a-tab-pane>
       </a-tabs>
 
-      <div class="pagination-con">
-        <a-pagination
-          show-size-changer
-          :page-size-options="pageSizeOptions||[10,20,30,40,100,150]"
-          show-less-items
-          :current="queryForm.pageNum"
-          :page-size.sync="queryForm.pageSize"
-          :total="paginationTotal"
-          @showSizeChange="onShowSizeChange"
-          @change="changePagination" />
-      </div>
     </div>
 
   </div>
@@ -214,6 +227,7 @@
 <script>
 
 import { mixinTableList } from '@/utils/mixin/index'
+import { download } from '@/utils/file'
 import moment from 'moment'
 const signColumns = [
   {
@@ -387,7 +401,8 @@ export default {
   },
   props: {},
   data () {
-    return {
+    return {      
+      exportLoading: false,
       /** 已签到页面字段 */
       signColumns,
       /** 已签到页面数据 */
@@ -417,6 +432,49 @@ export default {
   model: {},
   computed: {},
   methods: {
+    onNotShowSizeChange () {
+      this.queryForm.pageNum = 1
+      this.loadNotSignTableList()
+    },    
+    changeNotPagination (page) {
+      this.queryForm.pageNum = page
+      this.loadNotSignTableList()
+    },
+    async downloadSignExcel(){
+      try {
+        this.queryForm.signinDate = this.queryForm.signinDate == null ? null : moment(new Date(this.queryForm.signinDate)).format('YYYY-MM-DD')
+        const param = {
+          wareId: this.queryForm.wareId,
+          signinDate: this.queryForm.signinDate,
+          statusList: this.queryForm.status
+        }
+        this.exportLoading = true
+        const blobData = await this.$store.dispatch('driverDispatch/exportSign', param)
+        download(blobData, '车辆预约已签到数据.xlsx')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
+      }
+
+    },
+    async downloadNotSignExcel(){
+      try {
+        this.exportLoading = true
+        const param = {
+          signinDate: this.searchNotSignDate == null ? null : moment(new Date(this.searchNotSignDate)).format('YYYY-MM-DD')
+        }
+        const blobData = await this.$store.dispatch('driverDispatch/exportNotSign', param)
+        download(blobData, '车辆预约未签到数据.xlsx')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
+      }
+
+    },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
       this.handleSearch()
@@ -507,8 +565,20 @@ export default {
     async loadNotSignTableList () {
       try {
         this.tableLoading = true
-        const { data } = await this.$store.dispatch('driverDispatch/getTodayNoSignList', { signinDate: this.searchNotSignDate == null ? null : moment(new Date(this.searchNotSignDate)).format('YYYY-MM-DD') })
-        this.notSignList = data
+        const parameter = {
+          pageSize: this.queryForm.pageSize,
+          pageNum: this.queryForm.pageNum
+        }
+        const param = {
+          signinDate: this.searchNotSignDate == null ? null : moment(new Date(this.searchNotSignDate)).format('YYYY-MM-DD')
+        }
+        const options = {
+          parameter: parameter,
+          param: param
+        }
+        const { data: { rows, total }  } = await this.$store.dispatch('driverDispatch/getTodayNoSignList', options)
+        this.notSignList = rows
+        this.paginationTotal = total
         this.notSignList.forEach(x => {
           if(x.reserveType == 1 && x.late == null && x.reserveDate != null){
             if(x.driverType == 0){
