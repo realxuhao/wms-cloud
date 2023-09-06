@@ -480,8 +480,8 @@
         batch_nb,
         MIN(create_time) AS create_time,
         MAX(create_time) AS bc
-        ,MAX(CASE WHEN  DATE_FORMAT(create_time, '%Y-%m-%d')   <![CDATA[ <= ]]> DATE_FORMAT(#{createTimeStart}, '%Y-%m-%d') THEN total_stock ELSE '0' END) AS operation_stock
-        , MAX(CASE WHEN DATE_FORMAT(create_time, '%Y-%m-%d')   <![CDATA[ >= ]]> DATE_FORMAT(#{createTimeEnd}, '%Y-%m-%d') THEN total_stock ELSE '0' END) AS bs
+        ,SUM(CASE WHEN  create_time   <![CDATA[ <= ]]> #{createTimeStart} THEN total_stock ELSE '0' END) AS operation_stock
+        , SUM(CASE WHEN create_time  <![CDATA[ >= ]]> #{createTimeEnd} THEN total_stock ELSE '0' END) AS bs
         FROM
         product_stock_detail
         WHERE  1=1

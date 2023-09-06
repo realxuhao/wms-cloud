@@ -182,7 +182,7 @@ export default {
         }
 
         const createTimeStart = date.length > 0 ? date[0].format('YYYY-MM-DD 23:59:00') : undefined
-        const createTimeEnd = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:59') : undefined
+        const createTimeEnd = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:00') : undefined
         const options = { ..._.omit(this.queryForm, ['date']), createTimeStart, createTimeEnd }
 
         const {
