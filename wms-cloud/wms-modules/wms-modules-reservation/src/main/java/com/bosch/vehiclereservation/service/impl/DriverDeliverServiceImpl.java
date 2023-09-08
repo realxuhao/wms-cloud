@@ -359,7 +359,7 @@ public class DriverDeliverServiceImpl extends ServiceImpl<DriverDeliverMapper, D
                 min = result.getData().getTimeWindow().intValue();
             }
             String[] split = driverDeliver.getTimeWindow().split("-");
-            String dateTime = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, supplierReserve.get().getReserveDate()) + " " + split[1];
+            String dateTime = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, driverDeliver.getReserveDate()) + " " + split[1];
             Date date = DateUtils.addMinutes(DateUtils.parseDate(dateTime), min);
             if (DateUtils.getNowDate().after(date)) {
                 driverDeliver.setLate(LateEnum.LATE.getCode());
