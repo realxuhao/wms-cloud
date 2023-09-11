@@ -94,6 +94,10 @@ public class SysFileController {
             if(CollectionUtils.isEmpty(read)){
                 return R.fail("excel中无数据");
             }
+            R<SysFile> upload = upload(file);
+            if (!upload.isSuccess()){
+                return R.fail("上传文件服务失败");
+            }
             return R.ok(read);
         } catch (Exception e) {
             if(e.getMessage()=="excel模板不正确"){
@@ -118,6 +122,10 @@ public class SysFileController {
             List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass,className);
             if(CollectionUtils.isEmpty(read)){
                 return R.fail("excel中无数据");
+            }
+            R<SysFile> upload = upload(file);
+            if (!upload.isSuccess()){
+                return R.fail("上传文件服务失败");
             }
             return R.ok(read);
         } catch (Exception e) {
@@ -145,6 +153,10 @@ public class SysFileController {
             if(CollectionUtils.isEmpty(read)){
                 return R.fail("excel中无数据");
             }
+            R<SysFile> upload = upload(file);
+            if (!upload.isSuccess()){
+                return R.fail("上传文件服务失败");
+            }
             return R.ok(read);
         } catch (Exception e) {
             if(e.getMessage()=="excel模板不正确"){
@@ -169,6 +181,10 @@ public class SysFileController {
             List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass,className);
             if(CollectionUtils.isEmpty(read)){
                 return R.fail("excel中无数据");
+            }
+            R<SysFile> upload = upload(file);
+            if (!upload.isSuccess()){
+                return R.fail("上传文件服务失败");
             }
             return R.ok(read);
         } catch (Exception e) {
