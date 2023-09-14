@@ -168,7 +168,7 @@ public class MaterialController extends BaseController {
                     List<Material> materials = BeanConverUtil.converList(materialDTOS, Material.class);
                     materialService.saveBatch(materials);
                 }
-            } else {
+
                 return R.fail("excel中无数据");
             }
             return R.ok(materialDTOList);
