@@ -158,8 +158,14 @@ export default {
     async handleExport(){
       try {
         this.downloadLoading = true
-
-        const res  = await this.$store.dispatch('dashboard/proInOutStockExport',this.queryForm)
+        const { date = [] } = this.queryForm
+        if(!date.length){
+          throw new Error('请先选择期初期末时间')
+        }
+        const createTimeStart = date.length > 0 ? date[0].format('YYYY-MM-DD 23:59:00') : undefined
+        const createTimeEnd = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:00') : undefined
+        const options = { ..._.omit(this.queryForm, ['date']), createTimeStart, createTimeEnd }
+        const res  = await this.$store.dispatch('dashboard/proInOutStockExport',options)
         console.log(res)
         download(res,'成品进销存')
       } catch (error) {
