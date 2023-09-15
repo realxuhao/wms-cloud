@@ -33,7 +33,7 @@
                 allow-clear
                 v-model="queryForm.status"
               >
-                <a-select-option v-for="(value,key) in statusTextMap" :key="key" :value="value">
+                <a-select-option v-for="(value,key) in statusTextMap" :key="key" :value="key">
                   {{ value }}
                 </a-select-option>
               </a-select>
