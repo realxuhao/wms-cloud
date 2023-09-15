@@ -584,19 +584,26 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
         if (binInDTO.getType() == 1) {
             manualTransferOrder.setTargetAreaCode(binInDTO.getActualCode());
+            manualTransferOrder.setType(binInDTO.getType());
             AreaVO areaVO = remoteMasterDataService.getByCode(binInDTO.getActualCode()).getData();
             stock.setAreaCode(binInDTO.getActualCode());
-            stock.setPlantNb(areaVO.getPlantNb());
+            if(!"7761".equals(stock.getPlantNb())){
+                stock.setPlantNb(areaVO.getPlantNb());
+            }
+
             stock.setWareCode(areaVO.getWareCode());
             stock.setBinCode(null);
         } else {
             BinVO binVO = getBinVOByBinCode(binInDTO.getActualCode());
+            manualTransferOrder.setType(binInDTO.getType());
 
             manualTransferOrder.setTargetBinCode(binVO.getCode());
             manualTransferOrder.setTargetAreaCode(binVO.getAreaCode());
             stock.setAreaCode(binVO.getAreaCode());
             stock.setBinCode(binVO.getCode());
-            stock.setPlantNb(binVO.getPlantNb());
+            if(!"7761".equals(stock.getPlantNb())){
+                stock.setPlantNb(binVO.getPlantNb());
+            }
             stock.setWareCode(binVO.getWareCode());
         }
 

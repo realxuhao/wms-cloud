@@ -1,5 +1,6 @@
 package com.bosch.binin.service.impl;
 
+import com.alibaba.druid.sql.visitor.functions.Bin;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;

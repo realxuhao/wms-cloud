@@ -400,7 +400,7 @@ export default {
       try {
         this.exportLoading = true
         // this.queryForm.pageSize = 0
-        const blobData = await this.$store.dispatch('finishedProductInventory/productStockExport', this.queryForm)
+        const blobData = await this.$store.dispatch('finishedProductInventory/saleStockExport', this.queryForm)
         download(blobData, '成品销售库存.xlsx')
       } catch (error) {
         console.log(error)

@@ -77,6 +77,11 @@ public class SPDNDTO  extends PageDomain {
     private String areaCode;
 
 
+    private Date shipDateEnd;
+
+    private Date shipDateStart;
+
+
 
 
 

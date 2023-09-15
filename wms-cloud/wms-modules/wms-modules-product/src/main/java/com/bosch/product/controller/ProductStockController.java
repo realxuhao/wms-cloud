@@ -151,4 +151,14 @@ public class ProductStockController extends BaseController {
     }
 
 
+    @PostMapping("/saleExport")
+    @Log(title = "销售库存记录导出", businessType = BusinessType.EXPORT)
+    @ApiOperation("销售库存记录导出")
+    public void saleExport(HttpServletResponse response, @RequestBody ProductStockQueryDTO queryDTO) {
+        List<ProductStockVO> productStockVOS =  productStockService.spdnStocklist(queryDTO);
+        ExcelUtil<ProductStockVO> util = new ExcelUtil<>(ProductStockVO.class);
+        util.exportExcel(response, productStockVOS, "销售库存记录");
+    }
+
+
 }

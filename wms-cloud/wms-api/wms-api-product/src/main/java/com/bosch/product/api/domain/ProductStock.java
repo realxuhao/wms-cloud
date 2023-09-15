@@ -1,5 +1,7 @@
 package com.bosch.product.api.domain;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.web.domain.BaseEntity;
 import io.swagger.annotations.ApiModelProperty;
@@ -50,6 +52,7 @@ public class ProductStock extends BaseEntity {
     /**
      * 库位编码
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String binCode;
 
     /**

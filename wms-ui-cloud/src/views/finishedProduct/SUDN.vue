@@ -20,11 +20,11 @@
               <a-input v-model="queryForm.material" placeholder="Material" allow-clear/>
             </a-form-item>
           </a-col>
-          <a-col :span="4">
+          <!-- <a-col :span="4">
             <a-form-item label="Batch">
               <a-input v-model="queryForm.batch" placeholder="batch" allow-clear/>
             </a-form-item>
-          </a-col>
+          </a-col> -->
           <!-- <a-col :span="8">
             <a-form-item label="Ship_Date">
               <a-range-picker
@@ -234,6 +234,13 @@ const columns = [
     dataIndex: 'nameOfShipToParty',
     width: 140
   },
+  {
+    title: '指定批次',
+    key: 'storageLocation',
+    dataIndex: 'storageLocation',
+    width: 140
+  },
+  
   {
     title: 'Plant',
     key: 'plant',

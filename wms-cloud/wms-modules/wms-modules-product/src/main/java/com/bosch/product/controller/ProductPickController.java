@@ -7,6 +7,7 @@ import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.product.api.domain.ProductPick;
 import com.bosch.product.api.domain.ProductSPDNPick;
 import com.bosch.product.api.domain.dto.*;
+import com.bosch.product.api.domain.enumeration.ProductPickEnum;
 import com.bosch.product.api.domain.vo.ProductPickExportVO;
 import com.bosch.product.api.domain.vo.ProductPickVO;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
@@ -59,12 +60,12 @@ public class ProductPickController extends BaseController {
     @GetMapping(value = "/list")
     @ApiOperation("SUDN捡配列表")
     public R<PageVO<ProductPickVO>> list(ProductPickDTO queryDTO) {
-        if (queryDTO!=null&&queryDTO.getStartCreateTime()!=null){
+        if (queryDTO != null && queryDTO.getStartCreateTime() != null) {
             Calendar instance = Calendar.getInstance();
             instance.setTime(queryDTO.getStartCreateTime());
-            instance.set(Calendar.HOUR_OF_DAY,0);
-            instance.set(Calendar.MINUTE,0);
-            instance.set(Calendar.SECOND,0);
+            instance.set(Calendar.HOUR_OF_DAY, 0);
+            instance.set(Calendar.MINUTE, 0);
+            instance.set(Calendar.SECOND, 0);
             queryDTO.setStartCreateTime(instance.getTime());
 
         }
@@ -92,6 +93,7 @@ public class ProductPickController extends BaseController {
     public R<ProductPickVO> getOneBinDown(@PathVariable("qrCode") String qrCode) {
         ProductPickDTO pickDTO = new ProductPickDTO();
         pickDTO.setSscc(ProductQRCodeUtil.getSSCC(qrCode));
+        pickDTO.setStatus(ProductPickEnum.WAITTING_DOWN.code());
         List<ProductPickVO> list = pickService.binDownlist(pickDTO);
         if (!CollectionUtils.isEmpty(list)) {
             return R.ok(list.get(0));
@@ -122,16 +124,13 @@ public class ProductPickController extends BaseController {
         return R.ok(qrCode + "下架成功");
     }
 
-    @PutMapping(value = "/sumBatchBinDown/{qrCodeList}")
+    @PutMapping(value = "/sumBatchBinDown/{ssccs}")
     @ApiOperation("SUDN捡配任务汇总下架")
     @Log(title = "SUDN捡配任务汇总下架", businessType = BusinessType.UPDATE)
     @Transactional(rollbackFor = Exception.class)
     @Synchronized
-    public R batchBinDown(@PathVariable List<String> qrCodeList) {
-        qrCodeList.stream().forEach(qrCode->{
-            pickService.sumBinDown(qrCode);
-        });
-
+    public R batchBinDown(@PathVariable List<String> ssccs) {
+        ssccs.stream().forEach(sscc -> pickService.sumBinDownBySSCC(sscc));
         return R.ok("下架成功");
     }
 
@@ -196,13 +195,13 @@ public class ProductPickController extends BaseController {
      */
     @PostMapping("/exportExcel")
     @ApiOperation("SUDN捡配列表")
-    public void export(HttpServletResponse response,@RequestBody ProductPickDTO queryDTO) {
-        if (queryDTO!=null&&queryDTO.getStartCreateTime()!=null){
+    public void export(HttpServletResponse response, @RequestBody ProductPickDTO queryDTO) {
+        if (queryDTO != null && queryDTO.getStartCreateTime() != null) {
             Calendar instance = Calendar.getInstance();
             instance.setTime(queryDTO.getStartCreateTime());
-            instance.set(Calendar.HOUR_OF_DAY,0);
-            instance.set(Calendar.MINUTE,0);
-            instance.set(Calendar.SECOND,0);
+            instance.set(Calendar.HOUR_OF_DAY, 0);
+            instance.set(Calendar.MINUTE, 0);
+            instance.set(Calendar.SECOND, 0);
             queryDTO.setStartCreateTime(instance.getTime());
 
         }

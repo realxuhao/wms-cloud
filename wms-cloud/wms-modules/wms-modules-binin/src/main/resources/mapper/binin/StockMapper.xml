@@ -124,6 +124,9 @@
             where b.batch_nb =
             (SELECT a.batch_nb from
             (SELECT batch_nb from bi_stock where id=#{dto.id}) a )
+                and b.material_nb =
+            (SELECT c.material_nb from
+            (SELECT material_nb from bi_stock where id=#{dto.id}) c )
             and b.quality_status in
             <foreach collection="dto.fromStatusList" index="index" item="item" open="(" separator="," close=")">
                 #{item}
@@ -300,6 +303,8 @@
         where bs.quality_status = 'U'
         and bs.freeze_stock =0 and bs.delete_flag=0
         and (bs.area_code like '%0100'
+        or bs.area_code like '%FSMP'
+        or bs.area_code like '%fsmp'
         or bs.area_code like '%0101'
         or bs.area_code like '%0102'
         or bs.area_code like '%0103')

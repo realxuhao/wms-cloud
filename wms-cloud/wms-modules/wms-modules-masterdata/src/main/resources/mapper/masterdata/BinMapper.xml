@@ -56,7 +56,7 @@
                b.NAME        as name,
                w.CODE        as wareCode,
                w.NAME        as wareName,
-               w.factory_code as planNb,
+               w.factory_code as plantNb,
                w.id          as wareId,
                a.code        as areaCode,
                a.name        as areaName,

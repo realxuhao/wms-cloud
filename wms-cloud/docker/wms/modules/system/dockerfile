@@ -1,5 +1,5 @@
 # 基础镜像
-FROM adoptopenjdk/openjdk8-openj9:alpine-slim
+FROM adoptopenjdk/openjdk8-openj9 AS build
 # author
 MAINTAINER wms
 

@@ -56,17 +56,17 @@ public class WeightController {
         WeightVO weightVO3 = new WeightVO();
         WeightVO weightVO4 = new WeightVO();
 
-        weightVO1.setCode("001");
-        weightVO1.setIp("10.200.172.193");
+        weightVO1.setCode("内库1");
+        weightVO1.setIp("10.200.172.5");
 
-        weightVO2.setCode("002");
-        weightVO2.setIp("10.200.172.194");
+        weightVO2.setCode("内库2");
+        weightVO2.setIp("10.200.172.6");
 
 
-        weightVO3.setCode("003");
+        weightVO3.setCode("外库2");
         weightVO3.setIp("10.200.230.19");
 
-        weightVO4.setCode("004");
+        weightVO4.setCode("外库1");
         weightVO4.setIp("10.200.229.19");
 
         List<WeightVO> arrayList = new ArrayList<>();

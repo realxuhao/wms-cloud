@@ -46,6 +46,12 @@
         <if test="shipTo != null and shipTo != ''">
             AND sp.ship_to like concat('%', #{shipTo}, '%')
         </if>
+        <if test="shipDateEnd != null">
+            AND DATE(sp.ship_date) <![CDATA[ <= ]]> DATE(#{shipDateEnd})
+        </if>
+        <if test="shipDateStart != null">
+            AND DATE(sp.ship_date) <![CDATA[ >= ]]> DATE(#{shipDateStart})
+        </if>
         <if test="ssccNumber != null and ssccNumber != ''">
             AND sp.sscc_number like concat('%', #{ssccNumber}, '%')
         </if>
@@ -55,6 +61,7 @@
         <if test="batch != null and batch != ''">
             AND sp.batch like concat('%', #{batch}, '%')
         </if>
+
         <if test="startCreateTime != null">and sp.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
         <if test="endCreateTime != null">and sp.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
         <if test="status != null">and sp.status = #{status}</if>

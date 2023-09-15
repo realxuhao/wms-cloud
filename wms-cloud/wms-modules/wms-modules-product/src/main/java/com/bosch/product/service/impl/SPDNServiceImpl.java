@@ -133,7 +133,7 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         });
 
         if (!CollectionUtils.isEmpty(inValidPlantSSCCList) || !CollectionUtils.isEmpty(inValidQtySSCCList)) {
-            throw new ServiceException("存在" + inValidPlantSSCCList.size() + "条库存不在7752的数据\n" + "存在" + inValidQtySSCCList.size() + "条数量不正确的数据");
+            throw new ServiceException("存在" + inValidPlantSSCCList.size() + "条库存不在7752的数据:" + inValidPlantSSCCList + "\n" + "存在" + inValidQtySSCCList.size() + "条数量不正确的数据:" + inValidQtySSCCList);
         }
 
 

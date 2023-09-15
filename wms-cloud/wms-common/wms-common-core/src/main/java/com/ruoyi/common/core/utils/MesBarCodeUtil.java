@@ -110,7 +110,7 @@ public class MesBarCodeUtil {
         System.out.println(ceil1);
 
         String date = DateUtils.parseDateToStr("yyyyMMdd", new Date());
-        String barCode = generateMesBarCode(new Date(), "669006391114436414", "10326018", "2308021576", Double.valueOf(15000));
+        String barCode = generateMesBarCode(new Date(), "669006391114463779", "10305017", "2309081222", Double.valueOf(760));
         System.out.println(barCode);
 
         System.out.println("202408316690063911132813671045604522061011139.65".length());
@@ -144,6 +144,9 @@ public class MesBarCodeUtil {
         List<String> randomNonConsecutive = getRandomNonConsecutive(list);
         System.out.println(randomNonConsecutive);
 
+
+        Double n=new Double(0);
+        System.out.println(n==0);
 
     }
 

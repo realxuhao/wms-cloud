@@ -708,10 +708,15 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         }
         List<Stock> sortedStockList = new ArrayList<>();
         sortedStockList =
+                stockList.stream().filter(item -> !item.getExpireDate().before(new Date())).filter(item -> item.getAvailableStock() != 0 && AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).
+                        sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getBatchNb).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder()).thenComparing(Stock::getAvailableStock)).collect(Collectors.toList());
+
+        sortedStockList =
                 stockList.stream().filter(item -> item.getAvailableStock() != 0
                         && !AreaListConstants.mainArea(item.getAreaCode())
-                        && !AreaListConstants.noQualifiedArea(item.getAreaCode())).
-                        sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder())).collect(Collectors.toList());
+                        && !AreaListConstants.noQualifiedArea(item.getAreaCode()))
+                        .filter(item -> !item.getExpireDate().before(new Date()))
+                        .sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getBatchNb).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder()).thenComparing(Stock::getAvailableStock)).collect(Collectors.toList());
         double count = 0;
         List<Stock> useMaterialStockList = new ArrayList<>();
 
@@ -841,7 +846,6 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
     public int updateStatusByStatus(List<String> ssccs, Integer queryStatus, Integer status) {
         ArrayList<Object> ssccList = new ArrayList<>();
         ssccList.addAll(ssccs);
-
 
 
         if (queryStatus.equals(KanbanStatusEnum.INNER_RECEIVING.value())) {

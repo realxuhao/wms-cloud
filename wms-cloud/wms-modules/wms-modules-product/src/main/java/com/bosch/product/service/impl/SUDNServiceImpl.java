@@ -18,6 +18,7 @@ import com.bosch.product.mapper.SUDNMapper;
 import com.bosch.product.service.IProductPickService;
 import com.bosch.product.service.IProductStockService;
 import com.bosch.product.service.ISUDNService;
+import com.ruoyi.common.core.constant.AreaListConstants;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
@@ -30,10 +31,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -66,6 +64,18 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
 
     @Override
     public void validList(List<SUDNDTO> dtos) {
+        List<String> deliveries = dtos.stream().map(SUDNDTO::getDelivery).collect(Collectors.toList());
+        LambdaQueryWrapper<SUDN> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(SUDN::getDelivery, deliveries);
+        queryWrapper.eq(SUDN::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<SUDN> sudnList = this.list(queryWrapper);
+        if (!CollectionUtils.isEmpty(sudnList)) {
+            List<String> list = sudnList.stream().map(SUDN::getDelivery).collect(Collectors.toList());
+            HashSet<String> strings = new HashSet<>(list);
+            throw new ServiceException("以下DN号在系统中 已经存在，请删除后再上传。" + strings);
+        }
+
+
         dtos.stream().forEach(item -> {
             setQty(item.getDeliveryQuantityString(), item);
             item.setStatus(SPDNStatusEnum.WAITING_APPROVE.code());
@@ -94,11 +104,11 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
 
         List<Long> sudnIds = sudnList.stream().map(SUDN::getId).collect(Collectors.toList());
         LambdaQueryWrapper<ProductPick> pickQueryWrapper = new LambdaQueryWrapper<>();
-        pickQueryWrapper.in(ProductPick::getSudnId,sudnIds);
-        pickQueryWrapper.eq(ProductPick::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
-        pickQueryWrapper.ne(ProductPick::getStatus,ProductPickEnum.CANCEL.code());
+        pickQueryWrapper.in(ProductPick::getSudnId, sudnIds);
+        pickQueryWrapper.eq(ProductPick::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        pickQueryWrapper.ne(ProductPick::getStatus, ProductPickEnum.CANCEL.code());
         List<ProductPick> list = pickService.list(pickQueryWrapper);
-        if (!CollectionUtils.isEmpty(list)){
+        if (!CollectionUtils.isEmpty(list)) {
             List<Long> pickIds = list.stream().map(ProductPick::getId).collect(Collectors.toList());
             pickService.batchCancel(pickIds);
         }
@@ -129,7 +139,8 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
         if (CollectionUtils.isEmpty(stockList)) {
             throw new ServiceException("无可用库存");
         }
-        Map<String, List<ProductStock>> materialStockMap = stockList.stream().collect(Collectors.groupingBy(ProductStock::getMaterialNb));
+        Map<String, List<ProductStock>> materialStockMap = stockList.stream()
+                .collect(Collectors.groupingBy(ProductStock::getMaterialNb));
 
         List<ProductPick> pickInsertList = new ArrayList<>();
 
@@ -141,10 +152,13 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
 
             //查询库存
             List<ProductStock> productStocks = materialStockMap.get(material);
-            if (CollectionUtils.isEmpty(productStocks)){
-                throw new ServiceException("当前没有物料号为"+material+"的库存");
+            if (CollectionUtils.isEmpty(productStocks)) {
+                throw new ServiceException("当前没有物料号为" + material + "的库存");
             }
-            List<ProductStock> productSortedStockList = productStocks.stream().sorted(Comparator.comparing(ProductStock::getExpireDate).thenComparing(ProductStock::getTotalStock).thenComparing(ProductStock::getSsccNumber)).collect(Collectors.toList());
+            List<ProductStock> productSortedStockList = productStocks.stream()
+                    .filter(stock -> !AreaListConstants.oDDdArea(stock.getAreaCode()))
+                    .filter(stock -> !AreaListConstants.noQualifiedArea(stock.getAreaCode()))
+                    .sorted(Comparator.comparing(ProductStock::getExpireDate).thenComparing(ProductStock::getFromProdOrder).thenComparing(ProductStock::getTotalStock).thenComparing(ProductStock::getSsccNumber)).collect(Collectors.toList());
             //如果有指定批次的，需要筛选指定批次的库存信息
             if (StringUtils.isNotEmpty(item.getStorageLocation())) {
                 productSortedStockList = productSortedStockList.stream().filter(stock -> stock.getFromProdOrder().equals(item.getStorageLocation())).collect(Collectors.toList());

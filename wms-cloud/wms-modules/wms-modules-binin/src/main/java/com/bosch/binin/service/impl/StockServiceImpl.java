@@ -188,8 +188,8 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             });
         }
 
-        result.stream().forEach(r->{
-            if (r.getStatus() == 1){
+        result.stream().forEach(r -> {
+            if (r.getStatus() == 1) {
                 JobVO jobDescBySSCC = jobService.getJobDescBySSCC(r.getSsccnumber());
                 if (!jobDescBySSCC.getJobDesc().equals("无任务")) {
                     LambdaUpdateWrapper<Stock> wrapper = new LambdaUpdateWrapper<>();
@@ -210,9 +210,6 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                 }
             }
         });
-
-
-
 
 
         List<IQCVO> stockVOS = mapToMaterial(result);
@@ -471,9 +468,9 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             stock.setAvailableStock(stock.getAvailableStock() - stockEditDTO.getStockUse());
             stock.setTotalStock(stock.getTotalStock() - stockEditDTO.getStockUse());
             stock.setFreezeStock(stock.getTotalStock() - stock.getAvailableStock());
-            if (stock.getAvailableStock() == Double.valueOf(0)) {
+            if (stock.getAvailableStock() == 0) {
                 binInService.binDown(stock.getSsccNumber());
-            }else {
+            } else {
                 this.updateById(stock);
             }
 

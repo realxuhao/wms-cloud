@@ -41,5 +41,9 @@ public interface IProductPickService extends IService<ProductPick> {
 
     ProductPickBinDownVO sumBinDown(String qrCode);
 
+
+    ProductPickBinDownVO sumBinDownBySSCC(String sscc);
+
+
     List<ProductPickExportVO> getSUDNPickExportVO(ProductPickDTO sudndto);
 }

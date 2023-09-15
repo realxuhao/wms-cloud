@@ -13,7 +13,8 @@ public enum AreaTypeEnum {
     IQC("质检", 2),
     UNQUALIFIED("不合格品",3),
     DISCARD("报废区",4),
-    RETURN("退货区",5);
+    RETURN("退货区",5),
+    ODD("退货区",6);
 
 
     private String desc;

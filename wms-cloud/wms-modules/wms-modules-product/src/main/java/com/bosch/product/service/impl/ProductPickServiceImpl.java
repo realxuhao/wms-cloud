@@ -366,6 +366,77 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
     }
 
     @Override
+    public ProductPickBinDownVO sumBinDownBySSCC(String sscc) {
+        LambdaQueryWrapper<ProductPick> pickQueryWrapper = new LambdaQueryWrapper<>();
+        pickQueryWrapper.eq(ProductPick::getSscc, sscc);
+        pickQueryWrapper.eq(ProductPick::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        pickQueryWrapper.eq(ProductPick::getStatus, ProductPickEnum.WAITTING_DOWN.code());
+        List<ProductPick> productPicks = this.list(pickQueryWrapper);
+        if (CollectionUtils.isEmpty(productPicks)) {
+            throw new ServiceException("该SSCC" + sscc + "不存在捡配任务");
+        }
+        double downSum = productPicks.stream().mapToDouble(ProductPick::getDeliveryQuantity).sum();
+
+
+        LambdaQueryWrapper<ProductStock> stockQueryWrapper = new LambdaQueryWrapper<>();
+        stockQueryWrapper.eq(ProductStock::getSsccNumber, sscc);
+        stockQueryWrapper.eq(ProductStock::getPlantNb, "7761");
+        stockQueryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        ProductStock productStock = productStockService.getOne(stockQueryWrapper);
+
+        MdProductPackagingVO productVO = getProductVO(productStock.getMaterialNb());
+
+        //转化为箱
+        double tr = downSum / productVO.getBoxSpecification();
+
+        productStock.setTotalStock(productStock.getTotalStock() - tr);
+        productStock.setFreezeStock(productStock.getFreezeStock() - tr);
+
+        productPicks.stream().forEach(item -> {
+            item.setBinDownQuantity(item.getDeliveryQuantity());
+            item.setStatus(ProductPickEnum.FINISH.code());
+        });
+
+        ProductPickBinDownVO productPickBinDownVO = new ProductPickBinDownVO();
+        productPickBinDownVO.setSscc(sscc);
+
+        //如果总库存量是0 了，那么久一整托下架就可以了
+        if (productStock.getTotalStock() == 0) {
+            productStock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
+            productPickBinDownVO.setType(0);
+        } else {//如果不是0 ，代表还有，PDA需要提示把原托放到
+            productPickBinDownVO.setType(1);
+        }
+
+        productStockService.updateById(productStock);
+
+
+        this.updateBatchById(productPicks);
+
+
+        Map<Long, List<ProductPick>> groupBySudn = productPicks.stream().collect(Collectors.groupingBy(ProductPick::getSudnId));
+
+        AtomicReference<Double> total = new AtomicReference<>((double) 0);
+
+        groupBySudn.forEach((sudnID, picks) -> {
+            SUDN sudn = sudnService.getById(sudnID);
+            double sum = picks.stream().mapToDouble(ProductPick::getBinDownQuantity).sum();
+            total.set(total.get() + sum);
+            sudn.setSumBinDownQuantity(sudn.getSumBinDownQuantity() + sum);
+            sudnService.updateById(sudn);
+        });
+
+
+        productStockOperationService.addProductStockOperation(productStock.getPlantNb(),total.get(),
+                productStock.getSsccNumber(),productStock.getMaterialNb(),productStock.getFromProdOrder(), StockOperationType.SALESOUT.getCode());
+
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), sscc,productPicks.get(0).getMaterial());
+
+
+        return productPickBinDownVO;
+    }
+
+    @Override
     public List<ProductPickExportVO> getSUDNPickExportVO(ProductPickDTO sudndto) {
         return productPickMapper.getSUDNPickExportVO(sudndto);
     }
