@@ -17,6 +17,7 @@
 			Message
 		},
 		onShow() {
+			Bus.$emit('startScan');
 			Bus.$on('scancodedate', this.scanCodeCallback);
 		},
 		destroyed() {
@@ -35,10 +36,9 @@
 			},
 			handleGoto() {
 				Bus.$off('scancodedate', this.scanCodeCallback);
-				uni.redirectTo({
+				uni.navigateTo({
 					url: `/pages/wareShift/cancellingStocksOperation?barCode=${this.code}`
 				});
-				Bus.$emit('startScan');
 			}
 		}
 	};

@@ -36,7 +36,7 @@
 				uni.navigateTo({
 					url: `/pages/finishedProduct/adjustOperation?barCode=${data.code}`
 				});
-				Bus.$off('startScan')
+				Bus.$emit('startScan');
 			}
 		}
 	};
