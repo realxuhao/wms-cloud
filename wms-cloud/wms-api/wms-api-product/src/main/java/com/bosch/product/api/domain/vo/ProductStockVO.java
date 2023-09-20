@@ -116,49 +116,49 @@ public class ProductStockVO {
      * 总库存
      */
     @ApiModelProperty(value = "库存量")
-    @Excel(name = "库存量")
+    @Excel(name = "库存量",cellType = Excel.ColumnType.NUMERIC)
     private Double totalStock;
 
     /**
      * 冻结库存
      */
     @ApiModelProperty(value = "冻结库存")
-    @Excel(name = "冻结库存")
+    @Excel(name = "冻结库存",cellType = Excel.ColumnType.NUMERIC)
     private Double freezeStock;
 
     /**
      * 可用库存
      */
     @ApiModelProperty(value = "可用库存")
-    @Excel(name = "可用库存")
+    @Excel(name = "可用库存",cellType = Excel.ColumnType.NUMERIC)
     private Double availableStock;
 
     /**
      * 箱 Tr 对应包装规格
      */
     @ApiModelProperty(value = "箱 Tr 对应包装规格")
-    @Excel(name = "箱 Tr 对应包装规格")
+    @Excel(name = "箱 Tr 对应包装规格",cellType = Excel.ColumnType.NUMERIC)
     private String boxSpecification;
 
     /**
      * 总库存
      */
     @ApiModelProperty(value = "库存量PCS")
-    @Excel(name = "库存量PCS")
+    @Excel(name = "库存量PCS",cellType = Excel.ColumnType.NUMERIC)
     private Double pcsTotalStock;
 
     /**
      * 冻结库存
      */
     @ApiModelProperty(value = "冻结库存PCS")
-    @Excel(name = "冻结库存PCS")
+    @Excel(name = "冻结库存PCS",cellType = Excel.ColumnType.NUMERIC)
     private Double pcsFreezeStock;
 
     /**
      * 可用库存
      */
     @ApiModelProperty(value = "可用库存PCS")
-    @Excel(name = "可用库存PCS")
+    @Excel(name = "可用库存PCS",cellType = Excel.ColumnType.NUMERIC)
     private Double pcsAvailableStock;
 
     /** 创建者 */

@@ -156,12 +156,17 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
                 throw new ServiceException("当前没有物料号为" + material + "的库存");
             }
             List<ProductStock> productSortedStockList = productStocks.stream()
-                    .filter(stock -> !AreaListConstants.oDDdArea(stock.getAreaCode()))
-                    .filter(stock -> !AreaListConstants.noQualifiedArea(stock.getAreaCode()))
                     .sorted(Comparator.comparing(ProductStock::getExpireDate).thenComparing(ProductStock::getFromProdOrder).thenComparing(ProductStock::getTotalStock).thenComparing(ProductStock::getSsccNumber)).collect(Collectors.toList());
+
             //如果有指定批次的，需要筛选指定批次的库存信息
             if (StringUtils.isNotEmpty(item.getStorageLocation())) {
                 productSortedStockList = productSortedStockList.stream().filter(stock -> stock.getFromProdOrder().equals(item.getStorageLocation())).collect(Collectors.toList());
+            }else {
+                 productSortedStockList = productSortedStockList.stream()
+                        .filter(stock -> !AreaListConstants.oDDdArea(stock.getAreaCode()))
+                        .filter(stock -> !AreaListConstants.noQualifiedArea(stock.getAreaCode()))
+                        .sorted(Comparator.comparing(ProductStock::getExpireDate).thenComparing(ProductStock::getFromProdOrder).thenComparing(ProductStock::getTotalStock).thenComparing(ProductStock::getSsccNumber)).collect(Collectors.toList());
+
             }
             double currentQty = 0.0;
             List<ProductStock> useProductStocks = new ArrayList<>();

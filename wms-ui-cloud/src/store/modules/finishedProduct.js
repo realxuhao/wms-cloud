@@ -66,6 +66,15 @@ const finishedProduct = {
       const data = await finishedProductService.spdnList(options)
       return data
     },
+    async spdnCount ({ commit }, options) {
+      const data = await finishedProductService.spdnCount(options)
+      return data
+    },
+
+    async spdnExport ({ commit }, options) {
+      const data = await finishedProductService.spdnExport(options)
+      return data
+    },
     async approveSpdnList ({ commit }, options) {
       const data = await finishedProductService.approveSpdnList(options)
       return data

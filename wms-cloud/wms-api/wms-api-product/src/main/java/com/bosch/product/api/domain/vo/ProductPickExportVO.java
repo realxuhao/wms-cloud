@@ -14,30 +14,45 @@ import java.util.Date;
  **/
 @Data
 public class ProductPickExportVO {
-    @Excel(name = "Delivery")
-    private String delivery;
+
+    @Excel(name = "External Ref")
+    private String externalRef;
     @Excel(name = "Plant")
     private String plant;
-    @Excel(name = "Ship-To Party")
+
+    @Excel(name = "DeliveryNb")
+    private String delivery;
+    @Excel(name = "Ship-To")
     private String shipToParty;
-    @Excel(name = "Name of the ship-to party")
-    private String nameOfShipToParty;
-    @Excel(name = "Deliv.date(From/to)")
+
+    @Excel(name = "Ship Date")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private String deliveryDate;
-    @Excel(name = "Item")
+
+    @Excel(name = "Vendor Code")
+    private String vendorCode;
+
+
+    @Excel(name = "SSCCNumber")
+    private String ssccNumber;
+
+    @Excel(name = "Delivery_Item")
     private String item;
     @Excel(name = "Material")
     private String material;
-    @Excel(name = "Batch",dateFormat = "yyyy.MM.dd")
+    @Excel(name = "Batch", dateFormat = "yyyy.MM.dd")
     @JsonFormat(pattern = "yyyy.MM.dd")
     private Date batch;
-    @Excel(name = "Production batch")
-    private String productionBatch;
-//    @Excel(name = "Delivery Quantity")
-    private Double deliveryQuantity;
-    @Excel(name = "Delivery Quantity")
+    @Excel(name = "Qty")
     private String deliveryQuantityString;
-    @Excel(name = "Sales Unit")
+    @Excel(name = "Uom")
     private String salesUnit;
+    @Excel(name = "StorageLocation")
+    private String storageLocation;
+    @Excel(name = "ProdBatch")
+    private String productionBatch;
+    //    @Excel(name = "Delivery Quantity")
+    private Double deliveryQuantity;
+
+
 }

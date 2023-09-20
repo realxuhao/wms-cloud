@@ -81,6 +81,21 @@ const spdnList = async (parameter) => {
   return data
 }
 
+const spdnCount = async (parameter) => {
+  const url = `/spdn/spdnCount?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const spdnExport = async (options) => {
+  const url = `/spdn/export`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
 const approveSpdnList = async (parameter) => {
   const url = `/spdn/approveBy7761/${parameter}`
   const { data } = await createAuthInstance(baseUrl).put(url)
@@ -244,6 +259,8 @@ export const finishedProductService = {
   validateSUQAStatus,
   spdnPicklist,
   sudnList,
+  spdnCount,
+  spdnExport,
   sudnDelete,
   sudnPickBatchDelete,
   sudnGenerate,

@@ -28,9 +28,10 @@
     </resultMap>
 
 
-    <select id="getList" resultType="com.bosch.product.api.domain.vo.SPDNVO">
-        SELECT sp.*,pp.product_name materialName, pp.box_specification as boxSpecification
 
+    <select id="getList" resultType="com.bosch.product.api.domain.vo.SPDNVO">
+        SELECT sp.*,pp.product_name materialName, pp.box_specification as boxSpecification,
+        ROUND(sp.qty * pp.box_specification) as totalPCS
         FROM spdn sp
                  left join md_product_packaging pp on pp.product_no = sp.material and pp.delete_flag = 0
 
@@ -67,6 +68,48 @@
         <if test="status != null">and sp.status = #{status}</if>
 
 
+
+    </select>
+    <select id="getSPDNCount" resultType="com.bosch.product.api.domain.vo.SPDNCount">
+
+        select sum(t.qty) as totalTR,sum(t.pcsTotalStock) as totalPCS  from(
+        SELECT sp.qty,
+        ROUND(sp.qty * pp.box_specification) as pcsTotalStock
+        FROM spdn sp
+        left join md_product_packaging pp on pp.product_no = sp.material and pp.delete_flag = 0
+
+        WHERE sp.delete_flag = 0
+
+
+        <if test="plant != null and plant != ''">
+            AND sp.plant like concat('%', #{plant}, '%')
+        </if>
+        <if test="deliveryNb != null and deliveryNb != ''">
+            AND sp.delivery_nb like concat('%', #{deliveryNb}, '%')
+        </if>
+        <if test="shipTo != null and shipTo != ''">
+            AND sp.ship_to like concat('%', #{shipTo}, '%')
+        </if>
+        <if test="shipDateEnd != null">
+            AND DATE(sp.ship_date) <![CDATA[ <= ]]> DATE(#{shipDateEnd})
+        </if>
+        <if test="shipDateStart != null">
+            AND DATE(sp.ship_date) <![CDATA[ >= ]]> DATE(#{shipDateStart})
+        </if>
+        <if test="ssccNumber != null and ssccNumber != ''">
+            AND sp.sscc_number like concat('%', #{ssccNumber}, '%')
+        </if>
+        <if test="material != null and material != ''">
+            AND sp.material like concat('%', #{material}, '%')
+        </if>
+        <if test="batch != null and batch != ''">
+            AND sp.batch like concat('%', #{batch}, '%')
+        </if>
+
+        <if test="startCreateTime != null">and sp.create_time <![CDATA[ >= ]]> #{startCreateTime}</if>
+        <if test="endCreateTime != null">and sp.create_time <![CDATA[ <= ]]> #{endCreateTime}</if>
+        <if test="status != null">and sp.status = #{status}</if>
+        ) t
 
     </select>
 

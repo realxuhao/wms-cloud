@@ -13,6 +13,7 @@ import com.bosch.product.api.domain.*;
 import com.bosch.product.api.domain.dto.SPDNDTO;
 import com.bosch.product.api.domain.enumeration.ProductSPDNPickEnum;
 import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
+import com.bosch.product.api.domain.vo.SPDNCount;
 import com.bosch.product.api.domain.vo.SPDNVO;
 import com.bosch.product.mapper.SPDNMapper;
 import com.bosch.product.mapper.ShippingTaskMapper;
@@ -89,6 +90,11 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
     }
 
     @Override
+    public SPDNCount getSPDNCount(SPDNDTO spdndto) {
+        return spdnMapper.getSPDNCount(spdndto);
+    }
+
+    @Override
     public void batchDelete(List<Long> ids) {
         if (CollectionUtils.isEmpty(ids)) {
             throw new ServiceException("必须选中一条数据才能操作");
@@ -150,6 +156,8 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
             if ("7761".equals(item.getPlant())) {
                 if (productStock != null) {
                     productStock.setPlantNb(item.getPlant());
+                    productStock.setWareCode("7761WW");
+                    productStock.setAreaCode("7761-0001");
                     productStock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
                     productStock.setChangeStatus(0);
 

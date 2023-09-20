@@ -133,10 +133,12 @@
           7761审批
         </a-button>
 
+        <a-button style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
 
 
 
-        <h3>总库存量：{{ totalQty }}</h3>
+
+        <h3>总TR数{{ spdnCount.totalTR||0 }}   总PCS数：{{ spdnCount.totalPCS||0 }}</h3>
       </div>
       <a-table
         :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange,
@@ -146,6 +148,7 @@
         :loading="tableLoading"
         rowKey="id"
         :pagination="false"
+        :total="paginationTotal"
         size="middle"
         :scroll="tableScroll"
       >
@@ -205,6 +208,7 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+import { download } from '@/utils/file'
 
 import _ from 'lodash'
 
@@ -232,7 +236,7 @@ const columns = [
     title: 'Ship_To',
     key: 'shipTo',
     dataIndex: 'shipTo',
-    width: 140
+    width: 120
   },
   {
     title: 'Ship_Date',
@@ -265,16 +269,35 @@ const columns = [
     width: 70
   },
   {
+    title: '名称',
+    key: 'materialName',
+    dataIndex: 'materialName',
+    width: 110
+  },
+
+  {
     title: 'Batch',
     key: 'Batch',
     dataIndex: 'batch',
     width: 80
   },
+    {
+    title: '包装规格',
+    key: 'boxSpecification',
+    dataIndex: 'boxSpecification',
+    width: 100
+  },
   {
-    title: 'Qty',
+    title: 'Qty（TR）',
     key: 'Qty',
     dataIndex: 'qty',
-    width: 80
+    width: 100
+  },
+  {
+    title: 'Qty(PCS)',
+    key: 'totalPCS',
+    dataIndex: 'totalPCS',
+    width: 100
   },
  
   {
@@ -373,6 +396,7 @@ export default {
       uploadLoading: false,
       shipLoading:false,
       genTaskLoading: false,
+      exportLoading: false,
       queryForm: {
         pageSize: 20,
         pageNum: 1,
@@ -380,7 +404,7 @@ export default {
       },
       columns,
       list: [],
-
+      spdnCount: {},
       visible: false,
       moveDate: [],
 
@@ -397,6 +421,23 @@ export default {
     statusMap:()=>statusMap
   },
   methods: {
+    async handleDownload () {
+      try {
+        this.exportLoading = true
+        const { shipDate = [] } = this.queryForm
+        const shipDateStart = shipDate.length > 0 ? shipDate[0].format('YYYY-MM-DD 00:00:00') : undefined
+        const shipDateEnd = shipDate.length > 0 ? shipDate[1].format('YYYY-MM-DD 23:59:59') : undefined
+        const options = { ..._.omit(this.queryForm, ['shipDate']), shipDateStart, shipDateEnd }
+       
+        const blobData = await this.$store.dispatch('finishedProduct/spdnExport', options)
+        download(blobData, '工厂发货单列表')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
+      }
+    },
     async handleBatchShip () {
       try {
         this.shipLoading = true
@@ -529,6 +570,12 @@ export default {
         } = await this.$store.dispatch('finishedProduct/spdnList', options)
         this.list = rows
         this.paginationTotal = total
+
+
+        const { data } = await this.$store.dispatch('finishedProduct/spdnCount', options)
+        this.spdnCount = data || {}
+        console.log(this.spdnCount)
+       
       } catch (error) {
         this.$message.error(error.message)
       } finally {

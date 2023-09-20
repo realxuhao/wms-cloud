@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.product.api.domain.SPDN;
 import com.bosch.product.api.domain.ShippingTask;
 import com.bosch.product.api.domain.dto.SPDNDTO;
+import com.bosch.product.api.domain.vo.SPDNCount;
 import com.bosch.product.api.domain.vo.SPDNVO;
 
 import java.util.List;
@@ -17,6 +18,9 @@ import java.util.List;
 public interface ISPDNService  extends IService<SPDN> {
 
     List<SPDNVO> getList(SPDNDTO spdndto);
+
+
+    SPDNCount getSPDNCount(SPDNDTO spdndto);
 
     void batchDelete(List<Long> ids);
 

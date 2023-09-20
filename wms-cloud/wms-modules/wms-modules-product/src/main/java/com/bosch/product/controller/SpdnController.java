@@ -14,9 +14,7 @@ import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.dto.ProductWareShiftQueryDTO;
 import com.bosch.product.api.domain.dto.SPDNDTO;
 import com.bosch.product.api.domain.enumeration.ProductPickEnum;
-import com.bosch.product.api.domain.vo.ProductSPDNPickVO;
-import com.bosch.product.api.domain.vo.ProductStockVO;
-import com.bosch.product.api.domain.vo.SPDNVO;
+import com.bosch.product.api.domain.vo.*;
 import com.bosch.product.service.IProductOutService;
 import com.bosch.product.service.IProductSPDNPickService;
 import com.bosch.product.service.IProductStockService;
@@ -28,6 +26,7 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
@@ -48,6 +47,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -116,6 +116,27 @@ public class SpdnController extends BaseController {
         List<SPDNVO> list = spdnService.getList(spdndto);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
+
+    @GetMapping(value = "/spdnCount")
+    @ApiOperation("spdn统计")
+    public R<SPDNCount> spdnCount(SPDNDTO spdndto){
+        SPDNCount spdnCount = spdnService.getSPDNCount(spdndto);
+        return R.ok(spdnCount);
+    }
+
+    /**
+     * 导出列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("spdn列表导出")
+    @Log(title = "spdn列表导出", businessType = BusinessType.EXPORT)
+    public void export(HttpServletResponse response, @RequestBody SPDNDTO spdndto) {
+        List<SPDNVO> list = spdnService.getList(spdndto);
+
+        ExcelUtil<SPDNVO> util = new ExcelUtil<>(SPDNVO.class);
+        util.exportExcel(response, list, "spdn列表");
+    }
+
 
 
     @DeleteMapping(value = "/{ids}")
