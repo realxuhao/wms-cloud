@@ -164,10 +164,13 @@
         pp.box_specification as box_specification,
         temp.c as same_prod_order_count,
         (SELECT SUM(p.total_stock) FROM product_stock p
+        left join md_product_packaging ppp on ppp.product_no = p.material_nb and ppp.delete_flag = 0
+
         WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
         and p.plant_nb != '7701' and p.plant_nb != '7761'
 
         <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
+        <if test="cell != null  and cell != ''">and ppp.cell like concat('%', #{cell}, '%')</if>
 
         <if test="materialNb != null  and materialNb != ''">and p.material_nb like concat('%', #{materialNb}, '%')</if>
         <if test="batchNb != null  and batchNb != ''">and p.batch_nb like concat('%', #{batchNb}, '%')</if>
@@ -256,11 +259,13 @@
         ps.recommend_bin_code as recommend_bin_code,
         pp.box_specification as box_specification,
         (SELECT SUM(p.total_stock) FROM product_stock p
+        left join md_product_packaging ppp on ppp.product_no = p.material_nb and ppp.delete_flag = 0
+
         WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
 
 
         <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
-        <if test="cell != null  and cell != ''">and pp.cell like concat('%', #{cell}, '%')</if>
+        <if test="cell != null  and cell != ''">and ppp.cell like concat('%', #{cell}, '%')</if>
 
         <if test="materialNb != null  and materialNb != ''">and p.material_nb like concat('%', #{materialNb}, '%')</if>
         <if test="batchNb != null  and batchNb != ''">and p.batch_nb like concat('%', #{batchNb}, '%')</if>
@@ -348,11 +353,13 @@
         pp.box_specification as box_specification,
         temp.c as same_prod_order_count,
         (SELECT SUM(p.total_stock) FROM product_stock p
+        left join md_product_packaging ppp on ppp.product_no = p.material_nb and ppp.delete_flag = 0
+
         WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
         and p.plant_nb != '7701' and p.plant_nb != '7761'
 
         <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
-        <if test="cell != null  and cell != ''">and pp.cell like concat('%', #{cell}, '%')</if>
+        <if test="cell != null  and cell != ''">and ppp.cell like concat('%', #{cell}, '%')</if>
 
         <if test="materialNb != null  and materialNb != ''">and p.material_nb like concat('%', #{materialNb}, '%')</if>
         <if test="batchNb != null  and batchNb != ''">and p.batch_nb like concat('%', #{batchNb}, '%')</if>
@@ -453,11 +460,13 @@
         pp.box_specification as box_specification,
         temp.c as same_prod_order_count,
         (SELECT SUM(p.total_stock) FROM product_stock p
+        left join md_product_packaging ppp on ppp.product_no = p.material_nb and ppp.delete_flag = 0
+
         WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
         and p.plant_nb = '7761'
 
         <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
-        <if test="cell != null  and cell != ''">and pp.cell like concat('%', #{cell}, '%')</if>
+        <if test="cell != null  and cell != ''">and ppp.cell like concat('%', #{cell}, '%')</if>
 
         <if test="materialNb != null  and materialNb != ''">and p.material_nb like concat('%', #{materialNb}, '%')</if>
         <if test="batchNb != null  and batchNb != ''">and p.batch_nb like concat('%', #{batchNb}, '%')</if>
@@ -557,11 +566,13 @@
         pp.box_specification as box_specification,
         temp.c as sameProdOrderCount,
         (SELECT SUM(p.total_stock) FROM product_stock p
+        left join md_product_packaging ppp on ppp.product_no = p.material_nb and ppp.delete_flag = 0
+
         WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
         and p.plant_nb = '7761'
 
         <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
-        <if test="cell != null  and cell != ''">and pp.cell like concat('%', #{cell}, '%')</if>
+        <if test="cell != null  and cell != ''">and ppp.cell like concat('%', #{cell}, '%')</if>
 
         <if test="materialNb != null  and materialNb != ''">and p.material_nb like concat('%', #{materialNb}, '%')</if>
         <if test="batchNb != null  and batchNb != ''">and p.batch_nb like concat('%', #{batchNb}, '%')</if>

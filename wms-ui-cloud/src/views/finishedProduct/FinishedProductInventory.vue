@@ -15,6 +15,19 @@
             </a-form-item>
           </a-col>
           <a-col :span="4">
+            <a-form-model-item label="cell部门">
+              <a-select
+                placeholder="请选择cell部门"
+                allow-clear
+                v-model="queryForm.cell"
+              >
+                <a-select-option v-for="item in cellList" :key="item.id" :value="item.name">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
             <a-form-item label="仓库编码">
               <a-input v-model="queryForm.wareCode" placeholder="仓库编码" allow-clear/>
             </a-form-item>
@@ -372,7 +385,7 @@ export default {
       columns,
       list: [],
       departmentList: [],
-
+cellList: [],
       currentOrderNb: '',
       currentCell: '',
       currentMaterialNb: '',
@@ -398,6 +411,10 @@ export default {
     },
   },
   methods: {
+    async loadCellList () {
+      const { data } = await this.$store.dispatch('department/getList')
+      this.cellList = data
+    },
     async pageChange(page, filters, sorter){
         this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc'
         this.queryForm.orderByColumn= sorter.columnKey
@@ -459,6 +476,7 @@ export default {
   },
   mounted () {
     this.loadData()
+    this.loadCellList()
   }
 }
 </script>
