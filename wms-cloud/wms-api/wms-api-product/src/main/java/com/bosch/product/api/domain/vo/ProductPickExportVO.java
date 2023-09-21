@@ -15,6 +15,9 @@ import java.util.Date;
 @Data
 public class ProductPickExportVO {
 
+    @Excel(name = "Name of the ship-to party")
+    private String nameOfShipToParty;
+
     @Excel(name = "External Ref")
     private String externalRef;
     @Excel(name = "Plant")
@@ -47,7 +50,7 @@ public class ProductPickExportVO {
     private String deliveryQuantityString;
     @Excel(name = "Uom")
     private String salesUnit;
-    @Excel(name = "StorageLocation")
+    @Excel(name = "StorageLocation",defaultValue = "0001")
     private String storageLocation;
     @Excel(name = "ProdBatch")
     private String productionBatch;
