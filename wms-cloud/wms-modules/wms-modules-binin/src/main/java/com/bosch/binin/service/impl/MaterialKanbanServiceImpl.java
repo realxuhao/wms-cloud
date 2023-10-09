@@ -627,6 +627,14 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
             }
 
+            if (!stockVO.getMaterialNb().equals(MesBarCodeUtil.getMaterialNb(splitPallet.getNewMesBarCode()))){
+                throw new ServiceException("拆托物料号不一致！");
+            }
+
+            if (!stockVO.getBatchNb().equals(MesBarCodeUtil.getBatchNb(splitPallet.getNewMesBarCode()))){
+                throw new ServiceException("拆托批号不一致！");
+            }
+
 
             //老任务变为结束
             LambdaQueryWrapper<MaterialKanban> kanbanQueryWrapper = new LambdaQueryWrapper<>();

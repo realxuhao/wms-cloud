@@ -72,6 +72,7 @@ public class SUDNDTO extends PageDomain {
     @ApiModelProperty(value = "结束创建时间")
     private Date endCreateTime;
 
+    private String cell;
 
 
 }

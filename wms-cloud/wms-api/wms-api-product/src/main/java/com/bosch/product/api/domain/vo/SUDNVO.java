@@ -23,5 +23,7 @@ public class SUDNVO extends SUDN {
 
     private Set<String> productionBatchs;
 
+    private String cell;
+
 
 }

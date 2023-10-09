@@ -1,5 +1,5 @@
 const baseApi = {
-	development: "http://www.nutricia-home.com/api", // "http://192.168.85.161:8080",//本地开发环境地址
+	development: "http://192.168.134.161:8080", // "http://192.168.85.161:8080",//本地开发环境地址
 	production: "http://www.nutricia-home.com/api" //正式环境地址
 }
 

@@ -18,6 +18,8 @@ public class SPDN extends BaseEntity {
 
     private Long id;
 
+//    @Excel(name = "Cell")
+    private String cell;
     @Excel(name = "externalRef")
     private String externalRef;
     @Excel(name = "plant")
@@ -26,11 +28,11 @@ public class SPDN extends BaseEntity {
     private String deliveryNb;
     @Excel(name = "shipTo")
     private String shipTo;
-    @Excel(name = "shipDate")
+    @Excel(name = "shipDate",dateFormat = "yyyyMMdd")
     private String shipDate;
     @Excel(name = "vendorCode")
     private String vendorCode;
-    @Excel(name = "ssccNumber")
+    @Excel(name = "ssccNumber",cellType = Excel.ColumnType.STRING)
     private String ssccNumber;
     @Excel(name = "deliveryItem")
     private String deliveryItem;

@@ -38,8 +38,8 @@
           </a-col>
           <template v-if="advanced">
             <a-col :span="4">
-              <a-form-item label="FromProdOrder">
-                <a-input v-model="queryForm.fromProdOrder" placeholder="FromProdOrder" allow-clear/>
+              <a-form-item label="ProdOrder">
+                <a-input v-model="queryForm.fromProdOrder" placeholder="ProdOrder" allow-clear/>
               </a-form-item>
             </a-col>
             <a-col :span="4">
@@ -192,7 +192,7 @@ const columns = [
     width: 120
   },
   {
-    title: 'FromProdOrder',
+    title: 'ProdOrder',
     key: 'fromProdOrder',
     dataIndex: 'fromProdOrder',
     width: 120

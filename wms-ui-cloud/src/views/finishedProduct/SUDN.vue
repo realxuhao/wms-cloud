@@ -4,7 +4,19 @@
     <div class="table-content">
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
-         
+          <a-col :span="4">
+            <a-form-model-item label="cell部门">
+              <a-select
+                placeholder="请选择cell部门"
+                allow-clear
+                v-model="queryForm.cell"
+              >
+                <a-select-option v-for="item in cellList" :key="item.id" :value="item.name">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
           <a-col :span="4">
             <a-form-model-item label="Delivery">
               <a-input v-model="queryForm.delivery" placeholder="Delivery" allow-clear/>
@@ -34,11 +46,16 @@
               />
             </a-form-item>
           </a-col> -->
-          <!-- <a-col :span="4">
-            <a-form-item label="Ship-To Party">
-              <a-input v-model="queryForm.shipToParty" placeholder="Ship-To Party" allow-clear/>
+          <a-col :span="4">
+            <a-form-item label="Name Of Ship-To Party">
+              <a-input v-model="queryForm.nameOfShipToParty" placeholder="Name Of Ship-To Party" allow-clear/>
             </a-form-item>
-          </a-col> -->
+          </a-col>
+          <a-col :span="4">
+            <a-form-item label="指定批次">
+              <a-input v-model="queryForm.storageLocation" placeholder="指定批次" allow-clear/>
+            </a-form-item>
+          </a-col>
           <a-col :span="4">
             <a-form-model-item label="状态">
               <a-select
@@ -190,7 +207,12 @@ import EditTableCell from '@/components/EditTableCell'
 import _ from 'lodash'
 
 const columns = [
-
+{
+    title: 'Cell',
+    key: 'cell',
+    dataIndex: 'cell',
+    width: 120
+  },
   {
     title: 'Delivery',
     key: 'delivery',
@@ -310,7 +332,8 @@ const queryFormAttr = () => {
     material: '',
     materialName: '',
     batch: '',
-    
+    storageLocation: '',
+    nameOfShipToParty: '',
     status:undefined
   }
 }
@@ -336,6 +359,7 @@ export default {
   },
   data () {
     return {
+      cellList: [],
       tableLoading: false,
       uploadLoading: false,
       genTaskLoading: false,
@@ -444,10 +468,15 @@ export default {
     },
     async loadData () {
       this.loadTableList()
+    },
+     async loadCellList () {
+      const { data } = await this.$store.dispatch('department/getList')
+      this.cellList = data
     }
   },
   mounted () {
     this.loadData()
+    this.loadCellList()
   }
 }
 </script>

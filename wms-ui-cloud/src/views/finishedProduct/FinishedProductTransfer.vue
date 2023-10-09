@@ -5,6 +5,19 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           <a-col :span="4">
+            <a-form-model-item label="cell部门">
+              <a-select
+                placeholder="请选择cell部门"
+                allow-clear
+                v-model="queryForm.cell"
+              >
+                <a-select-option v-for="item in cellList" :key="item.id" :value="item.name">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
             <a-form-model-item label="源工厂">
               <a-input v-model="queryForm.sourcePlantNb" placeholder="源工厂" allow-clear/>
             </a-form-model-item>
@@ -42,8 +55,8 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
-            <a-form-model-item label="fromProdOrder">
-              <a-input v-model="queryForm.fromProdOrder" placeholder="fromProdOrder" allow-clear/>
+            <a-form-model-item label="ProdOrder">
+              <a-input v-model="queryForm.fromProdOrder" placeholder="ProdOrder" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
@@ -148,6 +161,12 @@ import { download } from '@/utils/file'
 
 const columns = [
   {
+    title: 'Cell',
+    key: 'cell',
+    dataIndex: 'cell',
+    width: 120
+  },
+  {
     title: '转运单号',
     key: 'orderNb',
     dataIndex: 'orderNb',
@@ -222,7 +241,7 @@ const columns = [
     width: 120
   },
   {
-    title: 'from_prod_order',
+    title: 'ProdOrder',
     key: 'fromProdOrder',
     dataIndex: 'fromProdOrder',
     width: 120
@@ -345,6 +364,7 @@ export default {
   },
   data () {
     return {
+      cellList: [],
       tableLoading: false,
       uploadLoading: false,
       exportLoading:false,
@@ -364,6 +384,10 @@ export default {
     statusColorMap: () => statusColorMap
   },
   methods: {
+      async loadCellList () {
+      const { data } = await this.$store.dispatch('department/getList')
+      this.cellList = data
+    },
     async handleDownload () {
       try {
         this.exportLoading = true
@@ -416,6 +440,7 @@ export default {
   },
   mounted () {
     this.loadData()
+    this.loadCellList()
   }
 }
 </script>

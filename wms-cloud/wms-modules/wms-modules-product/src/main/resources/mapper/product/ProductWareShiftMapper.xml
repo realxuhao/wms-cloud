@@ -44,6 +44,7 @@
         ) AS
         total_stock_sum,
         mm.product_name as material_name,
+               mm.cell as cell,
         tr.order_number as order_nb,tr.car_nb as carNb
         from product_ware_shift ws
         left join (SELECT * from md_product_packaging where delete_flag = '0') mm on ws.material_nb = mm.product_no
@@ -58,6 +59,9 @@
         </if>
         <if test="orderNb != null and orderNb != ''">
             AND tr.order_number like concat('%', #{orderNb}, '%')
+        </if>
+        <if test="cell != null and cell != ''">
+            AND mm.cell like concat('%', #{cell}, '%')
         </if>
         <if test="targetWareCode != null and targetWareCode != ''">
             AND ws.target_ware_code like concat('%', #{targetWareCode}, '%')

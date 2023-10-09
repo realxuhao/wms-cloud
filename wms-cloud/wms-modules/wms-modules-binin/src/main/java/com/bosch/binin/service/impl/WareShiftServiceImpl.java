@@ -530,6 +530,13 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             throw new ServiceException("新SSCC:" + MesBarCodeUtil.getSSCC(splitPallet.getNewMesBarCode()) + "已经存在库存");
         }
 
+        if (!wareShift.getMaterialNb().equals(MesBarCodeUtil.getMaterialNb(splitPallet.getNewMesBarCode()))){
+            throw new ServiceException("拆托物料号不一致!");
+        }
+        if (!wareShift.getBatchNb().equals(MesBarCodeUtil.getBatchNb(splitPallet.getNewMesBarCode()))){
+            throw new ServiceException("拆托批号不一致!");
+        }
+
         //老的拆托任务结束。解冻库存
         wareShift.setStatus(KanbanStatusEnum.FINISH.value());
         this.updateById(wareShift);

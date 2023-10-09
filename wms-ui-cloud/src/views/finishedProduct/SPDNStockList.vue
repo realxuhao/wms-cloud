@@ -47,9 +47,17 @@
             </a-form-item>
           </a-col>
           <a-col :span="4">
-            <a-form-item label="批次号">
-              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
-            </a-form-item>
+            <a-form-model-item label="cell部门">
+              <a-select
+                placeholder="请选择cell部门"
+                allow-clear
+                v-model="queryForm.cell"
+              >
+                <a-select-option v-for="item in cellList" :key="item.id" :value="item.name">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
           </a-col>
           <a-col :span="4">
             <a-form-item label="存储区">
@@ -62,8 +70,8 @@
             </a-form-item>
           </a-col>
           <a-col :span="4">
-            <a-form-item label="FromProdOrder">
-              <a-input v-model="queryForm.fromProdOrder" placeholder="FromProdOrder" allow-clear/>
+            <a-form-item label="ProdOrder">
+              <a-input v-model="queryForm.fromProdOrder" placeholder="ProdOrder" allow-clear/>
             </a-form-item>
           </a-col>
           <a-col :span="4">
@@ -209,7 +217,7 @@ const columns = [
     sorter: true
   },
   {
-    title: 'FromProdOrder',
+    title: 'ProdOrder',
     key: 'fromProdOrder',
     dataIndex: 'fromProdOrder',
     width: 120,
@@ -365,7 +373,7 @@ export default {
       columns,
       list: [],
       departmentList: [],
-
+      cellList: [],
       currentOrderNb: '',
       currentCell: '',
       currentMaterialNb: '',
@@ -391,6 +399,10 @@ export default {
     },
   },
   methods: {
+     async loadCellList () {
+      const { data } = await this.$store.dispatch('department/getList')
+      this.cellList = data
+    },
      async pageChange(page, filters, sorter){
         this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc'
         this.queryForm.orderByColumn= sorter.columnKey
@@ -442,6 +454,7 @@ export default {
   },
   mounted () {
     this.loadData()
+    this.loadCellList()
   }
 }
 </script>

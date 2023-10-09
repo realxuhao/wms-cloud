@@ -5,6 +5,19 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           <a-col :span="4">
+            <a-form-model-item label="cell部门">
+              <a-select
+                placeholder="请选择cell部门"
+                allow-clear
+                v-model="queryForm.cell"
+              >
+                <a-select-option v-for="item in cellList" :key="item.id" :value="item.name">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
             <a-form-model-item label="Plant">
               <a-input v-model="queryForm.plant" placeholder="Plant" allow-clear/>
             </a-form-model-item>
@@ -213,7 +226,12 @@ import { download } from '@/utils/file'
 import _ from 'lodash'
 
 const columns = [
-
+{
+    title: 'Cell',
+    key: 'cell',
+    dataIndex: 'cell',
+    width: 120
+  },
   {
     title: 'External Ref',
     key: 'externalRef',
@@ -392,6 +410,7 @@ export default {
   mixins: [mixinTableList],
   data () {
     return {
+      cellList: [],
       tableLoading: false,
       uploadLoading: false,
       shipLoading:false,
@@ -522,6 +541,10 @@ export default {
     //     this.genTaskLoading = false
     //   }
     // },
+    async loadCellList () {
+      const { data } = await this.$store.dispatch('department/getList')
+      this.cellList = data
+    },
     async handleUpload (e) {
       const { file } = e
 
@@ -584,6 +607,7 @@ export default {
     },
     async loadData () {
       this.loadTableList()
+      this.loadCellList()
     }
   },
   mounted () {

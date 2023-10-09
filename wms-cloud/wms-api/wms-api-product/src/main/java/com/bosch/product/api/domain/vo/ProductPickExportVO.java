@@ -28,7 +28,7 @@ public class ProductPickExportVO {
     @Excel(name = "Ship-To")
     private String shipToParty;
 
-    @Excel(name = "Ship Date")
+    @Excel(name = "Ship Date",dateFormat = "yyyyMMdd",cellType = Excel.ColumnType.STRING)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private String deliveryDate;
 
@@ -36,7 +36,7 @@ public class ProductPickExportVO {
     private String vendorCode;
 
 
-    @Excel(name = "SSCCNumber")
+    @Excel(name = "SSCCNumber",cellType = Excel.ColumnType.STRING)
     private String ssccNumber;
 
     @Excel(name = "Delivery_Item")

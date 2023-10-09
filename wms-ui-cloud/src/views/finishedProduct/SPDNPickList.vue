@@ -10,6 +10,19 @@
             </a-form-model-item>
           </a-col>
           <a-col :span="4">
+            <a-form-model-item label="cell部门">
+              <a-select
+                placeholder="请选择cell部门"
+                allow-clear
+                v-model="queryForm.cell"
+              >
+                <a-select-option v-for="item in cellList" :key="item.id" :value="item.name">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
             <a-form-item label="SSCC码">
               <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
             </a-form-item>
@@ -91,6 +104,12 @@
 import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
 const columns = [
+   {
+    title: 'Cell',
+    key: 'cell',
+    dataIndex: 'cell',
+    width: 200
+  },
   {
     title: 'plantNb',
     key: 'plantNb',
@@ -171,7 +190,7 @@ const columns = [
     width: 120
   },
   {
-    title: 'FromProdOrder',
+    title: 'ProdOrder',
     key: 'fromProdOrder',
     dataIndex: 'fromProdOrder',
     width: 120
@@ -187,14 +206,9 @@ const columns = [
     key: 'createTime',
     dataIndex: 'createTime',
     width: 200
-  },
-
-  {
-    title: 'cell',
-    key: 'cell',
-    dataIndex: 'cell',
-    width: 200
   }
+
+ 
 ]
 
 const colorMap = {
@@ -232,6 +246,7 @@ export default {
   },
   data () {
     return {
+       cellList: [],
       tableLoading: false,
       queryForm: {
         pageSize: 20,
@@ -261,6 +276,10 @@ export default {
     }
   },
   methods: {
+     async loadCellList () {
+      const { data } = await this.$store.dispatch('department/getList')
+      this.cellList = data
+    },
     onSelectChange (selectedRowKeys) {
       this.selectedRowKeys = selectedRowKeys
     },
@@ -294,6 +313,7 @@ export default {
   },
   mounted () {
     this.loadData()
+    this.loadCellList()
   }
 }
 </script>

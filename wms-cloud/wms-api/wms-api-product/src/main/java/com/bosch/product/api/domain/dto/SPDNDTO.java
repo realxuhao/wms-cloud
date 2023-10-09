@@ -90,6 +90,9 @@ public class SPDNDTO  extends PageDomain {
     private Date shipDateStart;
 
 
+    private String cell;
+
+
 
 
 

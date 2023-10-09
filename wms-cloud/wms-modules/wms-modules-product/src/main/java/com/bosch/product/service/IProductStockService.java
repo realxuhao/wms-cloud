@@ -75,4 +75,6 @@ public interface IProductStockService extends IService<ProductStock> {
     List<ProductReturnVO> returnList(ProductReturnDTO queryDTO);
 
     void addSplit(SplitPalletDTO splitPallet);
+
+    ProductStockVO getLastestOne(String sscc);
 }

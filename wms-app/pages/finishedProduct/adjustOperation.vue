@@ -6,12 +6,13 @@
 					<view class="label">库位：</view>
 					{{ materialInfo.binCode }}
 				</view>
+				
 				<view class="text-line m-b-8 ">
 					<view class="label">物料名称：</view>
 					{{ materialInfo.materialName }}
 				</view>
 				<view class="text-line m-b-8 ">
-					<view class="label">物料编码</view>
+					<view class="label">物料编码:</view>
 					{{ materialInfo.materialNb }}
 				</view>
 				<view class="text-line m-b-8 ">
@@ -22,6 +23,7 @@
 					<view class="label">批次：</view>
 					{{ materialInfo.batchNb }}
 				</view>
+				
 				<view class="text-line m-b-8 ">
 					<view class="label">总库存：</view>
 					{{ materialInfo.pcsTotalStock }} PCS 
@@ -33,6 +35,10 @@
 				<view class="text-line m-b-8 ">
 					<view class="label">可用库存：</view>
 					{{ materialInfo.pcsAvailableStock }} PCS 
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">状态：</view>
+					{{ materialInfo.desc }} 
 				</view>
 			</view>
 
@@ -55,6 +61,18 @@
 					</template>
 
 					<template v-if="form.type === 4">
+						<uni-forms-item label="总库存" name="totalStock" required>
+							<uni-easyinput v-model="form.totalStock" placeholder="请输入总库存"></uni-easyinput>
+						</uni-forms-item>
+						<uni-forms-item label="冻结库存" name="freezeStock" required>
+							<uni-easyinput v-model="form.freezeStock" placeholder="请输入冻结库存"></uni-easyinput>
+						</uni-forms-item>
+						<uni-forms-item label="可用库存" name="availableStock" required>
+							<uni-easyinput v-model="form.availableStock" placeholder="请输入可用库存"></uni-easyinput>
+						</uni-forms-item>
+					</template>
+					
+					<template v-if="form.type === 5">
 						<uni-forms-item label="总库存" name="totalStock" required>
 							<uni-easyinput v-model="form.totalStock" placeholder="请输入总库存"></uni-easyinput>
 						</uni-forms-item>
@@ -116,6 +134,10 @@
 					{
 						text: '其它',
 						value: 4
+					},
+					{
+						text: '库存恢复',
+						value: 5
 					}
 				],
 				submitLoading: false,
@@ -165,9 +187,9 @@
 					const materialInfo = await this.$store.dispatch('finishedProduct/productStockGetByBarCode',
 						barCode);
 					this.materialInfo = materialInfo
-					this.form.freezeStock = materialInfo.freezeStock;
-					this.form.availableStock = materialInfo.availableStock;
-					this.form.totalStock = materialInfo.totalStock;
+					this.form.freezeStock = materialInfo.pcsFreezeStock;
+					this.form.availableStock = materialInfo.pcsAvailableStock;
+					this.form.totalStock = materialInfo.pcsTotalStock;
 				} catch (e) {
 					this.$refs.message.error(e.message);
 				} finally {

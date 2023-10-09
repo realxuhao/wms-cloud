@@ -45,4 +45,6 @@ public class ProductWareShiftQueryDTO {
     @ApiModelProperty(value = "ssccList")
     private List<String> ssccList;
 
+    private String cell;
+
 }

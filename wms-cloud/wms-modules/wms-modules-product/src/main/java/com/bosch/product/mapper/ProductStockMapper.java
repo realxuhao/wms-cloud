@@ -44,4 +44,7 @@ public interface ProductStockMapper extends BaseMapper<ProductStock> {
 
     List<ProductStockVO> spdnStocklist(ProductStockQueryDTO stockQueryDTO);
 
+
+    ProductStockVO getLastestOne(String sscc);
+
 }

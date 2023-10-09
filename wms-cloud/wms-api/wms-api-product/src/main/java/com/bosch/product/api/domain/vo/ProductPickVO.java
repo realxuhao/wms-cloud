@@ -13,4 +13,6 @@ import lombok.Data;
 public class ProductPickVO extends ProductPick {
 
     private String materialName;
+
+    private String cell;
 }

@@ -4,52 +4,65 @@
     <div class="table-content">
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
-         
-          <a-col :span="4">
-            <a-form-model-item label="Delivery">
-              <a-input v-model="queryForm.delivery" placeholder="Delivery" allow-clear/>
-            </a-form-model-item>
-          </a-col>
-          <!-- <a-col :span="4">
+          <a-row :gutter="16">
+            <a-col :span="4">
+              <a-form-model-item label="cell部门">
+                <a-select
+                  placeholder="请选择cell部门"
+                  allow-clear
+                  v-model="queryForm.cell"
+                >
+                  <a-select-option v-for="item in cellList" :key="item.id" :value="item.name">
+                    {{ item.name }}
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-model-item label="Delivery">
+                <a-input v-model="queryForm.delivery" placeholder="Delivery" allow-clear/>
+              </a-form-model-item>
+            </a-col>
+            <!-- <a-col :span="4">
             <a-form-model-item label="Plant">
               <a-input v-model="queryForm.plant" placeholder="Plant" allow-clear/>
             </a-form-model-item>
           </a-col> -->
-          <a-col :span="4">
-            <a-form-item label="Material">
-              <a-input v-model="queryForm.material" placeholder="Material" allow-clear/>
-            </a-form-item>
-          </a-col>
-          <!-- <a-col :span="4">
+            <a-col :span="4">
+              <a-form-item label="Material">
+                <a-input v-model="queryForm.material" placeholder="Material" allow-clear/>
+              </a-form-item>
+            </a-col>
+            <!-- <a-col :span="4">
             <a-form-item label="Material Name">
               <a-input v-model="queryForm.materialName" placeholder="Material Name" allow-clear/>
             </a-form-item>
           </a-col> -->
-          <a-col :span="4">
-            <a-form-item label="SSCC">
-              <a-input v-model="queryForm.ssccNb" placeholder="SSCC" allow-clear/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="4">
-            <a-form-item label="Batch">
-              <a-input v-model="queryForm.batch" placeholder="Batch" allow-clear/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="4">
-            <a-form-item label="Production batch">
-              <a-input v-model="queryForm.productionBatch" placeholder="Production batch" allow-clear/>
-            </a-form-item>
-          </a-col>
-          <a-col :span="8">
-            <a-form-item label="创建时间" >
-              <a-range-picker
-                v-model="queryForm.date"
-                format="YYYY-MM-DD"
+            <a-col :span="4">
+              <a-form-item label="SSCC">
+                <a-input v-model="queryForm.ssccNb" placeholder="SSCC" allow-clear/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-item label="Batch">
+                <a-input v-model="queryForm.batch" placeholder="Batch" allow-clear/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-item label="Production batch">
+                <a-input v-model="queryForm.productionBatch" placeholder="Production batch" allow-clear/>
+              </a-form-item>
+            </a-col>
+            <a-col :span="8">
+              <a-form-item label="创建时间" >
+                <a-range-picker
+                  v-model="queryForm.date"
+                  format="YYYY-MM-DD"
             
-              />
-            </a-form-item>
-          </a-col>
-          <!-- <a-col :span="8">
+                />
+              </a-form-item>
+            </a-col>
+            <!-- <a-col :span="8">
             <a-form-item label="Ship_Date">
               <a-range-picker
                 format="YYYY-MM-DD"
@@ -58,38 +71,38 @@
               />
             </a-form-item>
           </a-col> -->
-          <!-- <a-col :span="4">
+            <!-- <a-col :span="4">
             <a-form-item label="Ship-To Party">
               <a-input v-model="queryForm.shipToParty" placeholder="Ship-To Party" allow-clear/>
             </a-form-item>
           </a-col> -->
-          <a-col :span="4">
-            <a-form-model-item label="状态">
-              <a-select
-                allow-clear
-                v-model="queryForm.status"
-              >
-                <a-select-option v-for="(item,key) in statusMap" :key="item" :value="key">
-                  {{ item }}
-                </a-select-option>
-              </a-select>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="4">
-            <span class="table-page-search-submitButtons" >
-              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
-              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-              <a @click="toggleAdvanced" style="margin-left: 8px">
-                {{ advanced ? '收起' : '展开' }}
-                <a-icon :type="advanced ? 'up' : 'down'"/>
-              </a>
-            </span>
-          </a-col>
-          <template v-if="advanced">
+            <a-col :span="4">
+              <a-form-model-item label="状态">
+                <a-select
+                  allow-clear
+                  v-model="queryForm.status"
+                >
+                  <a-select-option v-for="(item,key) in statusMap" :key="item" :value="key">
+                    {{ item }}
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </a-col>
+            <a-col :span="4">
+              <span class="table-page-search-submitButtons" >
+                <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+                <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+                <a @click="toggleAdvanced" style="margin-left: 8px">
+                  {{ advanced ? '收起' : '展开' }}
+                  <a-icon :type="advanced ? 'up' : 'down'"/>
+                </a>
+              </span>
+            </a-col>
+            <template v-if="advanced">
           
-          </template>
-        </a-row>
-      </a-form>
+            </template>
+          </a-row>
+        </a-row></a-form>
       <div class="action-content">
      
         <!-- <a-button
@@ -177,7 +190,12 @@ import EditTableCell from '@/components/EditTableCell'
 import _ from 'lodash'
 
 const columns = [
-
+{
+    title: 'Cell',
+    key: 'cell',
+    dataIndex: 'cell',
+    width: 120
+  },
   {
     title: 'Delivery',
     key: 'delivery',
@@ -351,6 +369,7 @@ export default {
   },
   data () {
     return {
+      cellList: [],
       tableLoading: false,
       genTaskLoading: false,
       dispatchLoading:false,
@@ -480,8 +499,13 @@ this.selectedRowKeys = []
         this.tableLoading = false 
       }
     },
+     async loadCellList () {
+      const { data } = await this.$store.dispatch('department/getList')
+      this.cellList = data
+    },
     async loadData () {
       this.loadTableList()
+      this.loadCellList()
     }
   },
   mounted () {

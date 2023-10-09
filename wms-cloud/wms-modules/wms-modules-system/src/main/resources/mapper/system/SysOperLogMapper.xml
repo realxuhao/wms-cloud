@@ -40,7 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			</if>
 
 			<if test="operParam != null and operParam != ''">
-				AND (oper_param like concat('%', #{operParam}, '%') OR oper_url like concat('%', #{operParam}))
+				AND (oper_param like concat('%', #{operParam}, '%') OR oper_url like concat('%', #{operParam}) OR json_result like concat('%', #{operParam},'%'))
 			</if>
 			<if test="businessType != null">
 				AND business_type = #{businessType}

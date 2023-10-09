@@ -6,7 +6,7 @@
 
 
     <select id="getList" resultType="com.bosch.product.api.domain.vo.SUDNVO">
-        SELECT *,pp.product_name as materialName
+        SELECT *,pp.product_name as materialName,pp.cell as cell
         FROM sudn sd
 
         left join md_product_packaging pp on pp.product_no = sd.material and pp.delete_flag = 0
@@ -15,8 +15,14 @@
         <if test="delivery != null and delivery != ''">
             AND sd.delivery like concat('%', #{delivery}, '%')
         </if>
+        <if test="cell != null and cell != ''">
+            AND pp.cell like concat('%', #{cell}, '%')
+        </if>
         <if test="nameOfShipToParty != null and nameOfShipToParty != ''">
             AND sd.name_of_ship_to_party like concat('%', #{nameOfShipToParty}, '%')
+        </if>
+        <if test="storageLocation != null and storageLocation != ''">
+            AND sd.storage_location like concat('%', #{storageLocation}, '%')
         </if>
         <if test="material != null and material != ''">
             AND sd.material like concat('%', #{material}, '%')

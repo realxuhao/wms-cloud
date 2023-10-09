@@ -106,6 +106,13 @@ public class SplitServiceImpl extends ServiceImpl<SplitMapper, SplitRecord> impl
             throw new ServiceException("拆托数量不可以大于源库存可用数量");
         }
 
+        if (!sourceStock.getMaterialNb().equals(MesBarCodeUtil.getMaterialNb(splitPallet.getNewMesBarCode()))){
+            throw new ServiceException("拆托物料号不一致!");
+        }
+        if (!sourceStock.getBatchNb().equals(MesBarCodeUtil.getBatchNb(splitPallet.getNewMesBarCode()))){
+            throw new ServiceException("拆托批号不一致!");
+        }
+
 
         SplitRecord splitRecord = new SplitRecord();
         splitRecord.setSplitQuantity(splitQuantity);

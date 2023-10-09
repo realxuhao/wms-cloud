@@ -46,4 +46,6 @@ public class ProductPickDTO {
 
     private String wareCode;
     private String ssccNb;
+
+    private String cell;
 }

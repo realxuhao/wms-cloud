@@ -38,6 +38,7 @@ import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IProductStockOperationService;
 import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import com.sun.xml.internal.bind.v2.schemagen.xmlschema.TypeHost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -325,8 +326,55 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         queryWrapper.last("limit 1");
         ProductStock stock = this.getOne(queryWrapper);
         if (stock == null) {
-            throw new ServiceException("无此库存信息");
+            if (stockEditDTO.getType() == 5) {
+
+
+                LambdaQueryWrapper<ProductStock> queryWrapperTemp = new LambdaQueryWrapper<>();
+                queryWrapperTemp.eq(ProductStock::getSsccNumber, stockEditDTO.getSsccNumber());
+                queryWrapperTemp.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.TRUE.getCode());
+                queryWrapperTemp.orderByDesc(ProductStock::getUpdateTime);
+                queryWrapperTemp.last("limit 1");
+                ProductStock one = this.getOne(queryWrapperTemp);
+
+                ProductStockAdjust stockAdjust = BeanConverUtil.conver(one, ProductStockAdjust.class);
+
+                MdProductPackagingVO productVO = getProductVO(one.getMaterialNb());
+
+                //   PCS/TR
+                Double boxSpecification = productVO.getBoxSpecification();
+
+                one.setDeleteFlag(DeleteFlagStatus.FALSE.getCode());
+                if (stockEditDTO.getSsccNumber() == null || stockEditDTO.getAvailableStock() == null || stockEditDTO.getFreezeStock() == null || stockEditDTO.getTotalStock() == null) {
+                    throw new ServiceException("所有参数都不能为空");
+                }
+                if (!stockEditDTO.getTotalStock().equals(stockEditDTO.getFreezeStock() + stockEditDTO.getAvailableStock())) {
+                    throw new ServiceException("总库存必须等于冻结库存+可用库存");
+                }
+
+
+                double diff = one.getTotalStock() - stockEditDTO.getTotalStock();
+
+                Double diffTR = diff / boxSpecification;
+
+                one.setAvailableStock(stockEditDTO.getAvailableStock() / boxSpecification);
+                one.setFreezeStock(stockEditDTO.getFreezeStock() / boxSpecification);
+                one.setTotalStock(stockEditDTO.getTotalStock() / boxSpecification);
+
+                this.updateById(one);
+
+                stockAdjust.setType(stockEditDTO.getType());
+                stockAdjust.setId(null);
+                stockAdjust.setAdjustFreezeStock(one.getFreezeStock());
+                stockAdjust.setAdjustTotalStock(one.getTotalStock());
+                stockAdjust.setAdjustAvailableStock(one.getAvailableStock());
+                stockAdjustService.save(stockAdjust);
+
+                return;
+            } else {
+                throw new ServiceException("无此库存信息");
+            }
         }
+
 
         ProductStockAdjust stockAdjust = BeanConverUtil.conver(stock, ProductStockAdjust.class);
 
@@ -461,7 +509,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
     public void stockReturn(ProductReturnDTO productReturnDTO) {
         String qrCode = productReturnDTO.getQrCode();
         String sscc = ProductQRCodeUtil.getSSCC(qrCode);
-        String batchNb = ProductQRCodeUtil.getBatchNb(qrCode);
+        String prodBatch = ProductQRCodeUtil.getProdBatch(qrCode);
         LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(ProductStock::getSsccNumber, sscc);
         queryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
@@ -489,7 +537,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
         //查询物料号等信息
         LambdaQueryWrapper<ProductStock> queryWrapper1 = new LambdaQueryWrapper<>();
-        queryWrapper1.eq(ProductStock::getBatchNb, batchNb);
+        queryWrapper1.eq(ProductStock::getFromProdOrder, prodBatch);
         queryWrapper1.last("limit 1");
         ProductStock oldStock = this.getOne(queryWrapper1);
 
@@ -512,6 +560,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             stock.setAvailableStock(productReturnDTO.getQuantity() / productVO.getBoxSpecification());
             stock.setQualityStatus(QualityStatusEnums.BLOCK.getCode());
             stock.setProductionDate(ProductQRCodeUtil.getProductionDate(qrCode));
+            stock.setFromProdOrder(prodBatch);
             stock.setBinInFlag(ProductStockBinInEnum.NONE.code());
             this.save(stock);
         } else if (productReturnDTO.getType() == 1) {//退货到工厂。也就是从7761退货到工厂。
@@ -530,6 +579,8 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             stock.setAvailableStock(productReturnDTO.getQuantity() / productVO.getBoxSpecification());
             stock.setQualityStatus(QualityStatusEnums.BLOCK.getCode());
             stock.setProductionDate(ProductQRCodeUtil.getProductionDate(qrCode));
+            stock.setFromProdOrder(prodBatch);
+
             stock.setBinInFlag(ProductStockBinInEnum.NONE.code());
             this.save(stock);
 
@@ -553,8 +604,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         productReturnService.save(productReturn);
 
 
-
-        productStockOperationService.addProductStockOperation(productReturn.getPlantNb(),productReturn.getQuantity(),productReturn.getSsccNumber(),productReturn.getMaterialNb(),stock.getFromProdOrder(), StockOperationType.IN.getCode());
+        productStockOperationService.addProductStockOperation(productReturn.getPlantNb(), productReturn.getQuantity(), productReturn.getSsccNumber(), productReturn.getMaterialNb(), stock.getFromProdOrder(), StockOperationType.IN.getCode());
 
 
     }
@@ -587,7 +637,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             manualTransferOrder.setType(binInDTO.getType());
             AreaVO areaVO = remoteMasterDataService.getByCode(binInDTO.getActualCode()).getData();
             stock.setAreaCode(binInDTO.getActualCode());
-            if(!"7761".equals(stock.getPlantNb())){
+            if (!"7761".equals(stock.getPlantNb())) {
                 stock.setPlantNb(areaVO.getPlantNb());
             }
 
@@ -601,7 +651,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             manualTransferOrder.setTargetAreaCode(binVO.getAreaCode());
             stock.setAreaCode(binVO.getAreaCode());
             stock.setBinCode(binVO.getCode());
-            if(!"7761".equals(stock.getPlantNb())){
+            if (!"7761".equals(stock.getPlantNb())) {
                 stock.setPlantNb(binVO.getPlantNb());
             }
             stock.setWareCode(binVO.getWareCode());
@@ -692,6 +742,11 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(), splitPallet.getSourceSsccNb(), newStock.getMaterialNb());
 
+    }
+
+    @Override
+    public ProductStockVO getLastestOne(String sscc) {
+        return stockMapper.getLastestOne(sscc);
     }
 
 

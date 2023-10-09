@@ -13,4 +13,6 @@ import lombok.Data;
 public class ProductSPDNPickVO extends ProductSPDNPick {
 
     private String materialName;
+
+    private String cell;
 }

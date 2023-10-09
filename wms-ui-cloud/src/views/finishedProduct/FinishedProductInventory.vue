@@ -75,8 +75,8 @@
             </a-form-item>
           </a-col>
           <a-col :span="4">
-            <a-form-item label="FromProdOrder">
-              <a-input v-model="queryForm.fromProdOrder" placeholder="FromProdOrder" allow-clear/>
+            <a-form-item label="ProdOrder">
+              <a-input v-model="queryForm.fromProdOrder" placeholder="ProdOrder" allow-clear/>
             </a-form-item>
           </a-col>
           <a-col :span="4">
@@ -216,7 +216,7 @@ const columns = [
     sorter: true
   },
   {
-    title: 'FromProdOrder',
+    title: 'ProdOrder',
     key: 'fromProdOrder',
     dataIndex: 'fromProdOrder',
     width: 120,
@@ -385,12 +385,12 @@ export default {
       columns,
       list: [],
       departmentList: [],
-cellList: [],
+      cellList: [],
       currentOrderNb: '',
       currentCell: '',
       currentMaterialNb: '',
       stockListVisible: false,
-      notQuantity: 0
+      notQuantity: 0,
     }
   },
   computed: {

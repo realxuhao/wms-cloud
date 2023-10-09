@@ -235,4 +235,8 @@ public class ProductStockVO {
     @Excel(name = "批次总托数")
     private Double sameProdOrderCount;
 
+
+
+    private String desc;
+
 }

@@ -1,5 +1,6 @@
 package com.bosch.product.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.bosch.binin.api.domain.dto.AddManualTransDTO;
 import com.bosch.binin.api.domain.dto.ManualBinInDTO;
 import com.bosch.binin.api.domain.dto.SplitPalletDTO;
@@ -123,9 +124,20 @@ public class ProductStockController extends BaseController {
         queryDTO.setSsccNumber(sscc);
         List<ProductStockVO> list = productStockService.allList(queryDTO);
         if (!CollectionUtils.isEmpty(list)) {
+            ProductStockVO productStockVO = list.get(0);
+            productStockVO.setDesc("在库");
+
             return R.ok(list.get(0));
+        }else {
+            ProductStockVO productStockVO = productStockService.getLastestOne(sscc);
+            if (productStockVO !=null) {
+                productStockVO.setDesc("不在库");
+                return R.ok(productStockVO);
+            }else {
+                return R.fail("没有该SSCC" + sscc + "对应的库存");
+            }
         }
-        return R.fail("没有该SSCC" + sscc + "对应的库存");
+
     }
 
 

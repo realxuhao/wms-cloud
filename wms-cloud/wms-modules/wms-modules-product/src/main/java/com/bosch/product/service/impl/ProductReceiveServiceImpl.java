@@ -58,7 +58,6 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
     private IUserOperationLogService userOperationLogService;
 
 
-
     @Override
     public List<ProductReceiveVO> list(ProductReceiveQueryDTO queryDTO) {
         return receiveMapper.list(queryDTO);
@@ -66,7 +65,7 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void receive(String qrCode,Double quantity) {
+    public void receive(String qrCode, Double quantity) {
         String sscc = ProductQRCodeUtil.getSSCC(qrCode);
         Date productionDate = ProductQRCodeUtil.getProductionDate(qrCode);
         String batchNb = ProductQRCodeUtil.getBatchNb(qrCode);
@@ -81,6 +80,9 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
         if (!productReceive.getStatus().equals(ProductReceiveEnum.WAAITTING_RECEIVE.code())) {
             throw new ServiceException("该sscc" + sscc + "码对应入库任务状态为" + ProductReceiveEnum.getDesc(productReceive.getStatus()) + ",不可入库");
         }
+        if (!SecurityUtils.getWareCode().startsWith(productReceive.getPlantNb())) {
+            throw new ServiceException("必须选择" + productReceive.getPlantNb() + "开头的仓库!");
+        }
         productReceive.setWareCode(SecurityUtils.getWareCode());
         productReceive.setBatchNb(batchNb);
         productReceive.setProductionDate(productionDate);
@@ -94,9 +96,9 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
 
         //记录操作
 
-        productStockOperationService.addProductStockOperation(productReceive.getPlantNb(),productReceive.getInQuantity() * productVO.getBoxSpecification(),productReceive.getSsccNumber(),productReceive.getMaterialNb(),productReceive.getFromProdOrder(), StockOperationType.IN.getCode());
+        productStockOperationService.addProductStockOperation(productReceive.getPlantNb(), productReceive.getInQuantity() * productVO.getBoxSpecification(), productReceive.getSsccNumber(), productReceive.getMaterialNb(), productReceive.getFromProdOrder(), StockOperationType.IN.getCode());
 
-        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_STORAGE_IN.getCode(), ProductQRCodeUtil.getSSCC(qrCode),productReceive.getMaterialNb());
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCT_STORAGE_IN.getCode(), ProductQRCodeUtil.getSSCC(qrCode), productReceive.getMaterialNb());
 
     }
 
@@ -120,11 +122,12 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
     @Override
     public ProductReceive getProductReceiveVO(String sscc) {
         LambdaQueryWrapper<ProductReceive> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProductReceive::getSsccNumber,sscc);
-        queryWrapper.eq(ProductReceive::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.eq(ProductReceive::getSsccNumber, sscc);
+        queryWrapper.eq(ProductReceive::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.last("limit 1");
         return this.getOne(queryWrapper);
     }
+
     @Override
     public boolean validList(List<ProductReceiveDTO> dtos) {
         //校验料号是否存在。
@@ -149,8 +152,6 @@ public class ProductReceiveServiceImpl extends ServiceImpl<ProductReceiveMapper,
         }
         return byCode.getData();
     }
-
-
 
 
 }

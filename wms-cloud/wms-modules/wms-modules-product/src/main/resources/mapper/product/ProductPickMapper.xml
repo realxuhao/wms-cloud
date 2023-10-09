@@ -6,13 +6,16 @@
 
 
     <select id="list" resultType="com.bosch.product.api.domain.vo.ProductPickVO">
-        SELECT pp.*,mp.product_name as materialName
+        SELECT pp.*,mp.product_name as materialName,mp.cell as cell
         FROM product_pick AS pp left join md_product_packaging mp on pp.material = mp.product_no and mp.delete_flag = 0
         where pp.delete_flag = 0
         <if test="sudnId != null">and pp.sudn_id = #{sudnId}</if>
         <if test="status != null">and pp.status = #{status}</if>
         <if test="delivery != null and delivery != ''">
             AND pp.delivery like concat('%', #{delivery}, '%')
+        </if>
+        <if test="cell != null and cell != ''">
+            AND mp.cell like concat('%', #{cell}, '%')
         </if>
         <if test="item != null and item != ''">
             AND pp.item like concat('%', #{item}, '%')

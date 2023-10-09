@@ -28,6 +28,14 @@ public class ProductWareShiftVO {
     /**
      * 物料号
      */
+    @ApiModelProperty(value = "Cell")
+    @Excel(name = "Cell")
+    private String cell;
+
+
+    /**
+     * 物料号
+     */
     @ApiModelProperty(value = "物料号")
     @Excel(name = "物料号")
     private String materialNb;

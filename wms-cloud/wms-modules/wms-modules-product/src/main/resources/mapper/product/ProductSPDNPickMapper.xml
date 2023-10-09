@@ -6,7 +6,7 @@
 
 
     <select id="getList" resultType="com.bosch.product.api.domain.vo.ProductSPDNPickVO">
-        select psp.*,mp.product_name as materialName
+        select psp.*,mp.product_name as materialName,mp.cell as cell
         from product_spdn_pick psp
         left join md_product_packaging mp on psp.material_nb = mp.product_no and mp.delete_flag = 0
         where psp.delete_flag = 0
@@ -15,6 +15,9 @@
         </if>
         <if test="ssccNumber != null and ssccNumber != ''">
             AND psp.sscc_number like concat('%', #{ssccNumber}, '%')
+        </if>
+        <if test="cell != null and cell != ''">
+            AND mp.cell like concat('%', #{cell}, '%')
         </if>
         <if test="wareCode != null and wareCode != ''">
             AND psp.ware_code like concat('%', #{wareCode}, '%')
