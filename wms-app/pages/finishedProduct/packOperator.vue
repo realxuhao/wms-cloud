@@ -209,8 +209,7 @@
 			async getHistoryRecord() {
 				try {
 					const options = {
-						shippingMark: this.params.shippingMark,
-						etoPo: this.params.etoPo,
+						shippingTaskId: this.taskId,
 						pageSize: 0
 					}
 					const {
@@ -228,6 +227,7 @@
 					})
 
 					this.allScanProdOrderList = allScanProdOrderList
+
 					this.stepIndex = rows.length + 1
 
 

@@ -51,7 +51,7 @@ const deletePackageHistory = async (options) => {
 	})
 }
 const getHistoryRecord = async (options) => {
-	const url = `/product/productPackaging/getHistoryRecordNotLike`
+	const url = `/product/productPackaging/getHistoryRecord`
 	const method = 'GET'
 
 	return request({
