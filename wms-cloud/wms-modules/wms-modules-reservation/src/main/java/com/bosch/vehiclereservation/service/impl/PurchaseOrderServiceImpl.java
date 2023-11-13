@@ -49,8 +49,10 @@ public class PurchaseOrderServiceImpl extends ServiceImpl<PurchaseOrderMapper, P
         List<PurchaseOrder> purchaseOrders = purchaseOrderMapper.selectSupplierPurchaseOrder(purchaseOrder);
         purchaseOrders.forEach(c -> {
             BigDecimal sum = supplierPorderService.getArriveQuantityByPurchaseId(c.getPurchaseId());
-            BigDecimal subtract = c.getQuantity().subtract(sum);
-            c.setQuantity(subtract);
+            if(!(sum == null || c.getQuantity() == null)){
+                BigDecimal subtract = c.getQuantity().subtract(sum);
+                c.setQuantity(subtract);
+            }
         });
         return purchaseOrders;
     }
