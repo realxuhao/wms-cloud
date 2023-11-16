@@ -67,11 +67,6 @@
 						rules: [{
 								required: true,
 								errorMessage: '不能为空'
-							},
-							{
-								minLength: 18,
-								maxLength: 18,
-								errorMessage: '非法的SSCC码'
 							}
 						]
 					},
