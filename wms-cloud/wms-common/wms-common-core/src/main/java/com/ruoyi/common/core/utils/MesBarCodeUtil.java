@@ -1,6 +1,7 @@
 package com.ruoyi.common.core.utils;
 
 
+import com.alibaba.fastjson2.JSON;
 import com.ruoyi.common.core.exception.ServiceException;
 
 import java.math.BigInteger;
@@ -25,9 +26,10 @@ public class MesBarCodeUtil {
         }
         return result;
     }
+
     public static String generateMesBarCode(Date date, String sscc, String materialNb, String batchNb, Double quantity) {
         String dateToStr = DateUtils.parseDateToStr("yyyyMMdd", date);
-        String quantityStr = String.valueOf(quantity.intValue());
+        String quantityStr = String.valueOf(quantity);
         String reverse = StringUtils.reverse(quantityStr);
         int len = 6 - reverse.length();
         for (int i = 0; i < len; i++) {
@@ -97,7 +99,7 @@ public class MesBarCodeUtil {
     }
 
     public static void main(String[] args) {
-        String mesBarCode = "202403226690063911100247521031104222032911260050.2666666";
+        String mesBarCode = "20261220669006391114790547104930672312211162060000";
         System.out.println(mesBarCode.length());
         System.out.println(getExpireDate(mesBarCode));
         System.out.println(getSSCC(mesBarCode));
@@ -110,7 +112,7 @@ public class MesBarCodeUtil {
         System.out.println(ceil1);
 
         String date = DateUtils.parseDateToStr("yyyyMMdd", new Date());
-        String barCode = generateMesBarCode(new Date(), "669006391114463779", "10305017", "2309081222", Double.valueOf(760));
+        String barCode = generateMesBarCode(new Date(), "669006391114322717", "10305017", "2309081222", Double.valueOf(5));
         System.out.println(barCode);
 
         System.out.println("202408316690063911132813671045604522061011139.65".length());
@@ -132,7 +134,7 @@ public class MesBarCodeUtil {
 
         Double aDouble = Double.valueOf(760);
         Double aDouble1 = Double.valueOf(0.6);
-        System.out.println(aDouble-aDouble1);
+        System.out.println(aDouble - aDouble1);
 
 
         ArrayList<String> list = new ArrayList<>();
@@ -145,10 +147,50 @@ public class MesBarCodeUtil {
         System.out.println(randomNonConsecutive);
 
 
-        Double n=new Double(0);
-        System.out.println(n==0);
+        System.out.println(Double.valueOf(5500) / Double.valueOf(1000));
+
+
+        Double n = new Double(0);
+        System.out.println(n == 0);
+
+
+        System.out.println("7761" + "7752WW".substring(4));
+
+        System.out.println(getIndex(0, 1));
+
+
+        List<String> tt = new ArrayList<>();
+        tt.add("1");
+        tt.add("2");
+        System.out.println(JSON.toJSON(splitTaskList(tt,1)));
+
+
+        System.out.println("0ce31d86037e051f9e0528af650c36c23a462e8b43d964af99e80d65d203d7f292d7fcfc3f4a1cea38daf1a81d3da532199795b3964b73f600550c446491ef2f6ab696e3f15f2b0bf8a82347f506a2a844632cd1e10bc7b7c6cd9cfc200d6ea3cbd96f0036957fb8b131ff9b13997c58babb5951c0bcdae25e470dcb3ed965e46187aec9aa35f25dcb922014ef6b9fde3d3c4774c6e5ef91e97f818f68f4ea2ac10c6102a26f305f6eb083faeb306e897168b52b84cb74fb82ce58aa74891f823dbde24f3d0709e181c2e66fdebbe8e2019cf5f9ae7d7ba4354912395bcd8aa48b2689c0dc25b91aec90d496a5065db261b513759b3b1b5daa973c8ea7e03dbd".length());
 
     }
+
+
+    private static int getIndex(int i, int length) {
+        if (i + 1 >= length) {
+            return 0;
+        }
+        return i+1;
+    }
+
+    public static List<List<String>> splitTaskList(List<String> tasks, int batchSize) {
+        List<List<String>> resultList = new ArrayList<>();
+        int size = tasks.size();
+
+        for (int i = 0; i < size; i += batchSize) {
+            int end = Math.min(size, i + batchSize);
+            List<String> sublist = tasks.subList(i, end);
+            resultList.add(new ArrayList<>(sublist));
+        }
+
+        return resultList;
+    }
+
+
 
 //    20240322669006391110024752103110422203291126000050
     //20250213669006391110024585103025072202141190001000

@@ -51,6 +51,7 @@ public class MaterialInController extends BaseController {
      * 根据mesBarCode查询物料校验信息
      */
     @GetMapping(value = "/getCheckByBarCode/{mesBarCode}")
+    @Log(title = "获取入库校验信息", businessType = BusinessType.OTHER)
     @ApiOperation("根据mesBarCode查询物料校验信息")
     public R<MaterialInCheckVO> getCheckInfo(@PathVariable("mesBarCode") String mesBarCode) {
 

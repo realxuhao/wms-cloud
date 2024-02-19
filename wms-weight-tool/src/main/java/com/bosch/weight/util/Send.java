@@ -19,7 +19,7 @@ public class Send {
 
         System.out.println("=============发送端启动===========");
         // 1.创建发送端对象
-        DatagramSocket socket1 = new DatagramSocket(6666);
+        DatagramSocket socket1 = new DatagramSocket(5575);
         DatagramSocket socket2 = new DatagramSocket(6667);
 
         DatagramSocket socket3 = new DatagramSocket(6668);

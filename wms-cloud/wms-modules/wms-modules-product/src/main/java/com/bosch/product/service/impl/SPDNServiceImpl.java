@@ -83,7 +83,6 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
     private RemoteProductService remoteProductService;
 
 
-
     @Override
     public List<SPDNVO> getList(SPDNDTO spdndto) {
         return spdnMapper.getList(spdndto);
@@ -103,7 +102,7 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         updateWrapper.in(SPDN::getId, ids);
         updateWrapper.set(SPDN::getDeleteFlag, DeleteFlagStatus.TRUE.getCode());
         updateWrapper.set(SPDN::getUpdateBy, SecurityUtils.getUsername());
-        updateWrapper.set(SPDN::getUpdateTime, DateUtils.getNowDate()) ;
+        updateWrapper.set(SPDN::getUpdateTime, DateUtils.getNowDate());
         this.update(updateWrapper);
     }
 
@@ -120,13 +119,16 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         stockLambdaQueryWrapper.in(ProductStock::getSsccNumber, ssccList);
         stockLambdaQueryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<ProductStock> stockList = productStockService.list(stockLambdaQueryWrapper);
-        if(CollectionUtils.isEmpty(stockList)){
+        if (CollectionUtils.isEmpty(stockList)) {
             throw new ServiceException("库存数据为空");
         }
         Map<String, ProductStock> ssccStockMap = stockList.stream().collect(Collectors.toMap(ProductStock::getSsccNumber, Function.identity()));
         List<String> inValidPlantSSCCList = new ArrayList<>();
         List<String> inValidQtySSCCList = new ArrayList<>();
         stockList.stream().forEach(item -> {
+            if (item.getFreezeStock() > 0) {
+                throw new ServiceException("该托" + item.getSsccNumber() + "存在未完成的移库或捡配任务!");
+            }
             if (!item.getPlantNb().equals("7752")) {
                 inValidPlantSSCCList.add(item.getSsccNumber());
             }
@@ -149,14 +151,14 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         // 如果是7761。那么就把库存的plantNb改成7761,同时质量状态变为Q
         ArrayList<ProductSPDNPick> spdnPickList = new ArrayList<>();
         spdnList.stream().forEach(item -> {
-            if(!item.getStatus().equals(SPDNStatusEnum.SHIPPED.code())){
+            if (!item.getStatus().equals(SPDNStatusEnum.SHIPPED.code())) {
                 throw new ServiceException("只能选择已发运的数据");
             }
             ProductStock productStock = ssccStockMap.get(item.getSsccNumber());
             if ("7761".equals(item.getPlant())) {
                 if (productStock != null) {
                     productStock.setPlantNb(item.getPlant());
-                    productStock.setWareCode("7761WW");
+                    productStock.setWareCode("7761" + productStock.getWareCode().substring(4));
                     productStock.setAreaCode("7761-0001");
                     productStock.setQualityStatus(QualityStatusEnums.WAITING_QUALITY.getCode());
                     productStock.setChangeStatus(0);
@@ -203,13 +205,16 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         stockLambdaQueryWrapper.in(ProductStock::getSsccNumber, ssccList);
         stockLambdaQueryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<ProductStock> stockList = productStockService.list(stockLambdaQueryWrapper);
-        if(CollectionUtils.isEmpty(stockList)){
+        if (CollectionUtils.isEmpty(stockList)) {
             throw new ServiceException("库存数据为空");
         }
         Map<String, ProductStock> ssccStockMap = stockList.stream().collect(Collectors.toMap(ProductStock::getSsccNumber, Function.identity()));
         List<String> inValidPlantSSCCList = new ArrayList<>();
         List<String> inValidQtySSCCList = new ArrayList<>();
         stockList.stream().forEach(item -> {
+            if (item.getFreezeStock() > 0) {
+                throw new ServiceException("该托" + item.getSsccNumber() + "存在未完成的移库或捡配任务!");
+            }
             if (!item.getPlantNb().equals("7752")) {
                 inValidPlantSSCCList.add(item.getSsccNumber());
             }
@@ -242,7 +247,7 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
 //                }
                 throw new ServiceException("只能选择非7761的数据");
             } else {//如果不是7761的，生成对应的发运装车任务
-                if(!item.getStatus().equals(SPDNStatusEnum.WAITING_APPROVE.code())){
+                if (!item.getStatus().equals(SPDNStatusEnum.WAITING_APPROVE.code())) {
                     throw new ServiceException("只能选择已上传状态的数据");
                 }
                 if (productStock != null) {
@@ -271,6 +276,7 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         productStockService.updateBatchById(list);
         this.updateBatchById(spdnList);
     }
+
     @Override
     public void binDown(String qrCode) {
         String sscc = ProductQRCodeUtil.getSSCC(qrCode);
@@ -283,11 +289,11 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
             throw new ServiceException("当前不存在该SSCC" + sscc + "对应的库存信息");
         }
         LambdaQueryWrapper<ProductSPDNPick> pickWrapper = new LambdaQueryWrapper<>();
-        pickWrapper.eq(ProductSPDNPick::getSsccNumber,sscc);
-        pickWrapper.eq(ProductSPDNPick::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
-        pickWrapper.eq(ProductSPDNPick::getStatus,ProductSPDNPickEnum.WAITTING_DOWN.code());
+        pickWrapper.eq(ProductSPDNPick::getSsccNumber, sscc);
+        pickWrapper.eq(ProductSPDNPick::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        pickWrapper.eq(ProductSPDNPick::getStatus, ProductSPDNPickEnum.WAITTING_DOWN.code());
         ProductSPDNPick spdnPick = spdnPickService.getOne(pickWrapper);
-        if (spdnPick==null){
+        if (spdnPick == null) {
             throw new ServiceException("当前不存在该SSCC" + sscc + "对应的下架信息");
         }
         productStock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
@@ -305,8 +311,7 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
 //                spdnPick.getSsccNumber(),spdnPick.getMaterialNb(),spdnPick.getBatchNb(), StockOperationType.SALESOUT.getCode());
 
 
-        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode),spdnPick.getMaterialNb());
-
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBINOUT.getCode(), ProductQRCodeUtil.getSSCC(qrCode), spdnPick.getMaterialNb());
 
 
     }
@@ -319,13 +324,13 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
                 .eq(ProductSPDNPick::getStatus, ProductSPDNPickEnum.WAITTING_SHIP.code());
         List<ProductSPDNPick> pickList = spdnPickService.list(queryWrapper);
 
-        if (CollectionUtils.isEmpty(pickList)){
+        if (CollectionUtils.isEmpty(pickList)) {
             throw new ServiceException("均是不为待发运的数据");
         }
         if (pickList.size() != ssccList.size()) {
             List<String> existSSCCList = pickList.stream().map(ProductSPDNPick::getSsccNumber).collect(Collectors.toList());
             ssccList.removeAll(existSSCCList);
-            throw new ServiceException("存在状态不为待发运的数据"+existSSCCList);
+            throw new ServiceException("存在状态不为待发运的数据" + existSSCCList);
         }
         List<TranshipmentOrder> transhipmentOrderList = new ArrayList<>();
         //获取next trans order
@@ -367,10 +372,10 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
     public void batchShip(Long[] ids) {
         List<SPDN> spdns = this.listByIds(Arrays.asList(ids));
         spdns.stream().forEach(spdn -> {
-            if(!spdn.getStatus().equals(SPDNStatusEnum.WAITING_APPROVE.code())){
+            if (!spdn.getStatus().equals(SPDNStatusEnum.WAITING_APPROVE.code())) {
                 throw new ServiceException("只能选择已上传状态的数据");
             }
-            if (!"7761".equals(spdn.getPlant())){
+            if (!"7761".equals(spdn.getPlant())) {
                 throw new ServiceException("只能选择7761的数据进行发运");
             }
             spdn.setStatus(SPDNStatusEnum.SHIPPED.code());
@@ -378,6 +383,7 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         this.updateBatchById(spdns);
 
     }
+
     private MdProductPackagingVO getProductVO(String code) {
         R<MdProductPackagingVO> byCode = remoteProductService.getByCode(code);
         if (byCode == null || !byCode.isSuccess()) {

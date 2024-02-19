@@ -5,7 +5,6 @@ import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.storagein.api.constants.Constants;
 import com.bosch.storagein.api.constants.ResponseConstants;
-import com.bosch.storagein.api.domain.MaterialReceive;
 import com.bosch.storagein.api.domain.dto.MaterialInCheckDTO;
 import com.bosch.storagein.api.domain.dto.MaterialInDTO;
 import com.bosch.storagein.api.domain.dto.MaterialQueryDTO;
@@ -22,6 +21,8 @@ import com.bosch.storagein.service.IMaterialInService;
 import com.bosch.storagein.utils.BeanConverUtil;
 import com.bosch.system.api.domain.UserOperationLog;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
+import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.log.enums.MaterialType;
@@ -37,6 +38,7 @@ import org.springframework.util.CollectionUtils;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -111,7 +113,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
     }
 
     @Override
-    public List<MaterialReceiveVO> getSameBatchList(String materialNb,String batchNb) {
+    public List<MaterialReceiveVO> getSameBatchList(String materialNb, String batchNb) {
         return materialRecevieMapper.selectSameBatchMaterialReceiveVO(materialNb, batchNb);
     }
 
@@ -126,7 +128,6 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         MaterialCheckResultVO checkResultVO = BeanConverUtil.conver(materialInCheckVO, MaterialCheckResultVO.class);
         checkResultVO.setOperateUser(SecurityUtils.getUsername());
         checkResultVO.setOperateTime(new Date());
-
 
 
         //如果是免检，直接入库。
@@ -155,12 +156,10 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         checkResultVO.setCheckFlag(false);
 
 
-
         return checkResultVO;
     }
 
     private void batchStorageIn(MaterialInCheckVO materialInCheckVO, MaterialInCheckDTO materialInCheckDTO, Double averageResult) {
-
 
 
         List<UserOperationLog> userOperationLogList = new ArrayList<>();
@@ -190,13 +189,12 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
             userOperationLogList.add(userOperationLog);
 
 
-
             return materialInDTO;
         }).collect(Collectors.toList());
         materialInMapper.batchInsert(materialInDTOList);
         materialRecevieMapper.batchUpdateStatus(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb(), MaterialStatusEnum.IN.getCode(),
                 SecurityUtils.getUsername(), new Date());
-        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(),null,SecurityUtils.getUsername(),UserOperationType.STORAGEIN.getCode(),userOperationLogList);
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.STORAGEIN.getCode(), userOperationLogList);
 
 
     }
@@ -237,8 +235,6 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         checkResultVO.setActualResult(actualResult).setActualQuantity(actualQuantity);
 
 
-
-
         if (res < materialVO.getLessDeviationRatio().doubleValue() || res > materialVO.getMoreDeviationRatio().doubleValue()) {
             return false;
         }
@@ -256,6 +252,18 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
      */
     private Boolean checkCount(MaterialInCheckVO materialInCheckVO, Double actualQuantity,
                                Double actualResult, MaterialCheckResultVO checkResultVO) {
+        //如果批次数量就这么多。
+        //那就直接通过
+        List<MaterialReceiveVO> sameBatchList = getSameBatchList(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb());
+
+        AtomicReference<Double> sum = new AtomicReference<>((double) 0);
+        sameBatchList.stream().forEach(item -> {
+            sum.set(DoubleMathUtil.doubleMathCalculation(sum.get(), item.getQuantity(), "+"));
+        });
+        if (sum.get().equals(actualResult)) {
+            return true;
+        }
+
         double res = Math.ceil(actualResult / actualQuantity);
         checkResultVO.setAverageResult(res);
         checkResultVO.setActualResult(actualResult).setActualQuantity(actualQuantity);
@@ -296,7 +304,11 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         //获取收货列表里面的总托数
         List<MaterialReceiveVO> sameBatchMaterials = materialRecevieMapper.selectSameBatchMaterialReceiveVO(materialInCheckVO.getMaterialNb(), materialInCheckVO.getBatchNb());
         sameBatchMaterials = sameBatchMaterials.stream().filter(item -> 0 == item.getStatus()).collect(Collectors.toList());
-
+        sameBatchMaterials.stream().forEach(item -> {
+            if (!item.getWareCode().equals(SecurityUtils.getWareCode())) {
+                throw new ServiceException("必须选择" + item.getWareCode() + "的仓库进行入库！");
+            }
+        });
         if (!CollectionUtils.isEmpty(sameBatchMaterials)) {
             materialInCheckVO.setTotalPallet(sameBatchMaterials.size());
         }
@@ -324,7 +336,7 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
 
     }
 
-    private void dealCheckQuantity(MaterialInCheckVO materialInCheckVO, Long minPackageNumber) {
+    private void dealCheckQuantity(MaterialInCheckVO materialInCheckVO, Double minPackageNumber) {
         MaterialReceiveDTO searchDTO = new MaterialReceiveDTO();
         searchDTO.setMaterialNb(materialInCheckVO.getMaterialNb());
         searchDTO.setBatchNb(materialInCheckVO.getBatchNb());
@@ -332,13 +344,17 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         list = list.stream().filter(item -> 0 == item.getStatus()).collect(Collectors.toList());
 
         //获取该物料下的该批次的总数量
-        Double total = list.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
+        AtomicReference<Double> total = new AtomicReference<>((double) 0);
+        list.stream().forEach(item->{
+            total.set(DoubleMathUtil.doubleMathCalculation(total.get(), item.getQuantity(), "+"));
+        });
+//        Double total = list.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
         //计算最小包装数量
-        Double totalPackage = Math.ceil(Double.valueOf(total) / Double.valueOf(minPackageNumber));
-        materialInCheckVO.setTotalQuantity(total);
+        Double totalPackage = Math.ceil(DoubleMathUtil.doubleMathCalculation(total.get(), minPackageNumber, "/"));
+        materialInCheckVO.setTotalQuantity(total.get());
         //如果是10件的话，保留小数点
 
-        double v = Double.valueOf(total) / Double.valueOf(minPackageNumber);
+        double v = DoubleMathUtil.doubleMathCalculation(total.get(), minPackageNumber, "/");
 
         materialInCheckVO.setCheckQuantity(getCheckQuantity(v));
 

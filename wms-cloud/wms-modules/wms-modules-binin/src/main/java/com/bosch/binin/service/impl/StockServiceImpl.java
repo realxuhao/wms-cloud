@@ -19,20 +19,16 @@ import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.domain.dto.IQCDTO;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.IQCVO;
-import com.bosch.product.api.domain.ProComparison;
 import com.bosch.system.api.domain.UserOperationLog;
 import com.ruoyi.common.core.constant.AreaListConstants;
-import com.ruoyi.common.core.constant.DataTranslateAspect;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.web.domain.BaseEntity;
-import com.ruoyi.common.log.enums.MaterialType;
-import com.ruoyi.common.log.enums.UserOperationType;
-import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -44,6 +40,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -279,8 +276,11 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         if (CollectionUtils.isEmpty(collect) || collect.size() != stockList.size()) {
             throw new ServiceException("库存状态已过期，请刷新页面");
         }
-
-        return stockList.stream().mapToDouble(Stock::getAvailableStock).sum();
+        final double[] sum = {0};
+        stockList.stream().forEach(item -> {
+            sum[0] = DoubleMathUtil.doubleMathCalculation(sum[0], item.getAvailableStock(), "+");
+        });
+        return sum[0];
 
     }
 
@@ -342,8 +342,16 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         if (CollectionUtils.isEmpty(list)) {
             return Double.valueOf(0);
         }
-        double sum = list.stream().filter(item -> AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
-        return sum;
+//        double sum = list.stream().filter(item -> AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
+
+        list = list.stream().filter(item -> AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).collect(Collectors.toList());
+
+        final double[] sum = {0};
+        list.forEach(item -> {
+            sum[0] = DoubleMathUtil.doubleMathCalculation(sum[0], item.getAvailableStock(), "+");
+        });
+
+        return sum[0];
     }
 
     @Override
@@ -354,12 +362,18 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
                 .ne(Stock::getAvailableStock, Double.valueOf(0))
                 .eq(Stock::getQualityStatus, QualityStatusEnums.USE.getCode())
                 .eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+
         List<Stock> list = this.list(queryWrapper);
         if (CollectionUtils.isEmpty(list)) {
             return Double.valueOf(0);
         }
-        double sum = list.stream().filter(item -> AreaListConstants.mainArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
-        return sum;
+        list = list.stream().filter(item -> AreaListConstants.mainArea(item.getAreaCode())).collect(Collectors.toList());
+        AtomicReference<Double> sum = new AtomicReference<>((double) 0);
+        list.stream().filter(item -> AreaListConstants.mainArea(item.getAreaCode())).forEach(item -> {
+            sum.set(DoubleMathUtil.doubleMathCalculation(sum.get(), item.getAvailableStock(), "+"));
+        });
+
+        return sum.get();
     }
 
     @Override
@@ -373,9 +387,13 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         if (CollectionUtils.isEmpty(list)) {
             return Double.valueOf(0);
         }
-        double sum = list.stream().filter(item -> !AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
-
-        return sum;
+        list = list.stream().filter(item -> !AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).collect(Collectors.toList());
+//        double sum = list.stream().filter(item -> !AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).mapToDouble(Stock::getAvailableStock).sum();
+        AtomicReference<Double> sum = new AtomicReference<>((double) 0);
+        list.stream().forEach(item->{
+            sum.set(DoubleMathUtil.doubleMathCalculation(sum.get(), item.getAvailableStock(), "+"));
+        });
+        return sum.get();
     }
 
     @Override

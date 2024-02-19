@@ -6,6 +6,7 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.bouncycastle.asn1.x509.SubjectPublicKeyInfo;
 
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -70,9 +71,11 @@ public class ProductQRCodeUtil {
     }
 
     //生产订单号
-    public static String getLot(String qrCode){
-        return splitQRCode(qrCode).get(0).substring(10);
+    public static String getProdBatch(String qrCode){
+        return qrCode.substring(10,19);
     }
+
+
 
 
 
@@ -102,7 +105,7 @@ public class ProductQRCodeUtil {
         return s.substring(2);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws ParseException {
 
         System.out.println(getSSCC("1123070710101326242\\r\\n02069200639400721724100537000060\\r\\n00369006391113830793"));
 
@@ -126,7 +129,7 @@ public class ProductQRCodeUtil {
         String batchNb = "101207530";
         String expireDate = "240709";
         String quantity = "000060";
-        String sscc="369006391113868734";
+        String sscc="369006391113877743";
 
 
         String s1="11"+productDate+"10"+batchNb;
@@ -160,6 +163,11 @@ public class ProductQRCodeUtil {
 
         System.out.println("369006391113935306".length());
 
+
+        System.out.println("11230924101013483890206920063900120172409223700006000369006391113992637".substring(10,19));
+
+
+        System.out.println(DateUtils.parseDate("2023/9/13","yyyy/MM/dd"));
     }
 
 

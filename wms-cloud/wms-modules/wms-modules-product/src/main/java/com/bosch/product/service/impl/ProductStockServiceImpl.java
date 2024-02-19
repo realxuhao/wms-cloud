@@ -38,7 +38,6 @@ import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IProductStockOperationService;
 import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import com.sun.xml.internal.bind.v2.schemagen.xmlschema.TypeHost;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -347,18 +346,18 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
                 if (stockEditDTO.getSsccNumber() == null || stockEditDTO.getAvailableStock() == null || stockEditDTO.getFreezeStock() == null || stockEditDTO.getTotalStock() == null) {
                     throw new ServiceException("所有参数都不能为空");
                 }
-                if (!stockEditDTO.getTotalStock().equals(stockEditDTO.getFreezeStock() + stockEditDTO.getAvailableStock())) {
+                if (!stockEditDTO.getTotalStock().equals(DoubleMathUtil.doubleMathCalculation(stockEditDTO.getFreezeStock(), stockEditDTO.getAvailableStock(), "+"))) {
                     throw new ServiceException("总库存必须等于冻结库存+可用库存");
                 }
 
 
-                double diff = one.getTotalStock() - stockEditDTO.getTotalStock();
+                double diff = DoubleMathUtil.doubleMathCalculation(one.getTotalStock(), stockEditDTO.getTotalStock(), "-");
 
-                Double diffTR = diff / boxSpecification;
+                Double diffTR = DoubleMathUtil.doubleMathCalculation(diff, boxSpecification, "/");
 
-                one.setAvailableStock(stockEditDTO.getAvailableStock() / boxSpecification);
-                one.setFreezeStock(stockEditDTO.getFreezeStock() / boxSpecification);
-                one.setTotalStock(stockEditDTO.getTotalStock() / boxSpecification);
+                one.setAvailableStock(DoubleMathUtil.doubleMathCalculation(stockEditDTO.getAvailableStock(), boxSpecification, "/"));
+                one.setFreezeStock(DoubleMathUtil.doubleMathCalculation(stockEditDTO.getFreezeStock(), boxSpecification, "/"));
+                one.setTotalStock(DoubleMathUtil.doubleMathCalculation(stockEditDTO.getTotalStock(), boxSpecification, "/"));
 
                 this.updateById(one);
 
@@ -386,7 +385,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
         if (stockEditDTO.getType() == 0 || stockEditDTO.getType() == 1) {//质检取样和取样
 
-            Double stockUseTR = stockEditDTO.getStockUse() / boxSpecification;
+            Double stockUseTR = DoubleMathUtil.doubleMathCalculation(stockEditDTO.getStockUse() , boxSpecification,"/");
 
 
             if (stockUseTR > stock.getAvailableStock()) {
@@ -394,9 +393,9 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             }
 
 
-            stock.setAvailableStock(stock.getAvailableStock() - stockUseTR);
-            stock.setTotalStock(stock.getTotalStock() - stockUseTR);
-            stock.setFreezeStock(stock.getTotalStock() - stock.getAvailableStock());
+            stock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(stock.getAvailableStock(), stockUseTR, "-"));
+            stock.setTotalStock(DoubleMathUtil.doubleMathCalculation(stock.getTotalStock(), stockUseTR, "-"));
+            stock.setFreezeStock(DoubleMathUtil.doubleMathCalculation(stock.getTotalStock(), stock.getAvailableStock(), "-"));
             if (stock.getAvailableStock() == Double.valueOf(0)) {
                 stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
             }
@@ -433,9 +432,9 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             if (stockUseTR > stock.getAvailableStock()) {
                 throw new ServiceException("报废数量不能大于可用数量");
             }
-            stock.setAvailableStock(stock.getAvailableStock() - stockUseTR);
-            stock.setTotalStock(stock.getTotalStock() - stockUseTR);
-            stock.setFreezeStock(stock.getTotalStock() - stock.getAvailableStock());
+            stock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(stock.getAvailableStock(), stockUseTR, "-"));
+            stock.setTotalStock(DoubleMathUtil.doubleMathCalculation(stock.getTotalStock(), stockUseTR, "-"));
+            stock.setFreezeStock(DoubleMathUtil.doubleMathCalculation(stock.getTotalStock(), stock.getAvailableStock(), "-"));
             if (stock.getAvailableStock() <= 0) {
                 stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
             }
@@ -458,19 +457,21 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             if (stockEditDTO.getSsccNumber() == null || stockEditDTO.getAvailableStock() == null || stockEditDTO.getFreezeStock() == null || stockEditDTO.getTotalStock() == null) {
                 throw new ServiceException("所有参数都不能为空");
             }
-            if (!stockEditDTO.getTotalStock().equals(stockEditDTO.getFreezeStock() + stockEditDTO.getAvailableStock())) {
+            if (!stockEditDTO.getTotalStock().equals(DoubleMathUtil.doubleMathCalculation(stockEditDTO.getFreezeStock(), stockEditDTO.getAvailableStock(), "+"))) {
                 throw new ServiceException("总库存必须等于冻结库存+可用库存");
             }
 
 
-            double diff = stock.getTotalStock() - stockEditDTO.getTotalStock();
+            double diff = DoubleMathUtil.doubleMathCalculation(stock.getTotalStock(), stockEditDTO.getTotalStock(), "-");
 
-            Double diffTR = diff / boxSpecification;
+            Double diffTR = DoubleMathUtil.doubleMathCalculation(diff, boxSpecification, "/");
 
-            stock.setAvailableStock(stockEditDTO.getAvailableStock() / boxSpecification);
-            stock.setFreezeStock(stockEditDTO.getFreezeStock() / boxSpecification);
-            stock.setTotalStock(stockEditDTO.getTotalStock() / boxSpecification);
-
+            stock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(stockEditDTO.getAvailableStock(), boxSpecification, "/"));
+            stock.setFreezeStock(DoubleMathUtil.doubleMathCalculation(stockEditDTO.getFreezeStock(), boxSpecification, "/"));
+            stock.setTotalStock(DoubleMathUtil.doubleMathCalculation(stockEditDTO.getTotalStock(), boxSpecification, "/"));
+            if (stock.getTotalStock() == Double.valueOf(0)){
+                stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
+            }
 
             if (diff > 0) {
                 productStockOperationService.addProductStockOperation(stock.getPlantNb(), diff, stock.getSsccNumber(),
@@ -515,7 +516,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         queryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.last("limit 1");
         ProductStock productStock = this.getOne(queryWrapper);
-        if (productStock != null) {
+        if (productReturnDTO.getType() == 1 && productStock != null) {
             throw new ServiceException("该托已存在于库存！");
         }
 
@@ -555,34 +556,38 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
                 stock.setBatchNb(oldStock.getBatchNb());
                 stock.setExpireDate(oldStock.getExpireDate());
             }
-            stock.setTotalStock(productReturnDTO.getQuantity() / productVO.getBoxSpecification());
+            stock.setTotalStock(DoubleMathUtil.doubleMathCalculation(productReturnDTO.getQuantity(), productVO.getBoxSpecification(), "/"));
             stock.setFreezeStock((double) 0);
-            stock.setAvailableStock(productReturnDTO.getQuantity() / productVO.getBoxSpecification());
+            stock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(productReturnDTO.getQuantity(), productVO.getBoxSpecification(), "/"));
             stock.setQualityStatus(QualityStatusEnums.BLOCK.getCode());
             stock.setProductionDate(ProductQRCodeUtil.getProductionDate(qrCode));
             stock.setFromProdOrder(prodBatch);
             stock.setBinInFlag(ProductStockBinInEnum.NONE.code());
             this.save(stock);
-        } else if (productReturnDTO.getType() == 1) {//退货到工厂。也就是从7761退货到工厂。
-            //获取当前仓库的信息。
-            stock.setSsccNumber(sscc);
-            stock.setPlantNb(areaVO.getPlantNb());
-            stock.setWareCode(areaVO.getWareCode());
-            stock.setAreaCode(areaVO.getCode());
-            if (oldStock != null) {
-                stock.setMaterialNb(oldStock.getMaterialNb());
-                stock.setBatchNb(oldStock.getBatchNb());
-                stock.setExpireDate(oldStock.getExpireDate());
+        } else if (productReturnDTO.getType() == 1) {//退货到工厂。也就是从7761退货到工厂。这时候是要查询库存信息的
+            if (productStock == null) {
+                throw new ServiceException("该托不存在销售库存中。不可以退货到工厂");
             }
-            stock.setTotalStock(productReturnDTO.getQuantity() / productVO.getBoxSpecification());
-            stock.setFreezeStock((double) 0);
-            stock.setAvailableStock(productReturnDTO.getQuantity() / productVO.getBoxSpecification());
-            stock.setQualityStatus(QualityStatusEnums.BLOCK.getCode());
-            stock.setProductionDate(ProductQRCodeUtil.getProductionDate(qrCode));
-            stock.setFromProdOrder(prodBatch);
 
-            stock.setBinInFlag(ProductStockBinInEnum.NONE.code());
-            this.save(stock);
+            //获取当前仓库的信息。
+            productStock.setSsccNumber(sscc);
+            productStock.setPlantNb(areaVO.getPlantNb());
+            productStock.setWareCode(areaVO.getWareCode());
+            productStock.setAreaCode(areaVO.getCode());
+//            if (oldStock != null) {
+//                stock.setMaterialNb(oldStock.getMaterialNb());
+//                stock.setBatchNb(oldStock.getBatchNb());
+//                stock.setExpireDate(oldStock.getExpireDate());
+//            }
+            productStock.setTotalStock(DoubleMathUtil.doubleMathCalculation(productReturnDTO.getQuantity() , productVO.getBoxSpecification(),"/"));
+            productStock.setFreezeStock((double) 0);
+            productStock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(productReturnDTO.getQuantity() , productVO.getBoxSpecification(),"/"));
+            productStock.setQualityStatus(QualityStatusEnums.BLOCK.getCode());
+            productStock.setProductionDate(ProductQRCodeUtil.getProductionDate(qrCode));
+            productStock.setFromProdOrder(prodBatch);
+
+            productStock.setBinInFlag(ProductStockBinInEnum.NONE.code());
+            this.updateById(productStock);
 
         }
 
@@ -639,22 +644,32 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             stock.setAreaCode(binInDTO.getActualCode());
             if (!"7761".equals(stock.getPlantNb())) {
                 stock.setPlantNb(areaVO.getPlantNb());
+                stock.setWareCode(areaVO.getWareCode());
+                stock.setAreaCode(binInDTO.getActualCode());
+                stock.setBinCode(null);
+            } else {
+                stock.setWareCode(areaVO.getWareCode());
+                stock.setAreaCode(binInDTO.getActualCode());
+                stock.setBinCode(null);
+
             }
 
-            stock.setWareCode(areaVO.getWareCode());
-            stock.setBinCode(null);
         } else {
             BinVO binVO = getBinVOByBinCode(binInDTO.getActualCode());
             manualTransferOrder.setType(binInDTO.getType());
 
             manualTransferOrder.setTargetBinCode(binVO.getCode());
             manualTransferOrder.setTargetAreaCode(binVO.getAreaCode());
-            stock.setAreaCode(binVO.getAreaCode());
-            stock.setBinCode(binVO.getCode());
-            if (!"7761".equals(stock.getPlantNb())) {
-                stock.setPlantNb(binVO.getPlantNb());
+            if ("7761".equals(stock.getPlantNb())) {
+                stock.setBinCode(binVO.getCode());
+
+            } else {
+                stock.setAreaCode(binVO.getAreaCode());
+                stock.setBinCode(binVO.getCode());
+                stock.setWareCode(binVO.getWareCode());
+
             }
-            stock.setWareCode(binVO.getWareCode());
+
         }
 
         manualTransferOrderService.save(manualTransferOrder);

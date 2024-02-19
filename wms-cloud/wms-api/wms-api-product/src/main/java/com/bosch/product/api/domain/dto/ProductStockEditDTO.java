@@ -19,7 +19,33 @@ public class ProductStockEditDTO {
     private Double availableStock;
     @ApiModelProperty("冻结库存")
     private Double freezeStock;
-    @ApiModelProperty("调整类型,0:质检取样，1：取样，2：报废,3:整托出库,4:其他")
+    /**
+     * typeList: [{
+     * 						text: '质检取样',
+     * 						value: 0
+     * 					                    },
+     *                    {
+     * 						text: '取样',
+     * 						value: 1
+     *                    },
+     *                    {
+     * 						text: '报废',
+     * 						value: 2
+     *                    },
+     *                    {
+     * 						text: '整托出库',
+     * 						value: 3
+     *                    },
+     *                    {
+     * 						text: '其它',
+     * 						value: 4
+     *                    },
+     *                    {
+     * 						text: '库存恢复',
+     * 						value: 5
+     *                    }
+     * 				],
+     */
     private Integer type;
 
     @ApiModelProperty("领料数量")

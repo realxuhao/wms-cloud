@@ -257,7 +257,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         qw.eq(MaterialCall::getOrderNb, materialCallNew.getOrderNb());
         qw.eq(MaterialCall::getMaterialNb, materialCallNew.getMaterialNb());
         qw.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        qw.ne(MaterialCall::getStatus,CallStatusEnum.CANCEL.code());
+        qw.ne(MaterialCall::getStatus, CallStatusEnum.CANCEL.code());
         qw.last("for update");
         MaterialCall materialCallDB = materialCallMapper.selectOne(qw);
 
@@ -379,7 +379,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
 
             List<MaterialCallVO> sortedCallList = callList.stream().sorted(Comparator.comparing(MaterialCallVO::getOrderNb)).collect(Collectors.toList());
 
-            sortedCallList.stream().forEach(call->{
+            sortedCallList.stream().forEach(call -> {
                 RunCallVO runCallVO = new RunCallVO();
                 runCallVO.setCallId(call.getId());
                 runCallVO.setMaterialNb(call.getMaterialNb());
@@ -406,7 +406,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
                 call.setStatus(CallStatusEnum.RUNNED.code());
 
                 mainStockCount.set(mainStockCount.get() - call.getQuantity() - call.getIssuedQuantity());
-                if (mainStockCount.get()<0){
+                if (mainStockCount.get() < 0) {
                     mainStockCount.set(Double.valueOf(0));
                 }
 
@@ -504,10 +504,15 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             List<Stock> stockList = stockService.list(lambdaQueryWrapper);
             List<Stock> sortedStockList = new ArrayList<>();
             sortedStockList =
-                    stockList.stream().filter(item->!item.getExpireDate().before(new Date())).filter(item -> item.getAvailableStock() != 0 && AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).
-                            sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getBatchNb).thenComparing(Stock::getWholeFlag, Comparator.reverseOrder()).thenComparing(Stock::getAvailableStock)).collect(Collectors.toList());
-            double sum = sortedStockList.stream().mapToDouble(Stock::getAvailableStock).sum();
-            if (sum < call.getUnIssuedQuantity()) {
+                    stockList.stream().filter(item -> !item.getExpireDate().before(new Date())).filter(item -> item.getAvailableStock() != 0 && AreaListConstants.mainArea(item.getAreaCode()) && !AreaListConstants.noQualifiedArea(item.getAreaCode())).
+                            sorted(Comparator.comparing(Stock::getExpireDate).thenComparing(Stock::getBatchNb).thenComparing(Stock::getAvailableStock)).collect(Collectors.toList());
+//            double sum = sortedStockList.stream().mapToDouble(Stock::getAvailableStock).sum();
+            AtomicReference<Double> sum = new AtomicReference<>((double) 0);
+            sortedStockList.stream().forEach(item -> {
+                sum.set(DoubleMathUtil.doubleMathCalculation(sum.get(), item.getAvailableStock(), "+"));
+            });
+
+            if (sum.get() < call.getUnIssuedQuantity()) {
                 throw new ServiceException("主库库存不足，请先手动创建移库");
             }
             List<Stock> useMaterialStockList = new ArrayList<>();
@@ -602,12 +607,16 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             return;
         }
         //计算最后一托是整托还是拆托
-        Double stockSum = useMaterialStockList.stream().collect(Collectors.summingDouble(Stock::getAvailableStock));
+//        Double stockSum = useMaterialStockList.stream().collect(Collectors.summingDouble(Stock::getAvailableStock));
+        AtomicReference<Double> stockSum = new AtomicReference<>((double) 0);
+        useMaterialStockList.stream().forEach(item -> {
+            stockSum.set(DoubleMathUtil.doubleMathCalculation(stockSum.get(), item.getAvailableStock(), "+"));
+        });
         Double deviation = null;
         boolean splitFlag = false;
-        if (stockSum > call.getUnIssuedQuantity()) {
+        if (stockSum.get() > call.getUnIssuedQuantity()) {
             splitFlag = true;
-            deviation = DoubleMathUtil.doubleMathCalculation(stockSum, call.getUnIssuedQuantity(), "-");
+            deviation = DoubleMathUtil.doubleMathCalculation(stockSum.get(), call.getUnIssuedQuantity(), "-");
         }
 
         List<MaterialKanban> kanbanList = new ArrayList<>();

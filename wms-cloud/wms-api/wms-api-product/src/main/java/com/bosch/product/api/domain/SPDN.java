@@ -1,6 +1,7 @@
 package com.bosch.product.api.domain;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
@@ -19,6 +20,7 @@ public class SPDN extends BaseEntity {
     private Long id;
 
 //    @Excel(name = "Cell")
+    @TableField(exist = false)
     private String cell;
     @Excel(name = "externalRef")
     private String externalRef;

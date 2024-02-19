@@ -7,7 +7,6 @@ import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.product.api.domain.ProductPick;
 import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.SUDN;
-import com.bosch.product.api.domain.ShippingPlan;
 import com.bosch.product.api.domain.dto.EditBinDownQuantityDTO;
 import com.bosch.product.api.domain.dto.ProductPickDTO;
 import com.bosch.product.api.domain.enumeration.ProductPickEnum;
@@ -21,6 +20,7 @@ import com.bosch.product.service.ISUDNService;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.log.enums.MaterialType;
@@ -31,7 +31,6 @@ import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.scheduling.support.SimpleTriggerContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -100,9 +99,9 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
             MdProductPackagingVO productVO = getProductVO(productStock.getMaterialNb());
             Double binDownQuantity = item.getBinDownQuantity();
             //转换为TR
-            double v = binDownQuantity / productVO.getBoxSpecification();
-            productStock.setAvailableStock(productStock.getAvailableStock()+v);
-            productStock.setFreezeStock(productStock.getFreezeStock()-v);
+            double v = DoubleMathUtil.doubleMathCalculation(binDownQuantity , productVO.getBoxSpecification(),"/");
+            productStock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(productStock.getAvailableStock(),v,"+"));
+            productStock.setFreezeStock(DoubleMathUtil.doubleMathCalculation(productStock.getFreezeStock(),v,"-"));
 
 
         });
@@ -126,12 +125,12 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
             throw new ServiceException(ProductPickEnum.getDesc(productPick.getStatus()) + "状态下暂不可修改");
         }
         ProductStock productStock = productStockService.getById(stockId);
-        if (productStock.getAvailableStock() - productPick.getDeliveryQuantity() < 0) {
+        if (DoubleMathUtil.doubleMathCalculation(productStock.getAvailableStock(),  productPick.getDeliveryQuantity(),"-") < 0) {
             throw new ServiceException("该托可用库存不足，请重新选择");
         }
         //修改库存信息
-        productStock.setAvailableStock(productStock.getAvailableStock() - productPick.getDeliveryQuantity());
-        productStock.setFreezeStock(productStock.getFreezeStock() + productPick.getDeliveryQuantity());
+        productStock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(productStock.getAvailableStock() , productPick.getDeliveryQuantity(),"-"));
+        productStock.setFreezeStock(DoubleMathUtil.doubleMathCalculation(productStock.getFreezeStock() , productPick.getDeliveryQuantity(),"+"));
 
 
         ProductPick newPick = BeanConverUtil.conver(productPick, ProductPick.class);
@@ -174,8 +173,8 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
         stockQueryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         ProductStock productStock = productStockService.getOne(stockQueryWrapper);
 
-        productStock.setTotalStock(productStock.getTotalStock() - productPick.getDeliveryQuantity());
-        productStock.setFreezeStock(productStock.getFreezeStock() - productPick.getDeliveryQuantity());
+        productStock.setTotalStock(DoubleMathUtil.doubleMathCalculation(productStock.getTotalStock() , productPick.getDeliveryQuantity(),"-"));
+        productStock.setFreezeStock(DoubleMathUtil.doubleMathCalculation(productStock.getFreezeStock() , productPick.getDeliveryQuantity(),"-"));
 
 
         ProductPickBinDownVO productPickBinDownVO = new ProductPickBinDownVO();
@@ -224,7 +223,7 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
         }
 
         String sscc = pick.getSscc();
-        Double diff = pick.getBinDownQuantity() - dto.getNewBinDownQuantity();
+        Double diff = DoubleMathUtil.doubleMathCalculation(pick.getBinDownQuantity() ,dto.getNewBinDownQuantity(),"-");
 
         //转化为箱
         MdProductPackagingVO productVO = getProductVO(pick.getMaterial());
@@ -238,8 +237,9 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
             throw new ServiceException("该托目前在库存中已经不存在");
         }
         if (productStock != null) {
-            productStock.setAvailableStock(productStock.getAvailableStock() + diff / productVO.getBoxSpecification());
-            productStock.setTotalStock(productStock.getTotalStock() + diff / productVO.getBoxSpecification());
+            double diff2 = DoubleMathUtil.doubleMathCalculation(diff, productVO.getBoxSpecification(), "/");
+            productStock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(productStock.getAvailableStock(), diff2, "+"));
+            productStock.setTotalStock(DoubleMathUtil.doubleMathCalculation(productStock.getTotalStock(), diff2, "+"));
             productStockService.updateById(productStock);
         } else {//如果为空，放到原库位
             LambdaQueryWrapper<ProductStock> stockWrapper = new LambdaQueryWrapper<>();
@@ -252,9 +252,9 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
                 throw new ServiceException("该托不存在于库存中。修改失败");
             }
             stock.setDeleteFlag(DeleteFlagStatus.FALSE.getCode());
-            stock.setTotalStock(diff / productVO.getBoxSpecification());
+            stock.setTotalStock(DoubleMathUtil.doubleMathCalculation(diff , productVO.getBoxSpecification(),"/"));
             stock.setFreezeStock(Double.valueOf(0));
-            stock.setAvailableStock(diff / productVO.getBoxSpecification());
+            stock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(diff, productVO.getBoxSpecification(),"/"));
             productStockService.updateById(stock);
         }
         pick.setBinDownQuantity(dto.getNewBinDownQuantity());
@@ -302,7 +302,11 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
         if (CollectionUtils.isEmpty(productPicks)) {
             throw new ServiceException("该SSCC" + sscc + "不存在捡配任务");
         }
-        double downSum = productPicks.stream().mapToDouble(ProductPick::getDeliveryQuantity).sum();
+
+        AtomicReference<Double> downSum = new AtomicReference<>((double) 0);
+        productPicks.stream().forEach(item->{
+            downSum.set(DoubleMathUtil.doubleMathCalculation(downSum.get(), item.getDeliveryQuantity(), "+"));
+        });
 
 
         LambdaQueryWrapper<ProductStock> stockQueryWrapper = new LambdaQueryWrapper<>();
@@ -314,10 +318,10 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
         MdProductPackagingVO productVO = getProductVO(productStock.getMaterialNb());
 
         //转化为箱
-        double tr = downSum / productVO.getBoxSpecification();
+        double tr = DoubleMathUtil.doubleMathCalculation(downSum.get(), productVO.getBoxSpecification(),"/");
 
-        productStock.setTotalStock(productStock.getTotalStock() - tr);
-        productStock.setFreezeStock(productStock.getFreezeStock() - tr);
+        productStock.setTotalStock(DoubleMathUtil.doubleMathCalculation(productStock.getTotalStock() , tr,"-"));
+        productStock.setFreezeStock(DoubleMathUtil.doubleMathCalculation(productStock.getFreezeStock() , tr,"-"));
 
         productPicks.stream().forEach(item -> {
             item.setBinDownQuantity(item.getDeliveryQuantity());
@@ -347,9 +351,13 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
 
         groupBySudn.forEach((sudnID, picks) -> {
             SUDN sudn = sudnService.getById(sudnID);
-            double sum = picks.stream().mapToDouble(ProductPick::getBinDownQuantity).sum();
-            total.set(total.get() + sum);
-            sudn.setSumBinDownQuantity(sudn.getSumBinDownQuantity() + sum);
+            AtomicReference<Double> sum = new AtomicReference<>((double) 0);
+            picks.stream().forEach(item->{
+                sum.set(DoubleMathUtil.doubleMathCalculation(sum.get(), item.getBinDownQuantity(), "+"));
+            });
+//            double sum = picks.stream().mapToDouble(ProductPick::getBinDownQuantity).sum();
+            total.set(DoubleMathUtil.doubleMathCalculation(total.get(), sum.get(),"+"));
+            sudn.setSumBinDownQuantity(DoubleMathUtil.doubleMathCalculation(sudn.getSumBinDownQuantity() , sum.get(),"+"));
             sudnService.updateById(sudn);
         });
 
@@ -375,7 +383,12 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
         if (CollectionUtils.isEmpty(productPicks)) {
             throw new ServiceException("该SSCC" + sscc + "不存在捡配任务");
         }
-        double downSum = productPicks.stream().mapToDouble(ProductPick::getDeliveryQuantity).sum();
+
+        AtomicReference<Double> downSum = new AtomicReference<>((double) 0);
+        productPicks.stream().forEach(item->{
+            downSum.set(DoubleMathUtil.doubleMathCalculation(downSum.get(), item.getDeliveryQuantity(), "+"));
+        });
+
 
 
         LambdaQueryWrapper<ProductStock> stockQueryWrapper = new LambdaQueryWrapper<>();
@@ -387,10 +400,10 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
         MdProductPackagingVO productVO = getProductVO(productStock.getMaterialNb());
 
         //转化为箱
-        double tr = downSum / productVO.getBoxSpecification();
+        double tr = DoubleMathUtil.doubleMathCalculation(downSum.get() , productVO.getBoxSpecification(),"/");
 
-        productStock.setTotalStock(productStock.getTotalStock() - tr);
-        productStock.setFreezeStock(productStock.getFreezeStock() - tr);
+        productStock.setTotalStock(DoubleMathUtil.doubleMathCalculation(productStock.getTotalStock() , tr,"-"));
+        productStock.setFreezeStock(DoubleMathUtil.doubleMathCalculation(productStock.getFreezeStock() , tr,"-"));
 
         productPicks.stream().forEach(item -> {
             item.setBinDownQuantity(item.getDeliveryQuantity());
@@ -420,9 +433,13 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
 
         groupBySudn.forEach((sudnID, picks) -> {
             SUDN sudn = sudnService.getById(sudnID);
-            double sum = picks.stream().mapToDouble(ProductPick::getBinDownQuantity).sum();
-            total.set(total.get() + sum);
-            sudn.setSumBinDownQuantity(sudn.getSumBinDownQuantity() + sum);
+            AtomicReference<Double> sum = new AtomicReference<>((double) 0);
+            picks.stream().forEach(item->{
+                sum.set(DoubleMathUtil.doubleMathCalculation(sum.get(), item.getBinDownQuantity(), "+"));
+            });
+//            double sum = picks.stream().mapToDouble(ProductPick::getBinDownQuantity).sum();
+            total.set(DoubleMathUtil.doubleMathCalculation(total.get() , sum.get(),"+"));
+            sudn.setSumBinDownQuantity(DoubleMathUtil.doubleMathCalculation(sudn.getSumBinDownQuantity(), sum.get(),"+"));
             sudnService.updateById(sudn);
         });
 

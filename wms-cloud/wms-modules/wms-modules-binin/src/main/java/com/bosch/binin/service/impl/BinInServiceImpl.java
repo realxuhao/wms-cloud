@@ -1,8 +1,6 @@
 package com.bosch.binin.service.impl;
 
-import com.alibaba.druid.sql.visitor.functions.Bin;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.StockLog;
 import com.bosch.binin.api.domain.*;
@@ -35,7 +33,6 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
-import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IUserOperationLogService;
@@ -48,12 +45,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.yaml.snakeyaml.events.Event;
 
-import java.lang.management.OperatingSystemMXBean;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 /**
  * @author: UWH4SZH
@@ -165,6 +160,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             return binInVO;
         }
         MaterialInVO materialInVO = getMaterialInVO(mesBarCode);
+        if (!materialInVO.getWareCode().equals(SecurityUtils.getWareCode())) {
+            throw new ServiceException("请切换" + materialInVO.getWareCode() + "仓库进行操作!");
+        }
 
         materialInVO.getMaterialNb();
 
@@ -603,6 +601,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         if (actualBinVO == null) {
             throw new ServiceException(binInDTO.getActualBinCode() + "不存在");
         }
+        if (!actualBinVO.getWareCode().equals(binIn.getWareCode())) {
+            throw new ServiceException("只能选择" + binIn.getWareCode() + "仓库下的库位进行上架！");
+        }
 
         if (!SecurityUtils.getWareCode().equals(actualBinVO.getWareCode())) {
             throw new ServiceException("仓库" + SecurityUtils.getWareCode() + "不存在库位" + binInDTO.getActualBinCode());
@@ -862,7 +863,9 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
             List<String> randomSscc = getRandomNonConsecutive(ssccList);
             List<BinIn> binIns = binInList.stream().filter(item -> randomSscc.contains(item.getSsccNumber())).collect(Collectors.toList());
             samplePlanList = convertToSamplePlans(binIns, materialVO, null);
-        } else if (fsmp.getClassification().equals(FsmpClassificationEnum.B.getDesc()) || sameBatchList.size() <= 3) {//随机下架一托
+        } else if (fsmp.getClassification().equals(FsmpClassificationEnum.A.getDesc()) && sameBatchList.size() <= 3) { //如果是A且<=三托，取全部
+            samplePlanList = convertToSamplePlans(binInList, materialVO, null);
+        } else if (fsmp.getClassification().equals(FsmpClassificationEnum.B.getDesc())) {//随机下架一托
             Collections.shuffle(binInList);
             IQCSamplePlan samplePlan = convertToSamplePlan(binInList.get(0), null, materialVO);
             samplePlanList.add(samplePlan);
@@ -963,9 +966,13 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     }
 
     private List<IQCSamplePlan> dealEcnBlpProcess(MaterialVO materialVO, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
-        double quantity = sameBatchList.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
+//        double quantity = sameBatchList.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
+        AtomicReference<Double> quantity = new AtomicReference<>((double) 0);
+        sameBatchList.stream().forEach(item->{
+            quantity.set(DoubleMathUtil.doubleMathCalculation(quantity.get(), item.getQuantity(), "+"));
+        });
         NMDIQCRuleDTO ruleDTO = new NMDIQCRuleDTO();
-        ruleDTO.setQuantity(quantity);
+        ruleDTO.setQuantity(quantity.get());
         ruleDTO.setCheckLevel(EcnPlanEnum.A.getDesc());
         NMDIQCRule iqcRule = ruleService.getNMDIQCRule(ruleDTO);
         //抽样量
@@ -1016,8 +1023,12 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
     }
 
     private List<IQCSamplePlan> dealSameBatchQuantity(MaterialVO materialVO, Ecn ecn, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
-        double quantity = sameBatchList.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
-        double criteria = Math.ceil(quantity / materialVO.getPackageWeight().doubleValue());
+//        double quantity = sameBatchList.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
+        AtomicReference<Double> quantity = new AtomicReference<>((double) 0);
+        sameBatchList.stream().forEach(item->{
+            quantity.set(DoubleMathUtil.doubleMathCalculation(quantity.get(), item.getQuantity(), "+"));
+        });
+        double criteria = Math.ceil(DoubleMathUtil.doubleMathCalculation(quantity.get(), materialVO.getPackageWeight().doubleValue(), "/"));
         if (criteria <= 3) {
             return convertToSamplePlans(binInList, materialVO, Double.valueOf(0));
         } else if (criteria > 3 && criteria <= 300) {
@@ -1126,8 +1137,11 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
     private List<IQCSamplePlan> dealNMDIQCProcess(MaterialVO materialVO, String batchNb, List<BinIn> binInList, List<MaterialReceiveVO> sameBatchList) {
 
-        double quantity = sameBatchList.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
-
+//        double quantity = sameBatchList.stream().mapToDouble(MaterialReceiveVO::getQuantity).sum();
+        AtomicReference<Double> quantity = new AtomicReference<>((double) 0);
+        sameBatchList.stream().forEach(item->{
+            quantity.set(DoubleMathUtil.doubleMathCalculation(quantity.get(), item.getQuantity(), "+"));
+        });
         R<Nmd> iqcInfoR = remoteIQCService.getNmdByMaterialNb(materialVO.getCode());
         if (StringUtils.isNull(iqcInfoR) || StringUtils.isNull(iqcInfoR.getData())) {
             throw new ServiceException("不存在该物料的IQC信息");
@@ -1140,7 +1154,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
                 sampleQuantity = 0;
             } else {
                 NMDIQCRuleDTO ruleDTO = new NMDIQCRuleDTO();
-                ruleDTO.setQuantity(quantity);
+                ruleDTO.setQuantity(quantity.get());
                 if (StringUtils.isEmpty(nmd.getLevel()) || nmd.getPlan() == null) {
                     throw new ServiceException("NMD 检验水平级别或者抽样方案为空！");
                 }
@@ -1682,11 +1696,11 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setStatus(BinInStatusEnum.PROCESSING.value());
         binIn.setRecommendFrameId(binVO.getFrameId());
         binIn.setRecommendFrameCode(binVO.getFrameCode());
-        binIn.setWareCode(SecurityUtils.getWareCode());
+        binIn.setWareCode(oldStock.getWareCode());
 
         binIn.setMoveType(MoveTypeEnums.SPLIT_IN.getCode());
         binIn.setFromPurchaseOrder(oldStock.getFromPurchaseOrder());
-        binIn.setPlantNb(getWareInfo(SecurityUtils.getWareCode()).getFactoryCode());
+        binIn.setPlantNb(oldStock.getPlantNb());
         this.save(binIn);
         return binInMapper.selectBySsccNumber(sscc);
 
