@@ -637,6 +637,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         manualTransferOrder.setStatus(ManuTransStatusEnum.FINISH.code());
         manualTransferOrder.setMaterialProductType(1);
 
+
         if (binInDTO.getType() == 1) {
             manualTransferOrder.setTargetAreaCode(binInDTO.getActualCode());
             manualTransferOrder.setType(binInDTO.getType());

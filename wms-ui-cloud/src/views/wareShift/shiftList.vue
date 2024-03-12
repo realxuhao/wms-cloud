@@ -445,7 +445,15 @@ export default {
       try {
         this.exportLoading = true
         this.queryForm.pageSize = 0
-        const blobData = await this.$store.dispatch('wareShift/exportExcel', this.queryForm)
+        const { date = [], updateDate } = this.queryForm
+        const startCreateTime = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
+        const endCreateTime = date.length > 0 ? date[1].format(this.endDateFormat) : undefined
+        const startUpdateTime = updateDate.length > 0 ? updateDate[0].format(this.startDateFormat) : undefined
+        const endUpdateTime = updateDate.length > 0 ? updateDate[1].format(this.endDateFormat) : undefined
+
+        const options = { ..._.omit(this.queryForm, ['date', 'updateDate']), startCreateTime, endCreateTime, startUpdateTime, endUpdateTime }
+
+        const blobData = await this.$store.dispatch('wareShift/exportExcel', options)
         download(blobData, '移库列表')
       } catch (error) {
         console.log(error)
