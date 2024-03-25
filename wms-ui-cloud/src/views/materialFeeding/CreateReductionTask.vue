@@ -186,7 +186,7 @@ const selectColumns = [
     width: 120
   },
   {
-    title: '有效期',
+    title: '保质/有效期',
     key: 'expireDate',
     dataIndex: 'expireDate',
     width: 140
@@ -316,7 +316,7 @@ export default {
           sorter: true,
         },
         {
-          title: '有效期',
+          title: '保质/有效期',
           key: 'expireDate',
           dataIndex: 'expireDate',
           width: 140,

@@ -211,7 +211,7 @@ const columns = [
   },
    {
     title: '批次总数量',
-    key: 'quantity',
+    key: 'totalStockSum',
     dataIndex: 'totalStockSum',
     width: 120
   },
@@ -259,7 +259,7 @@ const columns = [
     width: 120
   },
   {
-    title: '有效期',
+    title: '保质/有效期',
     key: 'expireDate',
     dataIndex: 'expireDate',
     width: 120
