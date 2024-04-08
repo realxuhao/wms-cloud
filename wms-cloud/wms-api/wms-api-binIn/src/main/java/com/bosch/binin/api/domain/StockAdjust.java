@@ -1,6 +1,7 @@
 package com.bosch.binin.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
 import java.util.Date;
@@ -13,7 +14,7 @@ import java.util.Date;
  **/
 @Data
 @TableName("stock_adjust")
-public class StockAdjust {
+public class StockAdjust extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**

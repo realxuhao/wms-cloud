@@ -1,6 +1,7 @@
 package com.bosch.product.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
 import java.util.Date;
@@ -13,7 +14,7 @@ import java.util.Date;
  **/
 @Data
 @TableName("product_stock_adjust")
-public class ProductStockAdjust {
+public class ProductStockAdjust extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -106,9 +107,14 @@ public class ProductStockAdjust {
     private Double adjustAvailableStock;
 
     /**
-     * "调整类型,0:质检取样，1：取样，2：报废,3:整托出库,4:其他"
+     * "调整类型,0:质检取样，1：取样，2：报废,3:整托出库,4:其他,5:库存恢复"
      */
     private Integer type;
+
+    /**
+     * 领料理由
+     */
+    private String useReason;
 
 
 }

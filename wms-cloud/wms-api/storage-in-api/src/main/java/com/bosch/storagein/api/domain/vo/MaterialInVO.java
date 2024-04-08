@@ -1,6 +1,7 @@
 package com.bosch.storagein.api.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ruoyi.common.core.annotation.Excel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -23,82 +24,101 @@ public class MaterialInVO {
      * 工厂
      */
     @ApiModelProperty(value = "工厂")
+    @Excel(name = "工厂编码")
     private String plantNb;
 
     /**
      * 仓库编码
      */
     @ApiModelProperty(value = "仓库编码")
+    @Excel(name = "仓库编码")
     private String wareCode;
 
     /**
      * SSCC码
      */
     @ApiModelProperty(value = "SSCC码")
+    @Excel(name = "SSCC码")
     private String ssccNumber;
+
+    /**
+     * 物料号
+     */
+    @ApiModelProperty(value = "物料号")
+    @Excel(name = "物料编码")
+    private String materialNb;
 
     /**
      * 批次号
      */
     @ApiModelProperty(value = "批次号")
+    @Excel(name = "批次号")
     private String batchNb;
 
     /**
      * 检验类型
      */
     @ApiModelProperty(value = "检验类型，0：称重，1：数数，2：免检，3：该批次已检")
+    @Excel(name = "检验方式", readConverterExp = "0=称重,1=数数,2=免检,3=该批次已检")
     private Integer checkType;
-
-    /**
-     * 物料号
-     */
-    @ApiModelProperty(value = "物料号")
-    private String materialNb;
 
     @ApiModelProperty(value = "物料名称")
     private String materialName;
-
 
     /**
      * 应检查数量
      */
     @ApiModelProperty(value = "目标抽样件数")
+    @Excel(name = "应检查数量")
     private Double checkQuantity;
-
-    /**
-     * 最小标准
-     */
-    @ApiModelProperty(value = "最小标准")
-    private Double minStandard;
-
-    /**
-     * 最大标准
-     */
-    @ApiModelProperty(value = "最大标准")
-    private Double maxStandard;
 
     /**
      * 实际数量
      */
     @ApiModelProperty(value = "实际抽样数量")
+    @Excel(name = "实际数量")
     private Double actualQuantity;
 
     /**
      * 实际称重、数数结果
      */
     @ApiModelProperty(value = "实际称重、数数结果")
+    @Excel(name = "结果")
     private Double actualResult;
 
     /**
      * 实际平均结果
      */
     @ApiModelProperty(value = "实际平均结果")
+    @Excel(name = "实际平均结果")
     private Double averageResult;
+
+    /**
+     * 最小标准
+     */
+    @ApiModelProperty(value = "最小标准")
+    @Excel(name = "最小标准")
+    private Double minStandard;
+
+    /**
+     * 最大标准
+     */
+    @ApiModelProperty(value = "最大标准")
+    @Excel(name = "最大标准")
+    private Double maxStandard;
+
+    /**
+     * 原托数
+     */
+    @ApiModelProperty(value = "原托数")
+    @Excel(name = "原托数")
+    private Integer originalPalletQuantity;
 
     /**
      * 操作人
      */
     @ApiModelProperty(value = "操作人")
+    @Excel(name = "操作人")
     private String operateUser;
 
     /**
@@ -106,13 +126,10 @@ public class MaterialInVO {
      */
     @ApiModelProperty(value = "操作时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "操作时间",dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date operateTime;
 
-    /**
-     * 原托数
-     */
-    @ApiModelProperty(value = "原托数")
-    private Integer originalPalletQuantity;
+
     /**
      * 该托的物料数量
      */

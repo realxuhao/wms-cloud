@@ -9,9 +9,11 @@ import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.StockAdjust;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.JobVO;
+import com.bosch.binin.api.domain.vo.StockAdjustVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.enumeration.BinInStatusEnum;
 import com.bosch.binin.api.enumeration.IQCStatusEnum;
+import com.bosch.binin.mapper.StockAdjustMapper;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.service.*;
 import com.bosch.binin.utils.BeanConverUtil;
@@ -55,6 +57,9 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
 
     @Autowired
     private StockMapper stockMapper;
+
+    @Autowired
+    private StockAdjustMapper stockAdjustMapper;
 
     @Autowired
     private RemoteMasterDataService remoteMasterDataService;
@@ -532,6 +537,11 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         stockAdjustService.save(stockAdjust);
 
 
+    }
+
+    @Override
+    public List<StockAdjustVO> selectStockAdjustVOList(StockQueryDTO stockQueryDTO) {
+        return stockAdjustMapper.selectStockAdjustVOList(stockQueryDTO);
     }
 
 

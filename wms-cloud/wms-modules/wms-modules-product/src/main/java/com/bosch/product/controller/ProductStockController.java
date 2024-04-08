@@ -1,10 +1,8 @@
 package com.bosch.product.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.bosch.binin.api.domain.dto.AddManualTransDTO;
-import com.bosch.binin.api.domain.dto.ManualBinInDTO;
-import com.bosch.binin.api.domain.dto.SplitPalletDTO;
-import com.bosch.binin.api.domain.dto.StockEditDTO;
+import com.bosch.binin.api.domain.dto.*;
+import com.bosch.binin.api.domain.vo.StockAdjustVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.RemoteProductService;
@@ -14,6 +12,7 @@ import com.bosch.product.api.domain.dto.ProductReturnDTO;
 import com.bosch.product.api.domain.dto.ProductStockEditDTO;
 import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.vo.ProductReturnVO;
+import com.bosch.product.api.domain.vo.ProductStockAdjustVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.bosch.product.service.IMaterialStockService;
 import com.bosch.product.service.IProductStockService;
@@ -23,6 +22,7 @@ import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
+import com.ruoyi.common.core.web.domain.BaseEntity;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.log.enums.MaterialType;
@@ -173,4 +173,29 @@ public class ProductStockController extends BaseController {
     }
 
 
+    /**
+     * 查询库存调整记录
+     *
+     * @param stockQueryDTO
+     * @return
+     */
+    @GetMapping(value = "/adjustList")
+    @ApiOperation("库存调整列表")
+    public R<PageVO<ProductStockAdjustVO>> adjustList(ProductStockQueryDTO stockQueryDTO) {
+        startPage();
+        List<ProductStockAdjustVO> list = productStockService.getStockAdjustVOList(stockQueryDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
+    /**
+     * 导出库存调整记录
+     */
+    @PostMapping("/exportStockAdjust")
+    @ApiOperation("库存调整导出")
+    @Log(title = "库存调整导出", businessType = BusinessType.EXPORT)
+    public void exportStockAdjust(HttpServletResponse response, @RequestBody ProductStockQueryDTO queryDTO) {
+        List<ProductStockAdjustVO> list = productStockService.getStockAdjustVOList(queryDTO);
+        ExcelUtil<ProductStockAdjustVO> util = new ExcelUtil<>(ProductStockAdjustVO.class);
+        util.exportExcel(response, list, "库存调整记录");
+    }
 }

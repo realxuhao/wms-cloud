@@ -10,6 +10,7 @@ import com.bosch.product.api.domain.ProductStock;
 import com.bosch.product.api.domain.ProductWareShift;
 import com.bosch.product.api.domain.dto.*;
 import com.bosch.product.api.domain.vo.ProductReturnVO;
+import com.bosch.product.api.domain.vo.ProductStockAdjustVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 
 import java.util.List;
@@ -77,4 +78,6 @@ public interface IProductStockService extends IService<ProductStock> {
     void addSplit(SplitPalletDTO splitPallet);
 
     ProductStockVO getLastestOne(String sscc);
+
+    List<ProductStockAdjustVO> getStockAdjustVOList(ProductStockQueryDTO stockQueryDTO);
 }

@@ -4,6 +4,7 @@ import com.bosch.binin.api.domain.dto.WareShiftBatchBinInDTO;
 import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
+import com.bosch.product.api.domain.ProductWareShift;
 import com.bosch.product.api.domain.dto.ProductBinInDTO;
 import com.bosch.product.api.domain.dto.ProductWareShiftQueryDTO;
 import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
@@ -183,6 +184,12 @@ public class ProductWareShiftController extends BaseController {
     @ApiOperation("获取单个上架信息")
     public R<ProductStockVO> getBinInInfo(@PathVariable("qrCode") String qrCode){
         return R.ok(productWareShiftService.getBinInInfo(qrCode));
+    }
+
+    @GetMapping(value = "/getBinInInfoList/{qrCode}")
+    @ApiOperation("获取该批次待上架的信息")
+    public R<List<ProductWareShift>> getBinInInfoList(@PathVariable("qrCode") String qrCode){
+        return R.ok(productWareShiftService.getBinInInfoList(qrCode));
     }
 
     /**

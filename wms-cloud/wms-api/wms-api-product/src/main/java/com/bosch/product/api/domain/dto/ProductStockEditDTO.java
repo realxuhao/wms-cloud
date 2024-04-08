@@ -51,6 +51,7 @@ public class ProductStockEditDTO {
     @ApiModelProperty("领料数量")
     private Double stockUse;
 
-
+    @ApiModelProperty("领料理由")
+    private String useReason;
 
 }

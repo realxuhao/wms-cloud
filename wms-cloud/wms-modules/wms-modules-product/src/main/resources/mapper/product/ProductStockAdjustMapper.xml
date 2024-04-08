@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bosch.product.mapper.ProductStockAdjustMapper">
+
+    <select id="getStockAdjustVOList" resultType="com.bosch.product.api.domain.vo.ProductStockAdjustVO">
+        select ps.id as id,
+               ps.sscc_number as sscc_number,
+               ps.plant_nb as plant_nb,
+               ps.ware_code as ware_code,
+               ps.frame_code as frame_code,
+               ps.bin_code as bin_code,
+               ps.material_nb as material_nb,
+               pp.product_name as material_name,
+               pp.type as material_type,
+               ps.batch_nb as batch_nb,
+               ps.expire_date as expire_date,
+               ps.total_stock as total_stock,
+               ROUND(ps.total_stock * pp.box_specification) as pcsTotalStock,
+               ps.freeze_stock as freeze_stock,
+               ROUND(ps.freeze_stock * pp.box_specification) as pcsFreezeStock,
+               ps.available_stock as available_stock,
+               ROUND(ps.available_stock * pp.box_specification) as pcsAvailableStock,
+               ps.create_by as create_by,
+               ps.create_time as create_time,
+               ps.quality_status as quality_status,
+               ps.area_code as area_code,
+               ps.pallet_code as pallet_code,
+               pp.cell as cell,
+               pp.box_specification as box_specification,
+               ps.adjust_total_stock,
+               ps.adjust_freeze_stock,
+               ps.adjust_available_stock,
+               ps.type,
+               dd.dict_label as use_reason
+        from product_stock_adjust ps
+        left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
+        left join (SELECT *  from   sys_dict_data WHERE  dict_type ='sys_use_reason') dd
+        on dd.dict_value = ps.use_reason
+        where ps.delete_flag = 0
+         -- and ps.plant_nb != '7701' and ps.plant_nb != '7761'
+           <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
+           <if test="materialType != null  and materialType != ''">and pp.type like concat('%', #{materialType}, '%')</if>
+           <if test="cell != null  and cell != ''">and pp.cell like concat('%', #{cell}, '%')</if>
+
+           <if test="materialNb != null  and materialNb != ''">and ps.material_nb like concat('%', #{materialNb}, '%')</if>
+           <if test="batchNb != null  and batchNb != ''">and ps.batch_nb like concat('%', #{batchNb}, '%')</if>
+
+           <if test="ssccNumber != null  and ssccNumber != ''">and ps.sscc_number like concat('%', #{ssccNumber}, '%')</if>
+           <if test="wareCode != null  and wareCode != ''">and ps.ware_code like concat('%', #{wareCode}, '%')</if>
+           <if test="areaCode != null  and areaCode != ''">and ps.area_code like concat('%', #{areaCode}, '%')</if>
+           <if test="binCode != null  and binCode != ''">and ps.bin_code like concat('%', #{binCode}, '%')</if>
+           <if test="fromProdOrder != null  and fromProdOrder != ''">and ps.from_prod_order like concat('%',
+                  #{fromProdOrder}, '%')
+           </if>
+           <if test="createBy != null  and createBy != ''">and ps.create_by like concat('%', #{createBy}, '%')</if>
+
+           <if test="qualityStatus != null and qualityStatus != ''">and ps.quality_status = #{qualityStatus}</if>
+           <if test="startExpireDate != null and endExpireDate != null">and str_to_date(ps.expire_date, '%d/%m/%Y')
+                  between
+                  #{startExpireDate} and #{endExpireDate}
+           </if>
+           <if test="adjustType != null">and ps.type = #{adjustType}</if>
+           <if test="useReason != null  and useReason != ''">
+               and ps.use_reason = #{useReason}
+           </if>
+           order by ps.create_time desc,ps.id desc
+    </select>
+
+</mapper>

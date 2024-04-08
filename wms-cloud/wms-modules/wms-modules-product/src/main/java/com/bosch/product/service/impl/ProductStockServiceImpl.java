@@ -22,7 +22,9 @@ import com.bosch.product.api.domain.dto.*;
 import com.bosch.product.api.domain.enumeration.ProductStockBinInEnum;
 import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
 import com.bosch.product.api.domain.vo.ProductReturnVO;
+import com.bosch.product.api.domain.vo.ProductStockAdjustVO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
+import com.bosch.product.mapper.ProductStockAdjustMapper;
 import com.bosch.product.mapper.ProductStockMapper;
 import com.bosch.product.service.*;
 import com.ruoyi.common.core.domain.R;
@@ -59,6 +61,9 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
     @Autowired
     private ProductStockMapper stockMapper;
+
+    @Autowired
+    private ProductStockAdjustMapper stockAdjustMapper;
 
     @Resource
     private RemoteProductService remoteProductService;
@@ -362,6 +367,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
                 this.updateById(one);
 
                 stockAdjust.setType(stockEditDTO.getType());
+                stockAdjust.setUseReason(stockEditDTO.getUseReason());
                 stockAdjust.setId(null);
                 stockAdjust.setAdjustFreezeStock(one.getFreezeStock());
                 stockAdjust.setAdjustTotalStock(one.getTotalStock());
@@ -475,10 +481,10 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
             if (diff > 0) {
                 productStockOperationService.addProductStockOperation(stock.getPlantNb(), diff, stock.getSsccNumber(),
-                        stock.getMaterialNb(), stock.getFromProdOrder(), StockOperationType.IN.getCode());
+                        stock.getMaterialNb(), stock.getFromProdOrder(), StockOperationType.OTHEROUT.getCode());
             } else {
                 productStockOperationService.addProductStockOperation(stock.getPlantNb(), diff, stock.getSsccNumber(),
-                        stock.getMaterialNb(), stock.getFromProdOrder(), StockOperationType.OTHEROUT.getCode());
+                        stock.getMaterialNb(), stock.getFromProdOrder(), StockOperationType.IN.getCode());
             }
             this.updateById(stock);
 
@@ -486,6 +492,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
 
         stockAdjust.setType(stockEditDTO.getType());
+        stockAdjust.setUseReason(stockEditDTO.getUseReason());
         stockAdjust.setId(null);
         stockAdjust.setAdjustFreezeStock(stock.getFreezeStock());
         stockAdjust.setAdjustTotalStock(stock.getTotalStock());
@@ -765,6 +772,10 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         return stockMapper.getLastestOne(sscc);
     }
 
+    @Override
+    public List<ProductStockAdjustVO> getStockAdjustVOList(ProductStockQueryDTO stockQueryDTO) {
+       return stockAdjustMapper.getStockAdjustVOList(stockQueryDTO);
+    }
 
     private MdProductPackagingVO getProductVO(String code) {
         R<MdProductPackagingVO> byCode = remoteProductService.getByCode(code);
