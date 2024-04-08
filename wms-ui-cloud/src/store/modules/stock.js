@@ -23,6 +23,14 @@ const stock = {
       const data = await stockService.exportExcel(options)
       return data
     },
+    async getPaginationAdjustList ({ commit }, options) {      
+      const data = await stockService.getAdjustList(options)
+      return data
+    },
+    async exportAdjustExcel ({ commit }, options) {
+      const data = await stockService.exportStockAdjust(options)
+      return data
+    },
   }
 }
 

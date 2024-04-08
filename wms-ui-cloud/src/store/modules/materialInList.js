@@ -18,6 +18,10 @@ const materialInList = {
       const data = await materialInListService.getList(options)
       return data
     },
+    async exportExcel ({ commit }, options) {
+      const data = await materialInListService.exportExcel(options)
+      return data
+    },
     async getPaginationReceiveList ({ commit }, options) {
       const data = await materialInListService.getReceiveList(options)
       return data
