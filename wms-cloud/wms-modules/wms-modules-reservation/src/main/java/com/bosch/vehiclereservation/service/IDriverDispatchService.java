@@ -2,6 +2,7 @@ package com.bosch.vehiclereservation.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
 import com.bosch.vehiclereservation.api.domain.dto.DispatchSendWxDTO;
 import com.bosch.vehiclereservation.api.domain.dto.DriverDispatchDTO;
@@ -50,7 +51,7 @@ public interface IDriverDispatchService extends IService<DriverDispatch> {
      * @param dispatchId 主键id
      * @return
      */
-    boolean dispatchComplete(Long dispatchId);
+    DriverDispatch dispatchComplete(Long dispatchId);
 
     /**
      * 取消
@@ -58,7 +59,7 @@ public interface IDriverDispatchService extends IService<DriverDispatch> {
      * @param dispatchId 主键id
      * @return
      */
-    boolean dispatchCancel(Long dispatchId);
+    DriverDeliver dispatchCancel(Long dispatchId);
 
     /**
      * 车辆排序

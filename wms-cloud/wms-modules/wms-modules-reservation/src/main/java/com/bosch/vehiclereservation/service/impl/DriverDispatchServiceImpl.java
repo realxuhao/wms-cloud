@@ -143,7 +143,7 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
     }
 
     @Override
-    public boolean dispatchComplete(Long dispatchId) {
+    public DriverDispatch dispatchComplete(Long dispatchId) {
         DriverDispatch driverDispatch = driverDispatchMapper.selectById(dispatchId);
         if (driverDispatch == null) {
             throw new ServiceException("调度信息不存在！");
@@ -168,11 +168,12 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
                 }
             }
         }
-        return i > 0;
+        return driverDispatch;
     }
 
     @Override
-    public boolean dispatchCancel(Long dispatchId) {
+    public DriverDeliver dispatchCancel(Long dispatchId) {
+        DriverDeliver driver = new DriverDeliver();
         DriverDispatch driverDispatch = driverDispatchMapper.selectById(dispatchId);
         if (driverDispatch == null) {
             throw new ServiceException("调度信息不存在！");
@@ -186,6 +187,7 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
             wrapper.eq("deliver_id", driverDispatch.getDriverId());
             Optional<DriverDeliver> driverDeliver = driverDeliverMapper.selectList(wrapper).stream().findFirst();
             if (driverDeliver.isPresent()) {
+                driver = driverDeliver.get();
                 int i = driverDeliverMapper.deleteById(driverDeliver.get().getDeliverId());
                 if (StringUtils.isNotEmpty(driverDeliver.get().getReserveNo())) {
                     QueryWrapper<SupplierReserve> wrapper1 = new QueryWrapper<>();
@@ -206,7 +208,7 @@ public class DriverDispatchServiceImpl extends ServiceImpl<DriverDispatchMapper,
                 int i = driverPickupMapper.deleteById(driverPickup.get().getPickupId());
             }
         }
-        return res;
+        return driver;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.bosch.vehiclereservation.controller;
 
+import com.bosch.vehiclereservation.api.domain.DriverDeliver;
 import com.bosch.vehiclereservation.api.domain.DriverDispatch;
 import com.bosch.vehiclereservation.api.domain.dto.*;
 import com.bosch.vehiclereservation.api.domain.vo.*;
@@ -11,6 +12,8 @@ import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.core.web.page.PageDomain;
+import com.ruoyi.common.log.annotation.Log;
+import com.ruoyi.common.log.enums.BusinessType;
 import com.ruoyi.common.security.annotation.RequiresPermissions;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -139,8 +142,9 @@ public class DriverDispatchController extends BaseController {
     //@RequiresPermissions("warehouse:dispatch:complete")
     @GetMapping("/complete/{id}")
     @ApiOperation("完成")
-    public AjaxResult dispatchComplete(@PathVariable("id") Long dispatchId) {
-        return toAjax(driverDispatchService.dispatchComplete(dispatchId));
+    @Log(title = "车辆预约完成——仓库完成送货/收货订单", businessType = BusinessType.UPDATE)
+    public R<DriverDispatch> dispatchComplete(@PathVariable("id") Long dispatchId) {
+        return R.ok(driverDispatchService.dispatchComplete(dispatchId));
     }
 
     /**
@@ -152,8 +156,9 @@ public class DriverDispatchController extends BaseController {
     //@RequiresPermissions("warehouse:dispatch:complete")
     @GetMapping("/cancel/{id}")
     @ApiOperation("取消")
-    public AjaxResult dispatchCancel(@PathVariable("id") Long dispatchId) {
-        return toAjax(driverDispatchService.dispatchCancel(dispatchId));
+    @Log(title = "车辆预约取消——仓库取消送货/收货订单", businessType = BusinessType.UPDATE)
+    public R<DriverDeliver> dispatchCancel(@PathVariable("id") Long dispatchId) {
+        return R.ok(driverDispatchService.dispatchCancel(dispatchId));
     }
 
     /**
@@ -178,6 +183,7 @@ public class DriverDispatchController extends BaseController {
     //@RequiresPermissions("warehouse:dispatch:complete")
     @GetMapping("/change/{id}")
     @ApiOperation("处理")
+    @Log(title = "车辆预约——异常数据处理操作", businessType = BusinessType.UPDATE)
     public AjaxResult dispatchChange(@PathVariable("id") Long dispatchId) {
         return toAjax(driverDispatchService.dispatchChange(dispatchId));
     }
