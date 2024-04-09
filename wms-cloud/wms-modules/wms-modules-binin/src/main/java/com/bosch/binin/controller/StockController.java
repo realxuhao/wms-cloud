@@ -1,26 +1,21 @@
 package com.bosch.binin.controller;
 
 import com.alibaba.fastjson2.JSON;
-import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.InitStockDTO;
 import com.bosch.binin.api.domain.dto.StockEditDTO;
 import com.bosch.binin.api.domain.dto.StockQueryDTO;
-import com.bosch.binin.api.domain.dto.WareShiftQueryDTO;
 import com.bosch.binin.api.domain.vo.JobVO;
+import com.bosch.binin.api.domain.vo.StockAdjustVO;
 import com.bosch.binin.api.domain.vo.StockVO;
-import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.service.IJobService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.RemoteMesBarCodeService;
-import com.bosch.masterdata.api.RemoteProductService;
-import com.bosch.masterdata.api.domain.dto.IQCDTO;
 import com.bosch.masterdata.api.domain.vo.MesBarCodeVO;
 import com.bosch.masterdata.api.domain.vo.PageVO;
 import com.bosch.masterdata.api.enumeration.ClassType;
 import com.bosch.product.api.RemoteProductStockService;
-import com.bosch.product.api.domain.dto.ProductStockQueryDTO;
 import com.bosch.product.api.domain.vo.ProductStockVO;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
@@ -41,10 +36,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
-import javax.swing.plaf.ProgressBarUI;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @program: wms-cloud
@@ -257,5 +250,31 @@ public class StockController extends BaseController {
         util.exportExcel(response, stockVOList, "移库任务列表");
     }
 
+    /**
+     * 查询库存调整记录
+     *
+     * @param stockQueryDTO
+     * @return
+     */
+    @GetMapping(value = "/adjustList")
+    @ApiOperation("库存调整列表")
+    public R<PageVO<StockAdjustVO>> adjustList(StockQueryDTO stockQueryDTO) {
+        startPage();
+        List<StockAdjustVO> list = stockService.selectStockAdjustVOList(stockQueryDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
+
+    /**
+     * 导出库存调整记录
+     */
+    @PostMapping("/exportStockAdjust")
+    @ApiOperation("库存调整导出")
+    @Log(title = "库存调整导出", businessType = BusinessType.EXPORT)
+    public void exportStockAdjust(HttpServletResponse response, @RequestBody StockQueryDTO queryDTO) {
+        List<StockAdjustVO> list = stockService.selectStockAdjustVOList(queryDTO);
+        ExcelUtil<StockAdjustVO> util = new ExcelUtil<>(StockAdjustVO.class);
+        util.exportExcel(response, list, "库存调整记录");
+    }
 
 }

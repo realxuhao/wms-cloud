@@ -89,6 +89,7 @@ public class ProductWareShiftVO {
 
 
     @ApiModelProperty(value = "车牌号")
+    @Excel(name = "车牌号")
     private String carNb;
 
     /**

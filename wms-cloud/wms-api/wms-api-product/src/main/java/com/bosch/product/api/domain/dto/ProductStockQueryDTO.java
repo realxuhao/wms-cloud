@@ -72,4 +72,8 @@ public class ProductStockQueryDTO {
 
 
     private String cell;
+
+    private Integer adjustType;
+
+    private String useReason;
 }

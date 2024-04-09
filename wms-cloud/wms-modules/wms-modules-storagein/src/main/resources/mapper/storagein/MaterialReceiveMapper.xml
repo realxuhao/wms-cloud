@@ -23,6 +23,7 @@
         <result property="status" column="status"/>
         <result property="editFlag" column="edit_flag"/>
         <result property="plantNb" column="plant_nb"/>
+        <result property="wareCode" column="ware_code" />
 
     </resultMap>
     <sql id="selectMaterialReceiveVo">
@@ -42,7 +43,8 @@
                sm.delete_flag,
                sm.status,
                sm.edit_flag,
-               sm.plant_nb
+               sm.plant_nb,
+               sm.ware_code
         from si_material_receive sm
     </sql>
 

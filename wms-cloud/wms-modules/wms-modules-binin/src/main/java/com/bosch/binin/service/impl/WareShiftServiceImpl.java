@@ -6,18 +6,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.*;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
-import com.bosch.binin.api.domain.vo.RequirementResultVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.api.enumeration.*;
-import com.bosch.binin.mapper.IQCSamplePlanMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
 import com.bosch.binin.service.*;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.masterdata.api.RemoteMaterialService;
-import com.bosch.masterdata.api.domain.Ware;
-import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.system.api.domain.UserOperationLog;
@@ -35,8 +31,6 @@ import com.ruoyi.common.log.enums.MaterialType;
 import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
-import org.apache.catalina.User;
-import org.apache.poi.ss.formula.functions.IDStarAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -45,6 +39,7 @@ import org.springframework.util.CollectionUtils;
 
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -433,9 +428,14 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         if (CollectionUtils.isEmpty(list)) {
             return Double.valueOf(0);
         }
-        double sum = list.stream().mapToDouble(WareShift::getQuantity).sum();
+        AtomicReference<Double> sum = new AtomicReference<>((double) 0);
 
-        return sum;
+        list.stream().forEach(item->{
+            sum.set(DoubleMathUtil.doubleMathCalculation(sum.get(), item.getQuantity(), "+"));
+        });
+//        double sum = list.stream().mapToDouble(WareShift::getQuantity).sum();
+
+        return sum.get();
     }
 
     @Override
@@ -468,8 +468,12 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
         Map<String, String> materialCallOrders = new HashMap<>();
 
         matrialCallMap.forEach((materialNb, list) -> {
-            double sum = list.stream().mapToDouble(item -> callQuantityMap.get(item.getId())).sum();
-            materialCountMap.put(materialNb, sum);
+            AtomicReference<Double> sum = new AtomicReference<>((double) 0);
+            list.stream().forEach(item->{
+                sum.set(DoubleMathUtil.doubleMathCalculation(sum.get(), callQuantityMap.get(item.getId()), "+"));
+            });
+//            double sum = list.stream().mapToDouble(item -> callQuantityMap.get(item.getId())).sum();
+            materialCountMap.put(materialNb, sum.get());
             List<String> ids = new ArrayList<>();
             list.stream().forEach(item -> ids.add(item.getId().toString()));
             String join = String.join(",", ids);

@@ -46,11 +46,11 @@
             </a-form-item>
           </a-col>
           <template v-if="advanced">
-            <a-col :span="4">
+            <!-- <a-col :span="4">
               <a-form-item label="托盘编码">
                 <a-input v-model="queryForm.palletCode" placeholder="托盘编码" allow-clear/>
               </a-form-item>
-            </a-col>
+            </a-col> -->
             <a-col :span="4">
               <a-form-item label="SSCC码">
                 <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
@@ -65,6 +65,15 @@
               <a-form-model-item label="批次号">
                 <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
               </a-form-model-item>
+            </a-col>
+            <a-col :span="4">
+              <a-form-item label="类型" >
+                <a-select allow-clear v-model="queryForm.adjustType">
+                  <a-select-option v-for="item in adjustTypes" :key="item.value" :value="item.value">
+                    {{ item.text }}
+                  </a-select-option>
+                </a-select>
+              </a-form-item>
             </a-col>
             <a-col :span="4">
               <a-form-item label="操作人">
@@ -98,16 +107,19 @@
         :scroll="tableScroll"
         @change="pageChange"
       >
-        <template slot="checkType" slot-scope="text">
+        <template slot="adjustType" slot-scope="text">
           <div >
             <a-tag color="orange" v-if="text===0">
-              称重
+              领用
             </a-tag>
             <a-tag color="blue" v-if="text===1">
-              数数
+              报废
             </a-tag>
             <a-tag color="#87d068" v-if="text===2">
-              免检
+              其它
+            </a-tag>
+            <a-tag color="#895256" v-if="text===3">
+              玻璃瓶配送到产线
             </a-tag>
           </div>
         </template>
@@ -127,7 +139,6 @@
         />
       </div>
     </div>
-
   </div>
 </template>
 
@@ -149,34 +160,52 @@ const qualityStatus = [
     value: 2
   }
 ]
+const adjustTypes=[
+  {
+    text: '领用',
+    value: 0
+  },
+  {
+    text: '报废',
+    value: 1
+  },
+  {
+    text: '其它',
+    value: 2
+  },
+  {
+    text: '玻璃瓶配送到产线',
+    value: 3
+  }
+]
 const columns = [
   {
     title: '工厂编码',
     key: 'plantNb',
     dataIndex: 'plantNb',
     width: 120,
-      sorter: true
+    sorter: true
   },
   {
     title: 'Cell',
     key: 'cell',
     dataIndex: 'cell',
     width: 100,
-      sorter: true
+    sorter: true
   },
   {
     title: '仓库编码',
     key: 'wareCode',
     dataIndex: 'wareCode',
     width: 120,
-      sorter: true
+    sorter: true
   },
   {
     title: '存储区编码',
     key: 'areaCode',
     dataIndex: 'areaCode',
     width: 120,
-      sorter: true
+    sorter: true
   },
   {
     title: 'SSCC码',
@@ -185,50 +214,45 @@ const columns = [
     width: 140
   },
   {
+    title: '跨编码',
+    key: 'frameCode',
+    dataIndex: 'frameCode',
+    width: 140
+  },
+  {
     title: '库位编码',
     key: 'binCode',
     dataIndex: 'binCode',
     width: 140,
-        sorter: true
-  },
-  {
-    title: '托盘编码',
-    key: 'palletCode',
-    dataIndex: 'palletCode',
-    width: 140
+    sorter: true
   },
   {
     title: '物料编码',
     key: 'materialNb',
     dataIndex: 'materialNb',
     width: 120,
-      sorter: true
+    sorter: true
   },
   {
     title: '批次号',
     key: 'batchNb',
     dataIndex: 'batchNb',
     width: 120,
-        sorter: true
+    sorter: true
   },
   {
     title: '质检状态',
     key: 'qualityStatus',
     dataIndex: 'qualityStatus',
     width: 80,
-      sorter: true
+    sorter: true
   },
   {
-    title: '当前任务',
-    key: 'jobDesc',
-    dataIndex: 'jobDesc',
-    width: 120
-  },
-  {
-    title: '任务状态',
-    key: 'jobStatus',
-    dataIndex: 'jobStatus',
-    width: 120
+    title: '保质/有效期',
+    key: 'expireDate',
+    dataIndex: 'expireDate',
+    width: 120,
+    sorter: true
   },
   {
     title: '库存量',
@@ -243,11 +267,35 @@ const columns = [
     width: 120
   },
   {
-    title: '保质/有效期',
-    key: 'expireDate',
-    dataIndex: 'expireDate',
-    width: 120,
-    sorter: true
+    title: '可用库存',
+    key: 'availableStock',
+    dataIndex: 'availableStock',
+    width: 120
+  },
+  {
+    title: '调整后总库存',
+    key: 'adjustTotalStock',
+    dataIndex: 'adjustTotalStock',
+    width: 120
+  },
+  {
+    title: '调整后冻结库存',
+    key: 'adjustFreezeStock',
+    dataIndex: 'adjustFreezeStock',
+    width: 120
+  },
+  {
+    title: '调整后可用库存',
+    key: 'adjustAvailableStock',
+    dataIndex: 'adjustAvailableStock',
+    width: 120
+  },
+  {
+    title: '类型',
+    key: 'type',
+    dataIndex: 'type',
+    scopedSlots: { customRender: 'adjustType' },
+    width: 80
   },
   {
     title: '操作人',
@@ -274,17 +322,19 @@ const queryFormAttr = () => {
     binCode: '',
     palletCode: '',
     qualityStatus: '',
+    operateUser:'',
+    adjustType:''
   }
 }
 
 export default {
-  name: 'Area',
+  name: 'Adjust',
   mixins: [mixinTableList],
   data () {
     return {
       tableLoading: false,
       uploadLoading: false,
-       exportLoading: false,
+      exportLoading: false,
       departmentList: [],
       queryForm: {
         pageSize: 20,
@@ -296,8 +346,8 @@ export default {
     }
   },
   computed: {
-    qualityStatus: () => qualityStatus
-    
+    qualityStatus: () => qualityStatus,
+    adjustTypes:()=>adjustTypes
   },
   methods: {
     async pageChange(page, filters, sorter){
@@ -319,7 +369,7 @@ export default {
 
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('stock/getPaginationList', this.queryForm)
+        } = await this.$store.dispatch('stock/getPaginationAdjustList', this.queryForm)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {
@@ -329,15 +379,15 @@ export default {
       }
     },
     async loadData () {
-       this.loadDepartmentList()
+      this.loadDepartmentList()
       this.loadTableList()
     },
     async handleDownload () {
       try {
         this.exportLoading = true
         // this.queryForm.pageSize = 0
-        const blobData = await this.$store.dispatch('stock/exportExcel', this.queryForm)
-        download(blobData, '库存列表.xlsx')
+        const blobData = await this.$store.dispatch('stock/exportAdjustExcel', this.queryForm)
+        download(blobData, '库存调整记录.xlsx')
       } catch (error) {
         console.log(error)
         this.$message.error(error.message)

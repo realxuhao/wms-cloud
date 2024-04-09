@@ -62,7 +62,7 @@
         </a-row>
       </a-form>
       <div class="action-content">
-
+        <a-button type="primary" style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
       </div>
       <a-table
         :columns="columns"
@@ -107,6 +107,7 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+import { download } from '@/utils/file'
 
 const columns = [
   {
@@ -235,6 +236,7 @@ export default {
   data () {
     return {
       tableLoading: false,
+      exportLoading: false,
       uploadLoading: false,
       queryForm: {
         pageSize: 20,
@@ -264,6 +266,19 @@ export default {
         this.$message.error(error.message)
       } finally {
         this.tableLoading = false
+      }
+    },
+    async handleDownload () {
+      try {
+        this.exportLoading = true
+        this.queryForm.pageSize = 0
+        const blobData = await this.$store.dispatch('materialInList/exportExcel', this.queryForm)
+        download(blobData, '入库清单.xlsx')
+      } catch (error) {
+        console.log(error)
+        this.$message.error(error.message)
+      } finally {
+        this.exportLoading = false
       }
     },
     async loadData () {

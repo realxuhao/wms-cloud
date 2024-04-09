@@ -211,7 +211,7 @@ const columns = [
   },
    {
     title: '批次总数量',
-    key: 'quantity',
+    key: 'totalStockSum',
     dataIndex: 'totalStockSum',
     width: 120
   },
@@ -259,7 +259,7 @@ const columns = [
     width: 120
   },
   {
-    title: '有效期',
+    title: '保质/有效期',
     key: 'expireDate',
     dataIndex: 'expireDate',
     width: 120
@@ -391,8 +391,15 @@ export default {
     async handleDownload () {
       try {
         this.exportLoading = true
-        // this.queryForm.pageSize = 0
-        const blobData = await this.$store.dispatch('finishedProduct/productShiftexport', this.queryForm)
+        this.queryForm.pageSize = 0
+        this.exportLoading = true
+        const { date = [] } = this.queryForm
+        const startCreateTime = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
+        const endCreateTime = date.length > 0 ? date[1].format(this.endDateFormat) : undefined
+
+        const options = { ..._.omit(this.queryForm, ['date']), startCreateTime, endCreateTime }
+
+        const blobData = await this.$store.dispatch('finishedProduct/productShiftexport', options)
         download(blobData, '成品移库.xlsx')
       } catch (error) {
         console.log(error)

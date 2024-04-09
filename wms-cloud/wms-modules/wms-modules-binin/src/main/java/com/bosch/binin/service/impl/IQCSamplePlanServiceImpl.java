@@ -436,9 +436,11 @@ public class IQCSamplePlanServiceImpl extends ServiceImpl<IQCSamplePlanMapper, I
         stockQueryWrapper.eq(Stock::getSsccNumber, samplePlan.getSsccNb());
         stockQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         Stock stock = stockService.getOne(stockQueryWrapper);
-        stock.setFreezeStock(Double.valueOf(0));
-        stock.setAvailableStock(stock.getTotalStock());
-        stockService.updateById(stock);
+        if (stock != null) {
+            stock.setFreezeStock(Double.valueOf(0));
+            stock.setAvailableStock(stock.getTotalStock());
+            stockService.updateById(stock);
+        }
 
         return samplePlan;
 

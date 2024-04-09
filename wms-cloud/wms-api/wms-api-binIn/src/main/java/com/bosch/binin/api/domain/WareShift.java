@@ -112,7 +112,7 @@ public class WareShift extends BaseEntity {
 
     private String callId;
 
-
+    // 0:整托，1：拆托
     private int splitType;
 
     private Double splitQuality;

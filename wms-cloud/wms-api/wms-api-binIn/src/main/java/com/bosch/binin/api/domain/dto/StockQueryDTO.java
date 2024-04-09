@@ -107,5 +107,5 @@ public class StockQueryDTO extends PageDomain {
 
     private String cell;
 
-
+    private Integer adjustType;
 }

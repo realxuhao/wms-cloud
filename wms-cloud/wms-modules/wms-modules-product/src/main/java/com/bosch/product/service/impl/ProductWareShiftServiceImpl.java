@@ -166,7 +166,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
                 .eq(ProductWareShift::getStatus, ProductWareShiftEnum.WAITTING_SHIPPING.code());
         List<ProductWareShift> productWareShifts = this.list(queryWrapper);
 
-        if (CollectionUtils.isEmpty(productWareShifts)){
+        if (CollectionUtils.isEmpty(productWareShifts)) {
             throw new ServiceException("均是不为待发运的数据");
         }
 
@@ -254,7 +254,6 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         List<ProductStockOperation> inOperationList = new ArrayList<>();
 
 
-
         wareShifts.forEach(item -> {
             MdProductPackagingVO productVO = getProductVO(item.getMaterialNb());
 
@@ -290,14 +289,11 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         stockService.generateStockByProductWareShifts(wareShifts);
 
 
-
-
 //        //出记录
 //        productStockOperationService.addProductStockOperationBatch(null,null,null,outOperationList);
 
 //        //入记录
 //        productStockOperationService.addProductStockOperationBatch(null,null,null,outOperationList);
-
 
 
     }
@@ -343,8 +339,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         this.updateById(productWareShift);
 
 
-        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBININ.getCode(), binInDTO.getSscc(),productWareShift.getMaterialNb());
-
+        userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBININ.getCode(), binInDTO.getSscc(), productWareShift.getMaterialNb());
 
 
     }
@@ -370,7 +365,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         try {
             String allocationBinCode = binAssignmentService.getBinAllocationVO(qrCode);
             productStockVO.setRecommendBinCode(allocationBinCode);
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
         }
 
@@ -382,15 +377,15 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
     public void addBatchByStockIds(List<Long> stockIds) {
         LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
         List<ProductStock> stockList = stockService.list(queryWrapper.in(ProductStock::getId, stockIds).eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode()));
-        if (stockIds.size()!=stockList.size()){
+        if (stockIds.size() != stockList.size()) {
             throw new ServiceException("id有误，存在无库存的数据");
         }
 
-        List<ProductWareShift> wareShifts=new ArrayList<>();
+        List<ProductWareShift> wareShifts = new ArrayList<>();
 
-        stockList.forEach(item->{
-            if(!item.getFreezeStock().equals((double) 0)){
-                throw new ServiceException("sscc码"+item.getSsccNumber()+"有冻结库存，不能生成移库任务");
+        stockList.forEach(item -> {
+            if (!item.getFreezeStock().equals((double) 0)) {
+                throw new ServiceException("sscc码" + item.getSsccNumber() + "有冻结库存，不能生成移库任务");
             }
 
             item.setFreezeStock(item.getTotalStock());
@@ -424,11 +419,11 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
     @Override
     public void mainReceiveConfirm(List<String> ssccList) {
-        Assert.notEmpty(ssccList,"至少选择一托");
+        Assert.notEmpty(ssccList, "至少选择一托");
 
         //先更新转运单状态
         LambdaQueryWrapper<TranshipmentOrder> transhipmentQueryWrapper = new LambdaQueryWrapper<>();
-        transhipmentQueryWrapper.in(TranshipmentOrder::getSsccNumber,ssccList);
+        transhipmentQueryWrapper.in(TranshipmentOrder::getSsccNumber, ssccList);
         transhipmentQueryWrapper.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<TranshipmentOrder> transhipmentOrderList = transhipmentOrderService.list(transhipmentQueryWrapper);
         transhipmentOrderList.forEach(item -> item.setStatus(1));
@@ -436,11 +431,11 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
         //移库变为完成
         LambdaQueryWrapper<ProductWareShift> shiftQueryWrapper = new LambdaQueryWrapper<>();
-        shiftQueryWrapper.in(ProductWareShift::getSsccNb,ssccList);
-        shiftQueryWrapper.ne(ProductWareShift::getStatus,ProductWareShiftEnum.CANCEL.code());
-        shiftQueryWrapper.ne(ProductWareShift::getStatus,ProductWareShiftEnum.FINISH.code());
-        shiftQueryWrapper.eq(ProductWareShift::getStatus,ProductWareShiftEnum.WAITTING_RECEIVING.code());
-        shiftQueryWrapper.eq(ProductWareShift::getDeleteFlag,DeleteFlagStatus.FALSE.getCode());
+        shiftQueryWrapper.in(ProductWareShift::getSsccNb, ssccList);
+        shiftQueryWrapper.ne(ProductWareShift::getStatus, ProductWareShiftEnum.CANCEL.code());
+        shiftQueryWrapper.ne(ProductWareShift::getStatus, ProductWareShiftEnum.FINISH.code());
+        shiftQueryWrapper.eq(ProductWareShift::getStatus, ProductWareShiftEnum.WAITTING_RECEIVING.code());
+        shiftQueryWrapper.eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<ProductWareShift> wareShiftList = wareShiftMapper.selectList(shiftQueryWrapper);
         AreaVO areaVO = stockService.getAreaByType(SecurityUtils.getWareCode(), AreaTypeEnum.PRO.getCode());
         wareShiftList.forEach(item -> {
@@ -459,7 +454,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void batchPerformBinIn(WareShiftBatchBinInDTO dto) {
-        LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
+        /*LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
         qw.eq(TranshipmentOrder::getSsccNumber, MesBarCodeUtil.getSSCC(dto.getMesBarCode()));
         qw.eq(TranshipmentOrder::getStatus, StatusEnums.TRUE.getCode());
         qw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
@@ -476,9 +471,14 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         List<TranshipmentOrder> ssccByOrder = transhipmentOrderService.list(tqw);
         if (CollectionUtils.isEmpty(ssccByOrder)) {
             throw new ServiceException("当前车次没有待上架的信息");
-        }
-        List<String> ssccList = ssccByOrder.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
+        }*/
+        String sscc = "369006391113938680";//ProductQRCodeUtil.getSSCC(dto.getMesBarCode());
+        List<TranshipmentOrder> transhipmentOrders = checkProductWareShift(sscc);
+        List<String> ssccList = transhipmentOrders.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
 
+        if (StringUtils.isEmpty(dto.getAreaCode())) {
+            throw new ServiceException("请选择上架的区域");
+        }
 
         LambdaQueryWrapper<ProductWareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
         wareShiftQueryWrapper.in(ProductWareShift::getSsccNb, ssccList);
@@ -486,12 +486,10 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         wareShiftQueryWrapper.eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<ProductWareShift> wareShiftList = this.list(wareShiftQueryWrapper);
 
-        wareShiftList.stream().forEach(productWareShift->{
+        wareShiftList.stream().forEach(productWareShift -> {
             productWareShift.setTargetAreaCode(dto.getAreaCode());
             productWareShift.setStatus(ProductWareShiftEnum.FINISH.code());
         });
-
-
 
         LambdaQueryWrapper<ProductStock> stockQueryWrapper = new LambdaQueryWrapper<>();
         stockQueryWrapper.in(ProductStock::getSsccNumber, ssccList);
@@ -502,7 +500,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         List<UserOperationLog> operationLogs = new ArrayList<>();
 
 
-        productStocks.stream().forEach(stock->{
+        productStocks.stream().forEach(stock -> {
             stock.setBinInFlag(ProductStockBinInEnum.FINISH.code());
             stock.setAreaCode(dto.getAreaCode());
 
@@ -521,6 +519,52 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         userOperationLogService.insertUserOperationLog(MaterialType.PRODUCT.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PRODUCTBININ.getCode(), operationLogs);
 
 
+    }
+
+    private List<TranshipmentOrder> checkProductWareShift(String sscc) {
+        //查询移库任务为待上架的记录
+        LambdaQueryWrapper<ProductWareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
+        wareShiftQueryWrapper.eq(ProductWareShift::getSsccNb, sscc);
+        wareShiftQueryWrapper.eq(ProductWareShift::getStatus, ProductWareShiftEnum.WAITTING_BIN_IN.code());
+        wareShiftQueryWrapper.eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        wareShiftQueryWrapper.last("limit 1");
+        ProductWareShift productWareShift = this.getOne(wareShiftQueryWrapper);
+        if (productWareShift == null) {
+            throw new ServiceException("没有该SSCC：" + sscc + "对应的上架任务");
+        }
+
+        LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
+        qw.eq(TranshipmentOrder::getProductWareShiftId, productWareShift.getId());
+        qw.eq(TranshipmentOrder::getStatus, StatusEnums.TRUE.getCode());
+        qw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.orderByDesc(TranshipmentOrder::getCreateTime);
+        qw.last("limit 1");
+        TranshipmentOrder transhipmentOrder = transhipmentOrderService.getOne(qw);
+        if (transhipmentOrder == null) {
+            throw new ServiceException("当前车次货物还没有收货");
+        }
+        LambdaQueryWrapper<TranshipmentOrder> tqw = new LambdaQueryWrapper<>();
+        tqw.eq(TranshipmentOrder::getOrderNumber, transhipmentOrder.getOrderNumber());
+        tqw.eq(TranshipmentOrder::getStatus, StatusEnums.TRUE.getCode());
+        tqw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<TranshipmentOrder> ssccByOrder = transhipmentOrderService.list(tqw);
+        if (CollectionUtils.isEmpty(ssccByOrder)) {
+            throw new ServiceException("当前车次没有待上架的信息");
+        }
+        return ssccByOrder;
+    }
+
+    @Override
+    public List<ProductWareShift> getBinInInfoList(String qrCode) {
+        String sscc = "369006391113884987"; //ProductQRCodeUtil.getSSCC(qrCode);
+        List<TranshipmentOrder> transhipmentOrders = checkProductWareShift(sscc);
+        List<String> ssccList = transhipmentOrders.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
+        LambdaQueryWrapper<ProductWareShift> wareShiftWrapper = new LambdaQueryWrapper<>();
+        wareShiftWrapper.in(ProductWareShift::getSsccNb, ssccList);
+        wareShiftWrapper.eq(ProductWareShift::getStatus, ProductWareShiftEnum.WAITTING_BIN_IN.code());
+        wareShiftWrapper.eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<ProductWareShift> wareShiftList = this.list(wareShiftWrapper);
+        return wareShiftList;
     }
 
 

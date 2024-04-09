@@ -38,4 +38,6 @@ public interface IProductWareShiftService extends IService<ProductWareShift> {
     void mainReceiveConfirm(List<String> ssccList);
 
     void batchPerformBinIn(WareShiftBatchBinInDTO dto);
+
+    List<ProductWareShift> getBinInInfoList(String qrCode);
 }

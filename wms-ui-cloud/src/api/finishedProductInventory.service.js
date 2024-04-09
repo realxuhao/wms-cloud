@@ -28,8 +28,26 @@ const saleStockExport = async (options) => {
   return data
 }
 
+const getAdjustList = async (parameter) => {
+  const url = `/product-stock/adjustList?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url, parameter)
+  return data
+}
+
+const productStockAdjustExport = async (options) => {
+  const url = `/product-stock/exportStockAdjust`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
+
 export const finishedProductInventoryService = {
   getInventoryList,
   productStockExport,
-  saleStockExport
+  saleStockExport,
+  getAdjustList,
+  productStockAdjustExport
 }

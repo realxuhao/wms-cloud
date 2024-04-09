@@ -17,6 +17,7 @@ import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
 import com.ruoyi.common.core.web.domain.AjaxResult;
 import com.ruoyi.common.log.annotation.Log;
@@ -29,6 +30,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -51,6 +53,7 @@ public class MaterialInController extends BaseController {
      * 根据mesBarCode查询物料校验信息
      */
     @GetMapping(value = "/getCheckByBarCode/{mesBarCode}")
+    @Log(title = "获取入库校验信息", businessType = BusinessType.OTHER)
     @ApiOperation("根据mesBarCode查询物料校验信息")
     public R<MaterialInCheckVO> getCheckInfo(@PathVariable("mesBarCode") String mesBarCode) {
 
@@ -69,8 +72,8 @@ public class MaterialInController extends BaseController {
         }
 
         List<Integer> collect = materialReceiveVOs.stream().filter(item -> 0 == item.getStatus()).map(MaterialReceiveVO::getStatus).collect(Collectors.toList());
-        if (CollectionUtils.isEmpty(collect)){
-            return R.fail(null, ResponseConstants.BATCH_HAS_IN, "物料号:"+MesBarCodeUtil.getMaterialNb(mesBarCode)+",批次号:"+MesBarCodeUtil.getBatchNb(mesBarCode)+"，无待入库任务");
+        if (CollectionUtils.isEmpty(collect)) {
+            return R.fail(null, ResponseConstants.BATCH_HAS_IN, "物料号:" + MesBarCodeUtil.getMaterialNb(mesBarCode) + ",批次号:" + MesBarCodeUtil.getBatchNb(mesBarCode) + "，无待入库任务");
         }
         return R.ok(materialInService.getMaterialCheckInfo(mesBarCode));
     }
@@ -110,8 +113,8 @@ public class MaterialInController extends BaseController {
     @GetMapping(value = "getSameBatchList")
     @ApiOperation("获取同一批次的数据")
     public R<List<MaterialReceiveVO>> getSameBatchList(@RequestParam("materialNb") String materialNb,
-                                                  @RequestParam("batchNb") String batchNb) {
-        return R.ok(materialInService.getSameBatchList(materialNb,batchNb));
+                                                       @RequestParam("batchNb") String batchNb) {
+        return R.ok(materialInService.getSameBatchList(materialNb, batchNb));
     }
 
     @GetMapping("/list")
@@ -138,6 +141,19 @@ public class MaterialInController extends BaseController {
         startPage();
         List<MaterialInVO> list = materialInService.selectMaterialInList(queryDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
+
+    /**
+     * 导出列表
+     */
+    @PostMapping("/export")
+    @ApiOperation("入库清单导出")
+    @Log(title = "入库清单列表导出", businessType = BusinessType.EXPORT)
+    public void export(HttpServletResponse response, @RequestBody MaterialQueryDTO queryDTO) {
+        List<MaterialInVO> list = materialInService.selectMaterialInList(queryDTO);
+        ExcelUtil<MaterialInVO> util = new ExcelUtil<>(MaterialInVO.class);
+        util.exportExcel(response, list, "入库清单列表");
     }
 
 

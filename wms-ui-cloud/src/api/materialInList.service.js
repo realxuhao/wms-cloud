@@ -10,6 +10,15 @@ const getList = async (parameter) => {
   return data
 }
 
+const exportExcel = async (options) => {
+  const url = `/material-in/export`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
 const getReceiveList = async (parameter) => {
   const url = `/material-receive/list?${qs.stringify(parameter)}`
   const { data } = await createAuthInstance(baseUrl).get(url, parameter)
@@ -36,6 +45,7 @@ const deleteMaterialReveive = async (id) => {
 
 export const materialInListService = {
   getList,
+  exportExcel,
   getReceiveList,
   upload,
   uploadBatchUpdate,

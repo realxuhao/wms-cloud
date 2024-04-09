@@ -22,6 +22,14 @@ const finishedProductInventory = {
       const data = await finishedProductInventoryService.saleStockExport(options)
       return data
     },
+    async getAdjustList ({ commit }, options) {
+      const data = await finishedProductInventoryService.getAdjustList(options)
+      return data
+    },
+    async productStockAdjustExport ({ commit }, options) {
+      const data = await finishedProductInventoryService.productStockAdjustExport(options)
+      return data
+    }
   }
 }
 

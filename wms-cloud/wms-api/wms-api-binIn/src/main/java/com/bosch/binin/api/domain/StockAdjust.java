@@ -1,6 +1,7 @@
 package com.bosch.binin.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ruoyi.common.core.web.domain.BaseEntity;
 import lombok.Data;
 
 import java.util.Date;
@@ -13,7 +14,7 @@ import java.util.Date;
  **/
 @Data
 @TableName("stock_adjust")
-public class StockAdjust {
+public class StockAdjust extends BaseEntity {
     private static final long serialVersionUID = 1L;
 
     /**
@@ -91,22 +92,38 @@ public class StockAdjust {
     private Integer deleteFlag;
 
     /**
-     * 总库存
+     * 调整后总库存
      */
     private Double adjustTotalStock;
 
     /**
-     * 冻结库存
+     * 调整后冻结库存
      */
     private Double adjustFreezeStock;
 
     /**
-     * 可用库存
+     * 调整后可用库存
      */
     private Double adjustAvailableStock;
 
     /**
-     * 调整类型,0:领料，1：报废，2：其他
+     * typeList: [{
+     * 						text: '领用',
+     * 						value: 0
+     * 					                    },
+     *                    {
+     * 						text: '报废',
+     * 						value: 1
+     *                    },
+     *                    {
+     * 						text: '其它',
+     * 						value: 2
+     *                    },
+     *                    {
+     * 						text: '玻璃瓶配送到产线',
+     * 						value: 3
+     *                    }
+     * 				],
      */
     private Integer type;
 

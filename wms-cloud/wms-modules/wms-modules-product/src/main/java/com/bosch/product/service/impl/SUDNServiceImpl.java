@@ -12,7 +12,6 @@ import com.bosch.product.api.domain.dto.SUDNDTO;
 import com.bosch.product.api.domain.dto.SUDNShipDTO;
 import com.bosch.product.api.domain.enumeration.ProductPickEnum;
 import com.bosch.product.api.domain.enumeration.SUDNStatusEnum;
-import com.bosch.product.api.domain.vo.ProductPickExportVO;
 import com.bosch.product.api.domain.vo.SUDNVO;
 import com.bosch.product.mapper.SUDNMapper;
 import com.bosch.product.service.IProductPickService;
@@ -23,6 +22,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 /**
@@ -171,8 +172,12 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
             double currentQty = 0.0;
             List<ProductStock> useProductStocks = new ArrayList<>();
             //判断库存是否还能满足
-            double sum = productSortedStockList.stream().mapToDouble(ProductStock::getAvailableStock).sum();
-            if ((double) Math.round((boxSpecification * sum * 100) / 100.0) < item.getDeliveryQuantity()) {
+            AtomicReference<Double> sum = new AtomicReference<>((double) 0);
+//            double sum = productSortedStockList.stream().mapToDouble(ProductStock::getAvailableStock).sum();
+            productSortedStockList.forEach(p->{
+                sum.set(DoubleMathUtil.doubleMathCalculation(sum.get(), p.getAvailableStock(),"+"));
+            });
+            if ((double) Math.round((boxSpecification * sum.get() * 100) / 100.0) < item.getDeliveryQuantity()) {
                 throw new ServiceException("DN" + item.getDelivery() + ",item:" + item.getItem() + ",Material:" + item.getMaterial() + "当前库存已不满足");
             }
             for (ProductStock stock : productSortedStockList) {
@@ -188,9 +193,11 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
                 }
             }
             //箱
-            double useSum = useProductStocks.stream().mapToDouble(ProductStock::getAvailableStock).sum();
+            AtomicReference<Double> useSum = new AtomicReference<>((double) 0);
+            useProductStocks.forEach(u -> useSum.set(DoubleMathUtil.doubleMathCalculation(useSum.get(), u.getAvailableStock(), "+")));
+//            double useSum = useProductStocks.stream().mapToDouble(ProductStock::getAvailableStock).sum();
             //  转化为PCS
-            useSum = (double) Math.round((boxSpecification * useSum * 100) / 100.0);
+            useSum.set((double) Math.round((boxSpecification * useSum.get() * 100) / 100.0));
             List<ProductPick> pickList = new ArrayList<>();
             for (ProductStock stock : useProductStocks) {
                 ProductPick productPick = BeanConverUtil.conver(item, ProductPick.class);
@@ -211,7 +218,7 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
 
                 if (useProductStocks.get(useProductStocks.size() - 1) == stock) {
 
-                    double abs = (double) Math.round(Math.abs(useSum - item.getDeliveryQuantity()) * 100 / 100.0);//PCS
+                    double abs = (double) Math.round(Math.abs(useSum.get() - item.getDeliveryQuantity()) * 100 / 100.0);//PCS
                     //对应的箱
                     double boxDiff = abs / boxSpecification;
                     stock.setFreezeStock(stock.getFreezeStock() + (stock.getAvailableStock() - boxDiff));
@@ -300,7 +307,7 @@ public class SUDNServiceImpl extends ServiceImpl<SUDNMapper, SUDN>
 
 //        double binDownSum = pickList.stream().filter(item -> item.getStatus() == ProductPickEnum.WAITTING_SHIP.code()).mapToDouble(ProductPick::getBinDownQuantity).sum();
         double binDownSum = sudn.getSumBinDownQuantity();
-        double shipQuantity = sudn.getShipQuantity() + shipDTO.getShipQuantity();
+        double shipQuantity = shipDTO.getShipQuantity();
         if (shipQuantity > binDownSum) {
             throw new ServiceException("发运数量不能大于已下架数量");
         }

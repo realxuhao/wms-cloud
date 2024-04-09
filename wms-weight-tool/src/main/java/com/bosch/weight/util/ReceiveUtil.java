@@ -80,7 +80,7 @@ public class ReceiveUtil {
 
 
         String rs = getBufHexStr(data);
-        logger.info("收到消息将16进制的byte数组转换成字符串：" + rs);
+        logger.info("receive data " + rs);
         task(rs, packet);
 
 //            FlexibleThreadPool.submitTask(() -> {
@@ -118,7 +118,6 @@ public class ReceiveUtil {
         String[] s = rs.split(" ");
 
         if (validMsg(s)) {
-            logger.info("校验成功");
 
             String hostAddress = packet.getAddress().getHostAddress();
             int port = packet.getPort();
@@ -126,7 +125,6 @@ public class ReceiveUtil {
             WeightDTO weightDTO = new WeightDTO(hostAddress, port, totalWeight);
             //称重>0的时候，进行请求
             if (weightDTO.getTotalWeight() > 0) {
-                logger.info("收到有效称重数据:" + JSONUtil.toJsonStr(weightDTO));
                 //查看缓存，如果两分钟内，如果实现相同数据则不进行上传
                 if (!Objects.isNull(CacheUtil.get(weightDTO.getIp() + ":" + weightDTO.getPort())) &&
                         CacheUtil.get(weightDTO.getIp() + ":" + weightDTO.getPort()).equals(weightDTO.getTotalWeight())) {
@@ -197,7 +195,6 @@ public class ReceiveUtil {
     }
 
     private static Boolean validMsg(String[] s) {
-        logger.info("start valid data :" + s.length);
         //长度校验
         if (s.length != 142) {
             return false;

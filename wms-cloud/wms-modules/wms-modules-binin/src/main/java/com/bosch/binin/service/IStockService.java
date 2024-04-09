@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
+import com.bosch.binin.api.domain.vo.StockAdjustVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.masterdata.api.domain.dto.IQCDTO;
 import com.bosch.masterdata.api.domain.vo.IQCVO;
@@ -76,4 +77,6 @@ public interface IStockService extends IService<Stock> {
     void initStock(List<InitStockDTO> list);
 
     void editStock(StockEditDTO stockEditDTO);
+
+    List<StockAdjustVO> selectStockAdjustVOList(StockQueryDTO stockQueryDTO);
 }

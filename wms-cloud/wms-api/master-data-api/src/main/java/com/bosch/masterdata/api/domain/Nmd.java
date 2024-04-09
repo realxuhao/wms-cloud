@@ -38,16 +38,18 @@ public class Nmd extends BaseEntity {
     /**
      * 类别（0：Components，1：Package）
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Integer classification;
 
     /**
      * AQL
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private Double aql;
     /**
      * 检验水平级别
      */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @TableField(fill = FieldFill.INSERT_UPDATE,updateStrategy = FieldStrategy.IGNORED)
     private String level;
 
     /**
@@ -57,7 +59,7 @@ public class Nmd extends BaseEntity {
     /**
      * 抽样方案（1：正常,2：加严,3：放宽）
      */
-    @TableField(fill = FieldFill.INSERT_UPDATE)
+    @TableField(fill = FieldFill.INSERT_UPDATE,updateStrategy = FieldStrategy.IGNORED)
     private Integer plan;
 
     @TableField(exist = false)

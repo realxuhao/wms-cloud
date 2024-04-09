@@ -2,16 +2,8 @@
 server:
   port: 8890
 
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
-    map-underscore-to-camel-case: true #自动驼峰映射
-
-mybatis:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 # Spring
-spring: 
+spring:
   application:
     # 应用名称
     name: bin-in

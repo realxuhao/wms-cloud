@@ -15,6 +15,7 @@ import com.bosch.product.service.IProductPickService;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
+import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
@@ -36,6 +37,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -209,6 +211,11 @@ public class ProductPickController extends BaseController {
         list.stream().forEach(item -> {
             item.setItem("0000" + item.getItem());
             item.setDeliveryQuantityString(String.valueOf(item.getDeliveryQuantity().intValue()));
+            try {
+                item.setShipDate(DateUtils.parseDate(item.getDeliveryDate(),"yyyy/MM/dd"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         });
         ExcelUtil<ProductPickExportVO> util = new ExcelUtil<>(ProductPickExportVO.class);
         util.exportExcel(response, list, "SUDN捡配列表");

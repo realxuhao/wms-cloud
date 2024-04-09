@@ -19,7 +19,24 @@ const exportExcel = async (options) => {
   return data
 }
 
+const getAdjustList = async (parameter) => {
+  const url = `/stock/adjustList?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url, parameter)
+  return data
+}
+
+const exportStockAdjust = async (options) => {
+  const url = `/stock/exportStockAdjust`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
 export const stockService = {
   getList,
-  exportExcel
+  exportExcel,
+  getAdjustList,
+  exportStockAdjust
 }

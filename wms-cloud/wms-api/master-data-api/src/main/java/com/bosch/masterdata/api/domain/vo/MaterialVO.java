@@ -26,7 +26,7 @@ public class MaterialVO {
 
     /** 最小包装数量 */
     @ApiModelProperty(value = "最小包装数量")
-    private Long minPackageNumber;
+    private Double minPackageNumber;
 
     /** 物料类型id */
     @Excel(name = "物料类型id")

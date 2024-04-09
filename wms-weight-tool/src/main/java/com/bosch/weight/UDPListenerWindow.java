@@ -174,10 +174,21 @@ public class UDPListenerWindow {
                                     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                                     socket1.receive(packet);
                                     ReceiveUtil.listenPort(packet, buffer);
-                                    System.out.println("Received from port 1: " + "长度为:" + new String(packet.getData()).length());
                                 } catch (Exception e1) {
-                                    e1.printStackTrace();
+//                                    try {
+//                                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+//                                        socket1.receive(packet);
+//                                        ReceiveUtil.listenPort(packet, buffer);
+//                                    }catch (Exception e){
+//                                        isSocket1Connected = false;
+//                                        e1.printStackTrace();
+//                                        JOptionPane.showMessageDialog(panel, e1.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
+//
+//                                    }
+                                    logger.error(e1.getMessage());
+                                    isSocket1Connected = false;
                                     JOptionPane.showMessageDialog(panel, e1.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
+
 
                                 }
                             }
@@ -185,6 +196,8 @@ public class UDPListenerWindow {
                     }.start();
                 } catch (SocketException ex) {
                     ex.printStackTrace();
+                    isSocket1Connected = false;
+
                     JOptionPane.showMessageDialog(panel, ex.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
                 }
             } else {
@@ -233,16 +246,28 @@ public class UDPListenerWindow {
                                     ReceiveUtil.listenPort(packet, buffer);
 //                                    System.out.println("Received from port 2: " + new String(packet.getData()));
                                 } catch (Exception e1) {
-//                                    e1.printStackTrace();
+//                                    try {
+//                                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+//                                        socket2.receive(packet);
+//                                        ReceiveUtil.listenPort(packet, buffer);
+//                                    }catch (Exception e){
+//                                        isSocket2Connected = false;
+//                                        e1.printStackTrace();
+//                                        JOptionPane.showMessageDialog(panel, e1.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
+//
+//                                    }
                                     logger.error(e1.getMessage());
+                                    isSocket2Connected = false;
                                     JOptionPane.showMessageDialog(panel, e1.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
 
+//
                                 }
                             }
                         }
                     }.start();
                 } catch (SocketException ex) {
 //                    ex.printStackTrace();
+                    isSocket2Connected = false;
                     logger.error(ex.getMessage());
                     JOptionPane.showMessageDialog(panel, ex.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
 
@@ -292,8 +317,18 @@ public class UDPListenerWindow {
                                     ReceiveUtil.listenPort(packet, buffer);
 //                                    System.out.println("Received from port 3: " + new String(packet.getData()));
                                 } catch (Exception e1) {
-//                                    e1.printStackTrace();
+//                                    try {
+//                                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+//                                        socket3.receive(packet);
+//                                        ReceiveUtil.listenPort(packet, buffer);
+//                                    }catch (Exception e){
+//                                        isSocket3Connected = false;
+//                                        e.printStackTrace();
+//                                        JOptionPane.showMessageDialog(panel, e1.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
+//
+//                                    }
                                     logger.error(e1.getMessage());
+                                    isSocket3Connected = false;
                                     JOptionPane.showMessageDialog(panel, e1.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
 
                                 }
@@ -302,6 +337,8 @@ public class UDPListenerWindow {
                     }.start();
                 } catch (SocketException ex) {
 //                    ex.printStackTrace();
+                    isSocket3Connected = false;
+
                     logger.error(ex.getMessage());
                     JOptionPane.showMessageDialog(panel, ex.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
 
@@ -350,12 +387,20 @@ public class UDPListenerWindow {
                                     DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
                                     socket4.receive(packet);
                                     ReceiveUtil.listenPort(packet, buffer);
-//                                    System.out.println("Received from port 4: " + new String(packet.getData()));
                                 } catch (Exception e1) {
-//                                    e1.printStackTrace();
+//                                    try {
+//                                        DatagramPacket packet = new DatagramPacket(buffer, buffer.length);
+//                                        socket4.receive(packet);
+//                                        ReceiveUtil.listenPort(packet, buffer);
+//                                    }catch (Exception e){
+//                                        isSocket4Connected = false;
+//                                        e.printStackTrace();
+//                                        JOptionPane.showMessageDialog(panel, e1.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
+//
+//                                    }
                                     logger.error(e1.getMessage());
+                                    isSocket4Connected = false;
                                     JOptionPane.showMessageDialog(panel, e1.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
-
                                 }
                             }
                         }
@@ -363,6 +408,7 @@ public class UDPListenerWindow {
                 } catch (SocketException ex) {
 //                    ex.printStackTrace();
                     logger.error(ex.getMessage());
+                    isSocket4Connected = false;
                     JOptionPane.showMessageDialog(panel, ex.getMessage(), "确认", JOptionPane.WARNING_MESSAGE);
 
                 }
