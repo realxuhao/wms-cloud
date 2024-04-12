@@ -61,4 +61,7 @@ public class MaterialReturnQueryDTO extends PageDomain {
      */
     @ApiModelProperty(value = "结束更新时间")
     private Date updateTimeEnd;
+
+    @ApiModelProperty(value = "cell")
+    private String cell;
 }
