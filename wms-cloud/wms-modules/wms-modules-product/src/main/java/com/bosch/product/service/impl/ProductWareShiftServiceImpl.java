@@ -472,7 +472,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         if (CollectionUtils.isEmpty(ssccByOrder)) {
             throw new ServiceException("当前车次没有待上架的信息");
         }*/
-        String sscc = "369006391113938680";//ProductQRCodeUtil.getSSCC(dto.getMesBarCode());
+        String sscc = ProductQRCodeUtil.getSSCC(dto.getMesBarCode());//"369006391113938680"
         List<TranshipmentOrder> transhipmentOrders = checkProductWareShift(sscc);
         List<String> ssccList = transhipmentOrders.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
 
@@ -556,7 +556,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
     @Override
     public List<ProductWareShift> getBinInInfoList(String qrCode) {
-        String sscc = "369006391113884987"; //ProductQRCodeUtil.getSSCC(qrCode);
+        String sscc = ProductQRCodeUtil.getSSCC(qrCode); //"369006391113884987"
         List<TranshipmentOrder> transhipmentOrders = checkProductWareShift(sscc);
         List<String> ssccList = transhipmentOrders.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
         LambdaQueryWrapper<ProductWareShift> wareShiftWrapper = new LambdaQueryWrapper<>();

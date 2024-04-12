@@ -29,12 +29,16 @@
     </sql>
 
     <select id="list" resultType="com.bosch.binin.api.domain.vo.MaterialReturnVO">
-        select mr.*,
+        select mr.id,mr.material_nb,mr.sscc_number,mr.batch_nb,
+        mr.type,mr.quantity,mr.move_type,mr.area_code,
+        mr.status,mr.create_by,mr.update_by,
+        mr.create_time,mr.update_time,mr.remark,
+        mr.delete_flag,mr.ware_code,mr.expire_date,
         mm.name as material_name,
         md.name as cell
         from material_return mr
         left join md_material mm on mr.material_nb = mm.code and mm.delete_flag = '0'
-        LEFT JOIN md_material_type mmt ON mm.material_type_id = mm.id
+        LEFT JOIN md_material_type mmt ON mm.material_type_id = mmt.id
         left join md_department md on mmt.department_id = md.id
         where mr.delete_flag = 0
         <if test="materialNb != null and materialNb != ''">
