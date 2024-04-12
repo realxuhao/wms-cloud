@@ -33,7 +33,10 @@
 							<MyRadio class="m-r-8" v-model="item.checked">
 								<view class="order-content">
 									<view class="title m-b-4">{{ item.materialName }}</view>
-									
+									<view class="desc m-b-4">
+										<text class="label">CELL:</text>
+										{{ item.cell }}
+									</view>
 									<view class="desc m-b-4">
 										<text class="label">物料编码:</text>
 										{{ item.materialNb }}

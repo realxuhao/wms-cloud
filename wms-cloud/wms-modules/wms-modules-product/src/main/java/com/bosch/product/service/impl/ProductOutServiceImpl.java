@@ -33,6 +33,9 @@ public class ProductOutServiceImpl implements IProductOutService {
 
     @Override
     public void validList(List<SPDNDTO> dtos) {
+        dtos.stream().forEach(item -> {
+            item.setSsccNumber(item.getSsccNumber().trim());
+        });
         //校验质量状态
         List<String> ssccList = dtos.stream().map(SPDNDTO::getSsccNumber).collect(Collectors.toList());
         LambdaQueryWrapper<ProductStock> stockWrapper = new LambdaQueryWrapper<>();
