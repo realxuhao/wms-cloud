@@ -86,7 +86,7 @@
           <a-col :span="4">
             <a-form-model-item label="领用理由">
               <a-select placeholder="请选择领用理由" allow-clear v-model="queryForm.useReason">
-                <a-select-option v-for="dict in dict.type['sys_use_reason']" :key="dict.value" :value="dict.value">
+                <a-select-option v-for="dict in dict.type['sys_use_reason']" :key="dict.value" :value="dict.label">
                   {{ dict.label }}
                 </a-select-option>
               </a-select>
@@ -207,6 +207,10 @@ const adjustTypes=[
   {
     text: '库存恢复',
     value: 5
+  },
+  {
+    text: '成品领用',
+    value: 6
   }
 ]
 const columns = [
