@@ -33,11 +33,11 @@
                ps.adjust_freeze_stock,
                ps.adjust_available_stock,
                ps.type,
-               dd.dict_label as use_reason
+               ps.use_reason
         from product_stock_adjust ps
         left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
-        left join (SELECT *  from   sys_dict_data WHERE  dict_type ='sys_use_reason') dd
-        on dd.dict_value = ps.use_reason
+        -- left join (SELECT *  from   sys_dict_data WHERE  dict_type ='sys_use_reason') dd
+        -- on dd.dict_value = ps.use_reason
         where ps.delete_flag = 0
          -- and ps.plant_nb != '7701' and ps.plant_nb != '7761'
            <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
