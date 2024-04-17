@@ -211,13 +211,7 @@ const columns = [
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
-    width: 140
-  },
-  {
-    title: '跨编码',
-    key: 'frameCode',
-    dataIndex: 'frameCode',
-    width: 140
+    width: 180
   },
   {
     title: '库位编码',
@@ -244,7 +238,7 @@ const columns = [
     title: '质检状态',
     key: 'qualityStatus',
     dataIndex: 'qualityStatus',
-    width: 80,
+    width: 100,
     sorter: true
   },
   {

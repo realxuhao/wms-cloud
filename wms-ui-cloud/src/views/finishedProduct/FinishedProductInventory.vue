@@ -53,12 +53,7 @@
             <a-form-item label="物料类型">
               <a-input v-model="queryForm.materialType" placeholder="物料类型" allow-clear/>
             </a-form-item>
-          </a-col>
-          <a-col :span="4">
-            <a-form-item label="批次号">
-              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
-            </a-form-item>
-          </a-col>
+          </a-col>         
           <a-col :span="4">
             <a-form-item label="批次号">
               <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>

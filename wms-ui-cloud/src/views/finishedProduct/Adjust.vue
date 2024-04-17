@@ -53,12 +53,7 @@
             <a-form-item label="物料类型">
               <a-input v-model="queryForm.materialType" placeholder="物料类型" allow-clear/>
             </a-form-item>
-          </a-col>
-          <a-col :span="4">
-            <a-form-item label="批次号">
-              <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
-            </a-form-item>
-          </a-col>
+          </a-col>          
           <a-col :span="4">
             <a-form-item label="批次号">
               <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
@@ -144,6 +139,9 @@
             </a-tag>
             <a-tag color="#895256" v-if="text===5">
               库存恢复
+            </a-tag>
+            <a-tag color="#235256" v-if="text===6">
+              领用
             </a-tag>
           </div>
         </template>
@@ -267,13 +265,6 @@ const columns = [
     title: '存储区',
     key: 'areaCode',
     dataIndex: 'areaCode',
-    width: 120,
-    sorter: true
-  },  
-  {
-    title: '跨编码',
-    key: 'frameCode',
-    dataIndex: 'frameCode',
     width: 120,
     sorter: true
   },
