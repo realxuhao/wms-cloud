@@ -71,7 +71,7 @@ public class ReturnMaterialController extends BaseController {
     @GetMapping(value = "/getOne/{mesBarCode}")
     public R<MaterialReturnVO> getOne(@PathVariable("mesBarCode") String mesBarCode){
         MaterialReturnQueryDTO materialReturnQueryDTO = new MaterialReturnQueryDTO();
-        materialReturnQueryDTO.setSsccNb(MesBarCodeUtil.getSSCC(mesBarCode));
+        materialReturnQueryDTO.setSsccNumber(MesBarCodeUtil.getSSCC(mesBarCode));
         List<MaterialReturnVO> list = materialReturnService.list(materialReturnQueryDTO);
         if (!CollectionUtils.isEmpty(list)){
             return R.ok(list.get(0));

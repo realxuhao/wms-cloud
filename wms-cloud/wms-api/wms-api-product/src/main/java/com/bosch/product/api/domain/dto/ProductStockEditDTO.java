@@ -43,6 +43,10 @@ public class ProductStockEditDTO {
      *                    {
      * 						text: '库存恢复',
      * 						value: 5
+     *                    },
+     *                    {
+     *      						text: '领用',
+     *       						value: 6
      *                    }
      * 				],
      */

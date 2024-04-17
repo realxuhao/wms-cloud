@@ -61,9 +61,9 @@ public class StockAdjustVO {
     /**
      * 跨编码
      */
-    @ApiModelProperty(value = "跨编码")
-    @Excel(name = "跨编码")
-    private String frameCode;
+//    @ApiModelProperty(value = "跨编码")
+//    @Excel(name = "跨编码")
+//    private String frameCode;
 
     /**
      * 库位编码

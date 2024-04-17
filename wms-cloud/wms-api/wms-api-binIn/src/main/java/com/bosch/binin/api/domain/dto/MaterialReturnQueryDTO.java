@@ -20,7 +20,7 @@ public class MaterialReturnQueryDTO extends PageDomain {
     private String materialNb;
 
     @ApiModelProperty(value = "ssccNb")
-    private String ssccNb;
+    private String ssccNumber;
 
     @ApiModelProperty(value = "开始创建时间")
     private String areaCode;

@@ -44,8 +44,8 @@
         <if test="materialNb != null and materialNb != ''">
             AND mr.material_nb like concat('%', #{materialNb}, '%')
         </if>
-        <if test="ssccNb != null and ssccNb != ''">
-            AND mr.sscc_number like concat('%', #{ssccNB}, '%')
+        <if test="ssccNumber != null and ssccNumber != ''">
+            AND mr.sscc_number like concat('%', #{ssccNumber}, '%')
         </if>
         <if test="wareCode != null and wareCode != ''">
             AND mr.ware_code like concat('%', #{wareCode}, '%')
