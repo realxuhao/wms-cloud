@@ -262,6 +262,29 @@ const finishedProduc = {
 			} = await finishedProductService.getHistoryRecord(options)
 			return data
 		},
+		async getBinInInfoList({
+			commit,
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.getBinInInfoList(options)
+			return data
+		},
+		async batchBinIn({
+			commit,
+		}, options) {
+			const {
+				data
+			} = await finishedProductService.batchBinIn(options)
+			return data
+		},
+		async getDictData({
+			commit
+		}, parameter) {
+			const data = await finishedProductService.getDictData(parameter)
+			return data
+		},
+
 
 
 	}

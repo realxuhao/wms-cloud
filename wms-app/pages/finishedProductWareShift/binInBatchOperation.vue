@@ -1,5 +1,5 @@
 <template>
-	<my-page nav-title="产线退料确认">
+	<my-page nav-title="移库上架">
 		<view class="main" slot="page-main">
 			<uni-forms class="form" :label-width="80" ref="form" :rules="formRules" :modelValue="form"
 				label-position="left">
@@ -19,65 +19,49 @@
 					<text class="active">{{ list.length }}</text>
 					&nbsp;托;
 				</view>
-				<view class="header">
-					已选择&nbsp;
-					<text class="active">{{ hasCheckedItems }}</text>
-					&nbsp;托
-				</view>
+
 			</view>
 
-			<!-- 			<uni-forms-item label="送至Cell" required name="age">
-				<uni-easyinput v-model="form.age" placeholder="请输入年龄" />
-			</uni-forms-item> -->
-			<div class="tabs">
-				<uni-segmented-control :current="currentCell" :values="cellItems" style-type="button"
-					@clickItem="handleCellChange" />
-			</div>
+
 
 			<uni-list class="m-b-12">
 				<uni-list-item v-for="(item, index) in list" :key="index">
 					<template slot="body">
 						<view class="order-main">
-							<MyRadio class="m-r-8" v-model="item.checked">
-								<view class="order-content">
-									<view class="title m-b-4">{{ item.materialName }}</view>
-									<view class="desc m-b-4">
-										<text class="label">CELL:</text>
-										{{ item.cell }}
-									</view>
-									<view class="desc m-b-4">
-										<text class="label">物料编码:</text>
-										{{ item.materialNb }}
-									</view>
-									<view class="desc m-b-4">
-										<text class="label">仓库:</text>
-										{{ item.wareCode }}
-									</view>
-									<view class="desc m-b-4" v-show="item.areaCode">
-										<text class="label">区域:</text>
-										{{ item.areaCode }}
-									</view>
-									<view class="desc m-b-4">
-										<text class="label">SSCC码:</text>
-										{{ item.ssccNumber }}
-									</view>
-									<view class="desc m-b-4">
-										<text class="label">数量:</text>
-										{{ item.quantity }}
-									</view>
-									<view class="desc">
-										<text class="label">批次号:</text>
-										{{item.batchNb}}
-									</view>
+							<!-- <MyRadio class="m-r-8" v-model="item.checked"> -->
+							<view class="order-content">
+								<view class="title m-b-4">{{ item.materialName }}</view>
+
+								<view class="desc m-b-4">
+									<text class="label">物料编码:</text>
+									{{ item.materialNb }}
 								</view>
-							</MyRadio>
+
+								<view class="desc m-b-4" v-show="item.areaCode">
+									<text class="label">区域:</text>
+									{{ item.areaCode }}
+								</view>
+								<view class="desc m-b-4">
+									<text class="label">SSCC码:</text>
+									{{ item.ssccNb }}
+								</view>
+								<view class="desc m-b-4">
+									<text class="label">数量:</text>
+									{{ item.quantity }}
+								</view>
+								<view class="desc">
+									<text class="label">批次号:</text>
+									{{item.batchNb}}
+								</view>
+							</view>
+							<!-- </MyRadio> -->
 						</view>
 					</template>
 				</uni-list-item>
 			</uni-list>
 
 			<view class="submit-btn"><o-btn class="primary-button" @click="handlePost" :loading="submitLoading"
-					:disabled="!hasCheckedItems" block>提交</o-btn></view>
+					:disabled="!list.length" block>提交</o-btn></view>
 		</view>
 		<uni-popup ref="popup" type="dialog">
 			<uni-popup-dialog type="info" title="提示" content="请确认提交" @close="$refs.popup.close()"
@@ -92,18 +76,7 @@
 <script>
 	import Message from '@/components/Message';
 	import MyRadio from '@/components/my-radio/my-radio';
-	import _ from 'lodash';
-
-	const typeMap = {
-		0: {
-			text: '正常退料',
-			color: 'success'
-		},
-		1: {
-			text: '异常退料',
-			color: 'warning'
-		}
-	};
+	import _ from 'lodash'
 	export default {
 		name: 'transhipmentOrderMaterialIn',
 		components: {
@@ -137,21 +110,19 @@
 					areaCode: undefined,
 					wareCode: undefined
 				},
-				dataTree: [],
 				plantList: [],
 				areaList: [],
-				area: undefined
+				dataTree: [],
+				area: undefined,
+				mesBarCode: ''
 			};
 		},
-		computed: {
-			hasCheckedItems() {
-				return _.filter(this.list, 'checked').length;
-			},
-			typeMap() {
-				return typeMap;
-			}
+
+		onLoad(options) {
+			this.loadList(options.barCode)
+			this.mesBarCode = options.barCode
+			this.lodaData()
 		},
-		onLoad(options) {},
 		async onPullDownRefresh() {
 			try {
 				await this.getList();
@@ -161,25 +132,9 @@
 				uni.stopPullDownRefresh();
 			}
 		},
-		mounted() {
-			this.getList();
-			this.lodaData();
-		},
+		mounted() {},
 		methods: {
-			async handleCellChange(e) {
-				try {
-					uni.showLoading({
-						title: "加载中"
-					})
-					this.currentCell = e.currentIndex
-					await this.getList()
-				} catch (e) {
-					//TODO handle the exception
-				} finally {
-					uni.hideLoading()
-				}
 
-			},
 			async getWareList() {
 				const data = await this.$store.dispatch('wareShift/getWareList', {
 					wareCode: this.form.wareCode
@@ -206,17 +161,10 @@
 
 				this.getWareList();
 			},
-			handleAreaChange(val) {
-				const {
-					detail: {
-						value
-					}
-				} = val;
-				this.form.areaCode = value[0].value;
-			},
 			async loadPlantList() {
-
-				const data = await this.$store.dispatch('plant/getList');
+				const data = await this.$store.dispatch('plant/getList', {
+					cell: this.cellItems[this.currentCell]
+				});
 				this.plantList = data;
 
 				const uniqList = _.uniqBy(data, 'factoryCode');
@@ -246,16 +194,27 @@
 			async lodaData() {
 				this.loadPlantList();
 			},
-			async getList() {
+			handleAreaChange(val) {
 				const {
-					rows
-				} = await this.$store.dispatch('wareShift/getReturnMaterialList', {
-					status: 0,
-					pageSize: 0,
-					cell: this.cellItems[this.currentCell]
-				});
-				this.list = rows;
+					detail: {
+						value
+					}
+				} = val;
+				this.form.areaCode = value[0].value;
 			},
+			async loadList(barCode) {
+				try {
+					const data = await this.$store.dispatch('finishedProduct/getBinInInfoList', {
+						barCode
+					});
+					this.list = data;
+
+				} catch (e) {
+					this.$refs.message.error(e.message);
+				}
+
+			},
+
 			async handlePost() {
 				this.$refs.form
 					.validate()
@@ -271,17 +230,18 @@
 						title: '正在提交'
 					});
 					this.submitLoading = true;
-					const ssccNumbers = _.map(_.filter(this.list, x => x.checked), x => x.ssccNumber);
 					const options = {
 						...this.form,
-						ssccNumbers
+						mesBarCode: this.mesBarCode
 					};
-					await this.$store.dispatch('wareShift/returnMaterialConfirm', options);
+					await this.$store.dispatch('finishedProduct/batchBinIn', options);
 					this.$refs.message.success('提交成功');
 					this.$refs.popup.close();
-					this.getList();
+					uni.navigateBack({
+						delta: 1
+					});
+
 				} catch (e) {
-					uni.startPullDownRefresh();
 					this.$refs.message.error(e.message);
 					//TODO handle the exception
 				} finally {
@@ -345,8 +305,12 @@
 		margin-bottom: 8px;
 	}
 
+	.radio {
+		display: none;
+	}
+
 	/deep/.uni-list {
-		height: calc(100vh - 340px);
+		height: calc(100vh - 300px);
 		overflow-y: auto;
 	}
 </style>

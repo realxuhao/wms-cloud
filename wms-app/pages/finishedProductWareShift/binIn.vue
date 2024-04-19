@@ -4,66 +4,97 @@
 			<Pending slot="content0"></Pending>
 			<Completed slot="content1"></Completed>
 		</AloysTab>
-		<view class="action" @click="handleGotoScan"><uni-icons type="scan" size="28" color="#fff"></uni-icons></view>
+		<!-- <view class="action" @click="handleGotoScan"><uni-icons type="scan" size="28" color="#fff"></uni-icons></view> -->
+		<view class="action1" @click="handleGotoScan('/pages/finishedProductWareShift/binInScan')">
+			<span>逐托</span>
+			<span>上架</span>
+		</view>
+		<view class="action" @click="handleGotoScan('/pages/finishedProductWareShift/binInBatchScan')">
+			<span>按批</span>
+			<span>上架</span>
+		</view>
 	</my-page>
 </template>
 
 <script>
-import AloysTab from '@/components/aloys-tab/aloys-tab';
-import Pending from './binInPending.vue';
-import Completed from './binInCompleted.vue';
+	import AloysTab from '@/components/aloys-tab/aloys-tab';
+	import Pending from './binInPending.vue';
+	import Completed from './binInCompleted.vue';
 
-export default {
-	name: 'binIn',
-	components: {
-		AloysTab,
-		Pending,
-		Completed
-	},
-	data() {
-		return {
-			tabs: [{ title: '待上架' }, { title: '已上架' }],
-			currentTabIndex: 0
-		};
-	},
-	methods: {
-		onTabChange(id) {
-			console.log(id);
+	export default {
+		name: 'binIn',
+		components: {
+			AloysTab,
+			Pending,
+			Completed
 		},
-		handleGotoScan() {
-			uni.navigateTo({
-				url: '/pages/finishedProductWareShift/binInScan'
-			});
+		data() {
+			return {
+				tabs: [{
+					title: '待上架'
+				}, {
+					title: '已上架'
+				}],
+				currentTabIndex: 0
+			};
+		},
+		methods: {
+			onTabChange(id) {
+				console.log(id);
+			},
+			handleGotoScan(url) {
+				uni.navigateTo({
+					url
+				});
+			}
 		}
-	}
-};
+	};
 </script>
 
 <style lang="scss">
-/deep/.tabs {
-	background: #fff;
-	.tab-item {
-		color: #999;
+	/deep/.tabs {
+		background: #fff;
+
+		.tab-item {
+			color: #999;
+		}
 	}
-}
 
-/deep/.swiper-box {
-	flex: 1;
-}
+	/deep/.swiper-box {
+		flex: 1;
+	}
 
-.action {
-	border: 1px solid $uni-border-color;
-	width: 60px;
-	height: 60px;
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	border-radius: 50%;
-	color: #fff;
-	position: fixed;
-	bottom: 60px;
-	right: 40px;
-	background: rgba(84, 27, 134, 0.7);
-	box-shadow: 0 1px 3px 2px rgba(0, 0, 0, 0.5);
-}
+	.action {
+		border: 1px solid $uni-border-color;
+		width: 60px;
+		height: 60px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		border-radius: 50%;
+		color: #fff;
+		position: fixed;
+		bottom: 60px;
+		right: 40px;
+		background: rgba(84, 27, 134, 0.7);
+		box-shadow: 0 1px 3px 2px rgba(0, 0, 0, 0.5);
+	}
+
+	.action1 {
+		border: 1px solid $uni-border-color;
+		width: 60px;
+		height: 60px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+		border-radius: 50%;
+		color: #fff;
+		position: fixed;
+		bottom: 150px;
+		right: 40px;
+		background: rgba(84, 27, 134, 0.7);
+		box-shadow: 0 1px 3px 2px rgba(0, 0, 0, 0.5);
+	}
 </style>
