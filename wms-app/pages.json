@@ -198,6 +198,12 @@
 			"path": "pages/binIn/batchBinInOperation"
 		},
 		{
+			"path": "pages/finishedProductWareShift/binInBatchOperation"
+		},
+		{
+			"path": "pages/finishedProductWareShift/binInBatchScan"
+		},
+		{
 			"path": "pages/stockTake/stockTake"
 		},
 		{

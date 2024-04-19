@@ -332,8 +332,38 @@ const addSplit = async (options) => {
 	})
 }
 
+const getBinInInfoList = async (options) => {
+	const method = 'GET'
+	const url = `/product/product-shift/getBinInInfoList/${options.barCode}`
+	return request({
+		url,
+		method,
+	})
+}
+
+const batchBinIn = async (options) => {
+	const method = 'POST'
+	const url = `/product/product-shift/batchBinIn`
+	return request({
+		url,
+		method,
+		data: options
+	})
+}
+
+const getDictData = async (type) => {
+	const url = `/system/dict/data/type/${type}`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+
+	})
+}
 
 export const finishedProductService = {
+	getDictData,
 	getTaskList,
 	addPackageHistory,
 	deleteMultiPackageHistory,
@@ -365,5 +395,8 @@ export const finishedProductService = {
 	sudnShip,
 	addProductReturn,
 	getOneBinDownBySSCC,
-	addSplit
+	addSplit,
+
+	getBinInInfoList,
+	batchBinIn
 }

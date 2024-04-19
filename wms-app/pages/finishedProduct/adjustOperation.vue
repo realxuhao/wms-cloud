@@ -6,7 +6,7 @@
 					<view class="label">库位：</view>
 					{{ materialInfo.binCode }}
 				</view>
-				
+
 				<view class="text-line m-b-8 ">
 					<view class="label">物料名称：</view>
 					{{ materialInfo.materialName }}
@@ -23,22 +23,22 @@
 					<view class="label">批次：</view>
 					{{ materialInfo.batchNb }}
 				</view>
-				
+
 				<view class="text-line m-b-8 ">
 					<view class="label">总库存：</view>
-					{{ materialInfo.pcsTotalStock }} PCS 
+					{{ materialInfo.pcsTotalStock }} PCS
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">冻结库存：</view>
-					{{ materialInfo.pcsFreezeStock }} PCS 
+					{{ materialInfo.pcsFreezeStock }} PCS
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">可用库存：</view>
-					{{ materialInfo.pcsAvailableStock }} PCS 
+					{{ materialInfo.pcsAvailableStock }} PCS
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">状态：</view>
-					{{ materialInfo.desc }} 
+					{{ materialInfo.desc }}
 				</view>
 			</view>
 
@@ -53,7 +53,7 @@
 							<uni-easyinput v-model="form.stockUse" placeholder="取样数量"></uni-easyinput>
 						</uni-forms-item>
 					</template>
-					
+
 					<template v-if="form.type === 2">
 						<uni-forms-item label="报废数量" name="totalStock" required>
 							<uni-easyinput v-model="form.stockUse" placeholder="报废数量"></uni-easyinput>
@@ -71,7 +71,7 @@
 							<uni-easyinput v-model="form.availableStock" placeholder="请输入可用库存"></uni-easyinput>
 						</uni-forms-item>
 					</template>
-					
+
 					<template v-if="form.type === 5">
 						<uni-forms-item label="总库存" name="totalStock" required>
 							<uni-easyinput v-model="form.totalStock" placeholder="请输入总库存"></uni-easyinput>
@@ -82,6 +82,14 @@
 						<uni-forms-item label="可用库存" name="availableStock" required>
 							<uni-easyinput v-model="form.availableStock" placeholder="请输入可用库存"></uni-easyinput>
 						</uni-forms-item>
+					</template>
+
+					<template v-if="form.type === 6">
+						<uni-forms-item label="领用理由" name="totalStock" required>
+							<uni-data-select v-model="form.useReason" :localdata="useList"></uni-data-select>
+
+						</uni-forms-item>
+
 					</template>
 
 					<o-btn block class="submit-btn primary-button" :loading="submitLoading"
@@ -138,6 +146,10 @@
 					{
 						text: '库存恢复',
 						value: 5
+					},
+					{
+						text: '领用',
+						value: 6
 					}
 				],
 				submitLoading: false,
@@ -168,14 +180,27 @@
 					totalStock: 0,
 					type: 0
 				},
-				list: []
+				list: [],
+				useList: []
 			};
 		},
 		onLoad(options) {
 			this.getInfo(options.barCode)
+			this.getUseList()
 		},
 
 		methods: {
+			async getUseList() {
+				const {
+					data
+				} = await this.$store.dispatch('finishedProduct/getDictData', 'sys_use_reason');
+				this.useList = _.map(data, x => {
+					return {
+						value: x.dictLabel,
+						text: x.dictLabel,
+					}
+				})
+			},
 			async handleGoBack() {
 				uni.navigateBack({
 					delta: 1
