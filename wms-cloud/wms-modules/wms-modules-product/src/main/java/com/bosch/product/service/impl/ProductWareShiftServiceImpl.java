@@ -472,8 +472,8 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         if (CollectionUtils.isEmpty(ssccByOrder)) {
             throw new ServiceException("当前车次没有待上架的信息");
         }*/
-        String sscc = ProductQRCodeUtil.getSSCC(dto.getMesBarCode());//"369006391113938680"
-        List<TranshipmentOrder> transhipmentOrders = checkProductWareShift(sscc);
+        String sscc = ProductQRCodeUtil.getSSCC(dto.getMesBarCode());
+        List<TranshipmentOrder> transhipmentOrders = getTranshipmentOrder(sscc);
         List<String> ssccList = transhipmentOrders.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
 
         if (StringUtils.isEmpty(dto.getAreaCode())) {
@@ -521,26 +521,15 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
     }
 
-    private List<TranshipmentOrder> checkProductWareShift(String sscc) {
-        //查询移库任务为待上架的记录
-        LambdaQueryWrapper<ProductWareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
-        wareShiftQueryWrapper.eq(ProductWareShift::getSsccNb, sscc);
-        wareShiftQueryWrapper.eq(ProductWareShift::getStatus, ProductWareShiftEnum.WAITTING_BIN_IN.code());
-        wareShiftQueryWrapper.eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        wareShiftQueryWrapper.last("limit 1");
-        ProductWareShift productWareShift = this.getOne(wareShiftQueryWrapper);
-        if (productWareShift == null) {
-            throw new ServiceException("没有该SSCC：" + sscc + "对应的上架任务");
-        }
-
+    private List<TranshipmentOrder> getTranshipmentOrder(String sscc) {
         LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
-        qw.eq(TranshipmentOrder::getProductWareShiftId, productWareShift.getId());
+        qw.eq(TranshipmentOrder::getSsccNumber, sscc);
         qw.eq(TranshipmentOrder::getStatus, StatusEnums.TRUE.getCode());
         qw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         qw.orderByDesc(TranshipmentOrder::getCreateTime);
         qw.last("limit 1");
         TranshipmentOrder transhipmentOrder = transhipmentOrderService.getOne(qw);
-        if (transhipmentOrder == null) {
+        if (transhipmentOrder.getStatus() == 0) {
             throw new ServiceException("当前车次货物还没有收货");
         }
         LambdaQueryWrapper<TranshipmentOrder> tqw = new LambdaQueryWrapper<>();
@@ -556,8 +545,8 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
 
     @Override
     public List<ProductWareShift> getBinInInfoList(String qrCode) {
-        String sscc = ProductQRCodeUtil.getSSCC(qrCode); //"369006391113884987"
-        List<TranshipmentOrder> transhipmentOrders = checkProductWareShift(sscc);
+        String sscc = ProductQRCodeUtil.getSSCC(qrCode);
+        List<TranshipmentOrder> transhipmentOrders = getTranshipmentOrder(sscc);
         List<String> ssccList = transhipmentOrders.stream().map(TranshipmentOrder::getSsccNumber).collect(Collectors.toList());
         LambdaQueryWrapper<ProductWareShift> wareShiftWrapper = new LambdaQueryWrapper<>();
         wareShiftWrapper.in(ProductWareShift::getSsccNb, ssccList);
