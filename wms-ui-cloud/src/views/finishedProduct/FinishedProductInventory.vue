@@ -112,7 +112,7 @@
           selectedRowKeys: selectedRowKeys, onChange: onSelectChange ,
           getCheckboxProps:record => ({
             props: {
-              disabled: record.freezeStock > 0 
+              disabled: record.freezeStock > 0 || record.binInFlag == 1
             },
           }),}"
         :columns="columns"
