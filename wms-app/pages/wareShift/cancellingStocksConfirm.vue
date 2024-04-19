@@ -1,9 +1,9 @@
 <template>
 	<my-page nav-title="产线退料确认">
 		<view class="main" slot="page-main">
-			<uni-forms class="form" :label-width="80" ref="form" :rules="formRules" :modelValue="form"
+			<uni-forms class="form" :label-width="100" ref="form" :rules="formRules" :modelValue="form"
 				label-position="left">
-				<uni-forms-item label="仓库" name="wareCode" required>
+				<uni-forms-item label="接收仓库" name="wareCode" required>
 					<uni-data-picker ref="picker" popup-title="请选择仓库" :localdata="dataTree"
 						@change="handleChangePlant"></uni-data-picker>
 				</uni-forms-item>
