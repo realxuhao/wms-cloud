@@ -108,9 +108,9 @@
         from product_stock ps
         left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
         where ps.delete_flag = 0
-        and (ps.material_nb,ps.expire_date) in
+        and (ps.material_nb,ps.expire_date,ps.plant_nb) in
         <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
-            (#{item.materialNb},#{item.batch})
+            (#{item.materialNb},#{item.batch},#{item.plantNb})
         </foreach>
 
     </select>
@@ -122,9 +122,9 @@
         from product_stock ps
         left join md_product_packaging pp on pp.product_no = ps.material_nb and pp.delete_flag = 0
         WHERE ps.delete_flag = 0
-        and (ps.material_nb,ps.batch_nb) not in
+        and (ps.material_nb,ps.batch_nb,ps.plant_nb) not in
         <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
-            (#{item.materialNb},#{item.batch})
+            (#{item.materialNb},#{item.batch},#{item.plantNb})
         </foreach>
         GROUP BY ps.material_nb,ps.batch_nb
 

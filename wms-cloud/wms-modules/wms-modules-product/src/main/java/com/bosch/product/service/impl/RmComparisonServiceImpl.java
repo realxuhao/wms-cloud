@@ -196,6 +196,9 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
                 Map<String, String> map = new HashMap<>();
                 map.put("materialNb", proComparison.getMaterialNb());
                 map.put("batch", replace);
+                //plantNb
+                map.put("plantNb",proComparison.getPlantNb());
+
                 return map;
             }).collect(Collectors.toList());
 
@@ -213,6 +216,7 @@ public class RmComparisonServiceImpl extends ServiceImpl<RmComparisonMapper, RmC
 //                }
                 proComparison.setStockExpireDate(inStock.getBatchNb());
                 proComparison.setStockMaterialNb(inStock.getMaterialNb());
+                //set plant
                 Double pcsTotalStock = inStock.getPcsTotalStock();
                 // pcsTotalStock四舍五入不需要小数
                 if(pcsTotalStock!=null){
