@@ -481,6 +481,9 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
         if (stock == null) {
             throw new ServiceException("无此库存信息");
         }
+        //校验有没有任务
+        jobService.validStockStatus(stockEditDTO.getSsccNumber());
+
         StockAdjust stockAdjust = BeanConverUtil.conver(stock, StockAdjust.class);
 
         if (stockEditDTO.getType() == 0) {//领料
