@@ -62,6 +62,10 @@ const materialFeeding = {
       const data = await materialFeedingService.exportExcel(options)
       return data
     },
+    async exportCallListExcel({ commit }, options) {
+      const data = await materialFeedingService.exportCallListExcel(options)
+      return data
+    },
     async exportCallExcel ({ commit }, options) {
       const data = await materialFeedingService.exportCallExcel(options)
       return data
@@ -101,7 +105,11 @@ const materialFeeding = {
     async batchCancel ({ commit }, ids) {
       const data = await materialFeedingService.batchCancel(ids)
       return data
-    }
+    },
+    async getPaginationRegisterList ({ commit }, options) {
+      const data = await materialFeedingService.getRegisterList(options)
+      return data
+    },
 
   }
 }

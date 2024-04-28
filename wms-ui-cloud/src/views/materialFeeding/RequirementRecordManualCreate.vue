@@ -17,6 +17,7 @@
       </a-form-item>
       <a-form-item label="Cell">
         <a-select
+          @change="handleChange"
           allow-clear
           placeholder="Cell"
           v-decorator="[
@@ -50,7 +51,16 @@
             { rules: [{ required: true, message: '请输入需求量!' }] }
           ]" />
       </a-form-item>
-
+      <a-form-item label="FSMP注册批" v-if="visibleRegister">
+        <a-radio-group 
+          v-decorator="[
+            'registerBatch',{initialValue:'0'}
+          ]" 
+          button-style="solid">
+          <a-radio-button value="1">是</a-radio-button>
+          <a-radio-button value="0">否</a-radio-button>
+        </a-radio-group>
+      </a-form-item>
     </a-form>
 
     <div class="action">
@@ -80,6 +90,7 @@ export default {
   data () {
     return {
       visible: false,
+      visibleRegister: false,
       form: this.$form.createForm(this),
       submitLoading: false,
 
@@ -135,6 +146,14 @@ export default {
           this.submitLoading = false
         }
       })
+    },
+    handleChange(value) {
+      if (value === 'FSMP') {
+        this.visibleRegister = true
+      }
+      else{
+        this.visibleRegister = false        
+      }
     }
   },
   watch: {

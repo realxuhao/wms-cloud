@@ -77,6 +77,14 @@ const cancelPickingOrder = async (options) => {
   const { data } = await createAuthInstance(config.apiHost).put(url)
   return data
 }
+const exportCallListExcel = async (options) => {
+  const url = `binin/material-feeding/exportCall`
+  const { data } = await createAuthInstance(config.apiHost).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
 
 const exportExcel = async (options) => {
   const url = `binin/material-feeding/export`
@@ -150,6 +158,12 @@ const callAdd = async (options) => {
   return data
 }
 
+const getRegisterList = async (parameter) => {
+  const url = `/materialKanban/registerBatchList?${qs.stringify(parameter)}`
+  const { data } = await createAuthInstance(baseUrl).get(url, parameter)
+  return data
+}
+
 export const materialFeedingService = {
   getList,
   upload,
@@ -163,6 +177,7 @@ export const materialFeedingService = {
   batchAddJob,
   cancelPickingOrder,
   exportExcel,
+  exportCallListExcel,
   getStockInfo,
   addShiftTask,
   confirmMaterial,
@@ -173,5 +188,6 @@ export const materialFeedingService = {
   generateJobByCall,
   callAdd,
   getCallList,
+  getRegisterList,
   batchCancel
 }

@@ -110,6 +110,14 @@
           <EditTableCell v-hasPermi="['call:list:edit']" v-if="record.status === 0" :text="text" @change="(val)=>handleQuantityChange(record,val)" />
           <span v-else>{{ text }}</span>
         </template>
+        <template slot="registerBatch" slot-scope="text">
+          <a-tag color="#f95256" v-if="text===1">
+            是
+          </a-tag>
+          <a-tag color="#87d068" v-if="text===0">
+            否
+          </a-tag>
+        </template>
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <!-- <a-popconfirm
@@ -222,6 +230,13 @@ const columns = [
     dataIndex: 'status',
     scopedSlots: { customRender: 'status' },
     width: 120
+  },
+  {
+    title: 'FSMP注册批',
+    key: 'registerBatch',
+    dataIndex: 'registerBatch',
+    scopedSlots: { customRender: 'registerBatch' },
+    width: 100
   },
   {
     title: '备注',

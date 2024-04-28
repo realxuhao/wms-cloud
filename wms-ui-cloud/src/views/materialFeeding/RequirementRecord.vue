@@ -119,6 +119,14 @@
         <template slot="status" slot-scope="text">
           <a-tag :color="statusColorMap[text]">{{ statusMap[text] }}</a-tag>
         </template>
+        <template slot="registerBatch" slot-scope="text">
+          <a-tag color="#f95256" v-if="text===1">
+            是
+          </a-tag>
+          <a-tag color="#87d068" v-if="text===0">
+            否
+          </a-tag>
+        </template>
         <template slot="quantity" slot-scope="text,record">
           <EditTableCell v-if="record.status === 0" :text="text" @change="(val) => handleQuantityChange(record, val)" />
           <span v-else>{{ text }}</span>
@@ -233,6 +241,13 @@ const columns = [
     key: 'remark',
     dataIndex: 'remark',
     width: 80
+  },
+  {
+    title: 'FSMP注册批',
+    key: 'registerBatch',
+    dataIndex: 'registerBatch',
+    scopedSlots: { customRender: 'registerBatch' },
+    width: 100
   },
   {
     title: '创建人',
@@ -374,7 +389,7 @@ export default {
       try {
         this.exportLoading = true
         this.queryForm.pageSize = 0
-        const blobData = await this.$store.dispatch('materialFeeding/exportExcel', this.queryForm)
+        const blobData = await this.$store.dispatch('materialFeeding/exportCallListExcel', this.queryForm)
         console.log(blobData)
         download(blobData, '需求记录')
       } catch (error) {
