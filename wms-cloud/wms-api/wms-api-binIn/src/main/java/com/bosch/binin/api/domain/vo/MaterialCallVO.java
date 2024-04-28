@@ -136,5 +136,8 @@ public class MaterialCallVO {
 
     private int shiftFlag;
 
-
+    @Excel(name = "FSMP注册批",readConverterExp = "1=是,0=否")
+    @ExcelProperty(value = "FSMP注册批")
+    @ApiModelProperty(value = "FSMP注册批")
+    private Integer registerBatch;
 }

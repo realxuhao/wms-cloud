@@ -1,12 +1,11 @@
 package com.bosch.binin.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.bosch.binin.api.domain.MaterialCall;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.vo.MaterialInfoVO;
 import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
-import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.binin.api.domain.vo.RegisterBatchVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -40,4 +39,6 @@ public interface MaterialKanbanMapper extends BaseMapper<MaterialKanban> {
     List<MaterialKanbanVO> waitingBinDownList(String wareCode);
 
     List<MaterialKanbanVO> getKanbanList(MaterialKanbanDTO dto);
+
+    List<RegisterBatchVO> getRegisterBatchList(MaterialKanbanDTO dto);
 }

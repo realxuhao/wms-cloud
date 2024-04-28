@@ -186,4 +186,9 @@ public class MaterialKanbanVO extends BaseEntity {
     @ExcelProperty(value = "deleteFlag")
     @ApiModelProperty(value = "deleteFlag")
     private Integer deleteFlag;
+
+    @Excel(name = "FSMP注册批",readConverterExp = "1=是,0=否")
+    @ExcelProperty(value = "FSMP注册批")
+    @ApiModelProperty(value = "FSMP注册批")
+    private Integer registerBatch;
 }

@@ -104,4 +104,16 @@ public class MaterialKanban extends BaseEntity {
     private Date expireDate;
 
     private Double binDownQuantity;
+
+    private Integer registerBatch;
+
+    /**
+     * 拣配时间
+     */
+    private Date pickingTime;
+
+    /**
+     * 产线收货时间
+     */
+    private Date receivedTime;
 }

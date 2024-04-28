@@ -21,7 +21,8 @@
         mc.update_time as update_time,
         mc.issued_quantity as issued_quantity,
         mm.name as material_name,
-        mc.shift_flag
+        mc.shift_flag,
+        ifnull(mc.register_batch,0) register_batch
         from material_call mc left join (SELECT * from md_material where delete_flag='0' ) mm on mc.material_nb =
         mm.code
         where
@@ -58,7 +59,8 @@
         mc.create_time as create_time,
         mc.update_time as update_time,
         mc.issued_quantity as issued_quantity,
-        mm.name as material_name
+        mm.name as material_name,
+        ifnull(mc.register_batch,0) register_batch
         from material_call mc left join (SELECT * from md_material where delete_flag='0' ) mm on mc.material_nb =
         mm.code
         where

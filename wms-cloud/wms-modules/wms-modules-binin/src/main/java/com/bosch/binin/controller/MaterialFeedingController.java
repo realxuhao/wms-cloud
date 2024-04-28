@@ -18,6 +18,7 @@ import com.bosch.masterdata.api.enumeration.ClassType;
 import com.github.pagehelper.PageInfo;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.controller.BaseController;
@@ -96,6 +97,9 @@ public class MaterialFeedingController extends BaseController {
                             if ( r.getQuantity() < 0) {
                                 throw new ServiceException("数量输入有误", 400);
                             }
+                            if (cell.equals("FSMP") && r.getRegisterBatchStr().equals("Y")) {
+                                r.setRegisterBatch(1);
+                            }
                             r.setSortType(0);
                             r.setCell(cell);
                             newList.add(r);
@@ -153,6 +157,12 @@ public class MaterialFeedingController extends BaseController {
         if (call.getQuantity() <= 0) {
             throw new ServiceException("需求量必须大于0");
         }
+        if (!call.getCell().equals("FSMP") && call.getRegisterBatch() != null && call.getRegisterBatch().equals(1)) {
+            call.setRegisterBatch(null);
+        }
+        if (call.getRegisterBatch() != null && call.getRegisterBatch().equals(0)) {
+            call.setRegisterBatch(null);
+        }
         materialCallService.add(call);
         return R.ok();
     }
@@ -197,6 +207,15 @@ public class MaterialFeedingController extends BaseController {
 
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
 
+    }
+
+    @PostMapping("/exportCall")
+    @ApiOperation("叫料需求列表导出")
+    @Log(title = "叫料需求列表导出", businessType = BusinessType.EXPORT)
+    public void exportCall(HttpServletResponse response, @RequestBody MaterialCallQueryDTO queryDTO) {
+        List<MaterialCallVO> materialCallVOS = materialCallService.getList(queryDTO);
+        ExcelUtil<MaterialCallVO> util = new ExcelUtil<MaterialCallVO>(MaterialCallVO.class);
+        util.exportExcel(response, materialCallVOS, "叫料需求");
     }
 
 

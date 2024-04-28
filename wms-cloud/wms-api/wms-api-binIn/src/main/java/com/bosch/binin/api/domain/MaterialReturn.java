@@ -71,6 +71,10 @@ public class MaterialReturn extends BaseEntity {
 
     private String cell;
 
+    private String orderNumber;
+
+    private Date receivedTime;
+
     /**
      * 删除标记1：删除，0:可用
      */

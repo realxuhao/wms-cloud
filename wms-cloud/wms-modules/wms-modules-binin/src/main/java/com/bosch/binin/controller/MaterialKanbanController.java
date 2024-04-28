@@ -6,6 +6,7 @@ import com.bosch.binin.api.domain.*;
 
 import com.bosch.binin.api.domain.dto.SplitPalletDTO;
 import com.bosch.binin.api.domain.vo.MaterialInfoVO;
+import com.bosch.binin.api.domain.vo.RegisterBatchVO;
 import com.bosch.binin.api.enumeration.CallStatusEnum;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.service.*;
@@ -22,10 +23,7 @@ import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.domain.SSCCLogVO;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
-import com.ruoyi.common.core.utils.DoubleMathUtil;
-import com.ruoyi.common.core.utils.MesBarCodeUtil;
-import com.ruoyi.common.core.utils.ProductQRCodeUtil;
-import com.ruoyi.common.core.utils.StringUtils;
+import com.ruoyi.common.core.utils.*;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
 import com.ruoyi.common.core.web.page.PageDomain;
@@ -101,6 +99,12 @@ public class MaterialKanbanController {
         dto.setSsccNumber(ssccNb);
         List<MaterialKanbanVO> list = materialKanbanService.getKanbanList(dto);
         return R.ok(list);
+    }
+
+    @GetMapping("/getRegisterBatchOrderNumberBySSCC/{ssccNb}")
+    public R<String> getRegisterBatchOrderNumberBySSCC(@PathVariable("ssccNb") String ssccNb) {
+        String orderNumber = materialKanbanService.getRegisterBatchOrderNumberBySSCC(ssccNb);
+        return R.ok(orderNumber);
     }
 
     @GetMapping(value = "/waitingBinDownList")
@@ -760,5 +764,19 @@ public class MaterialKanbanController {
 
         ExcelUtil<MaterialKanbanVO> util = new ExcelUtil<>(MaterialKanbanVO.class);
         util.exportExcel(response, materialKanbanVOS, "叫料需求");
+    }
+
+    @GetMapping(value = "/registerBatchList")
+    @ApiOperation("查询注册批列表")
+    public R<PageVO<RegisterBatchVO>> registerBatchList(MaterialKanbanDTO materialKanbanDTO) {
+        if (Objects.isNull(materialKanbanDTO)) {
+            materialKanbanDTO = new MaterialKanbanDTO();
+        }
+        if (StringUtils.isNotEmpty(SecurityUtils.getWareCode())) {
+            materialKanbanDTO.setWareCode(SecurityUtils.getWareCode());
+        }
+        startPage();
+        List<RegisterBatchVO> list = materialKanbanService.getRegisterBatchList(materialKanbanDTO);
+        return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
     }
 }

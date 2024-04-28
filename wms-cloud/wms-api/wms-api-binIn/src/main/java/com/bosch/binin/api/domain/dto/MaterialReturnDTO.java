@@ -23,4 +23,7 @@ public class MaterialReturnDTO {
     @ApiModelProperty(value = "sscc")
     private String ssccNb;
 
+    @ApiModelProperty(value = "订单号")
+    private String orderNumber;
+
 }

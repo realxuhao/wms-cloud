@@ -8,6 +8,7 @@ import com.bosch.binin.api.domain.*;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.*;
 import com.bosch.binin.api.enumeration.*;
+import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.service.IBinInService;
 import com.bosch.binin.service.IMaterialKanbanService;
 import com.bosch.binin.service.IMaterialReturnService;
@@ -23,6 +24,7 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -48,6 +50,9 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
 
     @Autowired
     private MaterialReturnMapper materialReturnMapper;
+
+    @Autowired
+    private MaterialKanbanMapper materialKanbanMapper;
 
     @Autowired
     private IStockService stockService;
@@ -94,6 +99,7 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         materialReturnList.stream().forEach(item -> {
             item.setType(finalUnquanlified ? MaterialTransTypeEnum.AB_NORMAL.code() : MaterialTransTypeEnum.NORMAL.code());
             item.setStatus(MaterialReturnStatusEnum.WAITING_BIN_IN.value());
+            item.setReceivedTime(DateUtils.getNowDate());
             item.setWareCode(confirmDTO.getWareCode());
             item.setAreaCode(confirmDTO.getAreaCode());
         });
@@ -142,6 +148,26 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
 //        materialReturn.setType(type);
         materialReturn.setQuantity(quantity);
 //        materialReturn.setCell(materialReturnDTO.getCell());
+        if (StringUtils.isNotEmpty(materialReturnDTO.getOrderNumber())) {
+            LambdaQueryWrapper<MaterialKanban> queryKanbanWrapper = new LambdaQueryWrapper<>();
+            queryKanbanWrapper.eq(MaterialKanban::getOrderNumber, materialReturnDTO.getOrderNumber());
+            queryKanbanWrapper.eq(MaterialKanban::getSsccNumber, materialReturn.getSsccNumber());
+            queryKanbanWrapper.eq(MaterialKanban::getMaterialCode, materialReturn.getMaterialNb());
+            //queryKanbanWrapper.eq(MaterialKanban::getRegisterBatch,1);
+            queryKanbanWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            queryKanbanWrapper.orderByDesc(MaterialKanban::getCreateTime);
+            MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryKanbanWrapper);
+            if (materialKanban == null) {
+                throw new ServiceException("该生产需求号：" + materialReturnDTO.getOrderNumber() + "不存在sscc码:" + materialReturn.getSsccNumber() + "的物料" + materialReturn.getMaterialNb());
+            }
+            if (!materialKanban.getRegisterBatch().equals(1)) {
+                throw new ServiceException("该生产需求号:" + materialReturnDTO.getOrderNumber() + ",sscc码:" + materialReturn.getSsccNumber() + "非FSMP注册批的托");
+            }
+            if (!materialKanban.getStatus().equals(KanbanStatusEnum.LINE_RECEIVED.value())) {
+                throw new ServiceException("该生产需求号：" + materialReturnDTO.getOrderNumber() + ",sscc码:" + materialReturn.getSsccNumber() + "所属的拣配任务产线还未收货");
+            }
+        }
+        materialReturn.setOrderNumber(materialReturnDTO.getOrderNumber());
         return save(materialReturn);
     }
 

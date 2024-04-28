@@ -5,20 +5,12 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bosch.binin.api.domain.BinIn;
-import com.bosch.binin.api.domain.MaterialKanban;
-import com.bosch.binin.api.domain.Stock;
-import com.bosch.binin.api.domain.WareShift;
+import com.bosch.binin.api.domain.*;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.dto.SplitPalletDTO;
-import com.bosch.binin.api.domain.vo.BinInVO;
-import com.bosch.binin.api.domain.vo.MaterialInfoVO;
-import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
-import com.bosch.binin.api.domain.vo.StockVO;
-import com.bosch.binin.api.enumeration.BinInStatusEnum;
-import com.bosch.binin.api.enumeration.KanbanStatusEnum;
-import com.bosch.binin.api.enumeration.KanbanActionTypeEnum;
-import com.bosch.binin.api.enumeration.StockWholeFlagEnum;
+import com.bosch.binin.api.domain.vo.*;
+import com.bosch.binin.api.enumeration.*;
+import com.bosch.binin.mapper.MaterialCallMapper;
 import com.bosch.binin.mapper.MaterialKanbanMapper;
 import com.bosch.binin.mapper.StockMapper;
 import com.bosch.binin.mapper.WareShiftMapper;
@@ -29,6 +21,7 @@ import com.ruoyi.common.core.constant.AreaListConstants;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.MesBarCodeUtil;
 import com.ruoyi.common.core.utils.StringUtils;
@@ -55,6 +48,9 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     private IStockService stockService;
     @Autowired
     private MaterialKanbanMapper materialKanbanMapper;
+
+    @Autowired
+    private MaterialCallMapper materialCallMapper;
 
     @Autowired
     private StockMapper stockMapper;
@@ -178,6 +174,14 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
      */
     @Override
     public List<MaterialKanban> setValue(List<Stock> stocks, List<MaterialKanbanDTO> dtos) {
+        LambdaQueryWrapper<MaterialCall> qw = new LambdaQueryWrapper<>();
+        qw.eq(MaterialCall::getOrderNb, dtos.get(0).getOrderNumber());
+        qw.eq(MaterialCall::getMaterialNb, dtos.get(0).getMaterialCode());
+        qw.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        qw.ne(MaterialCall::getStatus, CallStatusEnum.CANCEL.code());
+        qw.last("for update");
+        MaterialCall materialCallDB = materialCallMapper.selectOne(qw);
+
         List<MaterialKanban> materialKanbans = new ArrayList<>();
         stocks.forEach(r -> {
             MaterialKanban conver = BeanConverUtil.conver(r, MaterialKanban.class);
@@ -195,6 +199,10 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             conver.setType(dto.getQuantity() - r.getAvailableStock() == 0 ?
                     KanbanActionTypeEnum.FULL_BIN_DOWN.value() : KanbanActionTypeEnum.PART_BIN_DOWN.value());
             conver.setStatus(KanbanStatusEnum.WAITING_ISSUE.value());
+            if (materialCallDB != null) {
+                conver.setRegisterBatch(materialCallDB.getRegisterBatch());
+            }
+            conver.setPickingTime(DateUtils.getNowDate());
             conver.setUpdateBy(null);
             conver.setUpdateTime(null);
             conver.setCreateBy(null);
@@ -418,13 +426,13 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         UserOperationLog userOperationLog = new UserOperationLog();
         userOperationLog.setSsccNumber(ssccNb);
         userOperationLog.setCode(kanban.getMaterialCode());
-        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(), UserOperationType.BINOUT.getCode(),userOperationLog);
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.BINOUT.getCode(), userOperationLog);
 
         UserOperationLog userOperationLogFinish = new UserOperationLog();
         userOperationLogFinish.setSsccNumber(ssccNb);
         userOperationLogFinish.setCode(kanban.getMaterialCode());
 
-        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), kanban.getOrderNumber(),SecurityUtils.getUsername(), UserOperationType.CALLOVER.getCode(),userOperationLog);
+        userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), kanban.getOrderNumber(), SecurityUtils.getUsername(), UserOperationType.CALLOVER.getCode(), userOperationLog);
 
         return kanban;
 
@@ -468,6 +476,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     public int updateKanbanByStatus(List<String> ssccs, Integer queryStatus, Integer status) {
         MaterialKanban materialKanban = new MaterialKanban();
         materialKanban.setStatus(status);
+        materialKanban.setPickingTime(DateUtils.getNowDate());
         LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
         uw.in(MaterialKanban::getSsccNumber, ssccs);
         uw.eq(MaterialKanban::getStatus, queryStatus);
@@ -480,6 +489,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     public int updateKanbanByIdStatus(List<Long> ids, Integer queryStatus, Integer status) {
         MaterialKanban materialKanban = new MaterialKanban();
         materialKanban.setStatus(status);
+        materialKanban.setPickingTime(DateUtils.getNowDate());
         LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
         uw.in(MaterialKanban::getId, ids);
         uw.eq(MaterialKanban::getStatus, queryStatus);
@@ -548,8 +558,9 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         MaterialKanbanVO conver = BeanConverUtil.conver(materialKanban, MaterialKanbanVO.class);
         return conver;
     }
+
     @Override
-    public MaterialKanbanVO getKanbanBySSCCAndStatus(String sscc,KanbanStatusEnum kanbanStatusEnum) {
+    public MaterialKanbanVO getKanbanBySSCCAndStatus(String sscc, KanbanStatusEnum kanbanStatusEnum) {
         LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(MaterialKanban::getSsccNumber, sscc);
         queryWrapper.eq(MaterialKanban::getStatus, kanbanStatusEnum.value());
@@ -563,6 +574,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         MaterialKanbanVO conver = BeanConverUtil.conver(materialKanban, MaterialKanbanVO.class);
         return conver;
     }
+
     @Override
     public void splitPallet(SplitPalletDTO splitPallet) {
 
@@ -601,10 +613,10 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             materialKanbanMapper.updateById(materialKanban);
             //整托下架
             binInService.binDown(splitPallet.getSourceSsccNb());
-            userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(),UserOperationType.BINOUT.getCode(),splitPallet.getSourceSsccNb(),materialKanban.getMaterialCode());
+            userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.BINOUT.getCode(), splitPallet.getSourceSsccNb(), materialKanban.getMaterialCode());
 
 
-        }else {
+        } else {
 
 
             //校验quantity
@@ -627,11 +639,11 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
             }
 
-            if (!stockVO.getMaterialNb().equals(MesBarCodeUtil.getMaterialNb(splitPallet.getNewMesBarCode()))){
+            if (!stockVO.getMaterialNb().equals(MesBarCodeUtil.getMaterialNb(splitPallet.getNewMesBarCode()))) {
                 throw new ServiceException("拆托物料号不一致！");
             }
 
-            if (!stockVO.getBatchNb().equals(MesBarCodeUtil.getBatchNb(splitPallet.getNewMesBarCode()))){
+            if (!stockVO.getBatchNb().equals(MesBarCodeUtil.getBatchNb(splitPallet.getNewMesBarCode()))) {
                 throw new ServiceException("拆托批号不一致！");
             }
 
@@ -680,6 +692,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             newKanban.setMoveType(MoveTypeEnums.CALL.getCode());
             newKanban.setParentId(materialKanban.getId());
             newKanban.setExpireDate(materialKanban.getExpireDate());
+            newKanban.setRegisterBatch(materialKanban.getRegisterBatch());
             materialKanbanMapper.insert(newKanban);
 
             //如果有正在上架中的任务，需要删除掉
@@ -712,10 +725,9 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
                 stockMapper.updateById(conver);
             }
-            userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null,SecurityUtils.getUsername(),UserOperationType.PALLETSPLIT.getCode(),splitPallet.getSourceSsccNb(),materialKanban.getMaterialCode());
+            userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.PALLETSPLIT.getCode(), splitPallet.getSourceSsccNb(), materialKanban.getMaterialCode());
 
         }
-
 
 
     }
@@ -776,6 +788,29 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     @Override
     public List<MaterialKanbanVO> getKanbanList(MaterialKanbanDTO dto) {
         return materialKanbanMapper.getKanbanList(dto);
+    }
+
+    @Override
+    public String getRegisterBatchOrderNumberBySSCC(String ssccNb) {
+        LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
+        //queryWrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+        queryWrapper.eq(MaterialKanban::getRegisterBatch, 1);
+        queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        queryWrapper.orderByDesc(MaterialKanban::getCreateTime);
+        MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryWrapper);
+        if (materialKanban == null) {
+            throw new ServiceException("当前sscc码:" + ssccNb + "非FSMP注册批的托");
+        }
+        if (!materialKanban.getStatus().equals(KanbanStatusEnum.LINE_RECEIVED.value())) {
+            throw new ServiceException("当前sscc码:" + ssccNb + "所属的拣配任务产线还未收货");
+        }
+        return materialKanban.getOrderNumber();
+    }
+
+    @Override
+    public List<RegisterBatchVO> getRegisterBatchList(MaterialKanbanDTO dto) {
+        return materialKanbanMapper.getRegisterBatchList(dto);
     }
 
     private void dealCancelSubJob(MaterialKanban subKanban) {

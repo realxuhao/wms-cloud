@@ -21,6 +21,7 @@ import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
 import com.ruoyi.common.core.exception.ServiceException;
+import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.security.utils.SecurityUtils;
@@ -556,6 +557,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         String orderNb = call.getOrderNb();
         String cell = call.getCell();
         Double quantity = call.getQuantity();
+        Integer registerBatch = call.getRegisterBatch();
         LambdaQueryWrapper<MaterialCall> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.ne(MaterialCall::getStatus, CallStatusEnum.CANCEL.code());
@@ -570,6 +572,7 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
         materialCall.setOrderNb(orderNb);
         materialCall.setCell(cell);
         materialCall.setQuantity(quantity);
+        materialCall.setRegisterBatch(registerBatch);
         this.save(materialCall);
 
     }
@@ -639,7 +642,8 @@ public class MaterialCallServiceImpl extends ServiceImpl<MaterialCallMapper, Mat
             kanban.setCreateBy(SecurityUtils.getUsername());
             kanban.setCreateTime(new Date());
             kanban.setMoveType(MoveTypeEnums.CALL.getCode());
-
+            kanban.setRegisterBatch(call.getRegisterBatch());
+            kanban.setPickingTime(DateUtils.getNowDate());
 
             if (i == useMaterialStockList.size() - 1 && splitFlag) {
                 kanban.setQuantity(DoubleMathUtil.doubleMathCalculation(stock.getAvailableStock(), deviation, "-"));

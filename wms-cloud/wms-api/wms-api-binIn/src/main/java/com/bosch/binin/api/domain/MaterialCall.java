@@ -89,9 +89,9 @@ public class MaterialCall extends BaseEntity {
 
     private int shiftFlag;
 
-
-
-
-
+    /**
+     * 是否fsmp注册批
+     */
+    private Integer registerBatch;
 
 }

@@ -248,9 +248,10 @@
         mk.update_by,
         mk.create_time,
         mk.update_time,
-               mk.batch_nb,
-               mk.expire_date,
-               mk.bin_down_quantity
+        mk.batch_nb,
+        mk.expire_date,
+        mk.bin_down_quantity,
+        ifnull(mk.register_batch,0) register_batch
         FROM material_kanban mk
         LEFT JOIN (SELECT * from md_material where delete_flag='0' )mm ON mk.material_code=mm.code
         WHERE 1=1 AND mk.delete_flag='0'
@@ -320,5 +321,65 @@
         </if>
         order by mk.update_time desc, mk.create_time desc
 
+    </select>
+
+    <select id="getRegisterBatchList" parameterType="MaterialKanbanDTO"
+            resultType="com.bosch.binin.api.domain.vo.RegisterBatchVO">
+        SELECT t1.`status`,
+        t2.order_number,
+        t2.material_code,
+        t4.name material_name,
+        t2.sscc_number,
+        t2.batch_nb,
+        t1.quantity,
+        t1.issued_quantity,
+        IFNULL(t2.bin_down_quantity,t2.quantity) pick_quantity,
+        t2.picking_time,
+        t2.quantity received_quantity,
+        t2.received_time,
+        t2.type,
+        t2.parent_id,
+        t3.material_nb return_material_nb,
+        t3.batch_nb return_batch_nb,
+        t3.`status` return_status,
+        t3.quantity return_quantity,
+        t3.create_time return_time,
+        t3.quantity return_received_quantity,
+        t3.received_time return_received_time
+        from material_call t1
+        inner join material_kanban t2
+        on t1.order_nb = t2.order_number and t1.material_nb = t2.material_code
+        left join material_return t3
+        on t3.order_number = t2.order_number and t3.sscc_number = t2.sscc_number and
+        t3.material_nb = t2.material_code
+        and t3.`status` > 0
+        left join (SELECT * from md_material where delete_flag = '0') t4 ON t2.material_code = t4.code
+        where t2.`status` = 6
+        and t1.delete_flag = 0
+        and t2.delete_flag = 0
+        and t1.register_batch = 1
+        and t2.register_batch = 1
+        <if test="orderNumber != null and orderNumber != ''">
+            and t2.order_number like concat('%', #{orderNumber}, '%')
+        </if>
+        <if test="batchNb != null and batchNb != ''">
+            and t2.batch_nb like concat('%', #{batchNb}, '%')
+        </if>
+        <if test="materialCode != null and materialCode != ''">
+            and t2.material_code like concat('%', #{materialCode}, '%')
+        </if>
+        <if test="ssccNumber != null and ssccNumber != ''">
+            and t2.sscc_number like concat('%', #{ssccNumber}, '%')
+        </if>
+        <if test="wareCode != null and wareCode != ''">
+            and t2.ware_code like concat('%', #{wareCode}, '%')
+        </if>
+        <if test="createTimeStart != null ">
+            AND <![CDATA[t2.picking_time >= #{createTimeStart}]]>
+        </if>
+        <if test="createTimeEnd != null ">
+            AND <![CDATA[t2.picking_time <= #{createTimeEnd}]]>
+        </if>
+        order by order_number, material_code, sscc_number, batch_nb
     </select>
 </mapper>

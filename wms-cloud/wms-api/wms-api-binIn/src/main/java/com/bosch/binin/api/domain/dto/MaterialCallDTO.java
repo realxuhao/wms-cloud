@@ -62,6 +62,11 @@ public class MaterialCallDTO {
     @ApiModelProperty(value = "备注")
     private String remark;
 
+
+    @ExcelProperty( "是否FSMP注册批")
+    @ApiModelProperty(value = "是否FSMP注册批")
+    private String registerBatchStr;
+
     /**
      * 部门
      */
@@ -83,5 +88,8 @@ public class MaterialCallDTO {
     @ApiModelProperty(value = "删除标记")
     private Integer deleteFlag;
 
-
+    /**
+     * 是否fsmp注册批 0：否 1：是
+     */
+    private Integer registerBatch;
 }
