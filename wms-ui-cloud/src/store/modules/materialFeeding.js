@@ -110,7 +110,22 @@ const materialFeeding = {
       const data = await materialFeedingService.getRegisterList(options)
       return data
     },
-
+    async getRegisterOrderNumber({ commit }, options) {
+      const { data } = await materialFeedingService.getRegisterOrderNumber()
+      return data
+    },
+    async validRegisterOrderNumber({ commit }, orderNb){ 
+      const { data } = await materialFeedingService.validRegisterOrderNumber(orderNb)
+      return data
+    },
+    async uploadRegisterBom({ commit }, formdata) {
+      const data = await materialFeedingService.uploadRegisterBom(formdata)
+      return data
+    },
+    async exportRegisterBatchExcel({ commit }, options) {
+      const data = await materialFeedingService.exportRegisterBatchExcel(options)
+      return data
+    }
   }
 }
 

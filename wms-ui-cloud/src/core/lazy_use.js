@@ -50,6 +50,7 @@ import {
   notification,
   Space,
   Tree,
+  AutoComplete,
   Empty
 } from 'ant-design-vue'
 
@@ -108,6 +109,7 @@ Vue.use(Statistic)
 Vue.use(Descriptions)
 Vue.use(Space)
 Vue.use(Tree)
+Vue.use(AutoComplete)
 Vue.use(VueClipboard)
 Vue.use(Empty)
 

@@ -164,6 +164,33 @@ const getRegisterList = async (parameter) => {
   return data
 }
 
+const getRegisterOrderNumber = async () => {
+  const url = `/materialKanban/registerOrderList`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const validRegisterOrderNumber = async (orderNb) => {
+  const url = `/materialKanban/validRegisterOrderNumber/${orderNb}`
+  const { data } = await createAuthInstance(baseUrl).get(url)
+  return data
+}
+
+const uploadRegisterBom = async (formdata) => {
+  const url = `/materialKanban/registerBomImport`
+  const { data } = await createAuthInstance(baseUrl).post(url, formdata)
+  return data
+}
+
+const exportRegisterBatchExcel = async (options) => {
+  const url = `/materialKanban/exportRegister`
+  const { data } = await createAuthInstance(baseUrl).post(url, options, {
+    responseType: 'blob',
+    headers: { 'Content-Type': 'application/json' }
+  })
+  return data
+}
+
 export const materialFeedingService = {
   getList,
   upload,
@@ -189,5 +216,9 @@ export const materialFeedingService = {
   callAdd,
   getCallList,
   getRegisterList,
+  getRegisterOrderNumber,
+  validRegisterOrderNumber,
+  uploadRegisterBom,
+  exportRegisterBatchExcel,
   batchCancel
 }
