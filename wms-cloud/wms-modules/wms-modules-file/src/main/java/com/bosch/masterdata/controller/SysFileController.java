@@ -5,6 +5,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
+import com.bosch.binin.api.domain.dto.RegisterBomDTO;
 import com.bosch.file.api.domain.FileUpload;
 import com.bosch.masterdata.service.IFileUploadService;
 import com.bosch.masterdata.utils.CSVUtil;
@@ -390,6 +391,28 @@ public class SysFileController {
             return R.fail("解析文件失败,文件类型不匹配");
         }
 
+    }
+
+    /**
+     * 注册批bom解析文件
+     *
+     * @param file 文件信息
+     * @return 结果
+     */
+    @ApiOperation("解析excel表")
+    @PostMapping(value = "/registerBomImport")
+    public R<List<RegisterBomDTO>> registerBomImport(@RequestPart(value = "file") MultipartFile file,
+                                                     @RequestParam(value = "className") String className) throws Exception {
+        try {
+            Class<?> TClass = Class.forName("com.bosch.binin.api.domain.dto." + className);
+            List<RegisterBomDTO> read = EasyExcelUtil.read(file.getInputStream(), TClass, className);
+            if (CollectionUtils.isEmpty(read)) {
+                return R.fail("excel中无数据");
+            }
+            return R.ok(read);
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
     }
 
 }

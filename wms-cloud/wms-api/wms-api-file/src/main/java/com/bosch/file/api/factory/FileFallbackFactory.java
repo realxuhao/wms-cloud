@@ -77,5 +77,9 @@ public class FileFallbackFactory implements FileService {
         return R.fail("调用导入SPDN导入失败");
     }
 
+    @Override
+    public <T> R<List<T>> registerBomImport(MultipartFile file, String className) {
+        return R.fail("注册批导入失败");
+    }
 
 }

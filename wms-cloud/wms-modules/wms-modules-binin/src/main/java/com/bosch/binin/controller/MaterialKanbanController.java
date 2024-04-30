@@ -1,20 +1,20 @@
 package com.bosch.binin.controller;
 
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.*;
 
+import com.bosch.binin.api.domain.dto.RegisterBomDTO;
 import com.bosch.binin.api.domain.dto.SplitPalletDTO;
-import com.bosch.binin.api.domain.vo.MaterialInfoVO;
-import com.bosch.binin.api.domain.vo.RegisterBatchVO;
-import com.bosch.binin.api.enumeration.CallStatusEnum;
+import com.bosch.binin.api.domain.vo.*;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.binin.service.*;
 
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
-import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
-import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.domain.vo.PageVO;
+import com.bosch.masterdata.api.enumeration.ClassType;
 import com.bosch.product.api.domain.ProductWareShift;
 import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
 import com.bosch.system.api.domain.UserOperationLog;
@@ -34,16 +34,20 @@ import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import lombok.Synchronized;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -58,9 +62,16 @@ import static com.ruoyi.common.core.utils.PageUtils.startPage;
 public class MaterialKanbanController {
 
     @Autowired
+    private FileService fileService;
+
+    @Autowired
     private ITranshipmentOrderService transhipmentOrderService;
     @Autowired
     private IMaterialKanbanService materialKanbanService;
+
+    @Autowired
+    private IRegisterBomService registerBomService;
+
     @Autowired
     private IMaterialCallService materialCallService;
 
@@ -94,7 +105,7 @@ public class MaterialKanbanController {
     }
 
     @GetMapping("/getKanbanListBySSCC/{ssccNb}")
-    public R<List<MaterialKanbanVO>> getKanbanListBySSCC(@PathVariable("ssccNb") String ssccNb){
+    public R<List<MaterialKanbanVO>> getKanbanListBySSCC(@PathVariable("ssccNb") String ssccNb) {
         MaterialKanbanDTO dto = new MaterialKanbanDTO();
         dto.setSsccNumber(ssccNb);
         List<MaterialKanbanVO> list = materialKanbanService.getKanbanList(dto);
@@ -141,13 +152,13 @@ public class MaterialKanbanController {
     public R<List<SSCCLogVO>> issueJob(@PathVariable Long[] ids) {
         List<MaterialKanban> kanbanList = materialKanbanService.issueJob(ids);
         List<SSCCLogVO> ssccLogVOS = new ArrayList<>();
-        kanbanList.stream().forEach(kanban->{
+        kanbanList.stream().forEach(kanban -> {
             SSCCLogVO ssccLogVO = new SSCCLogVO();
             ssccLogVO.setSsccNumber(kanban.getSsccNumber());
             ssccLogVO.setQuantity(null);
             ssccLogVOS.add(ssccLogVO);
         });
-        return R.ok(ssccLogVOS,"下发成功");
+        return R.ok(ssccLogVOS, "下发成功");
     }
 
     @PutMapping(value = "/binDown/{ssccNb}")
@@ -160,7 +171,7 @@ public class MaterialKanbanController {
         SSCCLogVO ssccLogVO = new SSCCLogVO();
         ssccLogVO.setSsccNumber(kanban.getSsccNumber());
         ssccLogVO.setQuantity(kanban.getBinDownQuantity());
-        return R.ok(ssccLogVO,ssccNb + "下架成功");
+        return R.ok(ssccLogVO, ssccNb + "下架成功");
     }
 
     @PostMapping(value = "splitPallet")
@@ -329,7 +340,6 @@ public class MaterialKanbanController {
             ssccLogVO.setQuantity(kanban.getQuantity());
 
 
-
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             return R.fail(ex.getMessage());
@@ -344,7 +354,7 @@ public class MaterialKanbanController {
         String wareCode = SecurityUtils.getWareCode();
 
         dto.setWareCode(wareCode);
-        PageDomain pageDomain= BeanConverUtil.conver(dto,PageDomain.class);
+        PageDomain pageDomain = BeanConverUtil.conver(dto, PageDomain.class);
 
         startPage(pageDomain);
         List<MaterialKanbanVO> list = materialKanbanService.receivingMaterialList(dto);
@@ -357,7 +367,7 @@ public class MaterialKanbanController {
         String wareCode = SecurityUtils.getWareCode();
 
         dto.setWareCode(wareCode);
-        PageDomain pageDomain=BeanConverUtil.conver(dto,PageDomain.class);
+        PageDomain pageDomain = BeanConverUtil.conver(dto, PageDomain.class);
 
         startPage(pageDomain);
         List<MaterialKanbanVO> list = materialKanbanService.receivedMaterialList(dto);
@@ -477,7 +487,7 @@ public class MaterialKanbanController {
                 queryWrapper.eq(WareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
                 List<WareShift> wareShifts = wareShiftService.list(queryWrapper);
                 return R.ok(wareShifts);
-            }else {
+            } else {
                 LambdaQueryWrapper<ProductWareShift> lambdaQueryWrapper = new LambdaQueryWrapper<>();
                 lambdaQueryWrapper.in(ProductWareShift::getSsccNb, collect);
                 lambdaQueryWrapper.eq(ProductWareShift::getStatus, ProductWareShiftEnum.WAITTING_RECEIVING.code());
@@ -568,7 +578,6 @@ public class MaterialKanbanController {
             return R.ok(logVOS);
 
 
-
         } catch (Exception ex) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
             ex.printStackTrace();
@@ -591,7 +600,7 @@ public class MaterialKanbanController {
             //根据sscc获取kanban
             MaterialKanbanVO kanbanBySSCC = materialKanbanService.getKanbanBySSCC(sscc);
             if (kanbanBySSCC == null) {
-                return R.fail("没有该SSCC"+sscc+"对应的任务");
+                return R.fail("没有该SSCC" + sscc + "对应的任务");
             }
             return R.ok(kanbanBySSCC);
         } catch (Exception ex) {
@@ -599,6 +608,7 @@ public class MaterialKanbanController {
             return R.fail(ex.getMessage());
         }
     }
+
     @GetMapping(value = "/getKanbanBySSCCAndStatus")
     @ApiOperation("根据barcode的sscc和状态获取kanban数据")
     public R getKanbanBySSCCAndStatus(@RequestParam(value = "mesBarCode") String mesBarCode) {
@@ -612,9 +622,9 @@ public class MaterialKanbanController {
                 throw new ServiceException("请选择数据");
             }
             //根据sscc获取kanban
-            MaterialKanbanVO kanbanBySSCC = materialKanbanService.getKanbanBySSCCAndStatus(sscc,KanbanStatusEnum.INNER_DOWN);
+            MaterialKanbanVO kanbanBySSCC = materialKanbanService.getKanbanBySSCCAndStatus(sscc, KanbanStatusEnum.INNER_DOWN);
             if (kanbanBySSCC == null) {
-                return R.fail("没有该SSCC"+sscc+"对应的任务");
+                return R.fail("没有该SSCC" + sscc + "对应的任务");
             }
             return R.ok(kanbanBySSCC);
         } catch (Exception ex) {
@@ -622,6 +632,7 @@ public class MaterialKanbanController {
             return R.fail(ex.getMessage());
         }
     }
+
     @GetMapping(value = "/deliver")
     @ApiOperation("整托下架配送接口")
     @Transactional(rollbackFor = Exception.class)
@@ -647,9 +658,7 @@ public class MaterialKanbanController {
             UserOperationLog userOperationLog = new UserOperationLog();
             userOperationLog.setSsccNumber(kanban.getSsccNumber());
             userOperationLog.setCode(kanban.getMaterialCode());
-            userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), kanban.getOrderNumber(),SecurityUtils.getUsername(), UserOperationType.CALLOVER.getCode(),userOperationLog);
-
-
+            userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), kanban.getOrderNumber(), SecurityUtils.getUsername(), UserOperationType.CALLOVER.getCode(), userOperationLog);
 
 
             //更新kanban状态从 待上架  到 产线待收货
@@ -705,9 +714,6 @@ public class MaterialKanbanController {
             if (updateKanban <= 0) {
                 return R.fail("确认收货失败，请刷新重试");
             }
-
-
-
 
 
             return R.ok();
@@ -766,6 +772,12 @@ public class MaterialKanbanController {
         util.exportExcel(response, materialKanbanVOS, "叫料需求");
     }
 
+    /**
+     * 注册批列表
+     *
+     * @param materialKanbanDTO
+     * @return
+     */
     @GetMapping(value = "/registerBatchList")
     @ApiOperation("查询注册批列表")
     public R<PageVO<RegisterBatchVO>> registerBatchList(MaterialKanbanDTO materialKanbanDTO) {
@@ -778,5 +790,98 @@ public class MaterialKanbanController {
         startPage();
         List<RegisterBatchVO> list = materialKanbanService.getRegisterBatchList(materialKanbanDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
+    }
+
+
+    /**
+     * 导出注册批列表
+     */
+    @PostMapping("/exportRegister")
+    @ApiOperation("注册批列表导出")
+    @Log(title = "注册批列表导出", businessType = BusinessType.EXPORT)
+    public void exportRegister(HttpServletResponse response, @RequestBody MaterialKanbanDTO queryDTO) {
+        List<RegisterBatchVO> list = materialKanbanService.getRegisterBatchList(queryDTO);
+        ExcelUtil<RegisterBatchVO> util = new ExcelUtil<RegisterBatchVO>(RegisterBatchVO.class);
+        util.exportExcel(response, list, "注册批记录");
+    }
+
+    @PostMapping(value = "/registerBomImport")
+    @ApiOperation("上传注册批bom")
+    @ApiImplicitParams({
+            @ApiImplicitParam(value = "文件", name = "file", dataType = "File"),
+            @ApiImplicitParam(value = "订单号", name = "orderNumber", dataType = "String")
+    })
+    @Log(title = "上传注册批bom", businessType = BusinessType.IMPORT)
+    @Transactional(rollbackFor = Exception.class)
+    public R registerBomImport(@RequestParam(value = "file") MultipartFile file, @RequestParam("orderNumber") String orderNumber) {
+        try {
+            //解析文件服务
+            R result = fileService.registerBomImport(file, ClassType.REGISTERBOM.getDesc());
+            if (result.isSuccess()) {
+                Object data = result.getData();
+                List<RegisterBomDTO> dtos = JSON.parseArray(JSON.toJSONString(data), RegisterBomDTO.class);
+                List<RegisterBomDTO> newList = new ArrayList<>();
+                if (!org.springframework.util.CollectionUtils.isEmpty(dtos)) {
+                    boolean valid = registerBomService.validList(orderNumber);
+                    if (valid) {
+                        // 删除之前导入的和订单号相关记录
+                        int res = registerBomService.deleteList(orderNumber);
+                    }
+                    for (RegisterBomDTO r : dtos) {
+                        if (r.getComponentQuantity() == null || r.getComponentQuantity() == BigDecimal.ZERO) {
+                            continue;
+                        }
+                        if (r.getComponentQuantity().intValue() < 0) {
+                            throw new ServiceException("数量输入有误", 400);
+                        }
+                        r.setOrderNumber(orderNumber);
+                        newList.add(r);
+                    }
+                    List<RegisterBomDTO> dtoList = new ArrayList<>();
+                    newList.parallelStream().collect(Collectors.groupingBy(o -> (o.getOrderNumber() + o.getBomComponent()), Collectors.toList())).forEach((num, dto) -> {
+                        dto.stream().reduce((a, b) -> {
+                            a.setComponentQuantity(a.getComponentQuantity().add(b.getComponentQuantity()));
+                            return a;
+                        }).ifPresent(dtoList::add);
+                    });
+                    //添加
+                    List<RegisterBom> dos = BeanConverUtil.converList(dtoList, RegisterBom.class);
+                    return R.ok(registerBomService.saveBatch(dos));
+                }
+                return R.ok(null);
+            } else {
+                return R.fail(result.getMsg());
+            }
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();//contoller中增加事务
+            return R.fail(e.getMessage());
+        }
+    }
+
+
+    /**
+     * 获取注册批的orderNumber
+     *
+     * @return
+     */
+    @GetMapping("/registerOrderList")
+    public R<List<String>> registerOrderList() {
+        LambdaQueryWrapper<MaterialCall> wrapper = new LambdaQueryWrapper<MaterialCall>();
+        wrapper.eq(MaterialCall::getDeleteFlag, 0);
+        wrapper.eq(MaterialCall::getRegisterBatch, 1);
+        List<MaterialCall> materialCallList = materialCallService.list(wrapper);
+        List<String> list = materialCallList.stream().map(MaterialCall::getOrderNb).distinct().collect(Collectors.toList());
+        return R.ok(list);
+    }
+
+    /**
+     * 验证orderNumber是否已导入过BOM数据
+     * @param orderNumber
+     * @return
+     */
+    @GetMapping("/validRegisterOrderNumber/{orderNumber}")
+    public R<Boolean> validRegisterOrderNumber(@PathVariable("orderNumber") String orderNumber) {
+        Boolean valid = registerBomService.validList(orderNumber);
+        return R.ok(valid);
     }
 }

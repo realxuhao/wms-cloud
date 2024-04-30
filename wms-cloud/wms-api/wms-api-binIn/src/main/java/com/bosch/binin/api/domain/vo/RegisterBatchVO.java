@@ -113,4 +113,25 @@ public class RegisterBatchVO {
     @Excel(name = "仓库接收日期", dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date returnReceivedTime;
 
+    /**
+     * 车间消耗数量
+     */
+    @ApiModelProperty(value = "车间消耗数量")
+    @Excel(name = "车间消耗数量")
+    private Double productQuantity;
+
+    /**
+     * 标准配方量
+     */
+    @ApiModelProperty(value = "标准配方量")
+    @Excel(name = "标准配方量")
+    private Double componentQuantity;
+
+    /**
+     * 消耗与配方差异量
+     */
+    @ApiModelProperty(value = "消耗与配方差异量")
+    @Excel(name = "消耗与配方差异量")
+    private Double gapQuantity;
+
 }
