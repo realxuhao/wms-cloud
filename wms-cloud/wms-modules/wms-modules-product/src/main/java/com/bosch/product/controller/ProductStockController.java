@@ -67,9 +67,7 @@ public class ProductStockController extends BaseController {
     @GetMapping(value = "/listByBinCode/{binCode}")
     @ApiOperation("库存列表-根据库位")
     public R<List<ProductStockVO>> listByBinCode(@PathVariable("binCode") String binCode) {
-        ProductStockQueryDTO queryDTO = new ProductStockQueryDTO();
-        queryDTO.setBinCode(binCode);
-        List<ProductStockVO> list = productStockService.list(queryDTO);
+        List<ProductStockVO> list = productStockService.listByBinCode(binCode);
         return R.ok(list);
     }
 

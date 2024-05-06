@@ -80,4 +80,6 @@ public interface IProductStockService extends IService<ProductStock> {
     ProductStockVO getLastestOne(String sscc);
 
     List<ProductStockAdjustVO> getStockAdjustVOList(ProductStockQueryDTO stockQueryDTO);
+
+    List<ProductStockVO> listByBinCode(String binCode);
 }

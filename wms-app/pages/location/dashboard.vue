@@ -6,7 +6,10 @@
 					<view class="label">SSCC码：</view>
 					{{ item.ssccNumber }}
 				</view>
-
+				<view class="text-line m-b-8 ">
+					<view class="label">Cell：</view>
+					{{ item.cell }}
+				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">物料名称：</view>
 					{{ item.materialName }}
@@ -20,12 +23,36 @@
 					{{ item.batchNb }}
 				</view>
 				<view class="text-line m-b-8 ">
-					<view class="label">数量：</view>
+					<view class="label">质检状态：</view>
+					{{ item.qualityStatus }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">总库存：</view>
 					{{ item.totalStock }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">冻结库存：</view>
+					{{ item.freezeStock }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">可用库存：</view>
+					{{ item.availableStock }}
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">有效期：</view>
 					{{ item.expireDate }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">Plant：</view>
+					{{ item.plantNb }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">仓库：</view>
+					{{ item.wareCode }}
+				</view>
+				<view class="text-line m-b-8 ">
+					<view class="label">区域：</view>
+					{{ item.areaCode }}
 				</view>
 				<view class="text-line m-b-8 ">
 					<view class="label">所在库位：</view>

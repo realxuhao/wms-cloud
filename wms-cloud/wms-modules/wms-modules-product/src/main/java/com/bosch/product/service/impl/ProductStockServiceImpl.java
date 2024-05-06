@@ -777,6 +777,11 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
        return stockAdjustMapper.getStockAdjustVOList(stockQueryDTO);
     }
 
+    @Override
+    public List<ProductStockVO> listByBinCode(String binCode) {
+        return stockMapper.listByBinCode(binCode);
+    }
+
     private MdProductPackagingVO getProductVO(String code) {
         R<MdProductPackagingVO> byCode = remoteProductService.getByCode(code);
         if (byCode == null || !byCode.isSuccess()) {
