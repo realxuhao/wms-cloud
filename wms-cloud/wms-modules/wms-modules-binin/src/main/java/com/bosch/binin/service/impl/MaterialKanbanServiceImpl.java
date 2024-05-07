@@ -477,7 +477,9 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     public int updateKanbanByStatus(List<String> ssccs, Integer queryStatus, Integer status) {
         MaterialKanban materialKanban = new MaterialKanban();
         materialKanban.setStatus(status);
-        materialKanban.setPickingTime(DateUtils.getNowDate());
+        if (status == KanbanStatusEnum.LINE_RECEIVED.value()) {
+            materialKanban.setReceivedTime(DateUtils.getNowDate());
+        }
         LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
         uw.in(MaterialKanban::getSsccNumber, ssccs);
         uw.eq(MaterialKanban::getStatus, queryStatus);
@@ -490,7 +492,9 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     public int updateKanbanByIdStatus(List<Long> ids, Integer queryStatus, Integer status) {
         MaterialKanban materialKanban = new MaterialKanban();
         materialKanban.setStatus(status);
-        materialKanban.setPickingTime(DateUtils.getNowDate());
+        if (status == KanbanStatusEnum.LINE_RECEIVED.value()) {
+            materialKanban.setReceivedTime(DateUtils.getNowDate());
+        }
         LambdaUpdateWrapper<MaterialKanban> uw = new LambdaUpdateWrapper<>();
         uw.in(MaterialKanban::getId, ids);
         uw.eq(MaterialKanban::getStatus, queryStatus);
@@ -694,6 +698,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
             newKanban.setParentId(materialKanban.getId());
             newKanban.setExpireDate(materialKanban.getExpireDate());
             newKanban.setRegisterBatch(materialKanban.getRegisterBatch());
+            newKanban.setPickingTime(materialKanban.getPickingTime());
             materialKanbanMapper.insert(newKanban);
 
             //如果有正在上架中的任务，需要删除掉
