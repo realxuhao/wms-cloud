@@ -50,7 +50,7 @@ public class RegisterBatchVO {
      * 需求数量
      */
     @ApiModelProperty(value = "需求量")
-    @Excel(name = "需求量")
+    @Excel(name = "需求量", isMerge = true)
     private Double quantity;
 
     /**
@@ -124,14 +124,20 @@ public class RegisterBatchVO {
      * 标准配方量
      */
     @ApiModelProperty(value = "标准配方量")
-    @Excel(name = "标准配方量")
+    @Excel(name = "标准配方量", isMerge = true)
     private Double componentQuantity;
 
     /**
      * 消耗与配方差异量
      */
     @ApiModelProperty(value = "消耗与配方差异量")
-    @Excel(name = "消耗与配方差异量")
+    @Excel(name = "消耗与配方差异量", isMerge = true)
     private Double gapQuantity;
+
+    /**
+     * 合并行
+     */
+    @ApiModelProperty(value = "合并行")
+    private Integer rowSpan;
 
 }

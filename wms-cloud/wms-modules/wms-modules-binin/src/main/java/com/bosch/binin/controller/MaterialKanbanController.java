@@ -26,6 +26,7 @@ import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.*;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
 import com.ruoyi.common.core.utils.poi.ExcelUtil;
+import com.ruoyi.common.core.utils.poi.ExportUtilParam;
 import com.ruoyi.common.core.web.page.PageDomain;
 import com.ruoyi.common.log.annotation.Log;
 import com.ruoyi.common.log.enums.BusinessType;
@@ -48,9 +49,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.ruoyi.common.core.utils.PageUtils.startPage;
@@ -801,8 +800,17 @@ public class MaterialKanbanController {
     @Log(title = "注册批列表导出", businessType = BusinessType.EXPORT)
     public void exportRegister(HttpServletResponse response, @RequestBody MaterialKanbanDTO queryDTO) {
         List<RegisterBatchVO> list = materialKanbanService.getRegisterBatchList(queryDTO);
+        List<ExportUtilParam> mergeLst = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getRowSpan() != null && list.get(i).getRowSpan() > 0) {
+                ExportUtilParam param = new ExportUtilParam();
+                param.setStartRow(i + 1);
+                param.setEndRow(i + list.get(i).getRowSpan());
+                mergeLst.add(param);
+            }
+        }
         ExcelUtil<RegisterBatchVO> util = new ExcelUtil<RegisterBatchVO>(RegisterBatchVO.class);
-        util.exportExcel(response, list, "注册批记录");
+        util.exportExcel(response, list, "注册批记录",mergeLst);
     }
 
     @PostMapping(value = "/registerBomImport")
@@ -876,6 +884,7 @@ public class MaterialKanbanController {
 
     /**
      * 验证orderNumber是否已导入过BOM数据
+     *
      * @param orderNumber
      * @return
      */

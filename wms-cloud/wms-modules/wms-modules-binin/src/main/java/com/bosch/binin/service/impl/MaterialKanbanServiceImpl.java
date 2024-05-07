@@ -39,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -810,7 +811,26 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
     @Override
     public List<RegisterBatchVO> getRegisterBatchList(MaterialKanbanDTO dto) {
-        return materialKanbanMapper.getRegisterBatchList(dto);
+        List<RegisterBatchVO> list = materialKanbanMapper.getRegisterBatchList(dto);
+        Function<RegisterBatchVO, List<String>> compositeKey = c -> Arrays.asList(c.getOrderNumber(), c.getMaterialCode());
+        Map<List<String>, Long> groupingMap = list.stream().collect(Collectors.groupingBy(compositeKey, Collectors.counting()));
+        for (int i = 0; i < list.size(); i++) {
+            List<String> key = Arrays.asList(list.get(i).getOrderNumber(), list.get(i).getMaterialCode());
+            if (i == 0) {
+                if (groupingMap.containsKey(key) && groupingMap.get(key).intValue() > 1) {
+                    list.get(i).setRowSpan(groupingMap.get(key).intValue());
+                }
+                continue;
+            }
+            if (list.get(i - 1).getOrderNumber().equals(list.get(i).getOrderNumber()) && list.get(i - 1).getMaterialCode().equals(list.get(i).getMaterialCode())) {
+                list.get(i).setRowSpan(0);
+            } else {
+                if (groupingMap.containsKey(key) && groupingMap.get(key).intValue() > 1) {
+                    list.get(i).setRowSpan(groupingMap.get(key).intValue());
+                }
+            }
+        }
+        return list;
     }
 
     private void dealCancelSubJob(MaterialKanban subKanban) {

@@ -18,6 +18,14 @@ import com.ruoyi.common.core.utils.poi.ExcelHandlerAdapter;
 @Target(ElementType.FIELD)
 public @interface Excel
 {
+
+    /**
+     * 是否合并单元格
+     *
+     * @return
+     */
+    public boolean isMerge() default false;
+
     /**
      * 导出时在excel中排序
      */

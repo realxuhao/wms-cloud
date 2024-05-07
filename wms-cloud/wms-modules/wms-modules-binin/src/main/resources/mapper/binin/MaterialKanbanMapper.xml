@@ -346,33 +346,34 @@
         t3.create_time return_time,
         t3.quantity return_received_quantity,
         t3.received_time return_received_time,
-        IFNULL(t2.bin_down_quantity,t2.quantity)- t3.quantity product_quantity,
+        IFNULL(t2.bin_down_quantity,t2.quantity)- IFNULL(t3.quantity,0) product_quantity,
         t5.component_quantity,
         t6.material_quantity - t5.component_quantity gap_quantity
         from material_call t1
         inner join material_kanban t2
         on t1.order_nb = t2.order_number and t1.material_nb = t2.material_code
         left join material_return t3
-        on t3.order_number = t2.order_number and t3.sscc_number = t2.sscc_number and
-        t3.material_nb = t2.material_code
-        and t3.`status` > 0
+        on t3.order_number = t2.order_number and t3.sscc_number = t2.sscc_number
+        and t3.material_nb = t2.material_code
+        and t3.`status` > 0 and t3.delete_flag = 0
         left join (SELECT * from md_material where delete_flag = '0') t4 ON t2.material_code = t4.code
         left join (SELECT * from register_bom where delete_flag='0' ) t5 ON t2.order_number=t5.order_number
         and t2.material_code=t5.bom_component
         left join
-        (SELECT order_number,material_code,sum(product_quantity) material_quantity from (
-        SELECT mk.order_number,mk.material_code,mk.sscc_number,IFNULL(mk.bin_down_quantity,mk.quantity) - mr.quantity product_quantity from material_kanban mk left join material_return mr
+        (SELECT order_number,material_code,sum(productQuantity) material_quantity from (
+        SELECT mk.order_number,mk.material_code,mk.sscc_number,IFNULL(mk.bin_down_quantity,mk.quantity)-ifnull(mr.quantity,0) productQuantity
+        from material_kanban mk left join material_return mr
         on  mr.order_number =mk.order_number and mr.sscc_number=mk.sscc_number and mr.material_nb=mk.material_code
+        and mr.delete_flag = 0
+        and mr.`status` > 0
         WHERE mk.`status`=6
         and mk.delete_flag = 0
         and mk.register_batch=1
-        and mr.delete_flag = 0
-        and mr.`status` > 0 ) tt GROUP BY order_number,material_code) t6 on t6.order_number= t2.order_number
+        ) tt GROUP BY order_number,material_code) t6 on t6.order_number= t2.order_number
         and t6.material_code=t2.material_code
         where t2.`status` = 6
         and t1.delete_flag = 0
         and t2.delete_flag = 0
-        and t3.delete_flag = 0
         and t1.register_batch = 1
         and t2.register_batch = 1
         <if test="orderNumber != null and orderNumber != ''">
