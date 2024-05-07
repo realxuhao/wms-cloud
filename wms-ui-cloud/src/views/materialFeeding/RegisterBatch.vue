@@ -69,7 +69,8 @@
         rowKey="id"
         :pagination="false"
         :scroll="tableScroll"
-        size="middle">
+        size="middle"
+        bordered>
         
       </a-table>
 
@@ -96,8 +97,6 @@
 import _ from 'lodash'
 import { mixinTableList } from '@/utils/mixin/index'
 import RegisterBatchUpload from './RegisterBatchUpload'
-
-import EditTableCell from '@/components/EditTableCell'
 import { download } from '@/utils/file'
 
 const columns = [ 
@@ -111,19 +110,19 @@ const columns = [
     title: '物料编码',
     key: 'materialCode',
     dataIndex: 'materialCode',
-    width: 160
+    width: 120
   },
   {
     title: '物料名称',
     key: 'materialName',
     dataIndex: 'materialName',
-    width: 120
+    width: 160
   },
   {
     title: 'SSCC码',
     key: 'ssccNumber',
     dataIndex: 'ssccNumber',
-    width: 120
+    width: 180
   },
   {
     title: '批次号',
@@ -135,7 +134,17 @@ const columns = [
     title: '需求量',
     key: 'quantity',
     dataIndex: 'quantity',
-    width: 120
+    width: 120,
+    customRender:(value, row, index) => {
+      const obj = {
+        children: value,
+        attrs: {},
+      }      
+      if (row.rowSpan != null) {
+        obj.attrs.rowSpan = row.rowSpan
+      }
+      return obj
+    }
   },
   {
     title: '仓库拣配量',
@@ -147,7 +156,7 @@ const columns = [
     title: '仓库拣配日期',
     key: 'pickingTime',
     dataIndex: 'pickingTime',
-    width: 120
+    width: 150
   },
   {
     title: '车间接收数量',
@@ -159,7 +168,7 @@ const columns = [
     title: '车间接收日期',
     key: 'receivedTime',
     dataIndex: 'receivedTime',
-    width: 120
+    width: 150
   },
   {
     title: '车间退库数量',
@@ -171,7 +180,7 @@ const columns = [
     title: '车间退库日期',
     key: 'returnTime',
     dataIndex: 'returnTime',
-    width: 120
+    width: 150
   },
   {
     title: '仓库接收数量',
@@ -183,7 +192,7 @@ const columns = [
     title: '仓库接收日期',
     key: 'returnReceivedTime',
     dataIndex: 'returnReceivedTime',
-    width: 120
+    width: 150
   },
   {
     title: '车间消耗数量',
@@ -195,13 +204,35 @@ const columns = [
     title: '标准配方量',
     key: 'componentQuantity',
     dataIndex: 'componentQuantity',
-    width: 120
+    width: 120,
+    customRender:(value, row, index) => {
+      const obj = {
+        children: value,
+        attrs: {},
+      }
+      console.log(index,row.rowSpan)
+      if (row.rowSpan != null) {
+        obj.attrs.rowSpan = row.rowSpan
+      }
+      return obj
+    }
   },
   {
     title: '消耗与配方差异量',
     key: 'gapQuantity',
     dataIndex: 'gapQuantity',
-    width: 120
+    width: 120,
+    customRender:(value, row, index) => {
+      const obj = {
+        children: value,
+        attrs: {},
+      }
+      console.log(index,row.rowSpan)
+      if (row.rowSpan != null) {
+        obj.attrs.rowSpan = row.rowSpan
+      }
+      return obj
+    }
   }  
 ]
 
@@ -222,8 +253,7 @@ export default {
   name: 'Area',
   mixins: [mixinTableList],
   components: {
-    RegisterBatchUpload,
-    EditTableCell
+    RegisterBatchUpload
   },
   data () {
     return {
@@ -251,7 +281,7 @@ export default {
     async handleDownload () {
       try {
         this.exportLoading = true
-        this.queryForm.pageSize = 0
+        //this.queryForm.pageSize = 0
         const blobData = await this.$store.dispatch('materialFeeding/exportRegisterBatchExcel', this.queryForm)
         console.log(blobData)
         download(blobData, '注册批记录')
@@ -274,12 +304,10 @@ export default {
         this.tableLoading = true
 
         const { date = [], updateDate = [] } = this.queryForm
-        const startCreateTime = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
-        const endCreateTimeEnd = date.length > 0 ? date[1].format(this.endDateFormat) : undefined
-        const startUpdateTime = updateDate.length > 0 ? updateDate[0].format(this.startDateFormat) : undefined
-        const endUpdateTime = updateDate.length > 0 ? updateDate[1].format(this.endDateFormat) : undefined
+        const createTimeStart = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
+        const createTimeEnd = date.length > 0 ? date[1].format(this.endDateFormat) : undefined        
 
-        const options = { ..._.omit(this.queryForm, ['date', 'updateDate']), startCreateTime, endCreateTimeEnd, startUpdateTime, endUpdateTime }
+        const options = { ..._.omit(this.queryForm, ['date', 'updateDate']), createTimeStart, createTimeEnd }
 
         const {
           data: { rows, total }

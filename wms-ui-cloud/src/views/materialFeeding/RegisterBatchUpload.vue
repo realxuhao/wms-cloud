@@ -192,13 +192,15 @@ export default {
       try {       
           this.submitLoading = true
           await this.$store.dispatch('materialFeeding/uploadRegisterBom', this.formData)
+          this.isVisibleWarning = false
           this.$emit('on-ok')
-          this.onClose()
+          setTimeout(() => {
+            this.onClose()
+          }, 1000)
         } catch (error) {
           this.$message.error(error.message)
         } finally {
           this.submitLoading = false
-          this.isVisibleWarning = false
         }
     }
   },
