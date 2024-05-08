@@ -131,7 +131,7 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
 
     List<MaterialKanbanVO> getKanbanList(MaterialKanbanDTO dto);
 
-    String getRegisterBatchOrderNumberBySSCC(String ssccNb);
+    String getRegisterBatchOrderNumberBySSCC(String mesBarCode);
 
     List<RegisterBatchVO> getRegisterBatchList(MaterialKanbanDTO dto);
 }

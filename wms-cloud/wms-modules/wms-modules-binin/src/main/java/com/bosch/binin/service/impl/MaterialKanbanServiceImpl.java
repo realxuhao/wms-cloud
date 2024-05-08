@@ -797,7 +797,8 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
-    public String getRegisterBatchOrderNumberBySSCC(String ssccNb) {
+    public String getRegisterBatchOrderNumberBySSCC(String mesBarCode) {
+        String ssccNb = MesBarCodeUtil.getSSCC(mesBarCode);
         LambdaQueryWrapper<MaterialKanban> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
         //queryWrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());

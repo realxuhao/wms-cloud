@@ -111,9 +111,9 @@ public class MaterialKanbanController {
         return R.ok(list);
     }
 
-    @GetMapping("/getRegisterBatchOrderNumberBySSCC/{ssccNb}")
-    public R<String> getRegisterBatchOrderNumberBySSCC(@PathVariable("ssccNb") String ssccNb) {
-        String orderNumber = materialKanbanService.getRegisterBatchOrderNumberBySSCC(ssccNb);
+    @GetMapping("/getRegisterBatchOrderNumberBySSCC/{mesBarCode}")
+    public R<String> getRegisterBatchOrderNumberBySSCC(@PathVariable("mesBarCode") String mesBarCode) {
+        String orderNumber = materialKanbanService.getRegisterBatchOrderNumberBySSCC(mesBarCode);
         return R.ok(orderNumber);
     }
 
