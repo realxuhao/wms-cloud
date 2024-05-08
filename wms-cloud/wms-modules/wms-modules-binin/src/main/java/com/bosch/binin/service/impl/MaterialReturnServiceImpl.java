@@ -166,8 +166,8 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
             if (!materialKanban.getStatus().equals(KanbanStatusEnum.LINE_RECEIVED.value())) {
                 throw new ServiceException("该生产需求号：" + materialReturnDTO.getOrderNumber() + ",sscc码:" + materialReturn.getSsccNumber() + "所属的拣配任务产线还未收货");
             }
+            materialReturn.setOrderNumber(materialReturnDTO.getOrderNumber());
         }
-        materialReturn.setOrderNumber(materialReturnDTO.getOrderNumber());
         return save(materialReturn);
     }
 
