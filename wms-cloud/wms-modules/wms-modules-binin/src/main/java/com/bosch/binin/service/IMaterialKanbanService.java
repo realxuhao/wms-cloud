@@ -7,10 +7,7 @@ import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
 import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.dto.SplitPalletDTO;
-import com.bosch.binin.api.domain.vo.MaterialInfoVO;
-import com.bosch.binin.api.domain.vo.MaterialKanbanVO;
-import com.bosch.binin.api.domain.vo.RegisterBatchVO;
-import com.bosch.binin.api.domain.vo.StockVO;
+import com.bosch.binin.api.domain.vo.*;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.ruoyi.common.core.web.page.PageDomain;
 import org.apache.ibatis.annotations.Param;
@@ -132,6 +129,8 @@ public interface IMaterialKanbanService extends IService<MaterialKanban> {
     List<MaterialKanbanVO> getKanbanList(MaterialKanbanDTO dto);
 
     String getRegisterBatchOrderNumberBySSCC(String mesBarCode);
+
+    List<String> getRegisterBatchSSCC(String materialNb,String orderNumber);
 
     List<RegisterBatchVO> getRegisterBatchList(MaterialKanbanDTO dto);
 }

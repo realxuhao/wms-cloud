@@ -112,9 +112,17 @@ public class MaterialKanbanController {
     }
 
     @GetMapping("/getRegisterBatchOrderNumberBySSCC/{mesBarCode}")
+    @ApiOperation("扫描获取注册批托的生产需求号")
     public R<String> getRegisterBatchOrderNumberBySSCC(@PathVariable("mesBarCode") String mesBarCode) {
         String orderNumber = materialKanbanService.getRegisterBatchOrderNumberBySSCC(mesBarCode);
         return R.ok(orderNumber);
+    }
+
+    @GetMapping(value = "/getRegisterBatchSSCC")
+    @ApiOperation("根据生产需求号和物料code查询注册批生产需求号对应物料的sscc码")
+    public R<List<String>> getRegisterBatchSSCC(@RequestParam("materialNb") String materialNb, @RequestParam("orderNumber") String orderNumber) {
+        List<String> ssccNumbers = materialKanbanService.getRegisterBatchSSCC(materialNb, orderNumber);
+        return R.ok(ssccNumbers);
     }
 
     @GetMapping(value = "/waitingBinDownList")

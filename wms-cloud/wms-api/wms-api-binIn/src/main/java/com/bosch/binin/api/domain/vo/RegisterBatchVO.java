@@ -12,9 +12,9 @@ import java.util.Date;
 public class RegisterBatchVO {
 
     /**
-     * 订单号
+     * 生产需求号
      */
-    @ApiModelProperty(value = "订单号")
+    @ApiModelProperty(value = "生产需求号")
     @Excel(name = "生产需求号")
     private String orderNumber;
 

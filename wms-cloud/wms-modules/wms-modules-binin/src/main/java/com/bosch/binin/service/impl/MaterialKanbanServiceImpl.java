@@ -816,6 +816,23 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     }
 
     @Override
+    public List<String> getRegisterBatchSSCC(String materialNb, String orderNumber) {
+        //String materialNb = MesBarCodeUtil.getMaterialNb(mesBarCode);
+        LambdaQueryWrapper<MaterialKanban> queryKanbanWrapper = new LambdaQueryWrapper<>();
+        queryKanbanWrapper.eq(MaterialKanban::getMaterialCode, materialNb);
+        queryKanbanWrapper.eq(MaterialKanban::getOrderNumber, orderNumber);
+        queryKanbanWrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
+        queryKanbanWrapper.eq(MaterialKanban::getRegisterBatch, 1);
+        queryKanbanWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        List<MaterialKanban> materialKanbans = materialKanbanMapper.selectList(queryKanbanWrapper);
+        if (CollectionUtils.isEmpty(materialKanbans)) {
+            throw new ServiceException("当前生产需求号:" + orderNumber + "的物料:" + materialNb + "没有FSMP注册批的托");
+        }
+        List<String> collect = materialKanbans.stream().map(MaterialKanban::getSsccNumber).collect(Collectors.toList());
+        return collect;
+    }
+
+    @Override
     public List<RegisterBatchVO> getRegisterBatchList(MaterialKanbanDTO dto) {
         List<RegisterBatchVO> list = materialKanbanMapper.getRegisterBatchList(dto);
         Function<RegisterBatchVO, List<String>> compositeKey = c -> Arrays.asList(c.getOrderNumber(), c.getMaterialCode());
