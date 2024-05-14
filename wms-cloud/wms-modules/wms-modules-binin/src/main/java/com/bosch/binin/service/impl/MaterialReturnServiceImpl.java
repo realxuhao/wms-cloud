@@ -113,7 +113,6 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
 //        String wareCode = materialReturnDTO.getWareCode();
 //        String areaCode = materialReturnDTO.getAreaCode();
 //        Integer type = materialReturnDTO.getType();
-        String ssccNb = materialReturnDTO.getSsccNb();
         Double quantity = materialReturnDTO.getQuantity();
 
         LambdaQueryWrapper<Stock> stockQueryWrapper = new LambdaQueryWrapper<>();
@@ -152,29 +151,14 @@ public class MaterialReturnServiceImpl extends ServiceImpl<MaterialReturnMapper,
         if (StringUtils.isNotEmpty(materialReturnDTO.getOrderNumber())) {
             LambdaQueryWrapper<MaterialKanban> queryKanbanWrapper = new LambdaQueryWrapper<>();
             queryKanbanWrapper.eq(MaterialKanban::getOrderNumber, materialReturnDTO.getOrderNumber());
-            if (StringUtils.isNotEmpty(ssccNb)) {
-                queryKanbanWrapper.eq(MaterialKanban::getSsccNumber, ssccNb);
-            } else {
-                queryKanbanWrapper.eq(MaterialKanban::getSsccNumber, materialReturn.getSsccNumber());
-            }
             queryKanbanWrapper.eq(MaterialKanban::getMaterialCode, materialReturn.getMaterialNb());
-            //queryKanbanWrapper.eq(MaterialKanban::getRegisterBatch,1);
+            queryKanbanWrapper.eq(MaterialKanban::getRegisterBatch, 1);
+            queryKanbanWrapper.eq(MaterialKanban::getStatus, KanbanStatusEnum.LINE_RECEIVED.value());
             queryKanbanWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
             queryKanbanWrapper.orderByDesc(MaterialKanban::getCreateTime);
-            MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryKanbanWrapper);
-            if (materialKanban == null) {
-                throw new ServiceException("该生产需求号：" + materialReturnDTO.getOrderNumber() + "不存在sscc码:" + (StringUtils.isNotEmpty(ssccNb) ? ssccNb : materialReturn.getSsccNumber()) + "的物料" + materialReturn.getMaterialNb());
-            }
-            if (!materialKanban.getRegisterBatch().equals(1)) {
-                throw new ServiceException("该生产需求号:" + materialReturnDTO.getOrderNumber() + ",sscc码:" + materialReturn.getSsccNumber() + "非FSMP注册批的托");
-            }
-            if (!materialKanban.getStatus().equals(KanbanStatusEnum.LINE_RECEIVED.value())) {
-                throw new ServiceException("该生产需求号：" + materialReturnDTO.getOrderNumber() + ",sscc码:" + materialReturn.getSsccNumber() + "所属的拣配任务产线还未收货");
-            }
-            if (StringUtils.isNotEmpty(ssccNb)) {
-                materialReturn.setOriginSSCC(ssccNb);
-            } else {
-                materialReturn.setOriginSSCC(materialReturn.getSsccNumber());
+            List<MaterialKanban> materialKanbans = materialKanbanMapper.selectList(queryKanbanWrapper);
+            if (CollectionUtils.isEmpty(materialKanbans)){
+                throw new ServiceException("该生产需求号：" + materialReturnDTO.getOrderNumber() + "的物料：" + materialReturn.getMaterialNb() + "非FSMP注册批");
             }
             materialReturn.setOrderNumber(materialReturnDTO.getOrderNumber());
         }

@@ -325,17 +325,21 @@
 
     <select id="getRegisterBatchList" parameterType="MaterialKanbanDTO"
             resultType="com.bosch.binin.api.domain.vo.RegisterBatchVO">
-        SELECT t1.`status`,
+        SELECT *from (
+        SELECT
+        t1.`status`,
         t2.order_number,
         t2.material_code,
-        t4.name material_name,
+        t4.NAME material_name,
         t2.sscc_number,
         t2.batch_nb,
         t1.quantity,
         t1.issued_quantity,
-        IFNULL(t2.bin_down_quantity,t2.quantity) pick_quantity,
+        IFNULL( t2.bin_down_quantity, t2.quantity ) pick_quantity,
         t2.picking_time,
-        t2.quantity received_quantity,
+        case when t2.received_time is null then null
+        else t2.quantity
+        end as received_quantity,
         t2.received_time,
         t2.type,
         t2.parent_id,
@@ -344,60 +348,146 @@
         t3.`status` return_status,
         t3.quantity return_quantity,
         t3.create_time return_time,
-        t3.quantity return_received_quantity,
+        case when t3.received_time is null then NULL
+        else   t3.quantity
+        end as return_received_quantity,
         t3.received_time return_received_time,
-        IFNULL(t2.bin_down_quantity,t2.quantity)- IFNULL(t3.quantity,0) product_quantity,
+        IFNULL( t2.bin_down_quantity, t2.quantity )- IFNULL( t3.quantity, 0 ) product_quantity,
         t5.component_quantity,
         t6.material_quantity - t5.component_quantity gap_quantity
-        from material_call t1
-        inner join material_kanban t2
-        on t1.order_nb = t2.order_number and t1.material_nb = t2.material_code
-        left join material_return t3
-        on t3.order_number = t2.order_number and t3.origin_sscc = t2.sscc_number
-        and t3.material_nb = t2.material_code
-        -- and t3.`status` > 0
-        and t3.delete_flag = 0
-        left join (SELECT * from md_material where delete_flag = '0') t4 ON t2.material_code = t4.code
-        left join (SELECT * from register_bom where delete_flag='0' ) t5 ON t2.order_number=t5.order_number
-        and t2.material_code=t5.bom_component
-        left join
-        (SELECT order_number,material_code,sum(productQuantity) material_quantity from (
-        SELECT mk.order_number,mk.material_code,mk.sscc_number,IFNULL(mk.bin_down_quantity,mk.quantity)-ifnull(mr.quantity,0) productQuantity
-        from material_kanban mk left join material_return mr
-        on  mr.order_number =mk.order_number and mr.origin_sscc=mk.sscc_number and mr.material_nb=mk.material_code
-        and mr.delete_flag = 0
-        -- and mr.`status` > 0
-        WHERE mk.`status`=6
-        and mk.delete_flag = 0
-        and mk.register_batch=1
-        ) tt GROUP BY order_number,material_code) t6 on t6.order_number= t2.order_number
-        and t6.material_code=t2.material_code
-        where t2.`status` = 6
-        and t1.delete_flag = 0
-        and t2.delete_flag = 0
-        and t1.register_batch = 1
-        and t2.register_batch = 1
+        FROM
+        material_call t1
+        INNER JOIN material_kanban t2 ON t1.order_nb = t2.order_number
+        AND t1.material_nb = t2.material_code
+        LEFT JOIN material_return t3 ON t3.order_number = t2.order_number
+        AND t3.sscc_number = t2.sscc_number
+        AND t3.material_nb = t2.material_code
+        AND t3.delete_flag = 0
+        LEFT JOIN ( SELECT * FROM md_material WHERE delete_flag = '0' ) t4 ON t2.material_code = t4.
+        CODE LEFT JOIN ( SELECT * FROM register_bom WHERE delete_flag = '0' ) t5 ON t2.order_number = t5.order_number
+        AND t2.material_code = t5.bom_component
+        LEFT JOIN (
+        SELECT
+        order_number,
+        material_code,
+        sum( product_quantity ) material_quantity
+        FROM
+        (
+        SELECT
+        mk.order_number,
+        mk.material_code,
+        mk.sscc_number,
+        IFNULL( mk.bin_down_quantity, mk.quantity )- ifnull( mr.quantity, 0 ) product_quantity
+        FROM
+        material_kanban mk
+        LEFT JOIN material_return mr ON mr.order_number = mk.order_number
+        AND mr.sscc_number = mk.sscc_number
+        AND mr.material_nb = mk.material_code
+        AND mr.delete_flag = 0
+        WHERE
+        mk.`status` = 6
+        AND mk.delete_flag = 0
+        AND mk.register_batch = 1
+        union
+        SELECT mr.order_number,
+        mr.material_nb as material_code,
+        mr.sscc_number,
+        0 - ifnull( mr.quantity, 0 ) product_quantity
+        FROM material_return mr left join material_kanban mk
+        ON mr.order_number = mk.order_number
+        AND mr.sscc_number = mk.sscc_number
+        AND mr.material_nb = mk.material_code
+        WHERE mr.delete_flag=0 and mr.order_number is not null
+        and mk.sscc_number is null
+        ) tt
+        GROUP BY
+        order_number,
+        material_code
+        ) t6 ON t6.order_number = t2.order_number
+        AND t6.material_code = t2.material_code
+        WHERE
+        t2.`status` = 6
+        AND t1.delete_flag = 0
+        AND t2.delete_flag = 0
+        AND t1.register_batch = 1
+        AND t2.register_batch = 1
+        UNION
+        SELECT mc.`status`,mr.order_number,mc.material_nb as material_code,mm.name material_name,
+        mr.sscc_number,mr.batch_nb,mc.quantity,mc.issued_quantity,0 as pick_quantity,null as picking_time,
+        0 as received_quantity,null as received_time,0 as type,null as parent_id,mr.material_nb return_material_nb,
+        mr.batch_nb return_batch_nb,mr.`status` return_status,mr.quantity return_quantity,mr.create_time return_time,
+        case when  mr.received_time is null then NULL
+        else   mr.quantity
+        end as return_received_quantity,mr.received_time return_received_time,0-IFNULL(mr.quantity,0) product_quantity,
+        rb.component_quantity,v.material_quantity - rb.component_quantity gap_quantity
+        from material_call mc INNER JOIN material_return mr
+        on mc.order_nb=mr.order_number and mc.material_nb=mr.material_nb and mc.register_batch =1
+        left join material_kanban mk on mk.sscc_number = mr.sscc_number
+        left join (SELECT * from md_material where delete_flag='0' ) mm ON mr.material_nb=mm.code
+        left join (SELECT * from register_bom where delete_flag='0' ) rb ON mr.order_number=rb.order_number
+        and mr.material_nb=rb.bom_component
+        LEFT JOIN (
+        SELECT
+        order_number,
+        material_code,
+        sum( product_quantity ) material_quantity
+        FROM
+        (
+        SELECT
+        mk.order_number,
+        mk.material_code,
+        mk.sscc_number,
+        IFNULL( mk.bin_down_quantity, mk.quantity )- ifnull( mr.quantity, 0 ) product_quantity
+        FROM
+        material_kanban mk
+        LEFT JOIN material_return mr ON mr.order_number = mk.order_number
+        AND mr.sscc_number = mk.sscc_number
+        AND mr.material_nb = mk.material_code
+        AND mr.delete_flag = 0
+        WHERE
+        mk.`status` = 6
+        AND mk.delete_flag = 0
+        AND mk.register_batch = 1
+        union
+        SELECT mr.order_number,
+        mr.material_nb as material_code,
+        mr.sscc_number,
+        0 - ifnull( mr.quantity, 0 ) product_quantity
+        FROM material_return mr left join material_kanban mk
+        ON mr.order_number = mk.order_number
+        AND mr.sscc_number = mk.sscc_number
+        AND mr.material_nb = mk.material_code
+        WHERE mr.delete_flag=0 and mr.order_number is not null
+        and mk.sscc_number is null
+        ) tt
+        GROUP BY
+        order_number,
+        material_code
+        ) v ON v.order_number = mc.order_nb
+        AND v.material_code = mc.material_nb
+        WHERE mk.sscc_number is null
+        and mc.delete_flag=0 and mr.delete_flag=0
+        )  v1
+        <where>
         <if test="orderNumber != null and orderNumber != ''">
-            and t2.order_number like concat('%', #{orderNumber}, '%')
+            and v1.order_number like concat('%', #{orderNumber}, '%')
         </if>
         <if test="batchNb != null and batchNb != ''">
-            and t2.batch_nb like concat('%', #{batchNb}, '%')
+            and v1.batch_nb like concat('%', #{batchNb}, '%')
         </if>
         <if test="materialCode != null and materialCode != ''">
-            and t2.material_code like concat('%', #{materialCode}, '%')
+            and v1.material_code like concat('%', #{materialCode}, '%')
         </if>
         <if test="ssccNumber != null and ssccNumber != ''">
-            and t2.sscc_number like concat('%', #{ssccNumber}, '%')
-        </if>
-        <if test="wareCode != null and wareCode != ''">
-            and t2.ware_code like concat('%', #{wareCode}, '%')
+            and v1.sscc_number like concat('%', #{ssccNumber}, '%')
         </if>
         <if test="createTimeStart != null ">
-            AND <![CDATA[t2.picking_time >= #{createTimeStart}]]>
+            AND <![CDATA[v1.picking_time >= #{createTimeStart}]]>
         </if>
         <if test="createTimeEnd != null ">
-            AND <![CDATA[t2.picking_time <= #{createTimeEnd}]]>
+            AND <![CDATA[v1.picking_time <= #{createTimeEnd}]]>
         </if>
+        </where>
         order by order_number, material_code, sscc_number, batch_nb
     </select>
 </mapper>

@@ -71,8 +71,6 @@ public class MaterialReturn extends BaseEntity {
 
     private String cell;
 
-    private String originSSCC;
-
     private String orderNumber;
 
     private Date receivedTime;
