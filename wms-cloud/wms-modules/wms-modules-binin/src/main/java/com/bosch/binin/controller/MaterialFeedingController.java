@@ -97,7 +97,7 @@ public class MaterialFeedingController extends BaseController {
                             if ( r.getQuantity() < 0) {
                                 throw new ServiceException("数量输入有误", 400);
                             }
-                            if (cell.equals("FSMP") && r.getRegisterBatchStr().equals("Y")) {
+                            if (cell.equals("FSMP") && StringUtils.isNotEmpty(r.getRegisterBatchStr()) && r.getRegisterBatchStr().equals("Y")) {
                                 r.setRegisterBatch(1);
                             }
                             r.setSortType(0);
