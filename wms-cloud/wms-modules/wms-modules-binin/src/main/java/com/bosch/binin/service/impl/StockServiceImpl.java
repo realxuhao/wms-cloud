@@ -520,7 +520,7 @@ public class StockServiceImpl extends ServiceImpl<StockMapper, Stock> implements
             if (!stockEditDTO.getTotalStock().equals(stockEditDTO.getFreezeStock() + stockEditDTO.getAvailableStock())) {
                 throw new ServiceException("总库存必须等于冻结库存+可用库存");
             }
-            if (stockEditDTO.getTotalStock() == Double.valueOf(0)) {
+            if (stockEditDTO.getTotalStock().equals(Double.valueOf(0))) {
                 binInService.binDown(stock.getSsccNumber());
             } else {
                 stock.setAvailableStock(stockEditDTO.getAvailableStock());
