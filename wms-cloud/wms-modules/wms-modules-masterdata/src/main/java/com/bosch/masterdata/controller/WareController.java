@@ -55,8 +55,7 @@ public class WareController extends BaseController {
         startPage();
         List<Ware> list = wareService.selectWareList(BeanConverUtil.conver(wareDTO, Ware.class));
         List<WareVO> wareVOS = BeanConverUtil.converList(list, WareVO.class);
-        return R.ok(new PageVO<>(wareVOS, new PageInfo<>(wareVOS).getTotal()));
-
+        return R.ok(new PageVO<>(wareVOS, new PageInfo<>(list).getTotal()));
     }
 
 
