@@ -695,7 +695,12 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
 
 
         binInService.saveBatch(binInsInsertList);
-
+        stockList.forEach(stock->{
+            List<BinIn> binInList = binInsInsertList.stream().filter(c -> c.getSsccNumber().equals(stock.getSsccNumber())).collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(binInList)){
+                stock.setBinInId(binInList.get(0).getId());
+            }
+        });
         stockService.saveBatch(stockList);
 
         this.updateBatchById(wareShiftList);
