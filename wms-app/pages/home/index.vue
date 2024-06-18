@@ -62,14 +62,7 @@
 				v-if="$hasPermi(['app:manualTrans', 'app:manualTrans:scan', 'app:splitPallet:binIn', 'app:scan:scan', 'app:location:scan'])"
 				type="line" class="m-b-12">
 				<view class="list header-box">
-					<!-- <view class="list-item" v-if="$hasPermi(['app:manualTrans:binDown'])" @click="handleGoto('/pages/manualTrans/binDown')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-xiajia" color="BLUE"></uni-icons>
-						<view class="text">转储下架</view>
-					</view>
-					<view class="list-item" v-if="$hasPermi(['app:manualTrans:binIn'])" @click="handleGoto('/pages/manualTrans/binIn')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
-						<view class="text">转储上架</view>
-					</view> -->
+
 					<view class="list-item" v-if="$hasPermi(['app:manualTrans'])"
 						@click="handleGoto('/pages/manualTrans/scan')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2"
@@ -105,7 +98,7 @@
 				</view>
 			</uni-section>
 
-			<uni-section title="移库业务"
+			<uni-section title="物料移库业务"
 				v-if="$hasPermi(['app:wareShift:binDown', 'app:materialCall:shipment', 'app:wareShift:receiving', 'app:wareShift:binIn'])"
 				type="line" class="m-b-12">
 				<view class="list header-box">
@@ -282,23 +275,6 @@
 					</view>
 				</view>
 			</uni-section>
-
-			<!-- 	<uni-section title="成品移库业务" type="line" class="m-b-12">
-				<view class="list header-box">
-					<view class="list-item" @click="handleGoto('/pages/finishedProductWareShift/shipment')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-wuliufahuo" type="icon-wuliufahuo" color="#009A9A"></uni-icons>
-						<view class="text">移库发运</view>
-					</view>
-					<view class="list-item" @click="handleGoto('/pages/finishedProductWareShift/receiving')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-discharge" color="#00ADD4"></uni-icons>
-						<view class="text">移库收货</view>
-					</view>
-					<view class="list-item" @click="handleGoto('/pages/finishedProductWareShift/binIn')">
-						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2" color="#1afa29"></uni-icons>
-						<view class="text">移库上架</view>
-					</view>
-				</view>
-			</uni-section> -->
 			<uni-data-picker ref="picker" popup-title="请选择工厂/仓库" :localdata="dataTree"
 				@change="handleChangePlant"></uni-data-picker>
 		</view>

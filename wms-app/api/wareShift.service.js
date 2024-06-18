@@ -193,6 +193,16 @@ const batchBinIn = async (options) => {
 	})
 }
 
+const getOrderNumber = async (barCode) => {
+	const url = `/binin/materialKanban/getRegisterBatchOrderNumberBySSCC/${barCode}`
+	const method = 'get'
+
+	return request({
+		url,
+		method,
+	})
+}
+
 export const wareShiftService = {
 	getList,
 	binDown,
@@ -211,5 +221,6 @@ export const wareShiftService = {
 	splitPallet,
 	getTransInfo,
 	batchBinIn,
-	getOne
+	getOne,
+	getOrderNumber
 }

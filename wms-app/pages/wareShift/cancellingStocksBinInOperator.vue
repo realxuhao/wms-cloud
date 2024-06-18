@@ -39,44 +39,45 @@
 			</view>
 
 			<view class="content">
-				<uni-forms :label-width="80" ref="binInForm" :rules="binInFormRules" :modelValue="binInForm" label-position="left">
+				<uni-forms :label-width="80" ref="binInForm" :rules="binInFormRules" :modelValue="binInForm"
+					label-position="left">
 					<uni-forms-item v-if="!materialInfo.palletCode" label="托盘编码" name="palletCode" required>
 						<!-- <view class="custom-input" :class="editFieldName==='binInForm.palletCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.palletCode')">
 								<text :class="!binInForm.palletCode?'placeholder-text':''">{{binInForm.palletCode||'请扫描托盘编码'}}</text>
 							</view> -->
-						<uni-easyinput v-model="binInForm.palletCode" placeholder="请扫描托盘编码" @focus="handleSetEditFieldName('binInForm.palletCode')"></uni-easyinput>
+						<uni-easyinput v-model="binInForm.palletCode" placeholder="请扫描托盘编码"
+							@focus="handleSetEditFieldName('binInForm.palletCode')"></uni-easyinput>
 					</uni-forms-item>
 					<uni-forms-item v-if="type === 1" label="目标库位" name="actualCode" required>
 						<!-- <view class="custom-input" :class="editFieldName==='binInForm.actualCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.actualCode')">
 								<text :class="!binInForm.actualCode?'placeholder-text':''">{{binInForm.actualCode||'请扫描目标区域'}}</text>
 							</view> -->
-						<uni-easyinput v-model="binInForm.actualCode" placeholder="请扫描目标库位" @focus="handleSetEditFieldName('binInForm.actualCode')"></uni-easyinput>
+						<uni-easyinput v-model="binInForm.actualCode" placeholder="请扫描目标库位"
+							@focus="handleSetEditFieldName('binInForm.actualCode')"></uni-easyinput>
 					</uni-forms-item>
 					<uni-forms-item label="目标库位" name="actualCode" required v-if="type === 0">
 						<!-- <view class="custom-input" :class="editFieldName==='binInForm.actualCode'?'focus':''" @click="()=>handleSetEditFieldName('binInForm.actualCode')">
 								<text :class="!binInForm.actualCode?'placeholder-text':''">{{binInForm.actualCode||'请扫描目标库位'}}</text>
 							</view> -->
-						<uni-easyinput v-model="binInForm.actualCode" placeholder="请扫描目标库位" @focus="handleSetEditFieldName('binInForm.actualCode')"></uni-easyinput>
+						<uni-easyinput v-model="binInForm.actualCode" placeholder="请扫描目标库位"
+							@focus="handleSetEditFieldName('binInForm.actualCode')"></uni-easyinput>
 					</uni-forms-item>
-					<o-btn block class="submit-btn primary-button" :loading="submitLoading" @click="handlePostBinIn">提交</o-btn>
+					<o-btn block class="submit-btn primary-button" :loading="submitLoading"
+						@click="handlePostBinIn">提交</o-btn>
 				</uni-forms>
 			</view>
 
 			<uni-popup ref="alertDialog" type="dialog">
-				<uni-popup-dialog
-					type="info"
-					cancelText="关闭"
-					confirmText="确认"
-					title="通知"
+				<uni-popup-dialog type="info" cancelText="关闭" confirmText="确认" title="通知"
 					:content="type === 0 ? '扫描库位与推荐库位不一致，是否提交!' : '目标区域和实际区域不一致，是否提交'"
-					@confirm="onSubmitBinIn"
-				></uni-popup-dialog>
+					@confirm="onSubmitBinIn"></uni-popup-dialog>
 			</uni-popup>
 
 			<uni-popup ref="popup" :is-mask-click="false">
 				<view class="result-content">
 					<view class="result-status">
-						<uni-icons custom-prefix="iconfont" class="success-color" type="icon-chenggong" size="32"></uni-icons>
+						<uni-icons custom-prefix="iconfont" class="success-color" type="icon-chenggong"
+							size="32"></uni-icons>
 						<text class=" text success-color">上架成功</text>
 					</view>
 					<view class="data-box">
@@ -94,222 +95,227 @@
 </template>
 
 <script>
-import Message from '@/components/Message';
-import Bus from '@/utils/bus';
-import _ from 'lodash';
-import material from '../../store/modules/material';		function convertPalletList(rows) {
-	const list = rows.map(item => {
-		const text = `类型：${item.type}；宽：${item.width}；高：${item.height}`;
-		return {
-			text,
-			value: item.type
-		};
-	});
-	return list;
-}
+	import Message from '@/components/Message';
+	import Bus from '@/utils/bus';
+	import _ from 'lodash';
+	import material from '../../store/modules/material';
 
-const typeMap = {
-	0: {
-		text: '正常退料',
-		color: 'success'
-	},
-	1: {
-		text: '异常退料',
-		color: 'warning'
+	function convertPalletList(rows) {
+		const list = rows.map(item => {
+			const text = `类型：${item.type}；宽：${item.width}；高：${item.height}`;
+			return {
+				text,
+				value: item.type
+			};
+		});
+		return list;
 	}
-};
 
-export default {
-	components: {
-		Message
-	},
-	data() {
-		return {
-			submitLoading: false,
-			generatePalletCodeLoading: false,
-			materialInfo: {},
-			barCode: undefined,
-			palletTypeList: [],
-			palletForm: {},
-			binInFormRules: {
-				actualCode: {
-					rules: [
-						{
+	const typeMap = {
+		0: {
+			text: '正常退料',
+			color: 'success'
+		},
+		1: {
+			text: '异常退料',
+			color: 'warning'
+		}
+	};
+
+	export default {
+		components: {
+			Message
+		},
+		data() {
+			return {
+				submitLoading: false,
+				generatePalletCodeLoading: false,
+				materialInfo: {},
+				barCode: undefined,
+				palletTypeList: [],
+				palletForm: {},
+				binInFormRules: {
+					actualCode: {
+						rules: [{
 							required: true,
 							errorMessage: '不能为空'
-						}
-					]
-				},
-				palletCode: {
-					rules: [
-						{
+						}]
+					},
+					palletCode: {
+						rules: [{
 							required: true,
 							errorMessage: '托盘编码不能为空'
-						}
-					]
-				}
-			},
-			binInForm: {
-				mesBarCode: undefined,
-				actualCode: undefined,
-				palletCode: undefined
-			},
+						}]
+					}
+				},
+				binInForm: {
+					mesBarCode: undefined,
+					actualCode: undefined,
+					palletCode: undefined
+				},
 
-			editFieldName: 'binInForm.palletCode' //'binInForm.mesBarCode','binInForm.actualCode'
-		};
-	},
-	computed: {
-		typeMap: () => typeMap,
-		type() {
-			return this.materialInfo.recommendBinCode ? 0 : 1;
-		}
-	},
-	onLoad(options) {
-		this.barCode = options.barCode;
-		this.binInForm.barCode = options.barCode;
-		this.getByMesBarCode(options.barCode);
-
-		this.initScanCode();
-	},
-	onLaunch() {
-		Bus.$off('scancodedate');
-	},
-	methods: {
-		handleSetEditFieldName(editFieldName) {
-			this.editFieldName = editFieldName;
+				editFieldName: 'binInForm.palletCode' //'binInForm.mesBarCode','binInForm.actualCode'
+			};
 		},
-		async initScanCode() {
-			Bus.$on('scancodedate', data => {
-				const code = data.code.trim();
-				if (this.editFieldName) {
-					_.set(this, this.editFieldName, code);
-				}
-			});
-		},
-		async handleGoBack() {
-			uni.navigateBack({ delta: 1 });
-		},
-
-		async lodaData() {
-			// this.getPalletList()
-		},
-		async getByMesBarCode(barCode) {
-			try {
-				const data = await this.$store.dispatch('wareShift/getAllocateBin', barCode);
-
-				if (data.palletCode) {
-					this.editFieldName = 'binInForm.actualCode';
-				}
-				this.materialInfo = data;
-
-				if (data && data.status === 1) {
-					throw Error('已上架，请勿重复操作');
-				}
-			} catch (e) {
-				this.$refs.message.error(e.message);
+		computed: {
+			typeMap: () => typeMap,
+			type() {
+				return this.materialInfo.recommendBinCode ? 0 : 1;
 			}
 		},
-		async handlePostBinIn() {
-			this.$refs.binInForm
-				.validate()
-				.then(res => {
-					if (this.type === 0 && this.binInForm.actualCode !== this.materialInfo.recommendBinCode) {
-						this.$refs.alertDialog.open();
-						return;
-					}
-					if (this.type === 1 && this.binInForm.actualCode !== this.materialInfo.areaCode) {
-						this.$refs.alertDialog.open();
-						return;
-					}
-					this.onSubmitBinIn();
-				})
-				.catch(err => {});
+		onLoad(options) {
+			this.barCode = options.barCode;
+			this.binInForm.barCode = options.barCode;
+			this.getByMesBarCode(options.barCode);
+
+			this.initScanCode();
 		},
-		async onSubmitBinIn() {
-			try {
-				uni.showLoading({
-					title: '正在提交'
+		onLaunch() {
+			Bus.$off('scancodedate');
+		},
+		methods: {
+			handleSetEditFieldName(editFieldName) {
+				this.editFieldName = editFieldName;
+			},
+			async initScanCode() {
+				Bus.$on('scancodedate', data => {
+					const code = data.code.trim();
+					if (this.editFieldName) {
+						_.set(this, this.editFieldName, code);
+					}
 				});
-				this.submitLoading = true;
+			},
+			async handleGoBack() {
+				uni.navigateBack({
+					delta: 1
+				});
+			},
 
-				const options = {
-					...this.binInForm,
-					mesBarCode: this.barCode
-				};
-				const data = await this.$store.dispatch('wareShift/postBinIn', options);
-				this.$refs.popup.open();
-			} catch (e) {
-				this.$refs.message.error(e.message);
-			} finally {
-				uni.hideLoading();
-				this.submitLoading = false;
+			async lodaData() {
+				// this.getPalletList()
+			},
+			async getByMesBarCode(barCode) {
+				try {
+					const data = await this.$store.dispatch('wareShift/getAllocateBin', barCode);
+
+					if (data.palletCode) {
+						this.editFieldName = 'binInForm.actualCode';
+					}
+					this.materialInfo = data;
+
+					if (data && data.status === 1) {
+						throw Error('已上架，请勿重复操作');
+					}
+				} catch (e) {
+					this.$refs.message.error(e.message);
+				}
+			},
+			async handlePostBinIn() {
+				this.$refs.binInForm
+					.validate()
+					.then(res => {
+						if (this.type === 0 && this.binInForm.actualCode !== this.materialInfo.recommendBinCode) {
+							this.$refs.alertDialog.open();
+							return;
+						}
+						if (this.type === 1 && this.binInForm.actualCode !== this.materialInfo.areaCode) {
+							this.$refs.alertDialog.open();
+							return;
+						}
+						this.onSubmitBinIn();
+					})
+					.catch(err => {});
+			},
+			async onSubmitBinIn() {
+				try {
+					uni.showLoading({
+						title: '正在提交'
+					});
+					this.submitLoading = true;
+
+					const options = {
+						...this.binInForm,
+						mesBarCode: this.barCode
+					};
+					await this.$store.dispatch('wareShift/postBinIn', options);
+					this.$refs.popup.open();
+				} catch (e) {
+					this.$refs.message.error(e.message);
+				} finally {
+					uni.hideLoading();
+					this.submitLoading = false;
+				}
+			}
+		},
+		mounted() {
+			this.lodaData();
+		},
+		watch: {
+			'binInForm.palletCode'(value) {
+				this.editFieldName = 'binInForm.actualCode';
 			}
 		}
-	},
-	mounted() {
-		this.lodaData();
-	},
-	watch: {
-		'binInForm.palletCode'(value) {
-			this.editFieldName = 'binInForm.actualCode';
-		}
-	}
-};
+	};
 </script>
 
 <style lang="scss">
-.main {
-	height: 100%;
-	padding: 8px;
-	box-sizing: border-box;
-	display: flex;
-	flex-direction: column;
-}
-
-.header {
-	background: #fff;
-	padding: 8px;
-	border-radius: 4px;
-}
-
-.content {
-	background: #fff;
-	padding: 8px 8px 40px;
-	border-radius: 4px;
-}
-
-/deep/.uni-data-tree {
-	background: #fff;
-}
-
-.result-content {
-	width: 324px;
-	padding: 12px;
-	box-sizing: border-box;
-	background: #fff;
-	border-radius: 4px;
-	.result-status {
-		color: $uni-color-success;
+	.main {
+		height: 100%;
+		padding: 8px;
+		box-sizing: border-box;
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		margin-bottom: 16px;
-		.text {
-			margin-left: 8px;
-			font-size: 14px;
+		flex-direction: column;
+	}
+
+	.header {
+		background: #fff;
+		padding: 8px;
+		border-radius: 4px;
+	}
+
+	.content {
+		background: #fff;
+		padding: 8px 8px 40px;
+		border-radius: 4px;
+	}
+
+	/deep/.uni-data-tree {
+		background: #fff;
+	}
+
+	.result-content {
+		width: 324px;
+		padding: 12px;
+		box-sizing: border-box;
+		background: #fff;
+		border-radius: 4px;
+
+		.result-status {
+			color: $uni-color-success;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-bottom: 16px;
+
+			.text {
+				margin-left: 8px;
+				font-size: 14px;
+			}
+		}
+
+		.label {
+			width: 100px;
+		}
+
+		.data-box {
+			margin-bottom: 16px;
+			padding: 0px 8px;
 		}
 	}
-	.label {
-		width: 100px;
+
+	.flex {
+		.custom-input {
+			flex: 1;
+		}
 	}
-	.data-box {
-		margin-bottom: 16px;
-		padding: 0px 8px;
-	}
-}
-.flex {
-	.custom-input {
-		flex: 1;
-	}
-}
 </style>
