@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.*;
 import com.bosch.binin.api.domain.dto.*;
 import com.bosch.binin.api.domain.vo.BinInVO;
+import com.bosch.binin.api.domain.vo.RunCallVO;
 import com.bosch.binin.api.domain.vo.StockVO;
 import com.bosch.binin.api.domain.vo.WareShiftVO;
 import com.bosch.binin.api.enumeration.*;
@@ -449,6 +450,16 @@ public class WareShiftServiceImpl extends ServiceImpl<WareShiftMapper, WareShift
             }
         });
         List<Long> callIds = dtos.stream().map(CallWareShiftDTO::getCallId).collect(Collectors.toList());
+        List<RunCallVO> runCallVOS = callService.runCall(callIds);
+        runCallVOS.stream().forEach(item -> {
+            if (item.getOutStock() <= 0) {
+                throw new ServiceException("外库库存为0，无法创建移库，请重新选择");
+            }
+            Optional<CallWareShiftDTO> callWareShiftDTO = dtos.stream().filter(c -> c.getCallId().equals(item.getCallId())).findFirst();
+            if (callWareShiftDTO.isPresent() && callWareShiftDTO.get().getShiftQuality() > item.getOutStock()) {
+                throw new ServiceException("移库数量大于库存数量，无法创建移库，请重新选择");
+            }
+        });
         LambdaQueryWrapper<MaterialCall> callQueryWrapper = new LambdaQueryWrapper<>();
         callQueryWrapper.in(MaterialCall::getId, callIds);
         callQueryWrapper.eq(MaterialCall::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());

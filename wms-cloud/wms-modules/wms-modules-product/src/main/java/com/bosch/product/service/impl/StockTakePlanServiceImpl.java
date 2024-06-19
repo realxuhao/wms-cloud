@@ -4,8 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.Stock;
+import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.RemoteMaterialService;
 import com.bosch.masterdata.api.RemoteProductService;
+import com.bosch.masterdata.api.domain.Ware;
+import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.MaterialVO;
 import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.product.api.domain.ProductStock;
@@ -63,15 +66,30 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
     @Autowired
     private IStockTakeDetailService stockTakeDetailService;
 
+    @Autowired
+     private RemoteMasterDataService masterDataService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void addStockTakePlan(StockTakeAddDTO dto) {
+        String wareCode = "";
+        if (StringUtils.isNotEmpty(dto.getWareCode())) {
+            Ware wareInfo = masterDataService.getWareInfo(dto.getWareCode()).getData();
+            if (wareInfo != null) {
+                wareCode = wareInfo.getCode();
+            }
+        }
+        String areaCode = "";
+        if (StringUtils.isNotEmpty(dto.getAreaCode())) {
+            AreaVO data = masterDataService.getById(dto.getAreaCode()).getData();
+            areaCode = data.getCode();
+        }
 
         StockTakePlan stockTakePlan = new StockTakePlan();
         stockTakePlan.setCode(getNextPlanCode());
         stockTakePlan.setCell(dto.getCell());
-        stockTakePlan.setWareCode(dto.getWareCode());
-        stockTakePlan.setAreaCode(dto.getAreaCode());
+        stockTakePlan.setWareCode(wareCode);
+        stockTakePlan.setAreaCode(areaCode);
         stockTakePlan.setType(dto.getType());
         stockTakePlan.setMethod(dto.getMethod());
         stockTakePlan.setStatus(StockTakePlanStatusEnum.CREATED.getCode());
@@ -95,8 +113,8 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
             List<String> materialCodeList = materialVOList.stream().map(MaterialVO::getCode).collect(Collectors.toList());
 
             LambdaQueryWrapper<Stock> materialStockQueryWrapper = new LambdaQueryWrapper<>();
-            materialStockQueryWrapper.eq(StringUtils.isNotEmpty(dto.getWareCode()), Stock::getWareCode, dto.getWareCode())
-                    .eq(StringUtils.isNotEmpty(dto.getAreaCode()), Stock::getAreaCode, dto.getAreaCode())
+            materialStockQueryWrapper.eq(StringUtils.isNotEmpty(wareCode), Stock::getWareCode, wareCode)
+                    .eq(StringUtils.isNotEmpty(areaCode), Stock::getAreaCode, areaCode)
                     .eq(Stock::getFreezeStock, (double) 0)
                     .in(!CollectionUtils.isEmpty(materialCodeList), Stock::getMaterialNb, materialCodeList);
 
@@ -122,8 +140,8 @@ public class StockTakePlanServiceImpl extends ServiceImpl<StockTakePlanMapper, S
             List<String> materialCodeList = productPackagingVOS.stream().map(MdProductPackagingVO::getProductNo).collect(Collectors.toList());
 
             LambdaQueryWrapper<ProductStock> productStockQueryWrapper = new LambdaQueryWrapper<>();
-            productStockQueryWrapper.eq(StringUtils.isNotEmpty(dto.getWareCode()), ProductStock::getWareCode, dto.getWareCode())
-                    .eq(StringUtils.isNotEmpty(dto.getAreaCode()), ProductStock::getAreaCode, dto.getAreaCode())
+            productStockQueryWrapper.eq(StringUtils.isNotEmpty(wareCode), ProductStock::getWareCode, wareCode)
+                    .eq(StringUtils.isNotEmpty(areaCode), ProductStock::getAreaCode, areaCode)
 //                    .eq(ProductStock::getFreezeStock, (double) 0)
                     .eq(ProductStock::getDeleteFlag,DeleteFlagStatus.FALSE.getCode())
                     .in(!CollectionUtils.isEmpty(materialCodeList), ProductStock::getMaterialNb, materialCodeList);
