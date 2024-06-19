@@ -380,6 +380,10 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             }
         }
 
+        if (stock.getFreezeStock() > 0) {
+            throw new ServiceException(stockEditDTO.getSsccNumber() + "：该托存在任务，暂时不允许调整");
+        }
+
 
         ProductStockAdjust stockAdjust = BeanConverUtil.conver(stock, ProductStockAdjust.class);
 
@@ -629,6 +633,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         queryWrapper.eq(ProductStock::getSsccNumber, sscc);
         queryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         ProductStock stock = this.getOne(queryWrapper);
+
 
 
         ManualTransferOrder manualTransferOrder = new ManualTransferOrder();
