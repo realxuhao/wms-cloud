@@ -19,6 +19,7 @@ import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.product.api.domain.*;
 import com.bosch.product.api.domain.dto.*;
+import com.bosch.product.api.domain.enumeration.ProductPickEnum;
 import com.bosch.product.api.domain.enumeration.ProductStockBinInEnum;
 import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
 import com.bosch.product.api.domain.vo.ProductReturnVO;
@@ -93,6 +94,10 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
     @Autowired
     private IUserOperationLogService userOperationLogService;
+
+    @Autowired
+    @Lazy
+    private IProductPickService productPickService;
 
     @Override
     public void generateStockByReceive(ProductReceive receive) {
@@ -380,7 +385,15 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             }
         }
 
-        if (stock.getFreezeStock() > 0) {
+
+
+        LambdaQueryWrapper<ProductPick> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(ProductPick::getSscc,stockEditDTO.getSsccNumber());
+        lambdaQueryWrapper.ne(ProductPick::getStatus,ProductPickEnum.CANCEL.code());
+        lambdaQueryWrapper.ne(ProductPick::getStatus, ProductPickEnum.FINISH.code());
+        lambdaQueryWrapper.last("limit 1");
+        ProductPick pickServiceOne = productPickService.getOne(lambdaQueryWrapper);
+        if (pickServiceOne!=null){
             throw new ServiceException(stockEditDTO.getSsccNumber() + "：该托存在任务，暂时不允许调整");
         }
 
@@ -401,6 +414,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             if (stockUseTR > stock.getAvailableStock()) {
                 throw new ServiceException("领用数量不能大于可用数量");
             }
+
 
 
             stock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(stock.getAvailableStock(), stockUseTR, "-"));
