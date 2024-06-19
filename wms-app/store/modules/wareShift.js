@@ -144,7 +144,7 @@ const wareShift = {
 			} = await wareShiftService.splitPallet(options)
 			return data
 		},
-		
+
 		async getTransInfo({
 			commit
 		}, barCode) {
@@ -169,6 +169,15 @@ const wareShift = {
 			} = await wareShiftService.batchBinIn(options)
 			return data
 		},
+		async getOrderNumber({
+			commit
+		}, options) {
+			const {
+				data
+			} = await wareShiftService.getOrderNumber(options)
+			return data
+		},
+
 	}
 }
 

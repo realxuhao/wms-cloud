@@ -87,7 +87,10 @@
 					<template v-if="form.type === 6">
 						<uni-forms-item label="领用理由" name="totalStock" required>
 							<uni-data-select v-model="form.useReason" :localdata="useList"></uni-data-select>
+						</uni-forms-item>
 
+						<uni-forms-item label="领用数量" name="stockUse" required>
+							<uni-easyinput v-model="form.stockUse" placeholder="领用数量"></uni-easyinput>
 						</uni-forms-item>
 
 					</template>

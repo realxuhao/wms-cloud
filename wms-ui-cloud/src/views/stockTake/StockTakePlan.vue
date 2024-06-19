@@ -404,7 +404,7 @@ export default {
     },
     async handleDelete (row) {
       try {
-        await this.$store.dispatch('stockTake/delete', row.id)
+        await this.$store.dispatch('stockTake/destroy', row.id)
         this.$message.success('删除成功！')
 
         this.loadTableList()
