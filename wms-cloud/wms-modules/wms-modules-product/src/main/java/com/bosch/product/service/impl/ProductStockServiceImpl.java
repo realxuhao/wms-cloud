@@ -420,7 +420,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             stock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(stock.getAvailableStock(), stockUseTR, "-"));
             stock.setTotalStock(DoubleMathUtil.doubleMathCalculation(stock.getTotalStock(), stockUseTR, "-"));
             stock.setFreezeStock(DoubleMathUtil.doubleMathCalculation(stock.getTotalStock(), stock.getAvailableStock(), "-"));
-            if (stock.getAvailableStock() == Double.valueOf(0)) {
+            if (stock.getAvailableStock().equals(Double.valueOf(0))) {
                 stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
             }
 
@@ -493,7 +493,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             stock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(stockEditDTO.getAvailableStock(), boxSpecification, "/"));
             stock.setFreezeStock(DoubleMathUtil.doubleMathCalculation(stockEditDTO.getFreezeStock(), boxSpecification, "/"));
             stock.setTotalStock(DoubleMathUtil.doubleMathCalculation(stockEditDTO.getTotalStock(), boxSpecification, "/"));
-            if (stock.getTotalStock() == Double.valueOf(0)){
+            if (stock.getTotalStock().equals(Double.valueOf(0))) {
                 stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
             }
 
