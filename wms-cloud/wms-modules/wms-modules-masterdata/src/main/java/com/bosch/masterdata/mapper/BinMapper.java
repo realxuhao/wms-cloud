@@ -36,6 +36,8 @@ public interface BinMapper extends BaseMapper<Bin>
     public List<BinVO> selectBinVOByFrameType(String code);
 
     public List<BinVO> selectBinVOByFrameTypeAndWare(@Param("code") String code, @Param("ware") String ware);
+
+    public List<BinVO> selectBinVOByAreaCode(@Param("code") String code,@Param("isVirtual") Integer isVirtual);
     /**
      * 查询库位列表
      * 

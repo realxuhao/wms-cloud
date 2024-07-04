@@ -15,6 +15,7 @@
         <result property="updateTime" column="update_time"/>
         <result property="status" column="status"/>
         <result property="remark" column="remark"/>
+        <result property="isVirtual" column="is_virtual"/>
     </resultMap>
     <resultMap type="BinVO" id="BinVOResult">
         <result property="id" column="id"/>
@@ -34,7 +35,7 @@
         <result property="frameBearWeight" column="frameBearWeight"/>
         <result property="createTime" column="createTime"/>
         <result property="plantNb" column="plantNb"/>
-
+        <result property="isVirtual" column="isVirtual"/>
     </resultMap>
     <sql id="selectBinVo">
         select id,
@@ -46,7 +47,8 @@
                create_time,
                update_time,
                status,
-               remark
+               remark,
+               is_virtual
         from md_bin
     </sql>
     <sql id="binVOList">
@@ -63,11 +65,12 @@
                a.id          as areaId,
                f.code        as frameCode,
                f.name        as frameName,
-                f.type_code        as frameTypeCode,
+               f.type_code   as frameTypeCode,
                f.width       as frameWidth,
                f.bear_weight as frameBearWeight,
                b.create_time as createTime,
-               a.area_type as areaType
+               a.area_type as areaType,
+               b.is_virtual as isVirtual
         FROM md_bin AS b
                  LEFT JOIN md_frame AS f ON b.frame_id = f.id
                  LEFT JOIN md_area AS a ON f.area_id = a.id
@@ -118,6 +121,13 @@
         where f.type_code = #{code}
         AND w.CODE =#{ware}
     </select>
+    <select id="selectBinVOByAreaCode"  resultMap="BinVOResult">
+        <include refid="binVOList"/>
+        <where>
+            <if test="code != null ">and a.code = #{code}</if>
+            <if test="isVirtual != null ">and b.is_virtual = #{isVirtual}</if>
+        </where>
+    </select>
     <insert id="insertBin" parameterType="Bin">
         insert into md_bin
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -131,6 +141,7 @@
             <if test="updateTime != null">update_time,</if>
             <if test="status != null">status,</if>
             <if test="remark != null">remark,</if>
+            <if test="isVirtual != null">is_virtual,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
@@ -143,6 +154,7 @@
             <if test="updateTime != null">#{updateTime},</if>
             <if test="status != null">#{status},</if>
             <if test="remark != null">#{remark},</if>
+            <if test="isVirtual != null">#{isVirtual},</if>
         </trim>
     </insert>
 
@@ -158,6 +170,7 @@
             <if test="updateTime != null">update_time = #{updateTime},</if>
             <if test="status != null">status = #{status},</if>
             <if test="remark != null">remark = #{remark},</if>
+            <if test="isVirtual != null">is_virtual = #{isVirtual},</if>
         </trim>
         where id = #{id}
     </update>

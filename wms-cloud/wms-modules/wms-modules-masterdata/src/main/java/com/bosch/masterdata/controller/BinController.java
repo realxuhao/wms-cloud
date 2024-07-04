@@ -129,23 +129,35 @@ public class BinController extends BaseController
         }
 
     }
+
     /**
      * 根据跨id获取库位详细信息
      */
     @GetMapping(value = "/getInfoByFrameId/{frameId}")
-    public R<List<Bin> > getInfoByFrameId(@PathVariable("frameId") Long frameId)
-    {
+    public R<List<Bin>> getInfoByFrameId(@PathVariable("frameId") Long frameId) {
         try {
-
             List<Bin> bins = binService.selectBinByFrameId(frameId);
-
             return R.ok(bins);
-
-        }catch (Exception e){
+        } catch (Exception e) {
             return R.fail(e.getMessage());
         }
-
     }
+
+    /**
+     * 根据区域code获取库位信息
+     * @param code
+     * @return
+     */
+    @GetMapping(value = "/selectBinByAreaCode/{code}")
+    public R<List<BinVO>> selectBinByAreaCode(@PathVariable("code") String code) {
+        try {
+            List<BinVO> binVOS = binService.selectBinVOByAreaCode(code);
+            return R.ok(binVOS);
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
+    }
+
     /**
      * 删除库位
      */

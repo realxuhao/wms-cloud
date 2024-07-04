@@ -1,11 +1,14 @@
 package com.bosch.masterdata.api.domain;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ruoyi.common.core.annotation.Excel;
 import com.ruoyi.common.core.web.domain.BaseEntity;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * 库位对象 md_bin
@@ -38,5 +41,9 @@ public class Bin extends BaseEntity
     @Excel(name = "状态", readConverterExp = "1=：启用，0：停用")
     private Long status;
 
+    /**
+     * 是否是虚拟库位 0：实物，1:虚拟
+     */
+    private Integer isVirtual;
 
 }
