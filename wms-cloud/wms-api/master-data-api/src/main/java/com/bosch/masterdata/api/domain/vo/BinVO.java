@@ -82,4 +82,7 @@ public class BinVO {
 
     @ApiModelProperty(value = "存储区类型")
     private Integer areaType;
+
+    @ApiModelProperty(value = "是否虚拟库位")
+    private Integer isVirtual;
 }

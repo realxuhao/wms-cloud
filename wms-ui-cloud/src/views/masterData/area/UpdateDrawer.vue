@@ -40,7 +40,7 @@
             'areaType',
             { rules: [{ required: true, message: '请选择区域类型!' },] }
           ]">
-          <a-select-option v-for="(value, key) in areaTypeMap" :key="key" :value="key">{{ value }}</a-select-option>
+          <a-select-option v-for="(value, key) in areaTypeMap" :key="key" :value="Number(key)">{{ value }}</a-select-option>
         </a-select>
       </a-form-item>
     </a-form>
@@ -129,7 +129,7 @@ export default {
     },
     async getAndUpdateForm () {
       const { data } = await this.$store.dispatch('area/getOne', this.id)
-      this.form.setFieldsValue(_.pick(data, ['code', 'name', 'wareId']))
+      this.form.setFieldsValue(_.pick(data, ['code', 'name', 'wareId','areaType']))
     },
     async getWareList () {
       const list = await this.$store.dispatch('ware/getList')

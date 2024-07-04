@@ -20,6 +20,7 @@ import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.product.api.domain.*;
 import com.bosch.product.api.domain.dto.*;
 import com.bosch.product.api.domain.enumeration.ProductPickEnum;
+import com.bosch.product.api.domain.enumeration.ProductSPDNPickEnum;
 import com.bosch.product.api.domain.enumeration.ProductStockBinInEnum;
 import com.bosch.product.api.domain.enumeration.ProductWareShiftEnum;
 import com.bosch.product.api.domain.vo.ProductReturnVO;
@@ -98,6 +99,10 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
     @Autowired
     @Lazy
     private IProductPickService productPickService;
+
+    @Autowired
+    @Lazy
+    private IProductSPDNPickService  spdnPickService;
 
     @Override
     public void generateStockByReceive(ProductReceive receive) {
@@ -385,18 +390,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             }
         }
 
-
-
-        LambdaQueryWrapper<ProductPick> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(ProductPick::getSscc,stockEditDTO.getSsccNumber());
-        lambdaQueryWrapper.ne(ProductPick::getStatus,ProductPickEnum.CANCEL.code());
-        lambdaQueryWrapper.ne(ProductPick::getStatus, ProductPickEnum.FINISH.code());
-        lambdaQueryWrapper.last("limit 1");
-        ProductPick pickServiceOne = productPickService.getOne(lambdaQueryWrapper);
-        if (pickServiceOne!=null){
-            throw new ServiceException(stockEditDTO.getSsccNumber() + "：该托存在任务，暂时不允许调整");
-        }
-
+        validProductStockStatus(stockEditDTO.getSsccNumber());
 
         ProductStockAdjust stockAdjust = BeanConverUtil.conver(stock, ProductStockAdjust.class);
 
@@ -405,17 +399,15 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         //   PCS/TR
         Double boxSpecification = productVO.getBoxSpecification();
 
-
-        if (stockEditDTO.getType() == 0 || stockEditDTO.getType() == 1) {//质检取样和取样
-
+        if (stockEditDTO.getType() == 0 || stockEditDTO.getType() == 1 || stockEditDTO.getType() == 6) {//质检取样和取样和领用
+            if (stock.getFreezeStock() > 0) {
+                throw new ServiceException("该托有冻结库存，暂时不允许调整！");
+            }
             Double stockUseTR = DoubleMathUtil.doubleMathCalculation(stockEditDTO.getStockUse() , boxSpecification,"/");
-
 
             if (stockUseTR > stock.getAvailableStock()) {
                 throw new ServiceException("领用数量不能大于可用数量");
             }
-
-
 
             stock.setAvailableStock(DoubleMathUtil.doubleMathCalculation(stock.getAvailableStock(), stockUseTR, "-"));
             stock.setTotalStock(DoubleMathUtil.doubleMathCalculation(stock.getTotalStock(), stockUseTR, "-"));
@@ -424,16 +416,13 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
                 stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
             }
 
-
             productStockOperationService.addProductStockOperation(stock.getPlantNb(), stockEditDTO.getStockUse(), stock.getSsccNumber(),
                     stock.getMaterialNb(), stock.getFromProdOrder(), StockOperationType.OTHEROUT.getCode());
             this.updateById(stock);
-
-
         } else if (stockEditDTO.getType() == 2) {//报废
-//            if (stock.getFreezeStock() > 0) {
-//                throw new ServiceException("该库存存在执行任务，暂时不可以报废");
-//            }
+            if (stock.getFreezeStock() > 0) {
+                throw new ServiceException("该托有冻结库存，暂时不允许报废");
+            }
 //            //根据areaType查询区域
 //            R<List<AreaVO>> areaListR = remoteMasterDataService.getByWareCode(SecurityUtils.getWareCode());
 //            if (!areaListR.isSuccess() || areaListR == null) {
@@ -470,7 +459,7 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
 
         } else if (stockEditDTO.getType() == 3) {//整托出库
             if (stock.getFreezeStock() > 0) {
-                throw new ServiceException("该库存存在执行任务，暂时不可以整托出库");
+                throw new ServiceException("该托有冻结库存，暂时不允许整托出库");
             }
             stock.setDeleteFlag(DeleteFlagStatus.TRUE.getCode());
             productStockOperationService.addProductStockOperation(stock.getPlantNb(), stock.getTotalStock() * boxSpecification, stock.getSsccNumber(),
@@ -484,7 +473,6 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             if (!stockEditDTO.getTotalStock().equals(DoubleMathUtil.doubleMathCalculation(stockEditDTO.getFreezeStock(), stockEditDTO.getAvailableStock(), "+"))) {
                 throw new ServiceException("总库存必须等于冻结库存+可用库存");
             }
-
 
             double diff = DoubleMathUtil.doubleMathCalculation(stock.getTotalStock(), stockEditDTO.getTotalStock(), "-");
 
@@ -507,7 +495,6 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             this.updateById(stock);
 
         }
-
 
         stockAdjust.setType(stockEditDTO.getType());
         stockAdjust.setUseReason(stockEditDTO.getUseReason());
@@ -541,7 +528,8 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         queryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.last("limit 1");
         ProductStock productStock = this.getOne(queryWrapper);
-        if (productReturnDTO.getType() == 1 && productStock != null) {
+        //productReturnDTO.getType() == 1 &&
+        if (productStock != null) {
             throw new ServiceException("该托已存在于库存！");
         }
 
@@ -648,7 +636,15 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
         queryWrapper.eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         ProductStock stock = this.getOne(queryWrapper);
 
+        if (stock == null) {
+            throw new ServiceException("系统无此托的库存信息");
+        }
 
+        validProductStockStatus(sscc);
+
+        if (stock.getFreezeStock() > 0) {
+            throw new ServiceException("该托有冻结库存，暂时不能转储！");
+        }
 
         ManualTransferOrder manualTransferOrder = new ManualTransferOrder();
         manualTransferOrder.setSourcePlantNb(stock.getPlantNb());
@@ -807,6 +803,41 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             throw new ServiceException("调用主数据获取成品失败");
         }
         return byCode.getData();
+    }
+
+    private void validProductStockStatus(String ssccNumber) {
+        LambdaQueryWrapper<ProductWareShift> shiftQueryWrapper = new LambdaQueryWrapper<>();
+        shiftQueryWrapper.eq(ProductWareShift::getSsccNb, ssccNumber);
+        shiftQueryWrapper.ne(ProductWareShift::getStatus, ProductWareShiftEnum.CANCEL.code());
+        shiftQueryWrapper.ne(ProductWareShift::getStatus, ProductWareShiftEnum.FINISH.code());
+        shiftQueryWrapper.eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        shiftQueryWrapper.last("limit 1");
+        ProductWareShift wareShift = wareShiftService.getOne(shiftQueryWrapper);
+        if (wareShift != null) {
+            throw new ServiceException(ssccNumber + "：该托存在移库任务，暂时不允许调整");
+        }
+
+        LambdaQueryWrapper<ProductSPDNPick> spdnQueryWrapper = new LambdaQueryWrapper<>();
+        spdnQueryWrapper.eq(ProductSPDNPick::getSsccNumber, ssccNumber);
+        spdnQueryWrapper.ne(ProductSPDNPick::getStatus, ProductSPDNPickEnum.CANCEL.code());
+        spdnQueryWrapper.ne(ProductSPDNPick::getStatus, ProductSPDNPickEnum.FINISH.code());
+        spdnQueryWrapper.eq(ProductSPDNPick::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        spdnQueryWrapper.last("limit 1");
+        ProductSPDNPick spdnPick = spdnPickService.getOne(spdnQueryWrapper);
+        if (spdnPick != null) {
+            throw new ServiceException(ssccNumber + "：该托存在SPDN任务，暂时不允许调整");
+        }
+
+        LambdaQueryWrapper<ProductPick> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(ProductPick::getSscc, ssccNumber);
+        lambdaQueryWrapper.ne(ProductPick::getStatus, ProductPickEnum.CANCEL.code());
+        lambdaQueryWrapper.ne(ProductPick::getStatus, ProductPickEnum.FINISH.code());
+        lambdaQueryWrapper.eq(ProductPick::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        lambdaQueryWrapper.last("limit 1");
+        ProductPick pickServiceOne = productPickService.getOne(lambdaQueryWrapper);
+        if (pickServiceOne != null) {
+            throw new ServiceException(ssccNumber + "：该托存在SUDN任务，暂时不允许调整");
+        }
     }
 
 

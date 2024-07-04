@@ -8,8 +8,10 @@ import com.bosch.binin.api.domain.TranshipmentOrder;
 import com.bosch.binin.api.domain.WareShift;
 import com.bosch.binin.api.domain.dto.WareShiftBatchBinInDTO;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
+import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.RemoteProductService;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
+import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.masterdata.api.enumeration.AreaTypeEnum;
 import com.bosch.product.api.domain.ProductStock;
@@ -91,6 +93,8 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
     @Resource
     private RemoteProductService remoteProductService;
 
+    @Resource
+    private RemoteMasterDataService remoteMasterDataService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -480,16 +484,43 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
             throw new ServiceException("请选择上架的区域");
         }
 
+        BinVO binVO;
+        if (!StringUtils.isEmpty(dto.getBinCode())) {
+            R<BinVO> binInfoByCodeResult = remoteMasterDataService.getBinInfoByCode(dto.getBinCode());
+            if (!binInfoByCodeResult.isSuccess() || binInfoByCodeResult == null) {
+                throw new ServiceException("调用主数据服务查询库位信息失败");
+            }
+            if (binInfoByCodeResult.getData() == null) {
+                throw new ServiceException("没有库位，请维护主数据");
+            }
+            binVO = binInfoByCodeResult.getData();
+            if (binVO.getIsVirtual() != 1) {
+                throw new ServiceException("请选择虚拟库位进行批量上架");
+            }
+        } else {
+            binVO = null;
+        }
+
         LambdaQueryWrapper<ProductWareShift> wareShiftQueryWrapper = new LambdaQueryWrapper<>();
         wareShiftQueryWrapper.in(ProductWareShift::getSsccNb, ssccList);
         wareShiftQueryWrapper.eq(ProductWareShift::getStatus, ProductWareShiftEnum.WAITTING_BIN_IN.code());
         wareShiftQueryWrapper.eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         List<ProductWareShift> wareShiftList = this.list(wareShiftQueryWrapper);
 
+        if (CollectionUtils.isEmpty(wareShiftList)) {
+            throw new ServiceException("该批次没有待上架的移库任务");
+        }
+
         wareShiftList.stream().forEach(productWareShift -> {
             productWareShift.setTargetAreaCode(dto.getAreaCode());
+            if (!StringUtils.isEmpty(dto.getBinCode()) && binVO != null) {
+                productWareShift.setTargetBinCode(binVO.getCode());
+                productWareShift.setTargetAreaCode(binVO.getAreaCode());
+            }
             productWareShift.setStatus(ProductWareShiftEnum.FINISH.code());
         });
+
+        ssccList = wareShiftList.stream().map(ProductWareShift::getSsccNb).collect(Collectors.toList());
 
         LambdaQueryWrapper<ProductStock> stockQueryWrapper = new LambdaQueryWrapper<>();
         stockQueryWrapper.in(ProductStock::getSsccNumber, ssccList);
@@ -503,6 +534,12 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         productStocks.stream().forEach(stock -> {
             stock.setBinInFlag(ProductStockBinInEnum.FINISH.code());
             stock.setAreaCode(dto.getAreaCode());
+
+            if (!StringUtils.isEmpty(dto.getBinCode()) && binVO != null) {
+                stock.setBinCode(binVO.getCode());
+                stock.setAreaCode(binVO.getAreaCode());
+                stock.setFrameCode(binVO.getFrameCode());
+            }
 
             UserOperationLog userOperationLog = new UserOperationLog();
             userOperationLog.setCode(stock.getMaterialNb());

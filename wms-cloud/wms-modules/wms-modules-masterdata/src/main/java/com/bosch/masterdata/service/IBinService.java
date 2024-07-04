@@ -33,6 +33,14 @@ public interface IBinService extends IService<Bin>
      * @return
      */
     public List<BinVO> selectBinVOByFrameType(String code);
+
+    /**
+     * 根据区域code获取虚拟库位
+     * @param code
+     * @return
+     */
+    public List<BinVO> selectBinVOByAreaCode(String code);
+
     /**
      * 查询库位
      *

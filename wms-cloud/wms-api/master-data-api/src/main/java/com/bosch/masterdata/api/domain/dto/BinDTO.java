@@ -6,6 +6,8 @@ import com.ruoyi.common.core.web.page.PageDomain;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 public class BinDTO extends PageDomain {
 
@@ -47,4 +49,10 @@ public class BinDTO extends PageDomain {
 
     @ApiModelProperty(value = "frameType")
     private String frameType;
+
+    /**
+     * 是否是虚拟库位 0：实物，1:虚拟
+     */
+    @ApiModelProperty(value = "是否是虚拟库位 0：实物，1:虚拟")
+    private Integer isVirtual;
 }

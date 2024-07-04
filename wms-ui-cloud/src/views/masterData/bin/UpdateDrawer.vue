@@ -54,6 +54,23 @@
           <a-select-option v-for="item in frameList" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
         </a-select>
       </a-form-item>
+      <a-form-item label="是否虚拟库位">
+        <a-radio-group
+          v-decorator="[
+            'isVirtual',
+            { rules: [{ required: true, message: '不能为空!' }],
+              initialValue: 0
+            }
+          ]"
+        >
+          <a-radio :value="0">
+            实物
+          </a-radio>
+          <a-radio :value="1">
+            虚拟
+          </a-radio>          
+        </a-radio-group>
+      </a-form-item>
     </a-form>
 
     <div class="action">
@@ -160,7 +177,7 @@ export default {
     },
     async getAndUpdateForm () {
       const { data } = await this.$store.dispatch('bin/getOne', this.id)
-      this.form.setFieldsValue(_.pick(data, ['code', 'name', 'wareId', 'areaId', 'frameId']))
+      this.form.setFieldsValue(_.pick(data, ['code', 'name', 'wareId', 'areaId', 'frameId','isVirtual']))
     },
     async getWareList () {
       const list = await this.$store.dispatch('ware/getList')

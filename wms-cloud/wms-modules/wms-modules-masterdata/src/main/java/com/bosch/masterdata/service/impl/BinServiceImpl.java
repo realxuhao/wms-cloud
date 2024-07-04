@@ -29,40 +29,44 @@ import com.bosch.masterdata.service.IBinService;
 
 /**
  * 库位Service业务层处理
- * 
+ *
  * @author xuhao
  * @date 2022-09-26
  */
 @Service
-public class BinServiceImpl extends ServiceImpl<BinMapper, Bin> implements IBinService
-{
+public class BinServiceImpl extends ServiceImpl<BinMapper, Bin> implements IBinService {
     @Autowired
     private BinMapper binMapper;
 
     @Autowired
     private FrameMapper frameMapper;
+
     /**
      * 查询库位
-     * 
+     *
      * @param id 库位主键
      * @return 库位
      */
     @Override
-    public Bin selectBinById(Long id)
-    {
+    public Bin selectBinById(Long id) {
         return binMapper.selectBinById(id);
     }
 
-    public List<BinVO> selectBinVOByFrameType(String code)
-    {
-       // return binMapper.selectBinVOByFrameType(code);
-        return binMapper.selectBinVOByFrameTypeAndWare(code,SecurityUtils.getWareCode());
-    }
     @Override
-    public List<Bin>  selectBinByFrameId(Long frameId)
-    {
-        LambdaQueryWrapper<Bin> lambdaQueryWrapper=new LambdaQueryWrapper();
-        lambdaQueryWrapper.eq(Bin::getFrameId,frameId);
+    public List<BinVO> selectBinVOByFrameType(String code) {
+        // return binMapper.selectBinVOByFrameType(code);
+        return binMapper.selectBinVOByFrameTypeAndWare(code, SecurityUtils.getWareCode());
+    }
+
+    @Override
+    public List<BinVO> selectBinVOByAreaCode(String code) {
+        return binMapper.selectBinVOByAreaCode(code,1);
+    }
+
+    @Override
+    public List<Bin> selectBinByFrameId(Long frameId) {
+        LambdaQueryWrapper<Bin> lambdaQueryWrapper = new LambdaQueryWrapper();
+        lambdaQueryWrapper.eq(Bin::getFrameId, frameId);
         List<Bin> bins = binMapper.selectList(lambdaQueryWrapper);
         return bins;
     }
@@ -76,15 +80,15 @@ public class BinServiceImpl extends ServiceImpl<BinMapper, Bin> implements IBinS
     public BinVO selectBinVOByCode(String code) {
         return binMapper.selectBinVOByCode(code);
     }
+
     /**
      * 查询库位列表
-     * 
+     *
      * @param bin 库位
      * @return 库位
      */
     @Override
-    public List<Bin> selectBinList(Bin bin)
-    {
+    public List<Bin> selectBinList(Bin bin) {
         return binMapper.selectBinList(bin);
     }
 
@@ -96,13 +100,12 @@ public class BinServiceImpl extends ServiceImpl<BinMapper, Bin> implements IBinS
 
     /**
      * 新增库位
-     * 
+     *
      * @param bin 库位
      * @return 结果
      */
     @Override
-    public int insertBin(Bin bin)
-    {
+    public int insertBin(Bin bin) {
         bin.setCreateTime(DateUtils.getNowDate());
         return binMapper.insertBin(bin);
     }
@@ -117,13 +120,12 @@ public class BinServiceImpl extends ServiceImpl<BinMapper, Bin> implements IBinS
 
     /**
      * 修改库位
-     * 
+     *
      * @param bin 库位
      * @return 结果
      */
     @Override
-    public int updateBin(Bin bin)
-    {
+    public int updateBin(Bin bin) {
         bin.setUpdateTime(DateUtils.getNowDate());
         return binMapper.updateBin(bin);
     }
@@ -138,55 +140,54 @@ public class BinServiceImpl extends ServiceImpl<BinMapper, Bin> implements IBinS
 
     /**
      * 批量删除库位
-     * 
+     *
      * @param ids 需要删除的库位主键
      * @return 结果
      */
     @Override
-    public int deleteBinByIds(Long[] ids)
-    {
+    public int deleteBinByIds(Long[] ids) {
         return binMapper.deleteBinByIds(ids);
     }
 
     /**
      * 删除库位信息
-     * 
+     *
      * @param id 库位主键
      * @return 结果
      */
     @Override
-    public int deleteBinById(Long id)
-    {
+    public int deleteBinById(Long id) {
         return binMapper.deleteBinById(id);
     }
 
     @Override
-    public Map<String,Long> getTypeMap(List<String> codes) {
-        Map<String,Long> collect=new HashMap<>();
-        LambdaQueryWrapper<Frame> queryWrapper=new LambdaQueryWrapper<Frame>();
-        queryWrapper.in(Frame::getCode,codes);
+    public Map<String, Long> getTypeMap(List<String> codes) {
+        Map<String, Long> collect = new HashMap<>();
+        LambdaQueryWrapper<Frame> queryWrapper = new LambdaQueryWrapper<Frame>();
+        queryWrapper.in(Frame::getCode, codes);
         List<Frame> types = frameMapper.selectList(queryWrapper);
-        if (CollectionUtils.isNotEmpty(types)){
-            collect = types.stream().collect(Collectors.toMap(Frame::getCode,Frame::getId));
+        if (CollectionUtils.isNotEmpty(types)) {
+            collect = types.stream().collect(Collectors.toMap(Frame::getCode, Frame::getId));
         }
-        return  collect;
+        return collect;
     }
 
     public boolean validList(List<String> codes) {
-        QueryWrapper<Bin> wrapper=new QueryWrapper<>();
-        wrapper.in("code",codes);
-        return  binMapper.selectCount(wrapper)>0;
+        QueryWrapper<Bin> wrapper = new QueryWrapper<>();
+        wrapper.in("code", codes);
+        return binMapper.selectCount(wrapper) > 0;
     }
+
     public List<BinDTO> setValue(List<BinDTO> dtos) {
         //获取集合
         List<String> types =
                 dtos.stream().map(BinDTO::getFrameCode).collect(Collectors.toList());
         //获取map
-        Map<String,Long> typeMap = getTypeMap(types);
+        Map<String, Long> typeMap = getTypeMap(types);
         //绑定id
-        dtos.forEach(x->{
-            if (typeMap.get(x.getFrameCode())==null){
-                throw new ServiceException("包含不存在的跨Code:"+x.getFrameCode());
+        dtos.forEach(x -> {
+            if (typeMap.get(x.getFrameCode()) == null) {
+                throw new ServiceException("包含不存在的跨Code:" + x.getFrameCode());
             }
             x.setFrameId(typeMap.get(x.getFrameCode()));
         });

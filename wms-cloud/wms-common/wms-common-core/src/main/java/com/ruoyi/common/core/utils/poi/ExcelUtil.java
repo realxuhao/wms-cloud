@@ -69,7 +69,7 @@ public class ExcelUtil<T> {
     /**
      * Excel sheet最大行数，默认65536
      */
-    public static final int sheetSize = 65536;
+    public static final int sheetSize = 30000; //65536;
 
     /**
      * 工作表名称
@@ -503,14 +503,15 @@ public class ExcelUtil<T> {
      */
     @SuppressWarnings("unchecked")
     public void fillExcelData(int index, Row row, List<ExportUtilParam> lst) {
-        int startNo = index * sheetSize;
-        int endNo = Math.min(startNo + sheetSize, list.size());
-        int rowNo = (1 + rownum) - startNo;
-        for (int i = startNo; i < endNo; i++) {
-            rowNo = i > 1 ? rowNo + 1 : rowNo + i;
+        int startNo = index * sheetSize + 1;
+        int endNo = Math.min((index + 1) * sheetSize, list.size());
+        int rowNo = 0; //(1 + rownum) - startNo;
+        for (int i = startNo; i <= endNo; i++) {
+            //rowNo = i > 1 ? rowNo + 1 : rowNo + i;
+            rowNo = index > 0 ? i - sheetSize : i;
             row = sheet.createRow(rowNo);
             // 得到导出对象.
-            T vo = (T) list.get(i);
+            T vo = (T) list.get(i - 1);
             Collection<?> subList = null;
             if (isSubListValue(vo)) {
                 subList = getListCellValue(vo);
