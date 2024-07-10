@@ -284,6 +284,12 @@ const finishedProduc = {
 			const data = await finishedProductService.getDictData(parameter)
 			return data
 		},
+		async getSelectBinByAreaCode({
+			commit
+		}, parameter) {
+			const data = await finishedProductService.getSelectBinByAreaCode(parameter)
+			return data
+		},
 
 
 

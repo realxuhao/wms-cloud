@@ -323,6 +323,7 @@
 		width: 100%;
 		display: flex;
 		align-items: center;
+		min-height: 160px;
 
 		.desc {
 			color: #999;
@@ -346,7 +347,11 @@
 	}
 
 	/deep/.uni-list {
-		height: calc(100vh - 340px);
+		height: calc(100vh - 360px);
 		overflow-y: auto;
+	}
+
+	.order-content {
+		flex: 1;
 	}
 </style>

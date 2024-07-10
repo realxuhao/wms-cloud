@@ -362,6 +362,16 @@ const getDictData = async (type) => {
 	})
 }
 
+const getSelectBinByAreaCode = async (code) => {
+	const url = `/master-data/bin/selectBinByAreaCode/${code}`
+	const method = 'GET'
+
+	return request({
+		url,
+		method,
+	})
+}
+
 export const finishedProductService = {
 	getDictData,
 	getTaskList,
@@ -398,5 +408,6 @@ export const finishedProductService = {
 	addSplit,
 
 	getBinInInfoList,
-	batchBinIn
+	batchBinIn,
+	getSelectBinByAreaCode
 }

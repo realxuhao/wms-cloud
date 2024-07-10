@@ -11,6 +11,10 @@
 					<uni-data-picker ref="picker" v-model="area" popup-title="请选择存储区" :localdata="areaList"
 						@change="handleAreaChange"></uni-data-picker>
 				</uni-forms-item>
+				<uni-forms-item label="虚拟库位" name="binCode">
+					<uni-data-picker ref="picker" v-model="form.binCode" popup-title="请选择虚拟库位"
+						:localdata="virtualStorageLocationList"></uni-data-picker>
+				</uni-forms-item>
 			</uni-forms>
 
 			<view class="flex">
@@ -114,7 +118,8 @@
 				areaList: [],
 				dataTree: [],
 				area: undefined,
-				mesBarCode: ''
+				mesBarCode: '',
+				virtualStorageLocationList: []
 			};
 		},
 
@@ -134,7 +139,13 @@
 		},
 		mounted() {},
 		methods: {
-
+			async getVirtualStorageLocation(val) {
+				const data = await this.$store.dispatch('finishedProduct/getSelectBinByAreaCode', val);
+				this.virtualStorageLocationList = _.map(data, x => ({
+					text: x.name,
+					value: x.code
+				}));
+			},
 			async getWareList() {
 				const data = await this.$store.dispatch('wareShift/getWareList', {
 					wareCode: this.form.wareCode
@@ -201,6 +212,8 @@
 					}
 				} = val;
 				this.form.areaCode = value[0].value;
+
+				this.getVirtualStorageLocation(value[0].value)
 			},
 			async loadList(barCode) {
 				try {
