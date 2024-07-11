@@ -11,7 +11,7 @@
 					<uni-data-picker ref="picker" v-model="area" popup-title="请选择存储区" :localdata="areaList"
 						@change="handleAreaChange"></uni-data-picker>
 				</uni-forms-item>
-				<uni-forms-item label="虚拟库位" name="binCode">
+				<uni-forms-item label="虚拟库位" name="binCode" v-if="area">
 					<uni-data-picker ref="picker" v-model="form.binCode" popup-title="请选择虚拟库位"
 						:localdata="virtualStorageLocationList"></uni-data-picker>
 				</uni-forms-item>

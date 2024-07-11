@@ -33,51 +33,54 @@
 				<uni-segmented-control :current="currentCell" :values="cellItems" style-type="button"
 					@clickItem="handleCellChange" />
 			</div>
+			<scroll-view scroll-y="true" class="scroll-Y">
+				<uni-list class="m-b-12">
+					<uni-list-item v-for="(item, index) in list" :key="index">
+						<template slot="body">
+							<view class="order-main">
+								<MyRadio class="m-r-8" v-model="item.checked">
+									<view class="order-content">
+										<view class="title m-b-4">{{ item.materialName }}</view>
+										<view class="desc m-b-4">
+											<text class="label">CELL:</text>
+											{{ item.cell }}
+										</view>
+										<view class="desc m-b-4">
+											<text class="label">物料编码:</text>
+											{{ item.materialNb }}
+										</view>
+										<view class="desc m-b-4">
+											<text class="label">仓库:</text>
+											{{ item.wareCode }}
+										</view>
+										<view class="desc m-b-4" v-show="item.areaCode">
+											<text class="label">区域:</text>
+											{{ item.areaCode }}
+										</view>
+										<view class="desc m-b-4">
+											<text class="label">SSCC码:</text>
+											{{ item.ssccNumber }}
+										</view>
+										<view class="desc m-b-4">
+											<text class="label">数量:</text>
+											{{ item.quantity }}
+										</view>
+										<view class="desc">
+											<text class="label">批次号:</text>
+											{{item.batchNb}}
+										</view>
+									</view>
+								</MyRadio>
+							</view>
+						</template>
+					</uni-list-item>
 
-			<uni-list class="m-b-12">
-				<uni-list-item v-for="(item, index) in list" :key="index">
-					<template slot="body">
-						<view class="order-main">
-							<MyRadio class="m-r-8" v-model="item.checked">
-								<view class="order-content">
-									<view class="title m-b-4">{{ item.materialName }}</view>
-									<view class="desc m-b-4">
-										<text class="label">CELL:</text>
-										{{ item.cell }}
-									</view>
-									<view class="desc m-b-4">
-										<text class="label">物料编码:</text>
-										{{ item.materialNb }}
-									</view>
-									<view class="desc m-b-4">
-										<text class="label">仓库:</text>
-										{{ item.wareCode }}
-									</view>
-									<view class="desc m-b-4" v-show="item.areaCode">
-										<text class="label">区域:</text>
-										{{ item.areaCode }}
-									</view>
-									<view class="desc m-b-4">
-										<text class="label">SSCC码:</text>
-										{{ item.ssccNumber }}
-									</view>
-									<view class="desc m-b-4">
-										<text class="label">数量:</text>
-										{{ item.quantity }}
-									</view>
-									<view class="desc">
-										<text class="label">批次号:</text>
-										{{item.batchNb}}
-									</view>
-								</view>
-							</MyRadio>
-						</view>
-					</template>
-				</uni-list-item>
-			</uni-list>
+				</uni-list>
 
+			</scroll-view>
 			<view class="submit-btn"><o-btn class="primary-button" @click="handlePost" :loading="submitLoading"
 					:disabled="!hasCheckedItems" block>提交</o-btn></view>
+
 		</view>
 		<uni-popup ref="popup" type="dialog">
 			<uni-popup-dialog type="info" title="提示" content="请确认提交" @close="$refs.popup.close()"
@@ -299,7 +302,6 @@
 		box-sizing: border-box;
 		padding: 8px 0;
 		height: 100%;
-		overflow-y: auto;
 	}
 
 	.header {
@@ -323,7 +325,7 @@
 		width: 100%;
 		display: flex;
 		align-items: center;
-		min-height: 160px;
+		// height: 200px;
 
 		.desc {
 			color: #999;
@@ -346,12 +348,14 @@
 		margin-bottom: 8px;
 	}
 
-	/deep/.uni-list {
-		height: calc(100vh - 360px);
-		overflow-y: auto;
+	.scroll-Y {
+		height: calc(100vh - 340px);
 	}
+
+	/deep/.uni-list {}
 
 	.order-content {
 		flex: 1;
+		height: 100%;
 	}
 </style>
