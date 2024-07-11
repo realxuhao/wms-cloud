@@ -287,7 +287,9 @@ const finishedProduc = {
 		async getSelectBinByAreaCode({
 			commit
 		}, parameter) {
-			const data = await finishedProductService.getSelectBinByAreaCode(parameter)
+			const {
+				data 
+			} = await finishedProductService.getSelectBinByAreaCode(parameter)
 			return data
 		},
 
