@@ -89,7 +89,7 @@
 							<uni-data-select v-model="form.useReason" :localdata="useList"></uni-data-select>
 						</uni-forms-item>
 
-						<uni-forms-item label="领用数量" name="stockUse" required>
+						<uni-forms-item label="领用数量" name="totalStock" required>
 							<uni-easyinput v-model="form.stockUse" placeholder="领用数量"></uni-easyinput>
 						</uni-forms-item>
 
