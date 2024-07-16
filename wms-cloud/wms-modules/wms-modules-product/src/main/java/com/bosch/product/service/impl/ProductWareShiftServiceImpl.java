@@ -10,6 +10,7 @@ import com.bosch.binin.api.domain.dto.WareShiftBatchBinInDTO;
 import com.bosch.binin.api.enumeration.KanbanStatusEnum;
 import com.bosch.masterdata.api.RemoteMasterDataService;
 import com.bosch.masterdata.api.RemoteProductService;
+import com.bosch.masterdata.api.domain.Ware;
 import com.bosch.masterdata.api.domain.vo.AreaVO;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
@@ -378,7 +379,7 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
     }
 
     @Override
-    public void addBatchByStockIds(List<Long> stockIds) {
+    public void addBatchByStockIds(String wareCode, List<Long> stockIds) {
         LambdaQueryWrapper<ProductStock> queryWrapper = new LambdaQueryWrapper<>();
         List<ProductStock> stockList = stockService.list(queryWrapper.in(ProductStock::getId, stockIds).eq(ProductStock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode()));
         if (stockIds.size() != stockList.size()) {
@@ -386,7 +387,13 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         }
 
         List<ProductWareShift> wareShifts = new ArrayList<>();
-
+        R<Ware> wareInfoByCodeResult = remoteMasterDataService.getWareByCode(wareCode);
+        if (!wareInfoByCodeResult.isSuccess() || wareInfoByCodeResult == null) {
+            throw new ServiceException(wareInfoByCodeResult.getMsg());
+        }
+        if (wareInfoByCodeResult.getData() == null) {
+            throw new ServiceException("没有仓库，请维护主数据");
+        }
         stockList.forEach(item -> {
             if (!item.getFreezeStock().equals((double) 0)) {
                 throw new ServiceException("sscc码" + item.getSsccNumber() + "有冻结库存，不能生成移库任务");
@@ -410,6 +417,8 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
                     .unit(item.getUnit())
                     .status(ProductWareShiftEnum.WAITTING_SHIPPING.code())
                     .fromProdOrder(item.getFromProdOrder())
+                    .targetPlant(wareInfoByCodeResult.getData().getFactoryCode())
+                    .targetWareCode(wareInfoByCodeResult.getData().getCode())
                     .build();
             wareShifts.add(wareShift);
 
@@ -443,6 +452,9 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
         List<ProductWareShift> wareShiftList = wareShiftMapper.selectList(shiftQueryWrapper);
         AreaVO areaVO = stockService.getAreaByType(SecurityUtils.getWareCode(), AreaTypeEnum.PRO.getCode());
         wareShiftList.forEach(item -> {
+            if (StringUtils.isNotEmpty(item.getTargetWareCode()) && !item.getTargetWareCode().equals(SecurityUtils.getWareCode())) {
+                throw new ServiceException("收货仓库和目的仓库不一致");
+            }
             item.setStatus(ProductWareShiftEnum.WAITTING_BIN_IN.code());
             item.setTargetWareCode(SecurityUtils.getWareCode());
             item.setTargetAreaCode(areaVO.getCode());

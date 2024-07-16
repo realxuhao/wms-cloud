@@ -102,11 +102,11 @@ public class ProductWareShiftController extends BaseController {
         return R.ok();
     }
 
-    @PostMapping(value = "/batchGenerateShift")
+    @PostMapping(value = "/batchGenerateShift/{wareCode}")
     @ApiOperation("根据库存ids批量生成移库任务")
     @Log(title = "根据成品库存ids批量生成移库任务", businessType = BusinessType.INSERT)
-    public R add(@RequestBody List<Long> stockIds) {
-        productWareShiftService.addBatchByStockIds(stockIds);
+    public R add(@PathVariable("wareCode") String wareCode, @RequestBody List<Long> stockIds) {
+        productWareShiftService.addBatchByStockIds(wareCode, stockIds);
         return R.ok();
     }
 

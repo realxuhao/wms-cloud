@@ -271,7 +271,6 @@ export default {
         const endOperateTime = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:59') : undefined
 
         const options = { ..._.omit(this.queryForm, ['date']), startOperateTime, endOperateTime }
-        console.log(options)
         const {
           data: { rows, total }
         } = await this.$store.dispatch('materialInList/getPaginationList', options)

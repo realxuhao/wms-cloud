@@ -98,7 +98,13 @@
         </a-row>
       </a-form>
       <div class="action-content">
-        <a-button type="primary" class="m-r-8" icon="plus" @click="createTransfer" :disabled="this.selectedRowKeys.length <= 0"> 新建移库 </a-button>
+        <a-button 
+          type="primary" 
+          class="m-r-8" 
+          icon="plus" 
+          @click="visible = true" 
+          :disabled="this.selectedRowKeys.length <= 0" 
+          :loading="genTaskLoading">新建移库</a-button>
         <a-button type="primary" style="margin-left: 8px" :loading="exportLoading" @click="handleDownload"><a-icon type="download" />导出结果</a-button>
         <h3 style="margin-left: 20px">当前页总库存量(TR)：{{ totalStock }}</h3>
         <h3 style="margin-left: 20px">当前页总库存量(PCS)：{{ totalPCSStock }}</h3>
@@ -145,7 +151,25 @@
       </div>
 
     </div>
-
+    <a-modal
+      title="请确认收货仓库"
+      :visible="visible"
+      :confirm-loading="genTaskLoading"
+      @ok="createTransfer"
+      width="600px"
+      @cancel="visible = false"
+    >
+      <a-form layout="inline" class="search-content">
+        <a-form-item label="仓库编号" required>         
+          <a-auto-complete
+            v-model="wareCode"         
+            :data-source="wareList"             
+            placeholder="仓库编号"         
+            :filter-option="filterOrder">            
+          </a-auto-complete>
+        </a-form-item>
+      </a-form>
+    </a-modal>
   </div>
 </template>
 
@@ -386,6 +410,10 @@ export default {
       currentMaterialNb: '',
       stockListVisible: false,
       notQuantity: 0,
+      visible: false,
+      wareList: [],
+      genTaskLoading: false,
+      wareCode: null
     }
   },
   computed: {
@@ -457,16 +485,38 @@ export default {
     },
     async createTransfer () {
       try {
-        await this.$store.dispatch('finishedProductTransfer/createTransfer', this.selectedRowKeys)
-        this.$message.success('创建成功！')
+        if (this.wareCode == null || this.wareCode == '') {
+          this.$message.warning('请填写收货的仓库编号！')
+          return
+        }
+        this.genTaskLoading = true
+        const options = {
+          wareCode: this.wareCode,
+          selectedRowKeys: this.selectedRowKeys
+        }
+        console.log(options)
+        await this.$store.dispatch('finishedProductTransfer/createTransfer', options)
         this.loadData()
         this.selectedRowKeys = []
+        this.wareCode = null
+        this.$message.success('创建成功！')
+        this.visible = false
       } catch (error) {
         this.$message.error(error.message)
+      } finally {
+        this.genTaskLoading = false
       }
     },
-    async loadData () {
+    filterOrder(input, option) {
+      return (
+        option.componentOptions.children[0].text.toUpperCase().indexOf(input.toUpperCase()) >= 0
+      )
+    },
+    async loadData() {
       this.loadTableList()
+      const data = await this.$store.dispatch('ware/getOptionList')
+      const codes = data.data.map(obj => obj.code)
+      this.wareList = codes
     }
   },
   mounted () {

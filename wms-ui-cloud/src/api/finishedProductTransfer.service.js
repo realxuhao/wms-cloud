@@ -11,8 +11,8 @@ const getTransferList = async (parameter) => {
 }
 
 const createTransfer = async (options) => {
-  const url = `/product-shift/batchGenerateShift`
-  const { data } = await createAuthInstance(baseUrl).post(url, options)
+  const url = `/product-shift/batchGenerateShift/${options.wareCode}`
+  const { data } = await createAuthInstance(baseUrl).post(url, options.selectedRowKeys)
   return data
 }
 
