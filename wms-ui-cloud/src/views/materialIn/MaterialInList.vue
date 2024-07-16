@@ -48,6 +48,14 @@
                 <a-input v-model="queryForm.operateUser" placeholder="操作人" allow-clear/>
               </a-form-item>
             </a-col>
+            <a-col :span="9">
+              <a-form-item label="操作时间" >
+                <a-range-picker
+                  format="YYYY-MM-DD"                  
+                  v-model="queryForm.date"
+                />
+              </a-form-item>
+            </a-col>
           </template>
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
@@ -226,7 +234,8 @@ const queryFormAttr = () => {
     materialNb: '',
     batchNb: '',
     checkType: '',
-    operateUser: ''
+    operateUser: '',
+    date: []
   }
 }
 
@@ -257,9 +266,15 @@ export default {
       try {
         this.tableLoading = true
 
+        const { date = [] } = this.queryForm
+        const startOperateTime = date.length > 0 ? date[0].format('YYYY-MM-DD 00:00:00') : undefined
+        const endOperateTime = date.length > 0 ? date[1].format('YYYY-MM-DD 23:59:59') : undefined
+
+        const options = { ..._.omit(this.queryForm, ['date']), startOperateTime, endOperateTime }
+        console.log(options)
         const {
           data: { rows, total }
-        } = await this.$store.dispatch('materialInList/getPaginationList', this.queryForm)
+        } = await this.$store.dispatch('materialInList/getPaginationList', options)
         this.list = rows
         this.paginationTotal = total
       } catch (error) {

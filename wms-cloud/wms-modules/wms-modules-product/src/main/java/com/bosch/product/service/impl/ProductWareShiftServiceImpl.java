@@ -561,12 +561,12 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
     private List<TranshipmentOrder> getTranshipmentOrder(String sscc) {
         LambdaQueryWrapper<TranshipmentOrder> qw = new LambdaQueryWrapper<>();
         qw.eq(TranshipmentOrder::getSsccNumber, sscc);
-        qw.eq(TranshipmentOrder::getStatus, StatusEnums.TRUE.getCode());
+        //qw.eq(TranshipmentOrder::getStatus, StatusEnums.TRUE.getCode());
         qw.eq(TranshipmentOrder::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         qw.orderByDesc(TranshipmentOrder::getCreateTime);
         qw.last("limit 1");
         TranshipmentOrder transhipmentOrder = transhipmentOrderService.getOne(qw);
-        if (transhipmentOrder.getStatus() == 0) {
+        if (transhipmentOrder.getStatus() == StatusEnums.FALSE.getCode()) {
             throw new ServiceException("当前车次货物还没有收货");
         }
         LambdaQueryWrapper<TranshipmentOrder> tqw = new LambdaQueryWrapper<>();
