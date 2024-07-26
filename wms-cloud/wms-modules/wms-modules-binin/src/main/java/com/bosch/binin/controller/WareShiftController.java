@@ -1,6 +1,7 @@
 package com.bosch.binin.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.bosch.binin.api.domain.BinIn;
 import com.bosch.binin.api.domain.MaterialKanban;
 import com.bosch.binin.api.domain.TranshipmentOrder;
@@ -58,6 +59,21 @@ public class WareShiftController extends BaseController {
 
     @Autowired
     private IUserOperationLogService userOperationLogService;
+
+
+    @PostMapping(value = "/validNumberInOrder")
+    @ApiOperation("校验选择的sscc在不在转运单中")
+    public R batchFinish(@RequestParam(value = "ssccs") List<String> ssccs){
+        if (CollectionUtils.isEmpty(ssccs)){
+            throw new ServiceException("请选择数据");
+        }
+        LambdaUpdateWrapper<WareShift> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
+        lambdaUpdateWrapper.in(WareShift::getSsccNb,ssccs);
+        lambdaUpdateWrapper.set(WareShift::getStatus,KanbanStatusEnum.FINISH.value());
+        shiftService.update(lambdaUpdateWrapper);
+        return R.ok();
+
+    }
 
 
     @PostMapping(value = "/add")

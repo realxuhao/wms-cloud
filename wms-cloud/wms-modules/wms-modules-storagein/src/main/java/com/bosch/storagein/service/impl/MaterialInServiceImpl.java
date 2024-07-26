@@ -139,21 +139,23 @@ public class MaterialInServiceImpl extends ServiceImpl<MaterialInMapper, Materia
         }
 
 
-        //校验抽样件数
-        if (materialInCheckDTO.getActualQuantity() < materialInCheckVO.getCheckQuantity()) {
-            checkResultVO.setResponseCode(ResponseConstants.QUANTITY_INVALID);
-            return checkResultVO;
-        }
+//        //校验抽样件数
+//        if (materialInCheckDTO.getActualQuantity() < materialInCheckVO.getCheckQuantity()) {
+//            checkResultVO.setResponseCode(ResponseConstants.QUANTITY_INVALID);
+//            return checkResultVO;
+//        }
+//
+//        //称重 或者 dianshu
+//        if ((CheckTypeEnum.WEIGHT.getCode().equals(materialInCheckVO.getCheckType()) && checkWeight(mesBarCode, actualQuantity, actualResult, checkResultVO, materialInCheckDTO.getWeightTimes()))
+//                || (CheckTypeEnum.COUNT.getCode().equals(materialInCheckVO.getCheckType()) && checkCount(materialInCheckVO, actualQuantity, actualResult, checkResultVO))) {
+//            batchStorageIn(materialInCheckVO, materialInCheckDTO, checkResultVO.getAverageResult());
+//            checkResultVO.setCheckFlag(true);
+//            return checkResultVO;
+//        }
+        batchStorageIn(materialInCheckVO, materialInCheckDTO, checkResultVO.getAverageResult());
 
-        //称重 或者 dianshu
-        if ((CheckTypeEnum.WEIGHT.getCode().equals(materialInCheckVO.getCheckType()) && checkWeight(mesBarCode, actualQuantity, actualResult, checkResultVO, materialInCheckDTO.getWeightTimes()))
-                || (CheckTypeEnum.COUNT.getCode().equals(materialInCheckVO.getCheckType()) && checkCount(materialInCheckVO, actualQuantity, actualResult, checkResultVO))) {
-            batchStorageIn(materialInCheckVO, materialInCheckDTO, checkResultVO.getAverageResult());
-            checkResultVO.setCheckFlag(true);
-            return checkResultVO;
-        }
 
-        checkResultVO.setCheckFlag(false);
+        checkResultVO.setCheckFlag(true);
 
 
         return checkResultVO;

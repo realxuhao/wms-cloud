@@ -5,16 +5,8 @@
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
           
-          <a-col :span="4">
-            <a-form-model-item label="仓库">
-              <a-input v-model="queryForm.wareCode" placeholder="仓库" allow-clear/>
-            </a-form-model-item>
-          </a-col>
-          <a-col :span="4">
-            <a-form-item label="SSCC码">
-              <a-input v-model="queryForm.ssccNumber" placeholder="SSCC码" allow-clear/>
-            </a-form-item>
-          </a-col>
+          
+          
           <a-col :span="4">
             <a-form-item label="物料编码" >
               <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
@@ -57,6 +49,8 @@
           <a-col span="4">
             <span class="table-page-search-submitButtons" >
               <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button style="margin-left: 8px" type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />手动同步入库单</a-button>
+
               <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
               <a @click="toggleAdvanced" style="margin-left: 8px">
                 {{ advanced ? '收起' : '展开' }}
@@ -79,6 +73,12 @@
       </a-form-model> -->
 
       <div class="action-content">
+        <a-button :loading="uploadLoading" style="margin-left: 8px" type="primary" >
+          一键入库
+        </a-button>
+        <a-button :loading="uploadLoading" style="margin-left: 8px" type="primary" >
+          批量入库
+        </a-button>
         <a-tooltip placement="right">
           <template slot="title">
             <a style="color:#fff" @click="handleDownloadTemplate"><a-icon type="arrow-down" />下载模板</a>
@@ -90,13 +90,15 @@
             :before-upload="()=>false"
             @change="handleUpload"
           >
-            <a-button :loading="uploadLoading" type="primary" icon="upload" >
-              导入
+            <a-button :loading="uploadLoading" style="margin-left: 8px" type="primary" icon="upload" >
+              Excel导入
             </a-button>
           </a-upload>
         </a-tooltip>
       </div>
       <a-table
+        :row-selection="{ selectedRowKeys: selectedRowKeys     }"
+
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
@@ -282,6 +284,7 @@ export default {
       uploadLoading: false,
       columns,
       list: [],
+      selectedRowKeys: [],
       queryForm: {
         pageSize: 20,
         pageNum: 1,

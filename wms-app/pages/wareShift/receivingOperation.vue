@@ -73,7 +73,7 @@ export default {
 	},
 	methods: {
 		async getTranshipmentOrder() {
-			const data = await this.$store.dispatch('kanban/getTranshipmentOrder', { mesbarCode: this.barCode });
+			const data = await this.$store.dispatch('kanban/getTranshipmentOrder', { mesbarCode: this.barCode,type: 0 });
 			this.orderList = data;
 		},
 		async handleSubmit() {

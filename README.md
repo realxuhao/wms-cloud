@@ -72,6 +72,9 @@ docker
 ## git代码提交规范  
 
 
+curl -H "Authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVU0VSSUQiOiI0ZGM2YjgxMS0wODQ0LTQzYWMtYTkxOS0zMDFlMGI1ZGNkZTAiLCJQRVJTT05OQU1FIjoiYWRtaW4iLCJST0xFTkFNRSI6InZpZXcsYmFzZSxyZXBvcnQiLCJuYmYiOjE2OTM0Nzk2OTUsImV4cCI6MTY5MzQ5NDA5NSwiaXNzIjoiYm9zY2ggY29yZSBpZGVudGl0eSIsImF1ZCI6ImJvc2NoIHByZXNlbnRhdGlvbiJ9.rDEV1lh5XHqi8Plxt9BF1vWQPu3o_bpqLLa12-9R59o" http://energy.nutricia-home.com/api/BaseItem/getListByItemGroup?itemGroup=HomeImage
+
+
 
 
 

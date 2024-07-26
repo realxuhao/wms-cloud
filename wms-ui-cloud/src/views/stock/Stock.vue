@@ -218,30 +218,30 @@ const columns = [
     width: 80,
       sorter: true
   },
-  {
-    title: '当前任务',
-    key: 'jobDesc',
-    dataIndex: 'jobDesc',
-    width: 120
-  },
-  {
-    title: '任务状态',
-    key: 'jobStatus',
-    dataIndex: 'jobStatus',
-    width: 120
-  },
+  // {
+  //   title: '当前任务',
+  //   key: 'jobDesc',
+  //   dataIndex: 'jobDesc',
+  //   width: 120
+  // },
+  // {
+  //   title: '任务状态',
+  //   key: 'jobStatus',
+  //   dataIndex: 'jobStatus',
+  //   width: 120
+  // },
   {
     title: '库存量',
     key: 'totalStock',
     dataIndex: 'totalStock',
     width: 120
   },
-  {
-    title: '冻结库存',
-    key: 'freezeStock',
-    dataIndex: 'freezeStock',
-    width: 120
-  },
+  // {
+  //   title: '冻结库存',
+  //   key: 'freezeStock',
+  //   dataIndex: 'freezeStock',
+  //   width: 120
+  // },
   {
     title: '保质/有效期',
     key: 'expireDate',

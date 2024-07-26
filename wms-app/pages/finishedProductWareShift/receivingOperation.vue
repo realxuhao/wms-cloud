@@ -76,7 +76,8 @@
 		methods: {
 			async getTranshipmentOrder() {
 				const data = await this.$store.dispatch('kanban/getTranshipmentOrder', {
-					mesbarCode: this.barCode
+					mesbarCode: this.barCode,
+					type: 1
 				});
 				this.orderList = data;
 			},

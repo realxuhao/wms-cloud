@@ -58,11 +58,11 @@ services:
     container_name: wms-minio
     image: minio/minio
     ports:
-      - 8001:9000 # api 端口
-      - 8002:9001 # 控制台端口
+      - 9000:9000 # api 端口
+      - 9001:9001 # 控制台端口
     environment:
-      MINIO_ACCESS_KEY: admin    #管理后台用户名
-      MINIO_SECRET_KEY: nutricia-so #管理后台密码，最小8个字符
+      MINIO_ACCESS_KEY: minioadmin    #管理后台用户名
+      MINIO_SECRET_KEY: minioadmin #管理后台密码，最小8个字符
     volumes:
       - ./minio/data:/data               #映射当前目录下的data目录至容器内/data目录
       - ./minio/config:/root/.minio/     #映射配置目录
