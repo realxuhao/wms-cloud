@@ -16,9 +16,11 @@
 			}
 		},
 		mounted() {
+			/*#ifdef APP-PLUS*/
 			plus.runtime.getProperty(plus.runtime.appid, wgtinfo => {
 				this.version = wgtinfo.version; //客户端版本号
 			});
+			/*#endif*/
 		}
 	};
 </script>

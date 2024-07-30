@@ -12,20 +12,20 @@
 		</view>
 
 		<view class="main">
-			<uni-section title="采购原材料"
+			<uni-section title="入库模块"
 				v-if="$hasPermi(['app:material:in', 'app:material:binIn', 'app:material:batchBinIn'])" type="line"
 				class="m-b-12">
 				<view class="list header-box">
 					<view class="list-item" v-if="$hasPermi(['app:material:in'])"
 						@click="handleGoto('/pages/materialIn/index')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-ruku" type="icon-ruku"></uni-icons>
-						<view class="text">原材料入库</view>
+						<view class="text">入库</view>
 					</view>
 					<view class="list-item" v-if="$hasPermi(['app:material:binIn'])"
 						@click="handleGoto('/pages/binIn/binIn')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-shangjia"
 							type="icon-jiechubangding"></uni-icons>
-						<view class="text">原材料上架</view>
+						<view class="text">上架</view>
 					</view>
 					<view class="list-item" v-if="$hasPermi(['app:material:batchBinIn'])"
 						@click="handleGoto('/pages/binIn/batchBinIn')">
@@ -35,7 +35,7 @@
 					</view>
 				</view>
 			</uni-section>
-			<uni-section title="生产叫料" type="line" class="m-b-12"
+			<!-- <uni-section title="生产叫料" type="line" class="m-b-12"
 				v-if="$hasPermi(['app:materialCall:binDown', 'app:materialCall:receiving', 'app:materialCall:cancellingStocks'])">
 				<view class="list header-box">
 					<view class="list-item" v-if="$hasPermi(['app:materialCall:binDown'])"
@@ -57,7 +57,7 @@
 						<view class="text">产线退料</view>
 					</view>
 				</view>
-			</uni-section>
+			</uni-section> -->
 			<uni-section title="仓内管理"
 				v-if="$hasPermi(['app:manualTrans', 'app:manualTrans:scan', 'app:splitPallet:binIn', 'app:scan:scan', 'app:location:scan'])"
 				type="line" class="m-b-12">
@@ -158,7 +158,7 @@
 				</view>
 			</uni-section>
 
-			<uni-section title="成品管理" v-if="$hasPermi(['app:finishedProduct:packTask'])" type="line" class="m-b-12">
+			<!-- <uni-section title="成品管理" v-if="$hasPermi(['app:finishedProduct:packTask'])" type="line" class="m-b-12">
 				<view class="list header-box">
 					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:packTask'])"
 						@click="handleGoto('/pages/finishedProduct/packTask')">
@@ -166,9 +166,9 @@
 						<view class="text">成品打包</view>
 					</view>
 				</view>
-			</uni-section>
+			</uni-section> -->
 
-			<uni-section title="成品" v-if="$hasPermi([
+			<!-- <uni-section title="成品" v-if="$hasPermi([
 					'app:finishedProduct:productIn', 
 					'app:finishedProduct:shipment', 
 					'app:finishedProduct:receiving', 
@@ -219,9 +219,8 @@
 						<view class="text">拆托</view>
 					</view>
 				</view>
-			</uni-section>
-			<!-- 				v-if="$hasPermi(['app:finishedProduct:productIn', 'app:finishedProduct:shipment', 'app:finishedProduct:receiving', 'app:finishedProduct:binIn'])" -->
-			<uni-section title="成品SPDN" v-if="$hasPermi([
+			</uni-section> -->
+			<!-- <uni-section title="成品SPDN" v-if="$hasPermi([
 					'app:spdn:binin', 
 					'app:spdn:spdnShipment', 
 					'app:spdn:spdnReturns', 
@@ -247,8 +246,8 @@
 						<view class="text">退货</view>
 					</view>
 				</view>
-			</uni-section>
-			<uni-section title="成品SUDN" v-if="$hasPermi([
+			</uni-section> -->
+			<!-- <uni-section title="成品SUDN" v-if="$hasPermi([
 					'app:sudn:binin', 
 					'app:sudn:shipment', 
 					'app:sudn:returns', 
@@ -274,7 +273,7 @@
 						<view class="text">经销商退货</view>
 					</view>
 				</view>
-			</uni-section>
+			</uni-section> -->
 			<uni-data-picker ref="picker" popup-title="请选择工厂/仓库" :localdata="dataTree"
 				@change="handleChangePlant"></uni-data-picker>
 		</view>

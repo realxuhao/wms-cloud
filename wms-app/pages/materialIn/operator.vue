@@ -1,5 +1,5 @@
 <template>
-	<my-page nav-title="原材料入库">
+	<my-page nav-title="入库">
 		<view class="main" slot="page-main">
 			<view class="header m-b-8">
 				<view class="text-line m-b-8 ">
@@ -46,81 +46,11 @@
 				</view>
 			</view>
 			<view class="content">
-				<uni-forms :label-width="80" v-if="materialInfo.checkType === 1" ref="numberform" :rules="numberRules"
-					:modelValue="numberFormData" label-position="left">
-					<uni-forms-item label="原托数" name="originalPalletQuantity" required>
-						<uni-easyinput type="number" v-model="numberFormData.originalPalletQuantity"
-							placeholder="原托数" />
-					</uni-forms-item>
-					<uni-forms-item label="实际件数" name="actualQuantity" required>
-						<uni-easyinput type="number" v-model="numberFormData.actualQuantity" placeholder="实际抽样件数" />
-					</uni-forms-item>
-					<uni-forms-item label="数数结果" name="actualResult" required><uni-easyinput
-							v-model="numberFormData.actualResult" placeholder="数数结果" /></uni-forms-item>
-
-					<o-btn block class="submit-btn primary-button" :loading="submitLoading"
-						@click="handleNumberSubmit">提交</o-btn>
-				</uni-forms>
-
-				<uni-forms :label-width="80" v-if="materialInfo.checkType === 0" ref="weightform"
-					:rules="weightFormRules" :modelValue="weightFormData" label-position="left">
-					<uni-forms-item label="原托数" name="originalPalletQuantity" required>
-						<uni-easyinput type="number" v-model="weightFormData.originalPalletQuantity"
-							placeholder="原托数" />
-					</uni-forms-item>
-					<view class="count-item m-b-8" v-for="(item, index) in weightList" :key="index">
-						<view>
-							<uni-forms-item label="重量" :name="'weight' + item" required :rules="[
-									{
-										required: true,
-										errorMessage: '请输入称重重量'
-									}
-								]">
-								<uni-easyinput v-model="weightFormData[`weight${item}`]"
-									placeholder="请输入重量"></uni-easyinput>
-								<o-btn size="xs" type="primary" class="weight-action"
-									@click="getWeight(index)">获取重量</o-btn>
-							</uni-forms-item>
-							<uni-forms-item class="no-margin" label="件数" :name="'number' + item" required :rules="[
-									{
-										required: true,
-										errorMessage: '请输入称重件数'
-									}
-								]">
-								<uni-easyinput v-model="weightFormData[`number${item}`]" placeholder="请输入件数" />
-							</uni-forms-item>
-						</view>
-
-						<view class="action">
-							<uni-tag @click="handleDeleteWeight(item)" v-show="weightList.length > 1" type="warning"
-								class="action-delte  m-b-8" text="删除" />
-							<uni-tag type="success	" class="action-add" @click="handleAddWeight" text="新增" />
-						</view>
-					</view>
-					<o-btn block class="submit-btn primary-button" :loading="submitLoading"
-						@click="handleWeightSubmit">提交</o-btn>
-				</uni-forms>
-
-				<uni-forms :label-width="80" v-if="materialInfo.checkType === 2" ref="exemptionform"
-					:rules="exemptionRules" :modelValue="exemptionFormData" label-position="left">
-					<uni-forms-item label="原托数" name="originalPalletQuantity" required>
-						<uni-easyinput type="number" v-model="exemptionFormData.originalPalletQuantity"
-							placeholder="原托数" />
-					</uni-forms-item>
-
-					<o-btn block class="submit-btn primary-button" :loading="submitLoading"
-						@click="handleExemptionSubmit">提交</o-btn>
-				</uni-forms>
-
-				<!-- <view class="exxmption-content">
-				<view class="text-center">此物料为免检物料，请点击“提交”入库！</view>
-				<o-btn block class="submit-btn primary-button" :loading="submitLoading" @click="handleExemptionSubmit">提交</o-btn>
-			</view> -->
+				<o-btn block class="submit-btn primary-button" :loading="submitLoading"
+					@click="handleExemptionSubmit">确认</o-btn>
 			</view>
-
-			<uni-data-picker ref="picker" popup-title="请选择称" :localdata="weighbridgeList"
-				@change="handleChangeWeighbridge"></uni-data-picker>
 		</view>
+
 
 		<Message ref="message"></Message>
 
@@ -133,40 +63,7 @@
 						:class="resultData.checkFlag ? 'success-color' : 'error-color'">{{ resultData.checkFlag ? '入库成功' : '入库失败' }}</text>
 				</view>
 
-				<view class="data-box">
-					<view v-show="materialInfo.checkType !== 2">
-						<view class="text-line m-b-8">
-							<view class="label">实际抽样件数：</view>
-							{{ resultData.actualQuantity }}
-						</view>
-						<view class="text-line m-b-8">
-							<view class="label">目标抽样件数：</view>
-							{{ resultData.checkQuantity }}
-						</view>
-					</view>
-
-					<view v-show="materialInfo.checkType === 0">
-						<view class="text-line m-b-8">
-							<view class="label">实际重量每件：</view>
-							{{ resultData.averageResult }} ({{ resultData.unit }})
-						</view>
-						<view class="text-line">
-							<view class="label">目标重量每件：</view>
-							[{{ resultData.minStandard }} —————— {{ resultData.maxStandard }}]（{{ resultData.unit }})
-						</view>
-					</view>
-
-					<view v-show="materialInfo.checkType === 1">
-						<view class="text-line m-b-8">
-							<view class="label">实际数量每件：</view>
-							{{ resultData.averageResult }} ({{ resultData.unit }})
-						</view>
-						<view class="text-line">
-							<view class="label">目标数量每件：</view>
-							[{{ resultData.minStandard }},{{ resultData.maxStandard }}]（{{ resultData.unit }})
-						</view>
-					</view>
-				</view>
+				<view class="data-box"></view>
 				<o-btn block class="primary-button" v-if="resultData.checkFlag" @click="handleGoBack">返回</o-btn>
 				<o-btn block class="primary-button" v-else @click="handleOk">确定</o-btn>
 			</view>
@@ -384,12 +281,7 @@
 					.catch(err => {});
 			},
 			handleExemptionSubmit() {
-				this.$refs.exemptionform
-					.validate()
-					.then(res => {
-						this.postMaterialIn(res);
-					})
-					.catch(err => {});
+				this.postMaterialIn();
 			},
 			async postMaterialIn(res) {
 				try {
@@ -398,7 +290,6 @@
 					});
 					this.submitLoading = true;
 					const data = await this.$store.dispatch('materialIn/postMaterialIn', {
-						...res,
 						mesBarCode: this.barCode
 					});
 					this.resultData = data;

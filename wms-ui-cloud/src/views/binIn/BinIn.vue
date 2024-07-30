@@ -24,19 +24,20 @@
               <a-input v-model="queryForm.batchNb" placeholder="批次号" allow-clear/>
             </a-form-model-item>
           </a-col>
-          <a-col :span="4">
-            <a-form-model-item label="状态">
-              <a-select
-                allow-clear
-                v-model="queryForm.status"
-              >
-                <a-select-option v-for="item in status" :key="item.value" :value="item.value">
-                  {{ item.text }}
-                </a-select-option>
-              </a-select>
-            </a-form-model-item>
-          </a-col>
+      
           <template v-if="advanced">
+            <a-col :span="4">
+              <a-form-model-item label="状态">
+                <a-select
+                  allow-clear
+                  v-model="queryForm.status"
+                >
+                  <a-select-option v-for="item in status" :key="item.value" :value="item.value">
+                    {{ item.text }}
+                  </a-select-option>
+                </a-select>
+              </a-form-model-item>
+            </a-col>
             <a-col :span="4">
               <a-form-model-item label="物料编码">
                 <a-input v-model="queryForm.materialNb" placeholder="物料编码" allow-clear/>
@@ -61,9 +62,15 @@
         </a-row>
       </a-form>
       <div class="action-content">
-
+        <a-button :loading="uploadLoading" type="primary" >
+          一键上架
+        </a-button>
+        <a-button :loading="uploadLoading" style="margin-left: 8px" type="primary" >
+          批量上架
+        </a-button>
       </div>
       <a-table
+        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
@@ -88,7 +95,11 @@
         <template slot="action" slot-scope="text, record">
           <div class="action-con">
             <a-popconfirm title="确认要删除吗?" ok-text="确认" cancel-text="取消" @confirm="handleDelete(record)">
-              <a class="danger-color" :disabled="!(record.status!==null&&record.status===0)"><a-icon class="m-r-4" type="delete" />删除</a>
+              <a class="danger-color m-r-8" :disabled="!(record.status!==null&&record.status===0)"><a-icon class="m-r-4" type="delete" />删除</a>
+            </a-popconfirm>
+
+            <a-popconfirm title="确认要上架吗?" ok-text="确认" cancel-text="取消" >
+              <a ><a-icon class="m-r-4" type="arrow-right" />上架</a>
             </a-popconfirm>
           </div>
         </template>
@@ -151,18 +162,18 @@ const columns = [
     dataIndex: 'batchNb',
     width: 120
   },
-  {
-    title: '托盘编码',
-    key: 'palletCode',
-    dataIndex: 'palletCode',
-    width: 90
-  },
-  {
-    title: '托盘类型',
-    key: 'palletType',
-    dataIndex: 'palletType',
-    width: 70
-  },
+  // {
+  //   title: '托盘编码',
+  //   key: 'palletCode',
+  //   dataIndex: 'palletCode',
+  //   width: 90
+  // },
+  // {
+  //   title: '托盘类型',
+  //   key: 'palletType',
+  //   dataIndex: 'palletType',
+  //   width: 80
+  // },
   {
     title: '数量',
     key: 'quantity',
@@ -204,13 +215,13 @@ const columns = [
     title: '上架人',
     key: 'updateBy',
     dataIndex: 'updateBy',
-    width: 80
+    width: 100
   },
   {
     title: '上架时间',
     key: 'updateTime',
     dataIndex: 'updateTime',
-    width: 80
+    width: 180
   },
   {
     title: '操作',
@@ -259,7 +270,8 @@ export default {
         pageSize: 20,
         pageNum: 1,
         ...queryFormAttr()
-      }
+      },
+      selectedRowKeys: [],
     }
   },
   computed: {
@@ -267,6 +279,9 @@ export default {
   },
 
   methods: {
+    onSelectChange(selectedRowKeys) {
+      this.selectedRowKeys = selectedRowKeys
+    },
     async handleDelete (row) {
       try {
         await this.$store.dispatch('binIn/delete', row.ssccNumber)

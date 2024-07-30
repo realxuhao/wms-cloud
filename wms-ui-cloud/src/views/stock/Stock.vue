@@ -1,6 +1,5 @@
 <template>
   <div class="wrapper">
-    <!-- table -->
     <div class="table-content">
       <a-form layout="inline" class="search-content">
         <a-row :gutter="16">
@@ -111,6 +110,12 @@
             </a-tag>
           </div>
         </template>
+        <template slot="totalStock" slot-scope="text">
+          <div >
+            <EditTableCell :text="text" ></EditTableCell>
+          </div>
+        </template>
+        
       </a-table>
 
       <div class="pagination-con">
@@ -133,6 +138,7 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+import EditTableCell from '@/components/EditTableCell'
 import _ from 'lodash'
 import { download } from '@/utils/file'
 const qualityStatus = [
@@ -218,30 +224,15 @@ const columns = [
     width: 80,
       sorter: true
   },
-  // {
-  //   title: '当前任务',
-  //   key: 'jobDesc',
-  //   dataIndex: 'jobDesc',
-  //   width: 120
-  // },
-  // {
-  //   title: '任务状态',
-  //   key: 'jobStatus',
-  //   dataIndex: 'jobStatus',
-  //   width: 120
-  // },
+
   {
     title: '库存量',
     key: 'totalStock',
     dataIndex: 'totalStock',
-    width: 120
+    width: 120,
+    scopedSlots: { customRender: 'totalStock' },
   },
-  // {
-  //   title: '冻结库存',
-  //   key: 'freezeStock',
-  //   dataIndex: 'freezeStock',
-  //   width: 120
-  // },
+
   {
     title: '保质/有效期',
     key: 'expireDate',
@@ -279,6 +270,9 @@ const queryFormAttr = () => {
 
 export default {
   name: 'Area',
+  components:{
+    EditTableCell
+  },
   mixins: [mixinTableList],
   data () {
     return {

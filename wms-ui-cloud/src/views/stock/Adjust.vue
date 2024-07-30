@@ -187,6 +187,12 @@ const columns = [
     sorter: true
   },
   {
+    title: '来源',
+    key: 'binCode',
+    dataIndex: '',
+    width: 140,
+  },
+  {
     title: 'Cell',
     key: 'cell',
     dataIndex: 'cell',

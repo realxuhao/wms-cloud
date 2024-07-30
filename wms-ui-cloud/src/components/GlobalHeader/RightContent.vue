@@ -1,11 +1,24 @@
 <template>
   <div :class="wrpCls">
-    <a-space size="middle">
-      <!-- <screenfull /> -->
-      <!-- <notice-icon v-hasPermi="['system:notice:list']" /> -->
+    <a-space>
+      <a-select
+        mode="multiple"
+        :default-value="['7751W1', '7751W2']"
+        style="width: 300px;"
+        placeholder="请选择仓库"
+      >
+        <a-select-option value="all">
+          All
+        </a-select-option>
+        <a-select-option value="7751W1">
+          7751W1
+        </a-select-option>
+        <a-select-option value="7751W2">
+          7751W2
+        </a-select-option>
+      </a-select>
       <avatar-dropdown :menu="showMenu" :current-user="currentUser" :class="prefixCls" />
-      <!-- 暂只支持中文，国际化可自行扩展 -->
-      <!-- <select-lang :class="prefixCls" /> -->
+     
     </a-space>
   </div>
 </template>

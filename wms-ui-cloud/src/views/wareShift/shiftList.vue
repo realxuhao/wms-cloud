@@ -91,6 +91,18 @@
       <div class="action-content">
         <a-button
           class="m-r-8"
+          type="primary"
+          @click="handleAddWareShift"
+        >一键完成</a-button>
+
+        <a-button
+          class="m-r-8"
+          type="primary"
+          @click="handleAddWareShift"
+        >批量完成</a-button>
+
+        <a-button
+          class="m-r-8"
           v-hasPermi="['ware:shift:add']"
           type="primary"
           @click="handleAddWareShift"
@@ -104,6 +116,7 @@
 
       </div>
       <a-table
+        :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
         :columns="columns"
         :data-source="list"
         :loading="tableLoading"
@@ -399,6 +412,7 @@ export default {
   },
   data () {
     return {
+      selectedRowKeys:[],
       tableLoading: false,
       uploadLoading: false,
       exportLoading: false,
@@ -420,6 +434,9 @@ export default {
     statusColorMap: () => statusColorMap
   },
   methods: {
+    onSelectChange(selectedRowKeys) {
+      this.selectedRowKeys = selectedRowKeys
+    },
     async pageChange(page, filters, sorter){
         this.queryForm.isAsc= sorter.order === 'ascend' ? 'asc' : 'desc'
         this.queryForm.orderByColumn= sorter.columnKey

@@ -11,8 +11,11 @@
 			};
 		},
 		created() {
+			/*#ifdef APP-PLUS*/
 			this.initScan();
 			this.startScan();
+			/*#endif*/
+
 		},
 
 		mounted() {
