@@ -10,10 +10,7 @@ import com.bosch.binin.api.domain.dto.MaterialKanbanDTO;
 import com.bosch.binin.api.domain.dto.SplitPalletDTO;
 import com.bosch.binin.api.domain.vo.*;
 import com.bosch.binin.api.enumeration.*;
-import com.bosch.binin.mapper.MaterialCallMapper;
-import com.bosch.binin.mapper.MaterialKanbanMapper;
-import com.bosch.binin.mapper.StockMapper;
-import com.bosch.binin.mapper.WareShiftMapper;
+import com.bosch.binin.mapper.*;
 import com.bosch.binin.service.*;
 import com.bosch.binin.utils.BeanConverUtil;
 import com.bosch.system.api.domain.UserOperationLog;
@@ -58,6 +55,9 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
 
     @Autowired
     private WareShiftMapper wareShiftMapper;
+
+    @Autowired
+    private MaterialReturnMapper materialReturnMapper;
 
     @Autowired
     @Lazy
@@ -811,6 +811,16 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         }
         if (!materialKanban.getStatus().equals(KanbanStatusEnum.LINE_RECEIVED.value())) {
             throw new ServiceException("当前sscc码:" + ssccNb + "所属的拣配任务产线还未收货");
+        }
+        // 校验这托货物的退库记录是否关联order_number,关联了说明该托注册批货物已经退货完成
+        LambdaQueryWrapper<MaterialReturn> queryReturnWrapper = new LambdaQueryWrapper<>();
+        queryReturnWrapper.eq(MaterialReturn::getSsccNumber, materialKanban.getSsccNumber());
+        queryReturnWrapper.eq(MaterialReturn::getOrderNumber, materialKanban.getOrderNumber());
+        queryReturnWrapper.eq(MaterialReturn::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        queryReturnWrapper.ne(MaterialReturn::getStatus, MaterialReturnStatusEnum.CANCEL.value());
+        List<MaterialReturn> materialReturns = materialReturnMapper.selectList(queryReturnWrapper);
+        if (!CollectionUtils.isEmpty(materialReturns)) {
+            throw new ServiceException("当前sscc码:" + ssccNb + "的FSMP注册批托已退货入库");
         }
         return materialKanban.getOrderNumber();
     }
