@@ -743,6 +743,12 @@ public class ProductStockServiceImpl extends ServiceImpl<ProductStockMapper, Pro
             throw new ServiceException("拆托数量不可以大于源库存可用数量");
         }
 
+        validProductStockStatus(sourceSsccNb);
+
+        if (sourceStock.getFreezeStock() > 0) {
+            throw new ServiceException("该托有冻结库存，暂时不能拆托！");
+        }
+
 
         SplitRecord splitRecord = new SplitRecord();
         splitRecord.setSplitQuantity(splitQuantity);

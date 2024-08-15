@@ -805,6 +805,7 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         queryWrapper.eq(MaterialKanban::getRegisterBatch, 1);
         queryWrapper.eq(MaterialKanban::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
         queryWrapper.orderByDesc(MaterialKanban::getCreateTime);
+        queryWrapper.last("limit 1");
         MaterialKanban materialKanban = materialKanbanMapper.selectOne(queryWrapper);
         if (materialKanban == null) {
             throw new ServiceException("当前sscc码:" + ssccNb + "非FSMP注册批的托");

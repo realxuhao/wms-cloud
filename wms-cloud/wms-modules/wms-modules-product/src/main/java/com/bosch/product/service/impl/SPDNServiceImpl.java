@@ -129,6 +129,7 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
             if (item.getFreezeStock() > 0) {
                 throw new ServiceException("该托" + item.getSsccNumber() + "存在未完成的移库或捡配任务!");
             }
+            validProductStockStatus(item.getSsccNumber());
             if (!item.getPlantNb().equals("7752")) {
                 inValidPlantSSCCList.add(item.getSsccNumber());
             }
@@ -215,6 +216,7 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
             if (item.getFreezeStock() > 0) {
                 throw new ServiceException("该托" + item.getSsccNumber() + "存在未完成的移库或捡配任务!");
             }
+            validProductStockStatus(item.getSsccNumber());
             if (!item.getPlantNb().equals("7752")) {
                 inValidPlantSSCCList.add(item.getSsccNumber());
             }
@@ -275,6 +277,19 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         ArrayList<ProductStock> list = new ArrayList<>(ssccStockMap.values());
         productStockService.updateBatchById(list);
         this.updateBatchById(spdnList);
+    }
+
+    private void validProductStockStatus(String ssccNumber) {
+        LambdaQueryWrapper<ProductWareShift> shiftQueryWrapper = new LambdaQueryWrapper<>();
+        shiftQueryWrapper.eq(ProductWareShift::getSsccNb, ssccNumber);
+        shiftQueryWrapper.ne(ProductWareShift::getStatus, ProductWareShiftEnum.CANCEL.code());
+        shiftQueryWrapper.ne(ProductWareShift::getStatus, ProductWareShiftEnum.FINISH.code());
+        shiftQueryWrapper.eq(ProductWareShift::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+        shiftQueryWrapper.last("limit 1");
+        ProductWareShift wareShift = wareShiftService.getOne(shiftQueryWrapper);
+        if (wareShift != null) {
+            throw new ServiceException(ssccNumber + "：该托存在移库任务，暂时不允许调整");
+        }
     }
 
     @Override
