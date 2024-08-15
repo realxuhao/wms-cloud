@@ -34,10 +34,12 @@
 				</uni-list-item>
 			</uni-list>
 
-			<view class="submit-btn"><o-btn class="primary-button" @click="$refs.popup.open()" :loading="submitLoading" :disabled="!hasCheckedItems" block>提交</o-btn></view>
+			<view class="submit-btn"><o-btn class="primary-button" @click="$refs.popup.open()" :loading="submitLoading"
+					:disabled="!hasCheckedItems" block>提交</o-btn></view>
 		</view>
 		<uni-popup ref="popup" type="dialog">
-			<uni-popup-dialog type="info" title="提示" content="请确认提交" @close="$refs.popup.close()" @confirm="handleSubmit">
+			<uni-popup-dialog type="info" title="提示" content="请确认提交" @close="$refs.popup.close()"
+				@confirm="handleSubmit">
 				<!-- <view class="header">已选择&nbsp;<text class="active">{{hasCheckedItems}}</text>&nbsp;托</view> -->
 			</uni-popup-dialog>
 		</uni-popup>
@@ -73,6 +75,14 @@ export default {
 	},
 	methods: {
 		async getTranshipmentOrder() {
+			if (this.barCode.length > 60) {
+				uni.showToast({
+					title: '该SSCC码不是原材料SSCC码，请到原材料区域扫描收货',
+					icon: 'none',
+					duration: 10000
+				});
+				return;
+			}
 			const data = await this.$store.dispatch('kanban/getTranshipmentOrder', { mesbarCode: this.barCode });
 			this.orderList = data;
 		},
@@ -107,11 +117,13 @@ export default {
 	height: 100%;
 	overflow-y: auto;
 }
+
 .header {
 	color: #000;
 	padding: 0 0 12px 12px;
 	display: flex;
 	align-items: center;
+
 	.active {
 		color: $uni-color-error;
 		font-size: 18px;
@@ -127,6 +139,7 @@ export default {
 	width: 100%;
 	display: flex;
 	align-items: center;
+
 	.desc {
 		color: #999;
 		font-size: 12px;

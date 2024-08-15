@@ -75,6 +75,14 @@
 		},
 		methods: {
 			async getTranshipmentOrder() {
+				if (this.barCode.length <= 60 || this.barCode.indexOf('.') > 0) {
+					uni.showToast({
+						title: '该SSCC码不是成品SSCC码，请到成品区域扫描收货',
+						icon: 'none',
+						duration: 10000
+					});
+					return;
+				}
 				const data = await this.$store.dispatch('kanban/getTranshipmentOrder', {
 					mesbarCode: this.barCode
 				});
