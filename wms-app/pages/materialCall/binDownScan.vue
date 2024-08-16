@@ -6,9 +6,9 @@
 		</view>
 		<Message ref="message"></Message>
 		<uni-popup ref="submitLine" type="dialog">
-			<uni-popup-dialog before-close type="success" cancelText="返回" confirmText="继续扫描" title="已提交"
+			<uni-popup-dialog before-close type="success" cancelText="返回" confirmText="继续扫描" title="提醒"
 				@confirm="handleContinue" @close="handleGoBack">
-				<view>请立即配送产线！</view>
+				<view>下架成功！</view>
 			</uni-popup-dialog>
 		</uni-popup>
 	</my-page>
@@ -43,9 +43,9 @@
 		computed: {
 			moveTypeMap: () => moveTypeMap
 		},
-		// mounted() {
-		// 	this.checkTask('20230522369006391113797010103109369006391113797010');
-		// },
+		mounted() {
+			this.checkTask('20260522669006391114331375103049982307251388000500');
+		},
 		methods: {
 			async scanCodeCallback(data) {
 				Bus.$emit('stopScan');

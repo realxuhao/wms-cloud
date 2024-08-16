@@ -9,75 +9,78 @@
 </template>
 
 <script>
-import Bus from '@/utils/bus';
-import Message from '@/components/Message';
+	import Bus from '@/utils/bus';
+	import Message from '@/components/Message';
 
-export default {
-	components: {
-		Message
-	},
-	data() {
-		return {};
-	},
-	onShow() {
-		Bus.$on('scancodedate', this.scanCodeCallback);
-	},
-	destroyed() {
-		Bus.$off('scancodedate');
-	},
-	methods: {
-		async scanCodeCallback(data) {
-			Bus.$emit('stopScan');
-			this.getInfo(data.code);
+	export default {
+		components: {
+			Message
 		},
-		async getInfo(barCode) {
-			try {
-				uni.showLoading();
-				const data = await this.$store.dispatch('stock/getInfoByMesBarCode', barCode);
+		data() {
+			return {};
+		},
+		onShow() {
+			Bus.$on('scancodedate', this.scanCodeCallback);
+		},
+		destroyed() {
+			Bus.$off('scancodedate');
+		},
+		mounted() {
+			this.getInfo("20260522669006391114331375103049982307251388000500")
+		},
+		methods: {
+			async scanCodeCallback(data) {
+				Bus.$emit('stopScan');
+				this.getInfo(data.code);
+			},
+			async getInfo(barCode) {
+				try {
+					uni.showLoading();
+					const data = await this.$store.dispatch('stock/getInfoByMesBarCode', barCode);
 
-				this.handleGotoOperation(data);
-			} catch (e) {
-				this.$refs.message.error(e.message);
-			} finally {
-				uni.hideLoading();
-				Bus.$emit('startScan');
+					this.handleGotoOperation(data);
+				} catch (e) {
+					this.$refs.message.error(e.message);
+				} finally {
+					uni.hideLoading();
+					Bus.$emit('startScan');
+				}
+			},
+			handleGotoOperation(data) {
+				Bus.$off('scancodedate', this.scanCodeCallback);
+				uni.navigateTo({
+					url: `/pages/adjust/adjustOperation?info=${JSON.stringify(data)}`
+				});
 			}
-		},
-		handleGotoOperation(data) {
-			Bus.$off('scancodedate', this.scanCodeCallback);
-			uni.navigateTo({
-				url: `/pages/adjust/adjustOperation?info=${JSON.stringify(data)}`
-			});
 		}
-	}
-};
+	};
 </script>
 
 <style lang="scss">
-.wrapper {
-	display: flex;
-	flex-direction: column;
-}
-
-.content {
-	height: 100%;
-	background-color: $primary-color;
-	flex: 1;
-	display: flex;
-	align-items: center;
-	// justify-content: center;
-	flex-direction: column;
-
-	image {
-		width: 180px;
-		// height: 160px;
-		margin-top: 120px;
-		margin-bottom: 32px;
+	.wrapper {
+		display: flex;
+		flex-direction: column;
 	}
 
-	text {
-		color: #fff;
-		font-size: 16px;
+	.content {
+		height: 100%;
+		background-color: $primary-color;
+		flex: 1;
+		display: flex;
+		align-items: center;
+		// justify-content: center;
+		flex-direction: column;
+
+		image {
+			width: 180px;
+			// height: 160px;
+			margin-top: 120px;
+			margin-bottom: 32px;
+		}
+
+		text {
+			color: #fff;
+			font-size: 16px;
+		}
 	}
-}
 </style>

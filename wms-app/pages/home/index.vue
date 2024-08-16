@@ -35,29 +35,29 @@
 					</view>
 				</view>
 			</uni-section>
-			<!-- <uni-section title="生产叫料" type="line" class="m-b-12"
+			<uni-section title="出库" type="line" class="m-b-12"
 				v-if="$hasPermi(['app:materialCall:binDown', 'app:materialCall:receiving', 'app:materialCall:cancellingStocks'])">
 				<view class="list header-box">
 					<view class="list-item" v-if="$hasPermi(['app:materialCall:binDown'])"
 						@click="handleGoto('/pages/materialCall/binDown')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiajia" type="icon-xiajia"
 							color="BLUE"></uni-icons>
-						<view class="text">拣配下架</view>
+						<view class="text">出库下架</view>
 					</view>
 					<view class="list-item" v-if="$hasPermi(['app:materialCall:receiving'])"
 						@click="handleGoto('/pages/materialCall/receiving')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-purchasereceipt"
 							type="icon-purchasereceipt" color="#069314"></uni-icons>
-						<view class="text">生产收料</view>
+						<view class="text">确认出库</view>
 					</view>
-					<view class="list-item" v-if="$hasPermi(['app:materialCall:cancellingStocks'])"
+					<!-- 	<view class="list-item" v-if="$hasPermi(['app:materialCall:cancellingStocks'])"
 						@click="handleGoto('/pages/wareShift/cancellingStocks')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-chejiantuiliaojiaojie"
 							type="icon-chejiantuiliao" color="#ED1820"></uni-icons>
 						<view class="text">产线退料</view>
-					</view>
+					</view> -->
 				</view>
-			</uni-section> -->
+			</uni-section>
 			<uni-section title="仓内管理"
 				v-if="$hasPermi(['app:manualTrans', 'app:manualTrans:scan', 'app:splitPallet:binIn', 'app:scan:scan', 'app:location:scan'])"
 				type="line" class="m-b-12">

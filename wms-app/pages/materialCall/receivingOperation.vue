@@ -1,5 +1,5 @@
 <template>
-	<my-page nav-title="产线收货">
+	<my-page nav-title="确认出库">
 		<view class="main" slot="page-main">
 			<uni-notice-bar single text="请对准条形码进行扫描" />
 			<view class="header">
