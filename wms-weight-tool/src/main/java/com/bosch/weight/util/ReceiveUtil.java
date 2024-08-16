@@ -68,7 +68,13 @@ public class ReceiveUtil {
 //            Thread.sleep(1000);
 //        }
 
-
+//        String rs = "53 54 41 54 45 3A 20 32 34 2D 30 37 2D 32 39 20 31 36 3A 30 39 3A 30 37 00 8E 04 01 00 00 00 00 00 00 00 00 00 00 00 00 34 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 02 00 D0 69 45 02 01 50 9A C4 02 33 5B 6F 45 02 34 F3 87 C4 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 0C E8";
+//        String[] s = rs.split(" ");
+//        Boolean b = validMsg(s);
+//        if (b) {
+//            Double totalWeight = getTotalWeight(s, 48, 51);
+//            String aaa = "";
+//        }
     }
 
     public static void listenPort(DatagramPacket packet, byte[] buffer) throws IOException, InterruptedException {
@@ -124,7 +130,7 @@ public class ReceiveUtil {
             Double totalWeight = getTotalWeight(s, 48, 51);
             WeightDTO weightDTO = new WeightDTO(hostAddress, port, totalWeight);
             //称重>0的时候，进行请求
-            if (weightDTO.getTotalWeight() > 0) {
+            if (weightDTO.getTotalWeight() > 0 && weightDTO.getTotalWeight() <= 20000) {
                 //查看缓存，如果两分钟内，如果实现相同数据则不进行上传
                 if (!Objects.isNull(CacheUtil.get(weightDTO.getIp() + ":" + weightDTO.getPort())) &&
                         CacheUtil.get(weightDTO.getIp() + ":" + weightDTO.getPort()).equals(weightDTO.getTotalWeight())) {
