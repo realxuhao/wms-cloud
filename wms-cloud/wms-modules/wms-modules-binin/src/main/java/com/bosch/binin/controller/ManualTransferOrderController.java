@@ -125,4 +125,13 @@ public class ManualTransferOrderController extends BaseController {
         return R.ok("转储成功");
     }
 
+
+    @PostMapping(value = "/changebin")
+    @Log(title = "人工更新原材料库位信息", businessType = BusinessType.INSERT)
+    @ApiOperation("人工更新原材料库位信息")
+    @Synchronized
+    public R trans(@RequestBody List<ChangeBinDTO> changeBinDTOLst) {
+        List<String> errList = manualTransferOrderService.changeBin(changeBinDTOLst);
+        return R.ok(errList);
+    }
 }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bosch.binin.api.domain.*;
 import com.bosch.binin.api.domain.dto.AddManualTransDTO;
+import com.bosch.binin.api.domain.dto.ChangeBinDTO;
 import com.bosch.binin.api.domain.dto.ManualBinInDTO;
 import com.bosch.binin.api.domain.dto.ManualTransQueryDTO;
 import com.bosch.binin.api.domain.vo.BinInVO;
@@ -21,6 +22,7 @@ import com.bosch.binin.service.IManualTransferOrderService;
 import com.bosch.binin.service.IStockService;
 import com.bosch.masterdata.api.domain.vo.BinVO;
 import com.bosch.system.api.domain.UserOperationLog;
+import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.enums.MoveTypeEnums;
 import com.ruoyi.common.core.enums.QualityStatusEnums;
@@ -426,5 +428,37 @@ public class ManualTransferOrderServiceImpl extends ServiceImpl<ManualTransferOr
         userOperationLogService.insertUserOperationLog(MaterialType.MATERIAL.getCode(), null, SecurityUtils.getUsername(), UserOperationType.MATERIAL_TRANS.getCode(), userOperationLog);
 
 
+    }
+
+    @Override
+    public List<String> changeBin(List<ChangeBinDTO> changeBinDTOLst) {
+        List<String> lst = new ArrayList<>();
+        for (ChangeBinDTO bin : changeBinDTOLst) {
+            LambdaQueryWrapper<Stock> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(Stock::getSsccNumber, bin.getSscc());
+            queryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            Stock stock = stockService.getOne(queryWrapper);
+            if (stock == null) {
+                lst.add(bin.getSscc());
+                continue;
+            }
+            BinVO actualBinVO = binInService.getBinVOByBinCode(bin.getBin());
+            if (actualBinVO == null) {
+                lst.add(bin.getSscc());
+                continue;
+            }
+            //检查是否是原材料区
+            if (!actualBinVO.getAreaType().equals(0)) {
+                lst.add(bin.getSscc());
+                continue;
+            }
+            stock.setPalletCode(actualBinVO.getPlantNb());
+            stock.setWareCode(actualBinVO.getWareCode());
+            stock.setFrameCode(actualBinVO.getFrameCode());
+            stock.setAreaCode(actualBinVO.getAreaCode());
+            stock.setBinCode(actualBinVO.getCode());
+            stockService.updateById(stock);
+        }
+        return lst;
     }
 }
