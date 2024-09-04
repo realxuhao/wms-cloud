@@ -478,7 +478,7 @@ export default {
     async handleDownload () {
       try {
         this.exportLoading = true
-        const blobData = await this.$store.dispatch('stockTake/exportList', this.queryForm)
+        const blobData = await this.$store.dispatch('stockTake/exportDetailList', this.queryForm)
         console.log(blobData)
         download(blobData, '盘点明细')
       } catch (error) {
