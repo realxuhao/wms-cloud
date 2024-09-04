@@ -119,7 +119,7 @@ public class StockTakePlanDetailController extends BaseController {
     @PostMapping("/export")
     @ApiOperation("导出盘点明细")
     @Log(title = "导出盘点明细", businessType = BusinessType.EXPORT)
-    public void export(HttpServletResponse response, StockTakeDetailQueryDTO dto) {
+    public void export(HttpServletResponse response, @RequestBody StockTakeDetailQueryDTO dto) {
         List<StockTakeDetailVO> detailVOS = detailService.getDetailList(dto);
         ExcelUtil<StockTakeDetailVO> util = new ExcelUtil<>(StockTakeDetailVO.class);
         util.exportExcel(response, detailVOS, "盘点明细列表");

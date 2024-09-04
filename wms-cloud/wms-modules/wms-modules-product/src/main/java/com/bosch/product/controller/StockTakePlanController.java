@@ -68,7 +68,7 @@ public class StockTakePlanController extends BaseController {
     @PostMapping("/export")
     @Log(title = "导出盘点计划", businessType = BusinessType.EXPORT)
     @ApiOperation("导出盘点计划")
-    public void export(HttpServletResponse response, StockTakePlanDTO dto) {
+    public void export(HttpServletResponse response, @RequestBody StockTakePlanDTO dto) {
         List<StockTakePlan> list = stockTakePlanService.list(dto);
         List<StockTakePlanVO> stockTakePlanVOList = BeanConverUtil.converList(list, StockTakePlanVO.class);
 
