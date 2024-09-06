@@ -6,7 +6,7 @@
         <a-row :gutter="16">
           <a-col :span="3">
             <a-form-model-item label="计划编码">
-              <a-input v-model="queryForm.code" placeholder="计划编码" allow-clear/>
+              <a-input v-model="queryForm.planCode" placeholder="计划编码" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="3">
