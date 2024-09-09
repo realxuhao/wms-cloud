@@ -425,24 +425,32 @@ public class StockTakeDetailServiceImpl extends ServiceImpl<StockTakeDetailMappe
             item.setIssueTime(new Date());
         });
         List<String> planCodes = takeDetailVOList.stream().map(StockTakeDetail::getPlanCode).collect(Collectors.toList());
-        Map<String, List<StockTakeDetailVO>> detailMap = takeDetailVOList.stream()
-                .collect(Collectors.groupingBy(StockTakeDetailVO::getPlanCode));
-
+//        Map<String, List<StockTakeDetailVO>> detailMap = takeDetailVOList.stream()
+//                .collect(Collectors.groupingBy(StockTakeDetailVO::getPlanCode));
 
         LambdaQueryWrapper<StockTakePlan> planQueryWrapper = new LambdaQueryWrapper<>();
         planQueryWrapper.in(StockTakePlan::getCode, planCodes);
         List<StockTakePlan> planList = planService.list(planQueryWrapper);
+
+        List<StockTakeDetail> stockTakeDetailList = BeanConverUtil.converList(takeDetailVOList, StockTakeDetail.class);
+
+        LambdaQueryWrapper<StockTakeDetail> detailQueryWrapper = new LambdaQueryWrapper<>();
+        detailQueryWrapper.in(StockTakeDetail::getPlanCode, planCodes);
+        detailQueryWrapper.eq(StockTakeDetail::getStatus,StockTakePlanDetailStatusEnum.WAIT_TAKE.getCode());
+        List<StockTakeDetail> detailList = this.list(detailQueryWrapper);
+        boolean b = detailList.addAll(stockTakeDetailList);
+        long count = detailList.stream().map(StockTakeDetail::getMaterialCode).distinct().count();
+
         planList.forEach(item -> {
-            if (detailMap.containsKey(item.getCode())) {
-                long count = detailMap.get(item.getCode()).stream().map(StockTakeDetail::getMaterialCode).distinct().count();
-                item.setTotalIssueQuantity((int) count);
-            }
+//            if (detailMap.containsKey(item.getCode())) {
+//                long count = detailMap.get(item.getCode()).stream().map(StockTakeDetail::getMaterialCode).distinct().count();
+//                item.setTotalIssueQuantity(item.getTotalIssueQuantity() + (int) count);
+//            }
             item.setStatus(StockTakePlanStatusEnum.PROCESSING.getCode());
-            item.setTotalIssueQuantity(takeDetailVOList.size());
+            item.setTotalIssueQuantity((int)count);
         });
         planService.updateBatchById(planList);
 
-        List<StockTakeDetail> stockTakeDetailList = BeanConverUtil.converList(takeDetailVOList, StockTakeDetail.class);
         this.updateBatchById(stockTakeDetailList);
     }
 
