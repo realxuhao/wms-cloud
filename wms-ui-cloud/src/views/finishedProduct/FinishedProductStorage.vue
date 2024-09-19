@@ -306,7 +306,7 @@ export default {
     async handleDownloadTemplate () {
       try {
         // todo 暂时不知道这个文件名
-        this.$store.dispatch('file/downloadByFilename', '入库.xlsx')
+        this.$store.dispatch('file/downloadByFilename', '成品收货.xlsx')
       } catch (error) {
         this.$message.error(error.message)
       }
