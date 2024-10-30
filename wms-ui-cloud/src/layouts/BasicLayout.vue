@@ -40,6 +40,7 @@
     </template>
     <template v-slot:footerRender v-if="!hideFooter">
       <!-- <global-footer /> -->
+      <div style="text-align:center;font-size: 16px;">V1.0.0</div>
     </template>
     <keep-alive :include="this.cachedViews">
       <router-view :key="key" />
