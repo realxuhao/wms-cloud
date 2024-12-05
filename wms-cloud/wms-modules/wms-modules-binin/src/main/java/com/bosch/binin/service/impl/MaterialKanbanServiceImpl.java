@@ -54,6 +54,9 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
     private StockMapper stockMapper;
 
     @Autowired
+    private BinInMapper binInMapper;
+
+    @Autowired
     private WareShiftMapper wareShiftMapper;
 
     @Autowired
@@ -761,10 +764,40 @@ public class MaterialKanbanServiceImpl extends ServiceImpl<MaterialKanbanMapper,
         //叫料需求的下发量修改
         callService.updateCallQuantity(materialKanban);
         //sscc库存可用 冻结修改
-        if (materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_ISSUE.value()) || materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN.value())) {
+        if (materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_ISSUE.value()) || materialKanban.getStatus().equals(KanbanStatusEnum.WAITING_BIN_DOWN.value()) || materialKanban.getStatus().equals(KanbanStatusEnum.INNER_DOWN.value())) {
             if (AreaListConstants.mainArea(materialKanban.getAreaCode())) {
-                updateStockBySSCC(materialKanban.getSsccNumber(),
-                        materialKanban.getQuantity());
+                // 已下架的要恢复库存状态
+                if (materialKanban.getStatus().equals(KanbanStatusEnum.INNER_DOWN.value())) {
+                    LambdaQueryWrapper<BinIn> bininQueryMapper = new LambdaQueryWrapper<>();
+                    bininQueryMapper.eq(BinIn::getSsccNumber, materialKanban.getSsccNumber());
+                    bininQueryMapper.eq(BinIn::getDeleteFlag, DeleteFlagStatus.TRUE.getCode());
+                    bininQueryMapper.orderByDesc(BinIn::getUpdateTime);
+                    bininQueryMapper.last("limit 1");
+                    BinIn binIn = binInMapper.selectOne(bininQueryMapper);
+                    if (binIn != null) {
+                        binIn.setUpdateBy(SecurityUtils.getUsername());
+                        binIn.setUpdateTime(new Date());
+                        binIn.setDeleteFlag(DeleteFlagStatus.FALSE.getCode());
+                    }
+                    LambdaQueryWrapper<Stock> stockQuertMapper = new LambdaQueryWrapper<>();
+                    stockQuertMapper.eq(Stock::getSsccNumber, materialKanban.getSsccNumber());
+                    stockQuertMapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.TRUE.getCode());
+                    stockQuertMapper.orderByDesc(Stock::getUpdateTime);
+                    stockQuertMapper.last("limit 1");
+                    Stock stock = stockMapper.selectOne(stockQuertMapper);
+                    if (stock != null) {
+                        stock.setDeleteFlag(DeleteFlagStatus.FALSE.getCode());
+                        stock.setUpdateBy(SecurityUtils.getUsername());
+                        stock.setUpdateTime(new Date());
+                    }
+                    if (binIn != null) {
+                        binInMapper.updateById(binIn);
+                    }
+                    if (stock != null) {
+                        stockMapper.updateById(stock);
+                    }
+                }
+                updateStockBySSCC(materialKanban.getSsccNumber(), materialKanban.getQuantity());
             }
         }
 
