@@ -59,6 +59,7 @@
 
 <script>
 import { mixinTableList } from '@/utils/mixin/index'
+import moment from 'moment'
 import { download } from '@/utils/file'
 
 const columns = [
@@ -202,6 +203,9 @@ export default {
     }
   },
   mounted () {
+    const endDate = moment()
+    const startDate = moment().subtract(1, 'months')
+    this.queryForm.date = [startDate, endDate]
     this.loadData()
   }
 }

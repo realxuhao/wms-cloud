@@ -182,6 +182,9 @@ export default {
     }
   },
   mounted(){
+    const endDate = moment()
+    const startDate = moment().subtract(1, 'months')
+    this.queryForm.date = [startDate, endDate]
     this.getData()
 
 

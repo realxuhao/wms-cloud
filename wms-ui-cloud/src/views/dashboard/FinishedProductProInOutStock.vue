@@ -202,11 +202,14 @@ export default {
         this.tableLoading = false
       }
     },
-    async loadData () {
-      // this.loadTableList()
+    async loadData() {
+      this.loadTableList()
     }
   },
   mounted () {
+    const endDate = moment()
+    const startDate = moment().subtract(1, 'months')
+    this.queryForm.date = [startDate, endDate]
     this.loadData()
   }
 }
