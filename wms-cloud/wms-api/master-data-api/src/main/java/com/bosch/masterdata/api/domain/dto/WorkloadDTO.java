@@ -30,6 +30,18 @@ public class WorkloadDTO extends PageDomain {
     private String nickName;
 
     /**
+     * 原材料所属的CELL
+     */
+    @ApiModelProperty(value = "cell")
+    private String cell;
+
+    /**
+     * 物料类型
+     */
+    @ApiModelProperty(value = "materialType")
+    private String materialTypeId;
+
+    /**
      * 修改人
      */
     @ApiModelProperty(value = "update_by")
@@ -53,7 +65,6 @@ public class WorkloadDTO extends PageDomain {
      */
     @ApiModelProperty(value = "update_time")
     private Date updateTime;
-
 
 
     /**

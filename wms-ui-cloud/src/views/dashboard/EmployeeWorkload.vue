@@ -2,25 +2,61 @@
   <div class="wrapper">
     <!-- table -->
     <div class="table-content">
-      <a-form-model layout="inline">
-        <a-form-model-item label="时间">
-          <a-range-picker
-            format="YYYY-MM-DD"
-            v-model="queryForm.date"
-          />
-        </a-form-model-item>
-        <a-form-model-item label="操作账号">
-          <a-input v-model="queryForm.createBy" placeholder="操作账号" allow-clear/>
-        </a-form-model-item>
-        <a-form-model-item label="操作人">
-          <a-input v-model="queryForm.nickName" placeholder="操作人" allow-clear/>
-        </a-form-model-item>
-        <a-form-model-item >
-          <span class="table-page-search-submitButtons" >
-            <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
-            <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
-          </span>
-        </a-form-model-item>
+      <a-form-model layout="inline" class="search-content">
+        <a-row :gutter="16">
+          <a-col :span="5">
+            <a-form-model-item label="时间">
+              <a-range-picker
+                format="YYYY-MM-DD"
+                v-model="queryForm.date"
+              />
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="操作账号">
+              <a-input v-model="queryForm.createBy" placeholder="操作账号" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="操作人">
+              <a-input v-model="queryForm.nickName" placeholder="操作人" allow-clear/>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="3">
+            <a-form-model-item label="Cell">
+              <a-select allow-clear v-model="queryForm.cell">
+                <a-select-option v-for="item in departmentList" :key="item.id" :value="item.code">
+                  {{ item.code }}
+                </a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col :span="4">
+            <a-form-model-item label="物料类型">
+              <a-select
+                allowClear
+                show-search
+                :filter-option="filterOption"
+                option-filter-prop="children"
+                style="width:100%"
+                placeholder="物料类型"
+                v-model="queryForm.materialTypeId"
+                :loading="materialTypeListLoading">
+                <a-select-option
+                  :value="item.id"
+                  v-for="item in materialTypeList"
+                  :key="item.id">
+                  {{ item.code }}</a-select-option>
+              </a-select>
+            </a-form-model-item>
+          </a-col>
+          <a-col span="4">
+            <span class="table-page-search-submitButtons" >
+              <a-button type="primary" @click="handleSearch" :loading="searchLoading"><a-icon type="search" />查询</a-button>
+              <a-button style="margin-left: 8px" @click="handleResetQuery"><a-icon type="redo" />重置</a-button>
+            </span>
+          </a-col>
+        </a-row>
       </a-form-model>
 
       <div class="action-content">
@@ -139,7 +175,9 @@ const queryFormAttr = () => {
   return {
     date:[],
     createBy:'',
-    nickName: ''
+    nickName: '',
+    materialTypeId: '',
+    cell: '',
   }
 }
 
@@ -150,6 +188,9 @@ export default {
     return {
       tableLoading: false,
       downloadLoading: false,
+      materialTypeListLoading: false,
+      materialTypeList: [],
+      departmentList: [],
 
       queryForm: {
         pageSize: 20,
@@ -173,6 +214,10 @@ export default {
       }finally{
         this.downloadLoading = false
       }
+    },
+    async loadDepartmentList () {
+      const departmentList = await this.$store.dispatch('materialFeeding/getDepartmentList')
+      this.departmentList = departmentList
     },
     handleResetQuery () {
       this.queryForm = { ...this.queryForm, ...queryFormAttr() }
@@ -198,8 +243,27 @@ export default {
         this.tableLoading = false
       }
     },
+    filterOption (input, option) {
+      return (
+        option.componentOptions.children[0].text.toLowerCase().indexOf(input.toLowerCase()) >= 0
+      )
+    },
+    async loadMaterialTypeList () {
+      try {
+        this.materialTypeListLoading = true
+
+        const { data: { rows } } = await this.$store.dispatch('materialType/getList', { pageSize: 0 })
+        this.materialTypeList = rows
+      } catch (error) {
+        this.$message.error('获取物料类型失败，请联系管理员！')
+      } finally {
+        this.materialTypeListLoading = false
+      }
+    },
     async loadData () {
       this.loadTableList()
+      this.loadMaterialTypeList()
+      this.loadDepartmentList()
     }
   },
   mounted () {
