@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.api.domain.dto.RegisterBomDTO;
 import com.bosch.file.api.domain.FileUpload;
+import com.bosch.masterdata.service.SFTPService;
 import com.bosch.masterdata.service.IFileUploadService;
 import com.bosch.masterdata.utils.CSVUtil;
 import com.bosch.masterdata.utils.DataListener;
@@ -46,6 +47,30 @@ public class SysFileController {
     private ISysFileService sysFileService;
     @Autowired
     private IFileUploadService fileUploadService;
+
+    @Autowired
+    private SFTPService sftpService;
+
+
+    @PostMapping("sftp-upload")
+    public R uploadFile(@RequestParam String localFilePath, @RequestParam String remoteFileName) {
+        try {
+            sftpService.uploadFile(localFilePath, remoteFileName);
+            return R.ok();
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
+    }
+
+    @PostMapping("sftp-download")
+    public R downloadFile(@RequestParam String remoteFileName, @RequestParam String localFilePath) {
+        try {
+            sftpService.downloadFile(remoteFileName, localFilePath);
+            return R.ok();
+        } catch (Exception e) {
+            return R.fail(e.getMessage());
+        }
+    }
 
     /**
      * 文件上传请求
@@ -87,27 +112,28 @@ public class SysFileController {
         try {
             Class<?> TClass = Class.forName("com.bosch.masterdata.api.domain.dto." + className);
 
-            List<T> read = EasyExcelUtil.read(file.getInputStream(), TClass,className);
+            List<T> read = EasyExcelUtil.read(file.getInputStream(), TClass, className);
             boolean check = EasyExcelUtil.check(read);
-            if (!check){
+            if (!check) {
                 return R.fail("excel中存在重复数据");
             }
-            if(CollectionUtils.isEmpty(read)){
+            if (CollectionUtils.isEmpty(read)) {
                 return R.fail("excel中无数据");
             }
             R<SysFile> upload = upload(file);
-            if (!upload.isSuccess()){
+            if (!upload.isSuccess()) {
                 return R.fail("上传文件服务失败");
             }
             return R.ok(read);
         } catch (Exception e) {
-            if(e.getMessage()=="excel模板不正确"){
+            if (e.getMessage() == "excel模板不正确") {
                 return R.fail(e.getMessage());
             }
             return R.fail("解析文件失败,文件类型不匹配");
         }
 
     }
+
     /**
      * IQC解析文件
      *
@@ -120,23 +146,24 @@ public class SysFileController {
             "className") String className) throws Exception {
         try {
             Class<?> TClass = Class.forName("com.bosch.masterdata.api.domain.dto." + className);
-            List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass,className);
-            if(CollectionUtils.isEmpty(read)){
+            List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass, className);
+            if (CollectionUtils.isEmpty(read)) {
                 return R.fail("excel中无数据");
             }
             R<SysFile> upload = upload(file);
-            if (!upload.isSuccess()){
+            if (!upload.isSuccess()) {
                 return R.fail("上传文件服务失败");
             }
             return R.ok(read);
         } catch (Exception e) {
-            if(e.getMessage()=="excel模板不正确"){
+            if (e.getMessage() == "excel模板不正确") {
                 return R.fail(e.getMessage());
             }
             return R.fail("解析文件失败,文件类型不匹配");
         }
 
     }
+
     /**
      * packagingDataImport
      *
@@ -150,22 +177,23 @@ public class SysFileController {
         try {
 
             Class<?> TClass = Class.forName("com.bosch.product.api.domain.dto." + className);
-            List<T> read = EasyExcelUtil.readPackaging(file.getInputStream(), TClass,className);
-            if(CollectionUtils.isEmpty(read)){
+            List<T> read = EasyExcelUtil.readPackaging(file.getInputStream(), TClass, className);
+            if (CollectionUtils.isEmpty(read)) {
                 return R.fail("excel中无数据");
             }
             R<SysFile> upload = upload(file);
-            if (!upload.isSuccess()){
+            if (!upload.isSuccess()) {
                 return R.fail("上传文件服务失败");
             }
             return R.ok(read);
         } catch (Exception e) {
-            if(e.getMessage()=="excel模板不正确"){
+            if (e.getMessage() == "excel模板不正确") {
                 return R.fail(e.getMessage());
             }
             return R.fail("解析文件失败,文件类型不匹配");
         }
     }
+
     /**
      * productDataImport
      *
@@ -179,22 +207,23 @@ public class SysFileController {
         try {
 
             Class<?> TClass = Class.forName("com.bosch.product.api.domain.dto." + className);
-            List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass,className);
-            if(CollectionUtils.isEmpty(read)){
+            List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass, className);
+            if (CollectionUtils.isEmpty(read)) {
                 return R.fail("excel中无数据");
             }
             R<SysFile> upload = upload(file);
-            if (!upload.isSuccess()){
+            if (!upload.isSuccess()) {
                 return R.fail("上传文件服务失败");
             }
             return R.ok(read);
         } catch (Exception e) {
-            if(e.getMessage()=="excel模板不正确"){
+            if (e.getMessage() == "excel模板不正确") {
                 return R.fail(e.getMessage());
             }
             return R.fail("解析文件失败,文件类型不匹配");
         }
     }
+
     /**
      * 入库解析csv文件
      *
@@ -204,18 +233,18 @@ public class SysFileController {
     @ApiOperation("解析csv表")
     @PostMapping(value = "/materialcsvReceiveImport")
     public R<List<MaterialReceive>> materialcsvReceiveImport(@RequestPart(value = "file") MultipartFile file,
-                                                          @RequestParam(value = "className") String className) throws Exception {
+                                                             @RequestParam(value = "className") String className) throws Exception {
 
         try {
 
             List<MaterialReceive> csvData = CSVUtil.getCsvData(file.getInputStream(), MaterialReceive.class);
             boolean check = CSVUtil.check(csvData);
-            if (!check){
+            if (!check) {
                 return R.fail("excel中存在重复数据");
             }
 
             R<SysFile> upload = upload(file);
-            csvData.forEach(r->r.setFileId(upload.getData().getFileId().toString()));
+            csvData.forEach(r -> r.setFileId(upload.getData().getFileId().toString()));
             return R.ok(csvData);
         } catch (Exception e) {
             return R.fail("解析文件失败,文件类型不匹配");
@@ -237,32 +266,33 @@ public class SysFileController {
 
         try {
             Class<?> TClass = Class.forName("com.bosch.storagein.api.domain." + className);
-            List<MaterialReceive> read = EasyExcelUtil.read(file.getInputStream(), MaterialReceive.class,className);
+            List<MaterialReceive> read = EasyExcelUtil.read(file.getInputStream(), MaterialReceive.class, className);
 
-            if(CollectionUtils.isEmpty(read)){
+            if (CollectionUtils.isEmpty(read)) {
                 return R.fail("excel中无数据");
             }
             boolean check = EasyExcelUtil.check(read);
-            if (!check){
+            if (!check) {
                 return R.fail("excel中存在重复数据");
             }
             List<String> ssccList = read.stream().map(MaterialReceive::getSsccNumber).collect(Collectors.toList());
             boolean checkssccNumber = EasyExcelUtil.check(ssccList);
-            if (!checkssccNumber){
+            if (!checkssccNumber) {
                 return R.fail("excel中存在重复ssccNumber");
             }
 
             R<SysFile> upload = upload(file);
-            if (!upload.isSuccess()){
+            if (!upload.isSuccess()) {
                 return R.fail("上传文件服务失败");
             }
-            read.forEach(r->r.setFileId(upload.getData().getFileId().toString()));
+            read.forEach(r -> r.setFileId(upload.getData().getFileId().toString()));
             return R.ok(read);
         } catch (Exception e) {
             return R.fail(e.getMessage());
         }
 
     }
+
     /**
      * 叫料解析文件
      *
@@ -272,13 +302,13 @@ public class SysFileController {
     @ApiOperation("解析excel表")
     @PostMapping(value = "/materialCallImport")
     public R<List<MaterialCallDTO>> materialCallImport(@RequestPart(value = "file") MultipartFile file,
-                                                          @RequestParam(value = "className") String className) throws Exception {
+                                                       @RequestParam(value = "className") String className) throws Exception {
 
         try {
             Class<?> TClass = Class.forName("com.bosch.binin.api.domain.dto." + className);
-            List<MaterialCallDTO> read = EasyExcelUtil.read(file.getInputStream(), MaterialCallDTO.class,className);
+            List<MaterialCallDTO> read = EasyExcelUtil.read(file.getInputStream(), MaterialCallDTO.class, className);
 
-            if(CollectionUtils.isEmpty(read)){
+            if (CollectionUtils.isEmpty(read)) {
                 return R.fail("excel中无数据");
             }
 //            boolean check = EasyExcelUtil.check(read);
@@ -316,7 +346,7 @@ public class SysFileController {
                 return R.fail("参数为null");
             }
             String fileUrl = sysFileService.downloadObject(fileName);
-            
+
             return R.ok(fileUrl);
         } catch (Exception e) {
             return R.fail(e.getMessage());
@@ -330,13 +360,13 @@ public class SysFileController {
             "className") String className) throws Exception {
         try {
             Class<?> TClass = Class.forName("com.bosch.binin.api.domain.dto." + className);
-            List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass,className);
-            if(CollectionUtils.isEmpty(read)){
+            List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass, className);
+            if (CollectionUtils.isEmpty(read)) {
                 return R.fail("excel中无数据");
             }
             return R.ok(read);
         } catch (Exception e) {
-            if(e.getMessage()=="excel模板不正确"){
+            if (e.getMessage() == "excel模板不正确") {
                 return R.fail(e.getMessage());
             }
             return R.fail("解析文件失败,文件类型不匹配");
@@ -350,17 +380,17 @@ public class SysFileController {
             "className") String className) throws Exception {
         try {
             Class<?> TClass = Class.forName("com.bosch.product.api.domain.dto." + className);
-            List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass,className);
-            if(CollectionUtils.isEmpty(read)){
+            List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass, className);
+            if (CollectionUtils.isEmpty(read)) {
                 return R.fail("excel中无数据");
             }
             R<SysFile> upload = upload(file);
-            if (!upload.isSuccess()){
+            if (!upload.isSuccess()) {
                 return R.fail("上传文件服务失败");
             }
             return R.ok(read);
         } catch (Exception e) {
-            if(e.getMessage()=="excel模板不正确"){
+            if (e.getMessage() == "excel模板不正确") {
                 return R.fail(e.getMessage());
             }
             return R.fail("解析文件失败,文件类型不匹配");
@@ -374,18 +404,18 @@ public class SysFileController {
             "className") String className) throws Exception {
         try {
             Class<?> TClass = Class.forName("com.bosch.product.api.domain.dto." + className);
-            List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass,className);
-            if(CollectionUtils.isEmpty(read)){
+            List<T> read = EasyExcelUtil.readNoValid(file.getInputStream(), TClass, className);
+            if (CollectionUtils.isEmpty(read)) {
                 return R.fail("excel中无数据");
             }
             R<SysFile> upload = upload(file);
-            if (!upload.isSuccess()){
+            if (!upload.isSuccess()) {
                 return R.fail("上传文件服务失败");
             }
 
             return R.ok(read);
         } catch (Exception e) {
-            if(e.getMessage()=="excel模板不正确"){
+            if (e.getMessage() == "excel模板不正确") {
                 return R.fail(e.getMessage());
             }
             return R.fail("解析文件失败,文件类型不匹配");
