@@ -94,6 +94,13 @@
             <version>${minio.version}</version>
         </dependency>
 
+        <!-- jcraft -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>${jcraft.version}</version>
+        </dependency>
+
         <!-- RuoYi Api System -->
         <dependency>
             <groupId>com.bosch</groupId>

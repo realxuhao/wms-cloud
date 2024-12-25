@@ -21,11 +21,14 @@ import com.bosch.masterdata.mapper.MaterialTypeMapper;
 import com.bosch.masterdata.mapper.PalletMapper;
 import com.bosch.masterdata.service.IMaterialTypeService;
 import com.bosch.masterdata.utils.BeanConverUtil;
+import com.bosch.system.api.domain.UserOperationLog;
 import com.ruoyi.common.core.exception.ServiceException;
 import com.ruoyi.common.core.utils.DateUtils;
+import com.ruoyi.common.log.mapper.UserOperationLogMapper;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.ibatis.binding.MapperMethod;
+import org.aspectj.apache.bcel.classfile.Code;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.bosch.masterdata.mapper.MaterialMapper;
@@ -52,6 +55,9 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
     private PalletMapper palletMapper;
     @Autowired
     private IMaterialTypeService materialTypeService;
+    @Autowired
+    private UserOperationLogMapper userOperationLogMapper;
+
 
     /**
      * 查询物料信息
@@ -109,6 +115,16 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
 
     @Override
     public int updateMaterial(MaterialDTO materialDTO) {
+        LambdaQueryWrapper<Material> queryWrapper = new LambdaQueryWrapper<Material>();
+        queryWrapper.eq(Material::getId, materialDTO.getId());
+        List<Material> materials = materialMapper.selectList(queryWrapper);
+        List<String> collect = materials.stream().map(x -> x.getCode()).collect(Collectors.toList());
+        LambdaQueryWrapper<UserOperationLog> queryLogWrapper = new LambdaQueryWrapper<UserOperationLog>();
+        queryLogWrapper.in(UserOperationLog::getCode, collect);
+        List<UserOperationLog> userOperationLogs = userOperationLogMapper.selectList(queryLogWrapper);
+        if (userOperationLogs.size() > 0) {
+            throw new ServiceException("该物料被使用，不允许修改");
+        }
         if (ObjectUtils.isNotEmpty(materialDTO) && ObjectUtils.isNotEmpty(materialDTO.getPalletId())) {
             Pallet pallet = palletMapper.selectPalletById(materialDTO.getPalletId());
             if (pallet != null) {
@@ -129,6 +145,16 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
      */
     @Override
     public int deleteMaterialByIds(Long[] ids) {
+        LambdaQueryWrapper<Material> queryWrapper = new LambdaQueryWrapper<Material>();
+        queryWrapper.in(Material::getId, ids);
+        List<Material> materials = materialMapper.selectList(queryWrapper);
+        List<String> collect = materials.stream().map(x -> x.getCode()).collect(Collectors.toList());
+        LambdaQueryWrapper<UserOperationLog> queryLogWrapper = new LambdaQueryWrapper<UserOperationLog>();
+        queryLogWrapper.in(UserOperationLog::getCode, collect);
+        List<UserOperationLog> userOperationLogs = userOperationLogMapper.selectList(queryLogWrapper);
+        if (userOperationLogs.size() > 0) {
+            throw new ServiceException("该物料被使用，不允许删除");
+        }
         return materialMapper.deleteMaterialByIds(ids);
     }
 
@@ -189,13 +215,13 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         //绑定物料类型id
         materialDTOList.forEach(x -> {
             //绑定物料类型id
-            if (typeMap.get(x.getMaterialType())==null){
-                throw new ServiceException("输入数据中包含主数据中不存在的物料类型："+x.getMaterialType());
+            if (typeMap.get(x.getMaterialType()) == null) {
+                throw new ServiceException("输入数据中包含主数据中不存在的物料类型：" + x.getMaterialType());
             }
             x.setMaterialTypeId(typeMap.get(x.getMaterialType()));
             //托盘id
-            if (palletMap.get(x.getPalletType())==null){
-                throw new ServiceException("输入数据中包含主数据中不存在的托盘类型："+x.getPalletType());
+            if (palletMap.get(x.getPalletType()) == null) {
+                throw new ServiceException("输入数据中包含主数据中不存在的托盘类型：" + x.getPalletType());
             }
             x.setPalletId(palletMap.get(x.getPalletType()));
         });

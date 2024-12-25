@@ -527,6 +527,7 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
         binIn.setStatus(BinInStatusEnum.FINISH.value());
         binIn.setUpdateTime(new Date());
         binIn.setAreaCode(actualBinVO.getAreaCode());
+        binIn.setWareCode(actualBinVO.getWareCode());
         if (StringUtils.isEmpty(binIn.getPalletCode())) {
             binIn.setPalletCode(binInDTO.getPalletCode());
         }

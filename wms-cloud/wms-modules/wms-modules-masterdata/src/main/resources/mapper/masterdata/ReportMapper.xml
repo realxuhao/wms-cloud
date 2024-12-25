@@ -254,19 +254,21 @@
 
 
         FROM user_operation_log ul
-                                  left join sys_user su on su.user_name = ul.create_by and su.del_flag = 0 and su.status = 0
+        left join md_material mm on mm.code = ul.code
+        left join md_material_type mt on mt.id = mm.material_type_id
+        left join md_department md on md.id= mt.department_id and md.status=1
+        left join sys_user su on su.user_name = ul.create_by and su.del_flag = 0 and su.status = 0
         where ul.type='0'
         <if test="createTimeStart != null">and ul.create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
         <if test="createTimeEnd != null">and ul.create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
+        <if test="materialTypeId != null and materialTypeId != ''">and mt.id = #{materialTypeId}</if>
+        <if test="cell != null and cell != ''">and md.name = #{cell}</if>
         GROUP BY create_by ,operation_type,nick_name )AS t
         where 1=1
         <if test="createBy != null and createBy != ''">and create_by like concat('%', #{createBy}, '%')</if>
         <if test="nickName != null and nickName != ''">and nick_name like concat('%', #{nickName}, '%')</if>
-
         <if test="type != null and type != ''">and operation_type=#{type}</if>
         GROUP BY create_by,nick_name
-
-
     </select>
 
     <select id="workloadPro" resultType="com.bosch.masterdata.api.domain.vo.WorkloadVO" parameterType="com.bosch.masterdata.api.domain.dto.WorkloadDTO">
@@ -287,18 +289,21 @@
 
         ELSE 'other'
         END AS type_name
-        FROM user_operation_log ul left join sys_user su on su.user_name = ul.create_by and su.status = 0 and su.del_flag = 0 where  ul.TYPE='1'
+        FROM user_operation_log ul
+        left join md_material mm on mm.code = ul.code
+        left join md_material_type mt on mt.id = mm.material_type_id
+        left join md_department md on md.id= mt.department_id and md.status=1
+        left join sys_user su on su.user_name = ul.create_by and su.status = 0 and su.del_flag = 0
+        where  ul.TYPE='1'
         <if test="createTimeStart != null">and ul.create_time <![CDATA[ >= ]]> #{createTimeStart}</if>
         <if test="createTimeEnd != null">and ul.create_time <![CDATA[ <= ]]> #{createTimeEnd}</if>
-                                GROUP BY create_by ,operation_type, nick_name )AS t
+        <if test="materialTypeId != null and materialTypeId != ''">and mt.id = #{materialTypeId}</if>
+        <if test="cell != null and cell != ''">and md.name = #{cell}</if>
+        GROUP BY create_by ,operation_type, nick_name )AS t
         where 1=1
         <if test="createBy != null and createBy != ''">and create_by like concat('%', #{createBy}, '%')</if>
         <if test="nickName != null and nickName != ''">and nick_name like concat('%', #{nickName}, '%')</if>
-
-
         GROUP BY create_by,nick_name
-
-
     </select>
 
     <select id="getEfficiencyByOperationType" resultType="com.bosch.masterdata.api.domain.vo.EfficiencyVO" parameterType="com.bosch.masterdata.api.domain.dto.EfficiencyDTO">

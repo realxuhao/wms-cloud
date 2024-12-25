@@ -6,7 +6,7 @@
         <a-row :gutter="16">
           <a-col :span="3">
             <a-form-model-item label="计划编码">
-              <a-input v-model="queryForm.code" placeholder="计划编码" allow-clear/>
+              <a-input v-model="queryForm.planCode" placeholder="计划编码" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col :span="3">
@@ -478,7 +478,7 @@ export default {
     async handleDownload () {
       try {
         this.exportLoading = true
-        const blobData = await this.$store.dispatch('stockTake/exportList', this.queryForm)
+        const blobData = await this.$store.dispatch('stockTake/exportDetailList', this.queryForm)
         console.log(blobData)
         download(blobData, '盘点明细')
       } catch (error) {

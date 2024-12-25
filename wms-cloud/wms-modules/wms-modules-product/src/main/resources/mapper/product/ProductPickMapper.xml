@@ -56,6 +56,7 @@
     <select id="getSUDNPickExportVO" resultType="com.bosch.product.api.domain.vo.ProductPickExportVO">
         select pp.delivery as delivery,
         pp.plant as plant,
+        -- pp.sscc as ssccNumber,
         pp.ship_to_party as shipToParty,
         pp.name_of_ship_to_party as nameOfShipToParty,
         pp.delivery_date as deliveryDate,
@@ -72,9 +73,9 @@
         <if test="delivery != null and delivery != ''">
             AND pp.delivery like concat('%', #{delivery}, '%')
         </if>
-        <if test="sscc != null and sscc != ''">
-            AND pp.sscc like concat('%', #{sscc}, '%')
-        </if>
+        <!--<if test="ssccNb != null and ssccNb != ''">
+            AND pp.sscc like concat('%', #{ssccNb}, '%')
+        </if>-->
         <if test="material != null and material != ''">
             AND pp.material like concat('%', #{material}, '%')
         </if>

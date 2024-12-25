@@ -48,7 +48,7 @@
             <if test="cell != null  and cell != ''">and p.cell like concat('%', #{cell}, '%')</if>
             <if test="ssccNb != null  and ssccNb != ''">and d.sscc_nb like concat('%', #{ssccNb}, '%')</if>
             <if test="taskNo != null  and taskNo != ''">and d.task_no like concat('%', #{taskNo}, '%')</if>
-
+            <if test="planCode != null  and planCode != ''">and d.plan_code like concat('%', #{planCode}, '%')</if>
             <if test="wareCode != null  and wareCode != ''">and d.ware_code like concat('%', #{wareCode}, '%')</if>
             <if test="areaCode != null  and areaCode != ''">and d.area_code like concat('%', #{areaCode}, '%')</if>
             <if test="type != null">and p.type = #{type}</if>

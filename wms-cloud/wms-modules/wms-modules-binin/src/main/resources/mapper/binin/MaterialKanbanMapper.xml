@@ -422,7 +422,7 @@
         rb.component_quantity,v.material_quantity - rb.component_quantity gap_quantity
         from material_call mc INNER JOIN material_return mr
         on mc.order_nb=mr.order_number and mc.material_nb=mr.material_nb and mc.register_batch =1
-        left join material_kanban mk on mk.sscc_number = mr.sscc_number
+        left join material_kanban mk on mk.sscc_number = mr.sscc_number and mk.register_batch =1
         left join (SELECT * from md_material where delete_flag='0' ) mm ON mr.material_nb=mm.code
         left join (SELECT * from register_bom where delete_flag='0' ) rb ON mr.order_number=rb.order_number
         and mr.material_nb=rb.bom_component
