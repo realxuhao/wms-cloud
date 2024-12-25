@@ -184,19 +184,19 @@
 						<view class="text">成品入库</view>
 					</view>
 					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:shipment'])"
-						@click="handleGoto('/pages/finishedProductWareShift/shipment')">
+						@click="handleGoto('/pages/finishedProductWareShift/shipment?type=1')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-wuliufahuo" type="icon-wuliufahuo"
 							color="#009A9A"></uni-icons>
 						<view class="text">移库发运</view>
 					</view>
 					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:receiving'])"
-						@click="handleGoto('/pages/finishedProductWareShift/receiving')">
+						@click="handleGoto('/pages/finishedProductWareShift/receiving?type=1')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-discharge"
 							color="#00ADD4"></uni-icons>
 						<view class="text">移库收货</view>
 					</view>
 					<view class="list-item" v-if="$hasPermi(['app:finishedProduct:binIn'])"
-						@click="handleGoto('/pages/finishedProductWareShift/binIn')">
+						@click="handleGoto('/pages/finishedProductWareShift/binIn?type=1')">
 						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2"
 							color="#1afa29"></uni-icons>
 						<view class="text">移库上架</view>
@@ -272,6 +272,24 @@
 						<uni-icons custom-prefix="iconfont" class="icon icon-tuihuo1" type="icon-tuihuo1"
 							color="rgb(248,79,87)"></uni-icons>
 						<view class="text">经销商退货</view>
+					</view>
+					<view class="list-item" v-if="$hasPermi(['app:sudn:finishedProduct:shipment'])"
+						@click="handleGoto('/pages/finishedProductWareShift/shipment?type=2')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-wuliufahuo" type="icon-wuliufahuo"
+							color="#009A9A"></uni-icons>
+						<view class="text">移库发运</view>
+					</view>
+					<view class="list-item" v-if="$hasPermi(['app:sudn:finishedProduct:receiving'])"
+						@click="handleGoto('/pages/finishedProductWareShift/receiving?type=2')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-discharge"
+							color="#00ADD4"></uni-icons>
+						<view class="text">移库收货</view>
+					</view>
+					<view class="list-item" v-if="$hasPermi(['app:sudn:finishedProduct:binIn'])"
+						@click="handleGoto('/pages/finishedProductWareShift/binIn?type=2')">
+						<uni-icons custom-prefix="iconfont" class="icon icon-xiehuo" type="icon-shangjia2"
+							color="#1afa29"></uni-icons>
+						<view class="text">移库上架</view>
 					</view>
 				</view>
 			</uni-section>
