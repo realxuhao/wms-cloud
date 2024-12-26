@@ -47,4 +47,9 @@ public class ProductWareShiftQueryDTO {
 
     private String cell;
 
+    /**
+     * type 1: 成品库存  2： 销售库存
+     */
+    private Integer type;
+
 }

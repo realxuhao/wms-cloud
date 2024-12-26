@@ -182,8 +182,11 @@ public class ProductWareShiftController extends BaseController {
 
     @GetMapping(value = "/getBinInInfo/{qrCode}")
     @ApiOperation("获取单个上架信息")
-    public R<ProductStockVO> getBinInInfo(@PathVariable("qrCode") String qrCode){
-        return R.ok(productWareShiftService.getBinInInfo(qrCode));
+    public R<ProductStockVO> getBinInInfo(@PathVariable("qrCode") String qrCode, @RequestParam(name = "type", required = false) Integer type) {
+        if (type == null) {
+            type = 1;
+        }
+        return R.ok(productWareShiftService.getBinInInfo(qrCode, type));
     }
 
     @GetMapping(value = "/getBinInInfoList/{qrCode}")

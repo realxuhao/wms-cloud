@@ -167,8 +167,12 @@
         left join md_product_packaging ppp on ppp.product_no = p.material_nb and ppp.delete_flag = 0
 
         WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
+        <if test="type != null and type == 1 ">
         and p.plant_nb != '7701' and p.plant_nb != '7761'
-
+        </if>
+        <if test="type != null and type == 2 ">
+        and p.plant_nb = '7761'
+        </if>
         <if test="plantNb != null  and plantNb != ''">and p.plant_nb like concat('%', #{plantNb}, '%')</if>
         <if test="cell != null  and cell != ''">and ppp.cell like concat('%', #{cell}, '%')</if>
 
@@ -199,8 +203,13 @@
             where delete_flag = 0 and plant_nb != '7701' and plant_nb != '7761'
             group by from_prod_order
             )temp on temp.from_prod_order = ps.from_prod_order
-        where ps.delete_flag = 0 and ps.plant_nb != '7701' and ps.plant_nb != '7761'
-
+        where ps.delete_flag = 0
+        <if test="type != null and type == 1 ">
+        and ps.plant_nb != '7701' and ps.plant_nb != '7761'
+        </if>
+        <if test="type != null and type == 2 ">
+        and ps.plant_nb = '7761'
+        </if>
         <if test="plantNb != null  and plantNb != ''">and ps.plant_nb like concat('%', #{plantNb}, '%')</if>
         <if test="materialType != null  and materialType != ''">and pp.type like concat('%', #{materialType}, '%')</if>
         <if test="cell != null  and cell != ''">and pp.cell like concat('%', #{cell}, '%')</if>

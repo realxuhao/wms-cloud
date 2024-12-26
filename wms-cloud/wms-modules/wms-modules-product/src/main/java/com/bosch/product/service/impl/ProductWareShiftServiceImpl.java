@@ -350,10 +350,11 @@ public class ProductWareShiftServiceImpl extends ServiceImpl<ProductWareShiftMap
     }
 
     @Override
-    public ProductStockVO getBinInInfo(String qrCode) {
+    public ProductStockVO getBinInInfo(String qrCode,Integer type) {
         String sscc = ProductQRCodeUtil.getSSCC(qrCode);
         ProductStockQueryDTO queryDTO = new ProductStockQueryDTO();
         queryDTO.setSsccNumber(sscc);
+        queryDTO.setType(type);
         List<ProductStockVO> list = stockService.list(queryDTO);
         if (CollectionUtils.isEmpty(list)) {
             throw new ServiceException("没有该sscc:" + sscc + "对应的库存信息。");

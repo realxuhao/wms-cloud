@@ -353,7 +353,8 @@ const queryFormAttr = () => {
     fromProdOrder: '',
     batchNb: '',
     materialNb: '',
-    createBy: ''
+    createBy: '',
+    type: 0
   }
 }
 
@@ -384,9 +385,20 @@ export default {
     statusColorMap: () => statusColorMap
   },
   methods: {
-      async loadCellList () {
+    async loadCellList () {
       const { data } = await this.$store.dispatch('department/getList')
       this.cellList = data
+    },
+    handleRoute() {
+      console.log(this.$route.path)
+      switch (this.$route.path) {
+        case '/finished-product/transfer-list':
+          this.queryForm.type = 1
+          break
+        case '/finished-product/sudn-shift-list':
+          this.queryForm.type = 2
+          break
+      }
     },
     async handleDownload () {
       try {
@@ -396,7 +408,6 @@ export default {
         const { date = [] } = this.queryForm
         const startCreateTime = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
         const endCreateTime = date.length > 0 ? date[1].format(this.endDateFormat) : undefined
-
         const options = { ..._.omit(this.queryForm, ['date']), startCreateTime, endCreateTime }
 
         const blobData = await this.$store.dispatch('finishedProduct/productShiftexport', options)
@@ -427,7 +438,6 @@ export default {
         const { date = [] } = this.queryForm
         const startCreateTime = date.length > 0 ? date[0].format(this.startDateFormat) : undefined
         const endCreateTime = date.length > 0 ? date[1].format(this.endDateFormat) : undefined
-
         const options = { ..._.omit(this.queryForm, ['date']), startCreateTime, endCreateTime }
 
         const {
@@ -445,7 +455,8 @@ export default {
       this.loadTableList()
     }
   },
-  mounted () {
+  mounted () {    
+    this.handleRoute()     
     this.loadData()
     this.loadCellList()
   }
