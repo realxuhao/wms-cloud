@@ -35,8 +35,12 @@ export default {
 		},
 		async checkMaterialIn(barCode) {
 			try {
-				uni.showLoading();
-				const data = await this.$store.dispatch('finishedProduct/productShiftGetBinInInfo', barCode);
+				uni.showLoading();				 
+				const options = {
+					type: this.$route.query.type,
+					barCode: barCode
+				}
+				const data = await this.$store.dispatch('finishedProduct/productShiftGetBinInInfo', options);
 				if (data.binInFlag === 1) {
 					this.handleGoto();
 				} else {
@@ -51,8 +55,9 @@ export default {
 		},
 		handleGoto() {
 			Bus.$off('scancodedate', this.scanCodeCallback);
+			const type = this.$route.query.type;
 			uni.navigateTo({
-				url: `/pages/finishedProductWareShift/binInOperation?barCode=${this.code}`
+				url: `/pages/finishedProductWareShift/binInOperation?barCode=${this.code}&type=${type}`
 			});
 		}
 	}

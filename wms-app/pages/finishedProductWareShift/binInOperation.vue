@@ -153,10 +153,10 @@
 				editFieldName: 'binInForm.binCode' //'binInForm.mesBarCode','binInForm.recommendBinCode'
 			};
 		},
-		onLoad(options) {
+		onLoad(options) {			
 			this.barCode = options.barCode;
 			this.binInForm.barCode = options.barCode;
-			this.getByMesBarCode(options.barCode);
+			this.getByMesBarCode(options.barCode,options.type);
 
 			this.initScanCode();
 		},
@@ -205,9 +205,13 @@
 				});
 			},
 
-			async getByMesBarCode(barCode) {
+			async getByMesBarCode(barCode,type) {
 				try {
-					const data = await this.$store.dispatch('finishedProduct/productShiftGetBinInInfo', barCode);
+					let options = {						
+						barCode: barCode,
+						type:type
+					};					 
+					const data = await this.$store.dispatch('finishedProduct/productShiftGetBinInInfo', options);
 
 					this.materialInfo = data;
 

@@ -128,8 +128,11 @@ const postShift = async (data) => {
 	})
 }
 
-const productShiftGetBinInInfo = async (barCode) => {
-	const url = `/product/product-shift/getBinInInfo/${barCode}`
+const productShiftGetBinInInfo = async (options) => {	
+	let url = `/product/product-shift/getBinInInfo/${options.barCode}`
+	if(options.type){
+		url += '?type=' + options.type
+	}	 
 	const method = 'GET'
 
 	return request({

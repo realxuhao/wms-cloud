@@ -43,6 +43,8 @@
 				console.log(id);
 			},
 			handleGotoScan(url) {
+				const type = this.$route.query.type
+				url = url + "?type=" + type
 				uni.navigateTo({
 					url
 				});
