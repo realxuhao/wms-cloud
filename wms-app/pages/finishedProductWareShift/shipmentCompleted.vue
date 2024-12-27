@@ -37,6 +37,11 @@
 			Message,
 			hrPullLoad
 		},
+		props:{
+			urlQuery:{
+				type:Object
+			}
+		},
 		data() {
 			return {
 				list: [],
@@ -44,12 +49,9 @@
 				pageSize: 10,
 				pageNum: 1,
 				bottomTips: '',
-				urlQuery:{}
 			};
 		},
-		onLoad(options) {
-			this.urlQuery = options
-		},
+
 		created() {
 			this.loadData();
 		},

@@ -1,8 +1,8 @@
 <template>
 	<my-page nav-title="移库上架">
 		<AloysTab slot="page-main" class="flex flex-column" :tabs="tabs" @change="onTabChange">
-			<Pending slot="content0"></Pending>
-			<Completed slot="content1"></Completed>
+			<Pending :urlQuery="urlQuery" slot="content0"></Pending>
+			<Completed :urlQuery="urlQuery" slot="content1"></Completed>
 		</AloysTab>
 		<!-- <view class="action" @click="handleGotoScan"><uni-icons type="scan" size="28" color="#fff"></uni-icons></view> -->
 		<view class="action1" @click="handleGotoScan('/pages/finishedProductWareShift/binInScan')">

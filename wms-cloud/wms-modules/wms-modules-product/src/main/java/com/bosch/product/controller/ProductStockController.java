@@ -58,6 +58,9 @@ public class ProductStockController extends BaseController {
     @GetMapping(value = "/list")
     @ApiOperation("库存列表")
     public R<PageVO<ProductStockVO>> list(ProductStockQueryDTO stockQueryDTO) {
+        if (stockQueryDTO.getType() == null) {
+            stockQueryDTO.setType(1);
+        }
         startPage();
         List<ProductStockVO> list = productStockService.list(stockQueryDTO);
         return R.ok(new PageVO<>(list, new PageInfo<>(list).getTotal()));
