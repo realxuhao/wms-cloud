@@ -4,8 +4,7 @@
 			<uni-forms class="form" :label-width="80" ref="form" :rules="formRules" :modelValue="form"
 				label-position="left">
 				<uni-forms-item label="仓库" name="wareCode" required>
-					<uni-data-picker ref="picker" popup-title="请选择仓库" :localdata="dataTree"
-						@change="handleChangePlant"></uni-data-picker>
+					{{form.targetPlant}}/{{form.wareCode}}
 				</uni-forms-item>
 				<uni-forms-item label="存储区" name="areaCode" required>
 					<uni-data-picker ref="picker" v-model="area" popup-title="请选择存储区" :localdata="areaList"
@@ -95,7 +94,7 @@
 				list: [],
 				submitLoading: false,
 				barCode: '',
-
+			warehouse:[],
 				formRules: {
 					wareCode: {
 						rules: [{
@@ -155,55 +154,9 @@
 					value: x.code
 				}));
 			},
-			handleChangePlant(val) {
-				const {
-					detail: {
-						value
-					}
-				} = val;
-
-				const factoryCode = value[0].text;
-				const factory = _.find(this.plantList, ['factoryCode', factoryCode]);
-				this.form.plantNb = factory.factoryCode;
-
-				const wareCode = value[1].text;
-				const ware = _.find(this.plantList, ['code', wareCode]);
-				this.form.wareCode = ware.code;
-
-				this.getWareList();
-			},
-			async loadPlantList() {
-				const data = await this.$store.dispatch('plant/getList', {
-					cell: this.cellItems[this.currentCell]
-				});
-				this.plantList = data;
-
-				const uniqList = _.uniqBy(data, 'factoryCode');
-				const list = [];
-				_.each(uniqList, (plant, index) => {
-					const plantIndex = index + 1;
-					const obj = {
-						text: plant.factoryCode,
-						children: [],
-						value: `${plantIndex}-${index}`
-					};
-					_.each(data, (item, itemIndex) => {
-						if (item.factoryCode === plant.factoryCode) {
-							const ware = {
-								text: item.code,
-								value: `${plantIndex}-${itemIndex + 1}`,
-								code: item.code
-							};
-							obj.children.push(ware);
-						}
-					});
-					list.push(obj);
-				});
-
-				this.dataTree = list;
-			},
+			
 			async lodaData() {
-				this.loadPlantList();
+				// this.loadPlantList();
 			},
 			handleAreaChange(val) {
 				const {
@@ -228,7 +181,11 @@
 						barCode
 					});
 					this.list = data;
-
+					if(data[0]){
+						this.form.wareCode = data[0].targetWareCode
+						this.form.targetPlant = data[0].targetPlant
+						this.getWareList()
+					}
 				} catch (e) {
 					this.$refs.message.error(e.message);
 				}

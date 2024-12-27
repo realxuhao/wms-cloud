@@ -24,8 +24,12 @@ export default {
 	},
 	data() {
 		return {
-			code: ''
+			code: '',
+			urlQuery:{}
 		};
+	},
+	onLoad(options) {
+		this.urlQuery = options
 	},
 	methods: {
 		async scanCodeCallback(data) {
@@ -37,7 +41,7 @@ export default {
 			try {
 				uni.showLoading();				 
 				const options = {
-					type: this.$route.query.type,
+					type: this.urlQuery.type,
 					barCode: barCode
 				}
 				const data = await this.$store.dispatch('finishedProduct/productShiftGetBinInInfo', options);
@@ -55,7 +59,7 @@ export default {
 		},
 		handleGoto() {
 			Bus.$off('scancodedate', this.scanCodeCallback);
-			const type = this.$route.query.type;
+			const type = this.urlQuery.type;
 			uni.navigateTo({
 				url: `/pages/finishedProductWareShift/binInOperation?barCode=${this.code}&type=${type}`
 			});

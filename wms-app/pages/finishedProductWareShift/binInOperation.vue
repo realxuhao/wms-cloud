@@ -150,6 +150,7 @@
 				],
 				area: undefined,
 				areaList: [],
+				
 				editFieldName: 'binInForm.binCode' //'binInForm.mesBarCode','binInForm.recommendBinCode'
 			};
 		},
@@ -157,7 +158,7 @@
 			this.barCode = options.barCode;
 			this.binInForm.barCode = options.barCode;
 			this.getByMesBarCode(options.barCode,options.type);
-
+			
 			this.initScanCode();
 		},
 		onLaunch() {

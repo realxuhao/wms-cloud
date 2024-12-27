@@ -43,8 +43,13 @@
 				total: 0,
 				pageSize: 10,
 				pageNum: 1,
-				bottomTips: ''
+				bottomTips: '',
+				urlQuery:{}
+				
 			};
+		},
+		onLoad(options) {
+			this.urlQuery = options
 		},
 		created() {
 			this.loadData();
@@ -55,7 +60,7 @@
 					pageSize: this.pageSize,
 					pageNum: this.pageNum,
 					status: 2,
-					type: this.$route.query.type
+					type:  this.urlQuery.type
 				};
 				const {
 					rows,

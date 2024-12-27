@@ -35,15 +35,19 @@
 				}, {
 					title: '已上架'
 				}],
-				currentTabIndex: 0
+				currentTabIndex: 0,
+				urlQuery:{}
 			};
+		},
+		onLoad(options) {
+			this.urlQuery = options
 		},
 		methods: {
 			onTabChange(id) {
 				console.log(id);
 			},
 			handleGotoScan(url) {
-				const type = this.$route.query.type
+				const type = this.urlQuery.type
 				url = url + "?type=" + type
 				uni.navigateTo({
 					url
