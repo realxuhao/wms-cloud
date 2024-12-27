@@ -1,8 +1,8 @@
 <template>
 	<my-page nav-title="移库发运">
 		<AloysTab slot="page-main" class="flex flex-column" :tabs="tabs" @change="onTabChange">
-			<Pending slot="content0"></Pending>
-			<Completed slot="content1"></Completed>
+			<Pending :urlQuery="urlQuery" slot="content0"></Pending>
+			<Completed :urlQuery="urlQuery" slot="content1"></Completed>
 		</AloysTab>
 		<view class="action" @click="handleGotoScan"><uni-icons type="scan" size="28" color="#fff"></uni-icons></view>
 	</my-page>
@@ -27,8 +27,12 @@
 				}, {
 					title: '已发运'
 				}],
-				currentTabIndex: 0
+				currentTabIndex: 0,
+				urlQuery:{}
 			};
+		},
+		onLoad(options) {
+			this.urlQuery = options
 		},
 		methods: {
 			onTabChange(id) {
