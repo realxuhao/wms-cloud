@@ -38,6 +38,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
@@ -221,4 +224,17 @@ public class ProductPickController extends BaseController {
         util.exportExcel(response, list, "SUDN捡配列表");
     }
 
+    /**
+     * 测试接口
+     *
+     * @return
+     */
+    @GetMapping("/sudnpick")
+    public R sudnpick() {
+        LocalDate date = LocalDate.of(2024, 4, 26);
+        LocalDateTime startOfDay = date.atStartOfDay(); // 当天的开始时间 00:00:00
+        LocalDateTime endOfDay = date.atTime(LocalTime.MAX); // 当天的结束时间 23:59:59
+        pickService.exportSudnPickStockData(startOfDay, endOfDay);
+        return R.ok();
+    }
 }
