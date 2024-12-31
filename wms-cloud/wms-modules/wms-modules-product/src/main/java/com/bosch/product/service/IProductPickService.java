@@ -9,6 +9,8 @@ import com.bosch.product.api.domain.vo.ProductPickExportVO;
 import com.bosch.product.api.domain.vo.ProductPickVO;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,11 +28,11 @@ public interface IProductPickService extends IService<ProductPick> {
 
     void cancel(Long id);
 
-    void modifySscc(Long id,Long stockId);
+    void modifySscc(Long id, Long stockId);
 
     ProductPickBinDownVO binDown(String qrCode, Long sudnId);
 
-    List<ProductPickVO> getBySudnId(Long sudnId,Integer status);
+    List<ProductPickVO> getBySudnId(Long sudnId, Integer status);
 
 
     void editBinDownQuantity(EditBinDownQuantityDTO dto);
@@ -46,4 +48,6 @@ public interface IProductPickService extends IService<ProductPick> {
 
 
     List<ProductPickExportVO> getSUDNPickExportVO(ProductPickDTO sudndto);
+
+    void exportSudnPickStockData(LocalDateTime startDate, LocalDateTime endDate);
 }

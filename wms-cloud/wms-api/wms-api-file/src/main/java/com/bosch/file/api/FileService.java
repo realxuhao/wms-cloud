@@ -57,4 +57,6 @@ public interface FileService {
     @PostMapping(value = "/file/registerBomImport",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     <T> R<List<T>> registerBomImport(@RequestPart(value = "file") MultipartFile file,@RequestParam(value = "className") String className);
 
+    @PostMapping(value = "/file/sftp-upload")
+    public R sftpUpload(@RequestParam(value = "localFilePath") String localFilePath, @RequestParam(value = "remoteFileName") String remoteFileName);
 }

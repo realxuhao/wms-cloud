@@ -10,8 +10,12 @@ import com.bosch.product.api.domain.dto.SUDNDTO;
 import com.bosch.product.api.domain.vo.ProductPickExportVO;
 import com.bosch.product.api.domain.vo.ProductPickVO;
 import com.bosch.product.api.domain.vo.ProductReceiveVO;
+import com.bosch.product.api.domain.vo.SudnStockExportVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -29,4 +33,6 @@ public interface ProductPickMapper extends BaseMapper<ProductPick> {
     List<ProductPickVO> binDownlist(ProductPickDTO queryDTO);
 
     List<ProductPickExportVO> getSUDNPickExportVO(ProductPickDTO sudndto);
+
+    List<SudnStockExportVO> getSudnStockExportVO(@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate);
 }

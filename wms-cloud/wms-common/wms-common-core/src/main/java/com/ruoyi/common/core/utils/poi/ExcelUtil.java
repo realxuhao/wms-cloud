@@ -1,5 +1,7 @@
 package com.ruoyi.common.core.utils.poi;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
@@ -382,6 +384,18 @@ public class ExcelUtil<T> {
      */
     public void exportExcel(HttpServletResponse response, List<T> list, String sheetName) {
         exportExcel(response, list, sheetName, StringUtils.EMPTY);
+    }
+
+    public void exportLocalExcel(String localFilePath, List<T> list, String sheetName) {
+        this.init(list, sheetName, StringUtils.EMPTY, Type.EXPORT);
+        try(FileOutputStream outputStream = new FileOutputStream(localFilePath)) {
+            writeSheet(null);
+            wb.write(outputStream);
+        } catch (Exception e) {
+            log.error("导出Excel异常{}", e.getMessage());
+        } finally {
+            IOUtils.closeQuietly(wb);
+        }
     }
 
     public void exportExcel(HttpServletResponse response, List<T> list, String sheetName, List<ExportUtilParam> lst) {

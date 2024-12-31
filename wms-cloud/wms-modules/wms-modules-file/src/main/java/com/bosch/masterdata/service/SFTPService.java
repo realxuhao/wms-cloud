@@ -122,6 +122,10 @@ public class SFTPService {
         } finally {
             // 关闭sftp
             disconnect(sftp);
+            File file = new File(localFilePath);
+            if (file.exists() && file.isFile()) {
+                boolean success = file.delete();
+            }
         }
     }
 

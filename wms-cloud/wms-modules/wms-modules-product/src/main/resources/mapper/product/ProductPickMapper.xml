@@ -96,4 +96,49 @@
         group by pp.delivery, pp.plant, pp.ship_to_party, pp.name_of_ship_to_party, pp.delivery_date, pp.item,
         pp.material, pp.expire_date, pp.production_batch, pp.sales_unit,pp.batch
     </select>
+
+    <select id="getSudnStockExportVO" resultType="com.bosch.product.api.domain.vo.SudnStockExportVO">
+        SELECT
+        ps.from_prod_order fromProdOrder,
+        ps.ware_code wareCode,
+        ps.area_code areaCode,
+        ps.sscc_number ssccNumber,
+        ps.material_nb materialNb,
+        mpp.product_name materialName,
+        mpp.type as materialType ,
+        ps.total_stock totalStock,
+        (SELECT SUM(p.total_stock) FROM product_stock p
+        WHERE p.from_prod_order = ps.from_prod_order and p.delete_flag = 0
+        and p.plant_nb = '7761') totalStockSum,
+        ps.freeze_stock freezeStock,
+        ps.available_stock availableStock,
+        mpp.box_specification boxSpecification,
+        ROUND(ps.total_stock * mpp.box_specification) as pcsTotalStock,
+        ROUND(ps.freeze_stock * mpp.box_specification) as pcsFreezeStock,
+        ROUND(ps.available_stock * mpp.box_specification) as pcsAvailableStock,
+        ps.quality_status qualityStatus,
+        ps.unit,
+        mpp.cell,
+        pp.name_of_ship_to_party nameOfShipToParty,
+        pp.plant,
+        pp.delivery,
+        pp.ship_to_party shipToParty,
+        pp.delivery_date deliveryDate,
+        pp.item,
+        pp.batch,
+        pp.delivery_quantity deliveryQuantity,
+        sp.uom,
+        sp.storage_location storageLocation,
+        pp.production_batch productionBatch,
+        pp.bin_down_date binDownDate,
+        sp.delivery_nb deliveryNb
+        from  product_pick  pp
+        left join product_stock ps on ps.sscc_number=pp.sscc and ps.plant_nb = '7761' -- and ps.delete_flag = 0
+        left join spdn sp on sp.sscc_number=pp.sscc and sp.delete_flag =0
+        left join md_product_packaging mpp on mpp.product_no = ps.material_nb and mpp.delete_flag = 0
+        WHERE pp.delete_flag=0 and pp.`status`>=0
+        and pp.update_time <![CDATA[ >= ]]> #{startDate}
+        and pp.update_time <![CDATA[ <= ]]> #{endDate}
+    </select>
+
 </mapper>
