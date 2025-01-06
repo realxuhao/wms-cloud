@@ -252,6 +252,9 @@
 					'app:sudn:binin', 
 					'app:sudn:shipment', 
 					'app:sudn:returns', 
+					'app:sudn:finishedProduct:shipment',
+					'app:sudn:finishedProduct:receiving',
+					'app:sudn:finishedProduct:binIn'
 					])" type="line" class="m-b-12">
 				<view class="list header-box">
 
