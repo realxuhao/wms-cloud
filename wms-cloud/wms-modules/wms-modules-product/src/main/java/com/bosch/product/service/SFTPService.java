@@ -1,7 +1,5 @@
-package com.bosch.masterdata.service;
+package com.bosch.product.service;
 
-
-import com.bosch.masterdata.config.SFtpConfig;
 import com.jcraft.jsch.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -164,5 +162,4 @@ public class SFTPService {
             disconnect(sftp);
         }
     }
-
 }

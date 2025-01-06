@@ -139,6 +139,14 @@ public class ProductPickController extends BaseController {
         return R.ok("下架成功");
     }
 
+    @PostMapping(value = "/sumBatchBinDownList")
+    @Transactional(rollbackFor = Exception.class)
+    @Synchronized
+    public R batchBinDownList(@RequestBody List<String> ssccs) {
+        ssccs.stream().forEach(sscc -> pickService.sumBinDownBySSCC(sscc));
+        return R.ok("下架成功");
+    }
+
 
     @PostMapping(value = "/batchDelete/{ids}")
     @ApiOperation("删除SUDN捡配任务")

@@ -47,6 +47,13 @@
             <version>${swagger.fox.version}</version>
         </dependency>
 
+        <!-- jcraft -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>${jcraft.version}</version>
+        </dependency>
+
         <!-- Mysql Connector -->
         <dependency>
             <groupId>mysql</groupId>

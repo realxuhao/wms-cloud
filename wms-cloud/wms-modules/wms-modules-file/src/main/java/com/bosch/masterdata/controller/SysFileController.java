@@ -1,23 +1,18 @@
 package com.bosch.masterdata.controller;
 
 
-import com.alibaba.excel.EasyExcel;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.bosch.binin.api.domain.dto.MaterialCallDTO;
 import com.bosch.binin.api.domain.dto.RegisterBomDTO;
 import com.bosch.file.api.domain.FileUpload;
-import com.bosch.masterdata.service.SFTPService;
 import com.bosch.masterdata.service.IFileUploadService;
 import com.bosch.masterdata.utils.CSVUtil;
-import com.bosch.masterdata.utils.DataListener;
 import com.bosch.masterdata.utils.EasyExcelUtil;
-import com.bosch.product.api.domain.dto.ShippingPlanDTO;
 import com.bosch.storagein.api.domain.MaterialReceive;
 import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.security.utils.SecurityUtils;
 import io.swagger.annotations.ApiOperation;
-import org.apache.poi.ss.formula.functions.T;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +24,6 @@ import com.bosch.masterdata.service.ISysFileService;
 import com.bosch.system.api.domain.SysFile;
 
 import javax.annotation.Resource;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,31 +41,7 @@ public class SysFileController {
     private ISysFileService sysFileService;
     @Autowired
     private IFileUploadService fileUploadService;
-
-    @Autowired
-    private SFTPService sftpService;
-
-
-    @PostMapping("sftp-upload")
-    public R uploadFile(@RequestParam String localFilePath, @RequestParam String remoteFileName) {
-        try {
-            sftpService.uploadFile(localFilePath, remoteFileName);
-            return R.ok();
-        } catch (Exception e) {
-            return R.fail(e.getMessage());
-        }
-    }
-
-    @PostMapping("sftp-download")
-    public R downloadFile(@RequestParam String remoteFileName, @RequestParam String localFilePath) {
-        try {
-            sftpService.downloadFile(remoteFileName, localFilePath);
-            return R.ok();
-        } catch (Exception e) {
-            return R.fail(e.getMessage());
-        }
-    }
-
+    
     /**
      * 文件上传请求
      */

@@ -81,10 +81,5 @@ public class FileFallbackFactory implements FileService {
     public <T> R<List<T>> registerBomImport(MultipartFile file, String className) {
         return R.fail("注册批导入失败");
     }
-
-    @Override
-    public R sftpUpload(String localFilePath,String remoteFileName) {
-        return R.fail("sftp上传失败");
-    }
-
+    
 }

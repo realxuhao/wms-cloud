@@ -2,7 +2,6 @@ package com.bosch.product.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bosch.file.api.FileService;
 import com.bosch.masterdata.api.RemoteProductService;
 import com.bosch.masterdata.api.domain.vo.MdProductPackagingVO;
 import com.bosch.product.api.domain.ProductPick;
@@ -19,6 +18,7 @@ import com.bosch.product.mapper.ProductPickMapper;
 import com.bosch.product.service.IProductPickService;
 import com.bosch.product.service.IProductStockService;
 import com.bosch.product.service.ISUDNService;
+import com.bosch.product.service.SFTPService;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
@@ -41,7 +41,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -69,8 +68,8 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
     @Resource
     private RemoteProductService remoteProductService;
 
-    @Resource
-    private FileService fileService;
+    @Autowired
+    private SFTPService fileService;
 
     @Autowired
     @Lazy
@@ -479,7 +478,7 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
         String fileName = "销售库存" + DateUtils.dateTimeNow() + ".xlsx";
         String localFilePath = localDirectory + fileName;
         util.exportLocalExcel(localFilePath, list, "销售库存");
-        fileService.sftpUpload(localFilePath, fileName);
+        fileService.uploadFile(localFilePath, fileName);
     }
 
 
