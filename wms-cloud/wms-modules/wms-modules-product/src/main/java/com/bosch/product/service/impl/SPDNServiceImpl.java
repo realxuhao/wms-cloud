@@ -345,7 +345,7 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         if (pickList.size() != ssccList.size()) {
             List<String> existSSCCList = pickList.stream().map(ProductSPDNPick::getSsccNumber).collect(Collectors.toList());
             ssccList.removeAll(existSSCCList);
-            throw new ServiceException("存在状态不为待发运的数据" + existSSCCList);
+            throw new ServiceException("存在状态不为待发运的数据" + ssccList);
         }
         List<TranshipmentOrder> transhipmentOrderList = new ArrayList<>();
         //获取next trans order
