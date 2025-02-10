@@ -33,7 +33,7 @@
           </a-col>
           <a-col :span="4">
             <a-form-model-item label="物料类型">
-              <a-select
+              <!-- <a-select
                 allowClear
                 show-search
                 :filter-option="filterOption"
@@ -47,7 +47,8 @@
                   v-for="item in materialTypeList"
                   :key="item.id">
                   {{ item.code }}</a-select-option>
-              </a-select>
+              </a-select> -->
+              <a-input v-model="queryForm.materialTypeId" placeholder="物料类型" allow-clear/>
             </a-form-model-item>
           </a-col>
           <a-col span="4">
