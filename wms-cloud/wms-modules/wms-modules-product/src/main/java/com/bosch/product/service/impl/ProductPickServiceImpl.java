@@ -22,7 +22,6 @@ import com.bosch.product.service.SFTPService;
 import com.ruoyi.common.core.domain.R;
 import com.ruoyi.common.core.enums.DeleteFlagStatus;
 import com.ruoyi.common.core.exception.ServiceException;
-import com.ruoyi.common.core.utils.DateUtils;
 import com.ruoyi.common.core.utils.DoubleMathUtil;
 import com.ruoyi.common.core.utils.ProductQRCodeUtil;
 import com.ruoyi.common.core.utils.bean.BeanConverUtil;
@@ -33,6 +32,7 @@ import com.ruoyi.common.log.enums.UserOperationType;
 import com.ruoyi.common.log.service.IProductStockOperationService;
 import com.ruoyi.common.log.service.IUserOperationLogService;
 import com.ruoyi.common.security.utils.SecurityUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -41,7 +41,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -475,7 +477,8 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
     public void exportSudnPickStockData(LocalDateTime startDate, LocalDateTime endDate) {
         List<SudnStockExportVO> list = productPickMapper.getSudnStockExportVO(startDate, endDate);
         ExcelUtil<SudnStockExportVO> util = new ExcelUtil<>(SudnStockExportVO.class);
-        String fileName = "销售库存" + DateUtils.dateTimeNow() + ".xlsx";
+        LocalDate date = LocalDate.now().minusDays(1);
+        String fileName = "Bosch 进出库库存数据_" + date.format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".xlsx";
         String localFilePath = localDirectory + fileName;
         util.exportLocalExcel(localFilePath, list, "销售库存");
         fileService.uploadFile(localFilePath, fileName);

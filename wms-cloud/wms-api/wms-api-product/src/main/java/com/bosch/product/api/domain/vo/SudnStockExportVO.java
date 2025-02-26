@@ -98,8 +98,8 @@ public class SudnStockExportVO {
     @Excel(name = "ProdBatch")
     private String productionBatch;
 
-    @Excel(name = "出库时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @Excel(name = "出库时间",dateFormat = "yyyy-MM-dd HH:mm:ss")
     private Date binDownDate;
 
     @Excel(name = "7752DeliveryNb")

@@ -28,7 +28,7 @@ public class SudnScheduleTask {
         LocalDateTime startOfDay = date.atStartOfDay(); // 当天的开始时间 00:00:00
         LocalDateTime endOfDay = date.atTime(LocalTime.MAX); // 当天的结束时间 23:59:59
         System.out.println("查询开始时间: " + startOfDay + "结束时间：" + endOfDay);
-        //pickService.exportSudnPickStockData(startOfDay, endOfDay);
+        pickService.exportSudnPickStockData(startOfDay, endOfDay);
     }
 
 
