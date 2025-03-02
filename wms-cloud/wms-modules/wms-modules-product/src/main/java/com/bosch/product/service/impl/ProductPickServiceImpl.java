@@ -422,6 +422,7 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
 
         productPicks.stream().forEach(item -> {
             item.setBinDownQuantity(item.getDeliveryQuantity());
+            item.setBinDownDate(new Date());
             item.setStatus(ProductPickEnum.FINISH.code());
         });
 
