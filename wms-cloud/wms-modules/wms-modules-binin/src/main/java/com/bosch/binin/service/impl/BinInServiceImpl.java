@@ -875,16 +875,17 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         //冻结库存
         List<String> samplePlanSsccList = samplePlanList.stream().map(IQCSamplePlan::getSsccNb).collect(Collectors.toList());
-        LambdaQueryWrapper<Stock> stockLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        stockLambdaQueryWrapper.in(Stock::getSsccNumber, samplePlanSsccList);
-        stockLambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        List<Stock> stockList = stockService.list(stockLambdaQueryWrapper);
-        stockList.stream().forEach(item -> {
-            item.setFreezeStock(item.getTotalStock());
-            item.setAvailableStock(item.getTotalStock() - item.getFreezeStock());
-        });
-        stockService.updateBatchById(stockList);
-
+        if (!CollectionUtils.isEmpty((samplePlanSsccList))) {
+            LambdaQueryWrapper<Stock> stockLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            stockLambdaQueryWrapper.in(Stock::getSsccNumber, samplePlanSsccList);
+            stockLambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            List<Stock> stockList = stockService.list(stockLambdaQueryWrapper);
+            stockList.stream().forEach(item -> {
+                item.setFreezeStock(item.getTotalStock());
+                item.setAvailableStock(item.getTotalStock() - item.getFreezeStock());
+            });
+            stockService.updateBatchById(stockList);
+        }
         return samplePlanList;
     }
 
@@ -951,16 +952,17 @@ public class BinInServiceImpl extends ServiceImpl<BinInMapper, BinIn> implements
 
         //冻结库存
         List<String> samplePlanSsccList = samplePlanList.stream().map(IQCSamplePlan::getSsccNb).collect(Collectors.toList());
-        LambdaQueryWrapper<Stock> stockLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        stockLambdaQueryWrapper.in(Stock::getSsccNumber, samplePlanSsccList);
-        stockLambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
-        List<Stock> stockList = stockService.list(stockLambdaQueryWrapper);
-        stockList.stream().forEach(item -> {
-            item.setFreezeStock(item.getTotalStock());
-            item.setAvailableStock(item.getTotalStock() - item.getFreezeStock());
-        });
-        stockService.updateBatchById(stockList);
-
+        if (!CollectionUtils.isEmpty(samplePlanSsccList)) {
+            LambdaQueryWrapper<Stock> stockLambdaQueryWrapper = new LambdaQueryWrapper<>();
+            stockLambdaQueryWrapper.in(Stock::getSsccNumber, samplePlanSsccList);
+            stockLambdaQueryWrapper.eq(Stock::getDeleteFlag, DeleteFlagStatus.FALSE.getCode());
+            List<Stock> stockList = stockService.list(stockLambdaQueryWrapper);
+            stockList.stream().forEach(item -> {
+                item.setFreezeStock(item.getTotalStock());
+                item.setAvailableStock(item.getTotalStock() - item.getFreezeStock());
+            });
+            stockService.updateBatchById(stockList);
+        }
         return samplePlanList;
 
 
