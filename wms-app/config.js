@@ -1,6 +1,17 @@
 const baseApi = {
-	development: "http://192.168.134.161:8080", // "http://192.168.85.161:8080",//本地开发环境地址
-	production: "http://www.nutricia-home.com/api" //正式环境地址
+	// 正式环境地址
+	development: "https://digital-warehouse.nutriciachina.com/api", // "http://192.168.85.161:8080",//本地开发环境地址
+	production: "https://digital-warehouse.nutriciachina.com/api", //正式环境地址
+
+	// 华为云地址
+	// development: "https://digital-warehouse.nutriciachina.com/api", // "http://192.168.85.161:8080",//本地开发环境地址
+	// production: "https://www.nutricia-home.com/api", //正式环境地址
+
+
+	// https://digital-warehouse.nutriciachina.com/api
+	// 测试环境
+	// development: "http://10.200.178.66/api", // "http://192.168.85.161:8080",//本地开发环境地址
+	// production: "http://10.200.178.66/api" //正式环境地址
 }
 
 const NODE_ENV = process.env.NODE_ENV
