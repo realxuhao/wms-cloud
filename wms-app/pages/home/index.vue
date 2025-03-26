@@ -312,6 +312,7 @@
 	} from '@/api/file.service';
 	import MainFooter from '@/components/main-footer/main-footer.vue';
 	import _ from 'lodash';
+	import config from '@/config.js'
 
 	export default {
 		components: {
@@ -324,7 +325,7 @@
 				dataTree: [],
 				plantName: '',
 				downloadLoading: false,
-				downloadUrl: 'https://www.nutricia-home.com/api/file/download/wms/apk/wmsnew.apk',
+				downloadUrl: config.apiBaseUrl + '/file/download/wms/apk/wmsnew.apk',
 				isForceUpdate: false,
 				downloadNum: ''
 			};
