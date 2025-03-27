@@ -28,7 +28,8 @@ export default {
 	methods: {
 		async scanCodeCallback(data) {
 			Bus.$emit('stopScan');
-			this.getInfo(data.code);
+			//this.getInfo(data.code);
+      this.handleGotoOperation(data);
 		},
 		async getInfo(barCode) {
 			try {
@@ -46,8 +47,9 @@ export default {
 		handleGotoOperation(data) {
 			Bus.$off('scancodedate', this.scanCodeCallback);
 			uni.navigateTo({
-				url: `/pages/adjust/adjustOperation?info=${JSON.stringify(data)}`
+				url: `/pages/adjust/adjustOperation?barCode=${data.code}`  //info=${JSON.stringify(data)}
 			});
+      Bus.$emit('startScan');
 		}
 	}
 };

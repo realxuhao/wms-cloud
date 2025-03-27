@@ -140,11 +140,12 @@
 			};
 		},
 		onLoad(options) {
-			const materialInfo = JSON.parse(options.info);
-			this.materialInfo = materialInfo;
-			this.form.freezeStock = materialInfo.freezeStock;
-			this.form.availableStock = materialInfo.availableStock;
-			this.form.totalStock = materialInfo.totalStock;
+            //const materialInfo = JSON.parse(options.info);
+			//this.materialInfo = materialInfo;
+			//this.form.freezeStock = materialInfo.freezeStock;
+			//this.form.availableStock = materialInfo.availableStock;
+			//this.form.totalStock = materialInfo.totalStock;
+            this.getInfo(options.barCode)
 		},
 
 		methods: {
@@ -153,7 +154,20 @@
 					delta: 1
 				});
 			},
-
+			async getInfo(barCode) {
+				try {
+				  uni.showLoading();
+				  const materialInfo = await this.$store.dispatch('stock/getInfoByMesBarCode', barCode);
+				  this.materialInfo = materialInfo;
+				  this.form.freezeStock = materialInfo.freezeStock;
+				  this.form.availableStock = materialInfo.availableStock;
+				  this.form.totalStock = materialInfo.totalStock;
+				} catch (e) {
+				  this.$refs.message.error(e.message);
+				} finally {
+				  uni.hideLoading();
+				}
+			},
 			async lodaData() {},
 
 			async handlePost() {
