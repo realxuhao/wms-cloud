@@ -95,7 +95,7 @@
             <if test="wareCode != null  and wareCode != ''">and w.code like concat('%', #{wareCode}, '%')</if>
             <if test="areaCode != null  and areaCode != ''">and a.code  like concat('%', #{areaCode}, '%')</if>
             <if test="frameCode != null  and frameCode != ''">and f.code  like concat('%', #{frameCode}, '%')</if>
-            <if test="frameType != null  and frameType != ''">and f.type  like concat('%', #{frameType}, '%')</if>
+            <if test="frameType != null  and frameType != ''">and f.type_code  like concat('%', #{frameType}, '%')</if>
 
         </where>
     </select>
