@@ -54,7 +54,7 @@ import java.util.stream.Collectors;
  **/
 @RestController
 @Api(tags = "SUDN捡配接口")
-@RequestMapping("/sudn-pick")
+    @RequestMapping("/sudn-pick")
 public class ProductPickController extends BaseController {
 
 
@@ -237,11 +237,12 @@ public class ProductPickController extends BaseController {
      *
      * @return
      */
-    @GetMapping("/sudnpick")
-    public R sudnpick() {
-        LocalDate date = LocalDate.of(2024, 4, 26);
-        LocalDateTime startOfDay = date.atStartOfDay(); // 当天的开始时间 00:00:00
-        LocalDateTime endOfDay = date.atTime(LocalTime.MAX); // 当天的结束时间 23:59:59
+    @GetMapping("/sudnpick/{startday}/{endday}")
+    public R sudnpick(@PathVariable("startday") String startday, @PathVariable("endday") String endday) {
+        LocalDate start = LocalDate.parse(startday);
+        LocalDate end = LocalDate.parse(endday);
+        LocalDateTime startOfDay = start.atStartOfDay(); // 当天的开始时间 00:00:00
+        LocalDateTime endOfDay = end.atTime(LocalTime.MAX); // 当天的结束时间 23:59:59
         pickService.exportSudnPickStockData(startOfDay, endOfDay);
         return R.ok();
     }

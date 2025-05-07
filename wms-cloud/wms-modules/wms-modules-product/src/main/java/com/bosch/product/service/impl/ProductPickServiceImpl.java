@@ -478,8 +478,8 @@ public class ProductPickServiceImpl extends ServiceImpl<ProductPickMapper, Produ
     public void exportSudnPickStockData(LocalDateTime startDate, LocalDateTime endDate) {
         List<SudnStockExportVO> list = productPickMapper.getSudnStockExportVO(startDate, endDate);
         ExcelUtil<SudnStockExportVO> util = new ExcelUtil<>(SudnStockExportVO.class);
-        LocalDate date = LocalDate.now().minusDays(1);
-        String fileName = "Bosch 进出库库存数据_" + date.format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".xlsx";
+        //LocalDate date = LocalDate.now().minusDays(1);
+        String fileName = "Bosch 进出库库存数据_" + startDate.format(DateTimeFormatter.ofPattern("yyyyMMdd")) + ".xlsx";
         String localFilePath = localDirectory + fileName;
         util.exportLocalExcel(localFilePath, list, "销售库存");
         fileService.uploadFile(localFilePath, fileName);
