@@ -133,7 +133,13 @@
         pp.bin_down_date binDownDate,
         sp.delivery_nb deliveryNb
         from  product_pick  pp
-        left join product_stock ps on ps.sscc_number=pp.sscc -- and ps.delete_flag = 0
+        left join ( SELECT ps.*
+                    FROM product_stock ps
+                             INNER JOIN (
+                        SELECT sscc_number, MAX(id) AS max_id
+                        FROM product_stock
+                        GROUP BY sscc_number
+                    ) latest ON ps.sscc_number = latest.sscc_number AND ps.id = latest.max_id ) ps on ps.sscc_number=pp.sscc -- and ps.delete_flag = 0
         left join spdn sp on sp.sscc_number=pp.sscc and sp.delete_flag =0
         left join md_product_packaging mpp on mpp.product_no = ps.material_nb and mpp.delete_flag = 0
         WHERE pp.delete_flag=0 and pp.`status`=3 and ps.plant_nb = '7761'

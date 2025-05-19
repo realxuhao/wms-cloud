@@ -1,9 +1,6 @@
 package com.bosch.masterdata.service.impl;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -122,7 +119,8 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         LambdaQueryWrapper<UserOperationLog> queryLogWrapper = new LambdaQueryWrapper<UserOperationLog>();
         queryLogWrapper.in(UserOperationLog::getCode, collect);
         List<UserOperationLog> userOperationLogs = userOperationLogMapper.selectList(queryLogWrapper);
-        if (userOperationLogs.size() > 0) {
+        Optional<Material> first = materials.stream().findFirst();
+        if (userOperationLogs.size() > 0 && first.isPresent() && !first.get().getCode().equals(materialDTO.getCode())) {
             throw new ServiceException("该物料被使用，不允许修改");
         }
         if (ObjectUtils.isNotEmpty(materialDTO) && ObjectUtils.isNotEmpty(materialDTO.getPalletId())) {
@@ -145,17 +143,12 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
      */
     @Override
     public int deleteMaterialByIds(Long[] ids) {
-        LambdaQueryWrapper<Material> queryWrapper = new LambdaQueryWrapper<Material>();
-        queryWrapper.in(Material::getId, ids);
-        List<Material> materials = materialMapper.selectList(queryWrapper);
-        List<String> collect = materials.stream().map(x -> x.getCode()).collect(Collectors.toList());
-        LambdaQueryWrapper<UserOperationLog> queryLogWrapper = new LambdaQueryWrapper<UserOperationLog>();
-        queryLogWrapper.in(UserOperationLog::getCode, collect);
-        List<UserOperationLog> userOperationLogs = userOperationLogMapper.selectList(queryLogWrapper);
-        if (userOperationLogs.size() > 0) {
-            throw new ServiceException("该物料被使用，不允许删除");
+        //return materialMapper.deleteMaterialByIds(ids);
+        int i = 0;
+        for (Long id : ids) {
+            i += deleteMaterialById(id);
         }
-        return materialMapper.deleteMaterialByIds(ids);
+        return i;
     }
 
     /**
@@ -166,6 +159,22 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
      */
     @Override
     public int deleteMaterialById(Long id) {
+        LambdaQueryWrapper<Material> queryWrapper = new LambdaQueryWrapper<Material>();
+        queryWrapper.eq(Material::getId, id);
+        List<Material> materials = materialMapper.selectList(queryWrapper);
+        List<String> collect = materials.stream().map(x -> x.getCode()).collect(Collectors.toList());
+        LambdaQueryWrapper<UserOperationLog> queryLogWrapper = new LambdaQueryWrapper<UserOperationLog>();
+        queryLogWrapper.in(UserOperationLog::getCode, collect);
+        List<UserOperationLog> userOperationLogs = userOperationLogMapper.selectList(queryLogWrapper);
+
+        Optional<Material> first = materials.stream().findFirst();
+        queryWrapper = new LambdaQueryWrapper<Material>();
+        queryWrapper.eq(Material::getCode, first.get().getCode());
+        materials = materialMapper.selectList(queryWrapper);
+
+        if (userOperationLogs.size() > 0 && materials.size() == 1) {
+            throw new ServiceException("该物料被使用，不允许删除");
+        }
         return materialMapper.deleteMaterialById(id);
     }
 
