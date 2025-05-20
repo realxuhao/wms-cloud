@@ -120,7 +120,12 @@ public class MaterialServiceImpl extends ServiceImpl<MaterialMapper, Material> i
         queryLogWrapper.in(UserOperationLog::getCode, collect);
         List<UserOperationLog> userOperationLogs = userOperationLogMapper.selectList(queryLogWrapper);
         Optional<Material> first = materials.stream().findFirst();
-        if (userOperationLogs.size() > 0 && first.isPresent() && !first.get().getCode().equals(materialDTO.getCode())) {
+
+        queryWrapper = new LambdaQueryWrapper<Material>();
+        queryWrapper.eq(Material::getCode, first.get().getCode());
+        materials = materialMapper.selectList(queryWrapper);
+
+        if (userOperationLogs.size() > 0 && first.isPresent() && !first.get().getCode().equals(materialDTO.getCode()) && materials.size() == 1) {
             throw new ServiceException("该物料被使用，不允许修改");
         }
         if (ObjectUtils.isNotEmpty(materialDTO) && ObjectUtils.isNotEmpty(materialDTO.getPalletId())) {
