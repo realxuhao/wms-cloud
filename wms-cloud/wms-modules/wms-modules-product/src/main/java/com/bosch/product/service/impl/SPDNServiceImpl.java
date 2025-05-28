@@ -156,6 +156,9 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
                 throw new ServiceException("只能选择已发运的数据");
             }
             ProductStock productStock = ssccStockMap.get(item.getSsccNumber());
+            if (productStock == null) {
+                throw new ServiceException("该托" + item.getSsccNumber() + "库存不存在!");
+            }
             if ("7761".equals(item.getPlant())) {
                 if (productStock != null) {
                     productStock.setPlantNb(item.getPlant());
@@ -240,6 +243,9 @@ public class SPDNServiceImpl extends ServiceImpl<SPDNMapper, SPDN>
         ArrayList<ProductSPDNPick> spdnPickList = new ArrayList<>();
         spdnList.stream().forEach(item -> {
             ProductStock productStock = ssccStockMap.get(item.getSsccNumber());
+            if (productStock == null) {
+                throw new ServiceException("该托" + item.getSsccNumber() + "库存不存在!");
+            }
             if ("7761".equals(item.getPlant())) {
 //                if (productStock != null) {
 //                    productStock.setPlantNb(item.getPlant());
